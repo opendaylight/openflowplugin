@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
@@ -21,7 +21,7 @@ public class Ipv6NdTargetEntryDeserializer extends AbstractMatchEntryDeserialize
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         processHeader(message);
-        final Ipv6Address address = ByteBufUtils.readIetfIpv6Address(message);
+        final Ipv6AddressNoZone address = ByteBufUtils.readIetfIpv6Address(message);
 
         if (Objects.isNull(builder.getLayer3Match())) {
             builder.setLayer3Match(new Ipv6MatchBuilder()

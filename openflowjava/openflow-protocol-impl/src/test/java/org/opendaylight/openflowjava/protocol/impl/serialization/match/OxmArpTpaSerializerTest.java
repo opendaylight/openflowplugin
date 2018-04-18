@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
@@ -130,7 +130,7 @@ public class OxmArpTpaSerializerTest {
         if (hasMask) {
             valueBuilder.setMask(new byte[]{15, 15, 0, 0});
         }
-        valueBuilder.setIpv4Address(new Ipv4Address(value));
+        valueBuilder.setIpv4Address(new Ipv4AddressNoZone(value));
         casebuilder.setArpTpa(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());
         return builder;

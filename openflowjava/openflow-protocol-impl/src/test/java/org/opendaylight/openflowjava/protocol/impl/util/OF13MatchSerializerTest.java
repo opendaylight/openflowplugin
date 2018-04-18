@@ -21,8 +21,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
@@ -91,7 +91,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("1.2.3.4"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("1.2.3.4"));
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -127,7 +127,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1:2:3:4:5:6:7:8"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("1:2:3:4:5:6:7:8"));
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -138,7 +138,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
         Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
-        ipv6NdTargetBuilder.setIpv6Address(new Ipv6Address("1:2::6:7:8"));
+        ipv6NdTargetBuilder.setIpv6Address(new Ipv6AddressNoZone("1:2::6:7:8"));
         ipv6NdTargetCaseBuilder.setIpv6NdTarget(ipv6NdTargetBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6NdTargetCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -149,7 +149,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
-        ipv6DstBuilder.setIpv6Address(new Ipv6Address("1::8"));
+        ipv6DstBuilder.setIpv6Address(new Ipv6AddressNoZone("1::8"));
         ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -160,7 +160,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         ipv6DstBuilder = new Ipv6DstBuilder();
-        ipv6DstBuilder.setIpv6Address(new Ipv6Address("::1"));
+        ipv6DstBuilder.setIpv6Address(new Ipv6AddressNoZone("::1"));
         ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -171,7 +171,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         ipv6DstBuilder = new Ipv6DstBuilder();
-        ipv6DstBuilder.setIpv6Address(new Ipv6Address("::"));
+        ipv6DstBuilder.setIpv6Address(new Ipv6AddressNoZone("::"));
         ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -254,7 +254,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(false);
         Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1:2::::8"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("1:2::::8"));
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
         entries.add(entriesBuilder.build());

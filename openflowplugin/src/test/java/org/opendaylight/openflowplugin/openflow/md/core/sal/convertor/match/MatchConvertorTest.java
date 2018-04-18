@@ -19,9 +19,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -327,7 +327,7 @@ public class MatchConvertorTest {
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
     }
 
-    private static void checkEntryHeader(MatchEntry entry, Class<? extends MatchField> field, boolean hasMask) {
+    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field, final boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
         Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
@@ -337,8 +337,8 @@ public class MatchConvertorTest {
     public void testIpv4MatchArbitraryBitMaskwithNoMask() {
         MatchBuilder builder = new MatchBuilder();
         Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder = new Ipv4MatchArbitraryBitMaskBuilder();
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4Address("10.2.2.2"));
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address("10.1.1.1"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4AddressNoZone("10.2.2.2"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4AddressNoZone("10.1.1.1"));
         builder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
         Match match = builder.build();
 
@@ -360,9 +360,9 @@ public class MatchConvertorTest {
     @Test
     public void testIpv4MatchArbitraryBitMaskwithMask() {
         Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder = new Ipv4MatchArbitraryBitMaskBuilder();
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4Address("10.2.2.2"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceAddressNoMask(new Ipv4AddressNoZone("10.2.2.2"));
         ipv4MatchArbitraryBitMaskBuilder.setIpv4SourceArbitraryBitmask(new DottedQuad("0.0.255.0"));
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address("10.1.1.1"));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4AddressNoZone("10.1.1.1"));
         ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(new DottedQuad("0.240.0.0"));
 
         MatchBuilder builder = new MatchBuilder();
@@ -554,7 +554,7 @@ public class MatchConvertorTest {
         Ipv6LabelBuilder ipv6LabelBuilder = new Ipv6LabelBuilder();
         ipv6LabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(3L));
         ipv6Builder.setIpv6Label(ipv6LabelBuilder.build());
-        ipv6Builder.setIpv6NdTarget(new Ipv6Address("::4"));
+        ipv6Builder.setIpv6NdTarget(new Ipv6AddressNoZone("::4"));
         ipv6Builder.setIpv6NdSll(new MacAddress("00:00:00:00:00:05"));
         ipv6Builder.setIpv6NdTll(new MacAddress("00:00:00:00:00:06"));
         Ipv6ExtHeaderBuilder extHdrBuilder = new Ipv6ExtHeaderBuilder();
@@ -753,11 +753,11 @@ public class MatchConvertorTest {
     public void testIpv6MatchArbitraryBitMask() {
         Ipv6MatchArbitraryBitMaskBuilder ipv6MatchArbitraryBitMaskBuilder = new Ipv6MatchArbitraryBitMaskBuilder();
         ipv6MatchArbitraryBitMaskBuilder
-                .setIpv6SourceAddressNoMask(new Ipv6Address("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0"));
+                .setIpv6SourceAddressNoMask(new Ipv6AddressNoZone("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0"));
         ipv6MatchArbitraryBitMaskBuilder
                 .setIpv6SourceArbitraryBitmask(new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
         ipv6MatchArbitraryBitMaskBuilder
-                .setIpv6DestinationAddressNoMask(new Ipv6Address("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0"));
+                .setIpv6DestinationAddressNoMask(new Ipv6AddressNoZone("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0"));
         ipv6MatchArbitraryBitMaskBuilder
                 .setIpv6DestinationArbitraryBitmask(new Ipv6ArbitraryMask("fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:A555"));
 

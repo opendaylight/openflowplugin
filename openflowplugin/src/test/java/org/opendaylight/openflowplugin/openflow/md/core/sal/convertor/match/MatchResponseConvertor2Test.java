@@ -20,8 +20,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
@@ -369,7 +369,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Ipv4SrcCaseBuilder ipv4AddressBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.0.0.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.1"));
         ipv4AddressBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4AddressBuilder.build());
         entries.add(entriesBuilder.build());
@@ -380,7 +380,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
-        ipv4DstBuilder.setIpv4Address(new Ipv4Address("10.0.0.2"));
+        ipv4DstBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.2"));
         ipv4DstCaseBuilder.setIpv4Dst(ipv4DstBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -630,7 +630,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.0.0.0"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.0"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -642,7 +642,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.0.0"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.0"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -727,7 +727,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.1.1.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.1.1.1"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, 0, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -739,7 +739,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.1.1"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.1.1"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, 0, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -785,7 +785,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.1.1.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.1.1.1"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -797,7 +797,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.1.1"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.1.1"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, 0, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -843,7 +843,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.1.1.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.1.1.1"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, (byte) 0, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -855,7 +855,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.1.1"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.1.1"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -902,7 +902,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.1.1"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.1.1"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, 0, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -914,7 +914,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.1.1.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.1.1.1"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -960,7 +960,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
-        ipv4AddressBuilder.setIpv4Address(new Ipv4Address("10.0.1.1"));
+        ipv4AddressBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.1.1"));
         ipv4AddressBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 240, 0});
         ipv4DstCaseBuilder.setIpv4Dst(ipv4AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
@@ -972,7 +972,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
-        ipv4SrcBuilder.setIpv4Address(new Ipv4Address("10.1.1.1"));
+        ipv4SrcBuilder.setIpv4Address(new Ipv4AddressNoZone("10.1.1.1"));
         ipv4SrcBuilder.setMask(new byte[]{(byte) 255, (byte) 0, (byte) 255, 0});
         ipv4SrcCaseBuilder.setIpv4Src(ipv4SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
@@ -1108,7 +1108,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6AddressBuilder = new Ipv6SrcBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2001:cdba:0000:0000:0000:0000:3257:9657"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6AddressNoZone("2001:cdba:0000:0000:0000:0000:3257:9657"));
         ipv6SrcCaseBuilder.setIpv6Src(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1119,7 +1119,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
-        ipv6DstBuilder.setIpv6Address(new Ipv6Address("2001:cdba:0000:0000:0000:0000:3257:9658"));
+        ipv6DstBuilder.setIpv6Address(new Ipv6AddressNoZone("2001:cdba:0000:0000:0000:0000:3257:9658"));
         ipv6DstCaseBuilder.setIpv6Dst(ipv6DstBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1141,7 +1141,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
         final Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
-        ipv6NdTargetBuilder.setIpv6Address(new Ipv6Address("2001:cdba:0000:0000:0000:0000:3257:9659"));
+        ipv6NdTargetBuilder.setIpv6Address(new Ipv6AddressNoZone("2001:cdba:0000:0000:0000:0000:3257:9659"));
         ipv6NdTargetCaseBuilder.setIpv6NdTarget(ipv6NdTargetBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6NdTargetCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1264,7 +1264,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
         final ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
-        arpSpaBuilder.setIpv4Address(new Ipv4Address("10.0.0.3"));
+        arpSpaBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.3"));
         arpSpaCaseBuilder.setArpSpa(arpSpaBuilder.build());
         entriesBuilder.setMatchEntryValue(arpSpaCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1275,7 +1275,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
         final ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
-        arpTpaBuilder.setIpv4Address(new Ipv4Address("10.0.0.4"));
+        arpTpaBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.4"));
         arpTpaCaseBuilder.setArpTpa(arpTpaBuilder.build());
         entriesBuilder.setMatchEntryValue(arpTpaCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1337,7 +1337,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
         final ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
-        arpSpaBuilder.setIpv4Address(new Ipv4Address("10.0.0.3"));
+        arpSpaBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.3"));
         arpSpaBuilder.setMask(new byte[]{(byte) 255, (byte) 255, (byte) 255, 0});
         arpSpaCaseBuilder.setArpSpa(arpSpaBuilder.build());
         entriesBuilder.setMatchEntryValue(arpSpaCaseBuilder.build());
@@ -1349,7 +1349,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
         final ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
-        arpTpaBuilder.setIpv4Address(new Ipv4Address("10.0.0.0"));
+        arpTpaBuilder.setIpv4Address(new Ipv4AddressNoZone("10.0.0.0"));
         arpTpaBuilder.setMask(new byte[]{(byte) 255, (byte) 128, 0, 0});
         arpTpaCaseBuilder.setArpTpa(arpTpaBuilder.build());
         entriesBuilder.setMatchEntryValue(arpTpaCaseBuilder.build());
@@ -1424,7 +1424,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("1001:1001:1001:1001:1001:1001:1001:1001"));
         ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
@@ -1436,7 +1436,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6AddressNoZone("2002:2002:2002:2002:2002:2002:2002:2002"));
         ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
         ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
@@ -1482,7 +1482,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("1001:1001:1001:1001:1001:1001:1001:1001"));
         ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
@@ -1494,7 +1494,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6AddressNoZone("2002:2002:2002:2002:2002:2002:2002:2002"));
         ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
         ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
@@ -1540,7 +1540,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("1001:1001:1001:1001:1001:1001:1001:1001"));
         ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
@@ -1552,7 +1552,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6AddressNoZone("2002:2002:2002:2002:2002:2002:2002:2002"));
         ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
         ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
@@ -1599,7 +1599,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6AddressNoZone("1001:1001:1001:1001:1001:1001:1001:1001"));
         ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
         ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
@@ -1611,7 +1611,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("2002:2002:2002:2002:2002:2002:2002:2002"));
         ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
@@ -1658,7 +1658,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
-        ipv6AddressBuilder.setIpv6Address(new Ipv6Address("1001:1001:1001:1001:1001:1001:1001:1001"));
+        ipv6AddressBuilder.setIpv6Address(new Ipv6AddressNoZone("1001:1001:1001:1001:1001:1001:1001:1001"));
         ipv6AddressBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
         ipv6DstCaseBuilder.setIpv6Dst(ipv6AddressBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
@@ -1670,7 +1670,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-        ipv6SrcBuilder.setIpv6Address(new Ipv6Address("2002:2002:2002:2002:2002:2002:2002:2002"));
+        ipv6SrcBuilder.setIpv6Address(new Ipv6AddressNoZone("2002:2002:2002:2002:2002:2002:2002:2002"));
         ipv6SrcBuilder.setMask(new byte[]{(byte) 255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,(byte) 255});
         ipv6SrcCaseBuilder.setIpv6Src(ipv6SrcBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
@@ -1697,7 +1697,7 @@ public class MatchResponseConvertor2Test {
     }
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-            .MatchBuilder convert(Match match, VersionDatapathIdConvertorData data) {
+            .MatchBuilder convert(final Match match, final VersionDatapathIdConvertorData data) {
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
                 .MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 

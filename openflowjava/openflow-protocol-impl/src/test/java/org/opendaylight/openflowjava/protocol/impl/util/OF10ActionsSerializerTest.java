@@ -18,7 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.EnqueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
@@ -114,14 +114,14 @@ public class OF10ActionsSerializerTest {
         actionBuilder = new ActionBuilder();
         SetNwSrcCaseBuilder nwSrcCaseBuilder = new SetNwSrcCaseBuilder();
         SetNwSrcActionBuilder nwSrcBuilder = new SetNwSrcActionBuilder();
-        nwSrcBuilder.setIpAddress(new Ipv4Address("10.0.0.1"));
+        nwSrcBuilder.setIpAddress(new Ipv4AddressNoZone("10.0.0.1"));
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setActionChoice(nwSrcCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         SetNwDstCaseBuilder nwDstCaseBuilder = new SetNwDstCaseBuilder();
         SetNwDstActionBuilder nwDstBuilder = new SetNwDstActionBuilder();
-        nwDstBuilder.setIpAddress(new Ipv4Address("10.0.0.3"));
+        nwDstBuilder.setIpAddress(new Ipv4AddressNoZone("10.0.0.3"));
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setActionChoice(nwDstCaseBuilder.build());
         actions.add(actionBuilder.build());

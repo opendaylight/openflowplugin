@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.EnqueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetDlDstCase;
@@ -97,11 +97,11 @@ public class OF10ActionsDeserializerTest {
             ((SetDlDstCase) action6.getActionChoice()).getSetDlDstAction().getDlDstAddress().getValue());
         Action action7 = actions.get(6);
         Assert.assertTrue("Wrong action type", action7.getActionChoice() instanceof SetNwSrcCase);
-        Assert.assertEquals("Wrong nw-src", new Ipv4Address("10.0.0.1"),
+        Assert.assertEquals("Wrong nw-src", new Ipv4AddressNoZone("10.0.0.1"),
                 ((SetNwSrcCase) action7.getActionChoice()).getSetNwSrcAction().getIpAddress());
         Action action8 = actions.get(7);
         Assert.assertTrue("Wrong action type", action8.getActionChoice() instanceof SetNwDstCase);
-        Assert.assertEquals("Wrong nw-dst", new Ipv4Address("11.0.0.2"),
+        Assert.assertEquals("Wrong nw-dst", new Ipv4AddressNoZone("11.0.0.2"),
                 ((SetNwDstCase) action8.getActionChoice()).getSetNwDstAction().getIpAddress());
         Action action9 = actions.get(8);
         Assert.assertTrue("Wrong action type", action9.getActionChoice() instanceof SetNwTosCase);

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
@@ -210,14 +211,14 @@ public final class MatchUtil {
         return result;
     }
 
-    public static Ipv4Address longToIpv4Address(Long value) {
+    public static Ipv4AddressNoZone longToIpv4Address(Long value) {
         byte[] bytes = Longs.toByteArray(value);
         String[] strArray = new String[4];
         for (int i = 4; i < bytes.length; i++) {
             strArray[i - 4] = UnsignedBytes.toString(bytes[i]);
         }
         String str = JOINER.join(strArray);
-        Ipv4Address result = new Ipv4Address(str);
+        Ipv4AddressNoZone result = new Ipv4AddressNoZone(str);
         return result;
     }
 }

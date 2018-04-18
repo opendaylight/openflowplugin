@@ -123,7 +123,7 @@ module opendaylight-match-types {
 
         leaf ipv6-nd-target {
             description "IPv6 target address for neighbour discovery message";
-            type inet:ipv6-address;
+            type inet:ipv6-address-no-zone;
         }
 
         container "ipv6-label" {

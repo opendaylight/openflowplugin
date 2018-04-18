@@ -15,7 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMaskBuilder;
@@ -25,7 +25,7 @@ public class Ipv6ArbitraryBitMaskDestinationEntrySerializerTest extends Abstract
 
     @Test
     public void testSerialize() throws Exception {
-        final Ipv6Address ipv6Address = new Ipv6Address("aaaa:bbbb:1111:2222::");
+        final Ipv6AddressNoZone ipv6Address = new Ipv6AddressNoZone("aaaa:bbbb:1111:2222::");
         final Ipv6ArbitraryMask ipv6mask = new Ipv6ArbitraryMask("ffff:ffff:ffff:ffff::");
 
         final Match ipv6abmMatch = new MatchBuilder()

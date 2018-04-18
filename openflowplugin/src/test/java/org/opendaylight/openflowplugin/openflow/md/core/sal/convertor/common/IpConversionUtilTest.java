@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
@@ -28,7 +28,7 @@ public class IpConversionUtilTest {
     public void canonicalBinaryV6AddressTest() {
 
         byte [] ipv6binary = IpConversionUtil.canonicalBinaryV6Address(
-                new Ipv6Address("0000:0000:0000:0000:0000:0000:0000:0001"));
+                new Ipv6AddressNoZone("0000:0000:0000:0000:0000:0000:0000:0001"));
         byte [] expected = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1};
 
         Assert.assertTrue("Incorrect canonicalization - binary", Arrays.equals(ipv6binary, expected));
@@ -188,7 +188,7 @@ public class IpConversionUtilTest {
 
     @Test
     public void extractIpv6AddressTest() {
-        Ipv6Address ipv6Address;
+        Ipv6AddressNoZone ipv6Address;
         ipv6Address = IpConversionUtil.extractIpv6Address(new Ipv6Prefix("1:2:3:4:5:6:7:8/16"));
         Assert.assertEquals(ipv6Address.getValue(),"1:2:3:4:5:6:7:8");
     }
@@ -220,18 +220,18 @@ public class IpConversionUtilTest {
 
     @Test
     public void compressedIpv6AddressFormatTest() {
-        Ipv6Address compressedIpv6Address;
-        Ipv6Address ipv6IpAddressMask;
+        Ipv6AddressNoZone compressedIpv6Address;
+        Ipv6AddressNoZone ipv6IpAddressMask;
         // zero compression
-        ipv6IpAddressMask = new Ipv6Address("FFFF:0000:0000:0:0:0:1001:1000");
+        ipv6IpAddressMask = new Ipv6AddressNoZone("FFFF:0000:0000:0:0:0:1001:1000");
         compressedIpv6Address = IpConversionUtil.compressedIpv6AddressFormat(ipv6IpAddressMask);
         Assert.assertEquals(compressedIpv6Address.getValue(), "ffff::1001:1000");
         // :: present - no compression
-        ipv6IpAddressMask = new Ipv6Address("FFFF::F000:0:0:1000");
+        ipv6IpAddressMask = new Ipv6AddressNoZone("FFFF::F000:0:0:1000");
         compressedIpv6Address = IpConversionUtil.compressedIpv6AddressFormat(ipv6IpAddressMask);
         Assert.assertEquals(compressedIpv6Address.getValue(), "ffff::f000:0:0:1000");
         // more zero sequences - compress only one
-        ipv6IpAddressMask = new Ipv6Address("FFFF:0:0:F000:0000:0:0:1000");
+        ipv6IpAddressMask = new Ipv6AddressNoZone("FFFF:0:0:F000:0000:0:0:1000");
         compressedIpv6Address = IpConversionUtil.compressedIpv6AddressFormat(ipv6IpAddressMask);
         Assert.assertEquals(compressedIpv6Address.getValue(), "ffff:0:0:f000::1000");
     }

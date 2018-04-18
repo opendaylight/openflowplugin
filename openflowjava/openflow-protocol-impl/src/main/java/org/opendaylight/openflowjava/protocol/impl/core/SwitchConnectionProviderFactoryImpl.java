@@ -17,7 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
@@ -38,13 +38,13 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         return switchConnectionProviderImpl;
     }
 
-    private static InetAddress extractIpAddressBin(final IpAddress address) throws UnknownHostException {
+    private static InetAddress extractIpAddressBin(final IpAddressNoZone address) throws UnknownHostException {
         byte[] addressBin = null;
         if (address != null) {
-            if (address.getIpv4Address() != null) {
-                addressBin = address2bin(address.getIpv4Address().getValue());
-            } else if (address.getIpv6Address() != null) {
-                addressBin = address2bin(address.getIpv6Address().getValue());
+            if (address.getIpv4AddressNoZone() != null) {
+                addressBin = address2bin(address.getIpv4AddressNoZone().getValue());
+            } else if (address.getIpv6AddressNoZone() != null) {
+                addressBin = address2bin(address.getIpv6AddressNoZone().getValue());
             }
         }
 

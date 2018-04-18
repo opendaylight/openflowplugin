@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.impl.device.SwitchFeaturesUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
@@ -98,13 +98,14 @@ public final class DeviceInitializationUtil {
      * @param instanceIdentifier instance identifier
      * @return ip address
      */
-    public static IpAddress getIpAddress(final ConnectionContext connectionContext,
+    public static IpAddressNoZone getIpAddress(final ConnectionContext connectionContext,
                                          final InstanceIdentifier<Node> instanceIdentifier) {
         final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
 
         return getRemoteAddress(connectionContext, instanceIdentifier)
                 .map(inetSocketAddress -> {
-                    final IpAddress ipAddress = IetfInetUtil.INSTANCE.ipAddressFor(inetSocketAddress.getAddress());
+                    final IpAddressNoZone ipAddress = IetfInetUtil.INSTANCE.ipAddressNoZoneFor(
+                            inetSocketAddress.getAddress());
                     LOG.info("IP address of the node {} is: {}", node, ipAddress);
                     return ipAddress;
                 })

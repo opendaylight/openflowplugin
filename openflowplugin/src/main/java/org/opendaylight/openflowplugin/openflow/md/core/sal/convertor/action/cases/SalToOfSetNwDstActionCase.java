@@ -18,8 +18,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwDstActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4;
@@ -54,7 +54,7 @@ public class SalToOfSetNwDstActionCase extends ConvertorCase<SetNwDstActionCase,
 
         if (address instanceof Ipv4) {
             Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv4) address).getIpv4Address().getValue());
-            Ipv4Address result = new Ipv4Address(addressParts.iterator().next());
+            Ipv4AddressNoZone result = new Ipv4AddressNoZone(addressParts.iterator().next());
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
@@ -79,7 +79,7 @@ public class SalToOfSetNwDstActionCase extends ConvertorCase<SetNwDstActionCase,
             builder.setActionChoice(setFieldCaseBuilder.build());
         } else if (address instanceof Ipv6) {
             Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv6) address).getIpv6Address().getValue());
-            Ipv6Address result = new Ipv6Address(addressParts.iterator().next());
+            Ipv6AddressNoZone result = new Ipv6AddressNoZone(addressParts.iterator().next());
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
             matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);

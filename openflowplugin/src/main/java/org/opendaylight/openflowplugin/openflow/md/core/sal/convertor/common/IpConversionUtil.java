@@ -28,8 +28,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
@@ -632,13 +634,13 @@ public final class IpConversionUtil {
         return Arrays.copyOfRange(PREFIX_BYTEARRAYS, offset, offset + INADDR6SZ);
     }
 
-    public static Ipv6Address extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
+    public static Ipv6AddressNoZone extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
         return IetfInetUtil.INSTANCE.ipv6AddressFrom(ipv6Prefix);
     }
 
-    public static Ipv4Address extractIpv4Address(final Ipv4Prefix ipv4Prefix) {
+    public static Ipv4AddressNoZone extractIpv4Address(final Ipv4Prefix ipv4Prefix) {
         Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
-        return new Ipv4Address(addressParts.next());
+        return new Ipv4AddressNoZone(addressParts.next());
     }
 
     public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
@@ -801,8 +803,8 @@ public final class IpConversionUtil {
         }
     }
 
-    public static Ipv6Address compressedIpv6AddressFormat(final Ipv6Address ipv6Address) {
-        return new Ipv6Address(compressedIpv6FormatFromString(ipv6Address.getValue()));
+    public static Ipv6AddressNoZone compressedIpv6AddressFormat(final Ipv6AddressNoZone ipv6Address) {
+        return new Ipv6AddressNoZone(compressedIpv6FormatFromString(ipv6Address.getValue()));
     }
 
     public static Ipv6ArbitraryMask compressedIpv6MaskFormat(final Ipv6ArbitraryMask ipv6Mask) {

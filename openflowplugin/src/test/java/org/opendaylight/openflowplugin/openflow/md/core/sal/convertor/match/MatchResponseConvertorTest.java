@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -71,10 +71,10 @@ public class MatchResponseConvertorTest {
             MacAddress.getDefaultInstance("fa:fb:fc:fd:fe:ff");
     private static final int ETHTYPE_IPV4 = 0x800;
     private static final short VLAN_PCP = 7;
-    private static final Ipv4Address IPV4_SRC =
-            Ipv4Address.getDefaultInstance("192.168.10.254");
-    private static final Ipv4Address IPV4_DST =
-            Ipv4Address.getDefaultInstance("10.1.2.3");
+    private static final Ipv4AddressNoZone IPV4_SRC =
+            Ipv4AddressNoZone.getDefaultInstance("192.168.10.254");
+    private static final Ipv4AddressNoZone IPV4_DST =
+            Ipv4AddressNoZone.getDefaultInstance("10.1.2.3");
 
     private static final int DL_VLAN_NONE = 0xffff;
     private ConvertorManager convertorManager;
@@ -336,15 +336,15 @@ public class MatchResponseConvertorTest {
         }
     }
 
-    private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
+    private MatchBuilder convert(final MatchV10 match, final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }
 
     private MatchBuilder convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match,
-            VersionDatapathIdConvertorData data) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match,
+            final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
