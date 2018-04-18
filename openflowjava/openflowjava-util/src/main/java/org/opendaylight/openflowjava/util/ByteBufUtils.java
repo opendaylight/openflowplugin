@@ -380,13 +380,13 @@ public abstract class ByteBufUtils {
     public static Ipv4Address readIetfIpv4Address(final ByteBuf buf) {
         final byte[] tmp = new byte[4];
         buf.readBytes(tmp);
-        return IetfInetUtil.INSTANCE.ipv4AddressFor(tmp);
+        return new Ipv4Address(IetfInetUtil.INSTANCE.ipv4AddressFor(tmp));
     }
 
     public static Ipv6Address readIetfIpv6Address(final ByteBuf buf) {
         final byte[] tmp = new byte[16];
         buf.readBytes(tmp);
-        return IetfInetUtil.INSTANCE.ipv6AddressFor(tmp);
+        return new Ipv6Address(IetfInetUtil.INSTANCE.ipv6AddressFor(tmp));
     }
 
     public static MacAddress readIetfMacAddress(final ByteBuf buf) {
