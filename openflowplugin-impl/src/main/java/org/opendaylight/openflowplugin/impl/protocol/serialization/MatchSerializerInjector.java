@@ -49,6 +49,7 @@ import org.opendaylight.openflowplugin.impl.protocol.serialization.match.Metadat
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.MplsBosEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.MplsLabelEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.MplsTcEntrySerializer;
+import org.opendaylight.openflowplugin.impl.protocol.serialization.match.PacketTypeEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.PbbEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.SctpDestinationPortEntrySerializer;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.match.SctpSourcePortEntrySerializer;
@@ -97,6 +98,7 @@ public final class MatchSerializerInjector {
         basicInjector.apply(OxmMatchConstants.IN_PORT).accept(new InPortEntrySerializer());
         basicInjector.apply(OxmMatchConstants.IN_PHY_PORT).accept(new InPhyPortEntrySerializer());
         basicInjector.apply(OxmMatchConstants.METADATA).accept(new MetadataEntrySerializer());
+        basicInjector.apply(OxmMatchConstants.PACKET_TYPE).accept(new PacketTypeEntrySerializer());
         basicInjector.apply(OxmMatchConstants.ETH_DST).accept(new EthernetDestinationEntrySerializer());
         basicInjector.apply(OxmMatchConstants.ETH_SRC).accept(new EthernetSourceEntrySerializer());
         basicInjector.apply(OxmMatchConstants.ETH_TYPE).accept(new EthernetTypeEntrySerializer());

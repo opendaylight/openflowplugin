@@ -146,6 +146,9 @@ public interface OxmMatchConstants {
     /** IPv6 Extension Header pseudo-field. */
     int IPV6_EXTHDR = 39;
 
+    /** Packet Type. */
+    int PACKET_TYPE = 44;
+
     /**
      * OFPXMC_NXM_1 class Constants.
      */
