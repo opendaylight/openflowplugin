@@ -262,6 +262,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public UpgradeManager getUpgradeManager() {
+        return upgradeManager;
+    }
+
+    @Override
     public boolean isReconciliationDisabled() {
         return disableReconciliation;
     }
