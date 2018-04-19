@@ -14,3 +14,4 @@ Contents:
    bundle-reconciliation
    southbound-cli
    reconciliation-cli
+   arbitrator-reconciliation
