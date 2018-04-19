@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "51d315e0_db33859a",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-19T09:08:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "40c4a07b_291dd575",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "57fe5e82_6c531f5c",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
         "patchSetId": 15
@@ -118,6 +136,24 @@
       "writtenOn": "2018-04-18T16:47:36Z",
       "side": 1,
       "message": "this is confusing log. Basically it didn\u0027t find any connected node in operational, which is different than not triggered for any node, because the later means nodes are connected but reconciliation was not triggered because of some reason. Please rephrase it to \"Admin reconciliation is not triggered as not connected device found.\"",
+      "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44df2058_38d6ddce",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/AdminReconciliationCount.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-04-19T09:08:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d41474a_6b9974b5",
       "revId": "32975ca5373a2346e7eba7a029eca6fd4efd0820",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
