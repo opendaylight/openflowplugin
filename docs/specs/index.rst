@@ -12,3 +12,4 @@ Contents:
    reconciliation-framework
    group-add-mod
    bundle-reconciliation
+   southbound-cli
