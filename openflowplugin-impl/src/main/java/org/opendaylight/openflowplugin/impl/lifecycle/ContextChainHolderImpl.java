@@ -316,6 +316,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
             contextChain.close();
+            connectingDevices.remove(deviceInfo);
         });
     }
 
