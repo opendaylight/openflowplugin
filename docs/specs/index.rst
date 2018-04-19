@@ -13,3 +13,4 @@ Contents:
    group-add-mod
    bundle-reconciliation
    southbound-cli
+   reconciliation-cli
