@@ -12,3 +12,5 @@ Contents:
    reconciliation-framework
    group-add-mod
    bundle-reconciliation
+   arbitrator-reconciliation
+   admin-reconciliation
