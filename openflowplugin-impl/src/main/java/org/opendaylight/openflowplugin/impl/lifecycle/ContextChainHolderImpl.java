@@ -263,6 +263,7 @@ public class ContextChainHolderImpl implements ContextChainHolder {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
             contextChain.close();
+            connectingDevices.remove(deviceInfo);
         });
     }
 
