@@ -14,3 +14,4 @@ Contents:
    bundle-reconciliation
    arbitrator-reconciliation
    admin-reconciliation
+   southbound-cli
