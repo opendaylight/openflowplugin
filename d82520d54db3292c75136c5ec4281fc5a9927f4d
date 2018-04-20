@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c8ff0c07_99d8c987",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-match-types.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-04-20T08:23:42Z",
+      "side": 1,
+      "message": "Also thinking it is probably easier for users to keep this a single unstructured uint32 value.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 13
+      },
+      "revId": "d82520d54db3292c75136c5ec4281fc5a9927f4d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
