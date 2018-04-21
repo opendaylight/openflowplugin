@@ -5,20 +5,20 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.4-SNAPSHOT</version>
+        <version>1.8.4-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-nsf-services-he</artifactId>
     <packaging>feature</packaging>
-    <version>0.4.4-SNAPSHOT</version>
+    <version>0.4.4-Carbon</version>
 
     <name>OpenDaylight :: OpenflowPlugin :: NSF :: Services</name>
 
     <properties>
-        <mdsal.version>1.5.4-SNAPSHOT</mdsal.version>
-        <lldp.version>0.12.4-SNAPSHOT</lldp.version>
+        <mdsal.version>1.5.4-Carbon</mdsal.version>
+        <lldp.version>0.12.4-Carbon</lldp.version>
     </properties>
 
     <dependencyManagement>
