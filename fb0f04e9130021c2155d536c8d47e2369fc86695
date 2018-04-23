@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a503226_42c318ad",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d30c1d9_bb3899c5",
+      "range": {
+        "startLine": 19,
+        "startChar": 46,
+        "endLine": 19,
+        "endChar": 62
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "807e511b_a0631de5",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
         "patchSetId": 20
@@ -36,6 +60,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "Method comments",
+      "range": {
+        "startLine": 24,
+        "startChar": 4,
+        "endLine": 24,
+        "endChar": 17
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fc8d8a4d_7bd31311",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "807e511b_a0631de5",
       "range": {
         "startLine": 24,
         "startChar": 4,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "b2503976_e5934843",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconcileServiceImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f24096cb_1ebf9a28",
+      "range": {
+        "startLine": 51,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 42
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71a9a33c_2bb0ae69",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconcileServiceImpl.java",
         "patchSetId": 20
@@ -82,6 +154,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "new NodeKey(input.getNodeId()) ?\nWill the above work.. if does. you dont need to declare nodeId, nodeDpn",
+      "range": {
+        "startLine": 57,
+        "startChar": 35,
+        "endLine": 57,
+        "endChar": 51
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4378f7b0_52323470",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconcileServiceImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71a9a33c_2bb0ae69",
       "range": {
         "startLine": 57,
         "startChar": 35,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "d6fe12ba_761cf3ab",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconcileServiceImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08235040_bc117d71",
+      "range": {
+        "startLine": 60,
+        "startChar": 44,
+        "endLine": 60,
+        "endChar": 49
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "018f547a_9754cdd9",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconcileServiceImpl.java",
         "patchSetId": 20
@@ -128,6 +248,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "not required based on the above comment",
+      "range": {
+        "startLine": 66,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 5
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a2a4438b_920a538a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconcileServiceImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "018f547a_9754cdd9",
       "range": {
         "startLine": 66,
         "startChar": 4,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "3e7f65ab_ca65683b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "defa74a5_99704d57",
+      "range": {
+        "startLine": 161,
+        "startChar": 8,
+        "endLine": 162,
+        "endChar": 44
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "48b7646c_f38cfc67",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
@@ -174,6 +342,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "why registered 2 times ? line 225 and 232",
+      "range": {
+        "startLine": 225,
+        "startChar": 7,
+        "endLine": 225,
+        "endChar": 115
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca67d2fd_af2fc8de",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48b7646c_f38cfc67",
       "range": {
         "startLine": 225,
         "startChar": 7,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "8058078e_5490ec72",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a7aa5533_1a2d472e",
+      "range": {
+        "startLine": 222,
+        "startChar": 3,
+        "endLine": 237,
+        "endChar": 5
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de51a22a_aa03ad68",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
@@ -220,6 +436,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "not required as per my previous comments",
+      "range": {
+        "startLine": 282,
+        "startChar": 12,
+        "endLine": 282,
+        "endChar": 56
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "94d29c8c_428e72f4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de51a22a_aa03ad68",
       "range": {
         "startLine": 282,
         "startChar": 12,
@@ -255,6 +495,30 @@
     },
     {
       "key": {
+        "uuid": "77956d64_bb11e855",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9d04fd9d_783b7e75",
+      "range": {
+        "startLine": 286,
+        "startChar": 16,
+        "endLine": 286,
+        "endChar": 56
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f13fc3c2_7d774cd2",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
@@ -278,6 +542,30 @@
     },
     {
       "key": {
+        "uuid": "63a24712_fb70abf3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f13fc3c2_7d774cd2",
+      "range": {
+        "startLine": 289,
+        "startChar": 16,
+        "endLine": 294,
+        "endChar": 17
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fc7b26c6_fa065d04",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
@@ -289,6 +577,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "not required",
+      "range": {
+        "startLine": 327,
+        "startChar": 16,
+        "endLine": 327,
+        "endChar": 30
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ea2f419e_4590fef7",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc7b26c6_fa065d04",
       "range": {
         "startLine": 327,
         "startChar": 16,
@@ -347,6 +659,54 @@
     },
     {
       "key": {
+        "uuid": "c8511258_df6a9acd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2f9dea9_53072732",
+      "range": {
+        "startLine": 330,
+        "startChar": 24,
+        "endLine": 330,
+        "endChar": 92
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c133a4c8_5ba12fd8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80719122_4d654547",
+      "range": {
+        "startLine": 330,
+        "startChar": 46,
+        "endLine": 330,
+        "endChar": 53
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "003d2778_e95e6dac",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
@@ -358,6 +718,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "log message",
+      "range": {
+        "startLine": 337,
+        "startChar": 24,
+        "endLine": 337,
+        "endChar": 37
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "936be380_0533d41e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "003d2778_e95e6dac",
       "range": {
         "startLine": 337,
         "startChar": 24,
@@ -393,6 +777,30 @@
     },
     {
       "key": {
+        "uuid": "2401cdc6_3c3e29b9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af814d42_89f93e67",
+      "range": {
+        "startLine": 340,
+        "startChar": 53,
+        "endLine": 340,
+        "endChar": 61
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "47bb3579_fcafd5cf",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
@@ -404,6 +812,30 @@
       "writtenOn": "2018-04-23T06:14:56Z",
       "side": 1,
       "message": "parameterized logging not required for throwable.\n\nError while performing arbitrator reconciliation for device {}",
+      "range": {
+        "startLine": 363,
+        "startChar": 23,
+        "endLine": 363,
+        "endChar": 88
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c77ae3f_a0ae6ce2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47bb3579_fcafd5cf",
       "range": {
         "startLine": 363,
         "startChar": 23,
@@ -439,6 +871,30 @@
     },
     {
       "key": {
+        "uuid": "9f45a8a3_123c435e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b824445c_9a0e1229",
+      "range": {
+        "startLine": 384,
+        "startChar": 3,
+        "endLine": 391,
+        "endChar": 5
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0a5c1ef8_028d9d5d",
         "filename": "applications/forwardingrules-manager/src/main/yang/arbitrator-reconcile.yang",
         "patchSetId": 20
@@ -450,6 +906,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "check the alignment",
+      "range": {
+        "startLine": 22,
+        "startChar": 5,
+        "endLine": 37,
+        "endChar": 6
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c4b1e902_1bedbdff",
+        "filename": "applications/forwardingrules-manager/src/main/yang/arbitrator-reconcile.yang",
+        "patchSetId": 20
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a5c1ef8_028d9d5d",
       "range": {
         "startLine": 22,
         "startChar": 5,
@@ -485,6 +965,30 @@
     },
     {
       "key": {
+        "uuid": "1002581d_a620dd77",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/GroupListenerTest.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ee2ba6e_9fc64854",
+      "range": {
+        "startLine": 75,
+        "startChar": 38,
+        "endLine": 75,
+        "endChar": 70
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d4bed060_ea7c32d8",
         "filename": "applications/forwardingrules-manager/src/test/java/test/mock/TableFeaturesListenerTest.java",
         "patchSetId": 20
@@ -496,6 +1000,30 @@
       "writtenOn": "2018-04-23T06:09:53Z",
       "side": 1,
       "message": "change the name.. keep it as it is in other Test files",
+      "range": {
+        "startLine": 59,
+        "startChar": 44,
+        "endLine": 59,
+        "endChar": 58
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "489d294b_b41b9200",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/TableFeaturesListenerTest.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-04-23T15:24:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4bed060_ea7c32d8",
       "range": {
         "startLine": 59,
         "startChar": 44,
