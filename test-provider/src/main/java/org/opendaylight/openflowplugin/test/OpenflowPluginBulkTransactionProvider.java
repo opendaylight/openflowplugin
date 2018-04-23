@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
@@ -651,7 +650,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.delete(LogicalDatastoreType.OPERATIONAL, path4);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
@@ -708,7 +707,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path4, flow3.build(), true);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {

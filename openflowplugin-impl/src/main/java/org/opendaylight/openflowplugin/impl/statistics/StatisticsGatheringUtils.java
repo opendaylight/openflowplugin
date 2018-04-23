@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -170,7 +169,7 @@ public final class StatisticsGatheringUtils {
             return;
         }
 
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> future;
+        final ListenableFuture<Optional<FlowCapableNode>> future;
         try (ReadOnlyTransaction readTx = txFacade.getReadTransaction()) {
             future = readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         }
