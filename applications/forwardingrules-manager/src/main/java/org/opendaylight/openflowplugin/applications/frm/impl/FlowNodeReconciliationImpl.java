@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -37,7 +36,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -634,7 +632,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
         }
 
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
+        ListenableFuture<Void> submitFuture = writeTransaction.submit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -645,7 +643,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
         }
 
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
+        ListenableFuture<Void> submitFuture = writeTransaction.submit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -656,7 +654,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
         }
 
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
+        ListenableFuture<Void> submitFuture = writeTransaction.submit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -680,8 +678,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 
-    private void handleStaleEntityDeletionResultFuture(
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
+    private void handleStaleEntityDeletionResultFuture(ListenableFuture<Void> submitFuture) {
         Futures.addCallback(submitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
