@@ -262,7 +262,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
-    public <T extends DataObject> CheckedFuture<com.google.common.base.Optional<T>, ReadFailedException>
+    public <T extends DataObject> ListenableFuture<com.google.common.base.Optional<T>>
         readFromTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
@@ -327,7 +327,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
         if (!wasSubmitEnabled || transactionChain == null) {
             // stay with actual thread
-            future = Futures.immediateCheckedFuture(null);
+            future = Futures.immediateFuture(null);
 
             if (writeTx != null) {
                 writeTx.cancel();
