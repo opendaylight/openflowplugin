@@ -12,7 +12,6 @@ import static org.opendaylight.openflowplugin.applications.topology.manager.Flow
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
@@ -24,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
 
 class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
 
@@ -68,8 +69,8 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
                 try {
                     // read that checks if link exists (if we do not do this we might get an exception on delete)
                     linkOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL,
-                            TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology)).checkedGet();
-                } catch (ReadFailedException e) {
+                            TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology)).get();
+                } catch (InterruptedException | ExecutionException e) {
                     LOG.warn("Error occurred when trying to read Link: {}", e.getMessage());
                     LOG.debug("Error occurred when trying to read Link.. ", e);
                 }

@@ -10,15 +10,15 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -196,16 +196,16 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
         final ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction();
-        CheckedFuture<com.google.common.base.Optional<Node>, ReadFailedException> future = transaction
+        ListenableFuture<com.google.common.base.Optional<Node>> future = transaction
                 .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
         try {
-            com.google.common.base.Optional<Node> optionalDataObject = future.checkedGet();
+            com.google.common.base.Optional<Node> optionalDataObject = future.get();
             if (optionalDataObject.isPresent()) {
                 result = true;
             } else {
                 LOG.debug("{}: Failed to read {}", Thread.currentThread().getStackTrace()[1], nodeIid);
             }
-        } catch (ReadFailedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Failed to read {} ", nodeIid, e);
         }
         transaction.close();
