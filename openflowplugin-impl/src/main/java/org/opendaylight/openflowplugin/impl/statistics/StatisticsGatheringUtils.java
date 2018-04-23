@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -25,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -170,15 +168,15 @@ public final class StatisticsGatheringUtils {
             return;
         }
 
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> future;
+        final ListenableFuture<Optional<FlowCapableNode>> future;
         try (ReadOnlyTransaction readTx = txFacade.getReadTransaction()) {
             future = readTx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         }
 
         try {
-            Futures.transform(Futures.catchingAsync(future, Throwable.class, throwable -> {
-                return Futures.immediateFailedFuture(throwable);
-            }, MoreExecutors.directExecutor()), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
+            Futures.transform(Futures.catchingAsync(future, Throwable.class,
+                    throwable -> Futures.immediateFailedFuture(throwable), MoreExecutors.directExecutor()),
+                    (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
