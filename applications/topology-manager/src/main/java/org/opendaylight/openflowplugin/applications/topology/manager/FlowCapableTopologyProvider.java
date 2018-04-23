@@ -8,9 +8,9 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import com.google.common.base.Optional;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -78,12 +78,12 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
     private boolean isFlowTopologyExist(final InstanceIdentifier<Topology> path) {
         try {
             Optional<Topology> ofTopology = this.transactionChainManager
-                    .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path).checkedGet();
+                    .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path).get();
             LOG.debug("OpenFlow topology exist in the operational data store at {}", path);
             if (ofTopology.isPresent()) {
                 return true;
             }
-        } catch (ReadFailedException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOG.warn("OpenFlow topology read operation failed!", e);
         }
         return false;
