@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -32,8 +32,8 @@ final class TopologyManagerUtil {
                                     InstanceIdentifier<Topology> topology) {
         Optional<Topology> topologyOptional = Optional.absent();
         try {
-            topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
-        } catch (ReadFailedException e) {
+            topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
+        } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Error reading topology data for topology {}: {}", topology, e.getMessage());
             LOG.debug("Error reading topology data for topology.. ", e);
         }
@@ -62,8 +62,8 @@ final class TopologyManagerUtil {
                                     final InstanceIdentifier<Topology> topology) {
         Optional<Topology> topologyOptional = Optional.absent();
         try {
-            topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).checkedGet();
-        } catch (ReadFailedException e) {
+            topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
+        } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Error reading topology data for topology {}: {}", topology, e.getMessage());
             LOG.debug("Error reading topology data for topology..", e);
         }

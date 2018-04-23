@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
@@ -717,7 +716,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 .child(Group.class, new GroupKey(group1.getGroupId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path2, group1, true);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
@@ -743,7 +742,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 .child(Group.class, new GroupKey(group1.getGroupId()));
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {

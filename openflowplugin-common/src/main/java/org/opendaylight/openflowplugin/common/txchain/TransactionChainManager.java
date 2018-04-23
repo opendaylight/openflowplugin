@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.common.txchain;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -28,7 +27,6 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
@@ -262,7 +260,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
-    public <T extends DataObject> CheckedFuture<com.google.common.base.Optional<T>, ReadFailedException>
+    public <T extends DataObject> ListenableFuture<com.google.common.base.Optional<T>>
         readFromTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
@@ -327,7 +325,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
         if (!wasSubmitEnabled || transactionChain == null) {
             // stay with actual thread
-            future = Futures.immediateCheckedFuture(null);
+            future = Futures.immediateFuture(null);
 
             if (writeTx != null) {
                 writeTx.cancel();

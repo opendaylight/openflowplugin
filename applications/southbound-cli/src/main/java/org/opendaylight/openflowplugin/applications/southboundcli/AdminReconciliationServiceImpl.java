@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
@@ -162,8 +161,8 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
         }
         try {
             tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
-            tx.submit().checkedGet();
-        } catch (TransactionCommitFailedException e) {
+            tx.submit().get();
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("Exception while submitting counter {}", nodeId, e);
         }
     }
