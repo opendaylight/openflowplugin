@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.southboundcli.util;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +17,6 @@ import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -44,9 +42,7 @@ public final class ShellUtil {
         ReadOnlyTransaction tx = broker.newReadOnlyTransaction();
         InstanceIdentifier<Nodes> path = InstanceIdentifier.builder(Nodes.class).build();
         try {
-            CheckedFuture<Optional<Nodes>, ReadFailedException> checkedFuture =
-                    tx.read(LogicalDatastoreType.OPERATIONAL, path);
-            Optional<Nodes> result = checkedFuture.get();
+            Optional<Nodes> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 nodes = result.get().getNode();
             }
@@ -100,11 +96,9 @@ public final class ShellUtil {
         ReadOnlyTransaction tx = broker.newReadOnlyTransaction();
         InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(NODE_PREFIX + nodeId))).build();
-        Optional<Node> result;
+
         try {
-            CheckedFuture<Optional<Node>, ReadFailedException> checkedFuture =
-                    tx.read(LogicalDatastoreType.OPERATIONAL, path);
-            result = checkedFuture.get();
+            Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 Node node = result.get();
                 String name = null;
