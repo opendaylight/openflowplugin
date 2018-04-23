@@ -393,6 +393,29 @@
     },
     {
       "key": {
+        "uuid": "47bb3579_fcafd5cf",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-23T06:14:56Z",
+      "side": 1,
+      "message": "parameterized logging not required for throwable.\n\nError while performing arbitrator reconciliation for device {}",
+      "range": {
+        "startLine": 363,
+        "startChar": 23,
+        "endLine": 363,
+        "endChar": 88
+      },
+      "revId": "fb0f04e9130021c2155d536c8d47e2369fc86695",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b824445c_9a0e1229",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 20
