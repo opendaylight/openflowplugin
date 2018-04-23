@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b72d31bc_b9edf53d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-23T05:31:46Z",
+      "side": 1,
+      "message": "provide log message for add, update, remove for both bundleflow and bundlegroup forwarder",
+      "range": {
+        "startLine": 46,
+        "startChar": 8,
+        "endLine": 46,
+        "endChar": 21
+      },
+      "revId": "52e407f321b491704a6f6020224898c7d632cb88",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "93c6e444_88abe3d9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-04-23T05:31:46Z",
+      "side": 1,
+      "message": "specify the arbitratorReconManager in AbstractListeningCommiter  and use like arbitratorReconManager.getActiveBundleid()",
+      "range": {
+        "startLine": 158,
+        "startChar": 28,
+        "endLine": 159,
+        "endChar": 54
+      },
+      "revId": "52e407f321b491704a6f6020224898c7d632cb88",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
