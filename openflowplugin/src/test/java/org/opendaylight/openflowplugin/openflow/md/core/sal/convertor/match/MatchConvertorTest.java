@@ -573,11 +573,11 @@ public class MatchConvertorTest {
         /* Due to conversion ambiguities, we always get "has mask" because
          * an ip with no mask and prefix with /128 (or 32 in v4) cannot
          * be distinguished */
-        checkEntryHeader(entry, Ipv6Src.class, true);
+        checkEntryHeader(entry, Ipv6Src.class, false);
         Assert.assertEquals("Wrong ipv6 src", "::1",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         entry = entries.get(1);
-        checkEntryHeader(entry, Ipv6Dst.class, true);
+        checkEntryHeader(entry, Ipv6Dst.class, false);
         Assert.assertEquals("Wrong ipv6 dst", "::2",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
         entry = entries.get(2);
