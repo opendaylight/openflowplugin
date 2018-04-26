@@ -1,0 +1,181 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d94fe8fc_c3a3d76b",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "I think you should clear this alarm in the finally block, rather then in try block. Otherwise if any exception occur, reconciliation alarm will never get clear.",
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c350249c_338ebab8",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "please reoder the variables in following order\n\nprivate static final\nprivate static\nprivate final\nprivate",
+      "range": {
+        "startLine": 28,
+        "startChar": 3,
+        "endLine": 32,
+        "endChar": 76
+      },
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aa939f66_466ff88d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "make parameter final, also please rename the method to invokeFMRaiseMethod()",
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f4fe48d_07f60db0",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "please use the consistent log \"raiseAlarm function\" or \"raiseAlarm method\"",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 9
+      },
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4e176f38_a4ef00cb",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "make parameter final and rename the method to invokeFMClearMethod",
+      "range": {
+        "startLine": 84,
+        "startChar": 16,
+        "endLine": 84,
+        "endChar": 35
+      },
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "767f3fe8_28562caa",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "make parameter final. Also please use final for all the method where appropriate.",
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ac7313cd_a59b7889",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "please avoid using \"...\".",
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "79f6d6b5_f9de123c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "If possible, please stop using \"DPN\". OF Plugin in general is using \"Node\", \"Device\" or \"Switch\".",
+      "range": {
+        "startLine": 140,
+        "startChar": 34,
+        "endLine": 140,
+        "endChar": 36
+      },
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3dbad74f_92cfa103",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/ReconciliationAlarmMBean.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:02:07Z",
+      "side": 1,
+      "message": "why full package name is required, given that this class is already imported?",
+      "revId": "351e697e6056aece1ac65f763ceae7b6590f4240",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
