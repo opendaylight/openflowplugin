@@ -64,7 +64,7 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
 
             Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
             Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
-            final Integer prefix = IpConversionUtil.extractIpv6Prefix(ipv6Prefix);
+            final Integer prefix = IpConversionUtil.hasIpv6Prefix(ipv6Prefix);
             boolean hasMask = false;
             if (null != prefix) {
                 ipv6SrcBuilder.setMask(IpConversionUtil.convertIpv6PrefixToByteArray(prefix));
@@ -85,7 +85,7 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
 
             Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
             Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
-            final Integer prefix = IpConversionUtil.extractIpv6Prefix(ipv6Prefix);
+            final Integer prefix = IpConversionUtil.hasIpv6Prefix(ipv6Prefix);
             boolean hasMask = false;
             if (null != prefix) {
                 ipv6DstBuilder.setMask(IpConversionUtil.convertIpv6PrefixToByteArray(prefix));
