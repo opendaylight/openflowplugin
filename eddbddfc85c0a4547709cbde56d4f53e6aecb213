@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8cc4049_febbb5bd",
+        "filename": "applications/forwardingrules-manager/pom.xml",
+        "patchSetId": 24
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-04-26T09:06:03Z",
+      "side": 1,
+      "message": "why do openflowplugin has to depend on genius ? I am not very comfortable about this dependency, because it can create circular dependency. Other question we need to answer here is, will user be able to use openflowplugin standalone, without loading the genuis feature in their karaf?",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 16
+      },
+      "revId": "eddbddfc85c0a4547709cbde56d4f53e6aecb213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
