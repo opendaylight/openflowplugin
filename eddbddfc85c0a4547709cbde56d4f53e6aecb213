@@ -22,6 +22,30 @@
       "revId": "eddbddfc85c0a4547709cbde56d4f53e6aecb213",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ffd4ad25_e71572f0",
+        "filename": "applications/forwardingrules-manager/pom.xml",
+        "patchSetId": 24
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-04-26T10:10:18Z",
+      "side": 1,
+      "message": "here we are using srm-api which is developed by genius team and it is put as part of genius project. But srm-api is an independent api, which do not depend on any of the genius core modules. Openflowplugin standalone can work by adding this, because genius-srm-api feature is added as part of odl-openflowplugin-app-forwardingrules-manager feature as dependent feature and that feature is independent of genius core apis.",
+      "parentUuid": "f8cc4049_febbb5bd",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 16
+      },
+      "revId": "eddbddfc85c0a4547709cbde56d4f53e6aecb213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
