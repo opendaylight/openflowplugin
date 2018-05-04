@@ -14,7 +14,8 @@
           class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
     </bean>
     <bean id="adminReconciliationService"
-          class="org.opendaylight.openflowplugin.applications.southboundcli.AdminReconciliationServiceImpl">
+          class="org.opendaylight.openflowplugin.applications.southboundcli.AdminReconciliationServiceImpl"
+          destroy-method="close">
         <argument ref="dataBroker"/>
         <argument ref="reconciliationService"/>
         <argument ref="alarmAgent"/>
