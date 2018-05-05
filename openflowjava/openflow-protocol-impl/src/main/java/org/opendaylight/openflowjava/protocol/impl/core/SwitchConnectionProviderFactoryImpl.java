@@ -12,6 +12,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Objects;
+
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -38,26 +40,14 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         return switchConnectionProviderImpl;
     }
 
-    private static InetAddress extractIpAddressBin(final IpAddress address) throws UnknownHostException {
-        byte[] addressBin = null;
+    private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
         if (address != null) {
-            if (address.getIpv4Address() != null) {
-                addressBin = address2bin(address.getIpv4Address().getValue());
-            } else if (address.getIpv6Address() != null) {
-                addressBin = address2bin(address.getIpv6Address().getValue());
+            if (address.getIpv4Address() != null ) {
+                return InetAddress.getByName(address.getIpv4Address().getValue());
+            } else if (address.getIpv6Address() != null ) {
+                return InetAddress.getByName(address.getIpv6Address().getValue());
             }
         }
-
-        if (addressBin == null) {
-            return null;
-        } else {
-            return InetAddress.getByAddress(addressBin);
-        }
-    }
-
-    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    private static byte[] address2bin(final String value) {
-        //TODO: translate ipv4 or ipv6 into byte[]
         return null;
     }
 
@@ -69,7 +59,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
             this.config = config;
 
             try {
-                address = extractIpAddressBin(config.getAddress());
+                address = getInetAddress(config.getAddress());
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
