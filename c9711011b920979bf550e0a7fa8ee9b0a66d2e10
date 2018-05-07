@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b65cbc7e_23ccb0c8",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T15:44:18Z",
+      "side": 1,
+      "message": "you don\u0027t need to declare these variables.\n\nif(switchConnectionProvider.getConfiguration().getPort() \u003d\u003d OF_PORT_11) { legacyInetAddress \u003d switchConn.getCong.getAddress() }",
+      "range": {
+        "startLine": 43,
+        "startChar": 12,
+        "endLine": 44,
+        "endChar": 95
+      },
+      "revId": "c9711011b920979bf550e0a7fa8ee9b0a66d2e10",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb0f85c6_2f287792",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T15:44:18Z",
+      "side": 1,
+      "message": "declare the socket variable.",
+      "range": {
+        "startLine": 76,
+        "startChar": 6,
+        "endLine": 76,
+        "endChar": 13
+      },
+      "revId": "c9711011b920979bf550e0a7fa8ee9b0a66d2e10",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
