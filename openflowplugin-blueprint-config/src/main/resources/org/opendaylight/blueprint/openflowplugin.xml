@@ -44,6 +44,12 @@
     <bean id="ofPluginDiagstatusProvider"
           class="org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider">
         <argument ref="diagStatusService"/>
+        <argument>
+            <list>
+                <ref component-id="defaultSwitchConnProvider"/>
+                <ref component-id="legacySwitchConnProvider"/>
+            </list>
+        </argument>
     </bean>
 
     <service ref="ofPluginDiagstatusProvider" interface="org.opendaylight.infrautils.diagstatus.ServiceStatusProvider"/>
