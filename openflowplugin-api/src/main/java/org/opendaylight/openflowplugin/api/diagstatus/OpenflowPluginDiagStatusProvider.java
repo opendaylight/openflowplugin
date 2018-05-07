@@ -8,11 +8,14 @@
 package org.opendaylight.openflowplugin.api.diagstatus;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.diagstatus.ServiceStatusProvider;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +27,27 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
     private static final int OF_PORT_13 = 6653;
 
     private final DiagStatusService diagStatusService;
+    private InetAddress defaultInetAddres;
+    private InetAddress legacyInetAddress;
     private volatile ServiceDescriptor serviceDescriptor;
 
-    public OpenflowPluginDiagStatusProvider(final DiagStatusService diagStatusService) {
+    public OpenflowPluginDiagStatusProvider(final DiagStatusService diagStatusService,
+                                            final List<SwitchConnectionProvider> switchConnectionProviders) {
         this.diagStatusService = diagStatusService;
+        setSwitchConnectionInetAddress(switchConnectionProviders);
         diagStatusService.register(OPENFLOW_SERVICE_NAME);
+    }
+
+    private void setSwitchConnectionInetAddress(final List<SwitchConnectionProvider> switchConnectionProviders) {
+        switchConnectionProviders.forEach(switchConnectionProvider -> {
+            int port = switchConnectionProvider.getConfiguration().getPort();
+            InetAddress inetAddress = switchConnectionProvider.getConfiguration().getAddress();
+            if (port == OF_PORT_11) {
+                legacyInetAddress = inetAddress;
+            } else if (port == OF_PORT_13) {
+                defaultInetAddres = inetAddress;
+            }
+        });
     }
 
     public void reportStatus(ServiceState serviceState, String description) {
@@ -41,7 +60,8 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
     public ServiceDescriptor getServiceDescriptor() {
 
         if (serviceDescriptor.getServiceState().equals(ServiceState.OPERATIONAL)) {
-            if (getApplicationNetworkState(OF_PORT_13) && getApplicationNetworkState(OF_PORT_11)) {
+            if (getApplicationNetworkState(OF_PORT_13, defaultInetAddres)
+                    && getApplicationNetworkState(OF_PORT_11, legacyInetAddress)) {
                 return serviceDescriptor;
             } else {
                 serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
@@ -52,10 +72,13 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
         return serviceDescriptor;
     }
 
-    private boolean getApplicationNetworkState(int port) {
-        Socket socket = null;
+    private boolean getApplicationNetworkState(int port, InetAddress inetAddress) {
         try {
-            socket = new Socket("localhost", port);
+            if (inetAddress == null) {
+                socket = new Socket("localhost", port);
+            } else {
+                socket = new Socket(inetAddress, port);
+            }
             LOG.debug("Socket connection established");
             return true;
         } catch (IOException e) {
