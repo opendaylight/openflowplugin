@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3dc29723_cf447561",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "InetAddress defaultInetAddress\nInetAddress legacyInetAddress",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 62
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cd13226e_daf93f85",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "switchConnectionProviders",
+      "range": {
+        "startLine": 35,
+        "startChar": 81,
+        "endLine": 35,
+        "endChar": 103
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e0256756_6bad6ee3",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "switchConnectionProviders",
+      "range": {
+        "startLine": 41,
+        "startChar": 83,
+        "endLine": 41,
+        "endChar": 105
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5e0232db_ac4a4d81",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "setSwitchConnectionInetAddress",
+      "range": {
+        "startLine": 41,
+        "startChar": 17,
+        "endLine": 41,
+        "endChar": 45
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "546a2537_a5aed183",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "use foreach and set default and legacy InetAddress based on the check with getPort",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 48,
+        "endChar": 13
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9d0f1308_d37b9adc",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "pass InetAddress",
+      "range": {
+        "startLine": 74,
+        "startChar": 57,
+        "endLine": 74,
+        "endChar": 100
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ebc296f_9345c8dc",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-07T11:11:25Z",
+      "side": 1,
+      "message": "everytime you dont need to perform this.",
+      "range": {
+        "startLine": 76,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 76
+      },
+      "revId": "a888d7a23834787063eb8b915a1398fe7e155d33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
