@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7539b551_d9172f60",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/AdminReconciliationServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-08T05:40:00Z",
+      "side": 1,
+      "message": "use parallel stream foreach for nodesToRecocile",
+      "range": {
+        "startLine": 101,
+        "startChar": 12,
+        "endLine": 101,
+        "endChar": 50
+      },
+      "revId": "7b911206ef44b5967550c081c9f53f7548218e79",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
