@@ -48,28 +48,42 @@ public abstract class AbstractMatchCodec implements
 
     @Override
     public void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
-        outBuffer.writeInt(serializeHeaderToLong(input.isHasMask()).intValue());
+        serializeHeader(getHeader(input.isHasMask()), outBuffer);
     }
 
-    private Long serializeHeaderToLong(boolean hasMask) {
+    public void serializeHeader(NxmHeader input, ByteBuf outBuffer) {
+        outBuffer.writeInt((int) input.toLong());
+    }
+
+    protected NxmHeader getHeader(boolean hasMask) {
         if (hasMask) {
-            return getHeaderWithHasMask().toLong();
+            if (headerWithMask == null) {
+                headerWithMask = buildHeader(true);
+            }
+            return headerWithMask;
+        } else {
+            if (headerWithoutMask == null) {
+                headerWithoutMask = buildHeader(false);
+            }
+            return headerWithoutMask;
         }
-        return getHeaderWithoutHasMask().toLong();
+    }
+
+    protected NxmHeader buildHeader(boolean hasMask) {
+        return new NxmHeader(
+                getOxmClassCode(),
+                getNxmFieldCode(),
+                hasMask,
+                hasMask ? getValueLength() * 2 : getValueLength()
+        );
     }
 
     public NxmHeader getHeaderWithoutHasMask() {
-        if (headerWithoutMask == null) {
-            headerWithoutMask = new NxmHeader(getOxmClassCode(), getNxmFieldCode(), false, getValueLength());
-        }
-        return headerWithoutMask;
+        return getHeader(false);
     }
 
     public NxmHeader getHeaderWithHasMask() {
-        if (headerWithMask == null) {
-            headerWithMask = new NxmHeader(getOxmClassCode(), getNxmFieldCode(), true, getValueLength());
-        }
-        return headerWithMask;
+        return getHeader(true);
     }
 
     /**
