@@ -20,6 +20,8 @@ import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -170,6 +172,14 @@ public final class MatchExtensionHelper {
         // TODO: EXTENSION PROPOSAL (match, OFJava to MD-SAL)
         MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key = new MatchEntrySerializerKey<>(
                 ofVersion, matchEntry.getOxmClass(), matchEntry.getOxmMatchField());
+
+        // If entry is experimenter, set experimenter ID to key
+        if (matchEntry.getOxmClass().equals(ExperimenterClass.class)) {
+            ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) matchEntry.getMatchEntryValue();
+            Long experimenterId = experimenterIdCase.getExperimenter().getExperimenter().getValue();
+            key.setExperimenterId(experimenterId);
+        }
+
         if (null != OFSessionUtil.getExtensionConvertorProvider()) {
             ConvertorFromOFJava<MatchEntry, MatchPath> convertor =
                     OFSessionUtil.getExtensionConvertorProvider().getConverter(key);

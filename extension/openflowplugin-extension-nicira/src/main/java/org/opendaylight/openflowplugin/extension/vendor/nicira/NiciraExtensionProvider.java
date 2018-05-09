@@ -42,8 +42,10 @@ import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
 import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshFlagsCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshTtlCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
@@ -106,8 +108,10 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.E
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthDstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthSrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthTypeConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NshFlagsConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NshMdtypeConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NshNpConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NshTtlConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.Nshc1Convertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.Nshc2Convertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.Nshc3Convertor;
@@ -286,8 +290,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthTypeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshFlagsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshMdtypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshNpKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshTtlKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc2Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc3Key;
@@ -351,6 +357,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final Nshc2Convertor NSC2_CONVERTOR = new Nshc2Convertor();
     private static final Nshc3Convertor NSC3_CONVERTOR = new Nshc3Convertor();
     private static final Nshc4Convertor NSC4_CONVERTOR = new Nshc4Convertor();
+    private static final NshFlagsConvertor NSH_FLAGS_CONVERTOR = new NshFlagsConvertor();
+    private static final NshTtlConvertor NSH_TTL_CONVERTOR = new NshTtlConvertor();
     private static final TunIPv4SrcConvertor TUN_IPV4_SRC_CONVERTOR = new TunIPv4SrcConvertor();
     private static final TunIPv4DstConvertor TUN_IPV4_DST_CONVERTOR = new TunIPv4DstConvertor();
     private static final EncapEthTypeConvertor ENCAP_ETH_TYPE_CONVERTOR = new EncapEthTypeConvertor();
@@ -672,6 +680,16 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 new ConverterExtensionKey<>(NxmNxNshc4Key.class, EncodeConstants.OF13_VERSION_ID), NSC4_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Nshc4Codec.SERIALIZER_KEY, NSC4_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
+                new ConverterExtensionKey<>(NxmNxNshFlagsKey.class, EncodeConstants.OF13_VERSION_ID),
+                NSH_FLAGS_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(NshFlagsCodec.SERIALIZER_KEY,
+                NSH_FLAGS_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
+                new ConverterExtensionKey<>(NxmNxNshTtlKey.class, EncodeConstants.OF13_VERSION_ID),
+                NSH_TTL_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(NshTtlCodec.SERIALIZER_KEY,
+                NSH_TTL_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmNxTunIpv4SrcKey.class, EncodeConstants.OF13_VERSION_ID),
                 TUN_IPV4_SRC_CONVERTOR));

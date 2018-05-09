@@ -16,10 +16,18 @@ import java.util.Iterator;
 import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.MatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
@@ -39,8 +47,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthTypeGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshFlagsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshMdtypeGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshNpGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshTtlGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Grouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc2Grouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc3Grouping;
@@ -118,10 +128,14 @@ public final class MatchUtil {
             new GroupingResolver<>(NxmNxEncapEthSrcGrouping.class);
     public static final GroupingResolver<NxmNxEncapEthDstGrouping, Extension> ENCAP_ETH_DST_RESOLVER =
             new GroupingResolver<>(NxmNxEncapEthDstGrouping.class);
+    public static final GroupingResolver<NxmNxNshFlagsGrouping, Extension> NSH_FLAGS_RESOLVER =
+            new GroupingResolver<>(NxmNxNshFlagsGrouping.class);
     public static final GroupingResolver<NxmNxNshMdtypeGrouping, Extension> NSH_MDTYPE_RESOLVER =
             new GroupingResolver<>(NxmNxNshMdtypeGrouping.class);
     public static final GroupingResolver<NxmNxNshNpGrouping, Extension> NSH_NP_RESOLVER = new GroupingResolver<>(
             NxmNxNshNpGrouping.class);
+    public static final GroupingResolver<NxmNxNshTtlGrouping, Extension> NSH_TTL_RESOLVER =
+            new GroupingResolver<>(NxmNxNshTtlGrouping.class);
     public static final GroupingResolver<NxmNxTunGpeNpGrouping, Extension> TUN_GPE_NP_RESOLVER = new GroupingResolver<>(
             NxmNxTunGpeNpGrouping.class);
     public static final GroupingResolver<NxmOfTcpSrcGrouping, Extension> TCP_SRC_RESOLVER = new GroupingResolver<>(
@@ -178,8 +192,10 @@ public final class MatchUtil {
         ENCAP_ETH_TYPE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         ENCAP_ETH_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         ENCAP_ETH_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
+        NSH_FLAGS_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSH_MDTYPE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSH_NP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
+        NSH_TTL_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         TUN_GPE_NP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         TCP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         TCP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
@@ -206,6 +222,19 @@ public final class MatchUtil {
         matchEntryBuilder.setOxmClass(oxmClass);
         matchEntryBuilder.setMatchEntryValue(matchEntryValue);
         return matchEntryBuilder;
+    }
+
+    public static <V extends Augmentation<ExperimenterIdCase>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
+            Class<? extends MatchField> matchField,
+            long experimenterId,
+            NxExpMatchEntryValue value) {
+        ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
+        experimenterBuilder.setExperimenter(new ExperimenterId(experimenterId));
+        ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
+        expCaseBuilder.setExperimenter(experimenterBuilder.build());
+        OfjAugNxExpMatch ofjAugNxExpMatch = new OfjAugNxExpMatchBuilder().setNxExpMatchEntryValue(value).build();
+        expCaseBuilder.addAugmentation(OfjAugNxExpMatch.class, ofjAugNxExpMatch);
+        return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.class, expCaseBuilder.build());
     }
 
     public static Long ipv4ToLong(Ipv4Address ipv4) {

@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.DecNshTtlCodec;
 import org.opendaylight.openflowjava.nx.codec.action.DecapCodec;
@@ -40,6 +41,8 @@ import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshFlagsCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshTtlCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
@@ -66,6 +69,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionConntrack;
@@ -86,6 +90,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtZone;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc3;
@@ -403,6 +409,40 @@ public class NiciraExtensionsRegistratorTest {
         Mockito.verify(registrator).registerActionSerializer(
                 Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionDecNshTtl.class)),
                 Matchers.any(DecNshTtlCodec.class));
+
+        // experimenters
+        MatchEntrySerializerKey<ExperimenterClass, NxmNxNshFlags> nshFlagsSerializerKey = new MatchEntrySerializerKey<>(
+                EncodeConstants.OF13_VERSION_ID,
+                ExperimenterClass.class,
+                NxmNxNshFlags.class);
+        nshFlagsSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).registerMatchEntrySerializer(
+                Matchers.eq(nshFlagsSerializerKey),
+                Matchers.any(NshFlagsCodec.class));
+        MatchEntryDeserializerKey nshFlagsDeserializerKey = new MatchEntryDeserializerKey(
+                EncodeConstants.OF13_VERSION_ID,
+                OxmMatchConstants.EXPERIMENTER_CLASS,
+                1);
+        nshFlagsDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).registerMatchEntryDeserializer(
+                Matchers.eq(nshFlagsDeserializerKey),
+                Matchers.any(NshFlagsCodec.class));
+        MatchEntrySerializerKey<ExperimenterClass, NxmNxNshTtl> nshTtlSerializerKey = new MatchEntrySerializerKey<>(
+                EncodeConstants.OF13_VERSION_ID,
+                ExperimenterClass.class,
+                NxmNxNshTtl.class);
+        nshTtlSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).registerMatchEntrySerializer(
+                Matchers.eq(nshTtlSerializerKey),
+                Matchers.any(NshTtlCodec.class));
+        MatchEntryDeserializerKey nshTtlDeserializerKey = new MatchEntryDeserializerKey(
+                EncodeConstants.OF13_VERSION_ID,
+                OxmMatchConstants.EXPERIMENTER_CLASS,
+                10);
+        nshTtlDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).registerMatchEntryDeserializer(
+                Matchers.eq(nshTtlDeserializerKey),
+                Matchers.any(NshTtlCodec.class));
     }
 
     @Test
@@ -593,5 +633,31 @@ public class NiciraExtensionsRegistratorTest {
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxPktMark.class));
         Mockito.verify(registrator).unregisterMatchEntryDeserializer(
                 new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 33));
+
+        // experimenters
+        MatchEntrySerializerKey<ExperimenterClass, NxmNxNshFlags> nshFlagsSerializerKey = new MatchEntrySerializerKey<>(
+                EncodeConstants.OF13_VERSION_ID,
+                ExperimenterClass.class,
+                NxmNxNshFlags.class);
+        nshFlagsSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).unregisterMatchEntrySerializer(nshFlagsSerializerKey);
+        MatchEntryDeserializerKey nshFlagsDeserializerKey = new MatchEntryDeserializerKey(
+                EncodeConstants.OF13_VERSION_ID,
+                OxmMatchConstants.EXPERIMENTER_CLASS,
+                1);
+        nshFlagsDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).unregisterMatchEntryDeserializer(nshFlagsDeserializerKey);
+        MatchEntrySerializerKey<ExperimenterClass, NxmNxNshTtl> nshTtlSerializerKey = new MatchEntrySerializerKey<>(
+                EncodeConstants.OF13_VERSION_ID,
+                ExperimenterClass.class,
+                NxmNxNshTtl.class);
+        nshTtlSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).unregisterMatchEntrySerializer(nshTtlSerializerKey);
+        MatchEntryDeserializerKey nshTtlDeserializerKey = new MatchEntryDeserializerKey(
+                EncodeConstants.OF13_VERSION_ID,
+                OxmMatchConstants.EXPERIMENTER_CLASS,
+                10);
+        nshTtlDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
+        Mockito.verify(registrator).unregisterMatchEntryDeserializer(nshTtlDeserializerKey);
     }
 }
