@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
  */
 public class UdpSrcCodec extends AbstractMatchCodec {
 
-    private static final int VALUE_LENGTH = 4;
+    private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 11;
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfUdpSrc> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
             EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfUdpSrc.class);

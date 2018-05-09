@@ -149,10 +149,16 @@ module openflowplugin-extension-nicira-match {
     identity nxm-nx-encap-eth-dst-key {
         base ext-gen:extension-key;
     }
+    identity nxm-nx-nsh-flags-key {
+        base ext-gen:extension-key;
+    }
     identity nxm-nx-nsh-mdtype-key {
         base ext-gen:extension-key;
     }
     identity nxm-nx-nsh-np-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-nsh-ttl-key {
         base ext-gen:extension-key;
     }
     identity nxm-nx-tun-gpe-np-key {
@@ -388,6 +394,16 @@ module openflowplugin-extension-nicira-match {
             uses mac-address-grouping;
         }
     }
+    grouping nxm-nx-nsh-flags-grouping {
+        container nxm-nx-nsh-flags {
+            leaf nsh-flags {
+                type uint8;
+            }
+            leaf mask {
+                type uint8;
+            }
+        }
+    }
     grouping nxm-nx-nsh-mdtype-grouping {
         container nxm-nx-nsh-mdtype {
             leaf value {
@@ -398,6 +414,13 @@ module openflowplugin-extension-nicira-match {
     grouping nxm-nx-nsh-np-grouping {
         container nxm-nx-nsh-np {
             leaf value {
+                type uint8;
+            }
+        }
+    }
+    grouping nxm-nx-nsh-ttl-grouping {
+        container nxm-nx-nsh-ttl {
+            leaf nsh-ttl {
                 type uint8;
             }
         }
@@ -473,8 +496,10 @@ module openflowplugin-extension-nicira-match {
         uses nxm-nx-encap-eth-type-grouping;
         uses nxm-nx-encap-eth-src-grouping;
         uses nxm-nx-encap-eth-dst-grouping;
+        uses nxm-nx-nsh-flags-grouping;
         uses nxm-nx-nsh-mdtype-grouping;
         uses nxm-nx-nsh-np-grouping;
+        uses nxm-nx-nsh-ttl-grouping;
         uses nxm-nx-tun-gpe-np-grouping;
         uses nxm-of-tcp-src-grouping;
         uses nxm-of-tcp-dst-grouping;
