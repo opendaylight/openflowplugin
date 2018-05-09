@@ -12,74 +12,118 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigInteger;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 
 public class NxmHeaderTest {
 
-    NxmHeader nxmHeader;
-
-    private static long header;
-    private static final int NXM_FIELD_CODE = 4;
-    private static final int VALUE_LENGTH = 14;
+    private static final BigInteger NO_MASK_HEADER = new BigInteger("80000496", 16);
+    private static final BigInteger MASK_HEADER = new BigInteger("80000596", 16);
+    private static final BigInteger EXP_HEADER = new BigInteger("FFFFF4F300F2AB31", 16);
 
     @Test
-    public void nxmHeaderTest() {
-        header = createHeader();
-        nxmHeader = new NxmHeader(header);
+    public void nxmHeaderNoMaskTest() {
+        NxmHeader nxmHeaderFromBigInt = new NxmHeader(NO_MASK_HEADER);
 
-        assertEquals(OxmMatchConstants.NXM_1_CLASS, nxmHeader.getOxmClass());
-        assertEquals(NXM_FIELD_CODE, nxmHeader.getNxmField());
-        assertEquals(false, nxmHeader.isHasMask());
-        assertEquals(VALUE_LENGTH, nxmHeader.getLength());
+        assertEquals(0x8000, nxmHeaderFromBigInt.getOxmClass());
+        assertEquals(0x2, nxmHeaderFromBigInt.getNxmField());
+        assertFalse(nxmHeaderFromBigInt.isHasMask());
+        assertEquals(0x96, nxmHeaderFromBigInt.getLength());
+        assertEquals(0x80000496L, nxmHeaderFromBigInt.toLong());
+        assertFalse(nxmHeaderFromBigInt.isExperimenter());
+
+        NxmHeader nxmHeaderFromFields = new NxmHeader(
+                nxmHeaderFromBigInt.getOxmClass(),
+                nxmHeaderFromBigInt.getNxmField(),
+                nxmHeaderFromBigInt.isHasMask(),
+                nxmHeaderFromBigInt.getLength());
+
+        assertEquals(NO_MASK_HEADER, nxmHeaderFromFields.toBigInteger());
+        assertEquals(0x80000496L, nxmHeaderFromFields.toLong());
+        assertFalse(nxmHeaderFromFields.isExperimenter());
+
+        NxmHeader nxmHeaderFromLong = new NxmHeader(NO_MASK_HEADER.longValue());
+
+        assertEquals(NO_MASK_HEADER, nxmHeaderFromLong.toBigInteger());
+        assertEquals(0x80000496L, nxmHeaderFromLong.toLong());
+        assertFalse(nxmHeaderFromLong.isExperimenter());
+
+        assertEquals(nxmHeaderFromBigInt, nxmHeaderFromFields);
+        assertEquals(nxmHeaderFromBigInt, nxmHeaderFromLong);
+        assertEquals(nxmHeaderFromLong, nxmHeaderFromFields);
+        assertEquals(nxmHeaderFromBigInt.hashCode(), nxmHeaderFromFields.hashCode());
+        assertEquals(nxmHeaderFromBigInt.hashCode(), nxmHeaderFromLong.hashCode());
     }
 
     @Test
-    public void hashCodeTest() {
+    public void nxmHeaderMaskTest() {
+        NxmHeader nxmHeaderFromBigInt = new NxmHeader(MASK_HEADER);
 
+        assertEquals(0x8000, nxmHeaderFromBigInt.getOxmClass());
+        assertEquals(0x2, nxmHeaderFromBigInt.getNxmField());
+        assertTrue(nxmHeaderFromBigInt.isHasMask());
+        assertEquals(0x96, nxmHeaderFromBigInt.getLength());
+        assertEquals(0x80000596L, nxmHeaderFromBigInt.toLong());
+        assertFalse(nxmHeaderFromBigInt.isExperimenter());
+
+        NxmHeader nxmHeaderFromFields = new NxmHeader(
+                nxmHeaderFromBigInt.getOxmClass(),
+                nxmHeaderFromBigInt.getNxmField(),
+                nxmHeaderFromBigInt.isHasMask(),
+                nxmHeaderFromBigInt.getLength());
+
+        assertEquals(MASK_HEADER, nxmHeaderFromFields.toBigInteger());
+        assertEquals(0x80000596L, nxmHeaderFromFields.toLong());
+        assertFalse(nxmHeaderFromFields.isExperimenter());
+
+        NxmHeader nxmHeaderFromLong = new NxmHeader(MASK_HEADER.longValue());
+
+        assertEquals(MASK_HEADER, nxmHeaderFromLong.toBigInteger());
+        assertEquals(0x80000596L, nxmHeaderFromLong.toLong());
+        assertFalse(nxmHeaderFromLong.isExperimenter());
+
+        assertEquals(nxmHeaderFromBigInt, nxmHeaderFromFields);
+        assertEquals(nxmHeaderFromBigInt, nxmHeaderFromLong);
+        assertEquals(nxmHeaderFromLong, nxmHeaderFromFields);
+        assertEquals(nxmHeaderFromBigInt.hashCode(), nxmHeaderFromFields.hashCode());
+        assertEquals(nxmHeaderFromBigInt.hashCode(), nxmHeaderFromLong.hashCode());
     }
 
     @Test
-    public void equalsTest() {
-        Object notHeader = new Object();
-        header = createHeader();
-        nxmHeader = new NxmHeader(header);
+    public void nxmHeaderExpTest() {
+        NxmHeader nxmHeaderFromBigInt = new NxmHeader(EXP_HEADER);
 
-        assertFalse(nxmHeader.equals(notHeader));
+        assertEquals(0xFFFF, nxmHeaderFromBigInt.getOxmClass());
+        assertEquals(0xF4 >>> 1, nxmHeaderFromBigInt.getNxmField());
+        assertFalse(nxmHeaderFromBigInt.isHasMask());
+        assertEquals(0xF3, nxmHeaderFromBigInt.getLength());
+        assertEquals(0xFFFFF4F300F2AB31L, nxmHeaderFromBigInt.toLong());
+        assertTrue(nxmHeaderFromBigInt.isExperimenter());
+        assertEquals(0x00F2AB31L, nxmHeaderFromBigInt.getExperimenterId());
+
+        NxmHeader nxmHeaderFromFields = new NxmHeader(
+                nxmHeaderFromBigInt.getNxmField(),
+                nxmHeaderFromBigInt.isHasMask(),
+                nxmHeaderFromBigInt.getLength(),
+                nxmHeaderFromBigInt.getExperimenterId());
+
+        assertEquals(EXP_HEADER, nxmHeaderFromFields.toBigInteger());
+        assertEquals(0xFFFFF4F300F2AB31L, nxmHeaderFromFields.toLong());
+        assertTrue(nxmHeaderFromFields.isExperimenter());
+        assertEquals(0x00F2AB31L, nxmHeaderFromFields.getExperimenterId());
+
+        NxmHeader nxmHeaderFromLong = new NxmHeader(EXP_HEADER.longValue());
+
+        assertEquals(EXP_HEADER, nxmHeaderFromLong.toBigInteger());
+        assertEquals(0xFFFFF4F300F2AB31L, nxmHeaderFromLong.toLong());
+        assertTrue(nxmHeaderFromLong.isExperimenter());
+        assertEquals(0x00F2AB31L, nxmHeaderFromLong.getExperimenterId());
+
+        assertEquals(nxmHeaderFromBigInt, nxmHeaderFromFields);
+        assertEquals(nxmHeaderFromBigInt, nxmHeaderFromLong);
+        assertEquals(nxmHeaderFromLong, nxmHeaderFromFields);
+        assertEquals(nxmHeaderFromBigInt.hashCode(), nxmHeaderFromFields.hashCode());
+        assertEquals(nxmHeaderFromBigInt.hashCode(), nxmHeaderFromLong.hashCode());
     }
 
-    @Test
-    public void equalsTest1() {
-        header = createHeader();
-        nxmHeader = new NxmHeader(header);
-
-        assertTrue(nxmHeader.equals(nxmHeader));
-    }
-
-    @Test
-    public void toStringTest() {
-        header = createHeader();
-        nxmHeader = new NxmHeader(header);
-
-        String shouldBe = new String("NxmHeader " + "[headerAsLong=" + header + ", " + "oxmClass="
-                + OxmMatchConstants.NXM_1_CLASS + "," + " nxmField=" + NXM_FIELD_CODE + "," + " hasMask=" + false + ","
-                + " length=" + VALUE_LENGTH + "]");
-
-        assertEquals(shouldBe, nxmHeader.toString());
-    }
-
-
-    private long createHeader() {
-        long result = 0;
-        int oxmClass = 1 << 16;
-        result = result | oxmClass;
-        int oxmField = NXM_FIELD_CODE << 9;
-        result = result | oxmField;
-        int mask = 0 << 8;
-        result = result | mask;
-        int length = VALUE_LENGTH;
-        result = result | length;
-
-        return result;
-    }
 }

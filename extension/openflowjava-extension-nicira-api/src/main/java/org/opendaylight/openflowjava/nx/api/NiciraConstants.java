@@ -12,6 +12,8 @@ public final class NiciraConstants {
 
     public static final Long NX_VENDOR_ID = 0x00002320L;
 
+    public static final Long NX_NSH_VENDOR_ID = 0x005AD650L;
+
     private NiciraConstants() {}
 
 }
