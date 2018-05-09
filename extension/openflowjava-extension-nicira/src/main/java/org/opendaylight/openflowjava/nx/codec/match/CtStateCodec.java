@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
  */
 public class CtStateCodec extends AbstractMatchCodec {
 
-    private static final int VALUE_LENGTH = 8;
+    private static final int VALUE_LENGTH = 4;
     private static final int NXM_FIELD_CODE = 105;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxCtState> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
             EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtState.class);
