@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -329,12 +330,13 @@ public class HandshakeManagerImpl implements HandshakeManager {
         LOG.debug("sending hello message: version{}, xid={}, version bitmap={}", helloVersion, helloXid,
                   MessageFactory.digVersions(helloInput.getElements()));
 
-        Future<RpcResult<Void>> helloResult = connectionAdapter.hello(helloInput);
+        Future<RpcResult<HelloOutput>> helloResult = connectionAdapter.hello(helloInput);
 
-        ListenableFuture<RpcResult<Void>> rpcResultListenableFuture = JdkFutureAdapters.listenInPoolThread(helloResult);
-        Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<Void>>() {
+        ListenableFuture<RpcResult<HelloOutput>> rpcResultListenableFuture
+                = JdkFutureAdapters.listenInPoolThread(helloResult);
+        Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<HelloOutput>>() {
             @Override
-            public void onSuccess(@Nonnull RpcResult<Void> result) {
+            public void onSuccess(@Nonnull RpcResult<HelloOutput> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("hello successfully sent, xid={}, addr={}", helloXid,
                               connectionAdapter.getRemoteAddress());

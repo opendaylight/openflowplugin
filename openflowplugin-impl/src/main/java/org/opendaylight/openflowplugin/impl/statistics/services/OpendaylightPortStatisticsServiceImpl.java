@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -34,13 +34,13 @@ public class OpendaylightPortStatisticsServiceImpl implements OpendaylightPortSt
     }
 
     @Override
-    public Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
+    public ListenableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> getAllNodeConnectorsStatistics(
             final GetAllNodeConnectorsStatisticsInput input) {
         return allPortStats.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
+    public ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> getNodeConnectorStatistics(
             final GetNodeConnectorStatisticsInput input) {
         return portStats.handleAndNotify(input, notificationPublishService);
     }

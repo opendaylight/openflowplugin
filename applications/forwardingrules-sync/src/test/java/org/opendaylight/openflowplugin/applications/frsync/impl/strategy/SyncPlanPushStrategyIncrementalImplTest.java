@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutputBuilder;
@@ -175,7 +176,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
     @Before
     public void setUp() throws Exception {
         Mockito.when(flowCapableTxService.sendBarrier(Matchers.<SendBarrierInput>any()))
-                .thenReturn(RpcResultBuilder.success((Void) null).buildFuture());
+                .thenReturn(RpcResultBuilder.success((SendBarrierOutput) null).buildFuture());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(groupCommitter).add(
                 Matchers.<InstanceIdentifier<Group>>any(), Matchers.<Group>any(),

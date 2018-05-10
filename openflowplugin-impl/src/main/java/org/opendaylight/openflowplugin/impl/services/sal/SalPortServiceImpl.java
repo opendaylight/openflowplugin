@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -43,7 +43,7 @@ public final class SalPortServiceImpl
     }
 
     @Override
-    public Future<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
+    public ListenableFuture<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
         return portMessage.canUseSingleLayerSerialization()
             ? portMessage.handleServiceCall(getPortFromInput(input))
             : handleServiceCall(input);

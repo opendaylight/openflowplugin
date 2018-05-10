@@ -9,10 +9,10 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -26,6 +26,8 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFac
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
@@ -61,14 +63,16 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public Future<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode() {
+    public ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode(
+            GetStatisticsWorkModeInput input) {
         return RpcResultBuilder.success(new GetStatisticsWorkModeOutputBuilder()
                 .setMode(workMode)
                 .build()).buildFuture();
     }
 
     @Override
-    public Future<RpcResult<Void>> changeStatisticsWorkMode(ChangeStatisticsWorkModeInput input) {
+    public ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> changeStatisticsWorkMode(
+            ChangeStatisticsWorkModeInput input) {
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
             isStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
@@ -87,10 +91,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
             });
 
             workModeGuard.release();
-            return RpcResultBuilder.<Void>success().buildFuture();
+            return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>success().buildFuture();
         }
 
-        return RpcResultBuilder.<Void>failed()
+        return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION,
                         "Statistics work mode change is already in progress")
                 .buildFuture();

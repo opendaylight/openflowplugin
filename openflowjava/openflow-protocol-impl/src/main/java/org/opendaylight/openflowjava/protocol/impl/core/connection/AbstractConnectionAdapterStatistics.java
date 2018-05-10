@@ -11,10 +11,10 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.channel.Channel;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
@@ -37,7 +37,7 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
     }
 
     @Override
-    public Future<RpcResult<Void>> flowMod(final FlowModInput input) {
+    public ListenableFuture<RpcResult<FlowModOutput>> flowMod(final FlowModInput input) {
         statisticsCounters.incrementCounter(CounterEventTypes.DS_FLOW_MODS_ENTERED);
         return super.flowMod(input);
     }
@@ -50,7 +50,8 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
     }
 
     @Override
-    protected ListenableFuture<RpcResult<Void>> sendToSwitchFuture(final DataObject input, final String failureInfo) {
+    protected <O extends DataObject> ListenableFuture<RpcResult<O>> sendToSwitchFuture(final Object input,
+                                                                         final String failureInfo) {
         statisticsCounters.incrementCounter(CounterEventTypes.DS_ENTERED_OFJAVA);
         return super.sendToSwitchFuture(input, failureInfo);
     }

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
@@ -57,7 +58,7 @@ public final class MeterUtil {
             return resultBld.build();
         };
     public static final Function<Pair<RpcResult<AddMetersBatchOutput>,
-                                      RpcResult<Void>>,
+                                      RpcResult<SendBarrierOutput>>,
                                       RpcResult<AddMetersBatchOutput>>
         METER_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -72,7 +73,7 @@ public final class MeterUtil {
                 return resultBld.build();
             };
     public static final Function<Pair<RpcResult<RemoveMetersBatchOutput>,
-                                      RpcResult<Void>>,
+                                      RpcResult<SendBarrierOutput>>,
                                       RpcResult<RemoveMetersBatchOutput>>
         METER_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -87,7 +88,7 @@ public final class MeterUtil {
                 return resultBld.build();
             };
     public static final Function<Pair<RpcResult<UpdateMetersBatchOutput>,
-                                      RpcResult<Void>>,
+                                      RpcResult<SendBarrierOutput>>,
                                       RpcResult<UpdateMetersBatchOutput>>
         METER_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -133,7 +134,7 @@ public final class MeterUtil {
      */
     @VisibleForTesting
     static <T extends BatchMeterOutputListGrouping>
-        Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
+        Function<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>, RpcResult<T>> createComposingFunction() {
         return input -> {
             final RpcResultBuilder<T> resultBld;
             if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {

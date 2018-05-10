@@ -9,9 +9,9 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGetAsyncConfigService;
@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SalAsyncConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -31,16 +32,16 @@ public class SalAsyncConfigServiceImpl implements SalAsyncConfigService {
 
     public SalAsyncConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         setAsyncConfigService = new SingleLayerSetAsyncConfigService(requestContextStack, deviceContext);
-        getAsyncConfigService = new SingleLayerGetAsyncConfigService(requestContextStack, deviceContext);
+        this.getAsyncConfigService = new SingleLayerGetAsyncConfigService(requestContextStack, deviceContext);
     }
 
     @Override
-    public Future<RpcResult<Void>> setAsync(SetAsyncInput input) {
+    public ListenableFuture<RpcResult<SetAsyncOutput>> setAsync(SetAsyncInput input) {
         return setAsyncConfigService.handleServiceCall(input);
     }
 
     @Override
-    public Future<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input) {
+    public ListenableFuture<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input) {
         return Futures.transform(getAsyncConfigService.handleServiceCall(input), result ->
                 Objects.nonNull(result) && result.isSuccessful()
                         ? RpcResultBuilder.success(new GetAsyncOutputBuilder(result.getResult())).build()

@@ -10,10 +10,10 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -56,7 +56,8 @@ public class SingleLayerExperimenterMultipartService extends AbstractExperimente
     }
 
     @Override
-    public Future<RpcResult<SendExperimenterMpRequestOutput>> handleAndReply(SendExperimenterMpRequestInput input) {
+    public ListenableFuture<RpcResult<SendExperimenterMpRequestOutput>> handleAndReply(
+            SendExperimenterMpRequestInput input) {
         final SettableFuture<RpcResult<SendExperimenterMpRequestOutput>> future = SettableFuture.create();
 
         Futures.addCallback(handleServiceCall(input), new FutureCallback<RpcResult<List<MultipartReply>>>() {

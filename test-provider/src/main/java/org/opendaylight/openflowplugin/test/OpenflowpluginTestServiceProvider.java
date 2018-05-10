@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
@@ -119,7 +119,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * service.rev130819.AddFlowInput)
      */
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
+    public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
         String plus = "addFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;
@@ -135,7 +135,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * .service.rev130819.RemoveFlowInput)
      */
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
         String plus = "removeFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;
@@ -151,7 +151,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * .service.rev130819.UpdateFlowInput)
      */
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
+    public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
         String plus = "updateFlow - " + input;
         OpenflowpluginTestServiceProvider.LOG.info(plus);
         return null;

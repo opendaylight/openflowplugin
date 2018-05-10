@@ -7,27 +7,28 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.impl.services.AbstractVoidService;
+import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class FlowCapableTransactionServiceImpl extends AbstractVoidService<SendBarrierInput>
+public class FlowCapableTransactionServiceImpl extends AbstractSimpleService<SendBarrierInput, SendBarrierOutput>
                                                implements FlowCapableTransactionService {
     public FlowCapableTransactionServiceImpl(final RequestContextStack requestContextStack,
                                              final DeviceContext deviceContext) {
-        super(requestContextStack, deviceContext);
+        super(requestContextStack, deviceContext, SendBarrierOutput.class);
     }
 
     @Override
-    public Future<RpcResult<Void>> sendBarrier(final SendBarrierInput input) {
+    public ListenableFuture<RpcResult<SendBarrierOutput>> sendBarrier(final SendBarrierInput input) {
         return handleServiceCall(input);
     }
 

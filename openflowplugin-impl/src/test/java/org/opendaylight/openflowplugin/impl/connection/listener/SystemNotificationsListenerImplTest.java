@@ -9,12 +9,11 @@
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -164,7 +163,7 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnSwitchIdleEvent1() throws Exception {
-        final Future<RpcResult<EchoOutput>> echoReply =
+        final ListenableFuture<RpcResult<EchoOutput>> echoReply =
                 Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().setXid(0L).build()).build());
 
         Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);

@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -67,7 +66,7 @@ public class SalMeterServiceImpl implements SalMeterService {
     }
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture =
                 addMeterMessage.canUseSingleLayerSerialization()
                         ? addMeterMessage.handleServiceCall(input)
@@ -97,7 +96,7 @@ public class SalMeterServiceImpl implements SalMeterService {
     }
 
     @Override
-    public Future<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
+    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture =
                 updateMeterMessage.canUseSingleLayerSerialization()
                         ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
@@ -129,7 +128,7 @@ public class SalMeterServiceImpl implements SalMeterService {
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture =
                 removeMeterMessage.canUseSingleLayerSerialization()
                         ? removeMeterMessage.handleServiceCall(input)

@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -101,7 +101,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      * .service.rev130918.AddGroupInput)
      */
     @Override
-    public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
+    public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
         String plus = "addGroup - " + input;
         OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
         return null;
@@ -117,7 +117,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      * .group.service.rev130918.RemoveGroupInput)
      */
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> removeGroup(
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(
             RemoveGroupInput input) {
         String plus = "removeGroup - " + input;
         OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
@@ -134,7 +134,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      * .group.service.rev130918.UpdateGroupInput)
      */
     @Override
-    public Future<RpcResult<UpdateGroupOutput>> updateGroup(
+    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(
             UpdateGroupInput input) {
         String plus = "updateGroup - " + input;
         OpenflowpluginGroupTestServiceProvider.LOG.info(plus);

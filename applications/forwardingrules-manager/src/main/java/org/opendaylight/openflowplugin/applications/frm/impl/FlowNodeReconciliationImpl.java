@@ -29,7 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -74,8 +73,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
@@ -206,9 +207,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setMessages(createMessages(nodeRef, flowNode)).build();
 
-                Future<RpcResult<Void>> openBundle = salBundleService.controlBundle(openBundleInput);
+                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
+                        = salBundleService.controlBundle(openBundleInput);
 
-                ListenableFuture<RpcResult<Void>> addBundleMessagesFuture = Futures
+                ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessagesFuture = Futures
                         .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
                             if (rpcResult.isSuccessful()) {
                                 return JdkFutureAdapters
@@ -216,14 +218,14 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
-                ListenableFuture<RpcResult<Void>> commitBundleFuture = Futures.transformAsync(addBundleMessagesFuture,
-                    rpcResult -> {
-                        if (rpcResult.isSuccessful()) {
-                            return JdkFutureAdapters
-                                    .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
-                        }
-                        return Futures.immediateFuture(null);
-                    }, MoreExecutors.directExecutor());
+                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture
+                        = Futures.transformAsync(addBundleMessagesFuture, rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                return JdkFutureAdapters
+                                        .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
+                            }
+                            return Futures.immediateFuture(null);
+                        }, MoreExecutors.directExecutor());
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()

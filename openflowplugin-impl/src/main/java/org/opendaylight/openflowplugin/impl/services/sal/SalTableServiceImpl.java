@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
@@ -38,7 +38,7 @@ public final class SalTableServiceImpl implements SalTableService {
     }
 
     @Override
-    public Future<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
             ? singleLayerService.handleAndReply(input)
             : multiLayerService.handleAndReply(input);

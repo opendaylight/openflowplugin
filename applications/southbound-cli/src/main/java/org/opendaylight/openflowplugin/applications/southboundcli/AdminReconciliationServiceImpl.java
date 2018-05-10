@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -65,7 +66,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
 
 
     @Override
-    public Future<RpcResult<ReconcileOutput>> reconcile(ReconcileInput input) {
+    public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(ReconcileInput input) {
         boolean reconcileAllNodes = input.isReconcileAllNodes();
         List<BigInteger> inputNodes = input.getNodes();
         if (inputNodes == null) {
@@ -119,7 +120,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
         return result;
     }
 
-    private Future<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
+    private ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
         SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
         LOG.error(msg);
         RpcError error = RpcResultBuilder.newError(RpcError.ErrorType.PROTOCOL, "reconcile", msg);
