@@ -57,6 +57,10 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
     @Override
     public ServiceDescriptor getServiceDescriptor() {
 
+        if (serviceDescriptor == null) {
+            return new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR, "ServiceDescriptor is NULL.");
+        }
+
         if (serviceDescriptor.getServiceState().equals(ServiceState.OPERATIONAL)) {
             if (getApplicationNetworkState(OF_PORT_13, defaultInetAddres)
                     && getApplicationNetworkState(OF_PORT_11, legacyInetAddress)) {
