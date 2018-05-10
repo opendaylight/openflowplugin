@@ -12,6 +12,8 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.NiciraExtensionCodecRegistratorImpl;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -19,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ActionDeserializer implements OFDeserializer<Action> {
+public class ActionDeserializer implements OFDeserializer<Action>, DeserializerRegistryInjector {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActionDeserializer.class);
 
@@ -29,6 +31,7 @@ public class ActionDeserializer implements OFDeserializer<Action> {
             EncodeConstants.OF10_VERSION_ID, NiciraConstants.NX_VENDOR_ID);
 
     private final short version;
+    private DeserializerRegistry deserializerRegistry;
 
     /**
      * Constructor.
@@ -62,4 +65,12 @@ public class ActionDeserializer implements OFDeserializer<Action> {
         return actionDeserializer.deserialize(message);
     }
 
+    @Override
+    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+        this.deserializerRegistry = registry;
+    }
+
+    public DeserializerRegistry getDeserializerRegistry() {
+        return deserializerRegistry;
+    }
 }
