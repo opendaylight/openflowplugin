@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -58,7 +58,7 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
     }
 
     @Override
-    public Future<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
+    public ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
         return handleAndNotify(input, notificationPublishService);
     }

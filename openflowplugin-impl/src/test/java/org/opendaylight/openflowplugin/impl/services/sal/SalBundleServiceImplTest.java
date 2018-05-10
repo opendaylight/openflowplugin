@@ -84,6 +84,7 @@ public class SalBundleServiceImplTest {
         experimenterBuilder.setExperimenterMessageOfChoice(new BundleControlSalBuilder()
                 .setSalControlData(new SalControlDataBuilder(input).build())
                 .build());
+        Mockito.when(experimenterMessageService.sendExperimenter(Matchers.any())).thenReturn(SettableFuture.create());
         service.controlBundle(input);
         Mockito.verify(experimenterMessageService).sendExperimenter(experimenterBuilder.build());
     }

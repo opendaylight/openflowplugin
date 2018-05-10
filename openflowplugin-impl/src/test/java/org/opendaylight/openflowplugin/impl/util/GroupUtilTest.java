@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -151,12 +152,12 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_success() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
-                compositeFunction = GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchSuccessOutput();
-        final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = RpcResultBuilder.<SendBarrierOutput>success().build();
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
@@ -167,12 +168,12 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_success() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
-                compositeFunction = GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchFailureOutcome();
-        final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = RpcResultBuilder.<SendBarrierOutput>success().build();
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
@@ -183,12 +184,12 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_failure() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
-                compositeFunction = GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchSuccessOutput();
-        final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = createBarrierFailureOutcome();
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
@@ -199,12 +200,12 @@ public class GroupUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_failure() throws Exception {
-        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>>, RpcResult<AddGroupsBatchOutput>>
-                compositeFunction = GroupUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
         final RpcResult<AddGroupsBatchOutput> addGroupBatchOutput = createAddGroupsBatchFailureOutcome();
-        final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = createBarrierFailureOutcome();
+        final Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddGroupsBatchOutput> composite = compositeFunction.apply(input);
 
@@ -224,8 +225,8 @@ public class GroupUtilTest {
         assertEquals(GROUP_ACTION_BITMAP, bitmap);
     }
 
-    private RpcResult<Void> createBarrierFailureOutcome() {
-        return RpcResultBuilder.<Void>failed()
+    private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
+        return RpcResultBuilder.<SendBarrierOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }

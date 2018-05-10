@@ -7,9 +7,9 @@
  */
 package test.mock.util;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -25,19 +25,19 @@ public class SalFlowServiceMock implements SalFlowService {
     private final List<UpdateFlowInput> updateFlowCalls = new ArrayList<>();
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
+    public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
         addFlowCalls.add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
         removeFlowCalls.add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
+    public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
         updateFlowCalls.add(input);
         return null;
     }

@@ -13,7 +13,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.JdkFutureAdapters;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -129,7 +131,16 @@ public final class ReconcileUtil {
             final SendBarrierInput barrierInput = new SendBarrierInputBuilder()
                     .setNode(new NodeRef(nodeIdent))
                     .build();
-            return JdkFutureAdapters.listenInPoolThread(flowCapableTransactionService.sendBarrier(barrierInput));
+            ListenableFuture<RpcResult<SendBarrierOutput>> result
+                    = flowCapableTransactionService.sendBarrier(barrierInput);
+
+            return Futures.transformAsync(result, input1 -> {
+                if (input1.isSuccessful()) {
+                    return Futures.<RpcResult<Void>>immediateFuture(RpcResultBuilder.<Void>success().build());
+                } else {
+                    return Futures.<RpcResult<Void>>immediateFailedFuture(null);
+                }
+            });
         };
     }
 

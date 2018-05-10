@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
@@ -67,7 +66,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     }
 
     @Override
-    public Future<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBatch(final RemoveFlowsBatchInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBatch(final RemoveFlowsBatchInput input) {
         LOG.trace("Removing flows @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveFlows().size());
@@ -97,7 +96,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     }
 
     @Override
-    public Future<RpcResult<AddFlowsBatchOutput>> addFlowsBatch(final AddFlowsBatchInput input) {
+    public ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBatch(final AddFlowsBatchInput input) {
         LOG.trace("Adding flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddFlows().size());
         final ArrayList<ListenableFuture<RpcResult<AddFlowOutput>>> resultsLot = new ArrayList<>();
         for (BatchFlowInputGrouping batchFlow : input.getBatchAddFlows()) {
@@ -135,7 +134,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBatch(final UpdateFlowsBatchInput input) {
+    public ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBatch(final UpdateFlowsBatchInput input) {
         LOG.trace("Updating flows @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchUpdateFlows().size());

@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-final class SimpleRpcListener extends AbstractRpcListener<Void> {
+import org.opendaylight.yangtools.yang.binding.DataObject;
+
+final class SimpleRpcListener<T extends DataObject> extends AbstractRpcListener<T> {
     SimpleRpcListener(final Object message, final String failureInfo) {
         super(message, failureInfo);
     }

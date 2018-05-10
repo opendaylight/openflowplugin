@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInputBuilder;
@@ -99,7 +100,7 @@ public class SalFlowsBatchServiceImplTest {
         salFlowsBatchService = new SalFlowsBatchServiceImpl(salFlowService, transactionService);
 
         Mockito.when(transactionService.sendBarrier(Matchers.<SendBarrierInput>any()))
-                .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
+                .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After

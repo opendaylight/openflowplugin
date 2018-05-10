@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -83,7 +82,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     }
 
     @Override
-    public Future<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+    public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         final FlowRegistryKey flowRegistryKey =
                 FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future;
@@ -100,7 +99,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     }
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         final ListenableFuture<RpcResult<RemoveFlowOutput>> future;
 
         if (flowRemoveMessage.canUseSingleLayerSerialization()) {
@@ -116,7 +115,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     }
 
     @Override
-    public Future<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
+    public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
         final UpdatedFlow updated = input.getUpdatedFlow();
         final OriginalFlow original = input.getOriginalFlow();
 

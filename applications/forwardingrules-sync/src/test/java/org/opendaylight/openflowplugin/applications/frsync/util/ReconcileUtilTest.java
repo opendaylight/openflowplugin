@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
@@ -80,7 +81,7 @@ public class ReconcileUtilTest {
                 Futures.transformAsync(testRabbit, ReconcileUtil.chainBarrierFlush(NODE_IDENT, flowCapableService),
                         MoreExecutors.directExecutor());
         Mockito.when(flowCapableService.sendBarrier(barrierInputCaptor.capture()))
-                .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
+                .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
 
         Mockito.verify(flowCapableService, Mockito.never()).sendBarrier(Matchers.<SendBarrierInput>any());
         Assert.assertFalse(vehicle.isDone());

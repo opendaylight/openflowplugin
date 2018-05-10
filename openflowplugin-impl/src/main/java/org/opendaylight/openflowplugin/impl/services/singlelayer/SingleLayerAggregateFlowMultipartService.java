@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -52,7 +52,7 @@ public class SingleLayerAggregateFlowMultipartService
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
+    public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input), result -> {
             if (Preconditions.checkNotNull(result).isSuccessful()) {

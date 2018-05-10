@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
@@ -118,7 +118,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * .service.rev130918.AddMeterInput)
      */
     @Override
-    public Future<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         String plus = "addMeter - " + input;
         OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
         return null;
@@ -134,7 +134,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * .meter.service.rev130918.RemoveMeterInput)
      */
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeMeter(
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(
             final RemoveMeterInput input) {
         String plus = "removeMeter - " + input;
         OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
@@ -151,7 +151,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * .meter.service.rev130918.UpdateMeterInput)
      */
     @Override
-    public Future<RpcResult<UpdateMeterOutput>> updateMeter(
+    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(
             final UpdateMeterInput input) {
         String plus = "updateMeter - " + input;
         OpenflowpluginMeterTestServiceProvider.LOG.info(plus);

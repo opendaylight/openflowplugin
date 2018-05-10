@@ -13,12 +13,12 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -47,26 +47,23 @@ public final class BarrierUtil {
     public static <T> ListenableFuture<RpcResult<T>> chainBarrier(
             final ListenableFuture<RpcResult<T>> input, final NodeRef nodeRef,
             final FlowCapableTransactionService transactionService,
-            final Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> compositeTransform) {
-        final MutablePair<RpcResult<T>, RpcResult<Void>> resultPair = new MutablePair<>();
+            final Function<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>, RpcResult<T>> compositeTransform) {
+        final MutablePair<RpcResult<T>, RpcResult<SendBarrierOutput>> resultPair = new MutablePair<>();
 
         // store input result and append barrier
-        final ListenableFuture<RpcResult<Void>> barrierResult = Futures.transformAsync(input,
+        final ListenableFuture<RpcResult<SendBarrierOutput>> barrierResult = Futures.transformAsync(input,
             interInput -> {
                 resultPair.setLeft(interInput);
                 final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
                 return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
             }, MoreExecutors.directExecutor());
         // store barrier result and return initiated pair
-        final ListenableFuture<Pair<RpcResult<T>, RpcResult<Void>>> compositeResult = Futures.transform(
-                barrierResult, new Function<RpcResult<Void>, Pair<RpcResult<T>, RpcResult<Void>>>() {
-                    @Nullable
-                    @Override
-                    public Pair<RpcResult<T>, RpcResult<Void>> apply(@Nullable final RpcResult<Void> input) {
-                        resultPair.setRight(input);
-                        return resultPair;
-                    }
-                }, MoreExecutors.directExecutor());
+        final ListenableFuture<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>> compositeResult = Futures.transform(
+                barrierResult,
+            input1 -> {
+                resultPair.setRight(input1);
+                return resultPair;
+            }, MoreExecutors.directExecutor());
         // append assembling transform to barrier result
         return Futures.transform(compositeResult, compositeTransform, MoreExecutors.directExecutor());
     }

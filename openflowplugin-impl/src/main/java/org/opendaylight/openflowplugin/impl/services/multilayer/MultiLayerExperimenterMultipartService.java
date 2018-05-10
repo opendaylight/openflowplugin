@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -94,7 +93,8 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
 
     @Override
     @SuppressWarnings("unchecked")
-    public Future<RpcResult<SendExperimenterMpRequestOutput>> handleAndReply(SendExperimenterMpRequestInput input) {
+    public ListenableFuture<RpcResult<SendExperimenterMpRequestOutput>> handleAndReply(
+            SendExperimenterMpRequestInput input) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(input);
         final SettableFuture<RpcResult<SendExperimenterMpRequestOutput>> finalFuture = SettableFuture.create();
 
