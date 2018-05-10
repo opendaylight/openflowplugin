@@ -22,6 +22,7 @@ import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
+import org.opendaylight.openflowjava.nx.codec.action.RegLoad2Codec;
 import org.opendaylight.openflowjava.nx.codec.action.RegLoadCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegMoveCodec;
 import org.opendaylight.openflowjava.nx.codec.action.ResubmitCodec;
@@ -85,7 +86,9 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputRegConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.PopNshConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.PushNshConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoad2Convertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoadConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoadConvertorProxy;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegMoveConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.ResubmitConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.ArpOpConvertor;
@@ -136,6 +139,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPopNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPushNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionConntrackRpcAddFlowApplyActionsCase;
@@ -333,6 +337,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final EthDstConvertor ETH_DST_CONVERTOR = new EthDstConvertor();
     private static final EthSrcConvertor ETH_SRC_CONVERTOR = new EthSrcConvertor();
     private static final RegLoadConvertor REG_LOAD_CONVERTOR = new RegLoadConvertor();
+    private static final RegLoad2Convertor REG_LOAD2_CONVERTOR = new RegLoad2Convertor();
+    private static final RegLoadConvertorProxy REG_LOAD_CONVERTOR_PROXY = new RegLoadConvertorProxy();
     private static final RegMoveConvertor REG_MOVE_CONVERTOR = new RegMoveConvertor();
     private static final OutputRegConvertor OUTPUT_REG_CONVERTOR = new OutputRegConvertor();
     private static final EthTypeConvertor ETH_TYPE_CONVERTOR = new EthTypeConvertor();
@@ -381,7 +387,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         this.extensionConverterRegistrator = Preconditions.checkNotNull(provider.getExtensionConverterRegistrator());
         registrations = new HashSet<>();
         // src=dataStore/config
-        registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionOutputRegNodesNodeTableFlowApplyActionsCase.class, OUTPUT_REG_CONVERTOR);
         registerAction13(NxActionResubmitNodesNodeTableFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
@@ -396,7 +402,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionDecapNodesNodeTableFlowApplyActionsCase.class, DECAP_CONVERTOR);
         registerAction13(NxActionDecNshTtlNodesNodeTableFlowApplyActionsCase.class, DEC_NSH_TTL_CONVERTOR);
 
-        registerAction13(NxActionRegLoadNodesNodeTableFlowWriteActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadNodesNodeTableFlowWriteActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveNodesNodeTableFlowWriteActionsCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionOutputRegNodesNodeTableFlowWriteActionsCase.class, OUTPUT_REG_CONVERTOR);
         registerAction13(NxActionResubmitNodesNodeTableFlowWriteActionsCase.class, RESUBMIT_CONVERTOR);
@@ -411,7 +417,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionDecapNodesNodeTableFlowWriteActionsCase.class, DECAP_CONVERTOR);
         registerAction13(NxActionDecNshTtlNodesNodeTableFlowWriteActionsCase.class, DEC_NSH_TTL_CONVERTOR);
 
-        registerAction13(NxActionRegLoadNodesNodeGroupBucketsBucketActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadNodesNodeGroupBucketsBucketActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveNodesNodeGroupBucketsBucketActionsCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionOutputRegNodesNodeGroupBucketsBucketActionsCase.class, OUTPUT_REG_CONVERTOR);
         registerAction13(NxActionResubmitNodesNodeGroupBucketsBucketActionsCase.class, RESUBMIT_CONVERTOR);
@@ -427,7 +433,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionDecNshTtlNodesNodeGroupBucketsBucketActionsCase.class, DEC_NSH_TTL_CONVERTOR);
 
         // src=rpc-addFlow
-        registerAction13(NxActionRegLoadRpcAddFlowApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcAddFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveRpcAddFlowApplyActionsCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionOutputRegRpcAddFlowApplyActionsCase.class, OUTPUT_REG_CONVERTOR);
         registerAction13(NxActionResubmitRpcAddFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
@@ -442,7 +448,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionDecapRpcAddFlowApplyActionsCase.class, DECAP_CONVERTOR);
         registerAction13(NxActionDecNshTtlRpcAddFlowApplyActionsCase.class, DEC_NSH_TTL_CONVERTOR);
 
-        registerAction13(NxActionRegLoadRpcAddFlowWriteActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcAddFlowWriteActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveRpcAddFlowWriteActionsCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionOutputRegRpcAddFlowWriteActionsCase.class, OUTPUT_REG_CONVERTOR);
         registerAction13(NxActionResubmitRpcAddFlowWriteActionsCase.class, RESUBMIT_CONVERTOR);
@@ -457,10 +463,10 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionDecapRpcAddFlowWriteActionsCase.class, DECAP_CONVERTOR);
         registerAction13(NxActionDecNshTtlRpcAddFlowWriteActionsCase.class, DEC_NSH_TTL_CONVERTOR);
 
-        registerAction13(NxActionRegLoadRpcAddGroupCase.class, REG_LOAD_CONVERTOR);
-        registerAction13(NxActionRegLoadRpcRemoveGroupCase.class, REG_LOAD_CONVERTOR);
-        registerAction13(NxActionRegLoadRpcUpdateGroupOriginalCase.class, REG_LOAD_CONVERTOR);
-        registerAction13(NxActionRegLoadRpcUpdateGroupUpdatedCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcAddGroupCase.class, REG_LOAD_CONVERTOR_PROXY);
+        registerAction13(NxActionRegLoadRpcRemoveGroupCase.class, REG_LOAD_CONVERTOR_PROXY);
+        registerAction13(NxActionRegLoadRpcUpdateGroupOriginalCase.class, REG_LOAD_CONVERTOR_PROXY);
+        registerAction13(NxActionRegLoadRpcUpdateGroupUpdatedCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveRpcAddGroupCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionRegMoveRpcRemoveGroupCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionRegMoveRpcUpdateGroupOriginalCase.class, REG_MOVE_CONVERTOR);
@@ -514,17 +520,18 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionDecNshTtlRpcUpdateGroupOriginalCase.class, DEC_NSH_TTL_CONVERTOR);
         registerAction13(NxActionDecNshTtlRpcUpdateGroupUpdatedCase.class, DEC_NSH_TTL_CONVERTOR);
 
-        registerAction13(NxActionRegLoadRpcTransmitPacketCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcTransmitPacketCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitRpcTransmitPacketCase.class, RESUBMIT_CONVERTOR);
-        registerAction13(NxActionRegLoadRpcUpdateFlowOriginalApplyActionsCase.class, REG_LOAD_CONVERTOR);
-        registerAction13(NxActionRegLoadRpcUpdateFlowUpdatedApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcUpdateFlowOriginalApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
+        registerAction13(NxActionRegLoadRpcUpdateFlowUpdatedApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitRpcUpdateFlowUpdatedApplyActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionRegMoveRpcUpdateFlowUpdatedApplyActionsCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionRegLoadRpcRemoveFlowApplyActionsCase.class, REG_LOAD_CONVERTOR);
+        registerAction13(NxActionRegLoadRpcRemoveFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveRpcRemoveFlowApplyActionsCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionResubmitRpcRemoveFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
 
         registerAction13(ActionRegLoad.class, REG_LOAD_CONVERTOR);
+        registerAction13(ActionRegLoad2.class, REG_LOAD2_CONVERTOR);
         registerAction13(ActionRegMove.class, REG_MOVE_CONVERTOR);
         registerAction13(ActionOutputReg.class, OUTPUT_REG_CONVERTOR);
         registerAction13(ActionResubmit.class, RESUBMIT_CONVERTOR);
@@ -541,6 +548,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
 
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
                 NiciraUtil.createOfJavaKeyFrom(RegLoadCodec.SERIALIZER_KEY), REG_LOAD_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(
+                NiciraUtil.createOfJavaKeyFrom(RegLoad2Codec.SERIALIZER_KEY), REG_LOAD2_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
                 NiciraUtil.createOfJavaKeyFrom(RegMoveCodec.SERIALIZER_KEY), REG_MOVE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
