@@ -176,6 +176,11 @@ module openflowplugin-extension-nicira-action {
             type empty;
         }
     }
+    grouping nxm-nx-nsh-flags-grouping {
+        leaf nx-nsh-flags {
+            type empty;
+        }
+    }
     grouping nxm-nx-nsh-mdtype-grouping {
         leaf nx-nsh-mdtype {
             type empty;
@@ -183,6 +188,11 @@ module openflowplugin-extension-nicira-action {
     }
     grouping nxm-nx-nsh-np-grouping {
         leaf nx-nsh-np {
+            type empty;
+        }
+    }
+    grouping nxm-nx-nsh-ttl-grouping {
+        leaf nx-nsh-ttl {
             type empty;
         }
     }
@@ -275,11 +285,17 @@ module openflowplugin-extension-nicira-action {
             case dst-nx-encap-eth-dst-case {
                 uses nxm-nx-encap-eth-dst-grouping;
             }
+            case dst-nx-nsh-flags-case {
+                uses nxm-nx-nsh-flags-grouping;
+            }
             case dst-nx-nsh-mdtype-case {
                 uses nxm-nx-nsh-mdtype-grouping;
             }
             case dst-nx-nsh-np-case {
                 uses nxm-nx-nsh-np-grouping;
+            }
+            case dst-nx-nsh-ttl-case {
+                uses nxm-nx-nsh-ttl-grouping;
             }
             case dst-nx-tun-gpe-np-case {
                 uses nxm-nx-tun-gpe-np-grouping;
@@ -370,11 +386,17 @@ module openflowplugin-extension-nicira-action {
             case src-nx-encap-eth-dst-case {
                 uses nxm-nx-encap-eth-dst-grouping;
             }
+            case src-nx-nsh-flags-case {
+                uses nxm-nx-nsh-flags-grouping;
+            }
             case src-nx-nsh-mdtype-case {
                 uses nxm-nx-nsh-mdtype-grouping;
             }
             case src-nx-nsh-np-case {
                 uses nxm-nx-nsh-np-grouping;
+            }
+            case src-nx-nsh-ttl-case {
+                uses nxm-nx-nsh-ttl-grouping;
             }
             case src-nx-tun-gpe-np-case {
                 uses nxm-nx-tun-gpe-np-grouping;
