@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -53,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
@@ -165,7 +167,7 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testGetStatisticsWorkMode() throws Exception {
-        final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getStatisticsWorkMode();
+        final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getStatisticsWorkMode(null);
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
         assertNotNull(workMode.get().getResult());
@@ -186,14 +188,14 @@ public class StatisticsManagerImplTest {
                 new ChangeStatisticsWorkModeInputBuilder()
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
-        final Future<RpcResult<Void>> workMode = statisticsManager
+        final ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode = statisticsManager
                 .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
 
         checkWorkModeChangeOutcome(workMode);
         verify(statisticContext).disableGathering();
     }
 
-    private static void checkWorkModeChangeOutcome(Future<RpcResult<Void>> workMode)
+    private static void checkWorkModeChangeOutcome(ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode)
             throws InterruptedException, ExecutionException {
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
@@ -214,7 +216,7 @@ public class StatisticsManagerImplTest {
                 new ChangeStatisticsWorkModeInputBuilder()
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
-        Future<RpcResult<Void>> workMode = statisticsManager
+        ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode = statisticsManager
             .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
@@ -236,7 +238,7 @@ public class StatisticsManagerImplTest {
                 new ChangeStatisticsWorkModeInputBuilder()
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
-        Future<RpcResult<Void>> workMode;
+        ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode;
         workMode = statisticsManager.changeStatisticsWorkMode(
                 changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);

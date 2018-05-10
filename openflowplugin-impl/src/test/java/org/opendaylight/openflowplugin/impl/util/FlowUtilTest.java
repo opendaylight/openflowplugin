@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutputBuilder;
@@ -148,12 +149,13 @@ public class FlowUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_success() throws Exception {
-        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
-                compositeFunction = FlowUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
         final RpcResult<AddFlowsBatchOutput> addFlowBatchOutput = createAddFlowsBatchSuccessOutput();
-        final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>> input = Pair.of(addFlowBatchOutput, barrierOutput);
+        final RpcResult<SendBarrierOutput> barrierOutput = RpcResultBuilder.<SendBarrierOutput>success().build();
+        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>> input
+                = Pair.of(addFlowBatchOutput, barrierOutput);
         final RpcResult<AddFlowsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertTrue(composite.isSuccessful());
@@ -163,12 +165,13 @@ public class FlowUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_success() throws Exception {
-        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
-                compositeFunction = FlowUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
         final RpcResult<AddFlowsBatchOutput> addFlowBatchOutput = createAddFlowsBatchFailureOutcome();
-        final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>> input = Pair.of(addFlowBatchOutput, barrierOutput);
+        final RpcResult<SendBarrierOutput> barrierOutput = RpcResultBuilder.<SendBarrierOutput>success().build();
+        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>> input
+                = Pair.of(addFlowBatchOutput, barrierOutput);
         final RpcResult<AddFlowsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -178,12 +181,13 @@ public class FlowUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_failure() throws Exception {
-        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
-                compositeFunction = FlowUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
         final RpcResult<AddFlowsBatchOutput> addFlowBatchOutput = createAddFlowsBatchSuccessOutput();
-        final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>> input = Pair.of(addFlowBatchOutput, barrierOutput);
+        final RpcResult<SendBarrierOutput> barrierOutput = createBarrierFailureOutcome();
+        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>> input
+                = Pair.of(addFlowBatchOutput, barrierOutput);
         final RpcResult<AddFlowsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -193,12 +197,13 @@ public class FlowUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_failure() throws Exception {
-        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
-                compositeFunction = FlowUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
         final RpcResult<AddFlowsBatchOutput> addFlowBatchOutput = createAddFlowsBatchFailureOutcome();
-        final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>> input = Pair.of(addFlowBatchOutput, barrierOutput);
+        final RpcResult<SendBarrierOutput> barrierOutput = createBarrierFailureOutcome();
+        final Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>> input
+                = Pair.of(addFlowBatchOutput, barrierOutput);
         final RpcResult<AddFlowsBatchOutput> composite = compositeFunction.apply(input);
 
         Assert.assertFalse(composite.isSuccessful());
@@ -206,8 +211,8 @@ public class FlowUtilTest {
         Assert.assertEquals(1, composite.getResult().getBatchFailedFlowsOutput().size());
     }
 
-    private RpcResult<Void> createBarrierFailureOutcome() {
-        return RpcResultBuilder.<Void>failed()
+    private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
+        return RpcResultBuilder.<SendBarrierOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }

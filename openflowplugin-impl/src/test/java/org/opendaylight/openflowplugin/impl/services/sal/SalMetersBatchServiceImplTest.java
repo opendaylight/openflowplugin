@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -91,8 +92,8 @@ public class SalMetersBatchServiceImplTest {
     public void setUp() throws Exception {
         salMetersBatchService = new SalMetersBatchServiceImpl(salMeterService, transactionService);
 
-        Mockito.when(transactionService.sendBarrier(Matchers.<SendBarrierInput>any()))
-                .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
+        Mockito.when(transactionService.sendBarrier(Matchers.any()))
+                .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After

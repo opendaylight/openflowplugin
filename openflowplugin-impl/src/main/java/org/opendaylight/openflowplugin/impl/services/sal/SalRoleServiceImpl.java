@@ -53,7 +53,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     }
 
     @Override
-    public Future<RpcResult<SetRoleOutput>> setRole(final SetRoleInput input) {
+    public ListenableFuture<RpcResult<SetRoleOutput>> setRole(final SetRoleInput input) {
         LOG.info("SetRole called with input:{}", input);
 
         // Check current connection state

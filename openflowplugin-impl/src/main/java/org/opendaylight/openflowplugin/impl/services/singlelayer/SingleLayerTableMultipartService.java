@@ -10,11 +10,11 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -61,7 +61,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
     }
 
     @Override
-    public Future<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
         Futures.addCallback(handleServiceCall(input), new FutureCallback<RpcResult<List<MultipartReply>>>() {

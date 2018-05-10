@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
@@ -65,7 +65,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
+    public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
         getAggregateFlowStatisticsFromFlowTableForAllFlows(
                 final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
         if (delegate != null) {
@@ -76,7 +76,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
+    public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
         getAggregateFlowStatisticsFromFlowTableForGivenMatch(
                 final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
@@ -91,7 +91,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
+    public ListenableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
         if (delegate != null) {
             return delegate.getAllFlowStatisticsFromFlowTable(input);
@@ -107,8 +107,8 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
-            final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
+    public ListenableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>>
+        getAllFlowsStatisticsFromAllFlowTables(final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
         if (delegate != null) {
             return delegate.getAllFlowsStatisticsFromAllFlowTables(input);
         } else {
@@ -123,7 +123,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
+    public ListenableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
         if (delegate != null) {
             return delegate.getFlowStatisticsFromFlowTable(input);

@@ -7,9 +7,9 @@
  */
 package test.mock.util;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
@@ -25,19 +25,19 @@ public class SalMeterServiceMock implements SalMeterService {
     private final List<UpdateMeterInput> updateMeterCalls = new ArrayList<>();
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
         addMeterCalls.add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeMeter(RemoveMeterInput input) {
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(RemoveMeterInput input) {
         removeMeterCalls.add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<UpdateMeterOutput>> updateMeter(UpdateMeterInput input) {
+    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(UpdateMeterInput input) {
         updateMeterCalls.add(input);
         return null;
     }

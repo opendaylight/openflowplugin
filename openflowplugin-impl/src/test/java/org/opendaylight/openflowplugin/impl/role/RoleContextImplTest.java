@@ -13,8 +13,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
-import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class RoleContextImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private Future<RpcResult<SetRoleOutput>> setRoleFuture;
+    private ListenableFuture<RpcResult<SetRoleOutput>> setRoleFuture;
     @Mock
     private OpenflowProviderConfig config;
     private RoleContext roleContext;

@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
@@ -108,7 +109,7 @@ public class ConnectionManagerImplTest {
         Mockito.verify(connection).setMessageListener(ofpListenerAC.capture());
 
         // prepare void reply (hello rpc output)
-        final SettableFuture<RpcResult<Void>> voidResponseFx = SettableFuture.<RpcResult<Void>>create();
+        final SettableFuture<RpcResult<HelloOutput>> voidResponseFx = SettableFuture.create();
         Mockito.when(connection.hello(Matchers.any(HelloInput.class))).thenReturn(voidResponseFx);
         // prepare getFeature reply (getFeture rpc output)
         final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx =
@@ -121,7 +122,7 @@ public class ConnectionManagerImplTest {
 
         // deliver hello send output (void)
         Thread.sleep(100L);
-        final RpcResult<Void> helloResponse = RpcResultBuilder.success((Void) null).build();
+        final RpcResult<HelloOutput> helloResponse = RpcResultBuilder.success((HelloOutput) null).build();
         voidResponseFx.set(helloResponse);
 
         // send hello reply
@@ -164,7 +165,7 @@ public class ConnectionManagerImplTest {
         Mockito.verify(connection).setMessageListener(ofpListenerAC.capture());
 
         // prepare void reply (hello rpc output)
-        final SettableFuture<RpcResult<Void>> voidResponseFx = SettableFuture.<RpcResult<Void>>create();
+        final SettableFuture<RpcResult<HelloOutput>> voidResponseFx = SettableFuture.create();
         Mockito.when(connection.hello(Matchers.any(HelloInput.class))).thenReturn(voidResponseFx);
         // prepare getFeature reply (getFeture rpc output)
         final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx =
@@ -181,7 +182,7 @@ public class ConnectionManagerImplTest {
 
         // deliver hello send output (void)
         Thread.sleep(100L);
-        final RpcResult<Void> helloResponse = RpcResultBuilder.success((Void) null).build();
+        final RpcResult<HelloOutput> helloResponse = RpcResultBuilder.success((HelloOutput) null).build();
         voidResponseFx.set(helloResponse);
 
         // deliver getFeature output

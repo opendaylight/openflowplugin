@@ -56,7 +56,7 @@ public class SimpleRpcListenerTest {
      */
     @Test
     public void testSuccessfulRpc() {
-        SimpleRpcListener listener = new SimpleRpcListener("MESSAGE", "Failed to send message");
+        SimpleRpcListener<?> listener = new SimpleRpcListener("MESSAGE", "Failed to send message");
         listener.operationSuccessful();
         SettableFuture<RpcResult<?>> result = SettableFuture.create();
         result.set(RpcResultBuilder.success((Void)null).build());
@@ -75,7 +75,7 @@ public class SimpleRpcListenerTest {
     @Test
     public void testOperationComplete() {
         when(future.isSuccess()).thenReturn(false);
-        SimpleRpcListener listener = new SimpleRpcListener("MESSAGE", "Failed to send message");
+        SimpleRpcListener<?> listener = new SimpleRpcListener("MESSAGE", "Failed to send message");
         listener.operationComplete(future);
         verify(future, times(1)).cause();
         try {
@@ -91,7 +91,7 @@ public class SimpleRpcListenerTest {
     @Test
     public void testOperationComplete2() {
         when(future.isSuccess()).thenReturn(true);
-        SimpleRpcListener listener = new SimpleRpcListener("MESSAGE", "Failed to send message");
+        SimpleRpcListener<?> listener = new SimpleRpcListener("MESSAGE", "Failed to send message");
         listener.operationComplete(future);
         verify(future, times(0)).cause();
         try {
