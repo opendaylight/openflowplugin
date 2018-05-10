@@ -87,7 +87,7 @@ public class RegLoadConvertor implements
         return rightShifted & mask;
     }
 
-    private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
+    static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
             final NxRegLoad value, final ActionPath path) {
         switch (path) {
             case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
