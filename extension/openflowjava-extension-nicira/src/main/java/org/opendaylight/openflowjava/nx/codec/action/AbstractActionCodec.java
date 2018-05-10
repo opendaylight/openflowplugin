@@ -53,5 +53,20 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         return new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
     }
 
+    private static int getPaddingRemainder(int nonPaddedSize) {
+        int paddingRemainder = EncodeConstants.PADDING - (nonPaddedSize % EncodeConstants.PADDING);
+        return paddingRemainder % EncodeConstants.PADDING;
+    }
+
+    protected static final void skipPadding(ByteBuf message, int startIndex) {
+        int nonPaddedSize = message.readerIndex() - startIndex;
+        message.skipBytes(getPaddingRemainder(nonPaddedSize));
+    }
+
+    protected static final void writePaddingAndSetLength(ByteBuf outBuffer, int startIndex) {
+        int nonPaddedSize = outBuffer.writerIndex() - startIndex;
+        outBuffer.writeZero(getPaddingRemainder(nonPaddedSize));
+        outBuffer.setShort(startIndex + EncodeConstants.SIZE_OF_SHORT_IN_BYTES, outBuffer.writerIndex() - startIndex);
+    }
 
 }
