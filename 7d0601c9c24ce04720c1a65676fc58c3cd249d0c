@@ -22,6 +22,30 @@
       "revId": "7d0601c9c24ce04720c1a65676fc58c3cd249d0c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "36bd8c31_791fdab0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-10T16:59:16Z",
+      "side": 1,
+      "message": "Yes, lets do it through separate activity.",
+      "parentUuid": "ca42edc3_8c42fe42",
+      "range": {
+        "startLine": 216,
+        "startChar": 39,
+        "endLine": 217,
+        "endChar": 59
+      },
+      "revId": "7d0601c9c24ce04720c1a65676fc58c3cd249d0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
