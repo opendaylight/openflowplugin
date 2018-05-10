@@ -4,6 +4,7 @@ module nicira-action {
     namespace "urn:opendaylight:openflowjava:nx:action";
     prefix "nicira-action";
 
+    import openflow-extensible-match { prefix oxm;}
     import openflow-action {prefix ofaction; revision-date "2015-02-03";}
     import openflow-types {prefix oft;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
@@ -64,6 +65,11 @@ module nicira-action {
             leaf experimenter-id {
                 type oft:experimenter-id;
             }
+        }
+    }
+    grouping ofj-nx-action-reg-load-2-grouping {
+        container nx-action-reg-load-2 {
+            uses oxm:match-entries-grouping;
         }
     }
     grouping ofj-nx-action-reg-move-grouping {
@@ -477,6 +483,9 @@ module nicira-action {
         ext:augment-identifier "ofj-aug-nx-action";
         case action-reg-load {
             uses ofj-nx-action-reg-load-grouping;
+        }
+        case action-reg-load-2 {
+            uses ofj-nx-action-reg-load-2-grouping;
         }
         case action-reg-move {
             uses ofj-nx-action-reg-move-grouping;
