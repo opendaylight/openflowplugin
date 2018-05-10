@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -97,7 +97,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
      * .table.service.rev131026.UpdateTableInput)
      */
     @Override
-    public Future<RpcResult<UpdateTableOutput>> updateTable(
+    public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(
             UpdateTableInput input) {
         String plus = "updateTable - " + input;
         OpenflowpluginTableFeaturesTestServiceProvider.LOG.info(plus);

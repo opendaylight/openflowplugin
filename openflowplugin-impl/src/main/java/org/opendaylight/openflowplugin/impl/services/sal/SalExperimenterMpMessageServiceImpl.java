@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -33,7 +33,7 @@ public class SalExperimenterMpMessageServiceImpl implements SalExperimenterMpMes
     }
 
     @Override
-    public Future<RpcResult<SendExperimenterMpRequestOutput>>
+    public ListenableFuture<RpcResult<SendExperimenterMpRequestOutput>>
         sendExperimenterMpRequest(SendExperimenterMpRequestInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
             ? singleLayerService.handleAndReply(input)

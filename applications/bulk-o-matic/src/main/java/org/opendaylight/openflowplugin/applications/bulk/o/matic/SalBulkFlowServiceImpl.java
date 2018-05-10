@@ -34,16 +34,28 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.BulkFlowBaseContentGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultipleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultipleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RegisterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RegisterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RegisterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.SalBulkFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -82,11 +94,11 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         this.flowService = Preconditions.checkNotNull(flowService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
 
-        JdkFutures.addErrorLogging(register(), LOG, "register");
+        JdkFutures.addErrorLogging(register(new RegisterInputBuilder().build()), LOG, "register");
     }
 
     @Override
-    public Future<RpcResult<Void>> addFlowsDs(AddFlowsDsInput input) {
+    public ListenableFuture<RpcResult<AddFlowsDsOutput>> addFlowsDs(AddFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         boolean createParentsNextTime = MoreObjects.firstNonNull(input.isAlwaysCreateParents(), Boolean.FALSE);
         boolean createParents = true;
@@ -99,7 +111,13 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             createParents = createParentsNextTime;
         }
         ListenableFuture<Void> submitFuture = writeTransaction.submit();
-        return handleResultFuture(Futures.allAsList(submitFuture));
+        return Futures.transform(handleResultFuture(Futures.allAsList(submitFuture)), voidRpcResult -> {
+            if (voidRpcResult.isSuccessful()) {
+                return RpcResultBuilder.<AddFlowsDsOutput>success().build();
+            } else {
+                return RpcResultBuilder.<AddFlowsDsOutput>failed().build();
+            }
+        },MoreExecutors.directExecutor());
     }
 
     private InstanceIdentifier<Flow> getFlowInstanceIdentifier(BulkFlowDsItem bulkFlow) {
@@ -110,12 +128,18 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     }
 
     @Override
-    public Future<RpcResult<Void>> removeFlowsDs(RemoveFlowsDsInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowsDsOutput>> removeFlowsDs(RemoveFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow));
         }
-        return handleResultFuture(Futures.allAsList(writeTransaction.submit()));
+        return Futures.transform(handleResultFuture(Futures.allAsList(writeTransaction.submit())), voidRpcResult -> {
+            if (voidRpcResult.isSuccessful()) {
+                return RpcResultBuilder.<RemoveFlowsDsOutput>success().build();
+            } else {
+                return RpcResultBuilder.<RemoveFlowsDsOutput>failed().build();
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     private <T> ListenableFuture<RpcResult<Void>> handleResultFuture(ListenableFuture<List<T>> submitFuture) {
@@ -138,7 +162,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     }
 
     @Override
-    public Future<RpcResult<Void>> addFlowsRpc(AddFlowsRpcInput input) {
+    public ListenableFuture<RpcResult<AddFlowsRpcOutput>> addFlowsRpc(AddFlowsRpcInput input) {
         List<ListenableFuture<RpcResult<AddFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
@@ -150,33 +174,39 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             Future<RpcResult<AddFlowOutput>> rpcAddFlowResult = flowService.addFlow(flowInputBuilder.build());
             bulkResults.add(JdkFutureAdapters.listenInPoolThread(rpcAddFlowResult));
         }
-        return handleResultFuture(Futures.allAsList(bulkResults));
+        return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
+            if (voidRpcResult.isSuccessful()) {
+                return RpcResultBuilder.<AddFlowsRpcOutput>success().build();
+            } else {
+                return RpcResultBuilder.<AddFlowsRpcOutput>failed().build();
+            }
+        },MoreExecutors.directExecutor());
     }
 
     @Override
-    public Future<RpcResult<Void>> readFlowTest(ReadFlowTestInput input) {
+    public ListenableFuture<RpcResult<ReadFlowTestOutput>> readFlowTest(ReadFlowTestInput input) {
         FlowReader flowReader = FlowReader.getNewInstance(dataBroker, input.getDpnCount().intValue(),
                 input.getFlowsPerDpn().intValue(), input.isVerbose(), input.isIsConfigDs(),
                 input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
         flowCounterBeanImpl.setReader(flowReader);
         fjService.execute(flowReader);
-        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        RpcResultBuilder<ReadFlowTestOutput> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
     @Override
-    public Future<RpcResult<Void>> flowRpcAddTest(FlowRpcAddTestInput input) {
+    public ListenableFuture<RpcResult<FlowRpcAddTestOutput>> flowRpcAddTest(FlowRpcAddTestInput input) {
         FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
         flowAddRpcTestImpl.rpcFlowAdd(input.getDpnId(), input.getFlowCount().intValue(),
                 input.getRpcBatchSize().intValue());
 
-        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        RpcResultBuilder<FlowRpcAddTestOutput> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
     @Override
-    public Future<RpcResult<Void>> register() {
-        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+    public ListenableFuture<RpcResult<RegisterOutput>> register(RegisterInput input) {
+        RpcResultBuilder<RegisterOutput> rpcResultBuilder = RpcResultBuilder.success();
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             String pathToMBean = String.format("%s:type=%s", FlowCounter.class.getPackage().getName(),
@@ -192,7 +222,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     }
 
     @Override
-    public Future<RpcResult<Void>> removeFlowsRpc(RemoveFlowsRpcInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowsRpcOutput>> removeFlowsRpc(RemoveFlowsRpcInput input) {
         List<ListenableFuture<RpcResult<RemoveFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
@@ -204,11 +234,17 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             Future<RpcResult<RemoveFlowOutput>> rpcAddFlowResult = flowService.removeFlow(flowInputBuilder.build());
             bulkResults.add(JdkFutureAdapters.listenInPoolThread(rpcAddFlowResult));
         }
-        return handleResultFuture(Futures.allAsList(bulkResults));
+        return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
+            if (voidRpcResult.isSuccessful()) {
+                return RpcResultBuilder.<RemoveFlowsRpcOutput>success().build();
+            } else {
+                return RpcResultBuilder.<RemoveFlowsRpcOutput>failed().build();
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     @Override
-    public Future<RpcResult<Void>> flowTest(FlowTestInput input) {
+    public ListenableFuture<RpcResult<FlowTestOutput>> flowTest(FlowTestInput input) {
         if (input.isTxChain()) {
             FlowWriterTxChain flowTester = new FlowWriterTxChain(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
@@ -222,7 +258,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
                         input.getEndTableId().shortValue());
             }
-            RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+            RpcResultBuilder<FlowTestOutput> rpcResultBuilder = RpcResultBuilder.success();
             return Futures.immediateFuture(rpcResultBuilder.build());
         }
         if (input.isSeq()) {
@@ -252,12 +288,12 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                         input.getEndTableId().shortValue());
             }
         }
-        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        RpcResultBuilder<FlowTestOutput> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
     @Override
-    public Future<RpcResult<Void>> tableTest(final TableTestInput input) {
+    public ListenableFuture<RpcResult<TableTestOutput>> tableTest(final TableTestInput input) {
         final TableWriter writer = new TableWriter(dataBroker, fjService);
         flowCounterBeanImpl.setWriter(writer);
         switch (input.getOperation()) {
@@ -270,18 +306,18 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                         input.getEndTableId().shortValue());
                 break;
             default:
-                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
+                RpcResultBuilder<TableTestOutput> rpcResultBuilder = RpcResultBuilder.failed();
                 return Futures.immediateFuture(rpcResultBuilder.build());
         }
-        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        RpcResultBuilder<TableTestOutput> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
     @Override
-    public Future<RpcResult<Void>> flowRpcAddMultiple(FlowRpcAddMultipleInput input) {
+    public ListenableFuture<RpcResult<FlowRpcAddMultipleOutput>> flowRpcAddMultiple(FlowRpcAddMultipleInput input) {
         FlowWriterDirectOFRpc flowTesterRPC = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
         flowTesterRPC.rpcFlowAddAll(input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
-        RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.success();
+        RpcResultBuilder<FlowRpcAddMultipleOutput> rpcResultBuilder = RpcResultBuilder.success();
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 }

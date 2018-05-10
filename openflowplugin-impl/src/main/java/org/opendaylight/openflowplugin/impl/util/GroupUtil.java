@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -58,7 +59,7 @@ public final class GroupUtil {
             return resultBld.build();
         };
     public static final Function<Pair<RpcResult<AddGroupsBatchOutput>,
-                                 RpcResult<Void>>,
+                                 RpcResult<SendBarrierOutput>>,
                                  RpcResult<AddGroupsBatchOutput>>
         GROUP_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -73,7 +74,7 @@ public final class GroupUtil {
                 return resultBld.build();
             };
     public static final Function<Pair<RpcResult<RemoveGroupsBatchOutput>,
-                                      RpcResult<Void>>,
+                                      RpcResult<SendBarrierOutput>>,
                                       RpcResult<RemoveGroupsBatchOutput>>
         GROUP_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -88,7 +89,7 @@ public final class GroupUtil {
                 return resultBld.build();
             };
     public static final Function<Pair<RpcResult<UpdateGroupsBatchOutput>,
-                                      RpcResult<Void>>,
+                                      RpcResult<SendBarrierOutput>>,
                                       RpcResult<UpdateGroupsBatchOutput>>
             GROUP_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -164,7 +165,8 @@ public final class GroupUtil {
      * @return reusable static function
      */
     @VisibleForTesting
-    static <T extends BatchGroupOutputListGrouping> Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>>
+    static <T extends BatchGroupOutputListGrouping> Function<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>,
+            RpcResult<T>>
         createComposingFunction() {
         return input -> {
             final RpcResultBuilder<T> resultBld;

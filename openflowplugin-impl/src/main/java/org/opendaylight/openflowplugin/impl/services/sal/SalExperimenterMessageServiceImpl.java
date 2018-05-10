@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -17,10 +17,11 @@ import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.exception.ConverterNotFoundException;
-import org.opendaylight.openflowplugin.impl.services.AbstractVoidService;
+import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -32,7 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendExperimenterInput>
+public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<SendExperimenterInput,
+        SendExperimenterOutput>
                                                implements SalExperimenterMessageService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalExperimenterMessageServiceImpl.class);
@@ -41,7 +43,7 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
     public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack,
                                              final DeviceContext deviceContext,
                                              final ExtensionConverterProvider extensionConverterProvider) {
-        super(requestContextStack, deviceContext);
+        super(requestContextStack, deviceContext, SendExperimenterOutput.class);
         this.extensionConverterProvider = extensionConverterProvider;
     }
 
@@ -83,7 +85,7 @@ public class SalExperimenterMessageServiceImpl extends AbstractVoidService<SendE
     }
 
     @Override
-    public Future<RpcResult<Void>> sendExperimenter(SendExperimenterInput input) {
+    public ListenableFuture<RpcResult<SendExperimenterOutput>> sendExperimenter(SendExperimenterInput input) {
         return handleServiceCall(input);
     }
 }

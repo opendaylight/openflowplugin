@@ -8,10 +8,10 @@
 package org.opendaylight.openflowplugin.extension.test;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -67,7 +68,7 @@ public class Test implements TestService {
 
 
     @Override
-    public Future<RpcResult<Void>> testFlow(TestFlowInput input) {
+    public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(TestFlowInput input) {
         AddFlowInputBuilder flow = new AddFlowInputBuilder();
         flow.setPriority(2);
         flow.setMatch(createMatchBld().build());
@@ -95,7 +96,7 @@ public class Test implements TestService {
 
         pushFlowViaRpc(flow.build());
 
-        return Futures.immediateFuture(RpcResultBuilder.<Void>status(true).build());
+        return Futures.immediateFuture(RpcResultBuilder.<TestFlowOutput>status(true).build());
     }
 
     private void pushFlowViaRpc(AddFlowInput addFlowInput) {

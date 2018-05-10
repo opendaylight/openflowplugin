@@ -8,11 +8,13 @@
 
 package test.mock.util;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -23,13 +25,13 @@ public class SalBundleServiceMock implements SalBundleService {
     private final List<AddBundleMessagesInput>  addBundleMessagesInput = new ArrayList<>();
 
     @Override
-    public Future<RpcResult<java.lang.Void>> controlBundle(ControlBundleInput input) {
+    public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(ControlBundleInput input) {
         getControlBundleInput().add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<java.lang.Void>> addBundleMessages(AddBundleMessagesInput input) {
+    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(AddBundleMessagesInput input) {
         getAddBundleMessagesInput().add(input);
         return null;
     }

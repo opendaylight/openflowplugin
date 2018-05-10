@@ -7,9 +7,9 @@
  */
 package test.mock.util;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
@@ -23,7 +23,7 @@ public class SalTableServiceMock implements SalTableService {
     }
 
     @Override
-    public Future<RpcResult<UpdateTableOutput>> updateTable(UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(UpdateTableInput input) {
         updateTableInput.add(input);
         return null;
     }

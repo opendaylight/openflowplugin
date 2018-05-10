@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -51,24 +51,25 @@ public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeter
     }
 
     @Override
-    public Future<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
+    public ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
         return allMeterConfig.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
+    public ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
                                                                       final GetAllMeterStatisticsInput input) {
         return allMeterStats.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
+    public ListenableFuture<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
         return meterFeatures.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(final GetMeterStatisticsInput input) {
+    public ListenableFuture<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(
+            final GetMeterStatisticsInput input) {
         return meterStats.handleAndNotify(input, notificationPublishService);
     }
 }

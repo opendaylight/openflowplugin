@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
@@ -70,7 +69,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
     }
 
     @Override
-    public Future<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBatch(final UpdateGroupsBatchInput input) {
+    public ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBatch(final UpdateGroupsBatchInput input) {
         final List<BatchUpdateGroups> batchUpdateGroups = input.getBatchUpdateGroups();
         LOG.trace("Updating groups @ {} : {}", PathUtil.extractNodeId(input.getNode()), batchUpdateGroups.size());
 
@@ -103,7 +102,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
     }
 
     @Override
-    public Future<RpcResult<AddGroupsBatchOutput>> addGroupsBatch(final AddGroupsBatchInput input) {
+    public ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBatch(final AddGroupsBatchInput input) {
         LOG.trace("Adding groups @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddGroups().size());
         final ArrayList<ListenableFuture<RpcResult<AddGroupOutput>>> resultsLot = new ArrayList<>();
         for (BatchAddGroups addGroup : input.getBatchAddGroups()) {
@@ -128,7 +127,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
     }
 
     @Override
-    public Future<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBatch(final RemoveGroupsBatchInput input) {
+    public ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBatch(final RemoveGroupsBatchInput input) {
         LOG.trace("Removing groups @ {} : {}", PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveGroups().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveGroupOutput>>> resultsLot = new ArrayList<>();

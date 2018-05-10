@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutputBuilder;
@@ -51,21 +52,22 @@ public final class FlowUtil {
      * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;.
      */
     public static final Function<Pair<RpcResult<RemoveFlowsBatchOutput>,
-                                 RpcResult<Void>>,
+                                 RpcResult<SendBarrierOutput>>,
                                  RpcResult<RemoveFlowsBatchOutput>>
             FLOW_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
      * Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt;.
      */
-    public static final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<Void>>, RpcResult<AddFlowsBatchOutput>>
+    public static final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
+            RpcResult<AddFlowsBatchOutput>>
             FLOW_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
      * Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt;.
      */
     public static final Function<Pair<RpcResult<UpdateFlowsBatchOutput>,
-                                 RpcResult<Void>>,
+                                 RpcResult<SendBarrierOutput>>,
                                  RpcResult<UpdateFlowsBatchOutput>>
             FLOW_UPDATE_COMPOSING_TRANSFORM = createComposingFunction();
 
@@ -147,7 +149,7 @@ public final class FlowUtil {
      */
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping>
-        Function<Pair<RpcResult<T>, RpcResult<Void>>, RpcResult<T>> createComposingFunction() {
+        Function<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>, RpcResult<T>> createComposingFunction() {
         return input -> {
             final RpcResultBuilder<T> resultBld;
             if (input.getLeft().isSuccessful() && input.getRight().isSuccessful()) {

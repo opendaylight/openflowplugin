@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -67,7 +67,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImpl implements Opendaylig
      */
     @Override
     @Deprecated
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
+    public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
         getAggregateFlowStatisticsFromFlowTableForGivenMatch(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         throw new IllegalAccessError("unsupported by backward compatibility delegate service "
@@ -75,26 +75,26 @@ public class OpendaylightFlowStatisticsServiceDelegateImpl implements Opendaylig
     }
 
     @Override
-    public Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
+    public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>>
         getAggregateFlowStatisticsFromFlowTableForAllFlows(
             final GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input) {
         return aggregateFlowsInTable.handleAndNotify(input, notificationService);
     }
 
     @Override
-    public Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
+    public ListenableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> getAllFlowStatisticsFromFlowTable(
             final GetAllFlowStatisticsFromFlowTableInput input) {
         return allFlowsInTable.handleAndNotify(input, notificationService);
     }
 
     @Override
-    public Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> getAllFlowsStatisticsFromAllFlowTables(
-            final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
+    public ListenableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>>
+        getAllFlowsStatisticsFromAllFlowTables(final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
         return allFlowsInAllTables.handleAndNotify(input, notificationService);
     }
 
     @Override
-    public Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
+    public ListenableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> getFlowStatisticsFromFlowTable(
             final GetFlowStatisticsFromFlowTableInput input) {
         return flowsInTable.handleAndNotify(input, notificationService);
     }

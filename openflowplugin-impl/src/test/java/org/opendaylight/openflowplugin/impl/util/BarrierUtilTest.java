@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -46,14 +47,14 @@ public class BarrierUtilTest {
     @Mock
     private FlowCapableTransactionService transactionService;
     @Mock
-    private Function<Pair<RpcResult<String>, RpcResult<Void>>, RpcResult<String>> compositeTransform;
+    private Function<Pair<RpcResult<String>, RpcResult<SendBarrierOutput>>, RpcResult<String>> compositeTransform;
     @Captor
-    private ArgumentCaptor<Pair<RpcResult<String>, RpcResult<Void>>> pairCpt;
+    private ArgumentCaptor<Pair<RpcResult<String>, RpcResult<SendBarrierOutput>>> pairCpt;
 
     @Before
     public void setUp() throws Exception {
         Mockito.when(transactionService.sendBarrier(Matchers.<SendBarrierInput>any()))
-                .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
+                .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After
@@ -71,7 +72,7 @@ public class BarrierUtilTest {
         Mockito.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
         Mockito.verify(compositeTransform).apply(pairCpt.capture());
 
-        final Pair<RpcResult<String>, RpcResult<Void>> value = pairCpt.getValue();
+        final Pair<RpcResult<String>, RpcResult<SendBarrierOutput>> value = pairCpt.getValue();
         Assert.assertTrue(value.getLeft().isSuccessful());
         Assert.assertEquals(data, value.getLeft().getResult());
         Assert.assertTrue(value.getRight().isSuccessful());

@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -52,7 +53,7 @@ public class SalAsyncConfigServiceImplTest extends ServiceMocking {
         final ListenableFuture<RpcResult<SetAsyncInput>> replyFuture = Futures.immediateFuture(replyRpcResult);
         Mockito.when(mockedRequestContext.getFuture()).thenReturn(replyFuture);
 
-        final Future<RpcResult<Void>> setAsyncResult =
+        final ListenableFuture<RpcResult<SetAsyncOutput>> setAsyncResult =
                 salAsyncConfigService.setAsync(new SetAsyncInputBuilder().build());
 
         Assert.assertNotNull(setAsyncResult);

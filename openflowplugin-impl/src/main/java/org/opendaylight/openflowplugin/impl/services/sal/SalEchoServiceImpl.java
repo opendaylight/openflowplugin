@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.EchoService;
@@ -33,13 +32,13 @@ public final class SalEchoServiceImpl implements SalEchoService {
     }
 
     @Override
-    public Future<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
+    public ListenableFuture<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
         final EchoInputBuilder echoInputBld = new EchoInputBuilder()
                 .setData(sendEchoInput.getData());
         return transform(echoService.handleServiceCall(echoInputBld));
     }
 
-    private Future<RpcResult<SendEchoOutput>>
+    private ListenableFuture<RpcResult<SendEchoOutput>>
             transform(final ListenableFuture<RpcResult<EchoOutput>> rpcResultListenableFuture) {
         return Futures.transform(rpcResultListenableFuture, input -> {
             Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");

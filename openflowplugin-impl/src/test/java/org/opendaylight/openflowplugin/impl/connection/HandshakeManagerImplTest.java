@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
@@ -79,7 +80,7 @@ public class HandshakeManagerImplTest {
         resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
 
         Mockito.when(adapter.hello(Matchers.any(HelloInput.class)))
-                .thenReturn(Futures.immediateFuture(RpcResultBuilder.success((Void) null).build()));
+                .thenReturn(Futures.immediateFuture(RpcResultBuilder.success((HelloOutput) null).build()));
     }
 
     /**

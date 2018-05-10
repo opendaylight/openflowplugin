@@ -17,12 +17,14 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSalBuilder;
@@ -46,17 +48,24 @@ public class SalBundleServiceImpl implements SalBundleService {
     }
 
     @Override
-    public Future<RpcResult<Void>> controlBundle(ControlBundleInput input) {
+    public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(ControlBundleInput input) {
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         experimenterInputBuilder.setNode(input.getNode());
         experimenterInputBuilder.setExperimenterMessageOfChoice(
                 new BundleControlSalBuilder().setSalControlData(new SalControlDataBuilder(input).build()).build());
-        return experimenterMessageService.sendExperimenter(experimenterInputBuilder.build());
+        return Futures.transform(experimenterMessageService.sendExperimenter(
+                experimenterInputBuilder.build()), sendExperimenterOutputRpcResult -> {
+                if (sendExperimenterOutputRpcResult.isSuccessful()) {
+                    return RpcResultBuilder.<ControlBundleOutput>success().build();
+                } else {
+                    return RpcResultBuilder.<ControlBundleOutput>failed().build();
+                }
+            }, MoreExecutors.directExecutor());
     }
 
     @Override
-    public Future<RpcResult<Void>> addBundleMessages(AddBundleMessagesInput input) {
-        final List<ListenableFuture<RpcResult<Void>>> partialResults = new ArrayList<>();
+    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(AddBundleMessagesInput input) {
+        final List<ListenableFuture<RpcResult<SendExperimenterOutput>>> partialResults = new ArrayList<>();
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         final BundleAddMessageSalBuilder bundleAddMessageBuilder = new BundleAddMessageSalBuilder();
         final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
@@ -69,22 +78,23 @@ public class SalBundleServiceImpl implements SalBundleService {
             dataBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
             experimenterInputBuilder.setExperimenterMessageOfChoice(
                     bundleAddMessageBuilder.setSalAddMessageData(dataBuilder.build()).build());
-            ListenableFuture<RpcResult<Void>> res = JdkFutureAdapters
+            ListenableFuture<RpcResult<SendExperimenterOutput>> res = JdkFutureAdapters
                     .listenInPoolThread(experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
             partialResults.add(res);
         }
         return processResults(partialResults);
     }
 
-    private static Future<RpcResult<Void>> processResults(
-            final List<ListenableFuture<RpcResult<Void>>> partialResults) {
-        final SettableFuture<RpcResult<Void>> result = SettableFuture.create();
-        Futures.addCallback(Futures.successfulAsList(partialResults), new FutureCallback<List<RpcResult<Void>>>() {
+    private static ListenableFuture<RpcResult<AddBundleMessagesOutput>> processResults(
+            final List<ListenableFuture<RpcResult<SendExperimenterOutput>>> partialResults) {
+        final SettableFuture<RpcResult<AddBundleMessagesOutput>> result = SettableFuture.create();
+        Futures.addCallback(Futures.successfulAsList(partialResults),new FutureCallback<
+                List<RpcResult<SendExperimenterOutput>>>() {
             @Override
-            public void onSuccess(@Nonnull List<RpcResult<Void>> results) {
+            public void onSuccess(@Nonnull List<RpcResult<SendExperimenterOutput>> results) {
                 final ArrayList<RpcError> errors = new ArrayList<>();
-                final RpcResultBuilder<Void> rpcResultBuilder;
-                for (RpcResult<Void> res : results) {
+                final RpcResultBuilder<AddBundleMessagesOutput> rpcResultBuilder;
+                for (RpcResult<SendExperimenterOutput> res : results) {
                     if (res == null) {
                         errors.add(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "BundleExtensionService",
                                                              "RpcResult is null."));
@@ -95,14 +105,14 @@ public class SalBundleServiceImpl implements SalBundleService {
                 if (errors.isEmpty()) {
                     rpcResultBuilder = RpcResultBuilder.success();
                 } else {
-                    rpcResultBuilder = RpcResultBuilder.<Void>failed().withRpcErrors(errors);
+                    rpcResultBuilder = RpcResultBuilder.<AddBundleMessagesOutput>failed().withRpcErrors(errors);
                 }
                 result.set(rpcResultBuilder.build());
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                RpcResultBuilder<Void> rpcResultBuilder = RpcResultBuilder.failed();
+                RpcResultBuilder<AddBundleMessagesOutput> rpcResultBuilder = RpcResultBuilder.failed();
                 result.set(rpcResultBuilder.build());
             }
         }, MoreExecutors.directExecutor());
