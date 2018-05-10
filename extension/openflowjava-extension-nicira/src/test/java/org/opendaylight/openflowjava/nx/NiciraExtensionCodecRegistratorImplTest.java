@@ -24,6 +24,7 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraUtil;
 import org.opendaylight.openflowjava.nx.codec.action.ActionDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -51,7 +52,7 @@ public class NiciraExtensionCodecRegistratorImplTest {
 
     @Mock
     OFSerializer<Action> actionSerializer;
-    @Mock
+    @Mock(extraInterfaces = DeserializerRegistryInjector.class)
     OFDeserializer<Action> actionDeserializer;
     @Mock
     OFSerializer<MatchEntry> matchSerializer;
@@ -109,6 +110,8 @@ public class NiciraExtensionCodecRegistratorImplTest {
         assertTrue(niciraExtensionCodecRegistrator.isEmptyActionDeserializers());
         niciraExtensionCodecRegistrator.registerActionDeserializer(actionDeserializerKey, actionDeserializer);
         assertFalse(niciraExtensionCodecRegistrator.isEmptyActionDeserializers());
+        Mockito.verify((DeserializerRegistryInjector) actionDeserializer)
+                .injectDeserializerRegistry(Matchers.any());
     }
 
     @Test
