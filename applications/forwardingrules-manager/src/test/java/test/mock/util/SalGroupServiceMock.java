@@ -7,9 +7,9 @@
  */
 package test.mock.util;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -25,19 +25,19 @@ public class SalGroupServiceMock implements SalGroupService {
     private final List<UpdateGroupInput> updateGroupCalls = new ArrayList<>();
 
     @Override
-    public Future<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
+    public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
         addGroupCalls.add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> removeGroup(RemoveGroupInput input) {
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(RemoveGroupInput input) {
         removeGroupCalls.add(input);
         return null;
     }
 
     @Override
-    public Future<RpcResult<UpdateGroupOutput>> updateGroup(UpdateGroupInput input) {
+    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(UpdateGroupInput input) {
         updateGroupCalls.add(input);
         return null;
     }

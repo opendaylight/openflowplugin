@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -149,12 +150,12 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_success() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
-                compositeFunction = MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchSuccessOutput();
-        final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = RpcResultBuilder.<SendBarrierOutput>success().build();
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
@@ -165,12 +166,12 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_success() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
-                compositeFunction = MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchFailureOutcome();
-        final RpcResult<Void> barrierOutput = RpcResultBuilder.<Void>success().build();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = RpcResultBuilder.<SendBarrierOutput>success().build();
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
@@ -181,12 +182,12 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_success_failure() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
-                compositeFunction = MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchSuccessOutput();
-        final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = createBarrierFailureOutcome();
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
@@ -197,12 +198,12 @@ public class MeterUtilTest {
 
     @Test
     public void testCreateComposingFunction_failure_failure() throws Exception {
-        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>>, RpcResult<AddMetersBatchOutput>>
-                compositeFunction = MeterUtil.createComposingFunction();
+        final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
+                RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
         final RpcResult<AddMetersBatchOutput> addGroupBatchOutput = createAddMetersBatchFailureOutcome();
-        final RpcResult<Void> barrierOutput = createBarrierFailureOutcome();
-        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<Void>> input =
+        final RpcResult<SendBarrierOutput> barrierOutput = createBarrierFailureOutcome();
+        final Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>> input =
                 Pair.of(addGroupBatchOutput, barrierOutput);
         final RpcResult<AddMetersBatchOutput> composite = compositeFunction.apply(input);
 
@@ -211,8 +212,8 @@ public class MeterUtilTest {
         Assert.assertEquals(1, composite.getResult().getBatchFailedMetersOutput().size());
     }
 
-    private RpcResult<Void> createBarrierFailureOutcome() {
-        return RpcResultBuilder.<Void>failed()
+    private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
+        return RpcResultBuilder.<SendBarrierOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }

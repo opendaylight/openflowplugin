@@ -68,8 +68,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
@@ -160,7 +162,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
                         LOG.debug("Open successful: {}, msg: {}", voidRpcResult.isSuccessful(),
                                 voidRpcResult.getErrors());
 
-                        final CompletableFuture<RpcResult<Void>> addFuture =
+                        final CompletableFuture<RpcResult<AddBundleMessagesOutput>> addFuture =
                                 makeCompletableFuture(bundleService.addBundleMessages(addBundleMessagesInput));
 
                         return addFuture;
@@ -168,7 +170,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
                         LOG.debug("AddBundleMessages successful: {}, msg: {}", voidRpcResult.isSuccessful(),
                                 voidRpcResult.getErrors());
 
-                        final CompletableFuture<RpcResult<Void>> controlCommitFuture =
+                        final CompletableFuture<RpcResult<ControlBundleOutput>> controlCommitFuture =
                                 makeCompletableFuture(bundleService.controlBundle(commitBundleInput));
 
                         return controlCommitFuture;

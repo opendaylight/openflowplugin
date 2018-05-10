@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.MeterUtil;
@@ -71,7 +70,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
     }
 
     @Override
-    public Future<RpcResult<UpdateMetersBatchOutput>> updateMetersBatch(final UpdateMetersBatchInput input) {
+    public ListenableFuture<RpcResult<UpdateMetersBatchOutput>> updateMetersBatch(final UpdateMetersBatchInput input) {
         final List<BatchUpdateMeters> batchUpdateMeters = input.getBatchUpdateMeters();
         LOG.trace("Updating meters @ {} : {}", PathUtil.extractNodeId(input.getNode()), batchUpdateMeters.size());
 
@@ -107,7 +106,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
     }
 
     @Override
-    public Future<RpcResult<AddMetersBatchOutput>> addMetersBatch(final AddMetersBatchInput input) {
+    public ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBatch(final AddMetersBatchInput input) {
         LOG.trace("Adding meters @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddMeters().size());
         final ArrayList<ListenableFuture<RpcResult<AddMeterOutput>>> resultsLot = new ArrayList<>();
         for (BatchAddMeters addMeter : input.getBatchAddMeters()) {
@@ -135,7 +134,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
     }
 
     @Override
-    public Future<RpcResult<RemoveMetersBatchOutput>> removeMetersBatch(final RemoveMetersBatchInput input) {
+    public ListenableFuture<RpcResult<RemoveMetersBatchOutput>> removeMetersBatch(final RemoveMetersBatchInput input) {
         LOG.trace("Removing meters @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveMeters().size());

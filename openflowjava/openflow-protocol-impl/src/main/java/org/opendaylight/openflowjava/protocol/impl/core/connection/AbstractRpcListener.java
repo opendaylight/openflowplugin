@@ -37,7 +37,6 @@ abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Vo
      * Create RcpError object.
      *
      * @param info error info
-     * @param severity - error severity
      * @param message error message
      * @param cause - details of reason
      * @return RpcError

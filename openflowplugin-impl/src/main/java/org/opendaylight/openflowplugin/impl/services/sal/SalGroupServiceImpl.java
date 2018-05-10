@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -67,7 +66,7 @@ public class SalGroupServiceImpl implements SalGroupService {
     }
 
     @Override
-    public Future<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
+    public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture =
             addGroupMessage.canUseSingleLayerSerialization()
             ? addGroupMessage.handleServiceCall(input)
@@ -98,7 +97,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
 
     @Override
-    public Future<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
+    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture =
             updateGroupMessage.canUseSingleLayerSerialization()
             ? updateGroupMessage.handleServiceCall(input.getUpdatedGroup())
@@ -129,7 +128,7 @@ public class SalGroupServiceImpl implements SalGroupService {
     }
 
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
             removeGroupMessage.canUseSingleLayerSerialization()
             ? removeGroupMessage.handleServiceCall(input)

@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -48,23 +48,25 @@ public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroup
     }
 
     @Override
-    public Future<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(
+    public ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(
             final GetAllGroupStatisticsInput input) {
         return allGroups.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(final GetGroupDescriptionInput input) {
+    public ListenableFuture<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(
+            final GetGroupDescriptionInput input) {
         return groupDesc.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
+    public ListenableFuture<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
         return groupFeat.handleAndNotify(input, notificationPublishService);
     }
 
     @Override
-    public Future<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(final GetGroupStatisticsInput input) {
+    public ListenableFuture<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(
+            final GetGroupStatisticsInput input) {
         return groupStats.handleAndNotify(input, notificationPublishService);
     }
 }

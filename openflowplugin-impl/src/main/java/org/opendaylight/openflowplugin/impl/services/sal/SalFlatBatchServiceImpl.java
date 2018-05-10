@@ -74,7 +74,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
     }
 
     @Override
-    public Future<RpcResult<ProcessFlatBatchOutput>> processFlatBatch(final ProcessFlatBatchInput input) {
+    public ListenableFuture<RpcResult<ProcessFlatBatchOutput>> processFlatBatch(final ProcessFlatBatchInput input) {
         LOG.trace("processing flat batch @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()).getValue(),
                   input.getBatch().size());
@@ -90,7 +90,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
     }
 
     @VisibleForTesting
-    Future<RpcResult<ProcessFlatBatchOutput>> executeBatchPlan(final List<BatchStepJob> batchJobsChain) {
+    ListenableFuture<RpcResult<ProcessFlatBatchOutput>> executeBatchPlan(final List<BatchStepJob> batchJobsChain) {
         BatchStepJob batchJob;
         final List<ListenableFuture<RpcResult<ProcessFlatBatchOutput>>> firedJobs = new ArrayList<>();
         ListenableFuture<RpcResult<ProcessFlatBatchOutput>> chainSummaryResult =

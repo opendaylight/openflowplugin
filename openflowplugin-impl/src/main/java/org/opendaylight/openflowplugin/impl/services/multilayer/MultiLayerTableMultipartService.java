@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -81,8 +80,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
     }
 
     @Override
-
-    public Future<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(input);
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 

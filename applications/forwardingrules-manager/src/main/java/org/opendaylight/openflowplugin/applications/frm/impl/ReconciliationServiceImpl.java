@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -47,7 +46,7 @@ public class ReconciliationServiceImpl implements ReconciliationService {
     }
 
     @Override
-    public Future<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
+    public ListenableFuture<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
         LOG.debug("Triggering reconciliation for node: {}", input.getNodeId().toString());
         Node nodeDpn = buildNode(input.getNodeId().longValue());
         InstanceIdentifier<FlowCapableNode> connectedNode = InstanceIdentifier.builder(Nodes.class)

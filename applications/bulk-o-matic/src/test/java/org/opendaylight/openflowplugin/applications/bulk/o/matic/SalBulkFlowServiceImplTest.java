@@ -14,9 +14,9 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +39,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultipleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
@@ -181,7 +183,8 @@ public class SalBulkFlowServiceImplTest {
                 .setStartTableId(1L).setEndTableId(2L).setIsConfigDs(false).setFlowsPerDpn(1L).setVerbose(true);
 
         final ReadFlowTestInput readFlowTestInput = readFlowTestInputBuilder.build();
-        final Future<RpcResult<Void>> resultFuture = salBulkFlowService.readFlowTest(readFlowTestInput);
+        final ListenableFuture<RpcResult<ReadFlowTestOutput>> resultFuture
+                = salBulkFlowService.readFlowTest(readFlowTestInput);
 
         Assert.assertTrue(resultFuture.get().isSuccessful());
     }
@@ -196,7 +199,8 @@ public class SalBulkFlowServiceImplTest {
                 .setDpnId("1").setRpcBatchSize(1L);
 
         final FlowRpcAddTestInput flowRpcAddTestInput = flowRpcAddTestInputBuilder.build();
-        final Future<RpcResult<Void>> resultFuture = salBulkFlowService.flowRpcAddTest(flowRpcAddTestInput);
+        final ListenableFuture<RpcResult<FlowRpcAddTestOutput>> resultFuture
+                = salBulkFlowService.flowRpcAddTest(flowRpcAddTestInput);
 
         Assert.assertTrue(resultFuture.get().isSuccessful());
     }

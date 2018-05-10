@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -28,7 +28,7 @@ public final class NodeConfigServiceImpl extends AbstractSimpleService<SetConfig
     }
 
     @Override
-    public Future<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
+    public ListenableFuture<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
         return handleServiceCall(input);
     }
 
