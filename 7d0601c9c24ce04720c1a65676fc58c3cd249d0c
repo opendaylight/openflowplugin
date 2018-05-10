@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ca42edc3_8c42fe42",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-10T11:13:28Z",
+      "side": 1,
+      "message": "we no longer need to do this as addBundleMessages rpc will return ListenableFuture itself now.\n\nWe can do this as separate activity if needed.",
+      "range": {
+        "startLine": 216,
+        "startChar": 39,
+        "endLine": 217,
+        "endChar": 59
+      },
+      "revId": "7d0601c9c24ce04720c1a65676fc58c3cd249d0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
