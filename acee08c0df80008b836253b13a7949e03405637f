@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1d0ea06a_f93e7bc8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-10T11:35:48Z",
+      "side": 1,
+      "message": "dont initilze the variable instead have a method getActiveBundle which will return bundleId.\n\nprovider.getArbitratorReconciliationManager().getActiveBundle(nodeIdent)",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 74
+      },
+      "revId": "acee08c0df80008b836253b13a7949e03405637f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0bd3804d_e543a186",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-10T11:35:48Z",
+      "side": 1,
+      "message": "getActiveBundleId(nodeIdent);",
+      "range": {
+        "startLine": 105,
+        "startChar": 28,
+        "endLine": 105,
+        "endChar": 86
+      },
+      "revId": "acee08c0df80008b836253b13a7949e03405637f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa58b807_7f1ef071",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-10T11:35:48Z",
+      "side": 1,
+      "message": "move inside if statement",
+      "range": {
+        "startLine": 157,
+        "startChar": 8,
+        "endLine": 157,
+        "endChar": 87
+      },
+      "revId": "acee08c0df80008b836253b13a7949e03405637f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fdcbf00a_b385cb9f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-10T11:35:48Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "acee08c0df80008b836253b13a7949e03405637f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
