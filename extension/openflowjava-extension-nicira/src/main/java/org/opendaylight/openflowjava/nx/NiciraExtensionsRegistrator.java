@@ -22,6 +22,7 @@ import org.opendaylight.openflowjava.nx.codec.action.NiciraActionCodecs;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
+import org.opendaylight.openflowjava.nx.codec.action.RegLoad2Codec;
 import org.opendaylight.openflowjava.nx.codec.action.RegLoadCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegMoveCodec;
 import org.opendaylight.openflowjava.nx.codec.action.ResubmitCodec;
@@ -80,6 +81,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
 
         registrator.registerActionDeserializer(RegLoadCodec.DESERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
         registrator.registerActionSerializer(RegLoadCodec.SERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
+        registrator.registerActionDeserializer(RegLoad2Codec.DESERIALIZER_KEY, NiciraActionCodecs.REG_LOAD2_CODEC);
+        registrator.registerActionSerializer(RegLoad2Codec.SERIALIZER_KEY, NiciraActionCodecs.REG_LOAD2_CODEC);
         registrator.registerActionDeserializer(RegMoveCodec.DESERIALIZER_KEY, NiciraActionCodecs.REG_MOVE_CODEC);
         registrator.registerActionSerializer(RegMoveCodec.SERIALIZER_KEY, NiciraActionCodecs.REG_MOVE_CODEC);
         registrator.registerActionDeserializer(OutputRegCodec.DESERIALIZER_KEY, NiciraActionCodecs.OUTPUT_REG_CODEC);
@@ -216,6 +219,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
     public void close() throws Exception {
         registrator.unregisterActionDeserializer(RegLoadCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(RegLoadCodec.SERIALIZER_KEY);
+        registrator.unregisterActionDeserializer(RegLoad2Codec.DESERIALIZER_KEY);
+        registrator.unregisterActionSerializer(RegLoad2Codec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(RegMoveCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(RegMoveCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(OutputRegCodec.DESERIALIZER_KEY);
