@@ -2,6 +2,217 @@
   "comments": [
     {
       "key": {
+        "uuid": "09102017_16d17273",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "I think above line need a fix.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da6792b2_9ef3ae62",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "make parameter final.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "77444254_9d18fea1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "please rephrase it to \"flow\", del is an action that is what method name is saying. Also make these parameter final.",
+      "range": {
+        "startLine": 44,
+        "startChar": 65,
+        "endLine": 44,
+        "endChar": 68
+      },
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "84bac5b3_63e0ecc2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "If all the methods requires ForwardingRulesManager forwardingRulesManager, than it\u0027s better to create parameterize constructor and set the value at object creation time.",
+      "range": {
+        "startLine": 45,
+        "startChar": 12,
+        "endLine": 45,
+        "endChar": 57
+      },
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5309ae3a_3c32baf8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "please take it out of the add() method, that way it won\u0027t confuse who actually threw the exception in case of error.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ce3aaa73_59583b54",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "please do not use the method name in the log. removeBundleFlow --\u003e Pushing flow remove message{} to bundle {} for device {}",
+      "range": {
+        "startLine": 58,
+        "startChar": 27,
+        "endLine": 58,
+        "endChar": 44
+      },
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d45887d8_bc63fc9d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "make parameters final.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d8ab2432_42357245",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "same here.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1f65304e_e06c8cdf",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "same here (updateBundleFlow)",
+      "range": {
+        "startLine": 77,
+        "startChar": 27,
+        "endLine": 77,
+        "endChar": 43
+      },
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5217fc2b_7176de41",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "please fix this method as well based on the above comments.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f489669d_76033f5b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:57:56Z",
+      "side": 1,
+      "message": "please address the comments provided in BundleFlowForwarder to this class also.",
+      "revId": "f56e03b60881e4f3ab8c2ec616fae7647cc764b1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "deb54f58_cd5e4d67",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
         "patchSetId": 12
