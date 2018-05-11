@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "83d58b73_406d6123",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:15:24Z",
+      "side": 1,
+      "message": "what is really an error condition here?",
+      "revId": "fd1c2bd578a517ea199d3f843a9ccd21fd1eb744",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "41706431_c3352bad",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T01:15:24Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "fd1c2bd578a517ea199d3f843a9ccd21fd1eb744",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
