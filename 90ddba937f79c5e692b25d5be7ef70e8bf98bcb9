@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3cb45774_f993a10b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T02:18:26Z",
+      "side": 1,
+      "message": "provide the details of this service interface. What does this service really provide to the user. Method is something use can see anyways in the interface.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 3
+      },
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b86f3ea0_bd47d1fa",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T02:18:26Z",
+      "side": 1,
+      "message": "I think we should take this service and expose is as a RPC service, so that other applicaiton (FRM in this case) can fetch the reference of this service and can consume these interfaces. You can expose the implementation of this service as a rpc using \n\n\u003codl:rpc-implementation ref\u003d\"srbitratorReconciliationManager\" Interface\u003d\"\"/\u003e",
+      "range": {
+        "startLine": 22,
+        "startChar": 17,
+        "endLine": 22,
+        "endChar": 48
+      },
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0b3aeefc_43ad4086",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T02:18:26Z",
+      "side": 1,
+      "message": "please rephrase it to isArbitratorReconciliationEnabled, becusae Recon really mean something \n\nhttps://www.google.com/search?client\u003dubuntu\u0026channel\u003dfs\u0026q\u003dRecon\u0026ie\u003dutf-8\u0026oe\u003dutf-8\n\n;)",
+      "range": {
+        "startLine": 34,
+        "startChar": 12,
+        "endLine": 34,
+        "endChar": 36
+      },
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6fba9fcc_e00fd0ee",
+        "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T02:18:26Z",
+      "side": 1,
+      "message": "why not use the frm blueprint file ?",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "96b93ec0_e670f432",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T02:18:26Z",
+      "side": 1,
+      "message": "why do southbound plugin has to depends on FRM? This is wrong dependency, because FRM depends on southbound plugin as well, so this will create cycling dependency.",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f231a5fb_9ebd886a",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/src/main/feature/feature.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-11T02:18:26Z",
+      "side": 1,
+      "message": "is there any specific reason for using separate file for arbitrator and not using the openflowplugin.cfg? Also why we need to push this file to the etc/opendaylight/datastore/initial? directory?",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
