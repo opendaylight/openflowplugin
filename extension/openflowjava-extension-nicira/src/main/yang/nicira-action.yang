@@ -98,10 +98,10 @@ module nicira-action {
                     type uint16;
                 }
                 leaf src {
-                    type uint32;
+                    type uint64;
                 }
                 leaf dst {
-                    type uint32;
+                    type uint64;
                 }
                 leaf experimenter-id {
                     type oft:experimenter-id;
