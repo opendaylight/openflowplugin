@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 
 public class RegMoveCodec extends AbstractActionCodec {
 
-    public static final int LENGTH = 24;
     public static final byte SUBTYPE = 6; // NXAST_REG_MOVE
     public static final NiciraActionSerializerKey SERIALIZER_KEY = new NiciraActionSerializerKey(
             EncodeConstants.OF13_VERSION_ID, ActionRegMove.class);
@@ -30,26 +29,32 @@ public class RegMoveCodec extends AbstractActionCodec {
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
         ActionRegMove actionRegMove = (ActionRegMove) input.getActionChoice();
-        serializeHeader(LENGTH, SUBTYPE, outBuffer);
+        final int startIndex = outBuffer.writerIndex();
+        serializeHeader(EncodeConstants.EMPTY_LENGTH, SUBTYPE, outBuffer);
         outBuffer.writeShort(actionRegMove.getNxActionRegMove().getNBits());
         outBuffer.writeShort(actionRegMove.getNxActionRegMove().getSrcOfs());
         outBuffer.writeShort(actionRegMove.getNxActionRegMove().getDstOfs());
-        outBuffer.writeInt(actionRegMove.getNxActionRegMove().getSrc().intValue());
-        outBuffer.writeInt(actionRegMove.getNxActionRegMove().getDst().intValue());
+        writeNxmHeader(actionRegMove.getNxActionRegMove().getSrc(), outBuffer);
+        writeNxmHeader(actionRegMove.getNxActionRegMove().getDst(), outBuffer);
+        writePaddingAndSetLength(outBuffer, startIndex);
     }
 
     @Override
     public Action deserialize(final ByteBuf message) {
+        final int startIndex = message.readerIndex();
         final ActionBuilder actionBuilder = deserializeHeader(message);
         final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
         NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
         nxActionRegMoveBuilder.setNBits(message.readUnsignedShort());
         nxActionRegMoveBuilder.setSrcOfs(message.readUnsignedShort());
         nxActionRegMoveBuilder.setDstOfs(message.readUnsignedShort());
-        nxActionRegMoveBuilder.setSrc(message.readUnsignedInt());
-        nxActionRegMoveBuilder.setDst(message.readUnsignedInt());
+        nxActionRegMoveBuilder.setSrc(readNxmHeader(message));
+        nxActionRegMoveBuilder.setDst(readNxmHeader(message));
+        skipPadding(message, startIndex);
         actionRegMoveBuilder.setNxActionRegMove(nxActionRegMoveBuilder.build());
         actionBuilder.setActionChoice(actionRegMoveBuilder.build());
         return actionBuilder.build();
     }
+
+
 }
