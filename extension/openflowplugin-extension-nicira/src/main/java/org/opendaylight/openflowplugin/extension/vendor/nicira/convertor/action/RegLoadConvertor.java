@@ -50,7 +50,9 @@ public class RegLoadConvertor implements
 
         final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
         NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
-        nxActionRegLoadBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
+        // We resolve the destination as a uint32 header, reg load action
+        // does not support 8-byte experimenter headers.
+        nxActionRegLoadBuilder.setDst(FieldChoiceResolver.resolveDstHeaderUint32(dst.getDstChoice()));
         nxActionRegLoadBuilder.setOfsNbits(dst.getStart() << 6 | dst.getEnd() - dst.getStart());
         nxActionRegLoadBuilder.setValue(nxAction.getNxRegLoad().getValue());
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
@@ -62,7 +64,7 @@ public class RegLoadConvertor implements
             final Action input, final ActionPath path) {
         NxActionRegLoad actionRegLoad = ((ActionRegLoad) input.getActionChoice()).getNxActionRegLoad();
         DstBuilder dstBuilder = new DstBuilder();
-        dstBuilder.setDstChoice(RegMoveConvertor.resolveDstValue(actionRegLoad.getDst()));
+        dstBuilder.setDstChoice(FieldChoiceResolver.resolveDstChoice(actionRegLoad.getDst()));
         dstBuilder.setStart(resolveStart(actionRegLoad.getOfsNbits()));
         dstBuilder.setEnd(resolveEnd(actionRegLoad.getOfsNbits()));
         NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
