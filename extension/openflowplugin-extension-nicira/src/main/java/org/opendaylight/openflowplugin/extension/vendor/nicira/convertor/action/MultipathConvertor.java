@@ -49,7 +49,9 @@ public class MultipathConvertor implements
         nxActionMultipathBuilder.setArg(nxAction.getNxMultipath().getArg());
         Dst dst = nxAction.getNxMultipath().getDst();
         nxActionMultipathBuilder.setOfsNbits(dst.getStart() << 6 | dst.getEnd() - dst.getStart());
-        nxActionMultipathBuilder.setDst(RegMoveConvertor.resolveDst(dst.getDstChoice()));
+        // We resolve the destination as a uint32 header, multipath action
+        // does not support 8-byte experimenter headers.
+        nxActionMultipathBuilder.setDst(FieldChoiceResolver.resolveDstHeaderUint32(dst.getDstChoice()));
         ActionMultipathBuilder actionMultipathBuilder = new ActionMultipathBuilder();
         actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
         return ActionUtil.createAction(actionMultipathBuilder.build());
@@ -60,7 +62,7 @@ public class MultipathConvertor implements
             final Action input, final ActionPath path) {
         NxActionMultipath action = ((ActionMultipath) input.getActionChoice()).getNxActionMultipath();
         DstBuilder dstBuilder = new DstBuilder();
-        dstBuilder.setDstChoice(RegMoveConvertor.resolveDstValue(action.getDst()));
+        dstBuilder.setDstChoice(FieldChoiceResolver.resolveDstChoice(action.getDst()));
         dstBuilder.setStart(resolveStart(action.getOfsNbits()));
         dstBuilder.setEnd(resolveEnd(action.getOfsNbits()));
         NxMultipathBuilder builder = new NxMultipathBuilder();
