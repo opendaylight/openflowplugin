@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionOutputRegNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.NxOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.nx.output.reg.Src;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class OutputRegConvertorTest {
 
         when(src.getOfsNbits()).thenReturn(1);
         when(nxOutputReg.getSrc()).thenReturn(src);
-        when(nxOutputReg.getSrc().getSrcChoice()).thenReturn(Mockito.mock(SrcNxTunIdCase.class));
+        when(nxOutputReg.getSrc().getSrcChoice()).thenReturn(new SrcNxTunIdCaseBuilder().build());
         when(nxOutputReg.getMaxLen()).thenReturn(2);
         when(actionsCase.getNxOutputReg()).thenReturn(nxOutputReg);
 
