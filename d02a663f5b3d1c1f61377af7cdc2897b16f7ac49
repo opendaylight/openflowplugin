@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37f415d3_6d0be9ff",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-14T15:44:04Z",
+      "side": 1,
+      "message": "see https://git.opendaylight.org/gerrit/#/c/71906/2//COMMIT_MSG",
+      "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9c484ba7_57f1d4b7",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-14T15:44:04Z",
+      "side": 1,
+      "message": "I believe this field should simply be entirely removed?",
+      "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "46074f5b_fa55cbd0",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-14T15:44:04Z",
+      "side": 1,
+      "message": "this just works around a problem for which there may be a better solution - can\u0027t we just entirely remove the ServiceDescriptor serviceDescriptor field and only make it a method local variable?  (I vaguely remember recently having done the same in another ServiceStatusProvider, or at least wanted to.)",
+      "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
