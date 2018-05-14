@@ -45,7 +45,7 @@ public class OutputRegConvertor implements
             final Action input, final ActionPath path) {
         NxActionOutputReg action = ((ActionOutputReg) input.getActionChoice()).getNxActionOutputReg();
         SrcBuilder srcBuilder = new SrcBuilder();
-        srcBuilder.setSrcChoice(RegMoveConvertor.resolveSrcValue(action.getSrc()));
+        srcBuilder.setSrcChoice(FieldChoiceResolver.resolveSrcChoice(action.getSrc()));
         srcBuilder.setOfsNbits(action.getNBits());
         NxOutputRegBuilder builder = new NxOutputRegBuilder();
         builder.setSrc(srcBuilder.build());
@@ -61,7 +61,7 @@ public class OutputRegConvertor implements
         Src src = nxAction.getNxOutputReg().getSrc();
         final ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
         NxActionOutputRegBuilder nxActionOutputRegBuilder = new NxActionOutputRegBuilder();
-        nxActionOutputRegBuilder.setSrc(RegMoveConvertor.resolveSrc(src.getSrcChoice()));
+        nxActionOutputRegBuilder.setSrc(FieldChoiceResolver.resolveSrcHeaderUint32(src.getSrcChoice()));
         nxActionOutputRegBuilder.setNBits(src.getOfsNbits());
         nxActionOutputRegBuilder.setMaxLen(nxAction.getNxOutputReg().getMaxLen());
         builder.setNxActionOutputReg(nxActionOutputRegBuilder.build());
