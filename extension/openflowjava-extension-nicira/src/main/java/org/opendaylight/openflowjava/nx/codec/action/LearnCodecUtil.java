@@ -252,9 +252,9 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowModAddMatchFromField(ByteBuf message, short numBits) {
         FlowModAddMatchFromFieldBuilder builder = new FlowModAddMatchFromFieldBuilder();
-        builder.setSrcField((long) message.readInt());
+        builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
-        builder.setDstField((long) message.readInt());
+        builder.setDstField(message.readUnsignedInt());
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -269,7 +269,7 @@ public final class LearnCodecUtil {
     private static FlowMods readFlowModAddMatchFromValue(ByteBuf message, short numBits) {
         FlowModAddMatchFromValueBuilder builder = new FlowModAddMatchFromValueBuilder();
         builder.setValue(message.readUnsignedShort());
-        builder.setSrcField((long) message.readInt());
+        builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -283,9 +283,9 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowModCopyFromField(ByteBuf message, short numBits) {
         FlowModCopyFieldIntoFieldBuilder builder = new FlowModCopyFieldIntoFieldBuilder();
-        builder.setSrcField((long) message.readInt());
+        builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
-        builder.setDstField((long) message.readInt());
+        builder.setDstField(message.readUnsignedInt());
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -300,7 +300,7 @@ public final class LearnCodecUtil {
     private static FlowMods readFlowModCopyFromValue(ByteBuf message, short numBits) {
         FlowModCopyValueIntoFieldBuilder builder = new FlowModCopyValueIntoFieldBuilder();
         builder.setValue(message.readUnsignedShort());
-        builder.setDstField((long) message.readInt());
+        builder.setDstField(message.readUnsignedInt());
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -314,7 +314,7 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowToPort(ByteBuf message, short numBits) {
         FlowModOutputToPortBuilder builder = new FlowModOutputToPortBuilder();
-        builder.setSrcField((long) message.readInt());
+        builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= TO_PORT_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
