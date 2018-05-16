@@ -99,6 +99,30 @@
       "revId": "e15b573ed8dcad4ecd456bda780352fae9367fcc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fe46f02_24eb0941",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 2264
+      },
+      "writtenOn": "2018-05-16T19:37:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47f84e46_fd9a2b24",
+      "range": {
+        "startLine": 37,
+        "startChar": 81,
+        "endLine": 37,
+        "endChar": 92
+      },
+      "revId": "e15b573ed8dcad4ecd456bda780352fae9367fcc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
