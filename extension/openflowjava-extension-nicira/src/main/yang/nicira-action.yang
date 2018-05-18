@@ -473,6 +473,22 @@ module nicira-action {
         }
     }
 
+    grouping ofj-nx-action-encap-grouping {
+        container nx-action-encap {
+            leaf packet-type {
+                type uint32;
+            }
+        }
+    }
+
+    grouping ofj-nx-action-decap-grouping {
+        container nx-action-decap {
+            leaf packet-type {
+                type uint32;
+            }
+        }
+    }
+
     augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
         case action-reg-load {
@@ -507,6 +523,12 @@ module nicira-action {
         }
         case action-learn {
             uses ofj-nx-action-learn-grouping;
+        }
+        case action-encap {
+            uses ofj-nx-action-encap-grouping;
+        }
+        case action-decap {
+            uses ofj-nx-action-decap-grouping;
         }
     }
 }
