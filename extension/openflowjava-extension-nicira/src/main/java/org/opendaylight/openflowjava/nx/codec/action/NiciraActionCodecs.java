@@ -24,4 +24,6 @@ public interface NiciraActionCodecs {
     CtClearCodec CT_CLEAR_CODEC = new CtClearCodec();
     LearnCodec LEARN_CODEC = new LearnCodec();
     FinTimeoutCodec FIN_TIMEOUT_CODEC = new FinTimeoutCodec();
+    EncapCodec ENCAP_CODEC = new EncapCodec();
+    DecapCodec DECAP_CODEC = new DecapCodec();
 }
