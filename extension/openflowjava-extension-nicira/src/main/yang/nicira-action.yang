@@ -49,6 +49,12 @@ module nicira-action {
     identity nxm-nx-learn {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-encap {
+        base ofaction:experimenter-action-sub-type;
+    }
+    identity nxm-nx-decap {
+        base ofaction:experimenter-action-sub-type;
+    }
 
     grouping ofj-nx-action-reg-load-grouping {
         container nx-action-reg-load {
@@ -473,6 +479,28 @@ module nicira-action {
         }
     }
 
+    grouping ofj-nx-action-encap-grouping {
+        container nx-action-encap {
+            leaf packet-type {
+                type uint32;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
+
+    grouping ofj-nx-action-decap-grouping {
+        container nx-action-decap {
+            leaf packet-type {
+                type uint32;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
+
     augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
         case action-reg-load {
@@ -507,6 +535,12 @@ module nicira-action {
         }
         case action-learn {
             uses ofj-nx-action-learn-grouping;
+        }
+        case action-encap {
+            uses ofj-nx-action-encap-grouping;
+        }
+        case action-decap {
+            uses ofj-nx-action-decap-grouping;
         }
     }
 }
