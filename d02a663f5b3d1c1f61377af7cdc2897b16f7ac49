@@ -50,6 +50,24 @@
       "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9d41fbca_40d5ab6b",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 5987
+      },
+      "writtenOn": "2018-05-21T10:21:57Z",
+      "side": 1,
+      "message": "Hi Michael,\nYour comment is not totally clear to me and i could not find any change that you said you might have made.\nWe are setting the serviceDescriptor at the time of reporting status. However i have now updated the change with a static variable which will store the ServiceState.\nPlease let me know if that\u0027s not what you were looking for.",
+      "parentUuid": "46074f5b_fa55cbd0",
+      "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
