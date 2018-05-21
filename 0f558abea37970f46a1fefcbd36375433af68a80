@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1c0dd186_1a12b5c9",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2018-05-21T14:17:19Z",
+      "side": 1,
+      "message": "I think this should be handled by the application level. It is possible that the application may want to leave some stuff there, for e.g., it may want to erase only certain tables. How about if there is some sort of callback into the application when a bundle gets opened so that the application can decide how and what it wants to do?",
+      "range": {
+        "startLine": 75,
+        "startChar": 32,
+        "endLine": 75,
+        "endChar": 54
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "09f1588b_953e0fae",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2018-05-21T14:17:19Z",
+      "side": 1,
+      "message": "Sentence fragment? Seems the subject is missing.",
+      "range": {
+        "startLine": 95,
+        "startChar": 33,
+        "endLine": 95,
+        "endChar": 34
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7d6b878b_9372afee",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2018-05-21T14:17:19Z",
+      "side": 1,
+      "message": "Will this contain a status to know whether or not the bundle commit succeeded?",
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
