@@ -26,4 +26,5 @@ public interface NiciraActionCodecs {
     FinTimeoutCodec FIN_TIMEOUT_CODEC = new FinTimeoutCodec();
     EncapCodec ENCAP_CODEC = new EncapCodec();
     DecapCodec DECAP_CODEC = new DecapCodec();
+    DecNshTtlCodec DEC_NSH_TTL_CODEC = new DecNshTtlCodec();
 }

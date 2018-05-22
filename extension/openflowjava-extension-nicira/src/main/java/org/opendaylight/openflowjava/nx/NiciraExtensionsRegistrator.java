@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
+import org.opendaylight.openflowjava.nx.codec.action.DecNshTtlCodec;
 import org.opendaylight.openflowjava.nx.codec.action.DecapCodec;
 import org.opendaylight.openflowjava.nx.codec.action.EncapCodec;
 import org.opendaylight.openflowjava.nx.codec.action.FinTimeoutCodec;
@@ -103,6 +104,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerActionSerializer(EncapCodec.SERIALIZER_KEY, NiciraActionCodecs.ENCAP_CODEC);
         registrator.registerActionDeserializer(DecapCodec.DESERIALIZER_KEY, NiciraActionCodecs.DECAP_CODEC);
         registrator.registerActionSerializer(DecapCodec.SERIALIZER_KEY, NiciraActionCodecs.DECAP_CODEC);
+        registrator.registerActionDeserializer(DecNshTtlCodec.DESERIALIZER_KEY, NiciraActionCodecs.DEC_NSH_TTL_CODEC);
+        registrator.registerActionSerializer(DecNshTtlCodec.SERIALIZER_KEY, NiciraActionCodecs.DEC_NSH_TTL_CODEC);
         // Continue
 
         registrator.registerMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY, NiciraMatchCodecs.REG0_CODEC);
@@ -232,6 +235,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionDeserializer(EncapCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(DecapCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(DecapCodec.DESERIALIZER_KEY);
+        registrator.unregisterActionDeserializer(DecNshTtlCodec.DESERIALIZER_KEY);
+        registrator.unregisterActionSerializer(DecNshTtlCodec.SERIALIZER_KEY);
         // CONTINUE
         registrator.unregisterMatchEntrySerializer(Reg0Codec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(Reg0Codec.DESERIALIZER_KEY);
