@@ -29,7 +29,7 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
     private final DiagStatusService diagStatusService;
     private InetAddress defaultInetAddres;
     private InetAddress legacyInetAddress;
-    private static ServiceState ofpluginServiceState;
+    private volatile ServiceDescriptor serviceDescriptor;
 
     public OpenflowPluginDiagStatusProvider(final DiagStatusService diagStatusService,
                                             final List<SwitchConnectionProvider> switchConnectionProviders) {
@@ -50,25 +50,24 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     public void reportStatus(ServiceState serviceState, String description) {
         LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
-        ofpluginServiceState = serviceState;
-        diagStatusService.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState, description));
+        serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState, description);
+        diagStatusService.report(serviceDescriptor);
     }
 
     @Override
     public ServiceDescriptor getServiceDescriptor() {
-        if (ofpluginServiceState.equals(ServiceState.OPERATIONAL)) {
+
+        if (serviceDescriptor.getServiceState().equals(ServiceState.OPERATIONAL)) {
             if (getApplicationNetworkState(OF_PORT_13, defaultInetAddres)
                     && getApplicationNetworkState(OF_PORT_11, legacyInetAddress)) {
-                return new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ofpluginServiceState,
-                        "Reporting status of OpenflowPlugin Service");
+                return serviceDescriptor;
             } else {
-                ofpluginServiceState = ServiceState.ERROR;
-                return new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
+                serviceDescriptor = new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ServiceState.ERROR,
                         "OF::PORTS:: 6653 and 6633 are not up yet");
+                return serviceDescriptor;
             }
         }
-        return new ServiceDescriptor(OPENFLOW_SERVICE_NAME, ofpluginServiceState,
-                "Reporting status of OpenflowPlugin Service");
+        return serviceDescriptor;
     }
 
     private boolean getApplicationNetworkState(int port, InetAddress inetAddress) {
