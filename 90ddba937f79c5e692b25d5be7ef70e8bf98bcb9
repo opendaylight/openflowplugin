@@ -71,6 +71,23 @@
     },
     {
       "key": {
+        "uuid": "07d9e039_e2a3828f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2018-05-22T14:15:32Z",
+      "side": 1,
+      "message": "I\u0027m concerned about the following. There is nothing that synchronization between committing the bundles and flipping this flag off. Right? Given that, I\u0027m worried about the following orders of events:\n\nOption A:\n\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\n1. bundle committed\n2. application writes a flow\n3. flag flipped off\nSo, what happens at (2)? Will it go into a new bundle and remain there until it times out?\n\nOption B:\n\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\n1. flag flipped off\n2. application writes flow\n3. bundle committed\nSo, this would clearly break stuff. At a very minimum the flow written in (2) would clearly get deleted when the bundle is applied.\n\nMight I suggest that there be a single atomic operation for \"commit all bundles and flip the flag?\"\n\nOr perhaps we want to mandate option A where the commit happens before the flag flip but once a node\u0027s bundle is committed the bundle becomes the \"default\" bundle so the flows will go right through?",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6fba9fcc_e00fd0ee",
         "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
         "patchSetId": 26
