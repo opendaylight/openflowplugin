@@ -68,6 +68,24 @@
       "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3fad50d8_53aa1c75",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-22T12:16:01Z",
+      "side": 1,
+      "message": "Looks like you now got it because how it is in Patch Set 7 is what I meant.  (Just the commit message could be written better, but that is more minor.)",
+      "parentUuid": "9d41fbca_40d5ab6b",
+      "revId": "d02a663f5b3d1c1f61377af7cdc2897b16f7ac49",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
