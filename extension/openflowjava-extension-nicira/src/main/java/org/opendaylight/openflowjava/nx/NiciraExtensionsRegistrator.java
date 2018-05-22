@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
+import org.opendaylight.openflowjava.nx.codec.action.DecNshTtlCodec;
 import org.opendaylight.openflowjava.nx.codec.action.FinTimeoutCodec;
 import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
@@ -87,6 +88,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerActionSerializer(PushNshCodec.SERIALIZER_KEY, NiciraActionCodecs.PUSH_NSH_CODEC);
         registrator.registerActionDeserializer(PopNshCodec.DESERIALIZER_KEY, NiciraActionCodecs.POP_NSH_CODEC);
         registrator.registerActionSerializer(PopNshCodec.SERIALIZER_KEY, NiciraActionCodecs.POP_NSH_CODEC);
+        registrator.registerActionDeserializer(DecNshTtlCodec.DESERIALIZER_KEY, NiciraActionCodecs.DEC_NSH_TTL_CODEC);
+        registrator.registerActionSerializer(DecNshTtlCodec.SERIALIZER_KEY, NiciraActionCodecs.DEC_NSH_TTL_CODEC);
 
         registrator.registerActionSerializer(ConntrackCodec.SERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
         registrator.registerActionDeserializer(ConntrackCodec.DESERIALIZER_KEY, NiciraActionCodecs.CONNTRACK_CODEC);
@@ -207,6 +210,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionSerializer(PushNshCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(PopNshCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(PopNshCodec.SERIALIZER_KEY);
+        registrator.unregisterActionDeserializer(DecNshTtlCodec.DESERIALIZER_KEY);
+        registrator.unregisterActionSerializer(DecNshTtlCodec.SERIALIZER_KEY);
         registrator.unregisterActionSerializer(ConntrackCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ConntrackCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(CtClearCodec.SERIALIZER_KEY);

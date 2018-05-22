@@ -502,6 +502,13 @@ bits specified from the register.";
             description "Pop NSH header";
         }
     }
+    
+    grouping nx-action-dec-nsh-ttl-grouping {
+        container nx-dec-nsh-ttl {
+            presence "no content action";
+            description "Decrease NSH TTL";
+        }
+    }
 
     grouping nx-action-conntrack-grouping {
         container nx-conntrack {
@@ -750,6 +757,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-dec-nsh-ttl-rpc-add-flow-write-actions-case {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case nx-action-conntrack-rpc-add-flow-write-actions-case {
             uses nx-action-conntrack-grouping;
         }
@@ -803,6 +815,11 @@ bits specified from the register.";
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case nx-action-pop-nsh-rpc-add-flow-apply-actions-case {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-dec-nsh-ttl-rpc-add-flow-apply-actions-case {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
 
@@ -863,6 +880,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-dec-nsh-ttl-rpc-remove-flow-write-actions-case {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case nx-action-conntrack-rpc-remove-flow-write-actions-case {
             uses nx-action-conntrack-grouping;
         }
@@ -916,6 +938,11 @@ bits specified from the register.";
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case nx-action-pop-nsh-rpc-remove-flow-apply-actions-case {
             uses nx-action-pop-nsh-grouping;
+        }
+    }    
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case nx-action-dec-nsh-ttl-rpc-remove-flow-apply-actions-case {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -975,6 +1002,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-dec-nsh-ttl-rpc-update-flow-original-write-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-conntrack-rpc-update-flow-original-write-actions-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1028,6 +1060,11 @@ bits specified from the register.";
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-pop-nsh-rpc-update-flow-original-apply-actions-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-dec-nsh-ttl-rpc-update-flow-original-apply-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -1087,6 +1124,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-dec-nsh-ttl-rpc-update-flow-updated-write-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:write-actions-case/sal-flow:write-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-conntrack-rpc-update-flow-updated-write-actions-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1140,6 +1182,11 @@ bits specified from the register.";
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
         case "nx-action-pop-nsh-rpc-update-flow-updated-apply-actions-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
+        case "nx-action-dec-nsh-ttl-rpc-update-flow-updated-apply-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:instructions/sal-flow:instruction/sal-flow:instruction/sal-flow:apply-actions-case/sal-flow:apply-actions/sal-flow:action/sal-flow:action" {
@@ -1199,6 +1246,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-dec-nsh-ttl-rpc-add-group-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-group:add-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-conntrack-rpc-add-group-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1252,6 +1304,11 @@ bits specified from the register.";
     augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-pop-nsh-rpc-remove-group-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-dec-nsh-ttl-rpc-remove-group-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/sal-group:remove-group/sal-group:input/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
@@ -1311,6 +1368,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-dec-nsh-ttl-rpc-update-group-original-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:original-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-conntrack-rpc-update-group-original-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1367,6 +1429,11 @@ bits specified from the register.";
         }
     }
     augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
+        case "nx-action-dec-nsh-ttl-rpc-update-group-updated-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/sal-group:update-group/sal-group:input/sal-group:updated-group/sal-group:buckets/sal-group:bucket/sal-group:action/sal-group:action" {
         case "nx-action-conntrack-rpc-update-group-updated-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1420,6 +1487,11 @@ bits specified from the register.";
     augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
         case "nx-action-pop-nsh-rpc-transmit-packet-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
+        case "nx-action-dec-nsh-ttl-rpc-transmit-packet-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/sal-packet:transmit-packet/sal-packet:input/sal-packet:action/sal-packet:action" {
@@ -1480,6 +1552,11 @@ bits specified from the register.";
         }
     }
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
+        case "nx-action-dec-nsh-ttl-nodes-node-table-flow-write-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action" {
         case "nx-action-conntrack-nodes-node-table-flow-write-actions-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1536,6 +1613,11 @@ bits specified from the register.";
         }
     }
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
+        case "nx-action-dec-nsh-ttl-nodes-node-table-flow-apply-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action" {
         case "nx-action-conntrack-nodes-node-table-flow-apply-actions-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1589,6 +1671,11 @@ bits specified from the register.";
     augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
         case "nx-action-pop-nsh-nodes-node-group-buckets-bucket-actions-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
+        case "nx-action-dec-nsh-ttl-nodes-node-group-buckets-bucket-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/inv:nodes/inv:node/fni:group/fni:buckets/fni:bucket/fni:action/fni:action" {
@@ -1649,6 +1736,11 @@ bits specified from the register.";
         }
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-dec-nsh-ttl-notif-flows-statistics-update-write-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:write-actions-case/odl-flow-stats:write-actions/odl-flow-stats:action/odl-flow-stats:action" {
         case "nx-action-conntrack-notif-flows-statistics-update-write-actions-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1702,6 +1794,11 @@ bits specified from the register.";
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
         case "nx-action-pop-nsh-notif-flows-statistics-update-apply-actions-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
+        case "nx-action-dec-nsh-ttl-notif-flows-statistics-update-apply-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:instructions/odl-flow-stats:instruction/odl-flow-stats:instruction/odl-flow-stats:apply-actions-case/odl-flow-stats:apply-actions/odl-flow-stats:action/odl-flow-stats:action" {
@@ -1761,6 +1858,11 @@ bits specified from the register.";
         }
     }
     augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
+        case "nx-action-dec-nsh-ttl-notif-group-desc-stats-updated-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
+    }
+    augment "/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action" {
         case "nx-action-conntrack-notif-group-desc-stats-updated-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1800,6 +1902,9 @@ bits specified from the register.";
         case "nx-action-pop-nsh-notif-direct-statistics-update-apply-actions-case" {
             uses nx-action-pop-nsh-grouping;
         }
+        case "nx-action-dec-nsh-ttl-notif-direct-statistics-update-apply-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
+        }
         case "nx-action-conntrack-notif-direct-statistics-update-apply-actions-case" {
             uses nx-action-conntrack-grouping;
         }
@@ -1835,6 +1940,9 @@ bits specified from the register.";
         }
         case "nx-action-pop-nsh-notif-direct-statistics-update-write-actions-case" {
             uses nx-action-pop-nsh-grouping;
+        }
+        case "nx-action-dec-nsh-ttl-notif-direct-statistics-update-write-actions-case" {
+            uses nx-action-dec-nsh-ttl-grouping;
         }
         case "nx-action-conntrack-notif-direct-statistics-update-write-actions-case" {
             uses nx-action-conntrack-grouping;

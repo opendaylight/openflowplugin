@@ -20,6 +20,7 @@ public interface NiciraActionCodecs {
     MultipathCodec MULTIPATH_CODEC = new MultipathCodec();
     PushNshCodec PUSH_NSH_CODEC = new PushNshCodec();
     PopNshCodec POP_NSH_CODEC = new PopNshCodec();
+    DecNshTtlCodec DEC_NSH_TTL_CODEC = new DecNshTtlCodec();
     ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
     CtClearCodec CT_CLEAR_CODEC = new CtClearCodec();
     LearnCodec LEARN_CODEC = new LearnCodec();
