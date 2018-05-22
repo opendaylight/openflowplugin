@@ -55,6 +55,9 @@ module nicira-action {
     identity nxm-nx-decap {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-dec-nsh-ttl {
+        base ofaction:experimenter-action-sub-type;
+    }
 
     grouping ofj-nx-action-reg-load-grouping {
         container nx-action-reg-load {
@@ -501,6 +504,14 @@ module nicira-action {
         }
     }
 
+    grouping ofj-nx-action-dec-nsh-ttl-grouping {
+        container nx-action-dec-nsh-ttl {
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
+
     augment "/ofaction:action-container/ofaction:action-choice" {
         ext:augment-identifier "ofj-aug-nx-action";
         case action-reg-load {
@@ -541,6 +552,9 @@ module nicira-action {
         }
         case action-decap {
             uses ofj-nx-action-decap-grouping;
+        }
+        case action-dec-nsh-ttl {
+            uses ofj-nx-action-dec-nsh-ttl-grouping;
         }
     }
 }
