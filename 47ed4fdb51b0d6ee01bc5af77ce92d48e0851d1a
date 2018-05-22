@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "e582b800_aa0bec26",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-22T12:29:24Z",
+      "side": 1,
+      "message": "use Throwable instead of Exception, here",
+      "revId": "47ed4fdb51b0d6ee01bc5af77ce92d48e0851d1a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f62c69a0_5f562dbe",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-22T12:29:24Z",
+      "side": 1,
+      "message": "remove this change - there is no point in artificially creating a new IOException, the message alone with ServiceState.ERROR as it was before is perfectly fine.  The idea of the new API taking the Throwable is just to use that IFF you have an Exception (Throwable) ALREADY - as in the other case.",
+      "revId": "47ed4fdb51b0d6ee01bc5af77ce92d48e0851d1a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "978c4b18_853b096e",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 2
@@ -13,6 +47,30 @@
       "writtenOn": "2018-05-16T19:38:46Z",
       "side": 1,
       "message": "Michael, Anil, Faseela,\n\nam I on the path you are trying to lead me on?",
+      "range": {
+        "startLine": 181,
+        "startChar": 77,
+        "endLine": 181,
+        "endChar": 113
+      },
+      "revId": "47ed4fdb51b0d6ee01bc5af77ce92d48e0851d1a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "782d0f82_164a71df",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-05-22T12:29:24Z",
+      "side": 1,
+      "message": "just pass the throwable into your reportStatus(); you don\u0027t have to wrap it inside a new IllegalStateException(throwable).",
+      "parentUuid": "978c4b18_853b096e",
       "range": {
         "startLine": 181,
         "startChar": 77,
