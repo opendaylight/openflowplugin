@@ -95,18 +95,18 @@ public class GuardedContextImpl implements GuardedContext {
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public ListenableFuture<Void> closeServiceInstance() {
-        ListenableFuture<Void> result = Futures.immediateFuture(null);
+    public ListenableFuture<?> closeServiceInstance() {
+        ListenableFuture<?> result = Futures.immediateFuture(null);
 
         if (monitor.enterIf(isStoppable)) {
             try {
                 LOG.info("Stopping {} service for node {}", this, getDeviceInfo());
                 state = STOPPING;
-                final ListenableFuture<Void> resultFuture = delegate.closeServiceInstance();
+                final ListenableFuture<?> resultFuture = delegate.closeServiceInstance();
 
-                Futures.addCallback(resultFuture, new FutureCallback<Void>() {
+                Futures.addCallback(resultFuture, new FutureCallback<Object>() {
                     @Override
-                    public void onSuccess(@Nullable final Void result) {
+                    public void onSuccess(@Nullable final Object result) {
                         state = TERMINATED;
                     }
 

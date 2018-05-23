@@ -81,15 +81,13 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public ListenableFuture<Void> closeServiceInstance() {
+    public ListenableFuture<?> closeServiceInstance() {
 
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
-        final ListenableFuture<List<Void>> servicesToBeClosed = Futures
-                .allAsList(Lists.reverse(contexts)
-                        .stream()
-                        .map(OFPContext::closeServiceInstance)
-                        .collect(Collectors.toList()));
+        final ListenableFuture<?> servicesToBeClosed = Futures.allAsList(Lists.reverse(contexts).stream()
+            .map(OFPContext::closeServiceInstance)
+            .collect(Collectors.toList()));
 
         return Futures.transform(servicesToBeClosed, (input) -> {
             LOG.info("Closed clustering services for node {}", deviceInfo);
