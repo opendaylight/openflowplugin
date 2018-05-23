@@ -19,6 +19,7 @@ import org.opendaylight.openflowjava.nx.codec.action.FinTimeoutCodec;
 import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
 import org.opendaylight.openflowjava.nx.codec.action.NiciraActionCodecs;
+import org.opendaylight.openflowjava.nx.codec.action.OutputReg2Codec;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
@@ -87,6 +88,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerActionSerializer(RegMoveCodec.SERIALIZER_KEY, NiciraActionCodecs.REG_MOVE_CODEC);
         registrator.registerActionDeserializer(OutputRegCodec.DESERIALIZER_KEY, NiciraActionCodecs.OUTPUT_REG_CODEC);
         registrator.registerActionSerializer(OutputRegCodec.SERIALIZER_KEY, NiciraActionCodecs.OUTPUT_REG_CODEC);
+        registrator.registerActionDeserializer(OutputReg2Codec.DESERIALIZER_KEY, NiciraActionCodecs.OUTPUT_REG2_CODEC);
+        registrator.registerActionSerializer(OutputReg2Codec.SERIALIZER_KEY, NiciraActionCodecs.OUTPUT_REG2_CODEC);
         registrator.registerActionSerializer(ResubmitCodec.SERIALIZER_KEY, NiciraActionCodecs.RESUBMIT_CODEC);
         registrator.registerActionDeserializer(ResubmitCodec.DESERIALIZER_KEY, NiciraActionCodecs.RESUBMIT_CODEC);
         registrator.registerActionDeserializer(ResubmitCodec.TABLE_DESERIALIZER_KEY, NiciraActionCodecs.RESUBMIT_CODEC);
@@ -225,6 +228,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterActionSerializer(RegMoveCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(OutputRegCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(OutputRegCodec.SERIALIZER_KEY);
+        registrator.unregisterActionDeserializer(OutputReg2Codec.DESERIALIZER_KEY);
+        registrator.unregisterActionSerializer(OutputReg2Codec.SERIALIZER_KEY);
         registrator.unregisterActionSerializer(ResubmitCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ResubmitCodec.TABLE_DESERIALIZER_KEY);
         registrator.unregisterActionDeserializer(ResubmitCodec.DESERIALIZER_KEY);
