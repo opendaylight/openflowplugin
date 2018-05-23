@@ -411,4 +411,28 @@ public final class FieldChoiceResolver {
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).toBigInteger()
                 : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.getImplementedInterface()).toBigInteger();
     }
+
+    /**
+     * Check if the source choice field is experimenter.
+     *
+     * @param srcChoice the source choice field.
+     * @return true if experimenter.
+     */
+    static boolean isExperimenter(SrcChoice srcChoice) {
+        return srcChoice instanceof SrcNxRegCase
+                ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).isExperimenter()
+                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.getImplementedInterface()).isExperimenter();
+    }
+
+    /**
+     * Check if the destination choice field is experimenter.
+     *
+     * @param dstChoice the destination choice field.
+     * @return true if experimenter.
+     */
+    static boolean isExperimenter(DstChoice dstChoice) {
+        return dstChoice instanceof DstNxRegCase
+                ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).isExperimenter()
+                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.getImplementedInterface()).isExperimenter();
+    }
 }
