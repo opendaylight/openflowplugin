@@ -123,6 +123,24 @@
     },
     {
       "key": {
+        "uuid": "b43d7727_ff825de8",
+        "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-05-23T00:03:00Z",
+      "side": 1,
+      "message": "if you create cfg file, that will also go under /etc, so not sure the reason of using xml file here.",
+      "parentUuid": "2199da91_b39b0a26",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96b93ec0_e670f432",
         "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
         "patchSetId": 26
