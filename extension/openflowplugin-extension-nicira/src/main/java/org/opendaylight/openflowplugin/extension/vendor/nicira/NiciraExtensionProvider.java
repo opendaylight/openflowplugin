@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
 import org.opendaylight.openflowjava.nx.codec.action.FinTimeoutCodec;
 import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
+import org.opendaylight.openflowjava.nx.codec.action.OutputReg2Codec;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
@@ -77,7 +78,9 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.FinTimeoutConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.LearnConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.MultipathConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputReg2Convertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputRegConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputRegConvertorProxy;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.PopNshConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.PushNshConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoad2Convertor;
@@ -127,6 +130,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPopNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPushNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
@@ -305,6 +309,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final RegLoadConvertorProxy REG_LOAD_CONVERTOR_PROXY = new RegLoadConvertorProxy();
     private static final RegMoveConvertor REG_MOVE_CONVERTOR = new RegMoveConvertor();
     private static final OutputRegConvertor OUTPUT_REG_CONVERTOR = new OutputRegConvertor();
+    private static final OutputReg2Convertor OUTPUT_REG2_CONVERTOR = new OutputReg2Convertor();
+    private static final OutputRegConvertorProxy OUTPUT_REG_CONVERTOR_PROXY = new OutputRegConvertorProxy();
     private static final EthTypeConvertor ETH_TYPE_CONVERTOR = new EthTypeConvertor();
     private static final ResubmitConvertor RESUBMIT_CONVERTOR = new ResubmitConvertor();
     private static final FinTimeoutConvertor FIN_TIMEOUT_CONVERTOR = new FinTimeoutConvertor();
@@ -350,7 +356,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         // src=dataStore/config
         registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionOutputRegNodesNodeTableFlowApplyActionsCase.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(NxActionOutputRegNodesNodeTableFlowApplyActionsCase.class, OUTPUT_REG_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitNodesNodeTableFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutNodesNodeTableFlowApplyActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathNodesNodeTableFlowApplyActionsCase.class, MULTIPATH_CONVERTOR);
@@ -362,7 +368,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
 
         registerAction13(NxActionRegLoadNodesNodeTableFlowWriteActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveNodesNodeTableFlowWriteActionsCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionOutputRegNodesNodeTableFlowWriteActionsCase.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(NxActionOutputRegNodesNodeTableFlowWriteActionsCase.class, OUTPUT_REG_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitNodesNodeTableFlowWriteActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutNodesNodeTableFlowWriteActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathNodesNodeTableFlowWriteActionsCase.class, MULTIPATH_CONVERTOR);
@@ -374,7 +380,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
 
         registerAction13(NxActionRegLoadNodesNodeGroupBucketsBucketActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveNodesNodeGroupBucketsBucketActionsCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionOutputRegNodesNodeGroupBucketsBucketActionsCase.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(NxActionOutputRegNodesNodeGroupBucketsBucketActionsCase.class, OUTPUT_REG_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitNodesNodeGroupBucketsBucketActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutNodesNodeGroupBucketsBucketActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathNodesNodeGroupBucketsBucketActionsCase.class, MULTIPATH_CONVERTOR);
@@ -387,7 +393,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         // src=rpc-addFlow
         registerAction13(NxActionRegLoadRpcAddFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveRpcAddFlowApplyActionsCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionOutputRegRpcAddFlowApplyActionsCase.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(NxActionOutputRegRpcAddFlowApplyActionsCase.class, OUTPUT_REG_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitRpcAddFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutRpcAddFlowApplyActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathRpcAddFlowApplyActionsCase.class, MULTIPATH_CONVERTOR);
@@ -399,7 +405,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
 
         registerAction13(NxActionRegLoadRpcAddFlowWriteActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
         registerAction13(NxActionRegMoveRpcAddFlowWriteActionsCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionOutputRegRpcAddFlowWriteActionsCase.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(NxActionOutputRegRpcAddFlowWriteActionsCase.class, OUTPUT_REG_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitRpcAddFlowWriteActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutRpcAddFlowWriteActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathRpcAddFlowWriteActionsCase.class, MULTIPATH_CONVERTOR);
@@ -417,10 +423,10 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionRegMoveRpcRemoveGroupCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionRegMoveRpcUpdateGroupOriginalCase.class, REG_MOVE_CONVERTOR);
         registerAction13(NxActionRegMoveRpcUpdateGroupUpdatedCase.class, REG_MOVE_CONVERTOR);
-        registerAction13(NxActionOutputRegRpcAddGroupCase.class, OUTPUT_REG_CONVERTOR);
-        registerAction13(NxActionOutputRegRpcRemoveGroupCase.class, OUTPUT_REG_CONVERTOR);
-        registerAction13(NxActionOutputRegRpcUpdateGroupOriginalCase.class, OUTPUT_REG_CONVERTOR);
-        registerAction13(NxActionOutputRegRpcUpdateGroupUpdatedCase.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(NxActionOutputRegRpcAddGroupCase.class, OUTPUT_REG_CONVERTOR_PROXY);
+        registerAction13(NxActionOutputRegRpcRemoveGroupCase.class, OUTPUT_REG_CONVERTOR_PROXY);
+        registerAction13(NxActionOutputRegRpcUpdateGroupOriginalCase.class, OUTPUT_REG_CONVERTOR_PROXY);
+        registerAction13(NxActionOutputRegRpcUpdateGroupUpdatedCase.class, OUTPUT_REG_CONVERTOR_PROXY);
         registerAction13(NxActionResubmitRpcAddGroupCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionResubmitRpcRemoveGroupCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionResubmitRpcUpdateGroupOriginalCase.class, RESUBMIT_CONVERTOR);
@@ -468,6 +474,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(ActionRegLoad2.class, REG_LOAD2_CONVERTOR);
         registerAction13(ActionRegMove.class, REG_MOVE_CONVERTOR);
         registerAction13(ActionOutputReg.class, OUTPUT_REG_CONVERTOR);
+        registerAction13(ActionOutputReg2.class, OUTPUT_REG2_CONVERTOR);
         registerAction13(ActionResubmit.class, RESUBMIT_CONVERTOR);
         registerAction13(ActionFinTimeout.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(ActionMultipath.class, MULTIPATH_CONVERTOR);
@@ -485,6 +492,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 NiciraUtil.createOfJavaKeyFrom(RegMoveCodec.SERIALIZER_KEY), REG_MOVE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
                 NiciraUtil.createOfJavaKeyFrom(OutputRegCodec.SERIALIZER_KEY), OUTPUT_REG_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(
+                NiciraUtil.createOfJavaKeyFrom(OutputReg2Codec.SERIALIZER_KEY), OUTPUT_REG2_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
                 NiciraUtil.createOfJavaKeyFrom(ResubmitCodec.SERIALIZER_KEY), RESUBMIT_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
