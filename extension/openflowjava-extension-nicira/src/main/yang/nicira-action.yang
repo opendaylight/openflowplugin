@@ -29,6 +29,9 @@ module nicira-action {
     identity nxm-nx-output-reg {
         base ofaction:experimenter-action-sub-type;
     }
+    identity nxm-nx-output-reg2 {
+        base ofaction:experimenter-action-sub-type;
+    }
     identity nxm-nx-resubmit {
         base ofaction:experimenter-action-sub-type;
     }
@@ -115,6 +118,23 @@ module nicira-action {
             }
             leaf src {
                 type uint32;
+            }
+            leaf max_len {
+                type uint16;
+            }
+            leaf experimenter-id {
+                type oft:experimenter-id;
+            }
+        }
+    }
+
+    grouping ofj-nx-action-output-reg2-grouping {
+        container nx-action-output-reg2 {
+            leaf n_bits {
+                type uint16;
+            }
+            leaf src {
+                type uint64;
             }
             leaf max_len {
                 type uint16;
@@ -536,6 +556,9 @@ module nicira-action {
         }
         case action-output-reg {
             uses ofj-nx-action-output-reg-grouping;
+        }
+        case action-output-reg2 {
+            uses ofj-nx-action-output-reg2-grouping;
         }
         case action-resubmit {
             uses ofj-nx-action-resubmit-grouping;
