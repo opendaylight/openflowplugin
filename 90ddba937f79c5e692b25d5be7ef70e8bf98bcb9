@@ -178,6 +178,24 @@
     },
     {
       "key": {
+        "uuid": "507ad1c6_0f2de90c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 5357
+      },
+      "writtenOn": "2018-05-24T08:25:50Z",
+      "side": 1,
+      "message": "OK, so I think I understand where I went wrong. I had assumed that when a new flow comes whether or not the flow_mod goes i the bundle is keyed of the arbitrator flag. It is, instead, keyed off the presence of a bundle. OK :-) Thanks for the explanation!",
+      "parentUuid": "1b52021c_218b30e3",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6fba9fcc_e00fd0ee",
         "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
         "patchSetId": 26
