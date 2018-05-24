@@ -9,28 +9,25 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsi;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsi.grouping.NsiValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsi.grouping.NsiValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NsiCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NsiCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValueBuilder;
 
 public class NsiCodecTest {
 
     NsiCodec nsiCodec;
     ByteBuf buffer;
-    MatchEntry input;
 
-    private static final int VALUE_LENGTH = 1;
-    private static final int NXM_FIELD_CODE = 114;
+    private static final Short NSI_VALUE = (short) 255;
+    private static final Short NSI_MASK = 0xF0;
 
     @Before
     public void setUp() {
@@ -39,55 +36,56 @@ public class NsiCodecTest {
     }
 
     @Test
-    public void serializeTest() {
-        input = createMatchEntry();
-        nsiCodec.serialize(input, buffer);
+    public void serializeTestNoMask() {
+        NxExpMatchEntryValue matchEntryValue = createMatchEntryValue(NSI_VALUE, null);
 
-        assertEquals(OxmMatchConstants.NXM_1_CLASS, buffer.readUnsignedShort());
-        short fieldMask = buffer.readUnsignedByte();
-        assertEquals(NXM_FIELD_CODE, fieldMask >> 1);
-        assertEquals(0, fieldMask & 1);
-        assertEquals(VALUE_LENGTH, buffer.readUnsignedByte());
-        assertEquals(1, buffer.readUnsignedByte());
+        nsiCodec.serializeValue(matchEntryValue, false, buffer);
+
+        assertEquals(NSI_VALUE.shortValue(), buffer.readUnsignedByte());
+        assertFalse(buffer.isReadable());
     }
 
     @Test
-    public void deserializeTest() {
-        createBuffer(buffer);
+    public void serializeTestMask() {
+        NxExpMatchEntryValue matchEntryValue = createMatchEntryValue(NSI_VALUE, NSI_MASK);
 
-        input = nsiCodec.deserialize(buffer);
+        nsiCodec.serializeValue(matchEntryValue, true, buffer);
 
-        final NsiCaseValue result = (NsiCaseValue) input.getMatchEntryValue();
-
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxNsi.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
-        assertEquals(2, result.getNsiValues().getNsi().shortValue());
+        assertEquals(NSI_VALUE.shortValue(), buffer.readUnsignedByte());
+        assertEquals(NSI_MASK.shortValue(), buffer.readUnsignedByte());
+        assertFalse(buffer.isReadable());
     }
 
+    @Test
+    public void deserializeTestNoMask() {
+        writeBuffer(buffer, NSI_VALUE, null);
 
-    private MatchEntry createMatchEntry() {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        final NsiCaseValueBuilder caseBuilder = new NsiCaseValueBuilder();
-        final NsiValuesBuilder valuesBuilder = new NsiValuesBuilder();
+        NxExpMatchEntryValue value = nsiCodec.deserializeValue(buffer, false);
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxNsi.class);
-        matchEntryBuilder.setHasMask(false);
-
-        valuesBuilder.setNsi((short)1);
-
-        caseBuilder.setNsiValues(valuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        assertEquals(NSI_VALUE, ((NsiCaseValue) value).getNsiValues().getNsi());
+        assertFalse(buffer.isReadable());
     }
 
-    private void createBuffer(ByteBuf message) {
-        message.writeShort(OxmMatchConstants.NXM_1_CLASS);
+    @Test
+    public void deserializeTestMask() {
+        writeBuffer(buffer, NSI_VALUE, NSI_MASK);
 
-        int fieldMask = NXM_FIELD_CODE << 1;
-        message.writeByte(fieldMask);
-        message.writeByte(VALUE_LENGTH);
-        message.writeByte(2);
+        NxExpMatchEntryValue value = nsiCodec.deserializeValue(buffer, true);
+
+        assertEquals(NSI_VALUE, ((NsiCaseValue) value).getNsiValues().getNsi());
+        assertEquals(NSI_MASK, ((NsiCaseValue) value).getNsiValues().getMask());
+        assertFalse(buffer.isReadable());
+    }
+
+    private NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
+        NsiValues nsiValues = new NsiValuesBuilder().setNsi(value).setMask(mask).build();
+        return new NsiCaseValueBuilder().setNsiValues(nsiValues).build();
+    }
+
+    private void writeBuffer(ByteBuf message, Short value, Short mask) {
+        message.writeByte(value.intValue());
+        if (mask != null) {
+            message.writeByte(mask.intValue());
+        }
     }
 }
