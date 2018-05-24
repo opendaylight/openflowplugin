@@ -17,12 +17,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nshc._2.grouping.Nshc2ValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc2CaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc2CaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
@@ -30,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc2Key;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._2.grouping.NxmNxNshc2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._2.grouping.NxmNxNshc2Builder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
@@ -40,65 +42,72 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 public class Nshc2ConvertorTest {
     @Mock
     private Extension extension;
-    @Mock
-    private MatchEntry matchEntry;
 
     private Nshc2Convertor nshc2Convertor;
 
+    private static final Long NSHC2_VALUE = 0xFFFFFFFFL;
+    private static final Long MASK_VALUE = 0xFFFFFFFFL;
+
     @Before
     public void setUp() throws Exception {
-        final NxmNxNshc2Builder nxmNxNshc2Builder = new NxmNxNshc2Builder()
-                .setValue(1L);
-        final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
-                new NxAugMatchNodesNodeTableFlowBuilder();
-        nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxNshc2(nxmNxNshc2Builder.build());
-
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
+        NxmNxNshc2 nxmNxNshc2 = new NxmNxNshc2Builder().setValue(NSHC2_VALUE).setMask(MASK_VALUE).build();
+        NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
+                .setNxmNxNshc2(nxmNxNshc2)
+                .build();
         when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
-            .thenReturn(extensionAugmentation);
+                .thenReturn(nxAugMatchNotifUpdateFlowStats);
 
         nshc2Convertor = new Nshc2Convertor();
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvertToOFJava() {
         final MatchEntry converted = nshc2Convertor.convert(extension);
-        Assert.assertEquals(1, ((Nshc2CaseValue)converted.getMatchEntryValue()).getNshc2Values().getNshc().intValue());
+        ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) converted.getMatchEntryValue();
+        OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
+        NshcCaseValue nshcCaseValue = (NshcCaseValue) ofjAugNxExpMatch.getNxExpMatchEntryValue();
+        Assert.assertEquals(NiciraConstants.NX_NSH_VENDOR_ID,
+                experimenterIdCase.getExperimenter().getExperimenter().getValue());
+        Assert.assertEquals(NSHC2_VALUE, nshcCaseValue.getNshc());
+        Assert.assertEquals(MASK_VALUE, nshcCaseValue.getMask());
     }
 
     @Test
-    public void testConvert1() throws Exception {
-        final Nshc2ValuesBuilder nshc2ValuesBuilder = new Nshc2ValuesBuilder()
-                .setNshc(Long.valueOf(1));
-        final Nshc2CaseValueBuilder nshc2CaseValueBuilder = new Nshc2CaseValueBuilder()
-                .setNshc2Values(nshc2ValuesBuilder.build());
-
-        final Nshc2CaseValue nshc2CaseValue = nshc2CaseValueBuilder.build();
-
-        when(matchEntry.getMatchEntryValue()).thenReturn(nshc2CaseValue);
+    public void testConvertToOFSal() {
+        MatchEntry matchEntry = Nshc2Convertor.buildMatchEntry(NSHC2_VALUE, MASK_VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = nshc2Convertor.convert(matchEntry,
                 MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNshc2()
-                .getValue().intValue());
+        Assert.assertEquals(NSHC2_VALUE,
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNshc2().getValue());
+        Assert.assertEquals(MASK_VALUE,
+                ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNshc2().getMask());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc2Key.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = nshc2Convertor.convert(matchEntry,
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
-                .getNxmNxNshc2().getValue().intValue());
+        Assert.assertEquals(NSHC2_VALUE,
+                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                        .getNxmNxNshc2().getValue());
+        Assert.assertEquals(MASK_VALUE,
+                ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
+                        .getNxmNxNshc2().getMask());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc2Key.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = nshc2Convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
-                .getNxmNxNshc2().getValue().intValue());
+        Assert.assertEquals(NSHC2_VALUE,
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxNshc2().getValue());
+        Assert.assertEquals(MASK_VALUE,
+                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxNshc2().getMask());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc2Key.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = nshc2Convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(1, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNshc2()
-                .getValue().intValue());
+        Assert.assertEquals(NSHC2_VALUE,
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNshc2().getValue());
+        Assert.assertEquals(MASK_VALUE,
+                ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNshc2().getMask());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc2Key.class);
     }
 }
