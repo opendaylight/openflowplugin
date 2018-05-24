@@ -44,6 +44,7 @@ import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
 import org.opendaylight.openflowjava.nx.codec.match.InPortCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NshFlagsCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NshMdtypeCodec;
+import org.opendaylight.openflowjava.nx.codec.match.NshNpCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NshTtlCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc2Codec;
@@ -728,7 +729,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmNxNshNpKey.class, EncodeConstants.OF13_VERSION_ID), NSH_NP_CONVERTOR));
         registrations.add(
-                extensionConverterRegistrator.registerMatchConvertor(NshMdtypeCodec.SERIALIZER_KEY, NSH_NP_CONVERTOR));
+                extensionConverterRegistrator.registerMatchConvertor(NshNpCodec.SERIALIZER_KEY, NSH_NP_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmNxTunGpeNpKey.class, EncodeConstants.OF13_VERSION_ID),
                 TUN_GPE_NP_CONVERTOR));

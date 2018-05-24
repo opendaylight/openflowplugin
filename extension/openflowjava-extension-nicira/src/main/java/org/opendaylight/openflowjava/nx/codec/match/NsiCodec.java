@@ -9,44 +9,50 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsi;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsi.grouping.NsiValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsi.grouping.NsiValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NsiCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NsiCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValueBuilder;
 
-public class NsiCodec extends AbstractMatchCodec {
+public class NsiCodec extends AbstractExperimenterMatchCodec {
 
-    private static final int VALUE_LENGTH = 1;
-    private static final int NXM_FIELD_CODE = 114;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNsi> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNsi.class);
-    public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
+    private static final int VALUE_LENGTH = EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+    private static final int NXM_FIELD_CODE = 5;
+    public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNsi> SERIALIZER_KEY =
+            createSerializerKey(
+                    EncodeConstants.OF13_VERSION_ID,
+                    NiciraConstants.NX_NSH_VENDOR_ID,
+                    NxmNxNsi.class);
+    public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
+            createDeserializerKey(
+                    EncodeConstants.OF13_VERSION_ID,
+                    NiciraConstants.NX_NSH_VENDOR_ID,
+                    NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
-        serializeHeader(input, outBuffer);
-        NsiCaseValue nsiCaseValue = ((NsiCaseValue) input.getMatchEntryValue());
-        outBuffer.writeByte(nsiCaseValue.getNsiValues().getNsi());
+    protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
+        NsiCaseValue nsiCaseValue = (NsiCaseValue) value;
+        NsiValues nsiValues = nsiCaseValue.getNsiValues();
+        outBuffer.writeByte(nsiValues.getNsi());
+        if (hasMask) {
+            outBuffer.writeByte(nsiValues.getMask());
+        }
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
-        NsiCaseValueBuilder nsiCaseValueBuilder = new NsiCaseValueBuilder();
-        nsiCaseValueBuilder.setNsiValues(new NsiValuesBuilder().setNsi(message.readUnsignedByte()).build());
-        matchEntriesBuilder.setMatchEntryValue(nsiCaseValueBuilder.build());
-        matchEntriesBuilder.setHasMask(false);
-        return matchEntriesBuilder.build();
+    protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
+        Short value = message.readUnsignedByte();
+        Short mask = hasMask ? message.readUnsignedByte() : null;
+        NsiValues nsiValues = new NsiValuesBuilder().setNsi(value).setMask(mask).build();
+        return new NsiCaseValueBuilder().setNsiValues(nsiValues).build();
     }
 
     @Override
@@ -55,8 +61,8 @@ public class NsiCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public int getOxmClassCode() {
-        return OxmMatchConstants.NXM_1_CLASS;
+    protected long getExperimenterId() {
+        return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 
     @Override
@@ -67,10 +73,5 @@ public class NsiCodec extends AbstractMatchCodec {
     @Override
     public Class<? extends MatchField> getNxmField() {
         return NxmNxNsi.class;
-    }
-
-    @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
     }
 }
