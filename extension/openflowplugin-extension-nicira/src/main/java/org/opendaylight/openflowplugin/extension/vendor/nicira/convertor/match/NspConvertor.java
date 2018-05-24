@@ -9,16 +9,19 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
 import com.google.common.base.Optional;
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
@@ -38,11 +41,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
+
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        NspCaseValue nspCaseValue = (NspCaseValue) input.getMatchEntryValue();
+        ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) input.getMatchEntryValue();
+        OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
+        NspCaseValue nshNspCaseValue = (NspCaseValue) ofjAugNxExpMatch.getNxExpMatchEntryValue();
 
-        return resolveAugmentation(new NxmNxNspBuilder().setValue(nspCaseValue.getNspValues().getNsp()).build(), path,
+        return resolveAugmentation(
+                new NxmNxNspBuilder().setValue(nshNspCaseValue.getNspValues().getNsp()).build(),
+                path,
                 NxmNxNspKey.class);
     }
 
@@ -52,13 +60,18 @@ public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Long value = matchGrouping.get().getNxmNxNsp().getValue();
-        NspCaseValueBuilder nspCaseValueBuilder = new NspCaseValueBuilder();
-        nspCaseValueBuilder.setNspValues(new NspValuesBuilder()
-                .setNsp(value).build());
-        return MatchUtil.createDefaultMatchEntryBuilder(
+        Long nspValue = matchGrouping.get().getNxmNxNsp().getValue();
+        MatchEntry matchEntry = buildMatchEntry(nspValue, null);
+        return matchEntry;
+    }
+
+    public static MatchEntry buildMatchEntry(Long nsp, Long mask) {
+        NspValues nspValues = new NspValuesBuilder().setNsp(nsp).setMask(mask).build();
+        NspCaseValue nspCaseValue = new NspCaseValueBuilder().setNspValues(nspValues).build();
+        return MatchUtil.createExperimenterMatchEntryBuilder(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp.class,
-                Nxm1Class.class, nspCaseValueBuilder.build()).build();
+                NiciraConstants.NX_NSH_VENDOR_ID,
+                nspCaseValue).setHasMask(mask != null).build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxNsp value,
