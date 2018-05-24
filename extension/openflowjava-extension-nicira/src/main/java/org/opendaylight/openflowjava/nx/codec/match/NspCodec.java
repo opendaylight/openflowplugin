@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Red Hat, Inc. and others.  All rights reserved.
+ * Copyright (c) 2018 SUSE LINUX GmbH.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -9,54 +9,60 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.NspCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValueBuilder;
 
-public class NspCodec extends AbstractMatchCodec {
+public class NspCodec extends AbstractExperimenterMatchCodec {
 
-    private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 113;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNsp> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNsp.class);
-    public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
+    private static final int VALUE_LENGTH = EncodeConstants.SIZE_OF_INT_IN_BYTES;
+    private static final int NXM_FIELD_CODE = 4;
+    public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNsp> SERIALIZER_KEY =
+            createSerializerKey(
+                    EncodeConstants.OF13_VERSION_ID,
+                    NiciraConstants.NX_NSH_VENDOR_ID,
+                    NxmNxNsp.class);
+    public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
+            createDeserializerKey(
+                EncodeConstants.OF13_VERSION_ID,
+                NiciraConstants.NX_NSH_VENDOR_ID,
+                NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
-        serializeHeader(input, outBuffer);
-        NspCaseValue nspCaseValue = ((NspCaseValue) input.getMatchEntryValue());
-        outBuffer.writeInt(nspCaseValue.getNspValues().getNsp().intValue());
+    protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
+        NspCaseValue nspCaseValue = (NspCaseValue) value;
+        NspValues nspValues = nspCaseValue.getNspValues();
+        outBuffer.writeInt(nspValues.getNsp().intValue());
+        if (hasMask) {
+            outBuffer.writeInt(nspValues.getMask().intValue());
+        }
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        NspCaseValueBuilder nspCaseValueBuilder = new NspCaseValueBuilder();
-        nspCaseValueBuilder.setNspValues(new NspValuesBuilder().setNsp(message.readUnsignedInt()).build());
-        matchEntryBuilder.setMatchEntryValue(nspCaseValueBuilder.build());
-        matchEntryBuilder.setHasMask(false);
-        return matchEntryBuilder.build();
+    protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
+        Long nspValue = message.readUnsignedInt();
+        Long maskValue = hasMask ? message.readUnsignedInt() : null;
+        NspValues nspValues = new NspValuesBuilder().setNsp(nspValue).setMask(maskValue).build();
+        return new NspCaseValueBuilder().setNspValues(nspValues).build();
+    }
+
+    @Override
+    protected long getExperimenterId() {
+        return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 
     @Override
     public int getNxmFieldCode() {
         return NXM_FIELD_CODE;
-    }
-
-    @Override
-    public int getOxmClassCode() {
-        return OxmMatchConstants.NXM_1_CLASS;
     }
 
     @Override
@@ -67,10 +73,5 @@ public class NspCodec extends AbstractMatchCodec {
     @Override
     public Class<? extends MatchField> getNxmField() {
         return NxmNxNsp.class;
-    }
-
-    @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
     }
 }
