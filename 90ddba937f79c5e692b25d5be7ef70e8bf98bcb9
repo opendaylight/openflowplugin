@@ -160,6 +160,24 @@
     },
     {
       "key": {
+        "uuid": "1b52021c_218b30e3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:20:52Z",
+      "side": 1,
+      "message": "Hi Josh,\n\nFirstly, the flag is checked only at the start of the reconciliation, ie, when the switch connects. The bundle commit is solely carried out at the will of the orchestrator by the rpc exposed.\n\nAlso, we block the programming of new flows/groups when the commit bundle is ongoing(refer getActiveBundle()). So, all the flows/groups which arrive during the commit bundle would wait till the commit is successful.\n\nSo, in case of option A:\n\nThe flipping of the flag doesnt ve any effect as we dont check on the flag once the reconciliation starts. The reconciliation is completed by the commit bundle rpc.\n\nand for option B:\n\nEven if the flag had been flipped(though no reason to do it), the application doesnt check on the flag rather in the availability of an active bundle for the node. As soon as the commit bundle rpc is called by the orchestrator, the bundle is committed.",
+      "parentUuid": "07d9e039_e2a3828f",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6fba9fcc_e00fd0ee",
         "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
         "patchSetId": 26
