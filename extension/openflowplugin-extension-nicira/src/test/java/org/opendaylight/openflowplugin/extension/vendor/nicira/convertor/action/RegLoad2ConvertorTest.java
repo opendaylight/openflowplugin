@@ -62,7 +62,11 @@ public class RegLoad2ConvertorTest {
         return Arrays.asList(new Object[][] {
                 // specified values do not fit in the bit range
                 {1, 5, 0xFF, null, null, IllegalArgumentException.class},
-                {3, 5, 0x08, null, null, IllegalArgumentException.class}
+                {3, 5, 0x08, null, null, IllegalArgumentException.class},
+                // out of range value and mask
+                {0, 16, 0x1FFFF, null, null, IllegalArgumentException.class},
+                // out of range mask
+                {0, 16, 0x1, null, null, IllegalArgumentException.class}
         });
     }
 

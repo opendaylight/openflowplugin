@@ -298,6 +298,9 @@ module nicira-match {
             leaf nsp {
                 type uint32;
             }
+            leaf mask {
+                type uint32;
+            }
         }
     }
 
@@ -306,11 +309,17 @@ module nicira-match {
             leaf nsi {
                 type uint8;
             }
+            leaf mask {
+                type uint8;
+            }
         }
     }
 
     grouping ofj-nxm-nx-match-nshc-grouping {
         leaf nshc {
+            type uint32;
+        }
+        leaf mask {
             type uint32;
         }
     }
@@ -593,35 +602,11 @@ module nicira-match {
         case encap-eth-dst-case-value {
             uses ofj-nxm-nx-match-encap-eth-dst-grouping;
         }
-        case nsh-mdtype-case-value {
-            uses ofj-nxm-nx-match-nsh-mdtype-grouping;
-        }
-        case nsh-np-case-value {
-            uses ofj-nxm-nx-match-nsh-np-grouping;
-        }
         case tun-gpe-np-case-value {
             uses ofj-nxm-nx-match-tun-gpe-np-grouping;
         }
         case eth-type-case-value {
             uses ofj-nxm-of-match-eth-type-grouping;
-        }
-        case nsp-case-value {
-            uses ofj-nxm-nx-match-nsp-grouping;
-        }
-        case nsi-case-value {
-            uses ofj-nxm-nx-match-nsi-grouping;
-        }
-        case nshc-1-case-value {
-            uses ofj-nxm-nx-match-nshc-1-grouping;
-        }
-        case nshc-2-case-value {
-            uses ofj-nxm-nx-match-nshc-2-grouping;
-        }
-        case nshc-3-case-value {
-            uses ofj-nxm-nx-match-nshc-3-grouping;
-        }
-        case nshc-4-case-value {
-            uses ofj-nxm-nx-match-nshc-4-grouping;
         }
         case tcp-src-case-value {
             uses ofj-nxm-of-match-tcp-src-grouping;
@@ -669,6 +654,21 @@ module nicira-match {
         choice nx-exp-match-entry-value {
             case nsh-flags-case-value {
                 uses ofj-nxm-nx-match-nsh-flags-grouping;
+            }
+            case nsh-mdtype-case-value {
+                uses ofj-nxm-nx-match-nsh-mdtype-grouping;
+            }
+            case nsh-np-case-value {
+                uses ofj-nxm-nx-match-nsh-np-grouping;
+            }
+            case nsp-case-value {
+                uses ofj-nxm-nx-match-nsp-grouping;
+            }
+            case nsi-case-value {
+                uses ofj-nxm-nx-match-nsi-grouping;
+            }
+            case nshc-case-value {
+                uses ofj-nxm-nx-match-nshc-grouping;
             }
             case nsh-ttl-case-value {
                 uses ofj-nxm-nx-match-nsh-ttl-grouping;
