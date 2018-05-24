@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "057b5b9c_94b9f8fb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3cb45774_f993a10b",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 3
+      },
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b86f3ea0_bd47d1fa",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
         "patchSetId": 26
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "27e48f7d_1739b745",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b86f3ea0_bd47d1fa",
+      "range": {
+        "startLine": 22,
+        "startChar": 17,
+        "endLine": 22,
+        "endChar": 48
+      },
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0b3aeefc_43ad4086",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
         "patchSetId": 26
@@ -59,6 +107,30 @@
       "writtenOn": "2018-05-11T02:18:26Z",
       "side": 1,
       "message": "please rephrase it to isArbitratorReconciliationEnabled, becusae Recon really mean something \n\nhttps://www.google.com/search?client\u003dubuntu\u0026channel\u003dfs\u0026q\u003dRecon\u0026ie\u003dutf-8\u0026oe\u003dutf-8\n\n;)",
+      "range": {
+        "startLine": 34,
+        "startChar": 12,
+        "endLine": 34,
+        "endChar": 36
+      },
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "82485f84_e7d57e01",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/arbitratorreconciliation/ArbitratorReconciliationManager.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b3aeefc_43ad4086",
       "range": {
         "startLine": 34,
         "startChar": 12,
@@ -141,6 +213,42 @@
     },
     {
       "key": {
+        "uuid": "7f00219c_344c8e37",
+        "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6fba9fcc_e00fd0ee",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d207834b_931072ee",
+        "filename": "applications/forwardingrules-manager/src/main/resources/initial/openflowplugin-arbitrator-reconcile-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Hi Josh, Openflowplugin already has a config file inside etc openflowplugin.cfg which Anil had pointed out could be used here. Has done the same.",
+      "parentUuid": "2199da91_b39b0a26",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "96b93ec0_e670f432",
         "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
         "patchSetId": 26
@@ -158,6 +266,24 @@
     },
     {
       "key": {
+        "uuid": "3998568e_7916662d",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "96b93ec0_e670f432",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f231a5fb_9ebd886a",
         "filename": "features-aggregator/odl-openflowplugin-southbound/src/main/feature/feature.xml",
         "patchSetId": 26
@@ -169,6 +295,24 @@
       "writtenOn": "2018-05-11T02:18:26Z",
       "side": 1,
       "message": "is there any specific reason for using separate file for arbitrator and not using the openflowplugin.cfg? Also why we need to push this file to the etc/opendaylight/datastore/initial? directory?",
+      "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1279bd0e_d9b68261",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/src/main/feature/feature.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-05-24T05:02:12Z",
+      "side": 1,
+      "message": "Done. Moved the config property to cfg and so this xml (openflowplugin-arbitrator-reconcile-config.xml) not needed anymore",
+      "parentUuid": "f231a5fb_9ebd886a",
       "revId": "90ddba937f79c5e692b25d5be7ef70e8bf98bcb9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
