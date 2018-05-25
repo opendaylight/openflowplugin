@@ -18,8 +18,6 @@ import org.opendaylight.openflowjava.nx.codec.action.LearnCodec;
 import org.opendaylight.openflowjava.nx.codec.action.MultipathCodec;
 import org.opendaylight.openflowjava.nx.codec.action.OutputReg2Codec;
 import org.opendaylight.openflowjava.nx.codec.action.OutputRegCodec;
-import org.opendaylight.openflowjava.nx.codec.action.PopNshCodec;
-import org.opendaylight.openflowjava.nx.codec.action.PushNshCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegLoad2Codec;
 import org.opendaylight.openflowjava.nx.codec.action.RegLoadCodec;
 import org.opendaylight.openflowjava.nx.codec.action.RegMoveCodec;
@@ -32,9 +30,6 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.EncapEthTypeCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EthTypeCodec;
@@ -59,7 +54,6 @@ import org.opendaylight.openflowjava.nx.codec.match.Reg6Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg7Codec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TcpSrcCodec;
-import org.opendaylight.openflowjava.nx.codec.match.TunGpeNpCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIdCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
@@ -82,8 +76,6 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputReg2Convertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputRegConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.OutputRegConvertorProxy;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.PopNshConvertor;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.PushNshConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoad2Convertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoadConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.RegLoadConvertorProxy;
@@ -97,9 +89,6 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.A
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtMarkConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtStateConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtZoneConvertor;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EncapEthDstConvertor;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EncapEthSrcConvertor;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EncapEthTypeConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthDstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthSrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EthTypeConvertor;
@@ -117,7 +106,6 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.N
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.RegConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpDstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TcpSrcConvertor;
-import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunGpeNpConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4DstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIPv4SrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.TunIdConvertor;
@@ -132,8 +120,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPopNsh;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionPushNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
@@ -144,8 +130,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionLearnRpcAddFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionMultipathRpcAddFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionOutputRegRpcAddFlowApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPopNshRpcAddFlowApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPushNshRpcAddFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadRpcAddFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveRpcAddFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionResubmitRpcAddFlowApplyActionsCase;
@@ -155,8 +139,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionLearnRpcAddFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionMultipathRpcAddFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionOutputRegRpcAddFlowWriteActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionPopNshRpcAddFlowWriteActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionPushNshRpcAddFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadRpcAddFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveRpcAddFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.flow.input.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitRpcAddFlowWriteActionsCase;
@@ -166,8 +148,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionLearnRpcAddGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionMultipathRpcAddGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionOutputRegRpcAddGroupCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionPopNshRpcAddGroupCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionPushNshRpcAddGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionRegLoadRpcAddGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionRegMoveRpcAddGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.add.group.input.buckets.bucket.action.action.NxActionResubmitRpcAddGroupCase;
@@ -177,8 +157,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionLearnNodesNodeGroupBucketsBucketActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionMultipathNodesNodeGroupBucketsBucketActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionOutputRegNodesNodeGroupBucketsBucketActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionPopNshNodesNodeGroupBucketsBucketActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionPushNshNodesNodeGroupBucketsBucketActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionRegLoadNodesNodeGroupBucketsBucketActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionRegMoveNodesNodeGroupBucketsBucketActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.group.buckets.bucket.action.action.NxActionResubmitNodesNodeGroupBucketsBucketActionsCase;
@@ -188,8 +166,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionLearnNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionMultipathNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionOutputRegNodesNodeTableFlowApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPopNshNodesNodeTableFlowApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPushNshNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionResubmitNodesNodeTableFlowApplyActionsCase;
@@ -199,8 +175,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionLearnNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionMultipathNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionOutputRegNodesNodeTableFlowWriteActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionPopNshNodesNodeTableFlowWriteActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionPushNshNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegMoveNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
@@ -213,8 +187,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionLearnRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionMultipathRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionOutputRegRpcRemoveGroupCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionPopNshRpcRemoveGroupCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionPushNshRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionRegLoadRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionRegMoveRpcRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.remove.group.input.buckets.bucket.action.action.NxActionResubmitRpcRemoveGroupCase;
@@ -230,8 +202,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionLearnRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionMultipathRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionOutputRegRpcUpdateGroupOriginalCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionPopNshRpcUpdateGroupOriginalCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionPushNshRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionRegLoadRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionRegMoveRpcUpdateGroupOriginalCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.original.group.buckets.bucket.action.action.NxActionResubmitRpcUpdateGroupOriginalCase;
@@ -241,8 +211,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionLearnRpcUpdateGroupUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionMultipathRpcUpdateGroupUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionOutputRegRpcUpdateGroupUpdatedCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionPopNshRpcUpdateGroupUpdatedCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionPushNshRpcUpdateGroupUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionRegLoadRpcUpdateGroupUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionRegMoveRpcUpdateGroupUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.update.group.input.updated.group.buckets.bucket.action.action.NxActionResubmitRpcUpdateGroupUpdatedCase;
@@ -251,9 +219,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtMarkKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthTypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshFlagsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshMdtypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshNpKey;
@@ -272,7 +237,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxReg5Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxReg6Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxReg7Key;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunGpeNpKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIdKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4SrcKey;
@@ -316,8 +280,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final ResubmitConvertor RESUBMIT_CONVERTOR = new ResubmitConvertor();
     private static final FinTimeoutConvertor FIN_TIMEOUT_CONVERTOR = new FinTimeoutConvertor();
     private static final MultipathConvertor MULTIPATH_CONVERTOR = new MultipathConvertor();
-    private static final PushNshConvertor PUSH_NSH_CONVERTOR = new PushNshConvertor();
-    private static final PopNshConvertor POP_NSH_CONVERTOR = new PopNshConvertor();
     private static final NspConvertor NSP_CONVERTOR = new NspConvertor();
     private static final NsiConvertor NSI_CONVERTOR = new NsiConvertor();
     private static final Nshc1Convertor NSC1_CONVERTOR = new Nshc1Convertor();
@@ -328,12 +290,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final NshTtlConvertor NSH_TTL_CONVERTOR = new NshTtlConvertor();
     private static final TunIPv4SrcConvertor TUN_IPV4_SRC_CONVERTOR = new TunIPv4SrcConvertor();
     private static final TunIPv4DstConvertor TUN_IPV4_DST_CONVERTOR = new TunIPv4DstConvertor();
-    private static final EncapEthTypeConvertor ENCAP_ETH_TYPE_CONVERTOR = new EncapEthTypeConvertor();
-    private static final EncapEthSrcConvertor ENCAP_ETH_SRC_CONVERTOR = new EncapEthSrcConvertor();
-    private static final EncapEthDstConvertor ENCAP_ETH_DST_CONVERTOR = new EncapEthDstConvertor();
     private static final NshMdtypeConvertor NSH_MDTYPE_CONVERTOR = new NshMdtypeConvertor();
     private static final NshNpConvertor NSH_NP_CONVERTOR = new NshNpConvertor();
-    private static final TunGpeNpConvertor TUN_GPE_NP_CONVERTOR = new TunGpeNpConvertor();
     private static final TcpSrcConvertor TCP_SRC_CONVERTOR = new TcpSrcConvertor();
     private static final TcpDstConvertor TCP_DST_CONVERTOR = new TcpDstConvertor();
     private static final UdpSrcConvertor UDP_SRC_CONVERTOR = new UdpSrcConvertor();
@@ -361,8 +319,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionResubmitNodesNodeTableFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutNodesNodeTableFlowApplyActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathNodesNodeTableFlowApplyActionsCase.class, MULTIPATH_CONVERTOR);
-        registerAction13(NxActionPushNshNodesNodeTableFlowApplyActionsCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshNodesNodeTableFlowApplyActionsCase.class, POP_NSH_CONVERTOR);
         registerAction13(NxActionConntrackNodesNodeTableFlowApplyActionsCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionCtClearNodesNodeTableFlowApplyActionsCase.class, CT_CLEAR_CONVERTOR);
         registerAction13(NxActionLearnNodesNodeTableFlowApplyActionsCase.class, LEARN_CONVERTOR);
@@ -373,8 +329,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionResubmitNodesNodeTableFlowWriteActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutNodesNodeTableFlowWriteActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathNodesNodeTableFlowWriteActionsCase.class, MULTIPATH_CONVERTOR);
-        registerAction13(NxActionPushNshNodesNodeTableFlowWriteActionsCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshNodesNodeTableFlowWriteActionsCase.class, POP_NSH_CONVERTOR);
         registerAction13(NxActionConntrackNodesNodeTableFlowWriteActionsCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionCtClearNodesNodeTableFlowWriteActionsCase.class, CT_CLEAR_CONVERTOR);
         registerAction13(NxActionLearnNodesNodeTableFlowWriteActionsCase.class, LEARN_CONVERTOR);
@@ -385,8 +339,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionResubmitNodesNodeGroupBucketsBucketActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutNodesNodeGroupBucketsBucketActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathNodesNodeGroupBucketsBucketActionsCase.class, MULTIPATH_CONVERTOR);
-        registerAction13(NxActionPushNshNodesNodeGroupBucketsBucketActionsCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshNodesNodeGroupBucketsBucketActionsCase.class, POP_NSH_CONVERTOR);
         registerAction13(NxActionConntrackNodesNodeGroupBucketsBucketActionsCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionCtClearNodesNodeGroupBucketsBucketActionsCase.class, CT_CLEAR_CONVERTOR);
         registerAction13(NxActionLearnNodesNodeGroupBucketsBucketActionsCase.class, LEARN_CONVERTOR);
@@ -398,8 +350,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionResubmitRpcAddFlowApplyActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutRpcAddFlowApplyActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathRpcAddFlowApplyActionsCase.class, MULTIPATH_CONVERTOR);
-        registerAction13(NxActionPushNshRpcAddFlowApplyActionsCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshRpcAddFlowApplyActionsCase.class, POP_NSH_CONVERTOR);
         registerAction13(NxActionConntrackRpcAddFlowApplyActionsCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionCtClearRpcAddFlowApplyActionsCase.class, CT_CLEAR_CONVERTOR);
         registerAction13(NxActionLearnRpcAddFlowApplyActionsCase.class, LEARN_CONVERTOR);
@@ -410,8 +360,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionResubmitRpcAddFlowWriteActionsCase.class, RESUBMIT_CONVERTOR);
         registerAction13(NxActionFinTimeoutRpcAddFlowWriteActionsCase.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(NxActionMultipathRpcAddFlowWriteActionsCase.class, MULTIPATH_CONVERTOR);
-        registerAction13(NxActionPushNshRpcAddFlowWriteActionsCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshRpcAddFlowWriteActionsCase.class, POP_NSH_CONVERTOR);
         registerAction13(NxActionConntrackRpcAddFlowWriteActionsCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionCtClearRpcAddFlowWriteActionsCase.class, CT_CLEAR_CONVERTOR);
         registerAction13(NxActionLearnRpcAddFlowWriteActionsCase.class, LEARN_CONVERTOR);
@@ -440,14 +388,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(NxActionMultipathRpcRemoveGroupCase.class, MULTIPATH_CONVERTOR);
         registerAction13(NxActionMultipathRpcUpdateGroupOriginalCase.class, MULTIPATH_CONVERTOR);
         registerAction13(NxActionMultipathRpcUpdateGroupUpdatedCase.class, MULTIPATH_CONVERTOR);
-        registerAction13(NxActionPushNshRpcAddGroupCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPushNshRpcRemoveGroupCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPushNshRpcUpdateGroupOriginalCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPushNshRpcUpdateGroupUpdatedCase.class, PUSH_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshRpcAddGroupCase.class, POP_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshRpcRemoveGroupCase.class, POP_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshRpcUpdateGroupOriginalCase.class, POP_NSH_CONVERTOR);
-        registerAction13(NxActionPopNshRpcUpdateGroupUpdatedCase.class, POP_NSH_CONVERTOR);
         registerAction13(NxActionConntrackRpcAddGroupCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionConntrackRpcRemoveGroupCase.class, CONNTRACK_CONVERTOR);
         registerAction13(NxActionConntrackRpcUpdateGroupOriginalCase.class, CONNTRACK_CONVERTOR);
@@ -479,8 +419,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registerAction13(ActionResubmit.class, RESUBMIT_CONVERTOR);
         registerAction13(ActionFinTimeout.class, FIN_TIMEOUT_CONVERTOR);
         registerAction13(ActionMultipath.class, MULTIPATH_CONVERTOR);
-        registerAction13(ActionPushNsh.class, PUSH_NSH_CONVERTOR);
-        registerAction13(ActionPopNsh.class, POP_NSH_CONVERTOR);
         registerAction13(ActionConntrack.class, CONNTRACK_CONVERTOR);
         registerAction13(ActionCtClear.class, CT_CLEAR_CONVERTOR);
         registerAction13(ActionLearn.class, LEARN_CONVERTOR);
@@ -501,10 +439,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 NiciraUtil.createOfJavaKeyFrom(FinTimeoutCodec.SERIALIZER_KEY), FIN_TIMEOUT_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
                 NiciraUtil.createOfJavaKeyFrom(MultipathCodec.SERIALIZER_KEY), MULTIPATH_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerActionConvertor(
-                NiciraUtil.createOfJavaKeyFrom(PushNshCodec.SERIALIZER_KEY), PUSH_NSH_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerActionConvertor(
-                NiciraUtil.createOfJavaKeyFrom(PopNshCodec.SERIALIZER_KEY), POP_NSH_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
                 NiciraUtil.createOfJavaKeyFrom(ConntrackCodec.SERIALIZER_KEY), CONNTRACK_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerActionConvertor(
@@ -630,21 +564,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4DstCodec.SERIALIZER_KEY,
                 TUN_IPV4_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxEncapEthTypeKey.class, EncodeConstants.OF13_VERSION_ID),
-                ENCAP_ETH_TYPE_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(EncapEthTypeCodec.SERIALIZER_KEY,
-                ENCAP_ETH_TYPE_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxEncapEthSrcKey.class, EncodeConstants.OF13_VERSION_ID),
-                ENCAP_ETH_SRC_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(EncapEthSrcCodec.SERIALIZER_KEY,
-                ENCAP_ETH_SRC_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxEncapEthDstKey.class, EncodeConstants.OF13_VERSION_ID),
-                ENCAP_ETH_DST_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(EncapEthDstCodec.SERIALIZER_KEY,
-                ENCAP_ETH_DST_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmNxNshMdtypeKey.class, EncodeConstants.OF13_VERSION_ID),
                 NSH_MDTYPE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(NshMdtypeCodec.SERIALIZER_KEY,
@@ -653,11 +572,6 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 new ConverterExtensionKey<>(NxmNxNshNpKey.class, EncodeConstants.OF13_VERSION_ID), NSH_NP_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(NshNpCodec.SERIALIZER_KEY, NSH_NP_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxTunGpeNpKey.class, EncodeConstants.OF13_VERSION_ID),
-                TUN_GPE_NP_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunGpeNpCodec.SERIALIZER_KEY,
-                TUN_GPE_NP_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
                 new ConverterExtensionKey<>(NxmOfTcpSrcKey.class, EncodeConstants.OF13_VERSION_ID), TCP_SRC_CONVERTOR));
         registrations.add(
