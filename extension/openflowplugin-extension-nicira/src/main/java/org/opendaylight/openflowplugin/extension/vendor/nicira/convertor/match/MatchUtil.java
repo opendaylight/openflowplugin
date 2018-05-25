@@ -44,9 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthTypeGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshFlagsGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshMdtypeGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshNpGrouping;
@@ -59,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxPktMarkGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxRegGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunGpeNpGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIdGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4SrcGrouping;
@@ -122,12 +118,6 @@ public final class MatchUtil {
             NxmNxNshc3Grouping.class);
     public static final GroupingResolver<NxmNxNshc4Grouping, Extension> NSC4_RESOLVER = new GroupingResolver<>(
             NxmNxNshc4Grouping.class);
-    public static final GroupingResolver<NxmNxEncapEthTypeGrouping, Extension> ENCAP_ETH_TYPE_RESOLVER =
-            new GroupingResolver<>(NxmNxEncapEthTypeGrouping.class);
-    public static final GroupingResolver<NxmNxEncapEthSrcGrouping, Extension> ENCAP_ETH_SRC_RESOLVER =
-            new GroupingResolver<>(NxmNxEncapEthSrcGrouping.class);
-    public static final GroupingResolver<NxmNxEncapEthDstGrouping, Extension> ENCAP_ETH_DST_RESOLVER =
-            new GroupingResolver<>(NxmNxEncapEthDstGrouping.class);
     public static final GroupingResolver<NxmNxNshFlagsGrouping, Extension> NSH_FLAGS_RESOLVER =
             new GroupingResolver<>(NxmNxNshFlagsGrouping.class);
     public static final GroupingResolver<NxmNxNshMdtypeGrouping, Extension> NSH_MDTYPE_RESOLVER =
@@ -136,8 +126,6 @@ public final class MatchUtil {
             NxmNxNshNpGrouping.class);
     public static final GroupingResolver<NxmNxNshTtlGrouping, Extension> NSH_TTL_RESOLVER =
             new GroupingResolver<>(NxmNxNshTtlGrouping.class);
-    public static final GroupingResolver<NxmNxTunGpeNpGrouping, Extension> TUN_GPE_NP_RESOLVER = new GroupingResolver<>(
-            NxmNxTunGpeNpGrouping.class);
     public static final GroupingResolver<NxmOfTcpSrcGrouping, Extension> TCP_SRC_RESOLVER = new GroupingResolver<>(
             NxmOfTcpSrcGrouping.class);
     public static final GroupingResolver<NxmOfTcpDstGrouping, Extension> TCP_DST_RESOLVER = new GroupingResolver<>(
@@ -189,14 +177,10 @@ public final class MatchUtil {
         NSC2_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSC3_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSC4_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ENCAP_ETH_TYPE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ENCAP_ETH_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ENCAP_ETH_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSH_FLAGS_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSH_MDTYPE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSH_NP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NSH_TTL_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        TUN_GPE_NP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         TCP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         TCP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         UDP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
