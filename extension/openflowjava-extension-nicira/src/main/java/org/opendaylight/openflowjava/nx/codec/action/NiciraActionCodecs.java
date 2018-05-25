@@ -20,8 +20,6 @@ public interface NiciraActionCodecs {
     OutputReg2Codec OUTPUT_REG2_CODEC = new OutputReg2Codec();
     ResubmitCodec RESUBMIT_CODEC = new ResubmitCodec();
     MultipathCodec MULTIPATH_CODEC = new MultipathCodec();
-    PushNshCodec PUSH_NSH_CODEC = new PushNshCodec();
-    PopNshCodec POP_NSH_CODEC = new PopNshCodec();
     ConntrackCodec CONNTRACK_CODEC = new ConntrackCodec();
     CtClearCodec CT_CLEAR_CODEC = new CtClearCodec();
     LearnCodec LEARN_CODEC = new LearnCodec();
