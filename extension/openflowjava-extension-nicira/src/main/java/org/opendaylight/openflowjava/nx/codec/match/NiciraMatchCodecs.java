@@ -42,14 +42,10 @@ public interface NiciraMatchCodecs {
     Nshc2Codec NSC2_CODEC = new Nshc2Codec();
     Nshc3Codec NSC3_CODEC = new Nshc3Codec();
     Nshc4Codec NSC4_CODEC = new Nshc4Codec();
-    EncapEthTypeCodec ENCAP_ETH_TYPE_CODEC = new EncapEthTypeCodec();
-    EncapEthSrcCodec ENCAP_ETH_SRC_CODEC = new EncapEthSrcCodec();
-    EncapEthDstCodec ENCAP_ETH_DST_CODEC = new EncapEthDstCodec();
     NshFlagsCodec NSH_FLAGS_CODEC = new NshFlagsCodec();
     NshMdtypeCodec NSH_MDTYPE_CODEC = new NshMdtypeCodec();
     NshNpCodec NSH_NP_CODEC = new NshNpCodec();
     NshTtlCodec NSH_TTL_CODEC = new NshTtlCodec();
-    TunGpeNpCodec TUN_GPE_NP_CODEC = new TunGpeNpCodec();
     TcpSrcCodec TCP_SRC_CODEC = new TcpSrcCodec();
     TcpDstCodec TCP_DST_CODEC = new TcpDstCodec();
     UdpSrcCodec UDP_SRC_CODEC = new UdpSrcCodec();
