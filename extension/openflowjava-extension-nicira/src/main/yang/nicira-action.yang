@@ -41,12 +41,6 @@ module nicira-action {
     identity nxm-nx-multipath {
         base ofaction:experimenter-action-sub-type;
     }
-    identity nxm-nx-push-nsh {
-        base ofaction:experimenter-action-sub-type;
-    }
-    identity nxm-nx-pop-nsh {
-        base ofaction:experimenter-action-sub-type;
-    }
     identity nxm-nx-conntrack {
         base ofaction:experimenter-action-sub-type;
     }
@@ -285,21 +279,6 @@ module nicira-action {
             leaf dst {
                 type uint32;
             }
-            leaf experimenter-id {
-                type oft:experimenter-id;
-            }
-        }
-    }
-
-    grouping ofj-nx-action-push-nsh-grouping {
-        container nx-action-push-nsh {
-            leaf experimenter-id {
-                type oft:experimenter-id;
-            }
-        }
-    }
-    grouping ofj-nx-action-pop-nsh-grouping {
-        container nx-action-pop-nsh {
             leaf experimenter-id {
                 type oft:experimenter-id;
             }
@@ -568,12 +547,6 @@ module nicira-action {
         }
         case action-multipath {
             uses ofj-nx-action-multipath-grouping;
-        }
-        case action-push-nsh {
-            uses ofj-nx-action-push-nsh-grouping;
-        }
-        case action-pop-nsh {
-            uses ofj-nx-action-pop-nsh-grouping;
         }
         case action-conntrack {
             uses ofj-nx-action-conntrack-grouping;
