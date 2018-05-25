@@ -130,7 +130,7 @@ public final class LLDPDiscoveryUtils {
                 InstanceIdentifier<NodeConnector> srcInstanceId = InstanceIdentifier.builder(Nodes.class)
                         .child(Node.class, new NodeKey(srcNodeId))
                         .child(NodeConnector.class, new NodeConnectorKey(srcNodeConnectorId))
-                        .toInstance();
+                        .build();
                 nodeConnectorRef = new NodeConnectorRef(srcInstanceId);
             } catch (Exception e) {
                 LOG.debug("Caught exception while parsing out lldp optional and custom fields", e);
