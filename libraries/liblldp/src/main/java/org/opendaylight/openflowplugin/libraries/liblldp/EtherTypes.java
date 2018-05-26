@@ -26,8 +26,8 @@ public enum EtherTypes {
     CISCOQINQ("Cisco QINQ", 0x9200); // Cisco non-standard QinQ
 
     private static final String REGEX_NUMBER_STRING = "^[0-9]+$";
-    private String description;
-    private int number;
+    private final String description;
+    private final int number;
 
     EtherTypes(final String description, final int number) {
         this.description = description;

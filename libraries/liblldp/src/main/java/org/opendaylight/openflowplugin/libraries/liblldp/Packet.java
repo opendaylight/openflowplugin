@@ -93,7 +93,7 @@ public abstract class Packet {
             startOffset = bitOffset + this.getfieldOffset(hdrField);
             numBits = this.getfieldnumBits(hdrField);
 
-            byte[] hdrFieldBytes = null;
+            byte[] hdrFieldBytes;
             try {
                 hdrFieldBytes = BitBufferHelper.getBits(data, startOffset,
                         numBits);
