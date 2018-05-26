@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
@@ -42,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
@@ -158,8 +158,8 @@ public class GroupConvertorTest {
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
             final Action action = outActionList
                     .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+            if (action.getActionChoice() instanceof GroupCase) {
+                assertEquals((Long) 5L, ((GroupCase) action.getActionChoice()).getGroupAction().getGroupId());
 
             }
             // TODO:setMplsTTL :OF layer doesnt have get();
@@ -172,9 +172,9 @@ public class GroupConvertorTest {
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
             final Action action = outActionList1
                     .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
+            if (action.getActionChoice() instanceof GroupCase) {
 
-                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 6L, ((GroupCase) action.getActionChoice()).getGroupAction().getGroupId());
 
 
             }
@@ -269,8 +269,8 @@ public class GroupConvertorTest {
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
             final Action action = outActionList
                     .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+            if (action.getActionChoice() instanceof GroupCase) {
+                assertEquals((Long) 5L, ((GroupCase) action.getActionChoice()).getGroupAction().getGroupId());
             }
         }
 
@@ -278,8 +278,8 @@ public class GroupConvertorTest {
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
             final Action action = outActionList1
                     .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+            if (action.getActionChoice() instanceof GroupCase) {
+                assertEquals((Long) 6L, ((GroupCase) action.getActionChoice()).getGroupAction().getGroupId());
             }
         }
     }
@@ -491,8 +491,8 @@ public class GroupConvertorTest {
         for (int outItem = 0; outItem < outActionList.size(); outItem++) {
             final Action action = outActionList
                     .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+            if (action.getActionChoice() instanceof GroupCase) {
+                assertEquals((Long) 5L, ((GroupCase) action.getActionChoice()).getGroupAction().getGroupId());
 
             }
 
@@ -502,9 +502,9 @@ public class GroupConvertorTest {
         for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
             final Action action = outActionList1
                     .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
+            if (action.getActionChoice() instanceof GroupCase) {
 
-                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
+                assertEquals((Long) 6L, ((GroupCase) action.getActionChoice()).getGroupAction().getGroupId());
 
             }
 
@@ -512,7 +512,7 @@ public class GroupConvertorTest {
 
     }
 
-    private GroupModInputBuilder convert(Group group, VersionDatapathIdConvertorData data) {
+    private GroupModInputBuilder convert(final Group group, final VersionDatapathIdConvertorData data) {
         final Optional<GroupModInputBuilder> outAddGroupInputOptional = convertorManager.convert(group, data);
         assertTrue("Group convertor not found", outAddGroupInputOptional.isPresent());
         return outAddGroupInputOptional.get();
