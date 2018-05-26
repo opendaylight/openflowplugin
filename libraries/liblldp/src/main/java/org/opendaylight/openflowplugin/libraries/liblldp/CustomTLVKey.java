@@ -56,15 +56,7 @@ public class CustomTLVKey {
         }
 
         CustomTLVKey other = (CustomTLVKey) obj;
-        if (oui != other.oui) {
-            return false;
-        }
-
-        if (subtype != other.subtype) {
-            return false;
-        }
-
-        return true;
+        return oui == other.oui && subtype == other.subtype;
     }
 
 }

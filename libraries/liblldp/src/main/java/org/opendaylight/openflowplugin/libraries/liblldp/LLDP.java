@@ -55,25 +55,26 @@ public class LLDP extends Packet {
     /**
      * Returns the TLV byte type.
      *
-     * @param String description of the type of TLV
+     * @param typeDesc description of the type of TLV
      * @return byte type of TLV
      */
     private byte getType(final String typeDesc) {
-        if (typeDesc.equals(CHASSISID)) {
-            return LLDPTLV.TLVType.ChassisID.getValue();
-        } else if (typeDesc.equals(PORTID)) {
-            return LLDPTLV.TLVType.PortID.getValue();
-        } else if (typeDesc.equals(TTL)) {
-            return LLDPTLV.TLVType.TTL.getValue();
-        } else if (typeDesc.equals(SYSTEMNAMEID)) {
-            return LLDPTLV.TLVType.SystemName.getValue();
-        } else {
-            return LLDPTLV.TLVType.Unknown.getValue();
+        switch (typeDesc) {
+            case CHASSISID:
+                return LLDPTLV.TLVType.ChassisID.getValue();
+            case PORTID:
+                return LLDPTLV.TLVType.PortID.getValue();
+            case TTL:
+                return LLDPTLV.TLVType.TTL.getValue();
+            case SYSTEMNAMEID:
+                return LLDPTLV.TLVType.SystemName.getValue();
+            default:
+                return LLDPTLV.TLVType.Unknown.getValue();
         }
     }
 
     private LLDPTLV getFromTLVs(final Byte type) {
-        LLDPTLV tlv = null;
+        LLDPTLV tlv;
         tlv = mandatoryTLVs.get(type);
         if (tlv == null) {
             tlv = optionalTLVs.get(type);
@@ -197,8 +198,7 @@ public class LLDP extends Packet {
         int lldpSize = size; // LLDP size
 
         if (LOG.isTraceEnabled()) {
-            LOG.trace("LLDP: {} (offset {} bitsize {})", new Object[] { HexEncode.bytesToHexString(data),
-                lldpOffset, lldpSize });
+            LOG.trace("LLDP: {} (offset {} bitsize {})", HexEncode.bytesToHexString(data), lldpOffset, lldpSize);
         }
         /*
          * Deserialize the TLVs until we reach the end of the packet
