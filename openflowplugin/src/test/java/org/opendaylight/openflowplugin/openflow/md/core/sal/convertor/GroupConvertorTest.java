@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
@@ -42,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetMplsTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
@@ -155,32 +156,32 @@ public class GroupConvertorTest {
         assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
-        for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            final Action action = outActionList
-                    .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
-
-            }
-            // TODO:setMplsTTL :OF layer doesnt have get();
-        }
+        assertEquals(ImmutableList.of(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build()),
+            outActionList);
 
         assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
         assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
         assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
+
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
-        for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            final Action action = outActionList1
-                    .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-
-                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
-
-
-            }
-            // TODO:setMplsTTL :OF layer doesnt have get();
-        }
-
+        assertEquals(ImmutableList.of(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build()),
+            outActionList1);
     }
 
     /**
@@ -266,22 +267,28 @@ public class GroupConvertorTest {
         assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
-        for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            final Action action = outActionList
-                    .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
-            }
-        }
+        assertEquals(ImmutableList.of(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(6L).build()).build()).build()),
+            outActionList);
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
-        for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            final Action action = outActionList1
-                    .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
-            }
-        }
+        assertEquals(ImmutableList.of(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCaseBuilder()
+                .build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new SetMplsTtlCaseBuilder().setSetMplsTtlAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.mpls.ttl._case.SetMplsTtlActionBuilder()
+                .setMplsTtl((short) 1).build()).build()).build()),
+            outActionList1);
     }
 
     /**
@@ -488,31 +495,31 @@ public class GroupConvertorTest {
         assertEquals(10L, outAddGroupInput.getGroupId().getValue().longValue());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
-        for (int outItem = 0; outItem < outActionList.size(); outItem++) {
-            final Action action = outActionList
-                    .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-                assertEquals((Long) 5L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
-
-            }
-
-        }
+        assertEquals(ImmutableList.of(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(6L).build()).build()).build()),
+            outActionList);
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
-        for (int outItem = 0; outItem < outActionList1.size(); outItem++) {
-            final Action action = outActionList1
-                    .get(outItem);
-            if (action.getActionChoice() instanceof GroupActionCase) {
-
-                assertEquals((Long) 6L, ((GroupActionCase) action.getActionChoice()).getGroupAction().getGroupId());
-
-            }
-
-        }
-
+        assertEquals(ImmutableList.of(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(5L).build()).build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder()
+            .setActionChoice(new GroupCaseBuilder().setGroupAction(
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder()
+                .setGroupId(6L).build()).build()).build()),
+            outActionList1);
     }
 
-    private GroupModInputBuilder convert(Group group, VersionDatapathIdConvertorData data) {
+    private GroupModInputBuilder convert(final Group group, final VersionDatapathIdConvertorData data) {
         final Optional<GroupModInputBuilder> outAddGroupInputOptional = convertorManager.convert(group, data);
         assertTrue("Group convertor not found", outAddGroupInputOptional.isPresent());
         return outAddGroupInputOptional.get();
