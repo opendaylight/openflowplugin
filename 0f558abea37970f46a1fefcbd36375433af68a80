@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "72863620_154a2e54",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-27T03:48:48Z",
+      "side": 1,
+      "message": "Currently the logic has been placed in openflowplugin. We can move the logic to application( like upgrade orchestrator). Openflowplugin provides reconciliation framework, where any application registers itself and will get callback on switch added. Applications should register lower priority than the plugin reconciliation and can perform operations based on their needs.\n\nFor now, we are keeping this way.",
+      "parentUuid": "1c0dd186_1a12b5c9",
+      "range": {
+        "startLine": 75,
+        "startChar": 32,
+        "endLine": 75,
+        "endChar": 54
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "09f1588b_953e0fae",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "636bc86a_2fcdfd39",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-27T03:48:48Z",
+      "side": 1,
+      "message": "i\u0027m not getting it, could you please explain a little more in detail.",
+      "parentUuid": "09f1588b_953e0fae",
+      "range": {
+        "startLine": 95,
+        "startChar": 33,
+        "endLine": 95,
+        "endChar": 34
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7d6b878b_9372afee",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -59,6 +107,24 @@
       "writtenOn": "2018-05-21T14:17:19Z",
       "side": 1,
       "message": "Will this contain a status to know whether or not the bundle commit succeeded?",
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "024545c0_85677ed3",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-27T03:48:48Z",
+      "side": 1,
+      "message": "Yes, rpc result will return the status of the each commit for each switch bundle commit.",
+      "parentUuid": "7d6b878b_9372afee",
       "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
