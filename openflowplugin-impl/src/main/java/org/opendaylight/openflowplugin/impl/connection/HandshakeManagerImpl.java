@@ -169,7 +169,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     private void stepByStepVersionSubStep(Short remoteVersion) throws Exception {
-        if (remoteVersion.equals(lastProposedVersion)) {
+        if (remoteVersion >= lastProposedVersion) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.trace("ret - OK - switch answered with lastProposedVersion");
         } else {
