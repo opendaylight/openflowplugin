@@ -290,9 +290,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                 return flowRegistryKey;
             }
         } else {
-            for (Map.Entry<FlowRegistryKey, FlowDescriptor> keyValueSet : flowRegistry.entrySet()) {
-                if (keyValueSet.getKey().equals(flowRegistryKey)) {
-                    return keyValueSet.getKey();
+            synchronized (flowRegistry) {
+                for (Map.Entry<FlowRegistryKey, FlowDescriptor> keyValueSet : flowRegistry.entrySet()) {
+                    if (keyValueSet.getKey().equals(flowRegistryKey)) {
+                        return keyValueSet.getKey();
+                    }
                 }
             }
         }
