@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -52,7 +53,7 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
             ? extends DataContainer>> registryActionToOFJAva;
     private final Map<MessageTypeKey<?>, ConvertorActionFromOFJava<?, ?>> registryActionFromOFJAva;
     private final Map<TypeVersionKey<?>, ConverterMessageToOFJava<? extends ExperimenterMessageOfChoice,
-            ? extends DataContainer>> registryMessageToOFJAva;
+            ? extends DataContainer, ? extends ConvertorData>> registryMessageToOFJAva;
     private final Map<MessageTypeKey<?>, ConvertorMessageFromOFJava<? extends ExperimenterDataOfChoice, MessagePath>>
             registryMessageFromOFJAva;
 
@@ -142,9 +143,10 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param extConvertor extension convertor
      * @return registration closure
      */
-    private <T extends DataContainer, K extends ExperimenterMessageOfChoice> RegistrationCloserMessageToOFJava<T, K>
-            hireMessageJanitor(final TypeVersionKey<K> key, final ConverterMessageToOFJava<K, T> extConvertor) {
-        RegistrationCloserMessageToOFJava<T, K> janitor = new RegistrationCloserMessageToOFJava<>();
+    private <T extends DataContainer, K extends ExperimenterMessageOfChoice,
+        D extends ConvertorData> RegistrationCloserMessageToOFJava<T, K,
+        D> hireMessageJanitor(final TypeVersionKey<K> key, final ConverterMessageToOFJava<K, T, D> extConvertor) {
+        RegistrationCloserMessageToOFJava<T, K, D> janitor = new RegistrationCloserMessageToOFJava<>();
         janitor.setConverter(extConvertor);
         janitor.setKey(key);
         janitor.setRegistrator(this);
@@ -239,8 +241,8 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
      * @param key message key
      * @param converter extension convertor
      */
-    public void unregister(final TypeVersionKey<?> key, final ConverterMessageToOFJava<?, ?> converter) {
-        ConverterMessageToOFJava<?, ?> registeredConverter = registryMessageToOFJAva.get(key);
+    public void unregister(final TypeVersionKey<?> key, final ConverterMessageToOFJava<?, ?, ?> converter) {
+        ConverterMessageToOFJava<?, ?, ?> registeredConverter = registryMessageToOFJAva.get(key);
         if (registeredConverter != null && registeredConverter == converter) {
             registryMessageToOFJAva.remove(key);
         }
@@ -309,9 +311,9 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     }
 
     @Override
-    public <I extends ExperimenterMessageOfChoice, O extends DataContainer>
-            ObjectRegistration<ConverterMessageToOFJava<I, O>> registerMessageConvertor(
-                TypeVersionKey<I> key, ConverterMessageToOFJava<I, O> convertor) {
+    public <I extends ExperimenterMessageOfChoice, O extends DataContainer, D extends ConvertorData>
+            ObjectRegistration<ConverterMessageToOFJava<I, O, D>> registerMessageConvertor(
+                TypeVersionKey<I> key, ConverterMessageToOFJava<I, O, D> convertor) {
         registryMessageToOFJAva.put(key, convertor);
         return hireMessageJanitor(key, convertor);
     }
@@ -324,9 +326,9 @@ public class ExtensionConverterManagerImpl implements ExtensionConverterManager 
     }
 
     @Override
-    public <F extends ExperimenterMessageOfChoice, T extends DataContainer> ConverterMessageToOFJava<F, T>
-            getMessageConverter(TypeVersionKey<F> key) {
-        return (ConverterMessageToOFJava<F, T>) registryMessageToOFJAva.get(key);
+    public <F extends ExperimenterMessageOfChoice, T extends DataContainer,
+        D extends ConvertorData> ConverterMessageToOFJava<F, T, D> getMessageConverter(TypeVersionKey<F> key) {
+        return (ConverterMessageToOFJava<F, T, D>) registryMessageToOFJAva.get(key);
     }
 
     @Override
