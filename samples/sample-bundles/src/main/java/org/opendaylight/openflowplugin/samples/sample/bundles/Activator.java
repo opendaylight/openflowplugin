@@ -237,7 +237,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
         flowBuilder.setContainerName(null);
         flowBuilder.setId(new FlowId(flowId));
         flowBuilder.setTableId(tableId);
-        flowBuilder.setKey(key);
+        flowBuilder.withKey(key);
         flowBuilder.setFlowName("FlowWithGroupInstruction");
 
         return flowBuilder.build();
@@ -246,7 +246,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
     private static Group createGroup(long groupId) {
         GroupBuilder groupBuilder = new GroupBuilder();
         GroupKey groupKey = new GroupKey(new GroupId(groupId));
-        groupBuilder.setKey(groupKey);
+        groupBuilder.withKey(groupKey);
         groupBuilder.setGroupId(groupKey.getGroupId());
         groupBuilder.setBarrier(false);
         groupBuilder.setGroupName("Foo");
@@ -318,7 +318,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
 
         actionBuilder.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionBuilder.build()).build());
         actionBuilder.setOrder(1);
-        actionBuilder.setKey(new ActionKey(0));
+        actionBuilder.withKey(new ActionKey(0));
         List<Action> actionList = new ArrayList<>();
         actionList.add(actionBuilder.build());
 
@@ -329,7 +329,7 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
         instructionBuilder.setInstruction(new ApplyActionsCaseBuilder()
                 .setApplyActions(applyActionsBuilder.build()).build());
         instructionBuilder.setOrder(0);
-        instructionBuilder.setKey(new InstructionKey(0));
+        instructionBuilder.withKey(new InstructionKey(0));
 
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<>();

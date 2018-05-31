@@ -95,19 +95,19 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     private void createUserNode(String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
 
     private void createTestNode() {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
 
     private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
     private TableFeaturesBuilder createTestTableFeatures(String tableFeatureTypeArg) {
@@ -220,7 +220,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                         .setApplyActionsMiss(new ApplyActionsMissBuilder().setAction(actionList).build()).build());
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -241,7 +241,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                         .setApplyActions(new ApplyActionsBuilder().setAction(actionListt5).build()).build());
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -256,7 +256,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         tableFeatureProperty.setTableFeaturePropType(nextTblBld.build());
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -271,7 +271,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         tableFeatureProperty.setTableFeaturePropType(nextTblMissBld.build());
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -283,7 +283,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         ib.setOrder(1);
         ib.setInstruction(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
                 .instruction.ApplyActionsCaseBuilder().build());
-        ib.setKey(new InstructionKey(1));
+        ib.withKey(new InstructionKey(1));
 
         List<Instruction> instLst = new ArrayList<>();
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
@@ -296,7 +296,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -309,13 +309,13 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         ib1.setOrder(1);
         ib1.setInstruction(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
                 .instruction.WriteMetadataCaseBuilder().build());
-        ib1.setKey(new InstructionKey(1));
+        ib1.withKey(new InstructionKey(1));
 
         InstructionBuilder ib2 = new InstructionBuilder();
         ib2.setOrder(2);
         ib2.setInstruction(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
                 .instruction.MeterCaseBuilder().build());
-        ib2.setKey(new InstructionKey(2));
+        ib2.withKey(new InstructionKey(2));
 
         List<Instruction> instLst = new ArrayList<>();
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
@@ -328,7 +328,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -355,7 +355,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                         .WriteActionsBuilder().setAction(actionList).build()).build());
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -381,7 +381,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                         .miss.WriteActionsMissBuilder().setAction(actionList).build()).build());
 
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -405,7 +405,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(matchBld.build());
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -443,7 +443,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(writeSetfieldBld.build());
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -480,7 +480,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(writeSetfieldBld.build());
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -517,7 +517,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(applySetfieldBld.build());
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -554,7 +554,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(applySetfieldMissBld.build());
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -584,7 +584,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(wildCardsBld.build());
         TableFeaturePropertiesKey keyValue = new TableFeaturePropertiesKey(0);
-        tableFeatureProperty.setKey(keyValue);
+        tableFeatureProperty.withKey(keyValue);
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
@@ -594,7 +594,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
 
         KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
                         .child(TableFeatures.class, new TableFeaturesKey(tableFeatures.getTableId()));
 
         modification.merge(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode, true);

@@ -154,7 +154,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdent.child(Table.class, tableKey);
 
             for (final Flow flow : flowSyncBox.getItemsToPush()) {
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class, flow.getKey());
+                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class, flow.key());
 
                 LOG.trace("adding flow {} in table {} - absent on device {} match{}",
                         flow.getId(), tableKey, nodeId, flow.getMatch());
@@ -169,7 +169,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 final Flow updatedFlow = flowUpdate.getUpdated();
 
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                        updatedFlow.getKey());
+                        updatedFlow.key());
                 LOG.trace("flow {} in table {} - needs update on device {} match{}",
                         updatedFlow.getId(), tableKey, nodeId, updatedFlow.getMatch());
 
@@ -213,7 +213,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             // loop flows on device and check if the are configured
             for (final Flow flow : flowsPerTable.getValue().getItemsToPush()) {
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent =
-                        tableIdent.child(Flow.class, flow.getKey());
+                        tableIdent.child(Flow.class, flow.key());
                 allResults.add(JdkFutureAdapters.listenInPoolThread(
                         flowForwarder.remove(flowIdent, flow, nodeIdent)));
                 flowCrudCounts.incRemoved();
@@ -247,7 +247,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             LOG.trace("removing meter {} - absent in config {}",
                     meter.getMeterId(), nodeId);
             final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent =
-                    nodeIdent.child(Meter.class, meter.getKey());
+                    nodeIdent.child(Meter.class, meter.key());
             allResults.add(JdkFutureAdapters.listenInPoolThread(
                     meterForwarder.remove(meterIdent, meter, nodeIdent)));
             meterCrudCounts.incRemoved();
@@ -304,7 +304,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final ItemSyncBox<Group> groupsPortion) {
         List<ListenableFuture<RpcResult<RemoveGroupOutput>>> allResults = new ArrayList<>();
         for (Group group : groupsPortion.getItemsToPush()) {
-            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.getKey());
+            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
             allResults.add(JdkFutureAdapters.listenInPoolThread(groupForwarder.remove(groupIdent, group, nodeIdent)));
         }
 
@@ -355,7 +355,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         final List<ListenableFuture<RpcResult<UpdateGroupOutput>>> allUpdateResults = new ArrayList<>();
 
         for (Group group : groupsPortion.getItemsToPush()) {
-            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.getKey());
+            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
             allResults.add(JdkFutureAdapters.listenInPoolThread(groupForwarder.add(groupIdent, group, nodeIdent)));
 
         }
@@ -364,7 +364,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final Group existingGroup = groupTuple.getOriginal();
             final Group group = groupTuple.getUpdated();
 
-            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.getKey());
+            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
             allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
                     groupForwarder.update(groupIdent, existingGroup, group, nodeIdent)));
         }
@@ -403,7 +403,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         final List<ListenableFuture<RpcResult<AddMeterOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateMeterOutput>>> allUpdateResults = new ArrayList<>();
         for (Meter meter : syncBox.getItemsToPush()) {
-            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, meter.getKey());
+            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, meter.key());
             LOG.debug("adding meter {} - absent on device {}",
                     meter.getMeterId(), nodeId);
             allResults.add(JdkFutureAdapters.listenInPoolThread(
@@ -414,7 +414,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         for (ItemSyncBox.ItemUpdateTuple<Meter> meterTuple : syncBox.getItemsToUpdate()) {
             final Meter existingMeter = meterTuple.getOriginal();
             final Meter updated = meterTuple.getUpdated();
-            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, updated.getKey());
+            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, updated.key());
             LOG.trace("meter {} - needs update on device {}", updated.getMeterId(), nodeId);
             allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
                     meterForwarder.update(meterIdent, existingMeter, updated, nodeIdent)));

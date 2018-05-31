@@ -58,7 +58,7 @@ public class UdpDstConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfUdpDst(nxmOfUdpDstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
             .thenReturn(extensionAugmentation);
 
         udpDstConvertor = new UdpDstConvertor();

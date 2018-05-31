@@ -75,7 +75,7 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                                     .child(Flow.class, key),
                             flow
                                     .setId(key.getId())
-                                    .setKey(key)
+                                    .withKey(key)
                                     .build(),
                             withParents);
                 }

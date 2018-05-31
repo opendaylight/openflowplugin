@@ -54,6 +54,6 @@ public final class ModificationUtil {
         if (dataAfter == null) {
             return null;
         }
-        return dataAfter.getAugmentation(FlowCapableNode.class);
+        return dataAfter.augmentation(FlowCapableNode.class);
     }
 }

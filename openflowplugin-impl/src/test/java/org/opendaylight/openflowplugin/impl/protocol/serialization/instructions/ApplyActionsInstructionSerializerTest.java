@@ -39,7 +39,7 @@ public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSe
                 .setApplyActions(new ApplyActionsBuilder()
                         .setAction(Collections.singletonList(new ActionBuilder()
                                 .setOrder(order)
-                                .setKey(new ActionKey(order))
+                                .withKey(new ActionKey(order))
                                 .setAction(new SetNwSrcActionCaseBuilder()
                                         .setSetNwSrcAction(new SetNwSrcActionBuilder()
                                                 .setAddress(new Ipv4Builder()

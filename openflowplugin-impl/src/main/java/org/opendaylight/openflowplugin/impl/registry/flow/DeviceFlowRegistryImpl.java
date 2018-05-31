@@ -285,7 +285,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     private FlowRegistryKey getExistingKey(final FlowRegistryKey flowRegistryKey) {
-        if (flowRegistryKey.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class) == null) {
+        if (flowRegistryKey.getMatch().augmentation(GeneralAugMatchNodesNodeTableFlow.class) == null) {
             if (flowRegistry.containsKey(flowRegistryKey)) {
                 return flowRegistryKey;
             }

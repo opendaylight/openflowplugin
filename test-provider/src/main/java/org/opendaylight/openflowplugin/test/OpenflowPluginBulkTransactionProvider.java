@@ -142,7 +142,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         }
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         return builder;
     }
 
@@ -414,7 +414,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         flow.setOutPort(outputPort);
 
         FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
-        flow.setKey(key);
+        flow.withKey(key);
         flow.setPriority(2);
         flow.setFlowName(originalFlowName + "X" + flowType);
         return flow;
@@ -490,7 +490,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     }
 
     private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
     public void _modifyFlows(CommandInterpreter ci) {
@@ -626,28 +626,28 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 throw new IllegalArgumentException("Invalid flowtype: " + flowtype);
         }
 
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
+        InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
-                .child(Flow.class, tf.getKey());
+                .child(Flow.class, tf.key());
         modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
+        InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf1.getTableId()))
-                .child(Flow.class, tf1.getKey());
+                .child(Flow.class, tf1.key());
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
 
-        InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
+        InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf2.getTableId()))
-                .child(Flow.class, tf2.getKey());
+                .child(Flow.class, tf2.key());
         modification.delete(LogicalDatastoreType.OPERATIONAL, path3);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path3);
-        InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.getKey())
+        InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf3.getTableId()))
-                .child(Flow.class, tf3.getKey());
+                .child(Flow.class, tf3.key());
         modification.delete(LogicalDatastoreType.OPERATIONAL, path4);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
@@ -671,8 +671,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                            FlowBuilder flow3, NodeBuilder nodeBuilder) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey());
+                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key());
         modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
                 true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path1, flow.build(), true);
@@ -680,8 +680,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
         InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.getKey());
+                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.key());
         modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
                 true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path2, flow1.build(), true);
@@ -690,8 +690,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.merge(LogicalDatastoreType.CONFIGURATION, path2, flow1.build(), true);
 
         InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.getKey());
+                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.key());
         modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
                 true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path3, flow2.build(), true);
@@ -700,8 +700,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.merge(LogicalDatastoreType.CONFIGURATION, path3, flow2.build(), true);
 
         InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.getKey());
+                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.key());
         modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
                 true);
         modification.merge(LogicalDatastoreType.OPERATIONAL, path4, flow3.build(), true);
@@ -740,7 +740,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
         ib.setOrder(0);
 
         // Put our Instruction in a list of Instructions
@@ -842,7 +842,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.setOrder(0);
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
@@ -854,7 +854,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         ib.setOrder(0);
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();

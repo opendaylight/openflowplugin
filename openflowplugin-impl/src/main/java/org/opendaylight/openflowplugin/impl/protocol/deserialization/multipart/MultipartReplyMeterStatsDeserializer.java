@@ -48,7 +48,7 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
             message.skipBytes(PADDING_IN_METER_STATS_HEADER);
 
             itemBuilder
-                .setKey(new MeterStatsKey(itemBuilder.getMeterId()))
+                .withKey(new MeterStatsKey(itemBuilder.getMeterId()))
                 .setFlowCount(new Counter32(message.readUnsignedInt()));
 
             final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
@@ -76,7 +76,7 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
 
                 subItems.add(new BandStatBuilder()
                     .setBandId(new BandId(bandKey))
-                    .setKey(new BandStatKey(new BandId(bandKey)))
+                    .withKey(new BandStatKey(new BandId(bandKey)))
                     .setPacketBandCount(new Counter64(new BigInteger(1, packetCountB)))
                     .setByteBandCount(new Counter64(new BigInteger(1, byteCountB)))
                     .build());

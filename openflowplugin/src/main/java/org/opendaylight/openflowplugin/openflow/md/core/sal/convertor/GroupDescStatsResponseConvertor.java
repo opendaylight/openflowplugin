@@ -74,7 +74,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
                         convertedSalActions.get()) {
                     ActionBuilder wrappedAction = new ActionBuilder();
                     wrappedAction.setAction(action);
-                    wrappedAction.setKey(new ActionKey(actionKey));
+                    wrappedAction.withKey(new ActionKey(actionKey));
                     wrappedAction.setOrder(actionKey);
                     actions.add(wrappedAction.build());
                     actionKey++;
@@ -90,7 +90,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
             bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
             BucketId bucketId = new BucketId((long) bucketKey);
             bucketDesc.setBucketId(bucketId);
-            bucketDesc.setKey(new BucketKey(bucketId));
+            bucketDesc.withKey(new BucketKey(bucketId));
             bucketKey++;
             allBuckets.add(bucketDesc.build());
         }
@@ -114,7 +114,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
             salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList(), data.getVersion()));
             salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId().getValue()));
             salGroupDescStats.setGroupType(GroupTypes.forValue(groupDesc.getType().getIntValue()));
-            salGroupDescStats.setKey(new GroupDescStatsKey(salGroupDescStats.getGroupId()));
+            salGroupDescStats.withKey(new GroupDescStatsKey(salGroupDescStats.getGroupId()));
 
             convertedSALGroupsDesc.add(salGroupDescStats.build());
         }

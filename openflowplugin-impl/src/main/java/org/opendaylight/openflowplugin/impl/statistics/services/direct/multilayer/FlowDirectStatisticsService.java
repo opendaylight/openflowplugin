@@ -65,7 +65,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                     for (final FlowAndStatisticsMapList part : flowAndStatisticsMapLists) {
                         final FlowId flowId = new FlowId(generateFlowId(part).getValue());
                         statsList.add(new FlowAndStatisticsMapListBuilder(part)
-                                .setKey(new FlowAndStatisticsMapListKey(flowId))
+                                .withKey(new FlowAndStatisticsMapListKey(flowId))
                                 .setFlowId(flowId)
                                 .build());
                     }

@@ -301,7 +301,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private void writeExperimenterRelatedTableProperty(final ByteBuf output, final TableFeatureProperties property) {
-        long expId = property.getAugmentation(ExperimenterIdTableFeatureProperty.class).getExperimenter().getValue();
+        long expId = property.augmentation(ExperimenterIdTableFeatureProperty.class).getExperimenter().getValue();
         OFSerializer<TableFeatureProperties> serializer = registry.getSerializer(ExperimenterSerializerKeyFactory
                 .createMultipartRequestTFSerializerKey(EncodeConstants.OF13_VERSION_ID, expId));
         serializer.serialize(property, output);
@@ -313,7 +313,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
-        List<MatchEntry> entries = property.getAugmentation(OxmRelatedTableFeatureProperty.class).getMatchEntry();
+        List<MatchEntry> entries = property.augmentation(OxmRelatedTableFeatureProperty.class).getMatchEntry();
         if (entries != null) {
             TypeKeyMaker<MatchEntry> keyMaker = TypeKeyMakerFactory
                     .createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
@@ -330,7 +330,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
-        List<Action> actions = property.getAugmentation(ActionRelatedTableFeatureProperty.class).getAction();
+        List<Action> actions = property.augmentation(ActionRelatedTableFeatureProperty.class).getAction();
         if (actions != null) {
             TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF13_VERSION_ID);
             ListSerializer.serializeHeaderList(actions, keyMaker, registry, output);
@@ -346,7 +346,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
-        List<NextTableIds> nextTableIds = property.getAugmentation(NextTableRelatedTableFeatureProperty.class)
+        List<NextTableIds> nextTableIds = property.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds();
         if (nextTableIds != null) {
             for (NextTableIds next : nextTableIds) {
@@ -364,7 +364,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         output.writeShort(code);
         int lengthIndex = output.writerIndex();
         output.writeShort(EncodeConstants.EMPTY_LENGTH);
-        List<Instruction> instructions = property.getAugmentation(InstructionRelatedTableFeatureProperty.class)
+        List<Instruction> instructions = property.augmentation(InstructionRelatedTableFeatureProperty.class)
                 .getInstruction();
         if (instructions != null) {
             TypeKeyMaker<Instruction> keyMaker = TypeKeyMakerFactory

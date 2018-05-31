@@ -86,7 +86,7 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
                     MeterBandExperimenterCase experimenterBandCase = (MeterBandExperimenterCase) meterBand;
                     MeterBandExperimenter experimenterBand = experimenterBandCase.getMeterBandExperimenter();
                     ExperimenterIdMeterBand expIdMeterBand =
-                            experimenterBand.getAugmentation(ExperimenterIdMeterBand.class);
+                            experimenterBand.augmentation(ExperimenterIdMeterBand.class);
                     if (expIdMeterBand != null) {
                         long expId = expIdMeterBand.getExperimenter().getValue();
                         Class<? extends ExperimenterMeterBandSubType> meterBandSubType = expIdMeterBand.getSubType();

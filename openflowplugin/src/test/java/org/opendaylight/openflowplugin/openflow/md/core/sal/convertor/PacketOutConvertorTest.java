@@ -117,7 +117,7 @@ public class PacketOutConvertorTest {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(
                 output.build()).build());
         ab.setOrder(0);
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionList =
                 new ArrayList<>();

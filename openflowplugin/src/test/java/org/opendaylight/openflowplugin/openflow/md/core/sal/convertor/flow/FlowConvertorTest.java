@@ -329,7 +329,7 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public <E extends Augmentation<AddFlowInput>> E getAugmentation(final Class<E> augmentationType) {
+        public <E extends Augmentation<AddFlowInput>> E augmentation(final Class<E> augmentationType) {
             return null;
         }
 

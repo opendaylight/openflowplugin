@@ -107,7 +107,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                 }
 
                 instructions.add(new InstructionBuilder()
-                        .setKey(new InstructionKey(offset))
+                        .withKey(new InstructionKey(offset))
                         .setOrder(offset)
                         .setInstruction(deserializer.deserialize(message))
                         .build());

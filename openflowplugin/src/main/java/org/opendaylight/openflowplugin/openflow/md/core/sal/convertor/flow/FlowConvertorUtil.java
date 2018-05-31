@@ -39,7 +39,7 @@ public final class FlowConvertorUtil {
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action : actionList) {
             ActionBuilder wrappedAction = new ActionBuilder();
             wrappedAction.setAction(action);
-            wrappedAction.setKey(new ActionKey(actionKey));
+            wrappedAction.withKey(new ActionKey(actionKey));
             wrappedAction.setOrder(actionKey);
             actions.add(wrappedAction.build());
             actionKey++;

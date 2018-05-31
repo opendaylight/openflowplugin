@@ -47,7 +47,7 @@ public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<Mult
             message.readBytes(txErrors);
 
             items.add(new QueueIdAndStatisticsMapBuilder()
-                .setKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
+                .withKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
                 .setNodeConnectorId(nodeConnectorId)
                 .setQueueId(queueId)
                 .setTransmittedBytes(new Counter64(new BigInteger(1, txBytes)))

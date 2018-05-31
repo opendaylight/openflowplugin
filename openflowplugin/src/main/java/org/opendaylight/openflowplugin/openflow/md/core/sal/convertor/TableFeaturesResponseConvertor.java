@@ -460,7 +460,7 @@ public class TableFeaturesResponseConvertor
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731
                 .instructions.grouping.Instruction currInstruction : properties
-                .getAugmentation(InstructionRelatedTableFeatureProperty.class).getInstruction()) {
+                .augmentation(InstructionRelatedTableFeatureProperty.class).getInstruction()) {
             InstructionChoice currInstructionType = currInstruction.getInstructionChoice();
 
             if (currInstructionType instanceof GotoTableCase) {
@@ -500,7 +500,7 @@ public class TableFeaturesResponseConvertor
     }
 
     private static List<Short> setNextTableFeatureProperty(final TableFeatureProperties properties) {
-        return properties.getAugmentation(NextTableRelatedTableFeatureProperty.class)
+        return properties.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds().stream().map(NextTableIds::getTableId).collect(Collectors.toList());
     }
 
@@ -511,7 +511,7 @@ public class TableFeaturesResponseConvertor
         int order = 0;
 
         for (Action action : properties
-                .getAugmentation(ActionRelatedTableFeatureProperty.class).getAction()) {
+                .augmentation(ActionRelatedTableFeatureProperty.class).getAction()) {
             if (action != null && null != action.getActionChoice()) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder
                     actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
@@ -536,7 +536,7 @@ public class TableFeaturesResponseConvertor
         SetFieldMatchBuilder setFieldMatchBuilder = new SetFieldMatchBuilder();
 
         // This handles only OpenflowBasicClass oxm class.
-        for (MatchEntry currMatch : properties.getAugmentation(OxmRelatedTableFeatureProperty.class)
+        for (MatchEntry currMatch : properties.augmentation(OxmRelatedTableFeatureProperty.class)
                 .getMatchEntry()) {
             Class<? extends MatchField> ofMatchField = currMatch.getOxmMatchField();
 

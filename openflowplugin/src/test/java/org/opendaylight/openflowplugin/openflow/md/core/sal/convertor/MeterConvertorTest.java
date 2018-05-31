@@ -175,7 +175,7 @@ public class MeterConvertorTest {
                 assertEquals(expRate,
                         (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
                 ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
-                        .getAugmentation(ExperimenterIdMeterBand.class);
+                        .augmentation(ExperimenterIdMeterBand.class);
                 assertEquals(expExperimenter, (long) expBand.getExperimenter().getValue());
             }
         }
@@ -308,7 +308,7 @@ public class MeterConvertorTest {
                 assertEquals(expRate,
                         (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
                 ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
-                        .getAugmentation(ExperimenterIdMeterBand.class);
+                        .augmentation(ExperimenterIdMeterBand.class);
                 assertEquals(expExperimenter, (long) expBand.getExperimenter().getValue());
             }
         }
@@ -447,7 +447,7 @@ public class MeterConvertorTest {
                 assertEquals((long) 22,
                         (long) ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
                 ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
-                        .getAugmentation(ExperimenterIdMeterBand.class);
+                        .augmentation(ExperimenterIdMeterBand.class);
                 assertEquals((long) 23, (long) expBand.getExperimenter().getValue());
             }
         }

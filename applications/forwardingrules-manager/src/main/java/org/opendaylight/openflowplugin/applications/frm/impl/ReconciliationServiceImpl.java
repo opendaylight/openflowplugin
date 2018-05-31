@@ -41,7 +41,7 @@ public class ReconciliationServiceImpl implements ReconciliationService {
 
     private Node buildNode(long nodeIid) {
         NodeId nodeId = new NodeId("openflow:" + nodeIid);
-        Node nodeDpn = new NodeBuilder().setId(nodeId).setKey(new NodeKey(nodeId)).build();
+        Node nodeDpn = new NodeBuilder().setId(nodeId).withKey(new NodeKey(nodeId)).build();
         return nodeDpn;
     }
 
@@ -50,7 +50,7 @@ public class ReconciliationServiceImpl implements ReconciliationService {
         LOG.debug("Triggering reconciliation for node: {}", input.getNodeId().toString());
         Node nodeDpn = buildNode(input.getNodeId().longValue());
         InstanceIdentifier<FlowCapableNode> connectedNode = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeDpn.getKey()).augmentation(FlowCapableNode.class).build();
+                .child(Node.class, nodeDpn.key()).augmentation(FlowCapableNode.class).build();
         SettableFuture<RpcResult<ReconcileNodeOutput>> rpcResult = SettableFuture.create();
         ListenableFuture<Boolean> futureResult = forwardingRulesManagerImpl
                 .getNodeListener().reconcileConfiguration(connectedNode);

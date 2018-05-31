@@ -59,7 +59,7 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
                     .setTableProperties(new TablePropertiesBuilder()
                             .setTableFeatureProperties(Collections.singletonList(new TableFeaturePropertiesBuilder()
                                     .setOrder(0)
-                                    .setKey(new TableFeaturePropertiesKey(0))
+                                    .withKey(new TableFeaturePropertiesKey(0))
                                     .setTableFeaturePropType(NEXT_TABLE)
                                     .build()))
                             .build())

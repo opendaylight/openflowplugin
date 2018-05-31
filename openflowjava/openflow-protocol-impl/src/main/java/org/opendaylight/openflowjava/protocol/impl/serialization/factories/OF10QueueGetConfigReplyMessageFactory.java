@@ -48,7 +48,7 @@ public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQu
                 queuePropertyBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
                 queuePropertyBuff.writeZero(4);
                 if (queueProperty.getProperty() == QueueProperties.OFPQTMINRATE) {
-                    RateQueueProperty body = queueProperty.getAugmentation(RateQueueProperty.class);
+                    RateQueueProperty body = queueProperty.augmentation(RateQueueProperty.class);
                     queuePropertyBuff.writeShort(body.getRate().intValue());
                     queuePropertyBuff.writeZero(QUEUE_PROPERTY_PADDING);
                 }

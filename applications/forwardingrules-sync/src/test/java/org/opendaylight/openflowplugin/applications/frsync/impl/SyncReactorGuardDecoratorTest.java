@@ -53,7 +53,7 @@ public class SyncReactorGuardDecoratorTest {
 
         final Node operationalNode = Mockito.mock(Node.class);
         Mockito.when(operationalNode.getId()).thenReturn(NODE_ID);
-        Mockito.when(operationalNode.getAugmentation(FlowCapableNode.class)).thenReturn(fcOperationalNode);
+        Mockito.when(operationalNode.augmentation(FlowCapableNode.class)).thenReturn(fcOperationalNode);
     }
 
     @Test

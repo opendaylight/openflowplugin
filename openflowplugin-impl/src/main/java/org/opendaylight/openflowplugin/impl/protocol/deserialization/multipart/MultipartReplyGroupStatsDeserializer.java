@@ -57,7 +57,7 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
             message.readBytes(byteCountg);
 
             itemBuilder
-                .setKey(new GroupStatsKey(itemBuilder.getGroupId()))
+                .withKey(new GroupStatsKey(itemBuilder.getGroupId()))
                 .setPacketCount(new Counter64(new BigInteger(1, packetCountg)))
                 .setByteCount(new Counter64(new BigInteger(1, byteCountg)))
                 .setDuration(new DurationBuilder()
@@ -77,7 +77,7 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
 
                 subItems.add(new BucketCounterBuilder()
                     .setBucketId(new BucketId(bucketKey))
-                    .setKey(new BucketCounterKey(new BucketId(bucketKey)))
+                    .withKey(new BucketCounterKey(new BucketId(bucketKey)))
                     .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
                     .setByteCount(new Counter64(new BigInteger(1, byteCount)))
                     .build());

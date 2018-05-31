@@ -71,8 +71,8 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
                 queue2.getQueueProperty().get(0).getProperty());
         Assert.assertEquals("Wrong queue - wrong property", QueueProperties.OFPQTMINRATE,
                 queue2.getQueueProperty().get(1).getProperty());
-        RateQueueProperty rate1 = queue2.getQueueProperty().get(0).getAugmentation(RateQueueProperty.class);
-        RateQueueProperty rate2 = queue2.getQueueProperty().get(1).getAugmentation(RateQueueProperty.class);
+        RateQueueProperty rate1 = queue2.getQueueProperty().get(0).augmentation(RateQueueProperty.class);
+        RateQueueProperty rate2 = queue2.getQueueProperty().get(1).augmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong queue - wrong property rate", 32, rate1.getRate().intValue());
         Assert.assertEquals("Wrong queue - wrong property rate", 48, rate2.getRate().intValue());
     }

@@ -66,159 +66,159 @@ public class TableFeaturesMatchFieldDeserializerTest {
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_OP);
         Optional<SetFieldMatch> fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(ArpOp.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(ArpOp.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_SHA);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(ArpSha.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(ArpSha.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_SPA);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(ArpSpa.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(ArpSpa.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_THA);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(ArpTha.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(ArpTha.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_TPA);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(ArpTpa.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(ArpTpa.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ETH_DST);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(EthDst.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(EthDst.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ETH_SRC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(EthSrc.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(EthSrc.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ICMPV4_CODE);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Icmpv4Code.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Icmpv4Code.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ICMPV4_TYPE);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Icmpv4Type.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Icmpv4Type.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ICMPV6_CODE);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Icmpv6Code.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Icmpv6Code.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ICMPV6_TYPE);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Icmpv6Type.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Icmpv6Type.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PHY_PORT);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(InPhyPort.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(InPhyPort.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PORT);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(InPort.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(InPort.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_DSCP);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(IpDscp.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(IpDscp.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_ECN);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(IpEcn.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(IpEcn.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_PROTO);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(IpProto.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(IpProto.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV4_SRC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv4Src.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv4Src.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV4_DST);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv4Dst.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv4Dst.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_SRC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6Src.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6Src.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_DST);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6Dst.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6Dst.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_EXTHDR);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6Exthdr.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6Exthdr.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_FLABEL);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6Flabel.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6Flabel.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_ND_SLL);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6NdSll.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6NdSll.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_ND_TLL);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6NdTll.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6NdTll.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_ND_TARGET);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Ipv6NdTarget.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Ipv6NdTarget.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.METADATA);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(Metadata.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(Metadata.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_BOS);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(MplsBos.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(MplsBos.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_LABEL);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(MplsLabel.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(MplsLabel.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_TC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(MplsTc.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(MplsTc.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.PBB_ISID);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(PbbIsid.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(PbbIsid.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.SCTP_SRC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(SctpSrc.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(SctpSrc.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.SCTP_DST);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(SctpDst.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(SctpDst.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TCP_SRC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(TcpSrc.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(TcpSrc.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TCP_DST);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(TcpDst.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(TcpDst.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TUNNEL_ID);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(TunnelId.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(TunnelId.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.UDP_SRC);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(UdpSrc.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(UdpSrc.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.UDP_DST);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(UdpDst.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(UdpDst.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_PCP);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(VlanPcp.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(VlanPcp.class, fieldMatch.get().key().getMatchType());
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_VID);
         fieldMatch = deserializer.deserialize(buffer);
-        assertEquals(VlanVid.class, fieldMatch.get().getKey().getMatchType());
+        assertEquals(VlanVid.class, fieldMatch.get().key().getMatchType());
 
         assertEquals(0, buffer.readableBytes());
     }

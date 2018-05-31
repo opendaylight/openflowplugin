@@ -39,7 +39,7 @@ public class MultipartReplyFlowTableStatsDeserializer implements OFDeserializer<
             message.skipBytes(PADDING_IN_TABLE_HEADER);
 
             itemBuilder
-                .setKey(new FlowTableAndStatisticsMapKey(itemBuilder.getTableId()))
+                .withKey(new FlowTableAndStatisticsMapKey(itemBuilder.getTableId()))
                 .setActiveFlows(new Counter32(message.readUnsignedInt()));
 
             final byte[] packetsLooked = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
