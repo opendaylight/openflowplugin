@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
@@ -90,7 +91,8 @@ public abstract class ServiceMocking {
     @Mock
     protected ExtensionConverterProvider mockedExtensionConverterProvider;
     @Mock
-    protected ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> mockedExtensionConverter;
+    protected ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer,
+        ConvertorData> mockedExtensionConverter;
 
     @Before
     @SuppressWarnings("unchecked")

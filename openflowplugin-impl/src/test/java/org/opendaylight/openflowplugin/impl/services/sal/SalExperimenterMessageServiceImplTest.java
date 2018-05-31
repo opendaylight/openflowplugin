@@ -72,7 +72,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
         assertEquals(43L, input.getExperimenter().getValue().longValue());
         assertEquals(44L, input.getExpType().longValue());
 
-        Mockito.verify(extensionConverter).convert(sendExperimenterInput.getExperimenterMessageOfChoice());
+        Mockito.verify(extensionConverter).convert(sendExperimenterInput.getExperimenterMessageOfChoice(), null);
     }
 
     private SendExperimenterInput buildSendExperimenterInput() {
