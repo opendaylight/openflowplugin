@@ -13,11 +13,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -66,13 +69,20 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
         final OfHeader request =
                 salExperimenterMessageService.buildRequest(new Xid(DUMMY_XID_VALUE), sendExperimenterInput);
+        final ExtensionConvertorData data = new ExtensionConvertorData(OFConstants.OFP_VERSION_1_3);
+        data.setXid(DUMMY_XID_VALUE);
+        data.setDatapathId(SalExperimenterMessageServiceImpl.extractDatapathId(new NodeRef(mockedDeviceInfo
+                .getNodeInstanceIdentifier())));
         assertEquals(DUMMY_XID_VALUE, request.getXid());
         assertTrue(request instanceof ExperimenterInput);
         final ExperimenterInput input = (ExperimenterInput) request;
         assertEquals(43L, input.getExperimenter().getValue().longValue());
         assertEquals(44L, input.getExpType().longValue());
-
-        Mockito.verify(extensionConverter).convert(sendExperimenterInput.getExperimenterMessageOfChoice());
+        ArgumentCaptor<ExtensionConvertorData> argumentCaptor = ArgumentCaptor.forClass(ExtensionConvertorData.class);
+        Mockito.verify(extensionConverter).convert(Matchers.eq(sendExperimenterInput.getExperimenterMessageOfChoice()),
+                argumentCaptor.capture());
+        assertEquals(data.getXid(), argumentCaptor.getValue().getXid());
+        assertEquals(data.getDatapathId(), argumentCaptor.getValue().getDatapathId());
     }
 
     private SendExperimenterInput buildSendExperimenterInput() {
