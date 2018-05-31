@@ -13,6 +13,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -47,12 +50,12 @@ public class BundleControlConverterTest {
     }
 
     @Test
-    public void testConvertDownWithProperty() {
+    public void testConvertDownWithProperty() throws Exception{
         testConvertDown(true);
     }
 
     @Test
-    public void testConvertDownWithoutProperty() {
+    public void testConvertDownWithoutProperty() throws Exception{
         testConvertDown(false);
     }
 
@@ -66,9 +69,9 @@ public class BundleControlConverterTest {
         testConvertUp(true);
     }
 
-    private void testConvertDown(final boolean withProperty) {
+    private void testConvertDown(final boolean withProperty) throws Exception {
         final BundleControlSal original = createOFPMessage(withProperty);
-        final BundleControlOnf converted = converter.convert(original);
+        final BundleControlOnf converted = converter.convert(original, null);
         testConvert(original, converted, withProperty);
     }
 
