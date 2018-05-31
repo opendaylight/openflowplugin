@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
@@ -44,14 +44,14 @@ import org.slf4j.LoggerFactory;
  * Example usage:
  * <pre>
  * {@code
- * PacketOutConvertorData data = new PacketOutConvertorData(version);
+ * XidConvertorData data = new XidConvertorData(version);
  * data.setDatapathId(datapathId);
  * data.setXid(xid);
  * Optional<PacketOutInput> ofPacketInput = convertorManager.convert(salPacket, data);
  * }
  * </pre>
  */
-public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOutInput, PacketOutConvertorData> {
+public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOutInput, XidConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
     private static final Set<Class<?>> TYPES = Collections.singleton(TransmitPacketInput.class);
 
@@ -84,7 +84,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
     }
 
     @Override
-    public PacketOutInput convert(TransmitPacketInput source, PacketOutConvertorData data) {
+    public PacketOutInput convert(TransmitPacketInput source, XidConvertorData data) {
         LOG.trace("toPacketOutInput for datapathId:{}, xid:{}", data.getDatapathId(), data.getXid());
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr;

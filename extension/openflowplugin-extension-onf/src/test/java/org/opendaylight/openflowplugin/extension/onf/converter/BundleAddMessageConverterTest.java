@@ -15,7 +15,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
@@ -69,7 +72,6 @@ public class BundleAddMessageConverterTest {
 
     @Before
     public void setUp() throws Exception {
-        converter.setNode(NODE_REF);
     }
 
     @Test
@@ -163,7 +165,10 @@ public class BundleAddMessageConverterTest {
     private void testConvert(final BundleInnerMessage message, Class clazz, final boolean withProperty)
             throws Exception {
         final BundleAddMessageSal original = createMessage(withProperty, message);
-        final BundleAddMessageOnf converted = converter.convert(original);
+        final ExtensionConvertorData data = new ExtensionConvertorData(OFConstants.OFP_VERSION_1_3);
+        data.setDatapathId(InventoryDataServiceUtil
+                .dataPathIdFromNodeId(NODE_REF.getValue().firstKeyOf(Node.class).getId()));
+        final BundleAddMessageOnf converted = converter.convert(original, data);
         Assert.assertEquals("Wrong BundleId", new BundleId(original.getSalAddMessageData().getBundleId().getValue()),
                 converted.getOnfAddMessageGroupingData().getBundleId());
         Assert.assertEquals("Wrong flags",

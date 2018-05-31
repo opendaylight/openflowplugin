@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -67,8 +68,8 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
             input.getExperimenterMessageOfChoice().getImplementedInterface(),
             getVersion());
 
-        final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice> messageConverter =
-            getExtensionConverterProvider().getMessageConverter(key);
+        final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice,
+            ConvertorData> messageConverter = getExtensionConverterProvider().getMessageConverter(key);
 
         if (Objects.isNull(messageConverter)) {
             throw new ServiceException(new ConverterNotFoundException(key.toString()));
@@ -82,7 +83,7 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
                         .setExperimenter(messageConverter.getExperimenterId())
                         .setExpType(messageConverter.getType())
                         .setExperimenterDataOfChoice(messageConverter
-                            .convert(input.getExperimenterMessageOfChoice()))
+                            .convert(input.getExperimenterMessageOfChoice(), null))
                         .build())
                     .build())
                 .build();
