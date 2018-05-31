@@ -37,25 +37,14 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         return switchConnectionProviderImpl;
     }
 
-    private static InetAddress extractIpAddressBin(final IpAddress address) throws UnknownHostException {
-        byte[] addressBin = null;
+    private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
         if (address != null) {
             if (address.getIpv4Address() != null) {
-                addressBin = address2bin(address.getIpv4Address().getValue());
+                return InetAddress.getByName(address.getIpv4Address().getValue());
             } else if (address.getIpv6Address() != null) {
-                addressBin = address2bin(address.getIpv6Address().getValue());
+                return InetAddress.getByName(address.getIpv6Address().getValue());
             }
         }
-
-        if (addressBin == null) {
-            return null;
-        } else {
-            return InetAddress.getByAddress(addressBin);
-        }
-    }
-
-    private static byte[] address2bin(final String value) {
-        //TODO: translate ipv4 or ipv6 into byte[]
         return null;
     }
 
@@ -67,7 +56,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
             this.config = config;
 
             try {
-                address = extractIpAddressBin(config.getAddress());
+                address = getInetAddress(config.getAddress());
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
