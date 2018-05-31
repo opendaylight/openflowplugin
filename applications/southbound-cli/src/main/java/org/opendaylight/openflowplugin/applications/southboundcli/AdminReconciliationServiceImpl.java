@@ -141,7 +141,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
         ReadWriteTransaction tx = broker.newReadWriteTransaction();
         Optional<ReconcileCounter> optional = readReconcileCounterFromDS(tx, instanceIdentifier, nodeId);
         ReconcileCounterBuilder counterBuilder = new ReconcileCounterBuilder()
-                .setKey(new ReconcileCounterKey(nodeId)).setNodeId(nodeId)
+                .withKey(new ReconcileCounterKey(nodeId)).setNodeId(nodeId)
                 .setLastRequestTime(LocalDateTime.now().toString());
         if (reconcileState) {
             counterBuilder.setSuccessCount(startCount);

@@ -85,7 +85,7 @@ public class GroupListenerTest extends FRMTest {
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
         InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
-        Group group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
+        Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
@@ -98,7 +98,7 @@ public class GroupListenerTest extends FRMTest {
         groupKey = new GroupKey(new GroupId((long) 256));
         groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
-        group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
+        group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.submit());
@@ -115,7 +115,7 @@ public class GroupListenerTest extends FRMTest {
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
         InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
-        Group group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
+        Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
@@ -125,7 +125,7 @@ public class GroupListenerTest extends FRMTest {
         assertEquals(1, addGroupCalls.size());
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
-        group = new GroupBuilder().setKey(groupKey).setGroupName("Group2").build();
+        group = new GroupBuilder().withKey(groupKey).setGroupName("Group2").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.submit());
@@ -142,7 +142,7 @@ public class GroupListenerTest extends FRMTest {
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
         InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
-        Group group = new GroupBuilder().setKey(groupKey).setGroupName("Group1").build();
+        Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
@@ -168,7 +168,7 @@ public class GroupListenerTest extends FRMTest {
         StaleGroupKey groupKey = new StaleGroupKey(new GroupId((long) 255));
         InstanceIdentifier<StaleGroup> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(StaleGroup.class, groupKey);
-        StaleGroup group = new StaleGroupBuilder().setKey(groupKey).setGroupName("Stale_Group1").build();
+        StaleGroup group = new StaleGroupBuilder().withKey(groupKey).setGroupName("Stale_Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);

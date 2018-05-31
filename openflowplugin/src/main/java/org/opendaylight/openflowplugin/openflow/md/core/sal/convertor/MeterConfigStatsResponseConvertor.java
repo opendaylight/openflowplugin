@@ -68,7 +68,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
         for (MeterConfig meterConfig : source) {
             MeterConfigStatsBuilder meterConfigStatsBuilder = new MeterConfigStatsBuilder();
             meterConfigStatsBuilder.setMeterId(new MeterId(meterConfig.getMeterId().getValue()));
-            meterConfigStatsBuilder.setKey(new MeterConfigStatsKey(meterConfigStatsBuilder.getMeterId()));
+            meterConfigStatsBuilder.withKey(new MeterConfigStatsKey(meterConfigStatsBuilder.getMeterId()));
             MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
             List<Bands> bands = meterConfig.getBands();
 
@@ -94,7 +94,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     meterBandHeaderBuilder.setBandBurstSize(dropBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(dropBand.getRate());
                     BandId bandId = new BandId((long) bandKey);
-                    meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
+                    meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
 
                     MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
@@ -114,7 +114,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     meterBandHeaderBuilder.setBandBurstSize(dscpRemarkBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(dscpRemarkBand.getRate());
                     BandId bandId = new BandId((long) bandKey);
-                    meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
+                    meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
 
                     MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
@@ -133,7 +133,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     meterBandHeaderBuilder.setBandBurstSize(experimenterBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(experimenterBand.getRate());
                     BandId bandId = new BandId((long) bandKey);
-                    meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(bandId));
+                    meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
 
                     MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();

@@ -177,7 +177,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     private boolean isConsistentForReconcile(final DataTreeModification<Node> modification) {
         final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
         final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().getDataAfter()
-                .getAugmentation(FlowCapableStatisticsGatheringStatus.class);
+                .augmentation(FlowCapableStatisticsGatheringStatus.class);
 
         if (gatheringStatus == null) {
             LOG.trace("Statistics gathering never started: {}", nodeId.getValue());

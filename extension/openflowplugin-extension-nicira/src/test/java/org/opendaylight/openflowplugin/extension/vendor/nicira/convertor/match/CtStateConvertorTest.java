@@ -57,7 +57,7 @@ public class CtStateConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxCtState(nxmNxCtStateBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
             .thenReturn(extensionAugmentation);
 
         ctStateConvertor = new CtStateConvertor();

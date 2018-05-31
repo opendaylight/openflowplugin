@@ -71,7 +71,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
                 serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
         serializedBuffer.skipBytes(4);
-        RateQueueProperty rateQueueProperty = properties.get(0).getAugmentation(RateQueueProperty.class);
+        RateQueueProperty rateQueueProperty = properties.get(0).augmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueueProperty.getRate().intValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(6);
     }

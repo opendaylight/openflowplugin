@@ -86,7 +86,7 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
                         .setNodeConnectorId(nodeConnectorId)
                         .setDuration(durationBuilder.build())
                         .setCollisionCount(portStats.getCollisions())
-                        .setKey(new NodeConnectorStatisticsAndPortNumberMapKey(nodeConnectorId))
+                        .withKey(new NodeConnectorStatisticsAndPortNumberMapKey(nodeConnectorId))
                         .setReceiveCrcError(portStats.getRxCrcErr()).setReceiveDrops(portStats.getRxDropped())
                         .setReceiveErrors(portStats.getRxErrors())
                         .setReceiveFrameError(portStats.getRxFrameErr())

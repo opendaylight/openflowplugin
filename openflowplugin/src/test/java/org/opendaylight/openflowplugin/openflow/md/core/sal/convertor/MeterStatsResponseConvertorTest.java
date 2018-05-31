@@ -73,7 +73,7 @@ public class MeterStatsResponseConvertorTest {
         int cnt = 0;
         for (MeterStats meterStats : meterStatsList) {
             assertEquals(new MeterStatsKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918
-                    .MeterId((long) cnt)).getMeterId(), meterStats.getKey().getMeterId());
+                    .MeterId((long) cnt)).getMeterId(), meterStats.key().getMeterId());
             assertEquals(BigInteger.valueOf(cnt), meterStats.getByteInCount().getValue());
             assertEquals(new Long(1000 * cnt), meterStats.getDuration().getNanosecond().getValue());
             assertEquals(new Long(10 * cnt), meterStats.getDuration().getSecond().getValue());

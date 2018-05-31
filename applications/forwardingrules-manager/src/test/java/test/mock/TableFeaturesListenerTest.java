@@ -73,7 +73,7 @@ public class TableFeaturesListenerTest extends FRMTest {
 
         addTable(tableKey, NODE_KEY);
 
-        TableFeatures tableFeaturesData = new TableFeaturesBuilder().setKey(tableFeaturesKey).build();
+        TableFeatures tableFeaturesData = new TableFeaturesBuilder().withKey(tableFeaturesKey).build();
         InstanceIdentifier<TableFeatures> tableFeaturesII = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, NODE_KEY).augmentation(FlowCapableNode.class)
                 .child(TableFeatures.class, tableFeaturesKey);
@@ -81,7 +81,7 @@ public class TableFeaturesListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.submit());
 
-        tableFeaturesData = new TableFeaturesBuilder().setKey(tableFeaturesKey).setName("dummy name").build();
+        tableFeaturesData = new TableFeaturesBuilder().withKey(tableFeaturesKey).setName("dummy name").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.submit());

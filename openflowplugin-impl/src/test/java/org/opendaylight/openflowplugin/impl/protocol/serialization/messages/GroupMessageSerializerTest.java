@@ -70,14 +70,14 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
                                     .build())
                             .build())
                     .setOrder(ACTION_ORDER)
-                    .setKey(ACTION_KEY)
+                    .withKey(ACTION_KEY)
                     .build()
     );
 
     private static final Buckets BUCKETS = new BucketsBuilder()
             .setBucket(Collections.singletonList(new BucketBuilder()
                     .setBucketId(BUCKET_ID)
-                    .setKey(BUCKET_KEY)
+                    .withKey(BUCKET_KEY)
                     .setWatchGroup(BUCKET_WATCH_GROUP)
                     .setWatchPort(BUCKET_WATCH_PORT)
                     .setWeight(BUCKET_WEIGHT)

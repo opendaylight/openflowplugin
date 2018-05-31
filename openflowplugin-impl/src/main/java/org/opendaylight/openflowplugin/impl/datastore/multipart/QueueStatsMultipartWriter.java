@@ -63,7 +63,7 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
                                 .augmentation(FlowCapableNodeConnector.class)
                                 .child(Queue.class, new QueueKey(stat.getQueueId())),
                         new QueueBuilder()
-                                .setKey(new QueueKey(stat.getQueueId()))
+                                .withKey(new QueueKey(stat.getQueueId()))
                                 .setQueueId(stat.getQueueId())
                                 .addAugmentation(
                                         FlowCapableNodeConnectorQueueStatisticsData.class,

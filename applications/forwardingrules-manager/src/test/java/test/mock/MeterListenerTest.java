@@ -84,7 +84,7 @@ public class MeterListenerTest extends FRMTest {
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
         InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
-        Meter meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_one").build();
+        Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
@@ -97,7 +97,7 @@ public class MeterListenerTest extends FRMTest {
         meterKey = new MeterKey(new MeterId((long) 2001));
         meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
-        meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
+        meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.submit());
@@ -115,7 +115,7 @@ public class MeterListenerTest extends FRMTest {
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
         InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
-        Meter meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_one").setBarrier(false).build();
+        Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").setBarrier(false).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
@@ -125,7 +125,7 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(1, addMeterCalls.size());
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
 
-        meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
+        meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.submit());
@@ -143,7 +143,7 @@ public class MeterListenerTest extends FRMTest {
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
         InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
-        Meter meter = new MeterBuilder().setKey(meterKey).setMeterName("meter_one").build();
+        Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
@@ -170,7 +170,7 @@ public class MeterListenerTest extends FRMTest {
         StaleMeterKey meterKey = new StaleMeterKey(new MeterId((long) 2000));
         InstanceIdentifier<StaleMeter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(StaleMeter.class, meterKey);
-        StaleMeter meter = new StaleMeterBuilder().setKey(meterKey).setMeterName("stale_meter_one").build();
+        StaleMeter meter = new StaleMeterBuilder().withKey(meterKey).setMeterName("stale_meter_one").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);

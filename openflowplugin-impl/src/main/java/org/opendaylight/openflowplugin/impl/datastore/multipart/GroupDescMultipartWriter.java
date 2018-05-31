@@ -45,7 +45,7 @@ public class GroupDescMultipartWriter extends AbstractMultipartWriter<GroupDescS
                         .augmentation(FlowCapableNode.class)
                         .child(Group.class, new GroupKey(stat.getGroupId())),
                     new GroupBuilder(stat)
-                        .setKey(new GroupKey(stat.getGroupId()))
+                        .withKey(new GroupKey(stat.getGroupId()))
                         .addAugmentation(NodeGroupStatistics.class, new NodeGroupStatisticsBuilder().build())
                         .build(),
                     withParents);

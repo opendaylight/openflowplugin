@@ -91,7 +91,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             message.readBytes(write);
 
             items.add(itemBuilder
-                    .setKey(new TableFeaturesKey(itemBuilder.getTableId()))
+                    .withKey(new TableFeaturesKey(itemBuilder.getTableId()))
                     .setName(name)
                     .setMetadataMatch(new BigInteger(1, match))
                     .setMetadataWrite(new BigInteger(1, write))
@@ -127,7 +127,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             final int commonPropertyLength = propertyLength - COMMON_PROPERTY_LENGTH;
             final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder()
                 .setOrder(order)
-                .setKey(new TableFeaturePropertiesKey(order));
+                .withKey(new TableFeaturePropertiesKey(order));
 
             switch (propType) {
                 case OFPTFPTINSTRUCTIONS:
@@ -319,7 +319,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while (message.readerIndex() - startIndex < length) {
             try {
                 instructions.add(new InstructionBuilder()
-                        .setKey(new InstructionKey(offset))
+                        .withKey(new InstructionKey(offset))
                         .setOrder(offset)
                         .setInstruction(InstructionUtil
                                 .readInstructionHeader(EncodeConstants.OF13_VERSION_ID, message, registry))
@@ -343,7 +343,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while (message.readerIndex() - startIndex < length) {
             try {
                 actions.add(new ActionBuilder()
-                        .setKey(new ActionKey(offset))
+                        .withKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readActionHeader(EncodeConstants.OF13_VERSION_ID, message, registry,
                                 ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS))

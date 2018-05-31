@@ -243,7 +243,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         if (rpcResult.isSuccessful()) {
                             for (Meter meter : meters) {
                                 final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
-                                        .child(Meter.class, meter.getKey());
+                                        .child(Meter.class, meter.key());
                                 provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
                             }
                         }
@@ -329,7 +329,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         ? flowNode.get().getTableFeatures()
                         : Collections.<TableFeatures>emptyList();
                 for (TableFeatures tableFeaturesItem : tableList) {
-                    TableFeaturesKey tableKey = tableFeaturesItem.getKey();
+                    TableFeaturesKey tableKey = tableFeaturesItem.key();
                     KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdentity
                             .child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
                     provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
@@ -441,7 +441,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         : Collections.<Meter>emptyList();
                 for (Meter meter : meters) {
                     final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
-                            meter.getKey());
+                            meter.key());
                     provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
                 }
 
@@ -454,11 +454,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         : Collections.<Table>emptyList();
                 for (Table table : tables) {
                     final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
-                            table.getKey());
+                            table.key());
                     List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
                     for (Flow flow : flows) {
                         final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                                flow.getKey());
+                                flow.key());
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
@@ -478,7 +478,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
          *            The group to add.
          */
         private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
-            KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.getKey());
+            KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
             final Long groupId = group.getGroupId().getValue();
             ListenableFuture<?> future = JdkFutureAdapters
                     .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
@@ -566,7 +566,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     : Collections.<Table>emptyList();
             for (Table table : tables) {
                 final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdent.child(Table.class,
-                        table.getKey());
+                        table.key());
                 List<StaleFlow> staleFlows = table.getStaleFlow() != null ? table.getStaleFlow()
                         : Collections.<StaleFlow>emptyList();
                 for (StaleFlow staleFlow : staleFlows) {
@@ -575,7 +575,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     Flow toBeDeletedFlow = flowBuilder.setId(staleFlow.getId()).build();
 
                     final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                            toBeDeletedFlow.getKey());
+                            toBeDeletedFlow.key());
 
                     this.provider.getFlowCommiter().remove(flowIdent, toBeDeletedFlow, nodeIdent);
 
@@ -599,7 +599,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 Group toBeDeletedGroup = groupBuilder.setGroupId(staleGroup.getGroupId()).build();
 
                 final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class,
-                        toBeDeletedGroup.getKey());
+                        toBeDeletedGroup.key());
 
                 this.provider.getGroupCommiter().remove(groupIdent, toBeDeletedGroup, nodeIdent);
 
@@ -618,7 +618,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 Meter toBeDeletedMeter = meterBuilder.setMeterId(staleMeter.getMeterId()).build();
 
                 final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class,
-                        toBeDeletedMeter.getKey());
+                        toBeDeletedMeter.key());
 
                 this.provider.getMeterCommiter().remove(meterIdent, toBeDeletedMeter, nodeIdent);
 

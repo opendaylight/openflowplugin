@@ -85,7 +85,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
 
         InstructionBuilder instBuilder = new InstructionBuilder();
         instBuilder.setInstruction(applyActionsCaseBuilder.build());
-        instBuilder.setKey(new InstructionKey(0));
+        instBuilder.withKey(new InstructionKey(0));
         instBuilder.setOrder(0);
         List<Instruction> salInstructionList = new ArrayList<>();
         salInstructionList.add(instBuilder.build());

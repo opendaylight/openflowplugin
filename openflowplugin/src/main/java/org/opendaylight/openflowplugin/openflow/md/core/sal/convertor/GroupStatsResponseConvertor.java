@@ -63,7 +63,7 @@ public class GroupStatsResponseConvertor extends Convertor<
             bucketCounter.setByteCount(new Counter64(bucketStat.getByteCount()));
             bucketCounter.setPacketCount(new Counter64(bucketStat.getPacketCount()));
             BucketId bucketId = new BucketId((long) bucketKey);
-            bucketCounter.setKey(new BucketCounterKey(bucketId));
+            bucketCounter.withKey(new BucketCounterKey(bucketId));
             bucketCounter.setBucketId(bucketId);
             bucketKey++;
             allBucketStats.add(bucketCounter.build());
@@ -99,7 +99,7 @@ public class GroupStatsResponseConvertor extends Convertor<
             salGroupStats.setGroupId(new GroupId(groupStats.getGroupId().getValue()));
             salGroupStats.setPacketCount(new Counter64(groupStats.getPacketCount()));
             salGroupStats.setRefCount(new Counter32(groupStats.getRefCount()));
-            salGroupStats.setKey(new GroupStatsKey(salGroupStats.getGroupId()));
+            salGroupStats.withKey(new GroupStatsKey(salGroupStats.getGroupId()));
             convertedSALGroups.add(salGroupStats.build());
         }
 

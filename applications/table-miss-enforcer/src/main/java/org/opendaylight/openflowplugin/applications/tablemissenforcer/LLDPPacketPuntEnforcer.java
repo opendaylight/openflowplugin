@@ -127,7 +127,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         flowBuilder.setFlags(new FlowModFlags(false, false, false, false, true));
         flowBuilder.setId(new FlowId("12"));
         flowBuilder.setTableId(TABLE_ID);
-        flowBuilder.setKey(key);
+        flowBuilder.withKey(key);
         flowBuilder.setFlowName(LLDP_PUNT_WHOLE_PACKET_FLOW);
 
         return flowBuilder.build();
@@ -143,7 +143,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.setOrder(0);
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
         actionList.add(ab.build());
         // Create an Apply Action
         ApplyActionsBuilder aab = new ApplyActionsBuilder();
@@ -153,7 +153,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         ib.setOrder(0);
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();

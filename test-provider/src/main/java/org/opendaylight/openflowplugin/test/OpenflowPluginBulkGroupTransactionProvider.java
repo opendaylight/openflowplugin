@@ -133,14 +133,14 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeId));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         return builder;
     }
 
     private void createTestNode() {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         testNode12 = builder.build();
     }
 
@@ -182,7 +182,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
         ib.setOrder(0);
 
         // Put our Instruction in a list of Instructions
@@ -534,7 +534,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         // flow
         flow.setOutPort(outputPort);
 
-        flow.setKey(key);
+        flow.withKey(key);
         flow.setPriority(2);
         flow.setFlowName(originalFlowName + "X" + flowType);
         return flow;
@@ -597,7 +597,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private void createUserNode(String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         testNode12 = builder.build();
     }
 
@@ -640,7 +640,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     }
 
     private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
     public void _removeGroups(CommandInterpreter ci) {
@@ -706,13 +706,13 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
 
         InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group1.getGroupId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path2, group1, true);
@@ -733,12 +733,12 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private void deleteGroup(final CommandInterpreter ci, Group group, Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()));
         modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode12.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group1.getGroupId()));
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
@@ -762,7 +762,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
         bucket.setBucketId(new BucketId((long) 12));
-        bucket.setKey(new BucketKey(new BucketId((long) 12)));
+        bucket.withKey(new BucketKey(new BucketId((long) 12)));
 
         if (groupType == null) {
             groupType = "g1";
@@ -839,7 +839,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         long id = Long.parseLong(strId);
         GroupKey key = new GroupKey(new GroupId(id));
-        group.setKey(key);
+        group.withKey(key);
         // group.setInstall(false);
         group.setGroupId(new GroupId(id));
         group.setGroupName(originalGroupName);
@@ -856,7 +856,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
-        action.setKey(new ActionKey(0));
+        action.withKey(new ActionKey(0));
         List<Action> actions = new ArrayList<>();
         actions.add(action.build());
         return actions;
@@ -947,7 +947,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         groupActionB.setGroup("0");
         ActionBuilder action = new ActionBuilder();
         action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
-        action.setKey(new ActionKey(0));
+        action.withKey(new ActionKey(0));
         List<Action> actions = new ArrayList<>();
         actions.add(action.build());
         return actions;

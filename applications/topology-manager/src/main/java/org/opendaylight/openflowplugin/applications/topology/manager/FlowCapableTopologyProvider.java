@@ -58,7 +58,7 @@ public class FlowCapableTopologyProvider implements AutoCloseable {
 
         if (!isFlowTopologyExist(path)) {
             transactionChainManager.writeToTransaction(LogicalDatastoreType.OPERATIONAL, path,
-                                                       new TopologyBuilder().setKey(key).build(), true);
+                                                       new TopologyBuilder().withKey(key).build(), true);
             transactionChainManager.submitTransaction();
         }
 

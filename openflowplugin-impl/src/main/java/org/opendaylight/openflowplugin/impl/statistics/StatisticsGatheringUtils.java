@@ -183,7 +183,7 @@ public final class StatisticsGatheringUtils {
                         for (final Table tableData : flowCapNodeOpt.get().getTable()) {
                             final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
-                                    .child(Table.class, tableData.getKey());
+                                    .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                         }
                     }
