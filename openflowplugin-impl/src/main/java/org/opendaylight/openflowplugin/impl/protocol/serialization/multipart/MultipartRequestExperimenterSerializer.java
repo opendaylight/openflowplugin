@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterSerializerKeyFactory;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
@@ -43,7 +44,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
         } catch (ClassCastException | IllegalStateException ex) {
             Optional
                     .ofNullable(OFSessionUtil.getExtensionConvertorProvider().<ExperimenterMessageOfChoice,
-                            ExperimenterDataOfChoice>getMessageConverter(new TypeVersionKey<>(
+                            ExperimenterDataOfChoice, ConvertorData>getMessageConverter(new TypeVersionKey<>(
                             (Class<ExperimenterMessageOfChoice>) multipartRequestExperimenter
                                     .getExperimenterMessageOfChoice().getImplementedInterface(),
                             OFConstants.OFP_VERSION_1_3)))
@@ -57,7 +58,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
 
                         try {
                             serializer.serialize(converter.convert(multipartRequestExperimenter
-                                    .getExperimenterMessageOfChoice()), byteBuf);
+                                    .getExperimenterMessageOfChoice(), null), byteBuf);
                         } catch (ConversionException e) {
                             throw new IllegalStateException(e);
                         }
