@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
@@ -43,7 +43,7 @@ public final class PacketProcessingServiceImpl extends AbstractSimpleService<Tra
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final TransmitPacketInput input) throws ServiceException {
-        final PacketOutConvertorData data = new PacketOutConvertorData(getVersion());
+        final XidConvertorData data = new XidConvertorData(getVersion());
         data.setDatapathId(getDatapathId());
         data.setXid(xid.getValue());
 

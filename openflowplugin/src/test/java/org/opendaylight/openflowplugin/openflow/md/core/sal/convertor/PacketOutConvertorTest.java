@@ -20,7 +20,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.PacketOutConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -59,7 +59,7 @@ public class PacketOutConvertorTest {
     }
 
     /**
-     * Test for {@link PacketOutConvertor} with null parameters.
+     * Test for {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor} with null parameters.
      */
     @Test
     public void toPacketOutInputAllParmNullTest() {
@@ -88,7 +88,7 @@ public class PacketOutConvertorTest {
 
         Short version = (short) 0x04;
         Long xid = null;
-        PacketOutConvertorData data = new PacketOutConvertorData(version);
+        XidConvertorData data = new XidConvertorData(version);
         PacketOutInput message = convert(transmitPacketInput, data);
 
         //FIXME : this has to be fixed along with actions changed in openflowjava
@@ -103,7 +103,7 @@ public class PacketOutConvertorTest {
     }
 
     /**
-     * Test for PacketOutConvertor.
+     * Test for XidConvertorData.
      */
     @Test
     public void toPacketOutInputAllParmTest() {
@@ -166,7 +166,7 @@ public class PacketOutConvertorTest {
         BigInteger datapathId = new BigInteger(1, datapathIdByte);
         Long xid = 0xfffffL;
 
-        PacketOutConvertorData data = new PacketOutConvertorData(version);
+        XidConvertorData data = new XidConvertorData(version);
         data.setXid(xid);
         data.setDatapathId(datapathId);
         PacketOutInput message = convert(transmitPacketInput, data);
@@ -243,8 +243,8 @@ public class PacketOutConvertorTest {
         return new NodeRef(path);
     }
 
-    private PacketOutInput convert(TransmitPacketInput transmitPacketInput, PacketOutConvertorData data) {
+    private PacketOutInput convert(TransmitPacketInput transmitPacketInput, XidConvertorData data) {
         Optional<PacketOutInput> messageOptional = convertorManager.convert(transmitPacketInput, data);
-        return messageOptional.orElse(PacketOutConvertor.defaultResult(data.getVersion()));
+        return messageOptional.orElse(org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor.defaultResult(data.getVersion()));
     }
 }

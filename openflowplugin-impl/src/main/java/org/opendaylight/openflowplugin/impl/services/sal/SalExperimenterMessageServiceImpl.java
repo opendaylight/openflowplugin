@@ -8,17 +8,19 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
-import org.opendaylight.openflowplugin.extension.api.BundleMessageDataInjector;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
+import org.opendaylight.openflowplugin.extension.api.TempConvertorData;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.exception.ConverterNotFoundException;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
@@ -51,7 +53,7 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
     protected OfHeader buildRequest(Xid xid, SendExperimenterInput input) throws ServiceException {
         final TypeVersionKey key =
                 new TypeVersionKey(input.getExperimenterMessageOfChoice().getImplementedInterface(), getVersion());
-        final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice> messageConverter =
+        final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice, TempConvertorData> messageConverter =
                 extensionConverterProvider.getMessageConverter(key);
 
         if (messageConverter == null) {
@@ -59,22 +61,19 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
         }
 
         final ExperimenterInputBuilder experimenterInputBld;
-
-        if (messageConverter instanceof BundleMessageDataInjector) {
-            ((BundleMessageDataInjector) messageConverter).setNode(input.getNode());
-            ((BundleMessageDataInjector) messageConverter).setXid(xid.getValue());
             LOG.trace("Flow or group pushed to the node: {} with transaction id : {} is {}",
                     ((BundleAddMessageSal) input.getExperimenterMessageOfChoice())
                             .getSalAddMessageData().getBundleInnerMessage(),
                     input.getNode().getValue().firstKeyOf(Node.class).getId(),
                     xid);
-        }
-
         try {
+            final TempConvertorData data = new TempConvertorData(OFConstants.OFP_VERSION_1_3);
+            data.setXid(xid.getValue());
+            data.setDatapathId(InventoryDataServiceUtil.dataPathIdFromNodeId(input.getNode().getValue().firstKeyOf(Node.class).getId()));
             experimenterInputBld = new ExperimenterInputBuilder()
                     .setExperimenter(messageConverter.getExperimenterId())
                     .setExpType(messageConverter.getType())
-                    .setExperimenterDataOfChoice(messageConverter.convert(input.getExperimenterMessageOfChoice()))
+                    .setExperimenterDataOfChoice(messageConverter.convert(input.getExperimenterMessageOfChoice(), data))
                     .setVersion(getVersion())
                     .setXid(xid.getValue());
         } catch (ConversionException e) {

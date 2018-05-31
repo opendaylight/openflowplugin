@@ -12,15 +12,16 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.extension.api.BundleMessageDataInjector;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.TempConvertorData;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.extension.onf.OnfConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
@@ -63,23 +64,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
  * Converter for BundleAddMessage messages (ONF approved extension #230).
  */
 public class BundleAddMessageConverter implements
-        ConverterMessageToOFJava<BundleAddMessageSal, BundleAddMessageOnf>,
-        ConvertorMessageFromOFJava<BundleAddMessageOnf, MessagePath>,
-        BundleMessageDataInjector {
+        ConverterMessageToOFJava<BundleAddMessageSal, BundleAddMessageOnf, TempConvertorData>,
+        ConvertorMessageFromOFJava<BundleAddMessageOnf, MessagePath>{
 
     private static final ConvertorExecutor CONVERTER_EXECUTOR = ConvertorManagerFactory.createDefaultManager();
-    private long xid;
-    private NodeRef node;
 
     @Override
     public BundleAddMessageOnf convert(BundleAddMessageSal experimenterMessageCase) throws ConversionException {
+       return null;
+    }
+
+    @Override
+    public BundleAddMessageOnf convert(BundleAddMessageSal experimenterMessageCase, TempConvertorData xidData)
+            throws ConversionException {
         final OnfAddMessageGroupingDataBuilder dataBuilder = new OnfAddMessageGroupingDataBuilder();
         dataBuilder.setBundleId(experimenterMessageCase.getSalAddMessageData().getBundleId());
         dataBuilder.setFlags(experimenterMessageCase.getSalAddMessageData().getFlags());
         dataBuilder.setBundleProperty(experimenterMessageCase.getSalAddMessageData().getBundleProperty());
         final BundleInnerMessage innerMessage = experimenterMessageCase.getSalAddMessageData().getBundleInnerMessage();
-        final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
-        data.setDatapathId(digDatapathId(node));
+        final XidConvertorData data = new XidConvertorData(OFConstants.OFP_VERSION_1_3);
+        data.setDatapathId(xidData.getDatapathId());
+        data.setXid(xidData.getXid());
 
         if (innerMessage.getImplementedInterface().equals(BundleAddFlowCase.class)
                 || innerMessage.getImplementedInterface().equals(BundleUpdateFlowCase.class)
@@ -95,8 +100,7 @@ public class BundleAddMessageConverter implements
             throw new ConversionException("Unsupported inner message");
         }
 
-        return new BundleAddMessageOnfBuilder().setOnfAddMessageGroupingData(dataBuilder.build()).build();
-    }
+        return new BundleAddMessageOnfBuilder().setOnfAddMessageGroupingData(dataBuilder.build()).build();    }
 
     @Override
     public BundleAddMessageSal convert(final BundleAddMessageOnf input, final MessagePath path)
@@ -108,7 +112,7 @@ public class BundleAddMessageConverter implements
     }
 
     private BundleFlowModCase convertBundleFlowCase(final BundleInnerMessage messageCase,
-            final VersionDatapathIdConvertorData data) throws ConversionException {
+            final XidConvertorData data) throws ConversionException {
         Optional<List<FlowModInputBuilder>> flowModInputs = Optional.empty();
         final Class clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleAddFlowCase.class)) {
@@ -131,7 +135,7 @@ public class BundleAddMessageConverter implements
                                         flowModInputs
                                                 .get()
                                                 .get(0)
-                                                .setXid(xid)
+                                                .setXid(data.getXid())
                                                 .build())
                                         .build())
                         .build();
@@ -145,7 +149,7 @@ public class BundleAddMessageConverter implements
     }
 
     private BundleGroupModCase convertBundleGroupCase(final BundleInnerMessage messageCase,
-            final VersionDatapathIdConvertorData data) throws ConversionException {
+            final XidConvertorData data) throws ConversionException {
         Optional<GroupModInputBuilder> groupModInput = Optional.empty();
         final Class clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleAddGroupCase.class)) {
@@ -165,7 +169,7 @@ public class BundleAddMessageConverter implements
             return new BundleGroupModCaseBuilder()
                     .setGroupModCaseData(
                             new GroupModCaseDataBuilder(groupModInput.get()
-                                    .setXid(xid)
+                                    .setXid(data.getXid())
                                     .build())
                             .build()
                     )
@@ -176,7 +180,7 @@ public class BundleAddMessageConverter implements
     }
 
     private BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase,
-            final VersionDatapathIdConvertorData data) throws ConversionException {
+            final XidConvertorData data) throws ConversionException {
         Optional<PortModInput> portModInput = Optional.empty();
         final Class<?> clazz = messageCase.getImplementedInterface();
         if (clazz.equals(BundleUpdatePortCase.class)) {
@@ -189,17 +193,13 @@ public class BundleAddMessageConverter implements
             return new BundlePortModCaseBuilder()
                     .setPortModCaseData(
                             new PortModCaseDataBuilder(portModInput.get())
-                                    .setXid(xid)
+                                    .setXid(data.getXid())
                                     .build()
                     )
                     .build();
         } else {
             throw new ConversionException("BundlePortCase conversion unsuccessful.");
         }
-    }
-
-    private static BigInteger digDatapathId(final NodeRef ref) {
-        return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getValue().firstKeyOf(Node.class).getId());
     }
 
     @Override
@@ -210,15 +210,5 @@ public class BundleAddMessageConverter implements
     @Override
     public long getType() {
         return OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE;
-    }
-
-    @Override
-    public void setXid(long xid) {
-        this.xid = xid;
-    }
-
-    @Override
-    public void setNode(NodeRef node) {
-        this.node = node;
     }
 }
