@@ -47,12 +47,12 @@ public class BundleControlConverterTest {
     }
 
     @Test
-    public void testConvertDownWithProperty() {
+    public void testConvertDownWithProperty() throws Exception {
         testConvertDown(true);
     }
 
     @Test
-    public void testConvertDownWithoutProperty() {
+    public void testConvertDownWithoutProperty() throws Exception {
         testConvertDown(false);
     }
 
@@ -66,9 +66,9 @@ public class BundleControlConverterTest {
         testConvertUp(true);
     }
 
-    private void testConvertDown(final boolean withProperty) {
+    private void testConvertDown(final boolean withProperty) throws Exception {
         final BundleControlSal original = createOFPMessage(withProperty);
-        final BundleControlOnf converted = converter.convert(original);
+        final BundleControlOnf converted = converter.convert(original, null);
         testConvert(original, converted, withProperty);
     }
 
