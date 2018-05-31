@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -63,7 +64,6 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
     @Test
     public void testBuildRequest() throws Exception {
         SendExperimenterInput sendExperimenterInput = buildSendExperimenterInput();
-
         final OfHeader request =
                 salExperimenterMessageService.buildRequest(new Xid(DUMMY_XID_VALUE), sendExperimenterInput);
         assertEquals(DUMMY_XID_VALUE, request.getXid());
@@ -71,8 +71,8 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
         final ExperimenterInput input = (ExperimenterInput) request;
         assertEquals(43L, input.getExperimenter().getValue().longValue());
         assertEquals(44L, input.getExpType().longValue());
-
-        Mockito.verify(extensionConverter).convert(sendExperimenterInput.getExperimenterMessageOfChoice());
+        Mockito.verify(extensionConverter).convert(Matchers.eq(sendExperimenterInput.getExperimenterMessageOfChoice()),
+                Matchers.any(ExtensionConvertorData.class));
     }
 
     private SendExperimenterInput buildSendExperimenterInput() {
