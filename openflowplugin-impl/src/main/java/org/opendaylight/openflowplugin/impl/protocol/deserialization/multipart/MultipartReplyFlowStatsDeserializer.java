@@ -101,7 +101,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
 
                 while (itemMessage.readerIndex() - startIndex < length) {
                     instructions.add(new InstructionBuilder()
-                            .setKey(new InstructionKey(offset))
+                            .withKey(new InstructionKey(offset))
                             .setOrder(offset)
                             .setInstruction(InstructionUtil
                                     .readInstruction(EncodeConstants.OF13_VERSION_ID, itemMessage, registry))

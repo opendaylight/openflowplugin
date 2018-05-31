@@ -50,7 +50,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                 .map(flowAndStatisticsMapList -> {
                     final FlowId flowId = new FlowId(generateFlowId(flowAndStatisticsMapList));
                     return new FlowAndStatisticsMapListBuilder(flowAndStatisticsMapList)
-                        .setKey(new FlowAndStatisticsMapListKey(flowId))
+                        .withKey(new FlowAndStatisticsMapListKey(flowId))
                         .setFlowId(flowId)
                         .build();
                 })

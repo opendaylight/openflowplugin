@@ -61,7 +61,7 @@ public class QueueStatNotificationSupplierImpl extends
         final NodeConnectorBuilder connBuilder = new NodeConnectorBuilder();
         final NodeConnectorKey key = path.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
         connBuilder.setId(key.getId());
-        connBuilder.setKey(key);
+        connBuilder.withKey(key);
 
         final QueueIdAndStatisticsMapBuilder queueStatMapBuilder = new QueueIdAndStatisticsMapBuilder(
                 statisticsDataTreeItem.getFlowCapableNodeConnectorQueueStatistics());

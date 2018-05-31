@@ -54,7 +54,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
 
             message.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
             itemBuilder.setGroupId(new GroupId(message.readUnsignedInt()));
-            itemBuilder.setKey(new GroupDescStatsKey(itemBuilder.getGroupId()));
+            itemBuilder.withKey(new GroupDescStatsKey(itemBuilder.getGroupId()));
 
             final List<Bucket> subItems = new ArrayList<>();
             int actualLength = GROUP_DESC_HEADER_LENGTH;
@@ -65,7 +65,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
 
                 final BucketBuilder bucketBuilder = new BucketBuilder()
                         .setBucketId(new BucketId(bucketKey))
-                        .setKey(new BucketKey(new BucketId(bucketKey)))
+                        .withKey(new BucketKey(new BucketId(bucketKey)))
                         .setWeight(message.readUnsignedShort())
                         .setWatchPort(message.readUnsignedInt())
                         .setWatchGroup(message.readUnsignedInt());
@@ -79,7 +79,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
 
                 while (message.readerIndex() - startIndex < bucketLength) {
                     actions.add(new ActionBuilder()
-                            .setKey(new ActionKey(offset))
+                            .withKey(new ActionKey(offset))
                             .setOrder(offset)
                             .setAction(ActionUtil.readAction(EncodeConstants.OF13_VERSION_ID, message, registry,
                                     ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION))

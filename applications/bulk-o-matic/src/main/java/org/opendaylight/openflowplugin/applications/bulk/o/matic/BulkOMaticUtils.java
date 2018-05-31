@@ -61,7 +61,7 @@ public final class BulkOMaticUtils {
 
     public static Flow buildFlow(Short tableId, String flowId, Match match) {
         FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.setKey(new FlowKey(new FlowId(flowId)));
+        flowBuilder.withKey(new FlowKey(new FlowId(flowId)));
         flowBuilder.setTableId(tableId);
         flowBuilder.setMatch(match);
         return flowBuilder.build();

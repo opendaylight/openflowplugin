@@ -123,7 +123,7 @@ public class GroupStatsResponseConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
                 .GroupStats stat = salGroupStats.get(0);
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
-        Assert.assertEquals("Wrong key", 42, stat.getKey().getGroupId().getValue().intValue());
+        Assert.assertEquals("Wrong key", 42, stat.key().getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong ref-count", 24, stat.getRefCount().getValue().intValue());
         Assert.assertEquals("Wrong packet count", 54321, stat.getPacketCount().getValue().intValue());
         Assert.assertEquals("Wrong byte count", 12345, stat.getByteCount().getValue().intValue());
@@ -132,7 +132,7 @@ public class GroupStatsResponseConvertorTest {
         Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().getBucketCounter().size());
         stat = salGroupStats.get(1);
         Assert.assertEquals("Wrong group-id", 4, stat.getGroupId().getValue().intValue());
-        Assert.assertEquals("Wrong key", 4, stat.getKey().getGroupId().getValue().intValue());
+        Assert.assertEquals("Wrong key", 4, stat.key().getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong ref-count", 6, stat.getRefCount().getValue().intValue());
         Assert.assertEquals("Wrong packet count", 5, stat.getPacketCount().getValue().intValue());
         Assert.assertEquals("Wrong byte count", 1, stat.getByteCount().getValue().intValue());

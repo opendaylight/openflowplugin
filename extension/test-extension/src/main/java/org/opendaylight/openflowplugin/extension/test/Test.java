@@ -142,14 +142,14 @@ public class Test implements TestService {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
         ib.setOrder(0);
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<>();
         instructions.add(ib.build());
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
         isb.setInstruction(instructions);
         return isb;
     }
@@ -159,7 +159,7 @@ public class Test implements TestService {
         DecNwTtl decNwTtl = ta.build();
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-        ab.setKey(new ActionKey(actionKeyVal));
+        ab.withKey(new ActionKey(actionKeyVal));
         return ab;
     }
 
@@ -179,7 +179,7 @@ public class Test implements TestService {
 
         // base part
         ActionBuilder abExt = new ActionBuilder();
-        abExt.setKey(new ActionKey(actionKeyVal));
+        abExt.withKey(new ActionKey(actionKeyVal));
         abExt.setAction(topNxActionCaseBld.build());
         return abExt;
     }

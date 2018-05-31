@@ -87,7 +87,7 @@ public class GroupingLooseResolver<G> {
 
         for (Class<? extends Augmentation<?>> cls : classes) {
             Augmentation<T> potential = guessData
-                    .getAugmentation((Class<Augmentation<T>>) cls);
+                    .augmentation((Class<Augmentation<T>>) cls);
             if (potential != null) {
                 return Optional.of((G) potential);
             }

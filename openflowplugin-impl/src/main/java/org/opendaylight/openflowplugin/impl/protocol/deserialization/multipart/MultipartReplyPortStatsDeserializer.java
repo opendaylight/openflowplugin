@@ -71,7 +71,7 @@ public class MultipartReplyPortStatsDeserializer implements OFDeserializer<Multi
             message.readBytes(collisionCount);
 
             items.add(itemBuilder
-                    .setKey(new NodeConnectorStatisticsAndPortNumberMapKey(itemBuilder.getNodeConnectorId()))
+                    .withKey(new NodeConnectorStatisticsAndPortNumberMapKey(itemBuilder.getNodeConnectorId()))
                     .setPackets(new PacketsBuilder()
                             .setReceived(new BigInteger(1, recPack))
                             .setTransmitted(new BigInteger(1, txPack))

@@ -123,7 +123,7 @@ public final class FlowUtils {
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.setOrder(0);
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actionList = new ArrayList<>();
         actionList.add(ab.build());
@@ -136,7 +136,7 @@ public final class FlowUtils {
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         ib.setOrder(0);
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
@@ -146,7 +146,7 @@ public final class FlowUtils {
 
         MatchBuilder matchBuilder = new MatchBuilder();
         FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)
-                .setKey(new FlowKey(flowId));
+                .withKey(new FlowKey(flowId));
         allToCtrlFlow
             .setMatch(matchBuilder.build())
             .setInstructions(isb.build())

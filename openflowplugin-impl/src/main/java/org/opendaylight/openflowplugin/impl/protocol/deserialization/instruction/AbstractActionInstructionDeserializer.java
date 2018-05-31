@@ -67,7 +67,7 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
 
             while ((message.readerIndex() - startIndex) < instrLength) {
                 actions.add(new ActionBuilder()
-                        .setKey(new ActionKey(offset))
+                        .withKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil
                                 .readAction(EncodeConstants.OF13_VERSION_ID, message, registry, actionPath))

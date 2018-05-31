@@ -36,7 +36,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
         FlowCapableNodeBuilder fcnBuilder = new FlowCapableNodeBuilder();
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setKey(nodeKey);
+        nodeBuilder.withKey(nodeKey);
         nodeBuilder.addAugmentation(FlowCapableNode.class, fcnBuilder.build());
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -58,7 +58,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void addTable(final TableKey tableKey, final NodeKey nodeKey) {
         addFlowCapableNode(nodeKey);
-        final Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        final Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);

@@ -59,7 +59,7 @@ public class FlowTableStatNotificationSupplierImpl extends
         Preconditions.checkArgument(path != null);
 
         final FlowTableAndStatisticsMapBuilder ftsmBuilder = new FlowTableAndStatisticsMapBuilder(flowTableStatistics);
-        ftsmBuilder.setKey(new FlowTableAndStatisticsMapKey(
+        ftsmBuilder.withKey(new FlowTableAndStatisticsMapKey(
                 new TableId(path.firstKeyOf(Table.class, TableKey.class).getId())));
 
         final FlowTableStatisticsUpdateBuilder builder = new FlowTableStatisticsUpdateBuilder();

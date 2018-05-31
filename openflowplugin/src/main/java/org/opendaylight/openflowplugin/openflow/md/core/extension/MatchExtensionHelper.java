@@ -76,7 +76,7 @@ public final class MatchExtensionHelper {
         }
 
         final GeneralAugMatchNodesNodeTableFlowBuilder builder = Optional
-                .ofNullable(matchBuilder.getAugmentation(GeneralAugMatchNodesNodeTableFlow.class))
+                .ofNullable(matchBuilder.augmentation(GeneralAugMatchNodesNodeTableFlow.class))
                 .map(GeneralAugMatchNodesNodeTableFlowBuilder::new)
                 .orElse(new GeneralAugMatchNodesNodeTableFlowBuilder().setExtensionList(new ArrayList<>()));
 

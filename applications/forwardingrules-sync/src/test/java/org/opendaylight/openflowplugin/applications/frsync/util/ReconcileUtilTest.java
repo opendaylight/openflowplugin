@@ -113,7 +113,7 @@ public class ReconcileUtilTest {
         Assert.assertEquals(1, plan.size());
 
         Assert.assertEquals(1, plan.get(0).getItemsToPush().size());
-        Assert.assertEquals(4L, plan.get(0).getItemsToPush().iterator().next().getKey()
+        Assert.assertEquals(4L, plan.get(0).getItemsToPush().iterator().next().key()
                 .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(0).getItemsToUpdate().size());
     }
@@ -137,17 +137,17 @@ public class ReconcileUtilTest {
         Assert.assertEquals(3, plan.size());
 
         Assert.assertEquals(1, plan.get(0).getItemsToPush().size());
-        Assert.assertEquals(2L, plan.get(0).getItemsToPush().iterator().next().getKey()
+        Assert.assertEquals(2L, plan.get(0).getItemsToPush().iterator().next().key()
                 .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(0).getItemsToUpdate().size());
 
         Assert.assertEquals(1, plan.get(1).getItemsToPush().size());
-        Assert.assertEquals(4L, plan.get(1).getItemsToPush().iterator().next().getKey()
+        Assert.assertEquals(4L, plan.get(1).getItemsToPush().iterator().next().key()
                 .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(1).getItemsToUpdate().size());
 
         Assert.assertEquals(1, plan.get(2).getItemsToPush().size());
-        Assert.assertEquals(3L, plan.get(2).getItemsToPush().iterator().next().getKey()
+        Assert.assertEquals(3L, plan.get(2).getItemsToPush().iterator().next().key()
                 .getGroupId().getValue().longValue());
         Assert.assertEquals(0, plan.get(2).getItemsToUpdate().size());
     }

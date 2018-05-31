@@ -155,7 +155,7 @@ public final class FlowInstructionResponseConvertor extends Convertor<
 
             InstructionBuilder instBuilder = new InstructionBuilder();
             instBuilder.setInstruction(salInstruction);
-            instBuilder.setKey(new InstructionKey(instructionTreeNodekey));
+            instBuilder.withKey(new InstructionKey(instructionTreeNodekey));
             instBuilder.setOrder(instructionTreeNodekey);
             instructionTreeNodekey++;
             salInstructionList.add(instBuilder.build());

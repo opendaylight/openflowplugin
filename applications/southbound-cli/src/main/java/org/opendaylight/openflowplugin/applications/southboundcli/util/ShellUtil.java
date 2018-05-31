@@ -60,9 +60,9 @@ public final class ShellUtil {
             for (Node node : nodes) {
                 String[] nodeId = node.getId().getValue().split(":");
                 String name = null;
-                FlowCapableNode flowCapableNode = node.<FlowCapableNode>getAugmentation(FlowCapableNode.class);
+                FlowCapableNode flowCapableNode = node.<FlowCapableNode>augmentation(FlowCapableNode.class);
                 if (flowCapableNode != null) {
-                    name = node.<FlowCapableNode>getAugmentation(FlowCapableNode.class).getDescription();
+                    name = node.<FlowCapableNode>augmentation(FlowCapableNode.class).getDescription();
                 } else {
                     LOG.error("Error while converting OFNode: {} to FlowCapableNode", node.getId());
                     return Collections.emptyList();
@@ -112,9 +112,9 @@ public final class ShellUtil {
                 String name = null;
                 List<NodeConnector> nodeConnectors = null;
                 List<String> portList = new ArrayList<>();
-                FlowCapableNode flowCapableNode = node.<FlowCapableNode>getAugmentation(FlowCapableNode.class);
+                FlowCapableNode flowCapableNode = node.<FlowCapableNode>augmentation(FlowCapableNode.class);
                 if (flowCapableNode != null) {
-                    name = node.<FlowCapableNode>getAugmentation(FlowCapableNode.class).getDescription();
+                    name = node.<FlowCapableNode>augmentation(FlowCapableNode.class).getDescription();
                 } else {
                     LOG.error("Error while converting OFNode:{} to FlowCapableNode: {}", node.getId());
                     return null;
@@ -122,7 +122,7 @@ public final class ShellUtil {
                 nodeConnectors = node.getNodeConnector();
                 for (NodeConnector nodeConnector : nodeConnectors) {
                     FlowCapableNodeConnector flowCapableNodeConnector =
-                            nodeConnector.getAugmentation(FlowCapableNodeConnector.class);
+                            nodeConnector.augmentation(FlowCapableNodeConnector.class);
                     if (flowCapableNodeConnector == null) {
                         LOG.error("Error for OFNode:{} while reading nodeConnectors {}", node.getId());
                         return null;

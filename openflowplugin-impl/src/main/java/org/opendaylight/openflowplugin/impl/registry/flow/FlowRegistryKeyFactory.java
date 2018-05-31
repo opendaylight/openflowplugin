@@ -74,8 +74,8 @@ public final class FlowRegistryKeyFactory {
         }
 
         private boolean equalMatch(final Match input) {
-            GeneralAugMatchNodesNodeTableFlow thisAug = match.getAugmentation(GeneralAugMatchNodesNodeTableFlow.class);
-            GeneralAugMatchNodesNodeTableFlow inputAug = input.getAugmentation(GeneralAugMatchNodesNodeTableFlow.class);
+            GeneralAugMatchNodesNodeTableFlow thisAug = match.augmentation(GeneralAugMatchNodesNodeTableFlow.class);
+            GeneralAugMatchNodesNodeTableFlow inputAug = input.augmentation(GeneralAugMatchNodesNodeTableFlow.class);
             if (thisAug != inputAug) {
                 if (thisAug != null) {
                     if (inputAug == null) {
