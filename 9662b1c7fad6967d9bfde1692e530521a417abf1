@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "67ac3fb6_a7c65679",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ConverterMessageToOFJava.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "no longer requried",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 68
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "90e8b918_6159f720",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ConvertorData.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "2018, applicable to all new files.",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 22
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "07e322b3_299d00be",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/TempConvertorData.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "ExtensionConvertorData",
+      "range": {
+        "startLine": 13,
+        "startChar": 13,
+        "endLine": 13,
+        "endChar": 30
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "33ee0de0_a99578ab",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/TempConvertorData.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "Extension",
+      "range": {
+        "startLine": 20,
+        "startChar": 30,
+        "endLine": 20,
+        "endChar": 40
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "852ca3d5_541d59fb",
+        "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "extensionData",
+      "range": {
+        "startLine": 78,
+        "startChar": 102,
+        "endLine": 78,
+        "endChar": 109
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c314c171_f0120c93",
+        "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleControlConverter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "move the implementation to the other api and remove this",
+      "range": {
+        "startLine": 33,
+        "startChar": 4,
+        "endLine": 38,
+        "endChar": 5
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c2803fe6_4cf8f011",
+        "filename": "extension/openflowplugin-extension-onf/src/test/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "where data is used?",
+      "range": {
+        "startLine": 168,
+        "startChar": 8,
+        "endLine": 170,
+        "endChar": 91
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5b405056_fa5ffb1e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-05-31T11:14:49Z",
+      "side": 1,
+      "message": "move this to a method",
+      "range": {
+        "startLine": 72,
+        "startChar": 31,
+        "endLine": 72,
+        "endChar": 135
+      },
+      "revId": "9662b1c7fad6967d9bfde1692e530521a417abf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
