@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
@@ -56,7 +57,7 @@ public abstract class ServiceMocking {
     protected static final Xid DUMMY_XID = new Xid(DUMMY_XID_VALUE);
     protected static final long DUMMY_EXPERIMENTER_ID = 42L;
 
-    protected static final String DUMMY_NODE_ID = "dummyNodeID";
+    protected static final String DUMMY_NODE_ID = "444";
     protected static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_II = InstanceIdentifier
             .create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
@@ -90,7 +91,8 @@ public abstract class ServiceMocking {
     @Mock
     protected ExtensionConverterProvider mockedExtensionConverterProvider;
     @Mock
-    protected ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer> mockedExtensionConverter;
+    protected ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer,
+        ConvertorData> mockedExtensionConverter;
 
     @Before
     @SuppressWarnings("unchecked")

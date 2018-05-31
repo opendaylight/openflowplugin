@@ -12,6 +12,7 @@ import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -151,8 +152,8 @@ public abstract class RegistrationCloser<K, C> implements ObjectRegistration<C> 
      * @param <T> target type of wrapped convertor
      */
     public static class RegistrationCloserMessageToOFJava<T extends DataContainer,
-            K extends ExperimenterMessageOfChoice>
-                extends RegistrationCloser<TypeVersionKey<K>, ConverterMessageToOFJava<K, T>> {
+            K extends ExperimenterMessageOfChoice, D extends ConvertorData>
+                extends RegistrationCloser<TypeVersionKey<K>, ConverterMessageToOFJava<K, T, D>> {
 
         @Override
         public void close() {
