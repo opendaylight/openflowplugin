@@ -10,9 +10,12 @@ package org.opendaylight.openflowplugin.extension.onf.converter;
 
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
+import org.opendaylight.openflowplugin.extension.api.TempConvertorData;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.extension.onf.OnfConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSalBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.control.sal.SalControlDataBuilder;
@@ -24,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
  * Converter for BundleControl messages (ONF approved extension #230).
  */
 public class BundleControlConverter implements
-        ConverterMessageToOFJava<BundleControlSal, BundleControlOnf>,
+        ConverterMessageToOFJava<BundleControlSal, BundleControlOnf, TempConvertorData>,
         ConvertorMessageFromOFJava<BundleControlOnf, MessagePath> {
 
     @Override
@@ -32,6 +35,12 @@ public class BundleControlConverter implements
             convert(final BundleControlSal experimenterMessageCase) {
         return new BundleControlOnfBuilder().setOnfControlGroupingData(
                 new OnfControlGroupingDataBuilder(experimenterMessageCase.getSalControlData()).build()).build();
+    }
+
+    @Override
+    public BundleControlOnf convert(BundleControlSal experimenterMessageCase, TempConvertorData data)
+            throws ConversionException {
+        return null;
     }
 
     @Override

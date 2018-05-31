@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @param <F> input message model - MD-SAL model
  * @param <T> output message model - OFJava-API
  */
-public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice, T extends DataContainer> {
+public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice, T extends DataContainer, D extends ConvertorData> {
 
     /**
      * Converts a message to MD-SAL model.
@@ -27,6 +27,9 @@ public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice,
      * @return message converted to OFJava-API
      */
     T convert(F experimenterMessageCase) throws ConversionException;
+
+    T convert(F experimenterMessageCase, D data) throws ConversionException;
+
 
     /**
      * Returns the corresponding experimenter id (vendor id).
