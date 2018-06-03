@@ -159,8 +159,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     connectedNode.toString());
             reconciliationPreProcess(connectedNode);
         }
-        LOG.debug("Bundle based reconciliation status : {}",
-                provider.isBundleBasedReconciliationEnabled() ? "Enable" : "Disable");
         if (provider.isBundleBasedReconciliationEnabled()) {
             BundleBasedReconciliationTask bundleBasedReconTask = new BundleBasedReconciliationTask(connectedNode);
             return JdkFutureAdapters.listenInPoolThread(executor.submit(bundleBasedReconTask));
@@ -183,7 +181,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             Optional<FlowCapableNode> flowNode = Optional.absent();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
-            LOG.debug("Triggering bundle based reconciliation for device :{}", dpnId);
+            LOG.info("Triggering bundle based reconciliation for device : {}", dpnId);
             ReadOnlyTransaction trans = provider.getReadTranaction();
             try {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
@@ -194,6 +192,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             if (flowNode.isPresent()) {
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+
+                final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTCLOSEREQUEST).build();
 
                 final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS).setType(BundleControlType.ONFBCTOPENREQUEST)
@@ -207,22 +209,30 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setMessages(createMessages(nodeRef, flowNode)).build();
 
-                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
-                        = salBundleService.controlBundle(openBundleInput);
+                /* Close previously opened bundle on the openflow switch if any */
+                ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
+                        = salBundleService.controlBundle(closeBundleInput);
 
-                ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessagesFuture = Futures
-                        .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
+                /* Open a new bundle on the switch */
+                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
+                        Futures.transformAsync(closeBundle,
+                            rpcResult -> salBundleService.controlBundle(openBundleInput),
+                            MoreExecutors.directExecutor());
+
+                /* Push groups and flows via bundle add messages */
+                ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessagesFuture
+                        = Futures.transformAsync(openBundle, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
-                                return JdkFutureAdapters
-                                        .listenInPoolThread(salBundleService.addBundleMessages(addBundleMessagesInput));
+                                return salBundleService.addBundleMessages(addBundleMessagesInput);
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
+
+                /* Commit the bundle on the openflow switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture
                         = Futures.transformAsync(addBundleMessagesFuture, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
-                                return JdkFutureAdapters
-                                        .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
+                                return salBundleService.controlBundle(commitBundleInput);
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
