@@ -360,10 +360,7 @@ public abstract class NetUtils {
     }
 
     public static boolean fieldsConflict(final int field1, final int field2) {
-        if (field1 == 0 || field2 == 0 || field1 == field2) {
-            return false;
-        }
-        return true;
+        return field1 != 0 && field2 != 0 && field1 != field2;
     }
 
     public static InetAddress parseInetAddress(final String addressString) {

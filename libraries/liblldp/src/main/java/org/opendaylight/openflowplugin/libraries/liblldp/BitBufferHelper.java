@@ -169,7 +169,7 @@ public abstract class BitBufferHelper {
      */
     @Nonnull
     public static byte[] getBits(final byte[] data, final int startOffset, final int numBits) throws BufferException {
-        int startByteOffset = 0;
+        int startByteOffset;
         int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         final int extraOffsetBits = startOffset % NetUtils.NUM_BITS_IN_A_BYTE;
         int numBytes = numBits % NetUtils.NUM_BITS_IN_A_BYTE != 0 ? 1 + numBits / NetUtils.NUM_BITS_IN_A_BYTE
@@ -305,7 +305,7 @@ public abstract class BitBufferHelper {
     public static long toNumber(final byte[] array) {
         long ret = 0;
         long length = array.length;
-        int value = 0;
+        int value;
         for (int i = 0; i < length; i++) {
             value = array[i];
             if (value < 0) {
@@ -326,7 +326,7 @@ public abstract class BitBufferHelper {
         int bitsRest = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         int startOffset = array.length - length;
         long ret = 0;
-        int value = 0;
+        int value;
 
         value = array[startOffset - 1] & getLSBMask(bitsRest);
         value = array[startOffset - 1] < 0 ? array[startOffset - 1] + 256 : array[startOffset - 1];
@@ -350,7 +350,7 @@ public abstract class BitBufferHelper {
      */
     public static byte[] toByteArray(final Number input) {
         Class<? extends Number> dataType = input.getClass();
-        short size = 0;
+        short size;
         long longValue = input.longValue();
 
         if (dataType == Byte.class || dataType == byte.class) {
@@ -387,7 +387,7 @@ public abstract class BitBufferHelper {
      */
     public static byte[] toByteArray(final Number input, final int numBits) {
         Class<? extends Number> dataType = input.getClass();
-        short size = 0;
+        short size;
         long longValue = input.longValue();
 
         if (dataType == Short.class) {
@@ -411,7 +411,7 @@ public abstract class BitBufferHelper {
         }
 
         if (bytes[0] == 0 && dataType == Long.class || bytes[0] == 0 && dataType == Integer.class) {
-            int index = 0;
+            int index;
             for (index = 0; index < length; ++index) {
                 if (bytes[index] != 0) {
                     bytes[0] = bytes[index];
@@ -446,9 +446,9 @@ public abstract class BitBufferHelper {
      * @return byte[]
      */
     public static byte[] shiftBitsToMSB(final byte[] inputBytes, final int numBits) {
-        int numBitstoShiftBy = 0;
+        int numBitstoShiftBy;
         int leadZeroesMSB = 8;
-        int numEndRestBits = 0;
+        int numEndRestBits;
         int size = inputBytes.length;
         byte[] shiftedBytes = new byte[size];
 
@@ -517,8 +517,8 @@ public abstract class BitBufferHelper {
         int numBytes = inputBytes.length;
         int numBitstoShift = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         byte[] shiftedBytes = new byte[numBytes];
-        int inputLsb = 0;
-        int inputMsb = 0;
+        int inputLsb;
+        int inputMsb;
 
         if (numBitstoShift == 0) {
             return inputBytes;
@@ -555,7 +555,7 @@ public abstract class BitBufferHelper {
         int extraOffsetBits = startOffset % NetUtils.NUM_BITS_IN_A_BYTE;
         int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         int restBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
-        int inputMSBbits = 0;
+        int inputMSBbits;
         int inputLSBbits = 0;
 
         if (numBits == 0) {
