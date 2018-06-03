@@ -1,0 +1,6 @@
+---
+project_cfg: opendaylight
+project: ODL OpenFlowPlugin
+version: Fluorine
+copyright: 2017, Abhijit Kumbhare, Anil Vishnoi
+author: Abhijit Kumbhare, Anil Vishnoi
