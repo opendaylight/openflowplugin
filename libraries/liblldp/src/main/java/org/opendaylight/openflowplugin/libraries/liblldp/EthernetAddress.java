@@ -94,10 +94,7 @@ public class EthernetAddress extends DataLinkAddress {
             return false;
         }
         EthernetAddress other = (EthernetAddress) obj;
-        if (!Arrays.equals(macAddress, other.macAddress)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(macAddress, other.macAddress);
     }
 
     @Override

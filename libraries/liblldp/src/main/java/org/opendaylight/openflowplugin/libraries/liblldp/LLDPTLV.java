@@ -50,7 +50,7 @@ public class LLDPTLV extends Packet {
                 (byte) 4), SystemName((byte) 5), SystemDesc((byte) 6), Custom(
                         (byte) 127);
 
-        private byte value;
+        private final byte value;
 
         TLVType(final byte value) {
             this.value = value;
@@ -95,7 +95,7 @@ public class LLDPTLV extends Packet {
      */
     public int getLength() {
         return (int) BitBufferHelper.toNumber(fieldValues.get(LENGTH),
-                FIELD_COORDINATES.get(LENGTH).getRight().intValue());
+                FIELD_COORDINATES.get(LENGTH).getRight());
     }
 
     /**
@@ -186,8 +186,7 @@ public class LLDPTLV extends Packet {
     public int getfieldnumBits(final String fieldName) {
         if (fieldName.equals(VALUE)) {
             return NetUtils.NUM_BITS_IN_A_BYTE * BitBufferHelper.getShort(
-                    fieldValues.get(LENGTH), FIELD_COORDINATES.get(LENGTH)
-                    .getRight().intValue());
+                    fieldValues.get(LENGTH), FIELD_COORDINATES.get(LENGTH).getRight());
         }
         return FIELD_COORDINATES.get(fieldName).getRight();
     }

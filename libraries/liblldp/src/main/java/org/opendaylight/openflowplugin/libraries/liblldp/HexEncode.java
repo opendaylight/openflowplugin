@@ -79,8 +79,7 @@ public final class HexEncode {
     }
 
     public static long stringToLong(final String values) {
-        long value = new BigInteger(values.replaceAll(":", ""), 16).longValue();
-        return value;
+        return new BigInteger(values.replaceAll(":", ""), 16).longValue();
     }
 
     /**
