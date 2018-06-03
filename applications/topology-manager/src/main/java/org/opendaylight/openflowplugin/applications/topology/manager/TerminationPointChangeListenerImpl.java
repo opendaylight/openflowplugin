@@ -9,11 +9,11 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -80,8 +80,8 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                         nodeOptional = Optional.empty();
                 try {
                     nodeOptional = Optional.ofNullable(
-                            manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, node).checkedGet().orNull());
-                } catch (ReadFailedException e) {
+                            manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, node).get().orNull());
+                } catch (InterruptedException | ExecutionException e) {
                     LOG.warn("Error occurred when trying to read NodeConnector: {}", e.getMessage());
                     LOG.debug("Error occurred when trying to read NodeConnector.. ", e);
                 }

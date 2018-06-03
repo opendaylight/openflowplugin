@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -233,7 +232,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
@@ -315,7 +314,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 break;
         }
 
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
@@ -388,7 +387,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, meter, true);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
@@ -413,7 +412,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path2, meter1, true);
 
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
