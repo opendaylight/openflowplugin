@@ -8,9 +8,9 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Future;
@@ -18,7 +18,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
@@ -224,11 +223,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent),
                 staleFlow, false);
 
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTransaction.submit();
+        ListenableFuture<Void> submitFuture = writeTransaction.submit();
         handleStaleFlowResultFuture(submitFuture);
     }
 
-    private void handleStaleFlowResultFuture(CheckedFuture<Void, TransactionCommitFailedException> submitFuture) {
+    private void handleStaleFlowResultFuture(ListenableFuture<Void> submitFuture) {
         Futures.addCallback(submitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void result) {

@@ -9,9 +9,9 @@
 package org.opendaylight.openflowplugin.test;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
@@ -586,7 +585,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.getKey())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
@@ -621,7 +620,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 .child(Group.class, new GroupKey(group.getGroupId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
-        CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
+        ListenableFuture<Void> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void notUsed) {
