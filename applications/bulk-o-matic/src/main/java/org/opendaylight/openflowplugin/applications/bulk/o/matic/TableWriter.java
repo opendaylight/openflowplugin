@@ -90,7 +90,7 @@ public class TableWriter implements FlowCounterMBean {
                 String dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + String.valueOf(dpn);
                 for (short tableId = startTableId; tableId <= endTableId; tableId++) {
                     WriteTransaction wtx = dataBroker.newWriteOnlyTransaction();
-                    Table table = new TableBuilder().setKey(new TableKey(tableId)).setId(tableId).build();
+                    Table table = new TableBuilder().withKey(new TableKey(tableId)).setId(tableId).build();
                     InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
 
                     if (isAdd) {

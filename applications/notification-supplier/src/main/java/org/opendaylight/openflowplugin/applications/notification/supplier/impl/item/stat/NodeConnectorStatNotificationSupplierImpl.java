@@ -59,7 +59,7 @@ public class NodeConnectorStatNotificationSupplierImpl extends
         final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder();
         final NodeConnectorKey ncKey = path.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
         ncBuilder.setId(ncKey.getId());
-        ncBuilder.setKey(ncKey);
+        ncBuilder.withKey(ncKey);
 
         final NodeConnectorStatisticsUpdateBuilder builder = new NodeConnectorStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));

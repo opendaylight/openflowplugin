@@ -89,7 +89,7 @@ final class TopologyManagerUtil {
     }
 
     static InstanceIdentifier<Link> linkPath(final Link link, final InstanceIdentifier<Topology> topology) {
-        return topology.child(Link.class, link.getKey());
+        return topology.child(Link.class, link.key());
     }
 
 

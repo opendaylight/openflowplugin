@@ -301,7 +301,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                                                                     .setTag(PUSH_VLAN)
                                                                     .build())
                                                             .build())
-                                                    .setKey(action.getKey())
+                                                    .withKey(action.key())
                                                     .setOrder(action.getOrder() + offset[0])
                                                     .build());
 

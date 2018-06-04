@@ -76,7 +76,7 @@ public class MeterStatsResponseConvertor extends Convertor<
             salMeterStats.setFlowCount(new Counter32(meterStats.getFlowCount()));
             salMeterStats.setMeterId(new MeterId(meterStats.getMeterId().getValue()));
             salMeterStats.setPacketInCount(new Counter64(meterStats.getPacketInCount()));
-            salMeterStats.setKey(new MeterStatsKey(salMeterStats.getMeterId()));
+            salMeterStats.withKey(new MeterStatsKey(salMeterStats.getMeterId()));
 
             List<MeterBandStats> allMeterBandStats = meterStats.getMeterBandStats();
 
@@ -89,7 +89,7 @@ public class MeterStatsResponseConvertor extends Convertor<
                 bandStatBuilder.setByteBandCount(new Counter64(meterBandStats.getByteBandCount()));
                 bandStatBuilder.setPacketBandCount(new Counter64(meterBandStats.getPacketBandCount()));
                 BandId bandId = new BandId((long) bandKey);
-                bandStatBuilder.setKey(new BandStatKey(bandId));
+                bandStatBuilder.withKey(new BandStatKey(bandId));
                 bandStatBuilder.setBandId(bandId);
                 bandKey++;
                 listAllBandStats.add(bandStatBuilder.build());

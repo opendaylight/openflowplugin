@@ -349,7 +349,7 @@ public final class ReconcileUtil {
             final ItemSyncBox<Flow> flowsSyncBox = resolveFlowDiffsInTable(
                     flowsConfigured, flowOperationalMap, gatherUpdates);
             if (!flowsSyncBox.isEmpty()) {
-                tableFlowSyncBoxes.put(tableConfigured.getKey(), flowsSyncBox);
+                tableFlowSyncBoxes.put(tableConfigured.key(), flowsSyncBox);
             }
         }
         return tableFlowSyncBoxes;

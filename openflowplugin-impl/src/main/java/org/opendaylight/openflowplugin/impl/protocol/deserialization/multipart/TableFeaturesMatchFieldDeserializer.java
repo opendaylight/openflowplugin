@@ -269,7 +269,7 @@ public class TableFeaturesMatchFieldDeserializer {
         return Optional
                 .ofNullable(codeToFieldMap.get(key))
                 .map(clazz -> processHeader(message)
-                        .setKey(new SetFieldMatchKey(clazz))
+                        .withKey(new SetFieldMatchKey(clazz))
                         .setMatchType(clazz)
                         .build());
     }

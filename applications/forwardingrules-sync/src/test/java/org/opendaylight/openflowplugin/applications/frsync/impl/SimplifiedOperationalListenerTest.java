@@ -108,7 +108,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(operationalNode.getId()).thenReturn(NODE_ID);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
-        Mockito.when(operationalNode.getAugmentation(FlowCapableNode.class)).thenReturn(fcOperationalNode);
+        Mockito.when(operationalNode.augmentation(FlowCapableNode.class)).thenReturn(fcOperationalNode);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileButStaticsGatheringNotStarted() {
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
         operationalUpdate();
-        Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(null);
+        Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(null);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -174,7 +174,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileButStaticsGatheringNotFinished() {
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
         operationalUpdate();
-        Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class))
+        Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class))
             .thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(null);
 
@@ -187,7 +187,7 @@ public class SimplifiedOperationalListenerTest {
     public void testOnDataTreeChangedReconcileButStaticsGatheringNotSuccessful() {
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(true);
         operationalUpdate();
-        Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class))
+        Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class))
             .thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
         Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(false);
@@ -255,7 +255,7 @@ public class SimplifiedOperationalListenerTest {
     }
 
     private void prepareFreshOperational(final boolean afterRegistration) throws ParseException {
-        Mockito.when(operationalNode.getAugmentation(FlowCapableStatisticsGatheringStatus.class))
+        Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class))
              .thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
         Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(true);

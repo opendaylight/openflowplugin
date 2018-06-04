@@ -68,7 +68,7 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
     @SuppressWarnings("unchecked")
     public Optional<G> getExtension(T data) {
         for (Class<? extends Augmentation<T>> cls : classes) {
-            Augmentation<T> potential = data.getAugmentation(cls);
+            Augmentation<T> potential = data.augmentation(cls);
             if (potential != null) {
                 return Optional.of((G) potential);
             }

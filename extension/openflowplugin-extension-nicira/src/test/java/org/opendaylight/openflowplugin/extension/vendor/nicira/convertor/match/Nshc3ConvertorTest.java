@@ -55,7 +55,7 @@ public class Nshc3ConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxNshc3(nxmNxNshc3Builder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
             .thenReturn(extensionAugmentation);
 
         nshc3Convertor = new Nshc3Convertor();

@@ -78,7 +78,7 @@ public class GroupDescStatsResponseConvertorTest {
         GroupDescStats stat = statsList.get(0);
         Assert.assertEquals("Wrong type", GroupTypes.GroupAll, stat.getGroupType());
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
-        Assert.assertEquals("Wrong key", 42, stat.getKey().getGroupId().getValue().intValue());
+        Assert.assertEquals("Wrong key", 42, stat.key().getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong buckets size", 0, stat.getBuckets().getBucket().size());
     }
 
@@ -178,12 +178,12 @@ public class GroupDescStatsResponseConvertorTest {
         GroupDescStats stat = statsList.get(0);
         Assert.assertEquals("Wrong type", GroupTypes.GroupFf, stat.getGroupType());
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
-        Assert.assertEquals("Wrong key", 42, stat.getKey().getGroupId().getValue().intValue());
+        Assert.assertEquals("Wrong key", 42, stat.key().getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong buckets size", 1, stat.getBuckets().getBucket().size());
 
         // Test first bucket for first group desc
         Bucket bucket = stat.getBuckets().getBucket().get(0);
-        Assert.assertEquals("Wrong type", 0, bucket.getKey().getBucketId().getValue().intValue());
+        Assert.assertEquals("Wrong type", 0, bucket.key().getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 0, bucket.getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 16, bucket.getWeight().intValue());
         Assert.assertEquals("Wrong type", 168, bucket.getWatchGroup().intValue());
@@ -203,12 +203,12 @@ public class GroupDescStatsResponseConvertorTest {
         stat = statsList.get(1);
         Assert.assertEquals("Wrong type", GroupTypes.GroupIndirect, stat.getGroupType());
         Assert.assertEquals("Wrong group-id", 50, stat.getGroupId().getValue().intValue());
-        Assert.assertEquals("Wrong key", 50, stat.getKey().getGroupId().getValue().intValue());
+        Assert.assertEquals("Wrong key", 50, stat.key().getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong buckets size", 2, stat.getBuckets().getBucket().size());
 
         // Test first bucket for second group desc
         bucket = stat.getBuckets().getBucket().get(0);
-        Assert.assertEquals("Wrong type", 0, bucket.getKey().getBucketId().getValue().intValue());
+        Assert.assertEquals("Wrong type", 0, bucket.key().getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 0, bucket.getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 100, bucket.getWeight().intValue());
         Assert.assertEquals("Wrong type", 400, bucket.getWatchGroup().intValue());
@@ -235,7 +235,7 @@ public class GroupDescStatsResponseConvertorTest {
 
         // Test second bucket for second group desc
         bucket = stat.getBuckets().getBucket().get(1);
-        Assert.assertEquals("Wrong type", 1, bucket.getKey().getBucketId().getValue().intValue());
+        Assert.assertEquals("Wrong type", 1, bucket.key().getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 1, bucket.getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 5, bucket.getWeight().intValue());
         Assert.assertEquals("Wrong type", 15, bucket.getWatchGroup().intValue());

@@ -78,7 +78,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
                 serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_HEADER_PADDING);
-        RateQueueProperty rateQueueProperty = properties.get(0).getAugmentation(RateQueueProperty.class);
+        RateQueueProperty rateQueueProperty = properties.get(0).augmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueueProperty.getRate().intValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_RATE_PADDING);
 
@@ -93,7 +93,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
                 serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_HEADER_PADDING);
-        RateQueueProperty rateQueuePropertyTwo = propertiesTwo.get(0).getAugmentation(RateQueueProperty.class);
+        RateQueueProperty rateQueuePropertyTwo = propertiesTwo.get(0).augmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueuePropertyTwo.getRate().intValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_RATE_PADDING);
 

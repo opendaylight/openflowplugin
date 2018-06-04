@@ -270,7 +270,7 @@ public class OFPluginFlowTest {
         flow.setId(flowId);
         flow.setTableId(tableId);
 
-        flow.setKey(key);
+        flow.withKey(key);
         flow.setFlowName("Foo" + "X" + "f1");
 
         return flow;
@@ -297,7 +297,7 @@ public class OFPluginFlowTest {
         DecNwTtl decNwTtl = ta.build();
         ActionBuilder ab = new ActionBuilder();
         ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
         // Add our drop action to a list
         List<Action> actionList = new ArrayList<Action>();
         actionList.add(ab.build());
@@ -309,14 +309,14 @@ public class OFPluginFlowTest {
         // Wrap our Apply Action in an Instruction
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
         ib.setOrder(0);
 
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<Instruction>();
         instructions.add(ib.build());
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
         isb.setInstruction(instructions);
         return isb;
     }

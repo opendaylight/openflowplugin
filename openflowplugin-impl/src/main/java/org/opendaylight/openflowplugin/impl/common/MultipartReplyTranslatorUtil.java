@@ -305,7 +305,7 @@ public final class MultipartReplyTranslatorUtil {
             }
             statsBuilder.setDuration(durationBuilder.build());
             statsBuilder.setCollisionCount(portStats.getCollisions());
-            statsBuilder.setKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
+            statsBuilder.withKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
             statsBuilder.setReceiveCrcError(portStats.getRxCrcErr());
             statsBuilder.setReceiveDrops(portStats.getRxDropped());
             statsBuilder.setReceiveErrors(portStats.getRxErrors());

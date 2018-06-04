@@ -119,7 +119,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
             }
 
             items.add(itemBuilder
-                    .setKey(new MeterConfigStatsKey(itemBuilder.getMeterId()))
+                    .withKey(new MeterConfigStatsKey(itemBuilder.getMeterId()))
                     .setMeterBandHeaders(new MeterBandHeadersBuilder()
                             .setMeterBandHeader(subItems)
                             .build())

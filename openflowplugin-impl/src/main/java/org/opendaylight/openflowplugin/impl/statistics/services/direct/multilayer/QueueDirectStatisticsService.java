@@ -66,7 +66,7 @@ public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsS
                         getDatapathId(), queueStats.getPortNo(), getOfVersion());
 
                     final QueueIdAndStatisticsMapBuilder statsBuilder = new QueueIdAndStatisticsMapBuilder()
-                        .setKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
+                        .withKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
                         .setNodeConnectorId(nodeConnectorId)
                         .setTransmissionErrors(new Counter64(queueStats.getTxErrors()))
                         .setTransmittedBytes(new Counter64(queueStats.getTxBytes()))

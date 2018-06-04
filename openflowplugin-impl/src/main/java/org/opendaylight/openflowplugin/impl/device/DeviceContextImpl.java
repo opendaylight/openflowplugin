@@ -350,7 +350,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                 OpenflowVersion.get(deviceInfo.getVersion()))));
 
         writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                .setKey(iiToNodeConnector.getKey())
+                .withKey(iiToNodeConnector.getKey())
                 .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
                         FlowCapableNodeConnectorStatisticsDataBuilder().build())
                 .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)

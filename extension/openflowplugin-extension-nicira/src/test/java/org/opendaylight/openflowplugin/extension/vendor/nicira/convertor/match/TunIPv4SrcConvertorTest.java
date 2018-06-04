@@ -58,7 +58,7 @@ public class TunIPv4SrcConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxTunIpv4Src(nxmNxTunIpv4SrcBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.getAugmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
             .thenReturn(extensionAugmentation);
 
         tunIPv4DstConvertor = new TunIPv4SrcConvertor();

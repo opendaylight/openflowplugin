@@ -97,19 +97,19 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     private void createUserNode(String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
 
     private void createTestNode() {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
-        builder.setKey(new NodeKey(builder.getId()));
+        builder.withKey(new NodeKey(builder.getId()));
         testNode = builder.build();
     }
 
     private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.getKey());
+        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
     private GroupBuilder createTestGroup(String actionType, String groupType, String groupMod) {
@@ -118,7 +118,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
         bucket.setBucketId(new BucketId((long) 12));
-        bucket.setKey(new BucketKey(new BucketId((long) 12)));
+        bucket.withKey(new BucketKey(new BucketId((long) 12)));
 
         if (groupType == null) {
             groupType = "g1";
@@ -243,7 +243,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
 
         long id = 1;
         GroupKey key = new GroupKey(new GroupId(id));
-        group.setKey(key);
+        group.withKey(key);
         // group.setInstall(false);
         group.setGroupId(new GroupId(id));
         group.setGroupName(ORIGINAL_GROUP_NAME);
@@ -262,7 +262,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
-        action.setKey(new ActionKey(0));
+        action.withKey(new ActionKey(0));
         List<Action> actions = new ArrayList<>();
         actions.add(action.build());
         return actions;
@@ -343,7 +343,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         setQueueActionBuilder.setQueueId(1L);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
-        action.setKey(new ActionKey(0));
+        action.withKey(new ActionKey(0));
         List<Action> actions = new ArrayList<>();
         actions.add(action.build());
         return actions;
@@ -388,7 +388,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri("2");
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
         ab.setOrder(0);
 
         List<Action> actions = new ArrayList<>();
@@ -404,7 +404,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.FLOOD.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -418,7 +418,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.ALL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -432,7 +432,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.ANY.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -446,7 +446,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.NORMAL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -460,7 +460,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.INPORT.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -474,7 +474,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.TABLE.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -488,7 +488,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -502,7 +502,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.LOCAL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setKey(new ActionKey(0));
+        ab.withKey(new ActionKey(0));
 
         List<Action> actions = new ArrayList<>();
         actions.add(ab.build());
@@ -515,7 +515,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         groupActionB.setGroup("0");
         ActionBuilder action = new ActionBuilder();
         action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
-        action.setKey(new ActionKey(0));
+        action.withKey(new ActionKey(0));
         List<Action> actions = new ArrayList<>();
         actions.add(action.build());
         return actions;
@@ -582,7 +582,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         }
         GroupBuilder gbuilder = createTestGroup(ci.nextArgument(), ci.nextArgument(), "add");
         ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.getKey())
+        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         ListenableFuture<Void> commitFuture = modification.submit();
@@ -616,7 +616,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     private void writeGroup(final CommandInterpreter ci, Group group) {
         ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);

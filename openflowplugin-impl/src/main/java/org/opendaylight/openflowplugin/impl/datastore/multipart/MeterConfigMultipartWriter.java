@@ -45,7 +45,7 @@ public class MeterConfigMultipartWriter extends AbstractMultipartWriter<MeterCon
                         .augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(stat.getMeterId())),
                     new MeterBuilder(stat)
-                        .setKey(new MeterKey(stat.getMeterId()))
+                        .withKey(new MeterKey(stat.getMeterId()))
                         .addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build())
                         .build(),
                     withParents);

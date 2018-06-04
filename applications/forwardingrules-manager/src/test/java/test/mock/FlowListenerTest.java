@@ -90,8 +90,8 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
-        Flow flow = new FlowBuilder().setKey(flowKey).setTableId((short) 2).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Flow flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
@@ -105,7 +105,7 @@ public class FlowListenerTest extends FRMTest {
         flowKey = new FlowKey(new FlowId("test_Flow2"));
         flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY).augmentation(FlowCapableNode.class)
                 .child(Table.class, tableKey).child(Flow.class, flowKey);
-        flow = new FlowBuilder().setKey(flowKey).setTableId((short) 2).build();
+        flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.submit());
@@ -126,8 +126,8 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
-        Flow flow = new FlowBuilder().setKey(flowKey).setTableId((short) 2).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Flow flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
@@ -141,7 +141,7 @@ public class FlowListenerTest extends FRMTest {
         flowKey = new FlowKey(new FlowId("test_Flow"));
         flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY).augmentation(FlowCapableNode.class)
                 .child(Table.class, tableKey).child(Flow.class, flowKey);
-        flow = new FlowBuilder().setKey(flowKey).setTableId((short) 2).setOutGroup((long) 5).build();
+        flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).setOutGroup((long) 5).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.submit());
@@ -163,10 +163,10 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
         IpMatch ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short) 4)).build();
         Match match = new MatchBuilder().setIpMatch(ipMatch).build();
-        Flow flow = new FlowBuilder().setMatch(match).setKey(flowKey).setTableId((short) 2).build();
+        Flow flow = new FlowBuilder().setMatch(match).withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
@@ -182,7 +182,7 @@ public class FlowListenerTest extends FRMTest {
                 .child(Table.class, tableKey).child(Flow.class, flowKey);
         ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short) 5)).build();
         match = new MatchBuilder().setIpMatch(ipMatch).build();
-        flow = new FlowBuilder().setMatch(match).setKey(flowKey).setTableId((short) 2).build();
+        flow = new FlowBuilder().setMatch(match).withKey(flowKey).setTableId((short) 2).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.submit());
@@ -203,8 +203,8 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().setKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
-        Flow flow = new FlowBuilder().setKey(flowKey).setTableId((short) 2).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Flow flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
@@ -236,8 +236,8 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<StaleFlow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(StaleFlow.class, flowKey);
-        Table table = new TableBuilder().setKey(tableKey).setStaleFlow(Collections.<StaleFlow>emptyList()).build();
-        StaleFlow flow = new StaleFlowBuilder().setKey(flowKey).setTableId((short) 2).build();
+        Table table = new TableBuilder().withKey(tableKey).setStaleFlow(Collections.<StaleFlow>emptyList()).build();
+        StaleFlow flow = new StaleFlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);

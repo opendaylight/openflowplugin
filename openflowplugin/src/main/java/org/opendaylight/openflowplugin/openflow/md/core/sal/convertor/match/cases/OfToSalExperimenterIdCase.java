@@ -34,7 +34,7 @@ public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase,
 
         if (data.getOxmMatchField().equals(TcpFlags.class)) {
             final TcpFlagsMatchBuilder tcpFlagsMatchBuilder = data.getTcpFlagsMatchBuilder();
-            final TcpFlagsContainer tcpFlagsContainer = source.getAugmentation(TcpFlagsContainer.class);
+            final TcpFlagsContainer tcpFlagsContainer = source.augmentation(TcpFlagsContainer.class);
 
             if (tcpFlagsContainer != null) {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow

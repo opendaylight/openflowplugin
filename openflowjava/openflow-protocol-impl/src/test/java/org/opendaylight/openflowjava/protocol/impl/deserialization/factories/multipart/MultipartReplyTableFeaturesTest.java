@@ -155,7 +155,7 @@ public class MultipartReplyTableFeaturesTest {
         TableFeatureProperties property = feature.getTableFeatureProperties().get(2);
         Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTNEXTTABLES,
                 property.getType());
-        List<NextTableIds> tableIds = property.getAugmentation(NextTableRelatedTableFeatureProperty.class)
+        List<NextTableIds> tableIds = property.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds();
         Assert.assertEquals("Wrong next table id size", 4, tableIds.size());
         Assert.assertEquals("Wrong next table id", 1, tableIds.get(0).getTableId().intValue());
@@ -165,7 +165,7 @@ public class MultipartReplyTableFeaturesTest {
         property = feature.getTableFeatureProperties().get(3);
         Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTNEXTTABLESMISS,
                 property.getType());
-        tableIds = property.getAugmentation(NextTableRelatedTableFeatureProperty.class)
+        tableIds = property.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds();
         Assert.assertEquals("Wrong next table id size", 3, tableIds.size());
         Assert.assertEquals("Wrong next table id", 5, tableIds.get(0).getTableId().intValue());

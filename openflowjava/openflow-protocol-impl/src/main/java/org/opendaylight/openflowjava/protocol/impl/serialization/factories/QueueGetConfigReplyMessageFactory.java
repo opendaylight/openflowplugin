@@ -54,10 +54,10 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
                 switch (property.getProperty()) {
                     case OFPQTMINRATE:
                     case OFPQTMAXRATE:
-                        serializeRateBody(property.getAugmentation(RateQueueProperty.class), propertyBuff);
+                        serializeRateBody(property.augmentation(RateQueueProperty.class), propertyBuff);
                         break;
                     case OFPQTEXPERIMENTER:
-                        serializeExperimenterBody(property.getAugmentation(ExperimenterIdQueueProperty.class),
+                        serializeExperimenterBody(property.augmentation(ExperimenterIdQueueProperty.class),
                                 propertyBuff);
                         break;
                     default:

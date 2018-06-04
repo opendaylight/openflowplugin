@@ -511,7 +511,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
 
                         ActionBuilder actionBuilder = new ActionBuilder();
                         actionBuilder.setAction(injectedAction)
-                                .setKey(actionItem.getKey())
+                                .withKey(actionItem.key())
                                 .setOrder(actionItem.getOrder() + offset);
 
                         targetActionList.add(actionBuilder.build());
@@ -540,7 +540,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             }
 
             instructionBuilder
-                    .setKey(srcInstruction.getKey())
+                    .withKey(srcInstruction.key())
                     .setOrder(srcInstruction.getOrder());
             targetInstructionList.add(instructionBuilder.build());
 

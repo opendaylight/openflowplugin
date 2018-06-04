@@ -58,7 +58,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
     public void testOnNodeRemoved() {
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
         final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
-        Node topoNode = new NodeBuilder().setKey(topoNodeKey).build();
+        Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
                 .nodes.NodeKey nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
@@ -73,8 +73,8 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         final Topology topology = new TopologyBuilder().setLink(linkList).build();
 
         final InstanceIdentifier[] expDeletedIIDs = {
-                topologyIID.child(Link.class, linkList.get(0).getKey()),
-                topologyIID.child(Link.class, linkList.get(1).getKey()),
+                topologyIID.child(Link.class, linkList.get(0).key()),
+                topologyIID.child(Link.class, linkList.get(1).key()),
                 topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
             };
 
@@ -119,7 +119,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
         InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
-        Node topoNode = new NodeBuilder().setKey(topoNodeKey).build();
+        Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
                 nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
@@ -181,7 +181,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         verify(mockTx).merge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.child(Node.class,
                 new NodeKey(expNodeId))), mergedNode.capture(), eq(true));
         assertEquals("getNodeId", expNodeId, mergedNode.getValue().getNodeId());
-        InventoryNode augmentation = mergedNode.getValue().getAugmentation(InventoryNode.class);
+        InventoryNode augmentation = mergedNode.getValue().augmentation(InventoryNode.class);
         assertNotNull("Missing augmentation", augmentation);
         assertEquals("getInventoryNodeRef", new NodeRef(invNodeID), augmentation.getInventoryNodeRef());
     }
