@@ -156,8 +156,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     connectedNode.toString());
             reconciliationPreProcess(connectedNode);
         }
-        LOG.debug("Bundle based reconciliation status : {}",
-                provider.isBundleBasedReconciliationEnabled() ? "Enable" : "Disable");
         if (provider.isBundleBasedReconciliationEnabled()) {
             BundleBasedReconciliationTask bundleBasedReconTask = new BundleBasedReconciliationTask(connectedNode);
             return JdkFutureAdapters.listenInPoolThread(executor.submit(bundleBasedReconTask));
@@ -180,7 +178,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             Optional<FlowCapableNode> flowNode = Optional.absent();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
-            LOG.debug("Triggering bundle based reconciliation for device :{}", dpnId);
+            LOG.info("Triggering bundle based reconciliation for device :{}", dpnId);
             ReadOnlyTransaction trans = provider.getReadTranaction();
             try {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
@@ -191,6 +189,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             if (flowNode.isPresent()) {
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+
+                final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTCLOSEREQUEST).build();
 
                 final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS).setType(BundleControlType.ONFBCTOPENREQUEST)
@@ -204,8 +206,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setMessages(createMessages(nodeRef, flowNode)).build();
 
-                Future<RpcResult<Void>> openBundle = salBundleService.controlBundle(openBundleInput);
+                /* Close previously opened bundle on the openflow switch if any */
+                Future<RpcResult<Void>> closeBundle = salBundleService.controlBundle(closeBundleInput);
 
+                /* Open a new bundle on the switch */
+                ListenableFuture<RpcResult<Void>> openBundle = Futures
+                        .transformAsync(JdkFutureAdapters.listenInPoolThread(closeBundle), rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                return JdkFutureAdapters
+                                        .listenInPoolThread(salBundleService.controlBundle(openBundleInput));
+                            }
+                            return Futures.immediateFuture(null);
+                        }, MoreExecutors.directExecutor());
+
+                /* Push groups and flows via bundle add messages */
                 ListenableFuture<RpcResult<Void>> addBundleMessagesFuture = Futures
                         .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
                             if (rpcResult.isSuccessful()) {
@@ -214,6 +228,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
+
+                 /* Commit the bundle on the openflow switch */
                 ListenableFuture<RpcResult<Void>> commitBundleFuture = Futures.transformAsync(addBundleMessagesFuture,
                     rpcResult -> {
                         if (rpcResult.isSuccessful()) {
