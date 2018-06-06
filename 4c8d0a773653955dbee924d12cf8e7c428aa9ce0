@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5de8fb1_57531971",
+        "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleControlConverter.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-06T03:17:01Z",
+      "side": 1,
+      "message": "final -\u003e both the arguments",
+      "range": {
+        "startLine": 33,
+        "startChar": 35,
+        "endLine": 33,
+        "endChar": 38
+      },
+      "revId": "4c8d0a773653955dbee924d12cf8e7c428aa9ce0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d69ccfc5_f86f0035",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-06T03:17:01Z",
+      "side": 1,
+      "message": "move this to InventoryDataServiceUtil if you want to have this as static.",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 84,
+        "endChar": 1
+      },
+      "revId": "4c8d0a773653955dbee924d12cf8e7c428aa9ce0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
