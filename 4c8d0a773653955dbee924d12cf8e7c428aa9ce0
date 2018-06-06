@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "f33a759b_94affe14",
+        "filename": "extension/openflowplugin-extension-onf/src/test/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverterTest.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-06T03:27:27Z",
+      "side": 1,
+      "message": "if you move the extractMethod from salExperServiceImpl then you can use it here as well",
+      "range": {
+        "startLine": 169,
+        "startChar": 8,
+        "endLine": 170,
+        "endChar": 91
+      },
+      "revId": "4c8d0a773653955dbee924d12cf8e7c428aa9ce0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d69ccfc5_f86f0035",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalExperimenterMessageServiceImpl.java",
         "patchSetId": 10
