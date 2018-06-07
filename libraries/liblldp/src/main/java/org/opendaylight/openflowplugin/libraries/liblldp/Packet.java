@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -17,26 +16,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract class which represents the generic network packet object It provides
+ * Abstract class which represents the generic network packet object. It provides
  * the basic methods which are common for all the packets, like serialize and
  * deserialize.
  */
 public abstract class Packet {
+
     protected static final Logger LOG = LoggerFactory.getLogger(Packet.class);
+
     // Access level granted to this packet
     protected boolean writeAccess;
+
     // When deserialized from wire, packet could result corrupted
     protected boolean corrupted;
+
     // The packet that encapsulate this packet
     protected Packet parent;
+
     // The packet encapsulated by this packet
     protected Packet payload;
+
     // The unparsed raw payload carried by this packet
     protected byte[] rawPayload;
+
     // Bit coordinates of packet header fields
     protected Map<String, Pair<Integer, Integer>> hdrFieldCoordMap;
+
     // Header fields values: Map<FieldName,Value>
     protected Map<String, byte[]> hdrFieldsMap;
+
     // The class of the encapsulated packet object
     protected Class<? extends Packet> payloadClass;
 
