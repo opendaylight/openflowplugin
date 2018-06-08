@@ -7,14 +7,12 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkOverutilized;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkUtilizationNormal;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +21,13 @@ public class OpenflowpluginTestTopologyNotification {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestTopologyNotification.class);
 
     private final TopologyEventListener topologyEventListener = new TopologyEventListener();
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    public OpenflowpluginTestTopologyNotification(BundleContext ctx) {
+    public OpenflowpluginTestTopologyNotification(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        notificationService = session.getSALService(NotificationService.class);
+    public void init() {
         // For switch events
         notificationService.registerNotificationListener(topologyEventListener);
     }

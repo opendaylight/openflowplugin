@@ -13,7 +13,6 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -46,15 +45,15 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginStatsTestCommandProvider.class);
-    private DataBroker dataProviderService;
+    private final DataBroker dataProviderService;
     private final BundleContext ctx;
 
-    public OpenflowpluginStatsTestCommandProvider(BundleContext ctx) {
+    public OpenflowpluginStatsTestCommandProvider(DataBroker dataProviderService, BundleContext ctx) {
+        this.dataProviderService = dataProviderService;
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        dataProviderService = session.getSALService(DataBroker.class);
+    public void init() {
         ctx.registerService(CommandProvider.class.getName(), this, null);
 
     }

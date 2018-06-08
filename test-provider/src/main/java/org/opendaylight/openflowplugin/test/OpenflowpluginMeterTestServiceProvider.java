@@ -10,9 +10,9 @@ package org.opendaylight.openflowplugin.test;
 
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -159,10 +159,9 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     }
 
     public ObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(
-            final ProviderContext ctx) {
+            final RpcProviderRegistry rpcRegistry) {
 
-        RoutedRpcRegistration<SalMeterService> addRoutedRpcImplementation = ctx
-                .<SalMeterService>addRoutedRpcImplementation(
+        RoutedRpcRegistration<SalMeterService> addRoutedRpcImplementation = rpcRegistry.addRoutedRpcImplementation(
                         SalMeterService.class, this);
 
         setMeterRegistration(addRoutedRpcImplementation);

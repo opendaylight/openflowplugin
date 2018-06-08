@@ -23,10 +23,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.Mod
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.AbstractBrokerAwareActivator;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
@@ -82,49 +78,54 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Sample bundles activator.
+ * Sample DataTreeChangeListener.
  */
-public class Activator extends AbstractBrokerAwareActivator implements BindingAwareConsumer,
-        ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
+public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SampleFlowCapableNodeListener.class);
 
     private static final BundleId BUNDLE_ID = new BundleId(1L);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private DataBroker dataBroker;
-    private SalBundleService bundleService;
+    private final DataBroker dataBroker;
+    private final SalBundleService bundleService;
+    private ListenerRegistration<?> listenerReg;
 
-    @Override
-    public void close() throws Exception {
-        LOG.debug("close() passing");
+    public SampleFlowCapableNodeListener(DataBroker dataBroker, SalBundleService bundleService) {
+        this.dataBroker = dataBroker;
+        this.bundleService = bundleService;
     }
 
     @Override
-    public void onSessionInitialized(ConsumerContext consumerContext) {
+    public void close() {
+        LOG.debug("close() passing");
+        if (listenerReg != null) {
+            listenerReg.close();
+        }
+    }
+
+    public void init() {
         LOG.debug("inSessionInitialized() passing");
-        dataBroker = consumerContext.getSALService(DataBroker.class);
 
         final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class);
         final DataTreeIdentifier<FlowCapableNode> identifier =
                 new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, path);
 
-        dataBroker.registerDataTreeChangeListener(identifier, Activator.this);
-        bundleService = consumerContext.getRpcService(SalBundleService.class);
+        listenerReg = dataBroker.registerDataTreeChangeListener(identifier, SampleFlowCapableNodeListener.this);
     }
 
     @Override
     public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification modification : modifications) {
+        for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 LOG.info("Node connected:  {}",
                         modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
@@ -188,12 +189,6 @@ public class Activator extends AbstractBrokerAwareActivator implements BindingAw
                 throw new RuntimeException(e);
             }
         }, EXECUTOR);
-    }
-
-    @Override
-    protected void onBrokerAvailable(BindingAwareBroker bindingAwareBroker, BundleContext bundleContext) {
-        LOG.debug("onBrokerAvailable() passing");
-        bindingAwareBroker.registerConsumer(this);
     }
 
     private static List<Message> createMessages(NodeRef nodeRef) {

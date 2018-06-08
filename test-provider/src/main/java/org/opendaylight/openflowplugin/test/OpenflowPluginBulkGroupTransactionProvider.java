@@ -20,7 +20,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -107,22 +106,23 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("checkstyle:MethodName")
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
-    private DataBroker dataBroker;
+    private final DataBroker dataBroker;
     private final BundleContext ctx;
     private final String originalFlowName = "Foo";
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private Node testNode12;
     private final String originalGroupName = "Foo";
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    public OpenflowPluginBulkGroupTransactionProvider(BundleContext ctx) {
+    public OpenflowPluginBulkGroupTransactionProvider(DataBroker dataBroker, NotificationService notificationService,
+            BundleContext ctx) {
+        this.dataBroker = dataBroker;
+        this.notificationService = notificationService;
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        notificationService = session.getSALService(NotificationService.class);
+    public void init() {
         notificationService.registerNotificationListener(nodeErrorListener);
-        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }

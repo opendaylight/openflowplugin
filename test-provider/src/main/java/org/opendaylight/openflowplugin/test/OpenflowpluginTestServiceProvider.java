@@ -10,9 +10,9 @@ package org.opendaylight.openflowplugin.test;
 
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -39,9 +39,15 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginTestServiceProvider.class);
 
-    private DataBroker dataService;
+    private final DataBroker dataService;
     private RoutedRpcRegistration<SalFlowService> flowRegistration;
-    private NotificationProviderService notificationProviderService;
+    private final NotificationProviderService notificationProviderService;
+
+    public OpenflowpluginTestServiceProvider(DataBroker dataService,
+            NotificationProviderService notificationProviderService) {
+        this.dataService = dataService;
+        this.notificationProviderService = notificationProviderService;
+    }
 
     /**
      * Get data service.
@@ -50,13 +56,6 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     public DataBroker getDataService() {
         return dataService;
-    }
-
-    /**
-     * Set {@link #dataService}.
-     */
-    public void setDataService(final DataBroker dataService) {
-        this.dataService = dataService;
     }
 
     /**
@@ -83,18 +82,6 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     public NotificationProviderService getNotificationService() {
         return notificationProviderService;
-    }
-
-    /**
-     * Set {@link #notificationProviderService}.
-     */
-    public void setNotificationService(final NotificationProviderService service) {
-        this.notificationProviderService = service;
-    }
-
-    public void start() {
-        OpenflowpluginTestServiceProvider.LOG
-                .info("SalFlowServiceProvider Started.");
     }
 
     /*
@@ -157,11 +144,9 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(
-            final ProviderContext ctx) {
-        RoutedRpcRegistration<SalFlowService> addRoutedRpcImplementation = ctx
-                .<SalFlowService>addRoutedRpcImplementation(
-                        SalFlowService.class, this);
+    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(RpcProviderRegistry rpcRegistry) {
+        RoutedRpcRegistration<SalFlowService> addRoutedRpcImplementation =
+                rpcRegistry.addRoutedRpcImplementation(SalFlowService.class, this);
 
         setFlowRegistration(addRoutedRpcImplementation);
 

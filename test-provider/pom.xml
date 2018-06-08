@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
-        </dependency>    
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-base</artifactId>
@@ -53,15 +53,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven.bundle.version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.opendaylight.openflowplugin.test.OpenflowpluginTestActivator</Bundle-Activator>
-                        <Embed-Dependency>commons-lang</Embed-Dependency>
-                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>

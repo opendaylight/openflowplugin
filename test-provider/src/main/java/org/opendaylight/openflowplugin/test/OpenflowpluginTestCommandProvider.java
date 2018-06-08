@@ -23,7 +23,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
@@ -182,7 +181,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
 
-    private DataBroker dataBroker;
+    private final DataBroker dataBroker;
     private final BundleContext ctx;
     private static final String ORIGINAL_FLOW_NAME = "Foo";
     private static final String UPDATED_FLOW_NAME = "Bar";
@@ -191,18 +190,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static final String SRC_MAC_ADDRESS = "00:00:00:00:23:ae";
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    public OpenflowpluginTestCommandProvider(final BundleContext ctx) {
+    public OpenflowpluginTestCommandProvider(final DataBroker dataBroker, final NotificationService notificationService,
+            final BundleContext ctx) {
+        this.dataBroker = dataBroker;
+        this.notificationService = notificationService;
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(final ProviderContext session) {
-        notificationService = session.getSALService(NotificationService.class);
+    public void init() {
         // For switch events
         notificationService.registerNotificationListener(flowEventListener);
         notificationService.registerNotificationListener(nodeErrorListener);
-        dataBroker = session.getSALService(DataBroker.class);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
