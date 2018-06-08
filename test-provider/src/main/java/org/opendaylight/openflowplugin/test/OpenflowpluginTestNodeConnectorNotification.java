@@ -9,14 +9,12 @@ package org.opendaylight.openflowplugin.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +23,13 @@ public class OpenflowpluginTestNodeConnectorNotification {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestNodeConnectorNotification.class);
 
     private final PortEventListener portEventListener = new PortEventListener();
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    public OpenflowpluginTestNodeConnectorNotification(BundleContext ctx) {
+    public OpenflowpluginTestNodeConnectorNotification(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        notificationService = session.getSALService(NotificationService.class);
+    public void init() {
         // For switch events
         notificationService.registerNotificationListener(portEventListener);
     }

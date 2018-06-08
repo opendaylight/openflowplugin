@@ -24,9 +24,6 @@ public class SimpleDropFirewall {
         this.flowService = flowService;
     }
 
-    public void start() {
-    }
-
     public boolean addFlow(AddFlowInput flow) throws InterruptedException,
             ExecutionException, TimeoutException {
         Future<RpcResult<AddFlowOutput>> result = flowService.addFlow(flow);

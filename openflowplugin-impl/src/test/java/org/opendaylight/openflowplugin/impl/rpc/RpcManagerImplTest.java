@@ -21,7 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -49,7 +49,7 @@ public class RpcManagerImplTest {
     private RpcManagerImpl rpcManager;
 
     @Mock
-    private ProviderContext rpcProviderRegistry;
+    private RpcProviderRegistry rpcProviderRegistry;
     @Mock
     private DeviceContext deviceContext;
     @Mock
@@ -75,7 +75,7 @@ public class RpcManagerImplTest {
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
-    private NodeId nodeId = new NodeId("openflow-junit:1");
+    private final NodeId nodeId = new NodeId("openflow-junit:1");
 
     @Before
     public void setUp() {
