@@ -22,7 +22,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopMplsActionCaseBuilder;
@@ -77,16 +76,16 @@ import org.osgi.framework.BundleContext;
 @SuppressWarnings("checkstyle:MethodName")
 public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandProvider {
 
-    private DataBroker dataBroker;
+    private final DataBroker dataBroker;
     private final BundleContext ctx;
     private Node testNode;
 
-    public OpenflowpluginTableFeaturesTestCommandProvider(BundleContext ctx) {
+    public OpenflowpluginTableFeaturesTestCommandProvider(DataBroker dataBroker, BundleContext ctx) {
+        this.dataBroker = dataBroker;
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        dataBroker = session.getSALService(DataBroker.class);
+    public void init() {
         ctx.registerService(CommandProvider.class.getName(), this, null);
         // createTestNode();
         // createTestTableFeatures();

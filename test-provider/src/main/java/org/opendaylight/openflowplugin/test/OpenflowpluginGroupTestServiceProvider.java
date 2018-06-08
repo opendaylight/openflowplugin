@@ -9,9 +9,9 @@
 package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -142,9 +142,8 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     }
 
     public ObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(
-            final ProviderContext ctx) {
-        RoutedRpcRegistration<SalGroupService> addRoutedRpcImplementation = ctx
-                .<SalGroupService>addRoutedRpcImplementation(
+            final RpcProviderRegistry rpcRegistry) {
+        RoutedRpcRegistration<SalGroupService> addRoutedRpcImplementation = rpcRegistry.addRoutedRpcImplementation(
                         SalGroupService.class, this);
         setGroupRegistration(addRoutedRpcImplementation);
 

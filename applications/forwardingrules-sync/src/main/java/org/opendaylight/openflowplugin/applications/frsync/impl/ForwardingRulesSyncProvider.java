@@ -18,9 +18,6 @@ import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
@@ -47,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Top provider of forwarding rules synchronization functionality.
  */
-public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareProvider {
+public class ForwardingRulesSyncProvider implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
     private static final String FRS_EXECUTOR_PREFIX = "FRS-executor-";
@@ -72,8 +69,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
 
     private final ListeningExecutorService syncThreadPool;
 
-    public ForwardingRulesSyncProvider(final BindingAwareBroker broker,
-                                       final DataBroker dataBroker,
+    public ForwardingRulesSyncProvider(final DataBroker dataBroker,
                                        final RpcConsumerRegistry rpcRegistry,
                                        final ClusterSingletonServiceProvider clusterSingletonService) {
         Preconditions.checkNotNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
@@ -95,11 +91,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable, BindingAwareP
                 .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
                 .build());
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);
-        broker.registerProvider(this);
     }
 
-    @Override
-    public void onSessionInitiated(final ProviderContext providerContext) {
+    public void init() {
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
         final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl()

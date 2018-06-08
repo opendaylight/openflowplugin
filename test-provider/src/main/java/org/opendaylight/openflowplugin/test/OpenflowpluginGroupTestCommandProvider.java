@@ -20,7 +20,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
@@ -79,17 +78,17 @@ import org.osgi.framework.BundleContext;
 public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     private static final String ORIGINAL_GROUP_NAME = "Foo";
 
-    private DataBroker dataBroker;
+    private final DataBroker dataBroker;
     private final BundleContext ctx;
     private Group testGroup;
     private Node testNode;
 
-    public OpenflowpluginGroupTestCommandProvider(BundleContext ctx) {
+    public OpenflowpluginGroupTestCommandProvider(DataBroker dataBroker, BundleContext ctx) {
+        this.dataBroker = dataBroker;
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        dataBroker = session.getSALService(DataBroker.class);
+    public void init() {
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestNode();
     }

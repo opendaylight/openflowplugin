@@ -9,9 +9,9 @@
 package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -105,9 +105,8 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     }
 
     public ObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider> register(
-            final ProviderContext ctx) {
-        RoutedRpcRegistration<SalTableService> addRoutedRpcImplementation = ctx
-                .<SalTableService>addRoutedRpcImplementation(
+            final RpcProviderRegistry rpcRegistry) {
+        RoutedRpcRegistration<SalTableService> addRoutedRpcImplementation = rpcRegistry.addRoutedRpcImplementation(
                         SalTableService.class, this);
 
         setTableRegistration(addRoutedRpcImplementation);
