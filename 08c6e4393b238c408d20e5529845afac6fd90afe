@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b279abf0_6d0e63ff",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-11T06:15:27Z",
+      "side": 1,
+      "message": "use \"Openflow nodes\" in place of DPN",
+      "range": {
+        "startLine": 11,
+        "startChar": 44,
+        "endLine": 11,
+        "endChar": 48
+      },
+      "revId": "08c6e4393b238c408d20e5529845afac6fd90afe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "57eab187_10cbe1c1",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-11T06:15:27Z",
+      "side": 1,
+      "message": "only openflowplugin features or netvirt also?",
+      "range": {
+        "startLine": 39,
+        "startChar": 21,
+        "endLine": 39,
+        "endChar": 42
+      },
+      "revId": "08c6e4393b238c408d20e5529845afac6fd90afe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa31ded1_7c1d1496",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-11T06:15:27Z",
+      "side": 1,
+      "message": "is this step needed/is this step automated?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 79
+      },
+      "revId": "08c6e4393b238c408d20e5529845afac6fd90afe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
