@@ -12,6 +12,7 @@ import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
+import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -63,8 +64,8 @@ public interface ExtensionConverterProvider {
      * @param key the type version key
      * @return found converter
      */
-    <F extends ExperimenterMessageOfChoice, T extends DataContainer> ConverterMessageToOFJava<F, T> getMessageConverter(
-            TypeVersionKey<F> key);
+    <F extends ExperimenterMessageOfChoice, T extends DataContainer,
+        D extends ConvertorData> ConverterMessageToOFJava<F, T, D> getMessageConverter(TypeVersionKey<F> key);
 
     /**
      * Lookup converter for experimenter message.

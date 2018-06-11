@@ -159,4 +159,8 @@ public abstract class InventoryDataServiceUtil {
     public static String bigIntegerToPaddedHex(final BigInteger dataPathId) {
         return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
     }
+
+    public static BigInteger extractDatapathId(final NodeRef ref) {
+        return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getValue().firstKeyOf(Node.class).getId());
+    }
 }

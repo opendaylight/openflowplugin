@@ -9,18 +9,17 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 
 /**
- * Convertor data used in {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutConvertor}
- * containing Openflow version and XID.
+ * Convertor data used in containing Openflow version and XID.
  */
-public class PacketOutConvertorData extends VersionDatapathIdConvertorData {
+public class XidConvertorData extends VersionDatapathIdConvertorData {
     private Long xid;
 
     /**
-     * Instantiates a new Packet out convertor data.
+     * Instantiates a new Xid convertor data.
      *
      * @param version the version
      */
-    public PacketOutConvertorData(short version) {
+    public XidConvertorData(short version) {
         super(version);
     }
 
