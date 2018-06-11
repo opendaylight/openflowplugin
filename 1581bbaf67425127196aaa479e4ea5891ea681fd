@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b4d1dd8_b2a7d739",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTableFeaturesTestCommandProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-11T12:52:41Z",
+      "side": 1,
+      "message": "As we are moving to blueprint, do we need this still?",
+      "range": {
+        "startLine": 89,
+        "startChar": 8,
+        "endLine": 89,
+        "endChar": 73
+      },
+      "revId": "1581bbaf67425127196aaa479e4ea5891ea681fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
