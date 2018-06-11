@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "40b7b8bd_f6d8f07d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 2029
+      },
+      "writtenOn": "2018-06-11T19:03:12Z",
+      "side": 1,
+      "message": "Is this import needed?",
+      "revId": "ce463ae2fe0c04b77f763fafd6732d26089921a0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
