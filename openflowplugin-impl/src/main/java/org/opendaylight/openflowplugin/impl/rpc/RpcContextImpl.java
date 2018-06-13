@@ -87,7 +87,7 @@ class RpcContextImpl implements RpcContext {
             routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistrations.put(serviceClass, routedRpcReg);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Registration of service {} for device {}.",
+                LOG.info("Registration of service {} for device {}.",
                         serviceClass.getSimpleName(),
                         nodeInstanceIdentifier.getKey().getId().getValue());
             }
