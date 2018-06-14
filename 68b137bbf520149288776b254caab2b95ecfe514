@@ -16,6 +16,24 @@
       "revId": "68b137bbf520149288776b254caab2b95ecfe514",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1f163478_5a5a0a05",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-06-14T12:50:20Z",
+      "side": 1,
+      "message": "sorry I don\u0027t think I understand what you mean, why you want me to check that, and how that justifies to -1 this? ;)  I\u0027m guessing that is done somewhere, I don\u0027t know and don\u0027t care where, and haven\u0027t touched it in this change, which uses the variant in line 60 below, which is still there.",
+      "parentUuid": "d22adad7_77b0ef0c",
+      "revId": "68b137bbf520149288776b254caab2b95ecfe514",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
