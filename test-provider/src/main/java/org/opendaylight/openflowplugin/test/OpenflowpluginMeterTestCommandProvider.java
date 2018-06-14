@@ -19,7 +19,6 @@ import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -53,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
-    private DataBroker dataBroker;
+    private final DataBroker dataBroker;
     private final BundleContext ctx;
     private Meter testMeter;
     private Meter testMeter1;
@@ -62,17 +61,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private final String originalMeterName = "Foo";
     private final String updatedMeterName = "Bar";
     private final MeterEventListener meterEventListener = new MeterEventListener();
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
     private Registration listener1Reg;
 
-    public OpenflowpluginMeterTestCommandProvider(BundleContext ctx) {
+    public OpenflowpluginMeterTestCommandProvider(DataBroker dataBroker, NotificationService notificationService,
+            BundleContext ctx) {
+        this.dataBroker = dataBroker;
+        this.notificationService = notificationService;
         this.ctx = ctx;
     }
 
-    public void onSessionInitiated(ProviderContext session) {
-        dataBroker = session.getSALService(DataBroker.class);
+    public void init() {
         ctx.registerService(CommandProvider.class.getName(), this, null);
-        notificationService = session.getSALService(NotificationService.class);
         // For switch events
         listener1Reg = notificationService.registerNotificationListener(meterEventListener);
 

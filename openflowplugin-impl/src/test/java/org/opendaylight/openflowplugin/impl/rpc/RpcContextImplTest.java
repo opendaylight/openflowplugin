@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -46,7 +47,7 @@ public class RpcContextImplTest {
 
 
     @Mock
-    private BindingAwareBroker.ProviderContext rpcProviderRegistry;
+    private RpcProviderRegistry rpcProviderRegistry;
     @Mock
     private DeviceState deviceState;
     @Mock
