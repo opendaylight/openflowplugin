@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d22adad7_77b0ef0c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2018-06-14T11:39:53Z",
+      "side": 1,
+      "message": "in the output of CSIT we were seeing a descriptor as \"OF::PORTS:: 6653 and 6633 are up\".. can u check where it is",
+      "revId": "68b137bbf520149288776b254caab2b95ecfe514",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
