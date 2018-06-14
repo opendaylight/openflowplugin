@@ -172,7 +172,7 @@ public class OpenFlowPluginProviderImpl implements
             @Override
             public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
-                openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL, "switch connections started");
+                openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL);
             }
 
             @Override
@@ -294,7 +294,7 @@ public class OpenFlowPluginProviderImpl implements
         gracefulShutdown(executorService);
         gracefulShutdown(hashedWheelTimer);
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
-        openflowPluginStatusMonitor.reportStatus(ServiceState.UNREGISTERED, "service shutting down");
+        openflowPluginStatusMonitor.reportStatus(ServiceState.UNREGISTERED);
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
