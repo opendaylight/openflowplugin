@@ -34,6 +34,24 @@
       "revId": "68b137bbf520149288776b254caab2b95ecfe514",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1c95fb1b_3ac8fcc0",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-06-14T17:27:46Z",
+      "side": 1,
+      "message": "I believe reportStatus is removed because we already have other overloaded method just below it.",
+      "parentUuid": "1f163478_5a5a0a05",
+      "revId": "68b137bbf520149288776b254caab2b95ecfe514",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
