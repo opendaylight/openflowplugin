@@ -14,6 +14,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>
