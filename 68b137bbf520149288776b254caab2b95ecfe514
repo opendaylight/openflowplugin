@@ -52,6 +52,24 @@
       "revId": "68b137bbf520149288776b254caab2b95ecfe514",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "77491586_ca9f0d88",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 3276
+      },
+      "writtenOn": "2018-06-15T04:06:13Z",
+      "side": 1,
+      "message": "That comes from getServiceDescriptor() Line 65-75",
+      "parentUuid": "d22adad7_77b0ef0c",
+      "revId": "68b137bbf520149288776b254caab2b95ecfe514",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
