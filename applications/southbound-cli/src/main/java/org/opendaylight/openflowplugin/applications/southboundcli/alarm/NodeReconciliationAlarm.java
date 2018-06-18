@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.management.AttributeChangeNotification;
 import javax.management.NotificationBroadcasterSupport;
 
-public class ReconciliationAlarm extends NotificationBroadcasterSupport implements ReconciliationAlarmMBean {
+public class NodeReconciliationAlarm extends NotificationBroadcasterSupport implements NodeReconciliationAlarmMBean {
 
     private AtomicLong sequenceNumber = new AtomicLong(1);
 
