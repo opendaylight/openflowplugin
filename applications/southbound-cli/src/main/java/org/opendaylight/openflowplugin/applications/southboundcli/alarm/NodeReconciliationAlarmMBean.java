@@ -11,10 +11,10 @@ package org.opendaylight.openflowplugin.applications.southboundcli.alarm;
 import java.util.List;
 
 /**
- * ReconciliationAlarmMBean is the generic interface for
+ * NodeReconciliationAlarmMBean is the generic interface for
  * providing alarm services by maintaning the alarm object.
  */
-public interface ReconciliationAlarmMBean {
+public interface NodeReconciliationAlarmMBean {
 
     /**
      * This method is called to set the list of raiseAlarmObjets.

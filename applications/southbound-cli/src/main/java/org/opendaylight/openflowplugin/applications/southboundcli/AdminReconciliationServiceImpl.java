@@ -99,7 +99,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 return buildErrorResponse("Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
             nodesToReconcile.parallelStream().forEach(nodeId -> {
-                alarmAgent.raiseAdminReconciliationAlarm(nodeId);
+                alarmAgent.raiseNodeReconciliationAlarm(nodeId);
                 LOG.info("Executing admin reconciliation for node {}", nodeId);
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
                 ReconciliationTask reconcileTask = new ReconciliationTask(nodeId, nodeKey);
@@ -200,7 +200,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
             } catch (ExecutionException | InterruptedException e) {
                 LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
             }
-            alarmAgent.clearAdminReconciliationAlarm(nodeId);
+            alarmAgent.clearNodeReconciliationAlarm(nodeId);
         }
     }
 }

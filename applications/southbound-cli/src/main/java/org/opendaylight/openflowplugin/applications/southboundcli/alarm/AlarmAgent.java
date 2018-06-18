@@ -28,7 +28,7 @@ public class AlarmAgent {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmAgent.class);
     private static final String BEAN_NAME = "SDNC.FM:name=NodeReconciliationOperationOngoingBean";
     private final MBeanServer mbs;
-    private final ReconciliationAlarm alarmBean = new ReconciliationAlarm();
+    private final NodeReconciliationAlarm alarmBean = new NodeReconciliationAlarm();
     private ObjectName alarmName;
 
     /**
@@ -97,11 +97,11 @@ public class AlarmAgent {
      *
      * @param nodeId Source of the alarm dpnId
      */
-    public void raiseAdminReconciliationAlarm(final long nodeId) {
+    public void raiseNodeReconciliationAlarm(final long nodeId) {
         String alarmText = getAlarmText(nodeId,  " started reconciliation");
         String source = getSourceText(nodeId);
 
-        LOG.debug("Raising AdminReconciliation alarm, alarmText {} source {}", alarmText, source);
+        LOG.debug("Raising NodeReconciliationOperationOngoing alarm, alarmText {} source {}", alarmText, source);
         // Invokes JMX raiseAlarm method
         invokeFMRaiseMethod("NodeReconciliationOperationOngoing", alarmText, source);
     }
@@ -112,11 +112,11 @@ public class AlarmAgent {
      *
      * @param nodeId Source of the alarm dpnId
      */
-    public void clearAdminReconciliationAlarm(final long nodeId) {
+    public void clearNodeReconciliationAlarm(final long nodeId) {
         String alarmText = getAlarmText(nodeId, " finished reconciliation");
         String source = getSourceText(nodeId);
 
-        LOG.debug("Clearing AdminReconciliation alarm of source {}", source);
+        LOG.debug("Clearing NodeReconciliationOperationOngoing alarm of source {}", source);
         // Invokes JMX clearAlarm method
         invokeFMClearMethod("NodeReconciliationOperationOngoing", alarmText, source);
     }
