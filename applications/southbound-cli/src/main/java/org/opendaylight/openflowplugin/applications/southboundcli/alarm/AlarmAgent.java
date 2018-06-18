@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class AlarmAgent {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmAgent.class);
-    private static final String BEAN_NAME = "SDNC.FM:name=NodeReconciliationOperationOngoing";
+    private static final String BEAN_NAME = "SDNC.FM:name=NodeReconciliationOperationOngoingBean";
     private final MBeanServer mbs;
     private final ReconciliationAlarm alarmBean = new ReconciliationAlarm();
     private ObjectName alarmName;
@@ -103,7 +103,7 @@ public class AlarmAgent {
 
         LOG.debug("Raising AdminReconciliation alarm, alarmText {} source {}", alarmText, source);
         // Invokes JMX raiseAlarm method
-        invokeFMRaiseMethod("AdminReconciliation", alarmText, source);
+        invokeFMRaiseMethod("NodeReconciliationOperationOngoing", alarmText, source);
     }
 
     /**
@@ -118,7 +118,7 @@ public class AlarmAgent {
 
         LOG.debug("Clearing AdminReconciliation alarm of source {}", source);
         // Invokes JMX clearAlarm method
-        invokeFMClearMethod("AdminReconciliationAlarm", alarmText, source);
+        invokeFMClearMethod("NodeReconciliationOperationOngoing", alarmText, source);
     }
 
     /**
