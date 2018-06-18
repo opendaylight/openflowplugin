@@ -87,6 +87,24 @@
       "revId": "68b137bbf520149288776b254caab2b95ecfe514",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "436f6095_8656df50",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/diagstatus/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-06-18T13:49:53Z",
+      "side": 1,
+      "message": "That is up to you to decide! ;) I\u0027ve left it in there because at least this description provides some real additional value - whereas the other ones did not.  If you feel that this is not useful, either, then please feel free to follow-up on this change with one from you where you propose to remove this as well? ;)",
+      "parentUuid": "c15f375d_874669af",
+      "revId": "68b137bbf520149288776b254caab2b95ecfe514",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
