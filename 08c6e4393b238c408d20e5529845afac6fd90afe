@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "05ae5d0e_2eee3ade",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 7800
+      },
+      "writtenOn": "2018-06-19T12:01:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b279abf0_6d0e63ff",
+      "range": {
+        "startLine": 11,
+        "startChar": 44,
+        "endLine": 11,
+        "endChar": 48
+      },
+      "revId": "08c6e4393b238c408d20e5529845afac6fd90afe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "57eab187_10cbe1c1",
         "filename": "docs/testplans/Bundles-Resync.rst",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "583f4790_6f3cb4db",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 7800
+      },
+      "writtenOn": "2018-06-19T12:01:25Z",
+      "side": 1,
+      "message": "only openflow plugin feature..have updated the same",
+      "parentUuid": "57eab187_10cbe1c1",
+      "range": {
+        "startLine": 39,
+        "startChar": 21,
+        "endLine": 39,
+        "endChar": 42
+      },
+      "revId": "08c6e4393b238c408d20e5529845afac6fd90afe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa31ded1_7c1d1496",
         "filename": "docs/testplans/Bundles-Resync.rst",
         "patchSetId": 2
@@ -59,6 +107,30 @@
       "writtenOn": "2018-06-11T06:15:27Z",
       "side": 1,
       "message": "is this step needed/is this step automated?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 79
+      },
+      "revId": "08c6e4393b238c408d20e5529845afac6fd90afe",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ef0b8e29_6b19a9af",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 7800
+      },
+      "writtenOn": "2018-06-19T12:01:25Z",
+      "side": 1,
+      "message": "This step is not automated.\nBut covered as part of the manual testing.",
+      "parentUuid": "fa31ded1_7c1d1496",
       "range": {
         "startLine": 77,
         "startChar": 0,
