@@ -211,14 +211,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                 /* Open a new bundle on the switch */
                 ListenableFuture<RpcResult<Void>> openBundle = Futures
-                        .transformAsync(JdkFutureAdapters.listenInPoolThread(closeBundle), rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                return JdkFutureAdapters
-                                        .listenInPoolThread(salBundleService.controlBundle(openBundleInput));
-                            }
-                            return Futures.immediateFuture(null);
-                        }, MoreExecutors.directExecutor());
-
+                        .transformAsync(JdkFutureAdapters.listenInPoolThread(closeBundle),
+                            rpcResult -> JdkFutureAdapters
+                                .listenInPoolThread(salBundleService.controlBundle(openBundleInput)),
+                                MoreExecutors.directExecutor());
                 /* Push groups and flows via bundle add messages */
                 ListenableFuture<RpcResult<Void>> addBundleMessagesFuture = Futures
                         .transformAsync(JdkFutureAdapters.listenInPoolThread(openBundle), rpcResult -> {
