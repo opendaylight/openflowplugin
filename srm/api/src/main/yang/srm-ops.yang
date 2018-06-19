@@ -1,0 +1,50 @@
+module srm-ops {
+    namespace "urn:opendaylight:genius:srm:ops";
+    prefix "srmops";
+
+    import srm-types {
+        prefix srmtype;
+    }
+
+    revision "2017-07-11" {
+        description "ODL Services Recovery Manager Operations Model";
+    }
+
+    /* Operations  */
+
+    container service-ops {
+        config false;
+        list services {
+            key service-name;
+            leaf service-name {
+                type identityref {
+                    base srmtype:entity-name-base;
+                }
+            }
+            list operations {
+                key entity-name;
+                leaf entity-name {
+                    type identityref {
+                        base srmtype:entity-name-base;
+                    }
+                }
+                leaf entity-type {
+                    type identityref {
+                        base srmtype:entity-type-base;
+                    }
+                }
+                leaf entity-id {
+                    description "Optional when entity-type is service. Actual
+                                 id depends on entity-type and entity-name";
+                    type string;
+                }
+                leaf trigger-operation {
+                    type identityref {
+                        base srmtypes:service-op-base;
+                    }
+                }
+            }
+        }
+    }
+
+}
