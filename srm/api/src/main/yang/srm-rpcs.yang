@@ -1,5 +1,5 @@
 module srm-rpcs {
-    namespace "urn:opendaylight:genius:srm:rpcs";
+    namespace "urn:opendaylight:serviceutils:srm:rpcs";
     prefix "srmrpcs";
 
     import srm-types {

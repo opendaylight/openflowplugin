@@ -1,5 +1,5 @@
 module srm-ops {
-    namespace "urn:opendaylight:genius:srm:ops";
+    namespace "urn:opendaylight:serviceutils:srm:ops";
     prefix "srmops";
 
     import srm-types {

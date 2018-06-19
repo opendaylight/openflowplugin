@@ -6,33 +6,33 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.genius.srm.shell;
+package org.opendaylight.serviceutils.srm.shell;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Locale;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.EntityNameBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.EntityTypeBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.EntityTypeInstance;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.EntityTypeService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.GeniusIfm;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.GeniusIfmInterface;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.GeniusItm;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.GeniusItmTep;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.GeniusItmTz;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtAcl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtAclInstance;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtAclInterface;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtDhcp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtElan;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtElanInterface;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtL2gw;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtL2gwConnection;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtL2gwNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtQos;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtQosPolicyInstance;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtVpn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.NetvirtVpnInstance;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.types.rev170711.Ofplugin;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityNameBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityTypeBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityTypeInstance;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityTypeService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.GeniusIfm;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.GeniusIfmInterface;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.GeniusItm;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.GeniusItmTep;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.GeniusItmTz;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtAcl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtAclInstance;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtAclInterface;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtDhcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtElan;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtElanInterface;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtL2gw;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtL2gwConnection;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtL2gwNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtQos;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtQosPolicyInstance;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtVpn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.NetvirtVpnInstance;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.Ofplugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

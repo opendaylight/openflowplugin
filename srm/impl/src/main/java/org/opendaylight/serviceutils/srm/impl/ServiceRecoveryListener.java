@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.genius.srm.impl;
+package org.opendaylight.serviceutils.srm.impl;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -14,10 +14,10 @@ import javax.inject.Singleton;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.tools.mdsal.listener.AbstractClusteredSyncDataTreeChangeListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.ops.rev170711.ServiceOps;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.ops.rev170711.service.ops.Services;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.ops.rev170711.service.ops.services.Operations;
+import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractClusteredSyncDataTreeChangeListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev170711.ServiceOps;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev170711.service.ops.Services;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev170711.service.ops.services.Operations;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

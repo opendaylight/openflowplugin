@@ -10,19 +10,19 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.opendaylight.genius</groupId>
+    <groupId>org.opendaylight.serviceutils</groupId>
     <artifactId>binding-parent</artifactId>
     <version>0.5.0-SNAPSHOT</version>
     <relativePath>../../commons/binding-parent</relativePath>
   </parent>
 
-  <groupId>org.opendaylight.genius</groupId>
+  <groupId>org.opendaylight.serviceutils</groupId>
   <artifactId>srm-api</artifactId>
   <version>0.5.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
-  <name>ODL :: genius :: ${project.artifactId}</name>
+  <name>ODL :: serviceutils :: ${project.artifactId}</name>
 
   <dependencies>
     <dependency>

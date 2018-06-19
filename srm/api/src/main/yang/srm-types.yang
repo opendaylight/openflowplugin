@@ -1,5 +1,5 @@
 module srm-types {
-    namespace "urn:opendaylight:genius:srm:types";
+    namespace "urn:opendaylight:serviceutils:srm:types";
     prefix "srmtypes";
 
     revision "2017-07-11" {

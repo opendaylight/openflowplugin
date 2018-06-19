@@ -13,21 +13,21 @@
                interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
 
     <odl:rpc-service id="srmRpcService"
-             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.genius.srm.rpcs.rev170711.SrmRpcsService" />
+             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.SrmRpcsService" />
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
         <command>
-            <action class="org.opendaylight.genius.srm.shell.RecoverCommand">
+            <action class="org.opendaylight.serviceutils.srm.shell.RecoverCommand">
                 <argument ref="srmRpcService" />
             </action>
         </command>
         <command>
-            <action class="org.opendaylight.genius.srm.shell.ReinstallCommand">
+            <action class="org.opendaylight.serviceutils.srm.shell.ReinstallCommand">
                 <argument ref="srmRpcService" />
             </action>
         </command>
         <command>
-            <action class="org.opendaylight.genius.srm.shell.SrmDebugCommand">
+            <action class="org.opendaylight.serviceutils.srm.shell.SrmDebugCommand">
                 <argument ref="dataBroker"/>
             </action>
         </command>
