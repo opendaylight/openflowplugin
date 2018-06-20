@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc6cb2ff_68fa39ac",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/DecapCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-20T03:59:35Z",
+      "side": 1,
+      "message": "private static final?",
+      "range": {
+        "startLine": 24,
+        "startChar": 4,
+        "endLine": 25,
+        "endChar": 53
+      },
+      "revId": "5699c2702e5c020f5a8f329ed1bb8f2b64a0dc32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32e33f63_8b1a49a9",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/EncapCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-20T03:59:35Z",
+      "side": 1,
+      "message": "private static final?",
+      "range": {
+        "startLine": 24,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 58
+      },
+      "revId": "5699c2702e5c020f5a8f329ed1bb8f2b64a0dc32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c8cf5f41_d6434de9",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/DecapCodecTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-20T03:59:35Z",
+      "side": 1,
+      "message": "private",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 31
+      },
+      "revId": "5699c2702e5c020f5a8f329ed1bb8f2b64a0dc32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "35384026_7a595d0f",
+        "filename": "extension/openflowjava-extension-nicira/src/test/java/org/opendaylight/openflowjava/nx/codec/action/EncapCodecTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-20T03:59:35Z",
+      "side": 1,
+      "message": "private",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "5699c2702e5c020f5a8f329ed1bb8f2b64a0dc32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
