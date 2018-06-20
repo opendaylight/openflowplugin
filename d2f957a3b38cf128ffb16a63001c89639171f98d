@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "87e941d7_01d7fc02",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-20T09:33:31Z",
+      "side": 1,
+      "message": "will there be 6640 connection established ?",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 17
+      },
+      "revId": "d2f957a3b38cf128ffb16a63001c89639171f98d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "84ba7298_fff2c357",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-20T09:33:31Z",
+      "side": 1,
+      "message": "is this step required? Reference to ovsdb present across the test plan, is the ovsdb channel used in this suite?",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 56
+      },
+      "revId": "d2f957a3b38cf128ffb16a63001c89639171f98d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
