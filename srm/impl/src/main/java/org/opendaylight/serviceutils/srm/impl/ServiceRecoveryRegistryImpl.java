@@ -39,14 +39,14 @@ public class ServiceRecoveryRegistryImpl implements ServiceRecoveryRegistry {
     }
 
     @Override
-    public synchronized void addRecoverableListener(String serviceName, final RecoverableListener recoverableListener) {
+    public synchronized void addRecoverableListener(String serviceName, RecoverableListener recoverableListener) {
         recoverableListenersMap
                 .computeIfAbsent(serviceName, k -> new ConcurrentLinkedQueue<>())
                 .add(recoverableListener);
     }
 
     @Override
-    public void removeRecoverableListener(String serviceName, final RecoverableListener recoverableListener) {
+    public void removeRecoverableListener(String serviceName, RecoverableListener recoverableListener) {
         if (recoverableListenersMap.get(serviceName) != null) {
             recoverableListenersMap.get(serviceName).remove(recoverableListener);
         }

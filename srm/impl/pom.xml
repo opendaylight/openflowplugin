@@ -12,9 +12,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <parent>
     <groupId>org.opendaylight.serviceutils</groupId>
-    <artifactId>binding-parent</artifactId>
+    <artifactId>quality-parent</artifactId>
     <version>0.2.0-SNAPSHOT</version>
-    <relativePath>../../commons/binding-parent</relativePath>
+    <relativePath>../../commons/quality-parent</relativePath>
   </parent>
 
   <groupId>org.opendaylight.serviceutils</groupId>

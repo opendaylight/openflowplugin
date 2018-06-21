@@ -23,7 +23,7 @@ public final class ServiceRecoveryManager {
         this.serviceRecoveryRegistry = serviceRecoveryRegistry;
     }
 
-    private String getServiceRegistryKey(Class<? extends EntityNameBase> entityName) {
+    private static String getServiceRegistryKey(Class<? extends EntityNameBase> entityName) {
         return entityName.toString();
     }
 

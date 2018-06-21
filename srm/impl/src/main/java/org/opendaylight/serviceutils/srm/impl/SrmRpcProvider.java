@@ -32,7 +32,7 @@ public class SrmRpcProvider implements SrmRpcsService {
     private final DataBroker dataBroker;
 
     @Inject
-    public SrmRpcProvider(final DataBroker dataBroker) {
+    public SrmRpcProvider(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
 
