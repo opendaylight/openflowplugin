@@ -9,6 +9,7 @@
 package org.opendaylight.serviceutils.srm.shell;
 
 import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -43,7 +44,7 @@ public class RecoverCommand extends OsgiCommandSupport {
     String id;
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected @Nullable Object doExecute() throws Exception {
         RecoverInput input = getInput();
         if (input == null) {
             // We've already shown the relevant error msg
@@ -69,7 +70,7 @@ public class RecoverCommand extends OsgiCommandSupport {
         session.getConsole().println(strResult.toString());
     }
 
-    private RecoverInput getInput() {
+    private @Nullable RecoverInput getInput() {
         if (type == null || name == null) {
             return null;
         }

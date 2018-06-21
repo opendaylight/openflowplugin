@@ -9,6 +9,7 @@
 package org.opendaylight.serviceutils.srm.shell;
 
 import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -28,7 +29,7 @@ public class ReinstallCommand extends OsgiCommandSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReinstallCommand.class);
 
-    private SrmRpcsService srmRpcService;
+    private final SrmRpcsService srmRpcService;
     private final Class<? extends EntityTypeBase> entityType = EntityTypeService.class;
 
     public ReinstallCommand(SrmRpcsService srmRpcService) {
@@ -40,7 +41,7 @@ public class ReinstallCommand extends OsgiCommandSupport {
     String name;
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected @Nullable Object doExecute() throws Exception {
         ReinstallInput input = getInput();
         if (input == null) {
             // We've already shown the relevant error msg
@@ -65,7 +66,7 @@ public class ReinstallCommand extends OsgiCommandSupport {
         session.getConsole().println(strResult.toString());
     }
 
-    private ReinstallInput getInput() {
+    private @Nullable ReinstallInput getInput() {
         Class<? extends EntityNameBase> entityName = SrmCliUtils.getEntityName(entityType, name);
         if (entityName == null) {
             session.getConsole().println(SrmCliUtils.getNameHelp(entityType));

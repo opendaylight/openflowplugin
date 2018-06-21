@@ -8,6 +8,7 @@
 
 package org.opendaylight.serviceutils.srm.shell;
 
+import javax.annotation.Nullable;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -35,7 +36,7 @@ public class SrmDebugCommand extends OsgiCommandSupport {
     boolean clearOps;
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected @Nullable Object doExecute() throws Exception {
         if (clearOps) {
             clearOpsDs();
         }
@@ -46,7 +47,7 @@ public class SrmDebugCommand extends OsgiCommandSupport {
         InstanceIdentifier<ServiceOps> path = getInstanceIdentifier();
         WriteTransaction tx = txDataBroker.newWriteOnlyTransaction();
         tx.delete(LogicalDatastoreType.OPERATIONAL, path);
-        tx.submit();
+        tx.commit().get();
     }
 
     private static InstanceIdentifier<ServiceOps> getInstanceIdentifier() {

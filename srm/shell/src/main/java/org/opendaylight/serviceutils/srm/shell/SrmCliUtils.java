@@ -10,6 +10,7 @@ package org.opendaylight.serviceutils.srm.shell;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityNameBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityTypeBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev170711.EntityTypeInstance;
@@ -96,7 +97,8 @@ public final class SrmCliUtils {
      * @param strName Entity Name as a string
      * @return EntityName for use
      */
-    public static Class<? extends EntityNameBase> getEntityName(Class<? extends EntityTypeBase> type, String strName) {
+    public static @Nullable Class<? extends EntityNameBase> getEntityName(Class<? extends EntityTypeBase> type,
+            String strName) {
         LOG.debug("Getting entityName for type {} and name: {}", type, strName);
         if (EntityTypeService.class.equals(type)) {
             return SERVICE_NAME_MAP.get(strName.toUpperCase(Locale.ROOT));
