@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0f50e0e0_6d6b02d1",
+        "filename": "docs/testplans/Bundles-Resync.rst",
+        "patchSetId": 10
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-06-26T03:27:44Z",
+      "side": 1,
+      "message": "everything looks fine, could you please update this section as well. So, we can get it merged.",
+      "range": {
+        "startLine": 233,
+        "startChar": 0,
+        "endLine": 233,
+        "endChar": 48
+      },
+      "revId": "387e68c88d3557e53bd751252188a2a4b454e1de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
