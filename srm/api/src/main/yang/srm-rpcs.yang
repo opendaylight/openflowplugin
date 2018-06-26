@@ -1,12 +1,12 @@
-module srm-rpcs {
-    namespace "urn:opendaylight:serviceutils:srm:rpcs";
-    prefix "srmrpcs";
+module odl-srm-rpcs {
+    namespace "urn:opendaylight:serviceutils:srm:rpc";
+    prefix "srmrpc";
 
-    import srm-types {
+    import odl-srm-types {
         prefix srmtype;
     }
 
-    revision "2017-07-11" {
+    revision "2018-06-26" {
         description "ODL Services Recovery Manager Rpcs Module";
     }
 

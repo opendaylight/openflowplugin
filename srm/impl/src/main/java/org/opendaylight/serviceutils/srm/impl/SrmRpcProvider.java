@@ -15,17 +15,17 @@ import javax.inject.Singleton;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.serviceutils.tools.mdsal.rpc.FutureRpcResults;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.RecoverInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.RecoverOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.ReinstallInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.ReinstallOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.SrmRpcsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.OdlSrmRpcsService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.ReinstallInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.ReinstallOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class SrmRpcProvider implements SrmRpcsService {
+public class SrmRpcProvider implements OdlSrmRpcsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SrmRpcProvider.class);
 

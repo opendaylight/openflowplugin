@@ -1,8 +1,8 @@
-module srm-types {
+module odl-srm-types {
     namespace "urn:opendaylight:serviceutils:srm:types";
     prefix "srmtypes";
 
-    revision "2017-07-11" {
+    revision "2018-06-26" {
         description "ODL Services Recovery Manager Types Module";
     }
 

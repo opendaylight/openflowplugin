@@ -13,7 +13,7 @@
                interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
 
     <odl:rpc-service id="srmRpcService"
-             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpcs.rev170711.SrmRpcsService" />
+             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.OdlSrmRpcsService" />
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
         <command>
