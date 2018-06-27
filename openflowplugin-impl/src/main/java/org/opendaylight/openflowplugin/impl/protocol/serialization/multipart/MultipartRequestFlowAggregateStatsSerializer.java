@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.MoreObjects;
@@ -19,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.aggregate.stats.FlowAggregateStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 public class MultipartRequestFlowAggregateStatsSerializer implements OFSerializer<MultipartRequestFlowAggregateStats>,
@@ -31,22 +31,20 @@ public class MultipartRequestFlowAggregateStatsSerializer implements OFSerialize
     @Override
     public void serialize(final MultipartRequestFlowAggregateStats multipartRequestFlowAggregateStats,
             final ByteBuf byteBuf) {
-        byteBuf.writeByte(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getTableId(),
-                OFConstants.OFPTT_ALL).byteValue());
+        final FlowAggregateStats stats = multipartRequestFlowAggregateStats.getFlowAggregateStats();
+        byteBuf.writeByte(MoreObjects.firstNonNull(stats.getTableId(), OFConstants.OFPTT_ALL).byteValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01);
-        byteBuf.writeInt(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getOutPort(),
-                OFConstants.OFPP_ANY).intValue());
-        byteBuf.writeInt(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getOutGroup(),
-                OFConstants.OFPG_ANY).intValue());
+        byteBuf.writeInt(MoreObjects.firstNonNull(stats.getOutPort(), OFConstants.OFPP_ANY).intValue());
+        byteBuf.writeInt(MoreObjects.firstNonNull(stats.getOutGroup(), OFConstants.OFPG_ANY).intValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02);
-        byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getCookie(),
+        byteBuf.writeLong(MoreObjects.firstNonNull(stats.getCookie(),
                 new FlowCookie(OFConstants.DEFAULT_COOKIE)).getValue().longValue());
-        byteBuf.writeLong(MoreObjects.firstNonNull(multipartRequestFlowAggregateStats.getCookieMask(),
+        byteBuf.writeLong(MoreObjects.firstNonNull(stats.getCookieMask(),
                 new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
 
         Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class))
-                .serialize(multipartRequestFlowAggregateStats.getMatch(), byteBuf);
+                .serialize(stats.getMatch(), byteBuf);
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.f
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.stats.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -39,7 +40,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
     }
 
     @Override
-    protected GetFlowStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
+    protected GetFlowStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
         return new GetFlowStatisticsOutputBuilder()
             .setFlowAndStatisticsMapList(input
                 .stream()
@@ -64,7 +65,8 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             .setXid(xid.getValue())
             .setVersion(getVersion())
             .setRequestMore(false)
-            .setMultipartRequestBody(new MultipartRequestFlowStatsBuilder(input)
+            .setMultipartRequestBody(new MultipartRequestFlowStatsBuilder()
+                .setFlowStats(new FlowStatsBuilder(input).build())
                 .build())
             .build();
     }
