@@ -295,10 +295,14 @@ module opendaylight-flow-types {
 
     augment "/multipart:multipart-request/multipart:multipart-request-body" {
         case multipart-request-flow-stats {
-            uses flow;
+            container flow-stats {
+                uses flow;
+            }
         }
         case multipart-request-flow-aggregate-stats {
-            uses flow;
+            container flow-aggregate-stats {
+                uses flow;
+            }
         }
     }
 }

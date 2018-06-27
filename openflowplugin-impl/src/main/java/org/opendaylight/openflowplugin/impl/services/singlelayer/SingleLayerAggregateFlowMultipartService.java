@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.get.aggregate.flow.statistics.from.flow.table._for.given.match.output.AggregatedFlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowAggregateStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.aggregate.stats.FlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -46,8 +47,8 @@ public class SingleLayerAggregateFlowMultipartService
                 .setXid(xid.getValue())
                 .setVersion(getVersion())
                 .setRequestMore(false)
-                .setMultipartRequestBody(new MultipartRequestFlowAggregateStatsBuilder(input)
-                        .build())
+                .setMultipartRequestBody(new MultipartRequestFlowAggregateStatsBuilder()
+                    .setFlowAggregateStats(new FlowAggregateStatsBuilder(input).build()).build())
                 .build();
     }
 

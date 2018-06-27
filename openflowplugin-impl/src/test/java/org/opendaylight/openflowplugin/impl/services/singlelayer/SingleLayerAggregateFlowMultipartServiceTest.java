@@ -50,7 +50,7 @@ public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking
                 MultipartRequest.class.cast(ofHeader)
                         .getMultipartRequestBody());
 
-        assertEquals(TABLE_ID, result.getTableId().shortValue());
+        assertEquals(TABLE_ID, result.getFlowAggregateStats().getTableId().shortValue());
     }
 
     @Test
