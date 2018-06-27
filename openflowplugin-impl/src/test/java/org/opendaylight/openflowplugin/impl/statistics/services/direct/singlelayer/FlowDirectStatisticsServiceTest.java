@@ -68,7 +68,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
             .buildRequest(new Xid(42L), input))
             .getMultipartRequestBody();
 
-        assertEquals(TABLE_NO, body.getTableId());
+        assertEquals(TABLE_NO, body.getFlowStats().getTableId());
     }
 
     @Override
