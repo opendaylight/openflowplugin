@@ -7,10 +7,13 @@
  */
 package test.mock;
 
+import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
+
+import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,7 +101,10 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.submit());
         SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
+
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
+        Awaitility.await().until(salFlowService::getAddFlowCalls, is(0L));
+
         assertEquals(1, addFlowCalls.size());
         assertEquals("DOM-0", addFlowCalls.get(0).getTransactionUri().getValue());
 

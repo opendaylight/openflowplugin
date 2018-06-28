@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -83,6 +84,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private DevicesGroupRegistry devicesGroupRegistry;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -136,10 +138,12 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 new ReconciliationServiceImpl(this)));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
-        this.flowListener = new FlowForwarder(this, dataService);
-        this.groupListener = new GroupForwarder(this, dataService);
-        this.meterListener = new MeterForwarder(this, dataService);
-        this.tableListener = new TableForwarder(this, dataService);
+        NodeConfigurator nodeConfigurator = new NodeConfiguratorImpl();
+        this.flowListener = new FlowForwarder(this, dataService, nodeConfigurator);
+        this.groupListener = new GroupForwarder(this, dataService, nodeConfigurator);
+        this.meterListener = new MeterForwarder(this, dataService, nodeConfigurator);
+        this.tableListener = new TableForwarder(this, dataService, nodeConfigurator);
+        this.devicesGroupRegistry = new DevicesGroupRegistry();
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -231,6 +235,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public SalTableService getSalTableService() {
         return salTableService;
+    }
+
+    @Override
+    public DevicesGroupRegistry getDevicesGroupRegistry() {
+        return this.devicesGroupRegistry;
     }
 
     @Override
