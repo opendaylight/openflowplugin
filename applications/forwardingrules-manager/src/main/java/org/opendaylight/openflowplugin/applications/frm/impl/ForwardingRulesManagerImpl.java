@@ -27,6 +27,8 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
+import org.opendaylight.openflowplugin.applications.frm.nodeconfigurator.NodeConfiguratorImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -83,6 +85,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private DevicesGroupRegistry devicesGroupRegistry;
+    private final NodeConfigurator nodeConfigurator;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -105,6 +109,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
         this.rpcRegistry = rpcRegistry;
+        nodeConfigurator = new NodeConfiguratorImpl();
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
@@ -140,6 +145,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
         this.tableListener = new TableForwarder(this, dataService);
+        this.devicesGroupRegistry = new DevicesGroupRegistry();
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -234,6 +240,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public DevicesGroupRegistry getDevicesGroupRegistry() {
+        return this.devicesGroupRegistry;
+    }
+
+    @Override
     public SalBundleService getSalBundleService() {
         return salBundleService;
     }
@@ -276,6 +287,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
         return flowNodeConnectorInventoryTranslatorImpl;
+    }
+
+    @Override
+    public NodeConfigurator getNodeConfigurator() {
+        return nodeConfigurator;
     }
 
     public FlowNodeReconciliation getNodeListener() {

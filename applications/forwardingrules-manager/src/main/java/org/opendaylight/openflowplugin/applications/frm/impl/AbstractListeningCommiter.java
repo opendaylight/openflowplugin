@@ -13,7 +13,14 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -27,9 +34,12 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
+    NodeConfigurator nodeConfigurator;
 
-    public AbstractListeningCommiter(ForwardingRulesManager provider) {
+    public AbstractListeningCommiter(final ForwardingRulesManager provider) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
+        nodeConfigurator = Preconditions.checkNotNull(provider.getNodeConfigurator(),
+                "NodeConfigurator can not be null!");
     }
 
     @Override
@@ -102,5 +112,14 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         return provider.isNodeOwner(nodeIdent)
                 && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
     }
+
+    NodeId getNodeIdFromNodeIdentifier(InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId();
+    }
+
+    String getFlowId(FlowRef flowRef) {
+        return flowRef.getValue().firstKeyOf(Flow .class, FlowKey .class).getId().getValue();
+    }
+
 }
 
