@@ -27,6 +27,8 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesProperty;
+import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
+import org.opendaylight.openflowplugin.applications.frm.nodeconfigurator.NodeConfiguratorImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -83,6 +85,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
+    private DevicesGroupRegistry devicesGroupRegistry;
+    private NodeConfigurator nodeConfigurator;
 
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -122,6 +126,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void start() {
+        nodeConfigurator = new NodeConfiguratorImpl();
+        this.devicesGroupRegistry = new DevicesGroupRegistry();
+
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING);
         if (this.isReconciliationDisabled()) {
@@ -234,6 +241,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    public DevicesGroupRegistry getDevicesGroupRegistry() {
+        return this.devicesGroupRegistry;
+    }
+
+    @Override
     public SalBundleService getSalBundleService() {
         return salBundleService;
     }
@@ -276,6 +288,11 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public FlowNodeConnectorInventoryTranslatorImpl getFlowNodeConnectorInventoryTranslatorImpl() {
         return flowNodeConnectorInventoryTranslatorImpl;
+    }
+
+    @Override
+    public NodeConfigurator getNodeConfigurator() {
+        return nodeConfigurator;
     }
 
     public FlowNodeReconciliation getNodeListener() {
