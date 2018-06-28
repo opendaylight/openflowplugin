@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -27,9 +28,12 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
     ForwardingRulesManager provider;
+    NodeConfigurator nodeConfigurator;
 
-    public AbstractListeningCommiter(ForwardingRulesManager provider) {
+    public AbstractListeningCommiter(final ForwardingRulesManager provider) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
+        nodeConfigurator = Preconditions.checkNotNull(provider.getNodeConfigurator(),
+                "NodeConfigurator can not be null!");
     }
 
     @Override
