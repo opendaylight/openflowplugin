@@ -8,6 +8,8 @@
 package test.mock.util;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -95,5 +97,13 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
                 .thenReturn(config.isBundleBasedReconciliationEnabled());
 
         return configurationService;
+    }
+
+    protected Callable<Integer> listSize(List<?> list) {
+        return new Callable<Integer>() {
+            public Integer call() throws Exception {
+                return list.size(); // The condition supplier part
+            }
+        };
     }
 }

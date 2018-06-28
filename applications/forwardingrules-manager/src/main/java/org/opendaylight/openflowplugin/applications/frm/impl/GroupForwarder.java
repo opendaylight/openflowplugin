@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -22,10 +23,13 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
@@ -36,9 +40,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -128,6 +134,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         final Group originalGroup = original;
         final Group updatedGroup = update;
         final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
+        final NodeId nodeId = nodeIdent.firstIdentifierOf(Node.class).firstKeyOf(Node.class, NodeKey.class).getId();
+
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
@@ -135,9 +143,15 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
         builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
 
-        final Future<RpcResult<UpdateGroupOutput>> resultFuture =
-                this.provider.getSalGroupService().updateGroup(builder.build());
-        JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
+        nodeConfigurator.enqueueJob(nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue(), () -> {
+            UpdateGroupInput updateGroupInput = builder.build();
+            final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture;
+            resultFuture = this.provider.getSalGroupService().updateGroup(updateGroupInput);
+            JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
+            Futures.addCallback(resultFuture,
+                    new UpdateGroupCallBack(updateGroupInput, nodeId), MoreExecutors.directExecutor());
+            return resultFuture;
+        });
     }
 
     @Override
@@ -146,11 +160,20 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
         final Group group = addDataObj;
         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
+        final NodeId nodeId = nodeIdent.firstIdentifierOf(Node.class).firstKeyOf(Node.class, NodeKey.class).getId();
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalGroupService().addGroup(builder.build());
+        AddGroupInput addGroupInput = builder.build();
+        return nodeConfigurator
+                .enqueueJob(nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue(), () -> {
+                    final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture;
+                    resultFuture = this.provider.getSalGroupService().addGroup(addGroupInput);
+                    Futures.addCallback(resultFuture,
+                            new AddGroupCallBack(addGroupInput, nodeId), MoreExecutors.directExecutor());
+                    return resultFuture;
+                });
     }
 
     @Override
@@ -198,4 +221,82 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
+    private final class AddGroupCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
+        private final AddGroupInput addGroupInput;
+        private final NodeId nodeId;
+
+        AddGroupCallBack(final AddGroupInput addGroupInput, final NodeId nodeId) {
+            this.addGroupInput = addGroupInput;
+            this.nodeId = nodeId;
+        }
+
+        @Override
+        public void onSuccess(RpcResult<AddGroupOutput> result) {
+            if (result.isSuccessful()) {
+                provider.getDevicesGroupRegistry().storeGroup(nodeId, addGroupInput.getGroupId().getValue());
+                LOG.debug("Group add with id={} finished without error", addGroupInput.getGroupId().getValue());
+            } else {
+                LOG.debug("Group add with id={} failed", addGroupInput.getGroupId().getValue());
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            LOG.error("Service call for adding group={} failed", addGroupInput.getGroupId().getValue(), throwable);
+        }
+    }
+
+    private final class UpdateGroupCallBack implements FutureCallback<RpcResult<UpdateGroupOutput>> {
+        private final UpdateGroupInput updateGroupInput;
+        private final NodeId nodeId;
+
+        private UpdateGroupCallBack(final UpdateGroupInput updateGroupInput, final NodeId nodeId) {
+            this.updateGroupInput = updateGroupInput;
+            this.nodeId = nodeId;
+        }
+
+        public void onSuccess(RpcResult<UpdateGroupOutput> result) {
+            if (result.isSuccessful()) {
+                provider.getDevicesGroupRegistry().storeGroup(nodeId,
+                        updateGroupInput.getOriginalGroup().getGroupId().getValue());
+                LOG.debug("Group update with id={} finished without error",
+                        updateGroupInput.getOriginalGroup().getGroupId().getValue());
+            } else {
+                LOG.debug("Group update with id={} failed",
+                        updateGroupInput.getOriginalGroup().getGroupId().getValue());
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            LOG.error("Service call for updating group={} failed",
+                    updateGroupInput.getOriginalGroup().getGroupId().getValue(), throwable);
+        }
+    }
+
+    private final class RemoveGroupCallBack implements FutureCallback<RpcResult<RemoveGroupOutput>> {
+        private final RemoveGroupInput removeGroupInput;
+        private final NodeId nodeId;
+
+        private RemoveGroupCallBack(final RemoveGroupInput removeGroupInput, final NodeId nodeId) {
+            this.removeGroupInput = removeGroupInput;
+            this.nodeId = nodeId;
+        }
+
+        @Override
+        public void onSuccess(RpcResult<RemoveGroupOutput> result) {
+            if (result.isSuccessful()) {
+                LOG.debug("Group remove with id={} finished without error", removeGroupInput.getGroupId().getValue());
+                provider.getDevicesGroupRegistry().removeGroup(nodeId, removeGroupInput.getGroupId().getValue());
+            } else {
+                LOG.debug("Group remove with id={} failed", removeGroupInput.getGroupId().getValue());
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            LOG.error("Service call for removing group={} failed",
+                    removeGroupInput.getGroupId().getValue(), throwable);
+        }
+    }
 }
