@@ -66,6 +66,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -272,6 +273,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
         InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
+        // Clearing the group registry cache for the connected node if exists
+        provider.getDevicesGroupRegistry().clearNodeGroups(node.getNodeId());
         return futureMap.computeIfAbsent(node, future -> reconcileConfiguration(connectedNode));
     }
 
@@ -731,6 +734,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         if (flowNode.get().getGroup() != null) {
             for (Group gr : flowNode.get().getGroup()) {
+                NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class, NodeKey.class).getId();
+                provider.getDevicesGroupRegistry().storeGroup(nodeId,gr.getGroupId().getValue());
                 messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
                         .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());
             }
