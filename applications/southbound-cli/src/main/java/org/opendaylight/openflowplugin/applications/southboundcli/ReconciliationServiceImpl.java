@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -31,17 +30,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.AdminReconciliationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconciliationCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -49,20 +48,20 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AdminReconciliationServiceImpl implements AdminReconciliationService, AutoCloseable {
+public class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminReconciliationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
     private final DataBroker broker;
-    private final ReconciliationService reconciliationService;
-    private final AlarmAgent alarmAgent;
+    private final FrmReconciliationService frmReconciliationService;
     private final Long startCount = 1L;
+    private final AlarmAgent alarmAgent;
     private static final int THREAD_POOL_SIZE = 10;
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    public AdminReconciliationServiceImpl(final DataBroker broker, final ReconciliationService reconciliationService,
-                                          final AlarmAgent alarmAgent) {
+    public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
+                                     final AlarmAgent alarmAgent) {
         this.broker = broker;
-        this.reconciliationService = reconciliationService;
+        this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
     }
 
@@ -81,7 +80,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
             inputNodes = new ArrayList<>();
         }
         if (reconcileAllNodes && inputNodes.size() > 0) {
-            return buildErrorResponse("Error executing command reconcile."
+            return buildErrorResponse("Error executing command reconcile. "
                     + "If 'all' option is enabled, no Node must be specified as input parameter.");
         }
         if (!reconcileAllNodes && inputNodes.size() == 0) {
@@ -95,17 +94,19 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
             List<Long> unresolvedNodes =
                     nodesToReconcile.stream().filter(node -> !nodeList.contains(node)).collect(Collectors.toList());
             if (!unresolvedNodes.isEmpty()) {
-                return buildErrorResponse("Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
+                return buildErrorResponse("Error executing command reconcile. "
+                        + "Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
             nodesToReconcile.parallelStream().forEach(nodeId -> {
                 alarmAgent.raiseNodeReconciliationAlarm(nodeId);
-                LOG.info("Executing admin reconciliation for node {}", nodeId);
+                LOG.info("Executing reconciliation for node {}", nodeId);
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
                 ReconciliationTask reconcileTask = new ReconciliationTask(nodeId, nodeKey);
                 executor.execute(reconcileTask);
             });
         } else {
-            return buildErrorResponse("No node found");
+            return buildErrorResponse("Error executing command reconcile. "
+                    + "No node information is found for reconciliation");
         }
         result.set(RpcResultBuilder.<ReconcileOutput>success().build());
         return result;
@@ -115,8 +116,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
         SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
         LOG.error(msg);
         RpcError error = RpcResultBuilder.newError(RpcError.ErrorType.PROTOCOL, "reconcile", msg);
-        List<RpcError> errors = Collections.singletonList(error);
-        result.set(RpcResultBuilder.<ReconcileOutput>failed().withRpcErrors(errors).build());
+        result.set(RpcResultBuilder.<ReconcileOutput>failed().withRpcError(error).build());
         return result;
     }
 
@@ -185,7 +185,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
             ReconcileNodeInput reconInput = new ReconcileNodeInputBuilder()
                     .setNodeId(node).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class)
                             .child(Node.class, nodeKey).build())).build();
-            Future<RpcResult<ReconcileNodeOutput>> reconOutput = reconciliationService
+            Future<RpcResult<ReconcileNodeOutput>> reconOutput = frmReconciliationService
                     .reconcileNode(reconInput);
             try {
                 RpcResult<ReconcileNodeOutput> rpcResult = reconOutput.get();
@@ -198,8 +198,9 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
                 }
             } catch (ExecutionException | InterruptedException e) {
                 LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
+            } finally {
+                alarmAgent.clearNodeReconciliationAlarm(nodeId);
             }
-            alarmAgent.clearNodeReconciliationAlarm(nodeId);
         }
     }
 }
