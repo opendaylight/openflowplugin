@@ -11,11 +11,15 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
+
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
@@ -42,6 +46,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
 
     @Override
     public PacketInMessage deserialize(final ByteBuf message) {
+
         final PacketInMessageBuilder packetInMessageBuilder = new PacketInMessageBuilder()
                 .setVersion((short) EncodeConstants.OF13_VERSION_ID)
                 .setXid(message.readUnsignedInt());
