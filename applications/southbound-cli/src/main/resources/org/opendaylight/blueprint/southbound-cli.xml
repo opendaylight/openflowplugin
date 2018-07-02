@@ -7,21 +7,21 @@
     <reference id="dataBroker"
                interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
 
-    <odl:rpc-service id="reconciliationService"
-             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService"/>
+    <odl:rpc-service id="frmReconciliationService"
+             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
 
     <bean id="alarmAgent"
           class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
     </bean>
-    <bean id="adminReconciliationService"
-          class="org.opendaylight.openflowplugin.applications.southboundcli.AdminReconciliationServiceImpl"
+    <bean id="reconciliationService"
+          class="org.opendaylight.openflowplugin.applications.southboundcli.ReconciliationServiceImpl"
           destroy-method="close">
         <argument ref="dataBroker"/>
-        <argument ref="reconciliationService"/>
+        <argument ref="frmReconciliationService"/>
         <argument ref="alarmAgent"/>
     </bean>
 
-    <odl:rpc-implementation ref="adminReconciliationService"/>
+    <odl:rpc-implementation ref="reconciliationService"/>
 
     <!--To assert references for CLI implementations-->
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
@@ -37,11 +37,11 @@
         </command>
         <command name="openflow/reconcile">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.Reconcile">
-                <property name="adminReconciliationService" ref="adminReconciliationService"/>
+                <property name="reconciliationService" ref="reconciliationService"/>
             </action>
         </command>
-        <command name="openflow/getreconcilecount">
-            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.AdminReconciliationCount">
+        <command name="openflow/getreconciliationcount">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.ReconciliationCount">
                 <property name="dataBroker" ref="dataBroker"/>
             </action>
         </command>
