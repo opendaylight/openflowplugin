@@ -1,14 +1,14 @@
-module admin-reconciliation {
+module reconciliation {
 
-    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:admin-reconciliation:service";
-    prefix admin-reconciliation;
+    namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:reconciliation:service";
+    prefix reconciliation;
 
     revision "2018-02-27" {
-        description "Initial revision for admin reconciliation";
+        description "Initial revision for reconciliation";
     }
 
     container reconciliation-counter {
-        description "Number of administrative ordered reconciliation";
+        description "Number of reconciliation triggered for openflow nodes";
         list reconcile-counter {
             key node-id;
             uses counter;
@@ -28,13 +28,13 @@ module admin-reconciliation {
             default 0;
         }
         leaf last-request-time {
-             description "Timestamp when admin reconcile was last requested";
+             description "Timestamp when reconciliation was last requested";
              type string;
         }
     }
 
     rpc reconcile {
-        description "Requests the execution of an administrative reconciliation between the controller and
+        description "Requests the execution of reconciliation between the controller and
                      one or several or all Nodes";
         input {
             leaf-list nodes {
