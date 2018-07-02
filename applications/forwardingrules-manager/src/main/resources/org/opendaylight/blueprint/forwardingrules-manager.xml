@@ -26,12 +26,12 @@
     <argument ref="reconciliationservice"/>
   </bean>
 
-  <bean id="reconciliationService"
-          class="org.opendaylight.openflowplugin.applications.frm.impl.ReconciliationServiceImpl">
+  <bean id="frmReconciliationService"
+          class="org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationServiceImpl">
     <argument ref="frmManager"/>
   </bean>
-  <service ref="reconciliationService"
-           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService"
+  <service ref="frmReconciliationService"
+           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"
            odl:type="default"/>
 
 </blueprint>
