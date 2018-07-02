@@ -14,11 +14,11 @@ import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 
-@Command(scope = "openflow", name = "getReconcileCount",
-        description = "Displays the number of admin reconciliation launched")
-public class AdminReconciliationCount extends OsgiCommandSupport {
+@Command(scope = "openflow", name = "getReconciliationCount",
+        description = "Displays the number of reconciliation launched")
+public class ReconciliationCount extends OsgiCommandSupport {
 
     private DataBroker dataBroker;
 
@@ -30,7 +30,7 @@ public class AdminReconciliationCount extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
         List<ReconcileCounter> result = ShellUtil.getReconcileCount(dataBroker);
         if (result.isEmpty()) {
-            session.getConsole().println("Admin reconciliation is not triggered as connected device not found.");
+            session.getConsole().println("Reconciliation is not triggered as connected device not found.");
         } else {
             StringBuilder stringBuilder = new StringBuilder();
             final Formatter formatter = new Formatter(stringBuilder);

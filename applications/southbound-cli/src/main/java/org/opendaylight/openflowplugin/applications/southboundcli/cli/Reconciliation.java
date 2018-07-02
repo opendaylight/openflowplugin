@@ -18,22 +18,22 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.AdminReconciliationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "openflow", name = "reconcile", description = "Launch an admin reconciliation")
-public class Reconcile extends OsgiCommandSupport {
+@Command(scope = "openflow", name = "reconcile", description = "Launch reconciliation")
+public class Reconciliation extends OsgiCommandSupport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Reconcile.class);
-    private AdminReconciliationService adminReconciliationService;
+    private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
+    private ReconciliationService reconciliationService;
 
-    public void setAdminReconciliationService(AdminReconciliationService adminReconciliationService) {
-        this.adminReconciliationService = adminReconciliationService;
+    public void setReconciliationService(ReconciliationService reconciliationService) {
+        this.reconciliationService = reconciliationService;
     }
 
     @Argument(name = "nodeId", description = "The NODE Id", multiValued = true)
@@ -47,10 +47,10 @@ public class Reconcile extends OsgiCommandSupport {
         List<BigInteger> nodes = (nodeIds == null)
                 ? new ArrayList<>()
                 : nodeIds.stream().distinct().map(node -> BigInteger.valueOf(node)).collect(Collectors.toList());
-        LOG.debug("Triggering admin reconciliation for node {}", nodes);
+        LOG.debug("Triggering reconciliation for node {}", nodes);
         ReconcileInput rpcInput = new ReconcileInputBuilder().setNodes(nodes)
                 .setReconcileAllNodes(reconcileAllNodes).build();
-        Future<RpcResult<ReconcileOutput>> rpcOutput = adminReconciliationService.reconcile(rpcInput);
+        Future<RpcResult<ReconcileOutput>> rpcOutput = reconciliationService.reconcile(rpcInput);
         try {
             RpcResult<ReconcileOutput> rpcResult = rpcOutput.get();
             if (rpcResult.isSuccessful()) {
