@@ -39,7 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -132,8 +132,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         }
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, notificationService,
                 this.nodeListener, dataService);
-        this.deviceMastershipManager.setRoutedRpcReg(rpcRegistry.addRoutedRpcImplementation(ReconciliationService.class,
-                new ReconciliationServiceImpl(this)));
+        this.deviceMastershipManager.setRoutedRpcReg(rpcRegistry.addRoutedRpcImplementation(FrmReconciliationService.class,
+                new FrmReconciliationServiceImpl(this)));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         this.flowListener = new FlowForwarder(this, dataService);
