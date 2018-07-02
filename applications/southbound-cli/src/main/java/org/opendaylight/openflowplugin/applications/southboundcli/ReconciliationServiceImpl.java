@@ -32,17 +32,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.AdminReconciliationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconcileOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.ReconciliationCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.admin.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -50,20 +50,20 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AdminReconciliationServiceImpl implements AdminReconciliationService, AutoCloseable {
+public class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminReconciliationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
     private final DataBroker broker;
-    private final ReconciliationService reconciliationService;
+    private final FrmReconciliationService frmReconciliationService;
     private final Long startCount = 1L;
     private final AlarmAgent alarmAgent;
     private static final int THREAD_POOL_SIZE = 10;
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    public AdminReconciliationServiceImpl(final DataBroker broker, final ReconciliationService reconciliationService,
-                                          final AlarmAgent alarmAgent) {
+    public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
+                                     final AlarmAgent alarmAgent) {
         this.broker = broker;
-        this.reconciliationService = reconciliationService;
+        this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
     }
 
@@ -100,7 +100,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
             }
             nodesToReconcile.parallelStream().forEach(nodeId -> {
                 alarmAgent.raiseNodeReconciliationAlarm(nodeId);
-                LOG.info("Executing admin reconciliation for node {}", nodeId);
+                LOG.info("Executing reconciliation for node {}", nodeId);
                 NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
                 ReconciliationTask reconcileTask = new ReconciliationTask(nodeId, nodeKey);
                 executor.execute(reconcileTask);
@@ -186,7 +186,7 @@ public class AdminReconciliationServiceImpl implements AdminReconciliationServic
             ReconcileNodeInput reconInput = new ReconcileNodeInputBuilder()
                     .setNodeId(node).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class)
                             .child(Node.class, nodeKey).build())).build();
-            Future<RpcResult<ReconcileNodeOutput>> reconOutput = reconciliationService
+            Future<RpcResult<ReconcileNodeOutput>> reconOutput = frmReconciliationService
                     .reconcileNode(reconInput);
             try {
                 RpcResult<ReconcileNodeOutput> rpcResult = reconOutput.get();
