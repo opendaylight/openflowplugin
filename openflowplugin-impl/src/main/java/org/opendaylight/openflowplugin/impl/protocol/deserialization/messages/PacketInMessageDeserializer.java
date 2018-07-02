@@ -11,11 +11,15 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
+
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeMatchKey;
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
@@ -41,7 +45,17 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
     }
 
     @Override
-    public PacketInMessage deserialize(final ByteBuf message) {
+    public PacketInMessage deserialize(final ByteBuf message1) {
+
+        String str = "00000000ffffffff004a012e00000000081286a900010059800000040000001680000" +
+                "a02080000010604000186bc0001d30800000021000000ff0001d402138f0001f0040a0a070" +
+                "30001f204ac1e060a0001ee01060001f8029b000001fa0200178000040890000e0000030d7" +
+                "8000000000000000000fa163e45fb91fa163eb85f1708004500003c360940004006417e0a0" +
+                "a0703ac1e060a9b000017e97a507a00000000a0027210d7260000020405b40402080a00146" +
+                "6730000000001030307";
+        ByteBuf message = UnpooledByteBufAllocator.DEFAULT.buffer();
+        message.writeBytes(ByteBufUtils.hexStringToBytes(str));
+
         final PacketInMessageBuilder packetInMessageBuilder = new PacketInMessageBuilder()
                 .setVersion((short) EncodeConstants.OF13_VERSION_ID)
                 .setXid(message.readUnsignedInt());
