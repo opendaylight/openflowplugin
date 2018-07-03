@@ -18,35 +18,36 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.tp.src.grouping.CtTpSrcValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpSrcCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpSrcCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.pkt.mark.grouping.PktMarkValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValueBuilder;
 
-public class CtTpSrcCodec extends AbstractMatchCodec {
+public class PktMarkCodec extends AbstractMatchCodec {
 
-    private static final int VALUE_LENGTH = 2;
-    private static final int NXM_FIELD_CODE = 124;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxCtTpSrc> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtTpSrc.class);
+    private static final int VALUE_LENGTH = 4;
+    private static final int NXM_FIELD_CODE = 33;
+    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxPktMark> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxPktMark.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        CtTpSrcCaseValue ctTpSrcCase = (CtTpSrcCaseValue)input.getMatchEntryValue();
-        outBuffer.writeShort(ctTpSrcCase.getCtTpSrcValues().getCtTpSrc());
+        PktMarkCaseValue pktMarkCase = (PktMarkCaseValue)input.getMatchEntryValue();
+        outBuffer.writeInt(pktMarkCase.getPktMarkValues().getPktMark().intValue());
+
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
         final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        CtTpSrcCaseValueBuilder ctTpSrcCaseValueBuilder = new CtTpSrcCaseValueBuilder();
-        CtTpSrcValuesBuilder ctTpSrcValuesBuilder = new CtTpSrcValuesBuilder();
-        ctTpSrcValuesBuilder.setCtTpSrc(message.readUnsignedShort());
-        ctTpSrcCaseValueBuilder.setCtTpSrcValues(ctTpSrcValuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(ctTpSrcCaseValueBuilder.build());
+        PktMarkCaseValueBuilder pktMarkCaseValueBuilder = new PktMarkCaseValueBuilder();
+        PktMarkValuesBuilder pktMarkValuesBuilder = new PktMarkValuesBuilder();
+        pktMarkValuesBuilder.setPktMark(message.readUnsignedInt());
+        pktMarkCaseValueBuilder.setPktMarkValues(pktMarkValuesBuilder.build());
+        matchEntryBuilder.setMatchEntryValue(pktMarkCaseValueBuilder.build());
         return matchEntryBuilder.build();
     }
 
@@ -67,7 +68,7 @@ public class CtTpSrcCodec extends AbstractMatchCodec {
 
     @Override
     public Class<? extends MatchField> getNxmField() {
-        return NxmNxCtTpSrc.class;
+        return NxmNxPktMark.class;
     }
 
     @Override
