@@ -43,6 +43,7 @@ import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
+import org.opendaylight.openflowjava.nx.codec.match.PktMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg0Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg2Codec;
@@ -85,6 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg0;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg2;
@@ -371,6 +373,12 @@ public class NiciraExtensionsRegistratorTest {
         Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
                         .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
                                 OxmMatchConstants.NXM_1_CLASS, 125)), Matchers.any(CtTpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
+                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
+                        NxmNxPktMark.class)), Matchers.any(PktMarkCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
+                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+                        OxmMatchConstants.NXM_1_CLASS, 33)), Matchers.any(PktMarkCodec.class));
     }
 
     @Test
@@ -545,5 +553,9 @@ public class NiciraExtensionsRegistratorTest {
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtTpDst.class));
         Mockito.verify(registrator).unregisterMatchEntryDeserializer(
                 new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 125));
+        Mockito.verify(registrator).unregisterMatchEntrySerializer(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxPktMark.class));
+        Mockito.verify(registrator).unregisterMatchEntryDeserializer(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 33));
     }
 }
