@@ -22,6 +22,30 @@
       "revId": "2189925be283be137408361f3f61a80ba4aa9fe5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9c704441_65ccd4d0",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/Reconciliation.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 6839
+      },
+      "writtenOn": "2018-07-05T08:51:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03857329_88cdbefd",
+      "range": {
+        "startLine": 42,
+        "startChar": 36,
+        "endLine": 42,
+        "endChar": 41
+      },
+      "revId": "2189925be283be137408361f3f61a80ba4aa9fe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
