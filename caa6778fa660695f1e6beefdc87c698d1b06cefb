@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bd48bbd1_96d5bb6a",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1dc4f4c4_76398cb4",
+      "range": {
+        "startLine": 118,
+        "startChar": 8,
+        "endLine": 119,
+        "endChar": 39
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "933da772_34b54653",
         "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 41
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-05T12:35:51Z",
       "side": 1,
       "message": "we don\u0027t need to convert to LF.",
+      "range": {
+        "startLine": 141,
+        "startChar": 77,
+        "endLine": 142,
+        "endChar": 44
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4078b104_6062caa3",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "933da772_34b54653",
       "range": {
         "startLine": 141,
         "startChar": 77,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "ca4eebda_d023da25",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7cb2661_51c47a0d",
+      "range": {
+        "startLine": 143,
+        "startChar": 32,
+        "endLine": 143,
+        "endChar": 49
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e57e685_b49ebf38",
         "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 41
@@ -82,6 +154,30 @@
       "writtenOn": "2018-07-05T12:35:51Z",
       "side": 1,
       "message": "registerRpc(node)",
+      "range": {
+        "startLine": 181,
+        "startChar": 8,
+        "endLine": 183,
+        "endChar": 40
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7ded10ca_0a9ee25f",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e57e685_b49ebf38",
       "range": {
         "startLine": 181,
         "startChar": 8,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "8db5557e_eec74ce2",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0eb9ba10_51159718",
+      "range": {
+        "startLine": 325,
+        "startChar": 12,
+        "endLine": 325,
+        "endChar": 38
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b7fb3a34_e321224f",
         "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 41
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "1acd6e3e_81da6ec5",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7fb3a34_e321224f",
+      "range": {
+        "startLine": 335,
+        "startChar": 4,
+        "endLine": 337,
+        "endChar": 5
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "54cdac1e_a3d35906",
         "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 41
@@ -151,6 +295,30 @@
       "writtenOn": "2018-07-05T12:35:51Z",
       "side": 1,
       "message": "remove static and registerRpc(DeviceInfo node)",
+      "range": {
+        "startLine": 359,
+        "startChar": 4,
+        "endLine": 366,
+        "endChar": 61
+      },
+      "revId": "caa6778fa660695f1e6beefdc87c698d1b06cefb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7b30795f_264c7a76",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 41
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-06T05:30:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54cdac1e_a3d35906",
       "range": {
         "startLine": 359,
         "startChar": 4,
