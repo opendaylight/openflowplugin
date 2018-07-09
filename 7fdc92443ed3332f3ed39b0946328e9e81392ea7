@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eaffd8b7_102c2c92",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertor.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T16:16:26Z",
+      "side": 1,
+      "message": "use just PacketType.class, don\u0027t see any different PacketType.class used in this class",
+      "range": {
+        "startLine": 257,
+        "startChar": 0,
+        "endLine": 257,
+        "endChar": 103
+      },
+      "revId": "7fdc92443ed3332f3ed39b0946328e9e81392ea7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
