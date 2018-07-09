@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e692bede_f2ebb82d",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/PacketTypeEntryDeserializerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-07-09T16:44:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "618c533b_36f5cc84",
+      "range": {
+        "startLine": 46,
+        "startChar": 15,
+        "endLine": 46,
+        "endChar": 57
+      },
+      "revId": "cb7b4e2ff11944693e74edf3993c030101c0bc5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c11bef3_a7016dc1",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertor.java",
         "patchSetId": 6
@@ -36,6 +60,30 @@
       "writtenOn": "2018-06-20T03:49:18Z",
       "side": 1,
       "message": "Can\u0027t we have just PacketType.class?",
+      "range": {
+        "startLine": 257,
+        "startChar": 16,
+        "endLine": 257,
+        "endChar": 101
+      },
+      "revId": "cb7b4e2ff11944693e74edf3993c030101c0bc5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aba4369b_b38c5ec9",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/match/MatchConvertor.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-07-09T16:44:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c11bef3_a7016dc1",
       "range": {
         "startLine": 257,
         "startChar": 16,
