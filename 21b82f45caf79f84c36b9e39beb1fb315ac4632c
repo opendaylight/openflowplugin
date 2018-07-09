@@ -1,0 +1,383 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "40f8fd8f_c51ff1af",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "OpenDaylight",
+      "range": {
+        "startLine": 15,
+        "startChar": 79,
+        "endLine": 15,
+        "endChar": 82
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "76b1f08c_698154ab",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "openflow -\u003e OpenFlow",
+      "range": {
+        "startLine": 15,
+        "startChar": 98,
+        "endLine": 15,
+        "endChar": 106
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "965cf509_b4b16efb",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "openflow switch or controller",
+      "range": {
+        "startLine": 15,
+        "startChar": 12,
+        "endLine": 15,
+        "endChar": 38
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da1aac94_a7ef37dc",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "OpenFlow",
+      "range": {
+        "startLine": 19,
+        "startChar": 73,
+        "endLine": 19,
+        "endChar": 81
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4302adad_a92a86d4",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "triggered - \u003e triggers",
+      "range": {
+        "startLine": 33,
+        "startChar": 29,
+        "endLine": 33,
+        "endChar": 38
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6bd395fb_6583357e",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "replace all \"openflow\" with \"OpenFlow\"",
+      "range": {
+        "startLine": 33,
+        "startChar": 60,
+        "endLine": 33,
+        "endChar": 68
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "56b5f0ea_0ce84709",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "the?",
+      "range": {
+        "startLine": 39,
+        "startChar": 49,
+        "endLine": 39,
+        "endChar": 52
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7421378c_a68673f6",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "CLI command and rest rpc.",
+      "range": {
+        "startLine": 41,
+        "startChar": 92,
+        "endLine": 41,
+        "endChar": 107
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "901b3e29_b70761fa",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "I think we can add reference to the main southbound-cli web page so that user can reference it there.",
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8ead9f12_c5234a18",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "make it config false",
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4b133513_f482ee41",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "do we need node-id in the counter? We should keep it at one place, either at reconcile-counter or in counter, i would prefer the first. Removing node-id from counter will make it generic grouping that can be re-used.",
+      "range": {
+        "startLine": 68,
+        "startChar": 6,
+        "endLine": 70,
+        "endChar": 7
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e1a4beee_54cc5d90",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "i think you can use \"date-and-time\" or \"timestamp\" yang data-type here.",
+      "range": {
+        "startLine": 81,
+        "startChar": 11,
+        "endLine": 81,
+        "endChar": 23
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "39e70f46_6fa93b28",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "\"Request the reconciliation for given device or set of devices to the controller.\"",
+      "range": {
+        "startLine": 86,
+        "startChar": 19,
+        "endLine": 86,
+        "endChar": 114
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d2471ffb_f1877c2d",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "i think we should separate the reconcile-all-nodes from this rpc and expose new  reconcile-all-connected-nodes rpc. That will make these API\u0027s more clear. In future if we want to return the status of each individual device\u0027s reconciliation, extending the reconcile will be mess.",
+      "range": {
+        "startLine": 93,
+        "startChar": 1,
+        "endLine": 98,
+        "endChar": 11
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5eafc476_11743a6b",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "Disconnect the device from controller and reconnect or restart the controller.",
+      "range": {
+        "startLine": 114,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 4
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "75535eb3_df5839b7",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "will it take HexValue? Because most of the device basically have HexValue. Controller converts it to long, but i think we should internally add support for both.",
+      "range": {
+        "startLine": 133,
+        "startChar": 45,
+        "endLine": 133,
+        "endChar": 60
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "76c835bf_0ca52732",
+        "filename": "docs/specs/reconciliation-cli.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:36:53Z",
+      "side": 1,
+      "message": "I think the first RPC also should be routed rpc right ? Why do we need this second rpc here? It\u0027s bit confusing now.",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 4
+      },
+      "revId": "21b82f45caf79f84c36b9e39beb1fb315ac4632c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
