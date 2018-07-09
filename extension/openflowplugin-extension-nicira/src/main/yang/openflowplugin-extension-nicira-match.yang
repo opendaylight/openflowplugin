@@ -122,6 +122,12 @@ module openflowplugin-extension-nicira-match {
     identity nxm-nx-ct-zone-key {
         base ext-gen:extension-key;
     }
+    identity nxm-nx-ct-tp-src-key {
+        base ext-gen:extension-key;
+    }
+    identity nxm-nx-ct-tp-dst-key {
+        base ext-gen:extension-key;
+    }
     identity nxm-of-ip-dst-key {
         base ext-gen:extension-key;
     }
@@ -410,6 +416,26 @@ module openflowplugin-extension-nicira-match {
             }
         }
     }
+    grouping nxm-nx-ct-tp-src-grouping {
+        container nxm-nx-ct-tp-src {
+            leaf ct-tp-src {
+               type uint16;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+    grouping nxm-nx-ct-tp-dst-grouping {
+        container nxm-nx-ct-tp-dst {
+            leaf ct-tp-dst {
+               type uint16;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
 
     grouping all-matches-grouping {
         uses nxm-nx-reg-grouping;
@@ -447,6 +473,8 @@ module openflowplugin-extension-nicira-match {
         uses nxm-of-ip-src-grouping;
         uses nxm-of-icmp-type-grouping;
         uses nxm-nx-ct-mark-grouping;
+        uses nxm-nx-ct-tp-src-grouping;
+        uses nxm-nx-ct-tp-dst-grouping;
     }
 
     // MATCH augmentations
