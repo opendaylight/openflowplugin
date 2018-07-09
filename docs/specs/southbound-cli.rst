@@ -9,41 +9,43 @@ Southbound CLI
 
 This spec addresses following enhancement in Openflowplugin module:
 
-Addition of new karaf feature `odl-openflowplugin-app-southbound-cli` under openflowplugin moduel to add user helpful
-CLIs. This feature won't be part of any existing openflowpluigin feature and user needs to install addition to any
-existing feature.
+Addition of new Karaf feature `odl-openflowplugin-app-southbound-cli` under openflowplugin module that provides useful
+CLIs for users. This feature won't be part of any existing openflowplugin feature and user needs to explicitly install
+it in addition to the existing features.
 
 Problem description
 ===================
-Currently there is formatted way of getting the list of openflow nodes connected under odl controller. User has to read
-and search from operational inventory for the list of connected nodes. Even to get the list of ports available under a
-openflow node, user need to search the complete inventory dump.
+Currently there is no way of getting the formatted list of openflow nodes connected to the OpenDaylight controller. User
+has to fetch operational inventory using Restconf and search for all the connected nodes. Even to get the list of ports
+available under a OpenFlow node, user need to search the entire inventory dump. From user experience perspective it's
+not really very helpful, and at scale fetching the entire inventor from data store can cause CPU spike for the
+controller because of the huge data present under inventory tree.
 
 Southbound CLI
 ==============
-New karaf feature and cli's will be added to help user in retrieving the list of connected openflow nodes and the ports
-available under each openflow node.
+New Karaf feature is developed that will provide command line interface to the user using which user can retrieving
+the list of connected OpenFlow nodes and the ports available under each OpenFlow node.
 
 Use Cases
 ---------
-* List all openflow node(s) connected under odl controller either standalone/cluster environment.
-* List ports information available under a openflow node
+* List of all OpenFlow node(s) connected to the OpenDaylight controller in either standalone or cluster environment.
+* List ports information available under a connected OpenFlow node
 
 Proposed change
 ---------------
-New karaf feature `odl-openflowplugin-app-southbound-cli` will be added and this will not be part of any existing
-openflowplugin feature. User has to explicity install the feature to get the available CLIs.
+New karaf feature `odl-openflowplugin-app-southbound-cli` will be added and it will not be part of any existing
+openflowplugin feature. User will have to explicitly install the feature to get the available CLIs.
 
 Following 2 CLIs will be added:
 
 * `openflow:getallnodes`
 * `openflow:shownode`
 
-`openflow:getallnodes` will read the operational inventory and display information like NodeId and
-NodeName(datapath description) for all the connected nodes.
+`openflow:getallnodes` will display information like NodeId and NodeName(datapath description) for all the connected
+nodes.
 
-`openflow:shownode` will read the operational inventory and display information like NodeId,
-NodeName(datapath description) and Ports for a given openflow node.
+`openflow:shownode` will display information like NodeId, NodeName(datapath description) and Ports for a given
+openflow node.
 
 Yang changes
 ------------
@@ -55,13 +57,16 @@ Oxygen
 
 Alternatives
 ------------
-Use REST to get operational inventory details.
+Use RestConf to fetch entire operational inventory and parse through it.
 
 Usage
 =====
-Install ``odl-openflowplugin-app-southbound-cli`` feature as it doesn't part of any existing openflowplugin features.
+Install ``odl-openflowplugin-app-southbound-cli`` feature as it is not part of any existing openflowplugin features.
 
-List the connected openflow nodes under odl controller either in standalone/cluster environment.
+List the connected openflow nodes under odl controller either in standalone or cluster environment. In clustered
+environment user need to install this feature on all the three nodes if it wants to use any node to run these CLI
+commands, but user also can choose to install it on a dedicated node only if that's the master node to run CLI commands.
+This feature can be install at any point of time during or after controller start.
 
 .. code-block:: bash
    :caption: openflow:getallnodes
@@ -97,7 +102,7 @@ Contributors:
 
 Work Items
 ----------
-* Implementation of cli to list the connected openflow nodes across standalone/cluster environment.
+* Implementation of cli to list the connected openflow nodes across standalone or clustered environment.
 * Implementation of cli to list the ports available under openflow node.
 
 Dependencies
