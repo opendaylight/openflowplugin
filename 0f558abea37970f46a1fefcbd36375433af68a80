@@ -2,6 +2,305 @@
   "comments": [
     {
       "key": {
+        "uuid": "43e170d6_a8fd13d5",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "states -- \u003econfiguration",
+      "range": {
+        "startLine": 13,
+        "startChar": 58,
+        "endLine": 13,
+        "endChar": 64
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0ca997c2_85428d64",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "can you add the exact config knob that use should look for?",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 45
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "458e16ab_6e965620",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "use the consistent terminology, i think we should stick with openflowplugin",
+      "range": {
+        "startLine": 17,
+        "startChar": 29,
+        "endLine": 17,
+        "endChar": 37
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2ada7ee4_b538e429",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "use the full words (datastore)",
+      "range": {
+        "startLine": 19,
+        "startChar": 50,
+        "endLine": 19,
+        "endChar": 52
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4679b700_022b4c64",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "ARBITRATED mode implies that the default openflowplugin reconciliation will be disabled and consumer application will have to initiate and complete the  reconciliation including any error-handling. In the current implementation ARBITRATED mode will only supported bundle based reconciliation.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 15
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a34e9cb3_94caff49",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "config events replayed by orchestrator. --\u003e configuration pushed by user or external orchestrator.",
+      "range": {
+        "startLine": 29,
+        "startChar": 13,
+        "endLine": 29,
+        "endChar": 52
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "33631879_417eec1d",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "OF -\u003e OpenFlow",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 29
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "27a182a2_8c5f2074",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "that is applied\nas a single openflow operation on the switch. --\u003e that switch will apply in atomic transaction.",
+      "range": {
+        "startLine": 32,
+        "startChar": 101,
+        "endLine": 33,
+        "endChar": 45
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e3d4e62d_26769aad",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Reconciliation during replay based controller upgrade --\u003e Application controlled reconciliation of OpenFlow devices after controller re/start.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 53
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fbf8c666_02f9ce24",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "I think we should make the language of this spec more generic. What we are doing here is basically giving control to use on how/when they want to reconcile the device. It\u0027s out of scope for openflowplugin to mention whether it\u0027s replay based or some other mechanism. We are exposing generic functionality and user can consume it in any fashion they want.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 80
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "234baeb5_a6724653",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "It can be enabled/disabled as per the\nneed. --\u003e User can enable or disable this mode as per their deployment requirements.",
+      "range": {
+        "startLine": 41,
+        "startChar": 81,
+        "endLine": 42,
+        "endChar": 5
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "261264ce_3bd414c4",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "reconciliation framework --\u003e reconciliation framework(RF), mention RF here so it\u0027s easy for user to related it in the remaining document.",
+      "range": {
+        "startLine": 66,
+        "startChar": 75,
+        "endLine": 66,
+        "endChar": 99
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a58210ea_56c14341",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "receives at -\u003e received by",
+      "range": {
+        "startLine": 66,
+        "startChar": 35,
+        "endLine": 66,
+        "endChar": 46
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c0dd186_1a12b5c9",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -42,6 +341,144 @@
         "startChar": 32,
         "endLine": 75,
         "endChar": 54
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d3d370a8_bfd85ac0",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Send delete-all groups and delete-all flows  message to the opened bundle in the OpenFlow switch",
+      "range": {
+        "startLine": 78,
+        "startChar": 44,
+        "endLine": 78,
+        "endChar": 47
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71c09493_f6220854",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "please add -\u003e \", but the real switch clean-up will only happen when controller will commit the bundle.",
+      "range": {
+        "startLine": 80,
+        "startChar": 2,
+        "endLine": 80,
+        "endChar": 98
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "53e1dc37_303e1b4a",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Please remove reference to OVS here, this function can be used by any switch that support bundle.",
+      "range": {
+        "startLine": 86,
+        "startChar": 40,
+        "endLine": 86,
+        "endChar": 45
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9549ccb2_80983625",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "if you want to use OFP, add this short form in bracket with the first instance where you mention openflowplugin.",
+      "range": {
+        "startLine": 86,
+        "startChar": 11,
+        "endLine": 86,
+        "endChar": 14
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "34de4cfe_2fd6b70d",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Don\u0027t use project specific referneces. Just say, consumer application listening to inventory data store will receive Node added, Port status Data Change Notification from data store.",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 90,
+        "endChar": 87
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e0dc4b1_d9763cea",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Forwarding Rules Manager application in openflowplugin",
+      "range": {
+        "startLine": 92,
+        "startChar": 79,
+        "endLine": 92,
+        "endChar": 82
       },
       "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
@@ -96,6 +533,191 @@
     },
     {
       "key": {
+        "uuid": "76edb289_194d20af",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "I think what josh is saying is that you need to add some bullet at the start of the line to make it clear, as of now it looks like random text and not the bullet pointed steps.",
+      "parentUuid": "636bc86a_2fcdfd39",
+      "range": {
+        "startLine": 95,
+        "startChar": 33,
+        "endLine": 95,
+        "endChar": 34
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dbf3cf50_ee3345b2",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "also it should log an error message in karaf log.",
+      "range": {
+        "startLine": 99,
+        "startChar": 2,
+        "endLine": 99,
+        "endChar": 75
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c870bc2d_f1c8914c",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "orchestrator - \u003e orchestrators",
+      "range": {
+        "startLine": 101,
+        "startChar": 100,
+        "endLine": 101,
+        "endChar": 101
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dfee8894_6976a2d3",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "i think we don\u0027t need \"node\" here, that\u0027s implicit from the input parameter.",
+      "range": {
+        "startLine": 107,
+        "startChar": 7,
+        "endLine": 107,
+        "endChar": 25
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a0cb9819_39e16e1a",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Commits the active available bundle for the given node in openflowplugin,",
+      "range": {
+        "startLine": 108,
+        "startChar": 20,
+        "endLine": 108,
+        "endChar": 73
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b5b0521_1fc586db",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Consumer application",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 20
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fe7ea3dd_eff821cb",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "how about caching those configuration?",
+      "range": {
+        "startLine": 127,
+        "startChar": 61,
+        "endLine": 127,
+        "endChar": 98
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d1f992de_482eb428",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "datastore",
+      "range": {
+        "startLine": 127,
+        "startChar": 58,
+        "endLine": 127,
+        "endChar": 60
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7d6b878b_9372afee",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -125,6 +747,236 @@
       "side": 1,
       "message": "Yes, rpc result will return the status of the each commit for each switch bundle commit.",
       "parentUuid": "7d6b878b_9372afee",
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e4ebe5f1_e487f634",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "connected OpenFlow",
+      "range": {
+        "startLine": 135,
+        "startChar": 39,
+        "endLine": 135,
+        "endChar": 48
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f0fbdb5_5c0a63e7",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "use one?",
+      "range": {
+        "startLine": 136,
+        "startChar": 19,
+        "endLine": 136,
+        "endChar": 36
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a80bc73f_4684e62a",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "use one?",
+      "range": {
+        "startLine": 138,
+        "startChar": 51,
+        "endLine": 138,
+        "endChar": 60
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4a6c5a91_e94c2c61",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": ", that can be configured by user.",
+      "range": {
+        "startLine": 140,
+        "startChar": 6,
+        "endLine": 140,
+        "endChar": 48
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "563d4e13_c29d52a0",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "to enable",
+      "range": {
+        "startLine": 148,
+        "startChar": 29,
+        "endLine": 148,
+        "endChar": 41
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "06582a21_361be4c1",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "external application/user/consumer applications",
+      "range": {
+        "startLine": 160,
+        "startChar": 24,
+        "endLine": 160,
+        "endChar": 36
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3618cff4_74b898a2",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "probably returning the number of flows/groups will be really helpful here for the user to debug the reconciliation here.",
+      "range": {
+        "startLine": 174,
+        "startChar": 7,
+        "endLine": 178,
+        "endChar": 8
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2c937fdb_dc653cb0",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "User can fire the commit-bundle rpc call to any controller node in the cluster. This rpc will only be executed by the node that currently be owning the device.",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 4
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb019d97_7d476ad8",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Default reconciliation will be used, or application can just reconfigure all the configuration using the normal flow/group add/remove process.",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 4
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "615e9841_50407a45",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-09T08:09:15Z",
+      "side": 1,
+      "message": "Can you please add the reference to bundle feature from openflowplugin spec and also the reference that it\u0027s been approved extention for openflow 1.3",
+      "range": {
+        "startLine": 272,
+        "startChar": 0,
+        "endLine": 272,
+        "endChar": 4
+      },
       "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
