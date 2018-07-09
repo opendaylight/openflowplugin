@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4f309f76_f9e1947a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T06:56:24Z",
+      "side": 1,
+      "message": "move this to separate enum class and store it as class instead of string. APPLY_ACTION(org...AACase.class);",
+      "range": {
+        "startLine": 84,
+        "startChar": 4,
+        "endLine": 99,
+        "endChar": 5
+      },
+      "revId": "c01ab97ddd179be77aba025962bd3bd415734069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "09e4a207_703f24c9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T06:56:24Z",
+      "side": 1,
+      "message": "naming: future ??",
+      "range": {
+        "startLine": 203,
+        "startChar": 62,
+        "endLine": 203,
+        "endChar": 69
+      },
+      "revId": "c01ab97ddd179be77aba025962bd3bd415734069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bec8d6af_54c46dec",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T06:56:24Z",
+      "side": 1,
+      "message": "naming: future ??",
+      "range": {
+        "startLine": 239,
+        "startChar": 59,
+        "endLine": 239,
+        "endChar": 66
+      },
+      "revId": "c01ab97ddd179be77aba025962bd3bd415734069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d95f56e6_4843a8b9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T06:56:24Z",
+      "side": 1,
+      "message": "remove converting to LF",
+      "range": {
+        "startLine": 242,
+        "startChar": 34,
+        "endLine": 243,
+        "endChar": 51
+      },
+      "revId": "c01ab97ddd179be77aba025962bd3bd415734069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0ebc37a6_9379796b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T06:56:24Z",
+      "side": 1,
+      "message": "move inside try loop",
+      "range": {
+        "startLine": 328,
+        "startChar": 8,
+        "endLine": 328,
+        "endChar": 30
+      },
+      "revId": "c01ab97ddd179be77aba025962bd3bd415734069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dc558e05_e2696dff",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-09T06:56:24Z",
+      "side": 1,
+      "message": "getImplementedInteface().getClass() / getImplementedInterface().equals",
+      "range": {
+        "startLine": 354,
+        "startChar": 74,
+        "endLine": 354,
+        "endChar": 85
+      },
+      "revId": "c01ab97ddd179be77aba025962bd3bd415734069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
