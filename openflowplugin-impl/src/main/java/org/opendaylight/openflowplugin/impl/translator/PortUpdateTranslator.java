@@ -57,7 +57,11 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
         builder.setHardwareAddress(input.getHwAddr());
         builder.setMaximumSpeed(input.getMaxSpeed());
         builder.setName(input.getName());
-        builder.setPortNumber(new PortNumberUni(input.getPortNo()));
+
+        final Long portNo = input.getPortNo();
+        if (portNo != null) {
+            builder.setPortNumber(new PortNumberUni(portNo));
+        }
 
         return builder.build();
     }
