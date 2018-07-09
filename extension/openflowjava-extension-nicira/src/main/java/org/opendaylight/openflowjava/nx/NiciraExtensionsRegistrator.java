@@ -29,6 +29,8 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtTpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtTpSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
@@ -186,6 +188,10 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_ZONE_CODEC);
         registrator.registerMatchEntrySerializer(CtMarkCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_MARK_CODEC);
         registrator.registerMatchEntryDeserializer(CtMarkCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_MARK_CODEC);
+        registrator.registerMatchEntrySerializer(CtTpSrcCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_TP_SRC_CODEC);
+        registrator.registerMatchEntryDeserializer(CtTpSrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_TP_SRC_CODEC);
+        registrator.registerMatchEntrySerializer(CtTpDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_TP_DST_CODEC);
+        registrator.registerMatchEntryDeserializer(CtTpDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_TP_DST_CODEC);
     }
 
     @Override
@@ -294,6 +300,10 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(CtZoneCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(CtMarkCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(CtMarkCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(CtTpSrcCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(CtTpSrcCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(CtTpDstCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(CtTpDstCodec.DESERIALIZER_KEY);
     }
 
 }

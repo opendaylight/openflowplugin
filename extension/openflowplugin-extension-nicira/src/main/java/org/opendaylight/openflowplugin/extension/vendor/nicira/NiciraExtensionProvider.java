@@ -29,6 +29,8 @@ import org.opendaylight.openflowjava.nx.codec.match.ArpThaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.ArpTpaCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtStateCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtTpDstCodec;
+import org.opendaylight.openflowjava.nx.codec.match.CtTpSrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.CtZoneCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EncapEthDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.EncapEthSrcCodec;
@@ -87,6 +89,8 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.A
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.ArpTpaConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtMarkConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtStateConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtTpDstConvertor;
+import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtTpSrcConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.CtZoneConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EncapEthDstConvertor;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.EncapEthSrcConvertor;
@@ -237,6 +241,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtMarkKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpDstKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcKey;
@@ -323,6 +329,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
     private static final CtMarkConvertor CT_MARK_CONVERTOR = new CtMarkConvertor();
     private static final CtStateConvertor CT_STATE_CONVERTOR = new CtStateConvertor();
     private static final CtZoneConvertor CT_ZONE_CONVERTOR = new CtZoneConvertor();
+    private static final CtTpSrcConvertor CT_TP_SRC_CONVERTOR = new CtTpSrcConvertor();
+    private static final CtTpDstConvertor CT_TP_DST_CONVERTOR = new CtTpDstConvertor();
 
     private final ExtensionConverterRegistrator extensionConverterRegistrator;
     private final Set<ObjectRegistration<?>> registrations;
@@ -650,6 +658,16 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 new ConverterExtensionKey<>(NxmNxCtMarkKey.class, EncodeConstants.OF13_VERSION_ID), CT_MARK_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtMarkCodec.SERIALIZER_KEY, CT_MARK_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
+                new ConverterExtensionKey<>(NxmNxCtTpSrcKey.class, EncodeConstants.OF13_VERSION_ID),
+                CT_TP_SRC_CONVERTOR));
+        registrations.add(
+                extensionConverterRegistrator.registerMatchConvertor(CtTpSrcCodec.SERIALIZER_KEY, CT_TP_SRC_CONVERTOR));
+        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
+                new ConverterExtensionKey<>(NxmNxCtTpDstKey.class, EncodeConstants.OF13_VERSION_ID),
+                CT_TP_DST_CONVERTOR));
+        registrations.add(
+                extensionConverterRegistrator.registerMatchConvertor(CtTpDstCodec.SERIALIZER_KEY, CT_TP_DST_CONVERTOR));
     }
 
     @Override

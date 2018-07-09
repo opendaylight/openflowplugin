@@ -60,4 +60,6 @@ public interface NiciraMatchCodecs {
     Ipv6DstCodec IPV6_DST_CODEC = new Ipv6DstCodec();
     IcmpTypeCodec ICMP_TYPE_CODEC = new IcmpTypeCodec();
     CtMarkCodec CT_MARK_CODEC = new CtMarkCodec();
+    CtTpSrcCodec CT_TP_SRC_CODEC = new CtTpSrcCodec();
+    CtTpDstCodec CT_TP_DST_CODEC = new CtTpDstCodec();
 }

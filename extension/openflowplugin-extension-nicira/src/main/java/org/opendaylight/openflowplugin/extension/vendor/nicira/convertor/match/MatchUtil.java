@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtMarkGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpDstGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxEncapEthSrcGrouping;
@@ -135,6 +137,10 @@ public final class MatchUtil {
             NxmNxCtStateGrouping.class);
     public static final GroupingResolver<NxmNxCtZoneGrouping, Extension> CT_ZONE_RESOLVER = new GroupingResolver<>(
             NxmNxCtZoneGrouping.class);
+    public static final GroupingResolver<NxmNxCtTpSrcGrouping, Extension> CT_TP_SRC_RESOLVER = new GroupingResolver<>(
+            NxmNxCtTpSrcGrouping.class);
+    public static final GroupingResolver<NxmNxCtTpDstGrouping, Extension> CT_TP_DST_RESOLVER = new GroupingResolver<>(
+            NxmNxCtTpDstGrouping.class);
     public static final GroupingResolver<NxmOfInPortGrouping, Extension> NXM_OF_INPORT_RESOLVER =
             new GroupingResolver<>(NxmOfInPortGrouping.class);
 
@@ -180,6 +186,8 @@ public final class MatchUtil {
         CT_ZONE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         NXM_OF_INPORT_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         CT_MARK_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
+        CT_TP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
+        CT_TP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
     }
 
     private MatchUtil() {
