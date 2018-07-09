@@ -49,6 +49,7 @@ import org.opendaylight.openflowjava.nx.codec.match.Nshc3Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Nshc4Codec;
 import org.opendaylight.openflowjava.nx.codec.match.NsiCodec;
 import org.opendaylight.openflowjava.nx.codec.match.NspCodec;
+import org.opendaylight.openflowjava.nx.codec.match.PktMarkCodec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg0Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg1Codec;
 import org.opendaylight.openflowjava.nx.codec.match.Reg2Codec;
@@ -192,6 +193,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(CtTpSrcCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_TP_SRC_CODEC);
         registrator.registerMatchEntrySerializer(CtTpDstCodec.SERIALIZER_KEY, NiciraMatchCodecs.CT_TP_DST_CODEC);
         registrator.registerMatchEntryDeserializer(CtTpDstCodec.DESERIALIZER_KEY, NiciraMatchCodecs.CT_TP_DST_CODEC);
+        registrator.registerMatchEntrySerializer(PktMarkCodec.SERIALIZER_KEY, NiciraMatchCodecs.PKT_MARK_CODEC);
+        registrator.registerMatchEntryDeserializer(PktMarkCodec.DESERIALIZER_KEY, NiciraMatchCodecs.PKT_MARK_CODEC);
     }
 
     @Override
@@ -304,6 +307,7 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.unregisterMatchEntryDeserializer(CtTpSrcCodec.DESERIALIZER_KEY);
         registrator.unregisterMatchEntrySerializer(CtTpDstCodec.SERIALIZER_KEY);
         registrator.unregisterMatchEntryDeserializer(CtTpDstCodec.DESERIALIZER_KEY);
+        registrator.unregisterMatchEntrySerializer(PktMarkCodec.SERIALIZER_KEY);
+        registrator.unregisterMatchEntryDeserializer(PktMarkCodec.DESERIALIZER_KEY);
     }
-
 }
