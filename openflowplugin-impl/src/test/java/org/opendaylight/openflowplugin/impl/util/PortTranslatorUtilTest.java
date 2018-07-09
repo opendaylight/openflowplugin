@@ -102,7 +102,7 @@ public class PortTranslatorUtilTest {
         Short version = OpenflowVersion.OF10.getVersion();
 
         BigInteger dataPathId = BigInteger.ONE;
-        Long portNumber = Long.MAX_VALUE;
+        Long portNumber = 4294967295L;
         PortGrouping portGrouping = mockPortGrouping();
 
         NodeConnectorUpdated nodeConnectorUpdated = PortTranslatorUtil
