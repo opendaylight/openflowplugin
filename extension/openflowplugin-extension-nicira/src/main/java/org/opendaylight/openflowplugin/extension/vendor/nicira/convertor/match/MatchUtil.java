@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc4Grouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxPktMarkGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxRegGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunGpeNpGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIdGrouping;
@@ -141,6 +142,8 @@ public final class MatchUtil {
             NxmNxCtTpSrcGrouping.class);
     public static final GroupingResolver<NxmNxCtTpDstGrouping, Extension> CT_TP_DST_RESOLVER = new GroupingResolver<>(
             NxmNxCtTpDstGrouping.class);
+    public static final GroupingResolver<NxmNxPktMarkGrouping, Extension> PKT_MARK_RESOLVER = new GroupingResolver<>(
+            NxmNxPktMarkGrouping.class);
     public static final GroupingResolver<NxmOfInPortGrouping, Extension> NXM_OF_INPORT_RESOLVER =
             new GroupingResolver<>(NxmOfInPortGrouping.class);
 
@@ -188,6 +191,7 @@ public final class MatchUtil {
         CT_MARK_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         CT_TP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
         CT_TP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
+        PKT_MARK_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
     }
 
     private MatchUtil() {

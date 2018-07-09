@@ -62,4 +62,5 @@ public interface NiciraMatchCodecs {
     CtMarkCodec CT_MARK_CODEC = new CtMarkCodec();
     CtTpSrcCodec CT_TP_SRC_CODEC = new CtTpSrcCodec();
     CtTpDstCodec CT_TP_DST_CODEC = new CtTpDstCodec();
+    PktMarkCodec PKT_MARK_CODEC = new PktMarkCodec();
 }

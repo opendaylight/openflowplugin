@@ -159,6 +159,9 @@ module nicira-match {
     identity nxm-nx-ct-tp-dst {
         base ofoxm:match-field;
     }
+    identity nxm-nx-pkt-mark {
+        base ofoxm:match-field;
+    }
 
     grouping ofj-nxm-nx-match-reg-grouping {
         container reg-values {
@@ -481,7 +484,7 @@ module nicira-match {
                type uint16;
             }
             leaf mask {
-               type uint32;
+               type uint16;
             }
         }
     }
@@ -490,6 +493,17 @@ module nicira-match {
         container ct-tp-dst-values {
             leaf ct-tp-dst {
                type uint16;
+            }
+            leaf mask {
+               type uint16;
+            }
+        }
+    }
+
+    grouping ofj-nxm-nx-match-pkt-mark-grouping {
+        container pkt-mark-values {
+            leaf pkt-mark {
+               type uint32;
             }
             leaf mask {
                type uint32;
@@ -615,6 +629,9 @@ module nicira-match {
         }
         case ct-tp-dst-case-value {
             uses ofj-nxm-nx-match-ct-tp-dst-grouping;
+        }
+        case pkt-mark-case-value {
+            uses ofj-nxm-nx-match-pkt-mark-grouping;
         }
     }
 }
