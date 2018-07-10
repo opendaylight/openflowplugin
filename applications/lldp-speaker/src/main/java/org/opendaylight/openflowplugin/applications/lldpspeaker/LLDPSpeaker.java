@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -22,7 +21,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
-import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -54,7 +53,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
             .setNameFormat("lldp-speaker-%d").setDaemon(true).build();
     private final PacketProcessingService packetProcessingService;
     private final ScheduledExecutorService scheduledExecutorService;
-    private final DeviceOwnershipStatusService deviceOwnershipStatusService;
+    private final DeviceOwnershipService deviceOwnershipService;
     private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
             new ConcurrentHashMap<>();
     private final MacAddress addressDestionation;
@@ -63,18 +62,18 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     private volatile OperStatus operationalStatus = OperStatus.RUN;
 
     public LLDPSpeaker(final PacketProcessingService packetProcessingService, final MacAddress addressDestionation,
-                       final EntityOwnershipService entityOwnershipService) {
+                       final DeviceOwnershipService deviceOwnershipService) {
         this(packetProcessingService, Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY), addressDestionation,
-                entityOwnershipService);
+                deviceOwnershipService);
     }
 
     public LLDPSpeaker(final PacketProcessingService packetProcessingService,
                        final ScheduledExecutorService scheduledExecutorService,
                        final MacAddress addressDestionation,
-                       final EntityOwnershipService entityOwnershipService) {
+                       final DeviceOwnershipService deviceOwnershipStatusService) {
         this.addressDestionation = addressDestionation;
         this.scheduledExecutorService = scheduledExecutorService;
-        this.deviceOwnershipStatusService = new DeviceOwnershipStatusService(entityOwnershipService);
+        this.deviceOwnershipService = deviceOwnershipStatusService;
         scheduledSpeakerTask = this.scheduledExecutorService
                 .scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD,LLDP_FLOOD_PERIOD, TimeUnit.SECONDS);
         this.packetProcessingService = packetProcessingService;
@@ -126,18 +125,16 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     @Override
     public void run() {
         if (OperStatus.RUN.equals(operationalStatus)) {
-            LOG.debug("Sending LLDP frames to nodes {}", Arrays.toString(deviceOwnershipStatusService
-                    .getOwnedNodes().toArray()));
             LOG.debug("Sending LLDP frames to total {} ports", getOwnedPorts());
             nodeConnectorMap.keySet().forEach(ncIID -> {
                 NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(ncIID).getId();
                 NodeId nodeId = ncIID.firstKeyOf(Node.class, NodeKey.class).getId();
-                if (deviceOwnershipStatusService.isEntityOwned(nodeId.getValue())) {
+                if (deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
                     LOG.debug("Node is owned by this controller, sending LLDP packet through port {}",
                             nodeConnectorId.getValue());
                     packetProcessingService.transmitPacket(nodeConnectorMap.get(ncIID));
                 } else {
-                    LOG.trace("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
+                    LOG.debug("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
                             nodeId.getValue(), nodeConnectorId.getValue());
                 }
             });
@@ -157,10 +154,14 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
                     nodeConnectorId.getValue());
             return;
         }
-
         // Prepare to build LLDP payload
         InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
         NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
+        if (!deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
+            LOG.debug("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
+                    nodeId.getValue(), nodeConnectorId.getValue());
+            return;
+        }
         MacAddress srcMacAddress = flowConnector.getHardwareAddress();
         Long outputPortNo = flowConnector.getPortNumber().getUint32();
 
@@ -204,7 +205,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         AtomicInteger ownedPorts = new AtomicInteger();
         nodeConnectorMap.keySet().forEach(ncIID -> {
             NodeId nodeId = ncIID.firstKeyOf(Node.class, NodeKey.class).getId();
-            if (deviceOwnershipStatusService.isEntityOwned(nodeId.getValue())) {
+            if (deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
                 ownedPorts.incrementAndGet();
             }
         });
