@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.applications.ownershipstatusservice.DeviceOwnershipStatusService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
@@ -50,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -65,11 +67,14 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     private static final String DEFAULT_FLOW_ID = "42";
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
+    private final DeviceOwnershipStatusService deviceOwnershipStatusService;
     private ListenerRegistration<?> listenerRegistration;
 
-    public LLDPPacketPuntEnforcer(SalFlowService flowService, DataBroker dataBroker) {
+    public LLDPPacketPuntEnforcer(SalFlowService flowService, DataBroker dataBroker,
+            DeviceOwnershipStatusService deviceOwnershipStatusService) {
         this.flowService = flowService;
         this.dataBroker = dataBroker;
+        this.deviceOwnershipStatusService = deviceOwnershipStatusService;
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -98,11 +103,20 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
-                addFlowInput.setNode(
-                        new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class)));
-                final Future<RpcResult<AddFlowOutput>> resultFuture = this.flowService.addFlow(addFlowInput.build());
-                JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
+                String nodeId = modification.getRootPath().getRootIdentifier()
+                        .firstKeyOf(Node.class, NodeKey.class).getId().toString();
+                if (deviceOwnershipStatusService.isEntityOwned(nodeId)) {
+                    AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
+                    addFlowInput.setNode(new NodeRef(modification.getRootPath()
+                            .getRootIdentifier().firstIdentifierOf(Node.class)));
+                    final Future<RpcResult<AddFlowOutput>> resultFuture = this.flowService
+                            .addFlow(addFlowInput.build());
+                    JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
+                } else {
+                    LOG.info("Node {} is not owned by this controller, so skip adding LLDP table miss flow",
+                            nodeId);
+                }
+
             }
         }
     }

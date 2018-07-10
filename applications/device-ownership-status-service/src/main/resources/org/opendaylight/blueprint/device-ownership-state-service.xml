@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+    <reference id="entityOwnershipService" interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
+
+    <bean id="deviceOwnershipStatusService" class="org.opendaylight.openflowplugin.applications.ownershipstatusservice.impl.DeviceOwnershipStatusServiceImpl"
+          init-method="start"
+          destroy-method="close">
+        <argument ref="entityOwnershipService"/>
+    </bean>
+
+    <service ref="deviceOwnershipStatusService"
+             interface="org.opendaylight.openflowplugin.applications.ownershipstatusservice.DeviceOwnershipStatusService"
+             odl:type="default"/>
+
+</blueprint>
