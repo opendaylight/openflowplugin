@@ -8,22 +8,27 @@
 
 package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Collection;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
+
+import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.applications.ownershipstatusservice.DeviceOwnershipStatusService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
@@ -34,17 +39,21 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultConfigPusher implements AutoCloseable, DataTreeChangeListener<FlowCapableNode> {
+public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultConfigPusher.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private final NodeConfigService nodeConfigService;
     private final DataBroker dataBroker;
+    private final DeviceOwnershipStatusService deviceOwnershipStatusService;
     private ListenerRegistration<?> listenerRegistration;
 
-    public DefaultConfigPusher(NodeConfigService nodeConfigService, DataBroker dataBroker) {
+    public DefaultConfigPusher(NodeConfigService nodeConfigService, DataBroker dataBroker,
+            DeviceOwnershipStatusService deviceOwnershipStatusService) {
         this.nodeConfigService = nodeConfigService;
         this.dataBroker = dataBroker;
+        this.deviceOwnershipStatusService = Preconditions.checkNotNull(deviceOwnershipStatusService,
+                "DeviceOwnershipStatusService can not be null");
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -75,14 +84,21 @@ public class DefaultConfigPusher implements AutoCloseable, DataTreeChangeListene
     public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
-                setConfigInputBuilder.setFlag(SwitchConfigFlag.FRAGNORMAL.toString());
-                setConfigInputBuilder.setMissSearchLength(OFConstants.OFPCML_NO_BUFFER);
-                setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath()
-                        .getRootIdentifier().firstIdentifierOf(Node.class)));
-                final Future<RpcResult<SetConfigOutput>> resultFuture =
-                        nodeConfigService.setConfig(setConfigInputBuilder.build());
-                JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
+                String nodeId = modification.getRootPath().getRootIdentifier()
+                        .firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+                if (deviceOwnershipStatusService.isEntityOwned(nodeId)) {
+                    SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
+                    setConfigInputBuilder.setFlag(SwitchConfigFlag.FRAGNORMAL.toString());
+                    setConfigInputBuilder.setMissSearchLength(OFConstants.OFPCML_NO_BUFFER);
+                    setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath()
+                            .getRootIdentifier().firstIdentifierOf(Node.class)));
+                    final Future<RpcResult<SetConfigOutput>> resultFuture =
+                            nodeConfigService.setConfig(setConfigInputBuilder.build());
+                    JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
+                } else {
+                    LOG.warn("Node {} is not owned by this controller, so skip setting config", nodeId);
+                }
+
             }
         }
     }

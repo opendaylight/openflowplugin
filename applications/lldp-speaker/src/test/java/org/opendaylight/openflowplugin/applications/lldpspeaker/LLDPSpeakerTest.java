@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
-import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
+import org.opendaylight.openflowplugin.applications.ownershipstatusservice.DeviceOwnershipStatusService;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -66,6 +65,8 @@ public class LLDPSpeakerTest {
     private ScheduledFuture scheduledSpeakerTask;
     @Mock
     private EntityOwnershipService entityOwnershipService;
+    @Mock
+    private DeviceOwnershipStatusService deviceOwnershipStatusService;
 
     private LLDPSpeaker lldpSpeaker;
 
@@ -79,8 +80,8 @@ public class LLDPSpeakerTest {
         when(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(),
                 any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
         lldpSpeaker = new LLDPSpeaker(packetProcessingService,
-                scheduledExecutorService, null, entityOwnershipService);
-        when(entityOwnershipService.getOwnershipState(any())).thenReturn(Optional.of(EntityOwnershipState.IS_OWNER));
+                scheduledExecutorService, null, deviceOwnershipStatusService);
+        when(deviceOwnershipStatusService.isEntityOwned(any())).thenReturn(true);
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
 
         doReturn(RpcResultBuilder.success().buildFuture()).when(packetProcessingService).transmitPacket(any());
@@ -116,8 +117,7 @@ public class LLDPSpeakerTest {
         lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
 
 
-        when(entityOwnershipService.getOwnershipState(any()))
-                .thenReturn(Optional.of(EntityOwnershipState.OWNED_BY_OTHER));
+        when(deviceOwnershipStatusService.isEntityOwned(any())).thenReturn(false);
         // Execute one iteration of periodic task - LLDP packet should be
         // not transmit second packet because it doesn't own the device.
         lldpSpeaker.run();
