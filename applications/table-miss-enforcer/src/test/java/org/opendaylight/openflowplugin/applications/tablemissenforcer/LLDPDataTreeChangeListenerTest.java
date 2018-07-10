@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import org.junit.After;
@@ -30,6 +31,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.Mod
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -58,18 +60,22 @@ public class LLDPDataTreeChangeListenerTest {
     private SalFlowService flowService;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
+    @Mock
+    private DeviceOwnershipService deviceOwnershipService;
     @Captor
     private ArgumentCaptor<AddFlowInput> addFlowInputCaptor;
 
     @Before
     public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(flowService).addFlow(any());
-        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, Mockito.mock(DataBroker.class));
+        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, Mockito.mock(DataBroker.class),
+                deviceOwnershipService);
         final DataTreeIdentifier<FlowCapableNode> identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
                                                                                       NODE_IID);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(Mockito.mock(DataObjectModification.class));
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
+        when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
     }
 
     @Test
