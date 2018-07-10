@@ -89,9 +89,8 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
 
     @Override
     public void close() {
-        if (listenerRegistration != null) {
+        if (listenerRegistration != null)
             listenerRegistration.close();
-        }
     }
 
     @Override

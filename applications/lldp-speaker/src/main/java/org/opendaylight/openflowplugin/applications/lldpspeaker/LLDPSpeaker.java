@@ -162,6 +162,11 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         // Prepare to build LLDP payload
         InstanceIdentifier<Node> nodeInstanceId = nodeConnectorInstanceId.firstIdentifierOf(Node.class);
         NodeId nodeId = InstanceIdentifier.keyOf(nodeInstanceId).getId();
+        if (!deviceOwnershipStatusService.isEntityOwned(nodeId.getValue())) {
+            LOG.info("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
+                    nodeId.getValue(), nodeConnectorId.getValue());
+            return;
+        }
         MacAddress srcMacAddress = flowConnector.getHardwareAddress();
         Long outputPortNo = flowConnector.getPortNumber().getUint32();
 
