@@ -37,6 +37,11 @@
             <artifactId>openflowplugin-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>device-ownership-status-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
           <groupId>org.opendaylight.infrautils</groupId>
           <artifactId>infrautils-util</artifactId>
           <version>${infrautils.version}</version>

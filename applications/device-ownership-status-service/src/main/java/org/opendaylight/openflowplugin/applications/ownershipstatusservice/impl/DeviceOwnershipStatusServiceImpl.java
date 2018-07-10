@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.applications.lldpspeaker;
+package org.opendaylight.openflowplugin.applications.ownershipstatusservice.impl;
 
 import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -18,11 +18,12 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListener;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
+import org.opendaylight.openflowplugin.applications.ownershipstatusservice.DeviceOwnershipStatusService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceOwnershipStatusService implements EntityOwnershipListener {
+public class DeviceOwnershipStatusServiceImpl implements DeviceOwnershipStatusService, EntityOwnershipListener {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipStatusService.class);
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final Pattern NODE_ID_PATTERN = Pattern.compile("^openflow:\\d+");
@@ -30,11 +31,16 @@ public class DeviceOwnershipStatusService implements EntityOwnershipListener {
     private final EntityOwnershipService eos;
     private final ConcurrentMap<String, EntityOwnershipState> ownershipStateCache = new ConcurrentHashMap<>();
 
-    public DeviceOwnershipStatusService(final EntityOwnershipService entityOwnershipService) {
+    public DeviceOwnershipStatusServiceImpl(final EntityOwnershipService entityOwnershipService) {
         this.eos = entityOwnershipService;
-        registerEntityOwnershipListener();
     }
 
+    public void start() {
+        registerEntityOwnershipListener();
+        LOG.info("DeviceOwnershipStatusService started");
+    }
+
+    @Override
     public boolean isEntityOwned(final String nodeId) {
         EntityOwnershipState state = ownershipStateCache.get(nodeId);
         if (state == null) {
