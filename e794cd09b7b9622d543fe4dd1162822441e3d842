@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e11a7eec_a465763a",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-10T19:43:41Z",
+      "side": 1,
+      "message": "I think we should remove transmitting this packet here, because it run() method will anyways do that periodically. Also this breaks the guarantee that packet will be sent periodically.",
+      "revId": "e794cd09b7b9622d543fe4dd1162822441e3d842",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
