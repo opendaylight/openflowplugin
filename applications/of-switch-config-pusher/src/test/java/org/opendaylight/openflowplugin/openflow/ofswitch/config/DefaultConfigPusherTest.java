@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import org.junit.After;
@@ -29,6 +30,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -52,18 +54,22 @@ public class DefaultConfigPusherTest {
     private NodeConfigService nodeConfigService;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
+    @Mock
+    private DeviceOwnershipService deviceOwnershipService;
     @Captor
     private ArgumentCaptor<SetConfigInput> setConfigInputCaptor;
 
     @Before
     public void setUp() throws Exception {
         doReturn(RpcResultBuilder.success().buildFuture()).when(nodeConfigService).setConfig(any());
-        defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class));
+        defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class),
+                deviceOwnershipService);
         final DataTreeIdentifier<FlowCapableNode> identifier =
                 new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, NODE_IID);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(Mockito.mock(DataObjectModification.class));
         Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
+        when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
     }
 
     @Test
