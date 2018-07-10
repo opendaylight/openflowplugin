@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5dbf8ec3_d8d4c498",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/AbstractMatchCodec.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-07-10T07:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "917d28b8_32ed8b3e",
+      "range": {
+        "startLine": 61,
+        "startChar": 45,
+        "endLine": 61,
+        "endChar": 49
+      },
+      "revId": "ccab961306bd5a1d6cf78bbabafb3672846e0cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "abd77edf_0983caf8",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/AbstractMatchCodec.java",
         "patchSetId": 11
@@ -36,6 +60,30 @@
       "writtenOn": "2018-06-25T05:38:00Z",
       "side": 1,
       "message": "hasMask ?",
+      "range": {
+        "startLine": 66,
+        "startChar": 48,
+        "endLine": 66,
+        "endChar": 53
+      },
+      "revId": "ccab961306bd5a1d6cf78bbabafb3672846e0cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11265949_e163a5cc",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/AbstractMatchCodec.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-07-10T07:56:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "abd77edf_0983caf8",
       "range": {
         "startLine": 66,
         "startChar": 48,
