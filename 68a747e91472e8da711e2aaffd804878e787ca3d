@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a6d3adf_19abec46",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesManager.java",
+        "patchSetId": 27
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-11T13:21:10Z",
+      "side": 1,
+      "message": "OpenflowServiceRecoveryHandler",
+      "range": {
+        "startLine": 182,
+        "startChar": 4,
+        "endLine": 182,
+        "endChar": 40
+      },
+      "revId": "68a747e91472e8da711e2aaffd804878e787ca3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "75594efe_fde0d075",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 27
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-11T13:21:10Z",
+      "side": 1,
+      "message": "provider.buildServiceRegistry(this);",
+      "range": {
+        "startLine": 39,
+        "startChar": 8,
+        "endLine": 40,
+        "endChar": 100
+      },
+      "revId": "68a747e91472e8da711e2aaffd804878e787ca3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "07ca5e09_d4e298c6",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 27
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-11T13:21:10Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "68a747e91472e8da711e2aaffd804878e787ca3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11f26045_1e1d3803",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 27
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-07-11T13:21:10Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "68a747e91472e8da711e2aaffd804878e787ca3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
