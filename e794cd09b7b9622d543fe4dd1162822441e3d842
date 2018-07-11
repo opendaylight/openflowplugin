@@ -34,6 +34,24 @@
       "revId": "e794cd09b7b9622d543fe4dd1162822441e3d842",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9837913_e4e016fc",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-11T08:22:34Z",
+      "side": 1,
+      "message": "No that\u0027s not really required, because the periodic thread will start at the initialization, so it\u0027s already running, do does not make sense to send the packet explictly.",
+      "parentUuid": "32a5a931_16766839",
+      "revId": "e794cd09b7b9622d543fe4dd1162822441e3d842",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
