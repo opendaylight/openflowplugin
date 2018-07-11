@@ -16,6 +16,24 @@
       "revId": "e794cd09b7b9622d543fe4dd1162822441e3d842",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32a5a931_16766839",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-11T05:26:19Z",
+      "side": 1,
+      "message": "Yes, Anil agree. We\u0027re even adding the ports added later to the nodeconnectormap for which we already scheduled lldp packet transmit periodically in run(). But I could see a comment saying \" Transmit packet for first time immediately\". Are we supposed to send the lldp discovery for the port as soon as it added? Note: lldp is scheduled for every 5 s.",
+      "parentUuid": "e11a7eec_a465763a",
+      "revId": "e794cd09b7b9622d543fe4dd1162822441e3d842",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
