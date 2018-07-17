@@ -15,18 +15,22 @@
 
     <name>OpenDaylight :: OpenflowPlugin :: NSF :: Model</name>
 
-    <properties>
-        <mdsal.version>1.8.0-SNAPSHOT</mdsal.version>
-        <mdsal.model.version>0.13.0-SNAPSHOT</mdsal.model.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
+            <!-- MD-SAL models -->
+            <dependency>
+                <groupId>org.opendaylight.mdsal.model</groupId>
+                <artifactId>mdsal-model-artifacts</artifactId>
+                <version>0.13.0-SNAPSHOT</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
             <!-- Controller infrastructure -->
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>${mdsal.version}</version>
+                <version>1.8.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -37,8 +41,7 @@
         <!-- feature dependencies -->
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
-            <artifactId>odl-mdsal-models</artifactId>
-            <version>${mdsal.model.version}</version>
+            <artifactId>odl-mdsal-model-odl-l2-types</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
@@ -46,7 +49,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>odl-mdsal-model-inventory</artifactId>
-            <version>${mdsal.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
@@ -54,7 +56,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>odl-controller-model-topology</artifactId>
-            <version>${mdsal.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
