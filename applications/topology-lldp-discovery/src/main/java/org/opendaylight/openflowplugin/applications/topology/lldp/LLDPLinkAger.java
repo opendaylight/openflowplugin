@@ -95,6 +95,10 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         }
     }
 
+    public boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
+        return linkToDate.containsKey(linkDiscovered);
+    }
+
     @VisibleForTesting
     public boolean isLinkToDateEmpty() {
         return linkToDate.isEmpty();
@@ -105,11 +109,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         Optional.ofNullable(TopologyLLDPDiscoveryProperty.forValue(propertyName)).ifPresent(lldpDiscoveryProperty -> {
             switch (lldpDiscoveryProperty) {
                 case LLDP_SECURE_KEY:
-                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
-                    break;
                 case TOPOLOGY_LLDP_INTERVAL:
-                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
-                    break;
                 case TOPOLOGY_LLDP_EXPIRATION_INTERVAL:
                     LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
                     break;
