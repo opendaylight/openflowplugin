@@ -222,4 +222,5 @@ public final class LLDPDiscoveryUtils {
     private static Entity createNodeEntity(final String nodeId) {
         return new Entity(SERVICE_ENTITY_TYPE, nodeId);
     }
+
 }

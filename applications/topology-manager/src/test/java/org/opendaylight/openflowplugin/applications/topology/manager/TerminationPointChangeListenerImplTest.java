@@ -78,9 +78,9 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(
-                newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
-                newLink("link2", newSourceTp("source"), newDestTp("tp1")),
-                newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
+                newLink("link1", newSourceTp("tp1", "node1"), newDestTp("dest", "node2")),
+                newLink("link2", newSourceTp("source", "node1"), newDestTp("tp1", "node2")),
+                newLink("link3", newSourceTp("source2", "node2"), newDestTp("dest2", "node1")));
         final Topology topology = new TopologyBuilder().setLink(linkList).build();
 
         final InstanceIdentifier[] expDeletedIIDs = {
