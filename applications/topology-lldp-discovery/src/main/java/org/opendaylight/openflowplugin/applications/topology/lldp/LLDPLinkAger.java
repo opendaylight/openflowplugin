@@ -103,6 +103,10 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         }
     }
 
+    public boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
+        return linkToDate.containsKey(linkDiscovered);
+    }
+
     @VisibleForTesting
     public boolean isLinkToDateEmpty() {
         return linkToDate.isEmpty();
