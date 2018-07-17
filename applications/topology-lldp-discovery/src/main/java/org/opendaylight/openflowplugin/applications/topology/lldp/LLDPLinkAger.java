@@ -25,8 +25,14 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDeleted;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkOverutilized;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkUtilizationNormal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
@@ -34,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
+public class LLDPLinkAger implements ConfigurationListener, FlowTopologyDiscoveryListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
     private final long linkExpirationTime;
     private final Map<LinkDiscovered, Date> linkToDate;
@@ -57,6 +63,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         this.eos = entityOwnershipService;
         linkToDate = new ConcurrentHashMap<>();
         timer = new Timer();
+        notificationService.registerNotificationListener(this);
         timer.schedule(new LLDPAgingTask(), 0, topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue());
     }
 
@@ -103,6 +110,10 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         }
     }
 
+    public boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
+        return linkToDate.containsKey(linkDiscovered);
+    }
+
     @VisibleForTesting
     public boolean isLinkToDateEmpty() {
         return linkToDate.isEmpty();
@@ -122,5 +133,34 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                     break;
             }
         });
+    }
+
+    @Override
+    public void onLinkDiscovered(LinkDiscovered notification) {
+        //NOOP
+    }
+
+    @Override
+    public void onLinkOverutilized(LinkOverutilized notification) {
+        //NOOP
+    }
+
+    @Override
+    public void onLinkRemoved(LinkRemoved notification) {
+        //NOOP
+    }
+
+    @Override
+    public void onLinkDeleted(LinkDeleted notification) {
+        LOG.debug("Link {} deleted ", notification);
+        LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
+        ldb.setSource(notification.getSource());
+        ldb.setDestination(notification.getDestination());
+        linkToDate.remove(ldb.build());
+    }
+
+    @Override
+    public void onLinkUtilizationNormal(LinkUtilizationNormal notification) {
+        //NOOP
     }
 }
