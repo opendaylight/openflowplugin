@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDeletedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -28,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public final class FlowCapableNodeMapping {
 
@@ -80,6 +83,21 @@ public final class FlowCapableNodeMapping {
                 .build();
     }
 
+    public static NodeConnectorRef getNodeConnectorRefFromLink(final TpId tpId, final NodeId nodeId) {
+        String nodeConnectorId = tpId.getValue();
+        InstanceIdentifier<NodeConnector> nciid
+                = InstanceIdentifier.builder(Nodes.class)
+                .child(
+                        Node.class,
+                        new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
+                                .NodeId(nodeId)))
+                .child(
+                        NodeConnector.class,
+                        new NodeConnectorKey(new NodeConnectorId(nodeConnectorId)))
+                .build();
+        return new NodeConnectorRef(nciid);
+    }
+
     public static Link toTopologyLink(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.Link link) {
         return new LinkBuilder()
@@ -92,6 +110,16 @@ public final class FlowCapableNodeMapping {
                         .setDestTp(toTerminationPointId(link.getDestination()))
                         .build())
                 .setLinkId(new LinkId(getNodeConnectorKey(link.getSource()).getId()))
+                .build();
+    }
+
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819
+            .LinkDeleted toLLDPLinkDeleted(Link link) {
+        return new LinkDeletedBuilder()
+                .setSource(getNodeConnectorRefFromLink(link.getSource().getSourceTp(),
+                        link.getSource().getSourceNode()))
+                .setDestination(getNodeConnectorRefFromLink(link.getDestination().getDestTp(),
+                        link.getDestination().getDestNode()))
                 .build();
     }
 }
