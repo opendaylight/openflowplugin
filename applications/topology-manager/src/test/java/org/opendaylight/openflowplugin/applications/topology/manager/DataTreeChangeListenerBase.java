@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
@@ -48,6 +49,8 @@ public abstract class DataTreeChangeListenerBase {
     private DataBroker mockDataBroker;
     @Mock
     protected BindingTransactionChain mockTxChain;
+    @Mock
+    private NotificationProviderService notificationProviderService;
 
     @Before
     public void setUp() {
@@ -59,7 +62,8 @@ public abstract class DataTreeChangeListenerBase {
 
         topologyIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
-        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor);
+        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor,
+                notificationProviderService);
         nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor);
 
         executor.execute(processor);
