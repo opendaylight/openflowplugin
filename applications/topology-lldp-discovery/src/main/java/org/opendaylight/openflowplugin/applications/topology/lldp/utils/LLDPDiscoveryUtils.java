@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.libraries.liblldp.LLDP;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV;
 import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -36,6 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,5 +218,31 @@ public final class LLDPDiscoveryUtils {
 
     private static Entity createNodeEntity(final String nodeId) {
         return new Entity(SERVICE_ENTITY_TYPE, nodeId);
+    }
+
+    public static NodeConnectorRef getNodeConnectorRefFromLink(final TpId tpId, final org.opendaylight.yang.gen.v1.urn
+            .tbd.params.xml.ns.yang.network.topology.rev131021.NodeId nodeId) {
+        String nodeConnectorId = tpId.getValue();
+        InstanceIdentifier<NodeConnector> nciid
+                = InstanceIdentifier.builder(Nodes.class)
+                .child(
+                        Node.class,
+                        new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
+                                .NodeId(nodeId)))
+                .child(
+                        NodeConnector.class,
+                        new NodeConnectorKey(new NodeConnectorId(nodeConnectorId)))
+                .build();
+        return new NodeConnectorRef(nciid);
+    }
+
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819
+            .LinkDiscovered toLLDPLinkDiscovered(Link link) {
+        return new LinkDiscoveredBuilder()
+                .setSource(getNodeConnectorRefFromLink(link.getSource().getSourceTp(),
+                        link.getSource().getSourceNode()))
+                .setDestination(getNodeConnectorRefFromLink(link.getDestination().getDestTp(),
+                        link.getDestination().getDestNode()))
+                .build();
     }
 }
