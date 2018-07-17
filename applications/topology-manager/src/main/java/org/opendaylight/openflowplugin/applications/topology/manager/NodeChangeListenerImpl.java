@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -32,12 +33,16 @@ import org.slf4j.LoggerFactory;
 public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
+    private final NotificationPublishService notificationPublishService;
+
     @Inject
-    public NodeChangeListenerImpl(@Reference final DataBroker dataBroker, final OperationProcessor operationProcessor) {
+    public NodeChangeListenerImpl(@Reference final DataBroker dataBroker, final OperationProcessor operationProcessor,
+                                  @Reference NotificationPublishService notificationPublishService) {
         // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
         // listener)
         super(operationProcessor, dataBroker,
               InstanceIdentifier.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build());
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
@@ -75,7 +80,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
         if (iiToTopologyRemovedNode != null) {
             operationProcessor.enqueueOperation(manager -> {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
-                TopologyManagerUtil.removeAffectedLinks(nodeId, manager, II_TO_TOPOLOGY);
+                TopologyManagerUtil.removeAffectedLinks(nodeId, manager, II_TO_TOPOLOGY, notificationPublishService);
             });
         } else {
             LOG.debug("Instance identifier to inventory wasn't translated to topology while deleting node.");

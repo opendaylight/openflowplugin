@@ -17,9 +17,11 @@ import static org.opendaylight.mdsal.binding.api.DataObjectModification.Modifica
 import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestNode;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestTp;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeKey;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newLink;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newSourceNode;
+import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newSourceTp;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setReadFutureAsync;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setupStubbedDeletes;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setupStubbedSubmit;
@@ -65,10 +67,14 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class,
                 nodeKey);
 
+//        List<Link> linkList = Arrays.asList(
+//                newLink("link1", newSourceNode("node1"), newDestNode("dest")),
+//                newLink("link2", newSourceNode("source"), newDestNode("node1")),
+//                newLink("link2", newSourceNode("source2"), newDestNode("dest2")));
         List<Link> linkList = Arrays.asList(
-                newLink("link1", newSourceNode("node1"), newDestNode("dest")),
-                newLink("link2", newSourceNode("source"), newDestNode("node1")),
-                newLink("link2", newSourceNode("source2"), newDestNode("dest2")));
+                newLink("link1", newSourceTp("tp1", "node1"), newDestTp("tp2", "dest")),
+                newLink("link2", newSourceTp("tp3", "source"), newDestTp("tp1", "node1")),
+                newLink("link3", newSourceTp("tp4", "source2"), newDestTp("tp5", "dest2")));
         final Topology topology = new TopologyBuilder().setLink(linkList).build();
 
         final InstanceIdentifier[] expDeletedIIDs = {
