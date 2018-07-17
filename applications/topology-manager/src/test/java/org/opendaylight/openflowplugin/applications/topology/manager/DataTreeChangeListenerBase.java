@@ -23,6 +23,7 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -48,6 +49,8 @@ public abstract class DataTreeChangeListenerBase {
     private DataBroker mockDataBroker;
     @Mock
     protected TransactionChain mockTxChain;
+    @Mock
+    private NotificationPublishService notificationPublishService;
 
     @Before
     public void setUp() {
@@ -59,8 +62,9 @@ public abstract class DataTreeChangeListenerBase {
 
         topologyIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
-        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor);
-        nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor);
+        terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor,
+                notificationPublishService);
+        nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor, notificationPublishService);
 
         executor.execute(processor);
     }
