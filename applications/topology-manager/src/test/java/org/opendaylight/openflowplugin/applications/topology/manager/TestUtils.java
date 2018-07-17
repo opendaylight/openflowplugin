@@ -130,8 +130,16 @@ public final class TestUtils {
         return new DestinationBuilder().setDestTp(new TpId(id)).build();
     }
 
+    static Destination newDestTp(String id, String nodeId) {
+        return new DestinationBuilder().setDestTp(new TpId(id)).setDestNode(new NodeId(nodeId)).build();
+    }
+
     static Source newSourceTp(String id) {
         return new SourceBuilder().setSourceTp(new TpId(id)).build();
+    }
+
+    static Source newSourceTp(String id, String nodeId) {
+        return new SourceBuilder().setSourceTp(new TpId(id)).setSourceNode(new NodeId(nodeId)).build();
     }
 
     static Destination newDestNode(String id) {

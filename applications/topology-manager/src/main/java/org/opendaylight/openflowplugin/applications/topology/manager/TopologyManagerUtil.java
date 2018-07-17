@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -59,7 +60,8 @@ final class TopologyManagerUtil {
     }
 
     static void removeAffectedLinks(final TpId id, final TransactionChainManager manager,
-                                    final InstanceIdentifier<Topology> topology) {
+                                    final InstanceIdentifier<Topology> topology,
+                                    final NotificationProviderService notificationProviderService) {
         Optional<Topology> topologyOptional = Optional.absent();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
@@ -68,13 +70,14 @@ final class TopologyManagerUtil {
             LOG.debug("Error reading topology data for topology..", e);
         }
         if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, manager, topology);
+            removeAffectedLinks(id, topologyOptional, manager, topology, notificationProviderService);
         }
     }
 
     private static void removeAffectedLinks(final TpId id, Optional<Topology> topologyOptional,
                                             TransactionChainManager manager,
-                                            final InstanceIdentifier<Topology> topology) {
+                                            final InstanceIdentifier<Topology> topology,
+                                            final NotificationProviderService notificationProviderService) {
         if (!topologyOptional.isPresent()) {
             return;
         }
@@ -84,6 +87,7 @@ final class TopologyManagerUtil {
         for (Link link : linkList) {
             if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                notificationProviderService.publish(FlowCapableNodeMapping.toLLDPLinkDeleted(link));
             }
         }
     }
@@ -91,6 +95,7 @@ final class TopologyManagerUtil {
     static InstanceIdentifier<Link> linkPath(final Link link, final InstanceIdentifier<Topology> topology) {
         return topology.child(Link.class, link.key());
     }
+
 
 
 }
