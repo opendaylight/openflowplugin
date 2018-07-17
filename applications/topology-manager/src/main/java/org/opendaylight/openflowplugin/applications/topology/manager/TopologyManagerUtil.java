@@ -11,8 +11,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDeleted;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -29,7 +31,8 @@ final class TopologyManagerUtil {
     }
 
     static void removeAffectedLinks(final NodeId id, final TransactionChainManager manager,
-                                    InstanceIdentifier<Topology> topology) {
+                                    InstanceIdentifier<Topology> topology,
+                                    final NotificationPublishService notificationPublishService) {
         Optional<Topology> topologyOptional = Optional.empty();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
@@ -38,28 +41,37 @@ final class TopologyManagerUtil {
             LOG.debug("Error reading topology data for topology.. ", e);
         }
         if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, manager, topology);
+            removeAffectedLinks(id, topologyOptional, manager, topology, notificationPublishService);
         }
     }
 
     private static void removeAffectedLinks(final NodeId id, Optional<Topology> topologyOptional,
                                             TransactionChainManager manager,
-                                            final InstanceIdentifier<Topology> topology) {
+                                            final InstanceIdentifier<Topology> topology,
+                                            final NotificationPublishService notificationPublishService) {
         if (!topologyOptional.isPresent()) {
             return;
         }
 
         List<Link> linkList =
                 topologyOptional.get().getLink() != null ? topologyOptional.get().getLink() : Collections.emptyList();
+        LOG.info("Removing affected links {}", linkList);
         for (Link link : linkList) {
             if (id.equals(link.getSource().getSourceNode()) || id.equals(link.getDestination().getDestNode())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                LinkDeleted linkDeleted = FlowCapableNodeMapping.toLLDPLinkDeleted(link);
+                try {
+                    notificationPublishService.putNotification(linkDeleted);
+                } catch (InterruptedException e) {
+                    LOG.warn("Interrupted while publishing notification {}", linkDeleted, e);
+                }
             }
         }
     }
 
     static void removeAffectedLinks(final TpId id, final TransactionChainManager manager,
-                                    final InstanceIdentifier<Topology> topology) {
+                                    final InstanceIdentifier<Topology> topology,
+                                    final NotificationPublishService notificationPublishService) {
         Optional<Topology> topologyOptional = Optional.empty();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
@@ -68,22 +80,30 @@ final class TopologyManagerUtil {
             LOG.debug("Error reading topology data for topology..", e);
         }
         if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, manager, topology);
+            removeAffectedLinks(id, topologyOptional, manager, topology, notificationPublishService);
         }
     }
 
     private static void removeAffectedLinks(final TpId id, Optional<Topology> topologyOptional,
                                             TransactionChainManager manager,
-                                            final InstanceIdentifier<Topology> topology) {
+                                            final InstanceIdentifier<Topology> topology,
+                                            final NotificationPublishService notificationPublishService) {
         if (!topologyOptional.isPresent()) {
             return;
         }
 
         List<Link> linkList = topologyOptional.get().getLink() != null ? topologyOptional.get()
                 .getLink() : Collections.emptyList();
+        LOG.info("Removing affected links {}", linkList);
         for (Link link : linkList) {
             if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                LinkDeleted linkDeleted = FlowCapableNodeMapping.toLLDPLinkDeleted(link);
+                try {
+                    notificationPublishService.putNotification(linkDeleted);
+                } catch (InterruptedException e) {
+                    LOG.warn("Interrupted while publishing notification {}", linkDeleted, e);
+                }
             }
         }
     }
@@ -91,6 +111,7 @@ final class TopologyManagerUtil {
     static InstanceIdentifier<Link> linkPath(final Link link, final InstanceIdentifier<Topology> topology) {
         return topology.child(Link.class, link.key());
     }
+
 
 
 }
