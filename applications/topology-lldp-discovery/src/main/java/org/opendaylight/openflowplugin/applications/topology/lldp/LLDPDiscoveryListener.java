@@ -40,24 +40,28 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
     }
 
     @Override
-    public void onPacketReceived(PacketReceived lldp) {
+    public void onPacketReceived(final PacketReceived lldp) {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
         if (src != null) {
             final NodeKey nodeKey = lldp.getIngress().getValue().firstKeyOf(Node.class);
             LOG.debug("LLDP packet received for destination node {}", nodeKey);
             if (nodeKey != null) {
-                LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
+                final LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
                 ldb.setDestination(lldp.getIngress());
                 ldb.setSource(new NodeConnectorRef(src));
-                LinkDiscovered ld = ldb.build();
-
-                lldpLinkAger.put(ld);
+                final LinkDiscovered ld = ldb.build();
+                final boolean linkWasPresent = lldpLinkAger.isLinkPresent(ld);
                 if (LLDPDiscoveryUtils.isEntityOwned(this.eos, nodeKey.getId().getValue())) {
-                    LOG.debug("Publish add event for link {}", ld);
-                    try {
-                        notificationService.putNotification(ld);
-                    } catch (InterruptedException e) {
-                        LOG.warn("Interrupted while publishing notification {}", ld, e);
+                    if (linkWasPresent) {
+                        LOG.trace("Skipping link already present: {}", ld);
+                    } else {
+                        lldpLinkAger.put(ld);
+                        LOG.debug("Publish add event for link {}", ld);
+                        try {
+                            notificationService.putNotification(ld);
+                        } catch (InterruptedException e) {
+                            LOG.warn("Interrupted while publishing notification {}", ld, e);
+                        }
                     }
                 } else {
                     LOG.trace("Skip publishing the add event for link because controller is non-owner of the "

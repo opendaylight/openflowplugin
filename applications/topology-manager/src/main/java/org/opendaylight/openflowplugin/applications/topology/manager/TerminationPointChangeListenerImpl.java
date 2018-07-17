@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -38,14 +39,18 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNodeConnector> {
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
+    private final NotificationPublishService notificationPublishService;
 
     @Inject
     public TerminationPointChangeListenerImpl(@Reference final DataBroker dataBroker,
-                                              final OperationProcessor operationProcessor) {
+                                              final OperationProcessor operationProcessor,
+                                              @Reference final NotificationPublishService
+                                                      notificationPublishService) {
         super(operationProcessor, dataBroker,
               InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
                       .augmentation(FlowCapableNodeConnector.class).build());
         this.operationProcessor = operationProcessor;
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
@@ -97,7 +102,8 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                     LOG.debug("Error occurred when trying to read NodeConnector.. ", e);
                 }
                 if (nodeOptional.isPresent()) {
-                    TopologyManagerUtil.removeAffectedLinks(terminationPointId, manager, II_TO_TOPOLOGY);
+                    TopologyManagerUtil.removeAffectedLinks(terminationPointId, manager, II_TO_TOPOLOGY,
+                            notificationPublishService);
                     manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL,
                                                          iiToTopologyTerminationPoint);
                 }
@@ -129,10 +135,11 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
 
     private void removeLinks(final FlowCapableNodeConnector flowCapNodeConnector, final TerminationPoint point) {
         operationProcessor.enqueueOperation(manager -> {
-            if (flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()
-                    || flowCapNodeConnector.getConfiguration() != null
-                        && flowCapNodeConnector.getConfiguration().isPORTDOWN()) {
-                TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager, II_TO_TOPOLOGY);
+            if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()) || (
+                    flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration()
+                            .isPORTDOWN())) {
+                TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager, II_TO_TOPOLOGY,
+                        notificationPublishService);
             }
         });
     }
