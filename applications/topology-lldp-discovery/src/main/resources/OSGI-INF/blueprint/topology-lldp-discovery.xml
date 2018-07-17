@@ -13,4 +13,6 @@
     ]]></odl:default-config>
   </odl:clustered-app-config>
 
+  <odl:notification-listener ref="lLDPLinkAger"/>
+
 </blueprint>
