@@ -23,6 +23,9 @@
         <module>odl-openflowplugin-app-table-miss-enforcer</module>
         <module>odl-openflowplugin-app-config-pusher</module>
         <module>odl-openflowplugin-app-topology</module>
+        <module>odl-openflowplugin-app-lldp-speaker</module>
+        <module>odl-openflowplugin-app-topology-lldp-discovery</module>
+        <module>odl-openflowplugin-app-topology-manager</module>
         <module>odl-openflowplugin-app-bulk-o-matic</module>
         <module>odl-openflowplugin-app-notifications</module>
         <module>odl-openflowplugin-app-forwardingrules-manager</module>
