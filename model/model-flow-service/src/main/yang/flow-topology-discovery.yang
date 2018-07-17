@@ -34,7 +34,7 @@ module flow-topology-discovery {
         status deprecated;
         uses link;
     }
-    
+
     notification link-utilization-normal {
         status deprecated;
         uses link;
