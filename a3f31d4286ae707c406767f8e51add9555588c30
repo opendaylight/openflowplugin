@@ -16,6 +16,24 @@
       "revId": "a3f31d4286ae707c406767f8e51add9555588c30",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a21ac749_65ce8cc8",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2018-07-18T13:25:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "938dff1f_29ab17cc",
+      "revId": "a3f31d4286ae707c406767f8e51add9555588c30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
