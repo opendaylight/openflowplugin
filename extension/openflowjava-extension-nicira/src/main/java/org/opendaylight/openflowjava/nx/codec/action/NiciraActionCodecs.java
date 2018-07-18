@@ -15,6 +15,7 @@ package org.opendaylight.openflowjava.nx.codec.action;
 public interface NiciraActionCodecs {
     RegMoveCodec REG_MOVE_CODEC = new RegMoveCodec();
     RegLoadCodec REG_LOAD_CODEC = new RegLoadCodec();
+    RegLoad2Codec REG_LOAD2_CODEC = new RegLoad2Codec();
     OutputRegCodec OUTPUT_REG_CODEC = new OutputRegCodec();
     ResubmitCodec RESUBMIT_CODEC = new ResubmitCodec();
     MultipathCodec MULTIPATH_CODEC = new MultipathCodec();

@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.api.NiciraUtil;
 import org.opendaylight.openflowjava.nx.codec.action.ActionDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
@@ -44,11 +45,13 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
             new ConcurrentHashMap<>();
 
     private final List<SwitchConnectionProvider> providers;
+    private final ActionDeserializer of10ActionDeserializer;
+    private final ActionDeserializer of13ActionDeserializer;
 
     public NiciraExtensionCodecRegistratorImpl(List<SwitchConnectionProvider> providers) {
         this.providers = providers;
-        ActionDeserializer of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF10_VERSION_ID);
-        ActionDeserializer of13ActionDeserializer = new ActionDeserializer(EncodeConstants.OF13_VERSION_ID);
+        of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF10_VERSION_ID);
+        of13ActionDeserializer = new ActionDeserializer(EncodeConstants.OF13_VERSION_ID);
         registerActionDeserializer(ActionDeserializer.OF10_DESERIALIZER_KEY, of10ActionDeserializer);
         registerActionDeserializer(ActionDeserializer.OF13_DESERIALIZER_KEY, of13ActionDeserializer);
     }
@@ -70,6 +73,15 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      */
     @Override
     public void registerActionDeserializer(NiciraActionDeserializerKey key, OFDeserializer<Action> deserializer) {
+        if (deserializer instanceof DeserializerRegistryInjector) {
+            DeserializerRegistryInjector registryInjectable = (DeserializerRegistryInjector) deserializer;
+            if (key.getVersion() == EncodeConstants.OF10_VERSION_ID) {
+                registryInjectable.injectDeserializerRegistry(of10ActionDeserializer.getDeserializerRegistry());
+            }
+            if (key.getVersion() == EncodeConstants.OF13_VERSION_ID) {
+                registryInjectable.injectDeserializerRegistry(of13ActionDeserializer.getDeserializerRegistry());
+            }
+        }
         ACTION_DESERIALIZERS.put(key, deserializer);
     }
 
