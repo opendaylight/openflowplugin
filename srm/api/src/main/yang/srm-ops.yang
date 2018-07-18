@@ -40,7 +40,7 @@ module odl-srm-ops {
                 }
                 leaf trigger-operation {
                     type identityref {
-                        base srmtypes:service-op-base;
+                        base srmtype:service-op-base;
                     }
                 }
             }
