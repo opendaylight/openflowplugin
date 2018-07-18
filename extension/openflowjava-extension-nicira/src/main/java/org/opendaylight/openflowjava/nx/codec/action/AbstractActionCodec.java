@@ -8,7 +8,9 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
+import java.math.BigInteger;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
+import org.opendaylight.openflowjava.nx.codec.match.NxmHeader;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -67,6 +69,23 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         int nonPaddedSize = outBuffer.writerIndex() - startIndex;
         outBuffer.writeZero(getPaddingRemainder(nonPaddedSize));
         outBuffer.setShort(startIndex + EncodeConstants.SIZE_OF_SHORT_IN_BYTES, outBuffer.writerIndex() - startIndex);
+    }
+
+    protected static void writeNxmHeader(final BigInteger value, final ByteBuf outBuffer) {
+        if (NxmHeader.isExperimenter(value)) {
+            outBuffer.writeLong(value.longValue());
+        } else {
+            outBuffer.writeInt((int) value.longValue());
+        }
+    }
+
+    protected static BigInteger readNxmHeader(final ByteBuf message) {
+        int value = message.getUnsignedShort(message.readerIndex());
+        byte[] bytes = new byte[value == EncodeConstants.EXPERIMENTER_VALUE
+                ? EncodeConstants.SIZE_OF_LONG_IN_BYTES
+                : EncodeConstants.SIZE_OF_INT_IN_BYTES];
+        message.readBytes(bytes);
+        return new BigInteger(1, bytes);
     }
 
 }

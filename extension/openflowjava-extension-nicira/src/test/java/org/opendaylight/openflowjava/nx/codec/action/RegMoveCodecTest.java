@@ -9,9 +9,12 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import com.google.common.primitives.Longs;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -24,8 +27,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 
 public class RegMoveCodecTest {
-    private static final int LENGTH = 24;
     private static final byte SUBTYPE = 6;
+
+    private static final int SRC = 4;
+    private static final int DST = 5;
+    private static final long SRC_EXP = 0xFFFF000000000000L | SRC;
+    private static final long DST_EXP = 0xFFFF000000000000L | DST;
+    private static final BigInteger SRC_EXP_BIGINT = new BigInteger(1, Longs.toByteArray(SRC_EXP));
+    private static final BigInteger DST_EXP_BIGINT = new BigInteger(1, Longs.toByteArray(DST_EXP));
 
     RegMoveCodec regMoveCodec;
     ByteBuf buffer;
@@ -39,27 +48,68 @@ public class RegMoveCodecTest {
 
     @Test
     public void serializeTest() {
-        action = createAction();
-        regMoveCodec.serialize(action, buffer);
+        action = createAction(BigInteger.valueOf(SRC), BigInteger.valueOf(DST));
 
-        assertEquals(LENGTH, buffer.readableBytes());
+        regMoveCodec.serialize(action, buffer);
 
         //SerializeHeader part
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
-        assertEquals(LENGTH, buffer.readUnsignedShort());
+        assertEquals(24, buffer.readUnsignedShort());
         assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
         assertEquals(SUBTYPE, buffer.readUnsignedShort());
         //Serialize part
         assertEquals(1, buffer.readUnsignedShort());
         assertEquals(2, buffer.readUnsignedShort());
         assertEquals(3, buffer.readUnsignedShort());
-        assertEquals(4, buffer.readUnsignedInt());
-        assertEquals(5, buffer.readUnsignedInt());
+        assertEquals(SRC, buffer.readUnsignedInt());
+        assertEquals(DST, buffer.readUnsignedInt());
+        assertFalse(buffer.isReadable());
+    }
+
+    @Test
+    public void serializeWithExperimenterSrcTest() {
+        action = createAction(SRC_EXP_BIGINT, BigInteger.valueOf(DST));
+
+        regMoveCodec.serialize(action, buffer);
+
+        //SerializeHeader part
+        assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
+        assertEquals(32, buffer.readUnsignedShort());
+        assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
+        assertEquals(SUBTYPE, buffer.readUnsignedShort());
+        //Serialize part
+        assertEquals(1, buffer.readUnsignedShort());
+        assertEquals(2, buffer.readUnsignedShort());
+        assertEquals(3, buffer.readUnsignedShort());
+        assertEquals(SRC_EXP, buffer.readLong());
+        assertEquals(5, buffer.readInt());
+        assertEquals(0, buffer.readInt()); // padding
+        assertFalse(buffer.isReadable());
+    }
+
+    @Test
+    public void serializeWithExperimenterBothTest() {
+        action = createAction(SRC_EXP_BIGINT, DST_EXP_BIGINT);
+
+        regMoveCodec.serialize(action, buffer);
+
+        //SerializeHeader part
+        assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
+        assertEquals(32, buffer.readUnsignedShort());
+        assertEquals(NiciraConstants.NX_VENDOR_ID.intValue(), buffer.readUnsignedInt());
+        assertEquals(SUBTYPE, buffer.readUnsignedShort());
+        //Serialize part
+        assertEquals(1, buffer.readUnsignedShort());
+        assertEquals(2, buffer.readUnsignedShort());
+        assertEquals(3, buffer.readUnsignedShort());
+        assertEquals(SRC_EXP, buffer.readLong());
+        assertEquals(DST_EXP, buffer.readLong());
+        assertFalse(buffer.isReadable());
     }
 
     @Test
     public void deserializeTest() {
-        createBuffer(buffer);
+        createBuffer(buffer, false, false);
 
         action = regMoveCodec.deserialize(buffer);
 
@@ -73,7 +123,39 @@ public class RegMoveCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private Action createAction() {
+    @Test
+    public void deserializeWithExperimenterDstTest() {
+        createBuffer(buffer, false, true);
+
+        action = regMoveCodec.deserialize(buffer);
+
+        ActionRegMove result = (ActionRegMove) action.getActionChoice();
+
+        assertEquals(1, result.getNxActionRegMove().getNBits().shortValue());
+        assertEquals(2, result.getNxActionRegMove().getSrcOfs().shortValue());
+        assertEquals(3, result.getNxActionRegMove().getDstOfs().shortValue());
+        assertEquals(4, result.getNxActionRegMove().getSrc().longValue());
+        assertEquals(DST_EXP_BIGINT, result.getNxActionRegMove().getDst());
+        assertEquals(0, buffer.readableBytes());
+    }
+
+    @Test
+    public void deserializeWithExperimenterBothTest() {
+        createBuffer(buffer, true, true);
+
+        action = regMoveCodec.deserialize(buffer);
+
+        ActionRegMove result = (ActionRegMove) action.getActionChoice();
+
+        assertEquals(1, result.getNxActionRegMove().getNBits().shortValue());
+        assertEquals(2, result.getNxActionRegMove().getSrcOfs().shortValue());
+        assertEquals(3, result.getNxActionRegMove().getDstOfs().shortValue());
+        assertEquals(SRC_EXP_BIGINT, result.getNxActionRegMove().getSrc());
+        assertEquals(DST_EXP_BIGINT, result.getNxActionRegMove().getDst());
+        assertEquals(0, buffer.readableBytes());
+    }
+
+    private Action createAction(BigInteger src, BigInteger dst) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -83,8 +165,8 @@ public class RegMoveCodecTest {
         nxActionRegMoveBuilder.setNBits(1);
         nxActionRegMoveBuilder.setSrcOfs(2);
         nxActionRegMoveBuilder.setDstOfs(3);
-        nxActionRegMoveBuilder.setSrc((long)4);
-        nxActionRegMoveBuilder.setDst((long)5);
+        nxActionRegMoveBuilder.setSrc(src);
+        nxActionRegMoveBuilder.setDst(dst);
 
         actionRegMoveBuilder.setNxActionRegMove(nxActionRegMoveBuilder.build());
         actionBuilder.setActionChoice(actionRegMoveBuilder.build());
@@ -92,17 +174,28 @@ public class RegMoveCodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private void createBuffer(ByteBuf message, boolean withExpSrc, boolean withExpDst) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
-        message.writeShort(LENGTH);
+        int length = withExpSrc || withExpDst ? 32 : 24;
+        message.writeShort(length);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(SUBTYPE);
 
         message.writeShort(1);
         message.writeShort(2);
         message.writeShort(3);
-        message.writeInt(4);
-        message.writeInt(5);
+        if (withExpSrc) {
+            message.writeLong(SRC_EXP);
+        } else {
+            message.writeInt(SRC);
+        }
+        if (withExpDst) {
+            message.writeLong(DST_EXP);
+        } else {
+            message.writeInt(DST);
+        }
+        if (message.writerIndex() < length) {
+            message.writeInt(0);
+        }
     }
-
 }
