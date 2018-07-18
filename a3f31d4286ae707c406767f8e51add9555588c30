@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "938dff1f_29ab17cc",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-18T09:31:48Z",
+      "side": 1,
+      "message": "please change the level to trace, as it will get printed with every packet_in.",
+      "revId": "a3f31d4286ae707c406767f8e51add9555588c30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
