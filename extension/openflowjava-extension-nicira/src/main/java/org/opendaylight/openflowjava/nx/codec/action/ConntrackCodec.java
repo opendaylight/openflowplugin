@@ -17,7 +17,7 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxActionNatRangePresent;
@@ -221,11 +221,11 @@ public class ConntrackCodec extends AbstractActionCodec {
                 nxActionNatBuilder.setRangePresent(rangePresent);
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
                     InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                    nxActionNatBuilder.setIpAddressMin(new IpAddress(address.getHostAddress().toCharArray()));
+                    nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
                 }
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
                     InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                    nxActionNatBuilder.setIpAddressMax(new IpAddress(address.getHostAddress().toCharArray()));
+                    nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
                 }
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
                     nxActionNatBuilder.setPortMin(message.readUnsignedShort());
