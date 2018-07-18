@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionConntrack;
@@ -53,8 +53,8 @@ public class ConntrackConvertorTest {
         final NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder()
                 .setFlags(1)
                 .setRangePresent(2)
-                .setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()))
-                .setIpAddressMin(new IpAddress("192.168.10.0".toCharArray()))
+                .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"))
+                .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.10.0"))
                 .setPortMin(3000)
                 .setPortMax(4000);
         final CtActionsBuilder ctActionsBuilder = new CtActionsBuilder().setOfpactActions(new NxActionNatCaseBuilder()
@@ -111,8 +111,8 @@ public class ConntrackConvertorTest {
             .NxActionNatBuilder()
             .setFlags(1)
             .setRangePresent(2)
-            .setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()))
-            .setIpAddressMax(new IpAddress("192.168.10.0".toCharArray()))
+            .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"))
+            .setIpAddressMax(IpAddressBuilder.getDefaultInstance("192.168.10.0"))
             .setPortMin(3000)
             .setPortMax(4000);
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping

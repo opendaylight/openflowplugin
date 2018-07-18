@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
@@ -178,8 +178,8 @@ public class ConntrackCodecTest {
         NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
         nxActionNatBuilder.setFlags(5);
         nxActionNatBuilder.setRangePresent(0x3F);
-        nxActionNatBuilder.setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()));
-        nxActionNatBuilder.setIpAddressMax(new IpAddress("192.168.10.0".toCharArray()));
+        nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"));
+        nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance("192.168.10.0"));
         nxActionNatBuilder.setPortMin(3000);
         nxActionNatBuilder.setPortMax(4000);
         NxActionNatCaseBuilder nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
@@ -191,7 +191,7 @@ public class ConntrackCodecTest {
         nxActionNatBuilder = new NxActionNatBuilder();
         nxActionNatBuilder.setFlags(5);
         nxActionNatBuilder.setRangePresent(0x21);
-        nxActionNatBuilder.setIpAddressMin(new IpAddress("192.168.0.0".toCharArray()));
+        nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"));
         nxActionNatBuilder.setPortMax(4000);
         nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
         nxActionNatCaseBuilder.setNxActionNat(nxActionNatBuilder.build());
@@ -237,7 +237,7 @@ public class ConntrackCodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private void createBuffer(final ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(length + nxNatLengthAction1 + nxNatLengthAction2 + setFieldLength);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
@@ -297,7 +297,7 @@ public class ConntrackCodecTest {
         message.writeZero(4);
     }
 
-    private void createBufferWIthoutCtAction(ByteBuf message) {
+    private void createBufferWIthoutCtAction(final ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(length);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
