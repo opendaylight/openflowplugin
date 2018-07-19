@@ -24,8 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtZoneCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtZoneCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
@@ -95,7 +95,7 @@ public class CtZoneConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctZoneConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(2L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+        Assert.assertEquals(2L, ((NxAugMatchNotifNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxCtZone().getCtZone().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtZoneKey.class);
 
