@@ -25,8 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpDstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpDstCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
@@ -103,10 +103,10 @@ public class TcpDstConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tcpDstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(2, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+        Assert.assertEquals(2, ((NxAugMatchNotifNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfTcpDst().getMask().intValue());
-        Assert.assertEquals(DEFAULT_PORT,
-                ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfTcpDst().getPort());
+        Assert.assertEquals(DEFAULT_PORT,((NxAugMatchNotifNodesNodeTableFlow)
+                extensionAugment2.getAugmentationObject()).getNxmOfTcpDst().getPort());
         Assert.assertEquals(extensionAugment.getKey(), NxmOfTcpDstKey.class);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tcpDstConvertor
