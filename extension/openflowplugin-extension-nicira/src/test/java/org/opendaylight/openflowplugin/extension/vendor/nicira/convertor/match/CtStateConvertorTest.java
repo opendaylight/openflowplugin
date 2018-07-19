@@ -24,8 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtStateCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtStateCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNotifSwitchFlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
@@ -103,9 +103,9 @@ public class CtStateConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctStateConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(3L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+        Assert.assertEquals(3L, ((NxAugMatchNotifNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxCtState().getCtState().longValue());
-        Assert.assertEquals(4L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
+        Assert.assertEquals(4L, ((NxAugMatchNotifNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxCtState().getMask().longValue());
         Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
 
