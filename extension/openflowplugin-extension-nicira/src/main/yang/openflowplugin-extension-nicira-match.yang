@@ -320,11 +320,17 @@ module openflowplugin-extension-nicira-match {
             leaf value {
                 type uint32;
             }
+            leaf mask {
+                type uint32;
+            }
         }
     }
     grouping nxm-nx-nshc-2-grouping {
         container nxm-nx-nshc-2 {
             leaf value {
+                type uint32;
+            }
+            leaf mask {
                 type uint32;
             }
         }
@@ -334,11 +340,17 @@ module openflowplugin-extension-nicira-match {
             leaf value {
                 type uint32;
             }
+            leaf mask {
+                type uint32;
+            }
         }
     }
     grouping nxm-nx-nshc-4-grouping {
         container nxm-nx-nshc-4 {
             leaf value {
+                type uint32;
+            }
+            leaf mask {
                 type uint32;
             }
         }

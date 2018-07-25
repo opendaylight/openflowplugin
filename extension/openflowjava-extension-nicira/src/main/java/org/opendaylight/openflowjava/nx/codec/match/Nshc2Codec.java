@@ -8,47 +8,27 @@
 
 package org.opendaylight.openflowjava.nx.codec.match;
 
-import io.netty.buffer.ByteBuf;
-
+import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nshc._2.grouping.Nshc2ValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc2CaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.Nshc2CaseValueBuilder;
 
-public class Nshc2Codec extends AbstractMatchCodec {
+public class Nshc2Codec extends AbstractNshcCodec {
 
-    private static final int VALUE_LENGTH = 4;
-    private static final int NXM_FIELD_CODE = 116;
-    public static final MatchEntrySerializerKey<Nxm1Class, NxmNxNshc2> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxNshc2.class);
-    public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
-
-    @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
-        serializeHeader(input, outBuffer);
-        Nshc2CaseValue csc1CaseValue = ((Nshc2CaseValue) input.getMatchEntryValue());
-        outBuffer.writeInt(csc1CaseValue.getNshc2Values().getNshc().intValue());
-    }
-
-    @Override
-    public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        Nshc2CaseValueBuilder nsc2CaseValueBuilder = new Nshc2CaseValueBuilder();
-        nsc2CaseValueBuilder.setNshc2Values(new Nshc2ValuesBuilder().setNshc(message.readUnsignedInt()).build());
-        matchEntryBuilder.setMatchEntryValue(nsc2CaseValueBuilder.build());
-
-        return matchEntryBuilder.build();
-    }
+    private static final int NXM_FIELD_CODE = 7;
+    public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNshc2> SERIALIZER_KEY =
+            createSerializerKey(
+                    EncodeConstants.OF13_VERSION_ID,
+                    NiciraConstants.NX_NSH_VENDOR_ID,
+                    NxmNxNshc2.class);
+    public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
+            createDeserializerKey(
+                    EncodeConstants.OF13_VERSION_ID,
+                    NiciraConstants.NX_NSH_VENDOR_ID,
+                    NXM_FIELD_CODE);
 
     @Override
     public int getNxmFieldCode() {
@@ -56,22 +36,7 @@ public class Nshc2Codec extends AbstractMatchCodec {
     }
 
     @Override
-    public int getOxmClassCode() {
-        return OxmMatchConstants.NXM_1_CLASS;
-    }
-
-    @Override
-    public int getValueLength() {
-        return VALUE_LENGTH;
-    }
-
-    @Override
     public Class<? extends MatchField> getNxmField() {
         return NxmNxNshc2.class;
-    }
-
-    @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
     }
 }
