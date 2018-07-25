@@ -1,0 +1,250 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d03ac2fd_38ccd19f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/NodeConfigurator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "NodeConfigurator\u003cT\u003e ??",
+      "range": {
+        "startLine": 13,
+        "startChar": 17,
+        "endLine": 13,
+        "endChar": 33
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9f30c2d6_40a5104f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "NodeConfigurator\u003cT\u003e if you bound the interface to T as well.",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 20
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d733067a_55bb5867",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DevicesGroupRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "please avoid using \"dpn\" term, we are either using device or node throughout the plugin code.",
+      "range": {
+        "startLine": 18,
+        "startChar": 42,
+        "endLine": 18,
+        "endChar": 45
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "007f537c_19397d02",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DevicesGroupRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "Exits --\u003e Exist?",
+      "range": {
+        "startLine": 21,
+        "startChar": 26,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb2ee374_32253586",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "this can be a performance impact, if the dependent group is not installed than we should just cache the parent group, till we receive the dependent group notification. As of now this implementation is fine, but i think it can end up making lot of read call to data store.",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "82173a89_5568244f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "please change this log to debug and change the message to \"Check if flow {} is dependent on group.",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0bce40df_7e3ed2b2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "you can create a utility method for this (just a suggestion).",
+      "range": {
+        "startLine": 354,
+        "startChar": 8,
+        "endLine": 354,
+        "endChar": 110
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a473ec4f_43d89b19",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "please log the warning.",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab62ab1_341f7c21",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "no check for dependent group ?",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6ad6ce9a_70a9f820",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "Given that CachedThreadPool spawn thread as and when needed, i am not sure the execution order here, because having more threads than cores in machine, can execute threads in any random order and it means jobs can still get processed out of order. I was thinking if using a newSingleThreadExecutor per node with queue, probably is a better option because it can maintain the execution order per node in sequence.",
+      "range": {
+        "startLine": 52,
+        "startChar": 58,
+        "endLine": 52,
+        "endChar": 77
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "acbb5e12_09b7f5de",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "I think it\u0027s better to use small name like \"nc-exe\" rather than \"NodeConfigurator-executor-\", because karaf log clips the first letters if the thread name is too long.",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa01c42_dbd6c21e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:07:11Z",
+      "side": 1,
+      "message": "we should set it to true, so that it won\u0027t create issue for graceful JVM shutdown.",
+      "range": {
+        "startLine": 54,
+        "startChar": 27,
+        "endLine": 54,
+        "endChar": 32
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
