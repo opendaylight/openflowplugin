@@ -1,0 +1,170 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f6a51909_2418c942",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "thank you ;)",
+      "range": {
+        "startLine": 70,
+        "startChar": 16,
+        "endLine": 70,
+        "endChar": 32
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20a2cff0_7bc4f33e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "please do null check for these service instances.",
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8ae81ab0_3f5288ab",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/MeterForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "i think we can get rid of SimpleTaskRetryLooper, this is not required.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 120
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a78f23c2_0d564acd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/OpenflowServiceRecoveryHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "please add some description about this interface and all the methods.",
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f69b9389_c0a96b14",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "registering -\u003e Registering",
+      "range": {
+        "startLine": 30,
+        "startChar": 18,
+        "endLine": 30,
+        "endChar": 29
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "03863f5d_89f9e196",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "How does this service call works in case of 3-node cluster? Given that devices can be connected to any controller node, whenever recoverService() call happens it needs to be called on all the three controller node, otherwise node connected to other two controller node won\u0027t trigger this call.",
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0e773e11_56ead86b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "Recover",
+      "range": {
+        "startLine": 47,
+        "startChar": 18,
+        "endLine": 47,
+        "endChar": 25
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "42f4ad5f_ee75c877",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-07-25T11:23:42Z",
+      "side": 1,
+      "message": "Can you please add a NOTE/FIXME/TODO in a comment, that once we will have flow/group dependency resolution patch, we should clear internal caches as well in this method call, otherwise FRM won\u0027t be able to do proper reconciliation if caches are not clean.",
+      "range": {
+        "startLine": 48,
+        "startChar": 7,
+        "endLine": 49,
+        "endChar": 28
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
