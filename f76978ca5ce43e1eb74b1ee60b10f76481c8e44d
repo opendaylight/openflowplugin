@@ -42,6 +42,24 @@
     },
     {
       "key": {
+        "uuid": "b573d39a_8bf5483d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/ForwardingRulesManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "20a2cff0_7bc4f33e",
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ae81ab0_3f5288ab",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/MeterForwarder.java",
         "patchSetId": 5
@@ -53,6 +71,30 @@
       "writtenOn": "2018-07-25T11:23:42Z",
       "side": 1,
       "message": "i think we can get rid of SimpleTaskRetryLooper, this is not required.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 120
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "335e4a75_1509162c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/MeterForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8ae81ab0_3f5288ab",
       "range": {
         "startLine": 70,
         "startChar": 0,
@@ -82,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "0e9f4d1b_4e1e29dd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/OpenflowServiceRecoveryHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a78f23c2_0d564acd",
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f69b9389_c0a96b14",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
         "patchSetId": 5
@@ -93,6 +153,30 @@
       "writtenOn": "2018-07-25T11:23:42Z",
       "side": 1,
       "message": "registering -\u003e Registering",
+      "range": {
+        "startLine": 30,
+        "startChar": 18,
+        "endLine": 30,
+        "endChar": 29
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a67d44fd_ea429dca",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f69b9389_c0a96b14",
       "range": {
         "startLine": 30,
         "startChar": 18,
@@ -122,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "9afdd188_8ba0d07a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "As ServiceRecoveryListener extends AbstractSyncDataTreeChangeListener, recovery will be triggered in all 3 nodes",
+      "parentUuid": "03863f5d_89f9e196",
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0e773e11_56ead86b",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
         "patchSetId": 5
@@ -145,6 +247,30 @@
     },
     {
       "key": {
+        "uuid": "a5abf9f7_4b127753",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e773e11_56ead86b",
+      "range": {
+        "startLine": 47,
+        "startChar": 18,
+        "endLine": 47,
+        "endChar": 25
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "42f4ad5f_ee75c877",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
         "patchSetId": 5
@@ -156,6 +282,30 @@
       "writtenOn": "2018-07-25T11:23:42Z",
       "side": 1,
       "message": "Can you please add a NOTE/FIXME/TODO in a comment, that once we will have flow/group dependency resolution patch, we should clear internal caches as well in this method call, otherwise FRM won\u0027t be able to do proper reconciliation if caches are not clean.",
+      "range": {
+        "startLine": 48,
+        "startChar": 7,
+        "endLine": 49,
+        "endChar": 28
+      },
+      "revId": "f76978ca5ce43e1eb74b1ee60b10f76481c8e44d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1962f5f4_261b178c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-07-26T11:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42f4ad5f_ee75c877",
       "range": {
         "startLine": 48,
         "startChar": 7,
