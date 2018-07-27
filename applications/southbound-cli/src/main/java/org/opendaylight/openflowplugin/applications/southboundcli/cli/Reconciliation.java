@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -54,7 +55,19 @@ public class Reconciliation extends OsgiCommandSupport {
         try {
             RpcResult<ReconcileOutput> rpcResult = rpcOutput.get();
             if (rpcResult.isSuccessful()) {
-                session.getConsole().println("Reconciliation triggered for the nodes");
+                ReconcileOutput reconcileOutput = rpcResult.getResult();
+                List<BigInteger> reconcilingNodes = reconcileOutput.getReconcilingNodes();
+                if (reconcilingNodes.size() > 0) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    final Formatter formatter = new Formatter(stringBuilder);
+                    session.getConsole().println(getReconcileHeaderOutput());
+                    session.getConsole().println("-----------------------------------------");
+                    for (BigInteger node : reconcilingNodes) {
+                        session.getConsole().println(formatter.format("%-15s %n",node).toString());
+                        stringBuilder.setLength(0);
+                    }
+                }
+                session.getConsole().println("Reconciliation triggered for other node(s)");
             } else {
                 session.getConsole().println(rpcResult.getErrors().stream().findFirst().get().getMessage());
             }
@@ -62,5 +75,11 @@ public class Reconciliation extends OsgiCommandSupport {
             LOG.error("Error occurred while invoking reconcile RPC for node {}", nodes, e);
         }
         return null;
+    }
+    private String getReconcileHeaderOutput() {
+        final Formatter formatter = new Formatter();
+        String header = formatter.format("%-15s %n", "Reconciliation InProgress for below node(s)").toString();
+        formatter.close();
+        return header;
     }
 }
