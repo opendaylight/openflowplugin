@@ -33,6 +33,28 @@ module reconciliation {
         }
     }
 
+    container node-reconciliation {
+         description "Describes the reconcile state of individual NODEs";
+         list reconciliation-state {
+              key node-id;
+              uses node-reconcile-state;
+         }
+    }
+
+    grouping node-reconcile-state {
+         leaf node-id {
+              type uint64;
+         }
+         leaf state {
+              description "Expresses the current state of the reconcile on a specific NODE";
+              type enumeration {
+                   enum IN_PROGRESS;
+                   enum COMPLETED;
+                   enum FAILED;
+              }
+         }
+    }
+
     rpc reconcile {
         description "Requests the execution of reconciliation between the controller and
                      one or several or all Nodes";
@@ -53,6 +75,9 @@ module reconciliation {
         output {
              leaf result {
                  type boolean;
+             }
+             leaf-list reconcilingNodes {
+                 type uint64;
              }
         }
     }
