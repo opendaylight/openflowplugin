@@ -30,17 +30,17 @@ public class ReconciliationCount extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
         List<ReconcileCounter> result = ShellUtil.getReconcileCount(dataBroker);
         if (result.isEmpty()) {
-            session.getConsole().println("Reconciliation is not yet completed or connected device not found.");
+            session.getConsole().println("Reconciliation count not yet available for openflow nodes.");
         } else {
             StringBuilder stringBuilder = new StringBuilder();
             final Formatter formatter = new Formatter(stringBuilder);
             session.getConsole().println(getReconcileCountHeaderOutput());
             session.getConsole().println("--------------------------------------------------------------------------"
-                    + "----------------------");
+                    + "---------------------------");
             for (ReconcileCounter reconcile : result) {
                 session.getConsole().println(formatter.format("%-15s %3s %-15s %9s %-20s %4s %-20s %n",
                         reconcile.getNodeId(), "", reconcile.getSuccessCount(), "", reconcile.getFailureCount(), "",
-                        reconcile.getLastRequestTime()).toString());
+                        reconcile.getLastRequestTime().getValue()).toString());
                 stringBuilder.setLength(0);
             }
             formatter.close();
