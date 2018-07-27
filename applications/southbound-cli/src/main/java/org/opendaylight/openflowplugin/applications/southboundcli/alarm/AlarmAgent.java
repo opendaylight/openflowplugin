@@ -97,7 +97,7 @@ public class AlarmAgent {
      *
      * @param nodeId Source of the alarm dpnId
      */
-    public void raiseNodeReconciliationAlarm(final long nodeId) {
+    public void raiseNodeReconciliationAlarm(final Long nodeId) {
         String alarmText = getAlarmText(nodeId,  " started reconciliation");
         String source = getSourceText(nodeId);
 
@@ -112,7 +112,7 @@ public class AlarmAgent {
      *
      * @param nodeId Source of the alarm dpnId
      */
-    public void clearNodeReconciliationAlarm(final long nodeId) {
+    public void clearNodeReconciliationAlarm(final Long nodeId) {
         String alarmText = getAlarmText(nodeId, " finished reconciliation");
         String source = getSourceText(nodeId);
 
@@ -127,7 +127,7 @@ public class AlarmAgent {
      * @param nodeId Source of the alarm nodeId
      * @param event reason for alarm invoke/clear
      */
-    private String getAlarmText(final long nodeId, final String event) {
+    private String getAlarmText(final Long nodeId, final String event) {
         return new StringBuffer("OF Switch ").append(nodeId).append(event).toString();
     }
 
@@ -136,7 +136,7 @@ public class AlarmAgent {
      *
      * @param nodeId Source of the alarm nodeId
      */
-    private String getSourceText(final long nodeId) {
+    private String getSourceText(final Long nodeId) {
         return new StringBuffer("Device=").append(nodeId).toString();
     }
 }
