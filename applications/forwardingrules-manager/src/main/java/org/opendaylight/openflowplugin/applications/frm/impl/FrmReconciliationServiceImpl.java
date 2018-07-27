@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -69,7 +68,7 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
         }
 
         @Override
-        public void onSuccess(@Nullable Boolean result) {
+        public void onSuccess(Boolean result) {
             if (result) {
                 ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(result).build();
                 futureResult.set(RpcResultBuilder.success(output).build());

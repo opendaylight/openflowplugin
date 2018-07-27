@@ -3,22 +3,24 @@ module reconciliation {
     namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:reconciliation:service";
     prefix reconciliation;
 
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
     revision "2018-02-27" {
         description "Initial revision for reconciliation";
     }
 
     container reconciliation-counter {
         description "Number of reconciliation triggered for openflow nodes";
+        config false;
         list reconcile-counter {
             key node-id;
+            leaf node-id {
+                type uint64;
+            }
             uses counter;
         }
     }
 
     grouping counter {
-        leaf node-id {
-            type uint64;
-        }
         leaf success-count {
             type uint32;
             default 0;
@@ -29,13 +31,35 @@ module reconciliation {
         }
         leaf last-request-time {
              description "Timestamp when reconciliation was last requested";
-             type string;
+             type yang:date-and-time;
         }
     }
 
+    container reconciliation-state {
+         description "Reconciliation state for the given openflow nodes";
+         config false;
+         list reconciliation-state-list {
+              key node-id;
+              leaf node-id {
+                   type uint64;
+              }
+              uses node-reconcile-state;
+         }
+    }
+
+    grouping node-reconcile-state {
+         leaf state {
+              description "Expresses the current state of the reconcile on a specific NODE";
+              type enumeration {
+                   enum IN_PROGRESS;
+                   enum COMPLETED;
+                   enum FAILED;
+              }
+         }
+    }
+
     rpc reconcile {
-        description "Requests the execution of reconciliation between the controller and
-                     one or several or all Nodes";
+        description "Request the reconciliation for given device or set of devices to the controller.";
         input {
             leaf-list nodes {
                 description "List of nodes to be reconciled";
@@ -53,6 +77,11 @@ module reconciliation {
         output {
              leaf result {
                  type boolean;
+             }
+
+             leaf-list inprogress-nodes {
+                 description "List of nodes that are already in reconciling mode";
+                 type uint64;
              }
         }
     }
