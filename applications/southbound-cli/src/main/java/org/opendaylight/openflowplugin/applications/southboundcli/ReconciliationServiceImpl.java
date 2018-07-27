@@ -8,12 +8,18 @@
 
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.COMPLETED;
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.FAILED;
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.INPROGRESS;
+
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -21,11 +27,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -35,13 +43,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.state.ReconciliationStateList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.state.ReconciliationStateListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.state.ReconciliationStateListKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -52,12 +66,13 @@ import org.slf4j.LoggerFactory;
 public class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
+    private static final Long START_COUNT = 1L;
+    private static final int THREAD_POOL_SIZE = 10;
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
     private final DataBroker broker;
     private final FrmReconciliationService frmReconciliationService;
-    private final Long startCount = 1L;
     private final AlarmAgent alarmAgent;
-    private static final int THREAD_POOL_SIZE = 10;
-    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
                                      final AlarmAgent alarmAgent) {
@@ -68,8 +83,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
     @Override
     public void close() {
-        if (executor != null) {
-            executor.shutdownNow();
+        if (EXECUTOR != null) {
+            EXECUTOR.shutdownNow();
         }
     }
 
@@ -91,6 +106,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         List<Long> nodeList = getAllNodes();
         List<Long> nodesToReconcile = reconcileAllNodes ? nodeList :
                 inputNodes.stream().distinct().map(node -> node.longValue()).collect(Collectors.toList());
+        List<BigInteger> inprogressNodes = new ArrayList<>();
         if (nodesToReconcile.size() > 0) {
             List<Long> unresolvedNodes =
                     nodesToReconcile.stream().filter(node -> !nodeList.contains(node)).collect(Collectors.toList());
@@ -99,18 +115,42 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                         + "Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
             nodesToReconcile.parallelStream().forEach(nodeId -> {
-                alarmAgent.raiseNodeReconciliationAlarm(nodeId);
-                LOG.info("Executing reconciliation for node {}", nodeId);
-                NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
-                ReconciliationTask reconcileTask = new ReconciliationTask(nodeId, nodeKey);
-                executor.execute(reconcileTask);
+                Optional<ReconciliationStateList> state = getReconciliationState(nodeId);
+                if (state.isPresent() && state.get().getState().equals(INPROGRESS)) {
+                    inprogressNodes.add(new BigInteger(String.valueOf(nodeId)));
+                } else {
+                    alarmAgent.raiseNodeReconciliationAlarm(nodeId);
+                    LOG.info("Executing reconciliation for node {}", nodeId);
+                    NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
+                    ReconciliationTask reconcileTask = new ReconciliationTask(new BigInteger(String.valueOf(nodeId)),
+                            nodeKey);
+                    EXECUTOR.execute(reconcileTask);
+                }
             });
         } else {
             return buildErrorResponse("Error executing command reconcile. "
                     + "No node information is found for reconciliation");
         }
-        result.set(RpcResultBuilder.<ReconcileOutput>success().build());
+        ReconcileOutput reconcilingInProgress = new ReconcileOutputBuilder().setInprogressNodes(inprogressNodes)
+                .build();
+        result.set(RpcResultBuilder.success(reconcilingInProgress).build());
         return result;
+    }
+
+    private Optional<ReconciliationStateList> getReconciliationState(final Long nodeId) {
+        InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
+                .builder(ReconciliationState.class).child(ReconciliationStateList.class,
+                        new ReconciliationStateListKey(new BigInteger(String.valueOf(nodeId)))).build();
+        ReadOnlyTransaction tx = broker.newReadOnlyTransaction();
+        try {
+            return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+
+        } catch (InterruptedException  | ExecutionException e) {
+            LOG.error("Exception while reading reconciliation state for {}", nodeId, e);
+        } finally {
+            tx.close();
+        }
+        return Optional.absent();
     }
 
     private ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
@@ -121,88 +161,109 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         return result;
     }
 
-    public List<Long> getAllNodes() {
+    private List<Long> getAllNodes() {
         List<OFNode> nodeList = ShellUtil.getAllNodes(broker);
         List<Long> nodes = nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
         return nodes;
     }
 
-    private void increaseReconcileCount(BigInteger nodeId, Boolean reconcileState) {
-        InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier
-                .builder(ReconciliationCounter.class).child(ReconcileCounter.class,
-                        new ReconcileCounterKey(nodeId)).build();
-        ReadWriteTransaction tx = broker.newReadWriteTransaction();
-        Optional<ReconcileCounter> optional = readReconcileCounterFromDS(tx, instanceIdentifier, nodeId);
-        ReconcileCounterBuilder counterBuilder = new ReconcileCounterBuilder()
-                .withKey(new ReconcileCounterKey(nodeId)).setNodeId(nodeId)
-                .setLastRequestTime(LocalDateTime.now().toString());
-        if (reconcileState) {
-            counterBuilder.setSuccessCount(startCount);
-            if (optional.isPresent()) {
-                ReconcileCounter counter = optional.get();
-                Long successCount = counter.getSuccessCount();
-                counterBuilder.setSuccessCount(++successCount);
-                LOG.debug("Reconcile Success count {} for the node: {} ", successCount, nodeId);
-            }
-        } else {
-            counterBuilder.setFailureCount(startCount);
-            if (optional.isPresent()) {
-                ReconcileCounter counter = optional.get();
-                Long failureCount = counter.getFailureCount();
-                counterBuilder.setFailureCount(++failureCount);
-                LOG.debug("Reconcile Failure count {} for the node: {} ", failureCount, nodeId);
-            }
-        }
-        try {
-            tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
-            tx.submit().get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Exception while submitting counter {}", nodeId, e);
-        }
-    }
-
-    private Optional<ReconcileCounter> readReconcileCounterFromDS(ReadWriteTransaction tx,
-                InstanceIdentifier<ReconcileCounter> instanceIdentifier, BigInteger nodeId) {
-        try {
-            return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Exception while reading counter for node: {}", nodeId, e);
-        }
-        return Optional.absent();
-    }
-
     private final class ReconciliationTask implements Runnable {
+        private static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
         private final NodeKey nodeKey;
-        private final Long nodeId;
+        private final BigInteger nodeId;
 
-        private ReconciliationTask(Long nodeId, NodeKey nodeKey) {
+        private ReconciliationTask(BigInteger nodeId, NodeKey nodeKey) {
             this.nodeId = nodeId;
             this.nodeKey = nodeKey;
         }
 
         @Override
         public void run() {
-            BigInteger node = new BigInteger(String.valueOf(nodeId));
             ReconcileNodeInput reconInput = new ReconcileNodeInputBuilder()
-                    .setNodeId(node).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class)
+                    .setNodeId(nodeId).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class)
                             .child(Node.class, nodeKey).build())).build();
+            updateReconciliationState(INPROGRESS);
             Future<RpcResult<ReconcileNodeOutput>> reconOutput = frmReconciliationService
                     .reconcileNode(reconInput);
             try {
                 RpcResult<ReconcileNodeOutput> rpcResult = reconOutput.get();
                 if (rpcResult.isSuccessful()) {
-                    increaseReconcileCount(node, true);
-                    LOG.info("Reconciliation successfully completed for node {}", nodeId);
+                    increaseReconcileCount(true);
+                    updateReconciliationState(COMPLETED);
+                    LOG.info("Reconciliation successfully completed for node {}", this.nodeId);
                 } else {
-                    increaseReconcileCount(node, false);
-                    LOG.error("Reconciliation failed for node {} with error {}", nodeId, rpcResult.getErrors());
+                    increaseReconcileCount(false);
+                    updateReconciliationState(FAILED);
+                    LOG.error("Reconciliation failed for node {} with error {}", this.nodeId, rpcResult.getErrors());
                 }
             } catch (ExecutionException | InterruptedException e) {
-                increaseReconcileCount(node, false);
-                LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
-            } finally {
-                alarmAgent.clearNodeReconciliationAlarm(nodeId);
+                increaseReconcileCount(false);
+                LOG.error("Error occurred while invoking reconcile RPC for node {}", this.nodeId, e);
             }
+            finally {
+                alarmAgent.clearNodeReconciliationAlarm(nodeId.longValue());
+            }
+        }
+
+        private void increaseReconcileCount(final boolean isSuccess) {
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
+            InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier
+                    .builder(ReconciliationCounter.class).child(ReconcileCounter.class,
+                            new ReconcileCounterKey(nodeId)).build();
+            ReadWriteTransaction tx = broker.newReadWriteTransaction();
+            Optional<ReconcileCounter> count = getReconciliationCount(tx, instanceIdentifier);
+            ReconcileCounterBuilder counterBuilder = new ReconcileCounterBuilder()
+                    .withKey(new ReconcileCounterKey(nodeId))
+                    .setLastRequestTime(new DateAndTime(simpleDateFormat.format(new Date())));
+
+            if (isSuccess) {
+                if (count.isPresent()) {
+                    ReconcileCounter counter = count.get();
+                    Long successCount = counter.getSuccessCount();
+                    counterBuilder.setSuccessCount(++successCount);
+                    LOG.debug("Reconcile Success count {} for the node: {} ", successCount, nodeId);
+                } else {
+                    counterBuilder.setSuccessCount(START_COUNT);
+                }
+            } else {
+                if (count.isPresent()) {
+                    ReconcileCounter counter = count.get();
+                    Long failureCount = counter.getFailureCount();
+                    counterBuilder.setFailureCount(++failureCount);
+                    LOG.debug("Reconcile Failure count {} for the node: {} ", failureCount, nodeId);
+                }
+                else {
+                    counterBuilder.setFailureCount(START_COUNT);
+                }
+            }
+            try {
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
+                tx.submit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while submitting counter {}", nodeId, e);
+            }
+        }
+
+        private Optional<ReconcileCounter> getReconciliationCount(ReadWriteTransaction tx,
+                                InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
+            try {
+                return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while reading counter for node: {}", nodeId, e);
+            }
+            return Optional.absent();
+        }
+
+        private void updateReconciliationState(State state) {
+            ReadWriteTransaction tx = broker.newReadWriteTransaction();
+            InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
+                    .builder(ReconciliationState.class).child(ReconciliationStateList.class,
+                            new ReconciliationStateListKey(nodeId)).build();
+            ReconciliationStateListBuilder stateBuilder = new ReconciliationStateListBuilder()
+                    .withKey(new ReconciliationStateListKey(nodeId))
+                    .setState(state);
+            tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, stateBuilder.build(), true);
+            tx.submit();
         }
     }
 }
