@@ -11,6 +11,7 @@ module reconciliation {
         description "Number of reconciliation triggered for openflow nodes";
         list reconcile-counter {
             key node-id;
+            config false;
             uses counter;
         }
     }
@@ -33,6 +34,29 @@ module reconciliation {
         }
     }
 
+    container reconciliation-state {
+         description "Reconciliation state for the given openflow nodes";
+         list reconciliation-state-list {
+              key node-id;
+              config false;
+              uses node-reconcile-state;
+         }
+    }
+
+    grouping node-reconcile-state {
+         leaf node-id {
+              type uint64;
+         }
+         leaf state {
+              description "Expresses the current state of the reconcile on a specific NODE";
+              type enumeration {
+                   enum IN_PROGRESS;
+                   enum COMPLETED;
+                   enum FAILED;
+              }
+         }
+    }
+
     rpc reconcile {
         description "Requests the execution of reconciliation between the controller and
                      one or several or all Nodes";
@@ -53,6 +77,11 @@ module reconciliation {
         output {
              leaf result {
                  type boolean;
+             }
+
+             leaf-list inprogress-nodes {
+                 description "List of nodes that are already in reconciling mode";
+                 type uint64;
              }
         }
     }

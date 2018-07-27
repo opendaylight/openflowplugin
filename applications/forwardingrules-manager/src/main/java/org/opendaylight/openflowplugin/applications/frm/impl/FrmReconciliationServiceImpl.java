@@ -69,7 +69,7 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
         }
 
         @Override
-        public void onSuccess(@Nullable Boolean result) {
+        public void onSuccess(Boolean result) {
             if (result) {
                 ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(result).build();
                 futureResult.set(RpcResultBuilder.success(output).build());
