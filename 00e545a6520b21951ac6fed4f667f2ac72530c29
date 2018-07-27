@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fccdedf9_e4f00824",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/NodeConfigurator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d03ac2fd_38ccd19f",
+      "range": {
+        "startLine": 13,
+        "startChar": 17,
+        "endLine": 13,
+        "endChar": 33
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9f30c2d6_40a5104f",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-25T11:07:11Z",
       "side": 1,
       "message": "NodeConfigurator\u003cT\u003e if you bound the interface to T as well.",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 20
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "107bc6f8_8abf0b0d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "The enqueueJob() method in the superclass (FlowForwarder for instance) has to take arguments of different types(RpcResult\u003cUpdateFlowOutput\u003e and RpcResult\u003cAddFlowOutput\u003e). So I dont think we should set the bound here.",
+      "parentUuid": "9f30c2d6_40a5104f",
       "range": {
         "startLine": 31,
         "startChar": 4,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "f923804e_970099eb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DevicesGroupRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d733067a_55bb5867",
+      "range": {
+        "startLine": 18,
+        "startChar": 42,
+        "endLine": 18,
+        "endChar": 45
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "007f537c_19397d02",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DevicesGroupRegistry.java",
         "patchSetId": 4
@@ -82,6 +154,30 @@
       "writtenOn": "2018-07-25T11:07:11Z",
       "side": 1,
       "message": "Exits --\u003e Exist?",
+      "range": {
+        "startLine": 21,
+        "startChar": 26,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "031497fb_788fea77",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DevicesGroupRegistry.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "007f537c_19397d02",
       "range": {
         "startLine": 21,
         "startChar": 26,
@@ -111,6 +207,24 @@
     },
     {
       "key": {
+        "uuid": "c616101e_3f0ff4f4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Would add a TODO for this",
+      "parentUuid": "bb2ee374_32253586",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "82173a89_5568244f",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 4
@@ -122,6 +236,24 @@
       "writtenOn": "2018-07-25T11:07:11Z",
       "side": 1,
       "message": "please change this log to debug and change the message to \"Check if flow {} is dependent on group.",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "877ff668_00d8b885",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "82173a89_5568244f",
       "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -151,6 +283,30 @@
     },
     {
       "key": {
+        "uuid": "d160dc08_94ed3abe",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0bce40df_7e3ed2b2",
+      "range": {
+        "startLine": 354,
+        "startChar": 8,
+        "endLine": 354,
+        "endChar": 110
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a473ec4f_43d89b19",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 4
@@ -168,6 +324,24 @@
     },
     {
       "key": {
+        "uuid": "d4b370e9_aafe6730",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a473ec4f_43d89b19",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9ab62ab1_341f7c21",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
         "patchSetId": 4
@@ -179,6 +353,24 @@
       "writtenOn": "2018-07-25T11:07:11Z",
       "side": 1,
       "message": "no check for dependent group ?",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c264575e_b07e4f6f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "I don\u0027t think it is necessary for checking whether the dependent group exists on the device in case of the chained groups as the switch wont reject the group even if the dependent group doesnt exists(in switch)",
+      "parentUuid": "9ab62ab1_341f7c21",
       "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -208,6 +400,30 @@
     },
     {
       "key": {
+        "uuid": "346331bd_a180093d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ad6ce9a_70a9f820",
+      "range": {
+        "startLine": 52,
+        "startChar": 58,
+        "endLine": 52,
+        "endChar": 77
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "acbb5e12_09b7f5de",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
         "patchSetId": 4
@@ -225,6 +441,24 @@
     },
     {
       "key": {
+        "uuid": "9df8eb0f_c15b4aba",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "acbb5e12_09b7f5de",
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3aa01c42_dbd6c21e",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
         "patchSetId": 4
@@ -236,6 +470,30 @@
       "writtenOn": "2018-07-25T11:07:11Z",
       "side": 1,
       "message": "we should set it to true, so that it won\u0027t create issue for graceful JVM shutdown.",
+      "range": {
+        "startLine": 54,
+        "startChar": 27,
+        "endLine": 54,
+        "endChar": 32
+      },
+      "revId": "00e545a6520b21951ac6fed4f667f2ac72530c29",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4104c226_ed85bb44",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/nodeconfigurator/NodeConfiguratorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-07-27T08:42:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3aa01c42_dbd6c21e",
       "range": {
         "startLine": 54,
         "startChar": 27,
