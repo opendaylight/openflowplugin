@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Stephen Kitt <skitt@redhat.com>
+Code-Review+2: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-by: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-at: Mon, 30 Jul 2018 14:31:38 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/74203
+Project: openflowplugin
+Branch: refs/heads/master
