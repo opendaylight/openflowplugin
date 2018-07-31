@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.request.multipart.request.body.MultipartRequestPortDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.stats.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupStatsBuilder;
@@ -107,10 +108,9 @@ public final class MultipartRequestInputFactory {
         .MultipartRequestBody makeDefaultSingleLayerBody(final MultipartType type) {
         switch (type) {
             case OFPMPDESC: return new MultipartRequestDescBuilder().build();
-            case OFPMPFLOW: return new MultipartRequestFlowStatsBuilder()
+            case OFPMPFLOW: return new MultipartRequestFlowStatsBuilder().setFlowStats(new FlowStatsBuilder()
                 .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                    .MatchBuilder().build())
-                .build();
+                    .MatchBuilder().build()).build()).build();
             case OFPMPAGGREGATE: return new MultipartRequestFlowAggregateStatsBuilder().build();
             case OFPMPTABLE: return new MultipartRequestFlowTableStatsBuilder().build();
             case OFPMPPORTSTATS: return new org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics

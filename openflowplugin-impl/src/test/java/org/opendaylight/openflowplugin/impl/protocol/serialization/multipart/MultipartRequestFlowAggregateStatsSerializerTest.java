@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.aggregate.stats.FlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 
 public class MultipartRequestFlowAggregateStatsSerializerTest extends AbstractSerializerTest {
@@ -40,13 +41,14 @@ public class MultipartRequestFlowAggregateStatsSerializerTest extends AbstractSe
                     .build())
             .build();
     private static final MultipartRequestFlowAggregateStats BODY = new MultipartRequestFlowAggregateStatsBuilder()
-            .setTableId(TABLE_ID)
-            .setOutPort(OUT_PORT)
-            .setOutGroup(OUT_GROUP)
-            .setCookie(COOKIE)
-            .setCookieMask(COOKIE_MASK)
-            .setMatch(MATCH)
-            .build();
+            .setFlowAggregateStats(new FlowAggregateStatsBuilder()
+                .setTableId(TABLE_ID)
+                .setOutPort(OUT_PORT)
+                .setOutGroup(OUT_GROUP)
+                .setCookie(COOKIE)
+                .setCookieMask(COOKIE_MASK)
+                .setMatch(MATCH)
+                .build()).build();
 
     private MultipartRequestFlowAggregateStatsSerializer serializer;
 
