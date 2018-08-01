@@ -16,6 +16,8 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -49,7 +51,19 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
             final DataObjectModification<T> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNode> nodeIdent =
                     key.firstIdentifierOf(FlowCapableNode.class);
+            FlowBuilder flowBuilder = null;
+            if (mod.getDataAfter() instanceof Flow) {
+                flowBuilder = new FlowBuilder((Flow)mod.getDataAfter());
+                LOG.info("Data tree change triggered for flow to switch={} for "
+                                + "flowId={}, tableID={} and priority={}", nodeIdent.toString(),
+                        flowBuilder.getFlowName(), flowBuilder.getTableId(), flowBuilder.getPriority());
+            }
             if (preConfigurationCheck(nodeIdent)) {
+                if (mod.getDataAfter() instanceof Flow) {
+                    LOG.info("Precondition passed and add flow triggered for flow to switch={} for "
+                                    + "flowId={}, tableID={} and priority={}", nodeIdent.toString(),
+                            flowBuilder.getFlowName(), flowBuilder.getTableId(), flowBuilder.getPriority());
+                }
                 switch (mod.getModificationType()) {
                     case DELETE:
                         remove(key, mod.getDataBefore(), nodeIdent);
@@ -59,6 +73,11 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
                         break;
                     case WRITE:
                         if (mod.getDataBefore() == null) {
+                            if (mod.getDataAfter() instanceof Flow) {
+                                LOG.info("Add flow task triggered for the data tree change for flow to switch={} for "
+                                        + "flowId={}, tableID={} and priority={}", nodeIdent.toString(),
+                                        flowBuilder.getFlowName(), flowBuilder.getTableId(), flowBuilder.getPriority());
+                            }
                             add(key, mod.getDataAfter(), nodeIdent);
                         } else {
                             update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
@@ -106,8 +125,12 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // skip the flow/group/meter operational. This requires an addition check, where it reads
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
-        return provider.isNodeOwner(nodeIdent)
-                && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+        boolean isNodeOwner = provider.isNodeOwner(nodeIdent);
+        boolean isNodeActive = provider.isNodeActive(nodeIdent);
+        boolean isNodeInOperationalDS = provider.checkNodeInOperationalDataStore(nodeIdent);
+        LOG.info("preConfigurationCheck for node={} with isNodeOwner={}, isNodeActive={}, isNodeInOperationalDS={}",
+                nodeIdent, isNodeOwner, isNodeActive, isNodeInOperationalDS);
+        return isNodeOwner && (isNodeActive || isNodeInOperationalDS);
     }
 }
 
