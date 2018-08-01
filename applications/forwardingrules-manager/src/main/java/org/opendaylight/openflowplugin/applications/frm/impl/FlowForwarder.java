@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
@@ -167,9 +168,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     @Override
     public Future<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
         Future<RpcResult<AddFlowOutput>> future;
         final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        FlowBuilder flowBuilder = new FlowBuilder(addDataObj);
+        LOG.info("Trying to add flow to the switch: {} for flowName: {}, tableID: {} and priority: {}",
+                nodeIdent.toString(), flowBuilder.getFlowName(), flowBuilder.getTableId(), flowBuilder.getPriority());
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
@@ -177,6 +180,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             builder.setFlowRef(new FlowRef(identifier));
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+            LOG.info("Submitting add flow request to the switch: {} for flowName: {}, tableID: {} and priority: {}",
+                    nodeIdent.toString(), flowBuilder.getFlowName(), flowBuilder.getTableId(),
+                    flowBuilder.getPriority());
             future = provider.getSalFlowService().addFlow(builder.build());
         } else {
             future = Futures.<RpcResult<AddFlowOutput>>immediateFuture(null);
