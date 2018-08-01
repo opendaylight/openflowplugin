@@ -22,6 +22,7 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -51,11 +52,13 @@ public class DeviceMastershipManagerTest {
     private DataBroker dataBroker;
     @Mock
     private RoutedRpcRegistration routedRpcReg;
+    @Mock
+    MastershipChangeServiceManager mastershipChangeServiceManager;
 
     @Before
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, notificationService,
-                reconciliationAgent, dataBroker);
+                reconciliationAgent, dataBroker, mastershipChangeServiceManager);
         deviceMastershipManager.setRoutedRpcReg(routedRpcReg);
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
