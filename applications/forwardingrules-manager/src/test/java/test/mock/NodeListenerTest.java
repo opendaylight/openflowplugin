@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
@@ -40,14 +40,13 @@ public class NodeListenerTest extends FRMTest {
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
-    private NotificationProviderService notificationService;
-    @Mock
     private ReconciliationManager reconciliationManager;
     @Mock
     private OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     @Mock
     private ServiceRecoveryRegistry serviceRecoveryRegistry;
-
+    @Mock
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
 
     @Before
     public void setUp() {
@@ -55,8 +54,8 @@ public class NodeListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
+                mastershipChangeServiceManager,
                 clusterSingletonService,
-                notificationService,
                 getConfigurationService(),
                 reconciliationManager,
                 openflowServiceRecoveryHandler,
