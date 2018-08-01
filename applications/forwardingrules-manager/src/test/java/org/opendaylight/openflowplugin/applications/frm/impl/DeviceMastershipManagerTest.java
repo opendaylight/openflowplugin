@@ -18,80 +18,71 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test for {@link DeviceMastershipManager}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceMastershipManagerTest {
-    private static final NodeId NODE_ID = new NodeId("testNode");
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
     private ClusterSingletonServiceRegistration registration;
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
-    private NotificationProviderService notificationService;
-    @Mock
     private FlowNodeReconciliation reconciliationAgent;
     @Mock
     private DataBroker dataBroker;
     @Mock
     private RoutedRpcRegistration routedRpcReg;
+    @Mock
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    private DeviceInfo deviceInfo;
+    @Mock
+    private NodeId nodeId;
 
     @Before
     public void setUp() throws Exception {
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, notificationService,
-                reconciliationAgent, dataBroker);
+        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, reconciliationAgent, dataBroker,
+                mastershipChangeServiceManager);
         deviceMastershipManager.setRoutedRpcReg(routedRpcReg);
         Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
+        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
+        Mockito.when(nodeId.getValue()).thenReturn("dummyValue");
     }
 
     @Test
     public void testOnDeviceConnectedAndDisconnected() throws Exception {
         // no context
-        Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
-        NodeUpdatedBuilder nodeUpdatedBuilder = new NodeUpdatedBuilder();
-        nodeUpdatedBuilder.setId(NODE_ID);
-        deviceMastershipManager.onNodeUpdated(nodeUpdatedBuilder.build());
-        DeviceMastership serviceInstance = deviceMastershipManager.getDeviceMasterships().get(NODE_ID);
+        Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()));
+        deviceMastershipManager.onBecomeOwner(deviceInfo);
+        DeviceMastership serviceInstance = deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId());
         Assert.assertNotNull(serviceInstance);
         // destroy context - unregister
-        Assert.assertNotNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
-        NodeRemovedBuilder nodeRemovedBuilder = new NodeRemovedBuilder();
-        InstanceIdentifier<Node> nodeIId = InstanceIdentifier.create(Nodes.class).child(Node.class,
-                new NodeKey(NODE_ID));
-        nodeRemovedBuilder.setNodeRef(new NodeRef(nodeIId));
-        deviceMastershipManager.onNodeRemoved(nodeRemovedBuilder.build());
-        Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(NODE_ID));
+        Assert.assertNotNull(deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()));
+        deviceMastershipManager.onLoseOwnership(deviceInfo);
+        Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()));
     }
 
     @Test
     public void testIsDeviceMasteredOrSlaved() {
         // no context
-        Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
-        NodeUpdatedBuilder nodeUpdatedBuilder = new NodeUpdatedBuilder();
-        nodeUpdatedBuilder.setId(NODE_ID);
-        deviceMastershipManager.onNodeUpdated(nodeUpdatedBuilder.build());
+        Assert.assertFalse(deviceMastershipManager.isDeviceMastered(deviceInfo.getNodeId()));
+        deviceMastershipManager.onBecomeOwner(deviceInfo);
         // is master
-        deviceMastershipManager.getDeviceMasterships().get(NODE_ID).instantiateServiceInstance();
-        Assert.assertTrue(deviceMastershipManager.isDeviceMastered(NODE_ID));
+        deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()).instantiateServiceInstance();
+        Assert.assertTrue(deviceMastershipManager.isDeviceMastered(deviceInfo.getNodeId()));
         // is not master
-        deviceMastershipManager.getDeviceMasterships().get(NODE_ID).closeServiceInstance();
-        Assert.assertFalse(deviceMastershipManager.isDeviceMastered(NODE_ID));
+        deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()).closeServiceInstance();
+        Assert.assertFalse(deviceMastershipManager.isDeviceMastered(deviceInfo.getNodeId()));
     }
 }
