@@ -19,9 +19,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
@@ -56,9 +56,9 @@ public class GroupListenerTest extends FRMTest {
     @Mock
     DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private NotificationProviderService notificationService;
-    @Mock
     private ReconciliationManager reconciliationManager;
+    @Mock
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
 
 
     @Before
@@ -67,8 +67,8 @@ public class GroupListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
+                mastershipChangeServiceManager,
                 clusterSingletonService,
-                notificationService,
                 getConfigurationService(),
                 reconciliationManager);
 
