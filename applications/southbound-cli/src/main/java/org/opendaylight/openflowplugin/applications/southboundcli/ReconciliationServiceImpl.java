@@ -190,7 +190,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                     .reconcileNode(reconInput);
             try {
                 RpcResult<ReconcileNodeOutput> rpcResult = reconOutput.get();
-                if (rpcResult.isSuccessful()) {
+                if (rpcResult.isSuccessful() && rpcResult.getResult().isResult() == true) {
                     increaseReconcileCount(node, true);
                     LOG.info("Reconciliation successfully completed for node {}", nodeId);
                 } else {
