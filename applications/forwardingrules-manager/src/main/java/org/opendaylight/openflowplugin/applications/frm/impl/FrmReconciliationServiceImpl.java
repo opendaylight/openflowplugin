@@ -13,6 +13,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import javax.annotation.Nullable;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -24,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -69,15 +72,21 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
 
         @Override
         public void onSuccess(@Nullable Boolean result) {
-            ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(result).build();
-            futureResult.set(RpcResultBuilder.success(output).build());
+            if (result == true) {
+                ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(result).build();
+                futureResult.set(RpcResultBuilder.success(output).build());
+            } else {
+                futureResult.set(RpcResultBuilder.<ReconcileNodeOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION,"Error while triggering reconciliation").build());
+            }
+
         }
 
         @Override
         public void onFailure(Throwable error) {
             LOG.error("initReconciliation failed", error);
-            ReconcileNodeOutput output = new ReconcileNodeOutputBuilder().setResult(false).build();
-            futureResult.set(RpcResultBuilder.success(output).build());
+            futureResult.set(RpcResultBuilder.<ReconcileNodeOutput>failed()
+                    .withError(RpcError.ErrorType.RPC,"Error while calling RPC").build());
         }
     }
 }
