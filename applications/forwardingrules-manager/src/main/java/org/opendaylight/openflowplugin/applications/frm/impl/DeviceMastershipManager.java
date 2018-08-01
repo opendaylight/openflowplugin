@@ -26,6 +26,9 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -47,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * Manager for clustering service registrations of {@link DeviceMastership}.
  */
 public class DeviceMastershipManager
-        implements ClusteredDataTreeChangeListener<FlowCapableNode>, OpendaylightInventoryListener, AutoCloseable {
+        implements ClusteredDataTreeChangeListener<FlowCapableNode>, OpendaylightInventoryListener, AutoCloseable,
+        MastershipChangeService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE = InstanceIdentifier
             .builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
@@ -61,16 +65,19 @@ public class DeviceMastershipManager
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
     private RoutedRpcRegistration routedRpcReg;
+    private final AutoCloseable mastershipChangeServiceRegistration;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
                                    final NotificationProviderService notificationService,
                                    final FlowNodeReconciliation reconcliationAgent,
-                                   final DataBroker dataBroker) {
+                                   final DataBroker dataBroker,
+                                   final MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.clusterSingletonService = clusterSingletonService;
         this.notifListenerRegistration = notificationService.registerNotificationListener(this);
         this.reconcliationAgent = reconcliationAgent;
         this.dataBroker = dataBroker;
         registerNodeListener();
+        mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
     }
 
     public boolean isDeviceMastered(final NodeId nodeId) {
@@ -99,7 +106,7 @@ public class DeviceMastershipManager
      */
     @Override
     public void onNodeUpdated(NodeUpdated notification) {
-        LOG.debug("NodeUpdate notification received : {}", notification);
+        LOG.warn("NodeUpdate notification received : {}", notification);
         DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(),
             device -> new DeviceMastership(notification.getId(), routedRpcReg));
         membership.reconcile();
@@ -113,7 +120,7 @@ public class DeviceMastershipManager
 
     @Override
     public void onNodeRemoved(NodeRemoved notification) {
-        LOG.debug("NodeRemoved notification received : {}", notification);
+        LOG.warn("NodeRemoved notification received : {}", notification);
         NodeId nodeId = notification.getNodeRef().getValue().firstKeyOf(Node.class).getId();
         final DeviceMastership mastership = deviceMasterships.remove(nodeId);
         if (mastership != null) {
@@ -245,6 +252,34 @@ public class DeviceMastershipManager
             LOG.warn("Data listener registration failed: {}", e.getMessage());
             LOG.debug("Data listener registration failed ", e);
             throw new IllegalStateException("Node listener registration failed!", e);
+        }
+    }
+
+    @Override
+    public void onBecomeOwner(@Nonnull final DeviceInfo deviceInfo) {
+        if (deviceMasterships.get(deviceInfo.getNodeId()) ==  null) {
+            LOG.warn("onBecomeOwner notification received for device : {}", deviceInfo.getDatapathId());
+            DeviceMastership membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
+                device -> new DeviceMastership(deviceInfo.getNodeId(), routedRpcReg));
+            membership.reconcile();
+            membership.registerReconciliationRpc();
+        } else {
+            LOG.warn("Device {} is already found with mastership", deviceInfo.getNodeId());
+        }
+    }
+
+    @Override
+    public void onLoseOwnership(@Nonnull DeviceInfo deviceInfo) {
+        if (deviceMasterships.get(deviceInfo.getNodeId()) != null) {
+            LOG.warn("onLoseOwnership notification received for device : {}", deviceInfo.getDatapathId());
+            final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
+            if (mastership != null) {
+                mastership.deregisterReconciliationRpc();
+                mastership.close();
+                LOG.warn("Unregistered FRM cluster singleton service for service id : {}", deviceInfo.getNodeId());
+            }
+        } else {
+            LOG.warn("Device {} is not found on the deviceMasterships map", deviceInfo.getNodeId());
         }
     }
 }
