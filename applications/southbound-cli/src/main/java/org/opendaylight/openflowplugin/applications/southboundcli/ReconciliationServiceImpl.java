@@ -197,6 +197,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                     LOG.error("Reconciliation failed for node {} with error {}", nodeId, rpcResult.getErrors());
                 }
             } catch (ExecutionException | InterruptedException e) {
+                increaseReconcileCount(node, false);
                 LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
             } finally {
                 alarmAgent.clearNodeReconciliationAlarm(nodeId);
