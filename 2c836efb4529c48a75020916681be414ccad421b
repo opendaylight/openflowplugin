@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a83bfa25_691147bc",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FrmReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T02:41:49Z",
+      "side": 1,
+      "message": "if (result)",
+      "range": {
+        "startLine": 73,
+        "startChar": 16,
+        "endLine": 73,
+        "endChar": 30
+      },
+      "revId": "2c836efb4529c48a75020916681be414ccad421b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a4556ff_b25de914",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FrmReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T02:41:49Z",
+      "side": 1,
+      "message": "space",
+      "range": {
+        "startLine": 78,
+        "startChar": 64,
+        "endLine": 78,
+        "endChar": 69
+      },
+      "revId": "2c836efb4529c48a75020916681be414ccad421b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
