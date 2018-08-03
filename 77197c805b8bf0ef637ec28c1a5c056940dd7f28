@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f70cbcbe_85aa0236",
+        "filename": "features-aggregator/odl-openflowplugin-app-forwardingrules-manager/pom.xml",
+        "patchSetId": 35
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T09:33:48Z",
+      "side": 1,
+      "message": "move this to southbound feature pom",
+      "range": {
+        "startLine": 37,
+        "startChar": 8,
+        "endLine": 43,
+        "endChar": 21
+      },
+      "revId": "77197c805b8bf0ef637ec28c1a5c056940dd7f28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
