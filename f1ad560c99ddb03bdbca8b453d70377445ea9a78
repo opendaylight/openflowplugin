@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3b75d8a_e9a1e850",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "static imports should be in top",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 27
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b53a19c2_ce79ef3d",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "inProgressNodes",
+      "range": {
+        "startLine": 103,
+        "startChar": 25,
+        "endLine": 103,
+        "endChar": 41
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80d4680c_7806e890",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "List\u003cBigInteger\u003e ? Can\u0027t we have List\u003cString\u003e or List\u003cLong\u003e",
+      "range": {
+        "startLine": 103,
+        "startChar": 8,
+        "endLine": 103,
+        "endChar": 24
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c844e3a3_ef578198",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "tx close not needed?\n\nIs this needed in this method? Or can\u0027t you move it to readReconcileState?",
+      "range": {
+        "startLine": 104,
+        "startChar": 29,
+        "endLine": 104,
+        "endChar": 32
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8493209b_d623bd2c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "you are passing nodeId for printing it the logs alone. Instead pass (tx, nodeId) and form InstanceIdentifier inside the read method.",
+      "range": {
+        "startLine": 138,
+        "startChar": 70,
+        "endLine": 138,
+        "endChar": 85
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "514f1d72_af495984",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "config false;",
+      "range": {
+        "startLine": 12,
+        "startChar": 8,
+        "endLine": 13,
+        "endChar": 24
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e1972f6_0beff26e",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "reconciliation-state",
+      "range": {
+        "startLine": 36,
+        "startChar": 14,
+        "endLine": 36,
+        "endChar": 33
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "266ea6dc_26b92551",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "Reconciliation state for the given openflow nodes",
+      "range": {
+        "startLine": 37,
+        "startChar": 22,
+        "endLine": 37,
+        "endChar": 71
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f13d8ec_c3532448",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "reconciliation-state-list",
+      "range": {
+        "startLine": 38,
+        "startChar": 14,
+        "endLine": 38,
+        "endChar": 34
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "74e5b2d2_22279943",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "config false",
+      "range": {
+        "startLine": 38,
+        "startChar": 9,
+        "endLine": 39,
+        "endChar": 26
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "692d5f4a_7e8a5fb2",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-03T04:48:44Z",
+      "side": 1,
+      "message": "inprogress-nodes and add description",
+      "range": {
+        "startLine": 79,
+        "startChar": 23,
+        "endLine": 79,
+        "endChar": 39
+      },
+      "revId": "f1ad560c99ddb03bdbca8b453d70377445ea9a78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
