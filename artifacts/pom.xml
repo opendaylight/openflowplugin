@@ -197,6 +197,11 @@
                 <artifactId>notification-supplier</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>device-ownership-status-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- config files -->
             <dependency>
                 <groupId>${project.groupId}</groupId>

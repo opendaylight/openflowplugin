@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.applications.lldpspeaker;
+package org.opendaylight.openflowplugin.applications.deviceownershipservice.impl;
 
 import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
@@ -18,26 +16,37 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListener;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
+import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceOwnershipStatusService implements EntityOwnershipListener {
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipStatusService.class);
+public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, EntityOwnershipListener {
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipService.class);
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final Pattern NODE_ID_PATTERN = Pattern.compile("^openflow:\\d+");
 
     private final EntityOwnershipService eos;
     private final ConcurrentMap<String, EntityOwnershipState> ownershipStateCache = new ConcurrentHashMap<>();
 
-    public DeviceOwnershipStatusService(final EntityOwnershipService entityOwnershipService) {
+    public DeviceOwnershipServiceImpl(final EntityOwnershipService entityOwnershipService) {
         this.eos = entityOwnershipService;
-        registerEntityOwnershipListener();
     }
 
+    public void start() {
+        registerEntityOwnershipListener();
+        LOG.info("DeviceOwnershipService started");
+    }
+
+    public void close() {
+        LOG.info("DeviceOwnershipService closed");
+    }
+
+    @Override
     public boolean isEntityOwned(final String nodeId) {
         EntityOwnershipState state = ownershipStateCache.get(nodeId);
         if (state == null) {
+            LOG.debug("The ownership state for node {} is not cached. Retrieving from the EOS Datastore");
             java.util.Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(nodeId);
             if (status.isPresent()) {
                 state = status.get();
@@ -47,16 +56,6 @@ public class DeviceOwnershipStatusService implements EntityOwnershipListener {
             }
         }
         return state != null && state.equals(EntityOwnershipState.IS_OWNER);
-    }
-
-    public List<String> getOwnedNodes() {
-        List<String> nodes = new ArrayList<>();
-        ownershipStateCache.forEach((node, change) -> {
-            if (isEntityOwned(node)) {
-                nodes.add(node);
-            }
-        });
-        return nodes;
     }
 
     @Override
@@ -72,6 +71,7 @@ public class DeviceOwnershipStatusService implements EntityOwnershipListener {
             } else if (!ownershipChange.getState().isOwner() && ownershipChange.getState().hasOwner()) {
                 ownershipStateCache.put(entityName, EntityOwnershipState.OWNED_BY_OTHER);
             } else if (ownershipChange.getState().isOwner()) {
+                LOG.trace("Entity for node : {} is registered", entityName);
                 ownershipStateCache.put(entityName, EntityOwnershipState.IS_OWNER);
             }
         }
@@ -80,9 +80,8 @@ public class DeviceOwnershipStatusService implements EntityOwnershipListener {
     private java.util.Optional<EntityOwnershipState> getCurrentOwnershipStatus(final String nodeId) {
         org.opendaylight.mdsal.eos.binding.api.Entity entity = createNodeEntity(nodeId);
         Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
-
         if (ownershipStatus.isPresent()) {
-            LOG.debug("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
+            LOG.trace("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
             return java.util.Optional.of(ownershipStatus.get());
         }
         return java.util.Optional.empty();
