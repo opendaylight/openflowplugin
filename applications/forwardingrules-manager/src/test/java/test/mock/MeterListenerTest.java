@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
@@ -65,6 +66,8 @@ public class MeterListenerTest extends FRMTest {
     private OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     @Mock
     private ServiceRecoveryRegistry serviceRecoveryRegistry;
+    @Mock
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
 
     @Before
     public void setUp() {
@@ -72,6 +75,7 @@ public class MeterListenerTest extends FRMTest {
                 getDataBroker(),
                 rpcProviderRegistryMock,
                 getConfig(),
+                mastershipChangeServiceManager,
                 clusterSingletonService,
                 notificationService,
                 getConfigurationService(),

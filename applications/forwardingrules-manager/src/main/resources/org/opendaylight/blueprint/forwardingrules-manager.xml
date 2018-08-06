@@ -11,6 +11,7 @@
   <reference id="rpcRegistry" interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
   <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+  <reference id="mastershipChangeServiceManager" interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
   <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
   <reference id="reconciliationservice" interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
   <reference id="serviceRecoveryRegistry" interface="org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry"/>
@@ -27,6 +28,7 @@
     <argument ref="dataBroker"/>
     <argument ref="rpcRegistry"/>
     <argument ref="frmConfig"/>
+    <argument ref="mastershipChangeServiceManager"/>
     <argument ref="clusterSingletonService"/>
     <argument ref="notificationService"/>
     <argument ref="configurationService"/>
