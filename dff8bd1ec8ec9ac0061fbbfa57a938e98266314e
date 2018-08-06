@@ -1,0 +1,349 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "91dc3764_1d930045",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "private static final Long START_COUNT \u003d 1L;",
+      "range": {
+        "startLine": 68,
+        "startChar": 4,
+        "endLine": 68,
+        "endChar": 39
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3f42365f_3e42cab6",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "static",
+      "range": {
+        "startLine": 71,
+        "startChar": 10,
+        "endLine": 71,
+        "endChar": 14
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c00cf3fb_7820c11b",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "state",
+      "range": {
+        "startLine": 114,
+        "startChar": 50,
+        "endLine": 114,
+        "endChar": 58
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "34f2588f_d02aa246",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": ".equals",
+      "range": {
+        "startLine": 115,
+        "startChar": 69,
+        "endLine": 115,
+        "endChar": 72
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a05f444_ab769bcf",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "final Long",
+      "range": {
+        "startLine": 136,
+        "startChar": 68,
+        "endLine": 136,
+        "endChar": 72
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "250d5d4b_175d6fbd",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "Exception while reading reconciliation state for {}",
+      "range": {
+        "startLine": 145,
+        "startChar": 43,
+        "endLine": 145,
+        "endChar": 49
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fd0ad0a4_0df3d789",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "private",
+      "range": {
+        "startLine": 160,
+        "startChar": 4,
+        "endLine": 160,
+        "endChar": 10
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "02e9ad22_3a4f7190",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "(final boolean isSuccess)",
+      "range": {
+        "startLine": 166,
+        "startChar": 40,
+        "endLine": 166,
+        "endChar": 81
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e46ff9a8_c34e25a1",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "move this method inside ReconciliationTask",
+      "range": {
+        "startLine": 166,
+        "startChar": 4,
+        "endLine": 166,
+        "endChar": 84
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ae8fee3b_c679ca35",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "count",
+      "range": {
+        "startLine": 171,
+        "startChar": 35,
+        "endLine": 171,
+        "endChar": 43
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6ee35d3b_54a6c06c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "getReconciliationCount()",
+      "range": {
+        "startLine": 171,
+        "startChar": 46,
+        "endLine": 171,
+        "endChar": 72
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "60d8f3be_e65d6540",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "else { counterBuilder.setSuccessCount(startCount); }",
+      "range": {
+        "startLine": 182,
+        "startChar": 12,
+        "endLine": 182,
+        "endChar": 13
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25bf747b_f963c5d5",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "else { counterBuilder.setFailureCount(startCount); }",
+      "range": {
+        "startLine": 189,
+        "startChar": 12,
+        "endLine": 190,
+        "endChar": 13
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "437e06a1_d0c802cc",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "move this as well to RT",
+      "range": {
+        "startLine": 200,
+        "startChar": 39,
+        "endLine": 200,
+        "endChar": 65
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "50eb0ef5_0b69d80c",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/Reconciliation.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-06T05:55:47Z",
+      "side": 1,
+      "message": "rpcResult.getResult()",
+      "range": {
+        "startLine": 60,
+        "startChar": 37,
+        "endLine": 60,
+        "endChar": 52
+      },
+      "revId": "dff8bd1ec8ec9ac0061fbbfa57a938e98266314e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
