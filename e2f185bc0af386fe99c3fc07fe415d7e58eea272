@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6f69eb9f_62b671b7",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:52:15Z",
+      "side": 1,
+      "message": "I think the right solution for this issue is that openflowplugin should not write the node information in the data store till it\u0027s able to push the role down to the switch.Although this solution can work as a workaround, but it won\u0027t fix some other corner cases like, assume , node is added to the operational data store, and application end up removing the flow, but given that mastership didn\u0027t call the onBecomeOwner() yet, so the delete data will be removed from the data store but not from the switch. Now when master role is pushed and FRM will get onBecomeOwner(), that flow data is gone from the data store, so you won\u0027t be able to delete that flow from switch because FRM has no  knowledge of that information (the only solution is that it cleans up the switch before programming all the flows, so i think bundle based reconciliation is the only solution that will work here properly).",
+      "revId": "e2f185bc0af386fe99c3fc07fe415d7e58eea272",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
