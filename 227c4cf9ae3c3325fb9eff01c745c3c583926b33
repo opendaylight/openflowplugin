@@ -1,0 +1,193 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7fa924fc_57351374",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "Given that ReconciliationServiceImpl is initialized through blueprint, any specific reason you want to make the executor static here ? Apart from that i would suggest that rather than using the FixedThreadPool, use newWorkStealingPool, so that this code can use more processor on more cpu machine for better performance.",
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "28a8afdd_eb9310d4",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "move 106, 131,132 line in if block. No point in creating array list when if condition is going to be false. It will create unnecessary garbage.",
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e7bc922_33f25c71",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "if you are not doing any kind of check on counter, you can directly call counte.get().getSuccessCount().",
+      "range": {
+        "startLine": 215,
+        "startChar": 20,
+        "endLine": 215,
+        "endChar": 44
+      },
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8e360f80_7b9cc4c4",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "Success - \u003e success",
+      "range": {
+        "startLine": 218,
+        "startChar": 41,
+        "endLine": 218,
+        "endChar": 48
+      },
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7677c6ba_ba857011",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 224,
+        "startChar": 20,
+        "endLine": 224,
+        "endChar": 59
+      },
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b16bba56_21028a10",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/ReconciliationServiceImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "counter for",
+      "range": {
+        "startLine": 237,
+        "startChar": 54,
+        "endLine": 237,
+        "endChar": 61
+      },
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "08ebee28_f2ee2865",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/Reconciliation.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "printInprogressNodes -\u003e printInProgressNodes",
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e12915d1_b42db00e",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 11
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "change it -\u003e Current state of the node reconciliation.",
+      "range": {
+        "startLine": 51,
+        "startChar": 27,
+        "endLine": 51,
+        "endChar": 90
+      },
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eb0cef2f_b0d4e278",
+        "filename": "applications/southbound-cli/src/main/yang/reconciliation.yang",
+        "patchSetId": 11
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-07T09:39:12Z",
+      "side": 1,
+      "message": "change it to -\u003e List of nodes currently reconciliation mode",
+      "range": {
+        "startLine": 83,
+        "startChar": 30,
+        "endLine": 83,
+        "endChar": 80
+      },
+      "revId": "227c4cf9ae3c3325fb9eff01c745c3c583926b33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
