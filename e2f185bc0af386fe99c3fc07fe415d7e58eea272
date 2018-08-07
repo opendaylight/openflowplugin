@@ -16,6 +16,24 @@
       "revId": "e2f185bc0af386fe99c3fc07fe415d7e58eea272",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a80910eb_e7a91fa8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-08-07T10:24:16Z",
+      "side": 1,
+      "message": "Anil, Master role is already elected for the switch and we are changing the mastership role even before node is added to the operational datastore. We are trying to overcome yang notification delay by registering to MastershipChangeService.",
+      "parentUuid": "6f69eb9f_62b671b7",
+      "revId": "e2f185bc0af386fe99c3fc07fe415d7e58eea272",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
