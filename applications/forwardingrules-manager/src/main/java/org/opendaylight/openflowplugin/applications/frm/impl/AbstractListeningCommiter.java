@@ -17,12 +17,6 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -36,9 +30,10 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         RecoverableListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-    protected final DataBroker dataBroker;
-    ForwardingRulesManager provider;
+
+    final ForwardingRulesManager provider;
     NodeConfigurator nodeConfigurator;
+    protected final DataBroker dataBroker;
 
     public AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
@@ -119,14 +114,5 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         return provider.isNodeOwner(nodeIdent)
                 && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
     }
-
-    NodeId getNodeIdFromNodeIdentifier(InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId();
-    }
-
-    String getFlowId(FlowRef flowRef) {
-        return flowRef.getValue().firstKeyOf(Flow .class, FlowKey .class).getId().getValue();
-    }
-
 }
 
