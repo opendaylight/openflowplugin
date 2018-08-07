@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3cc6988b_a96af668",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "MastershipChangeRegistration",
+      "range": {
+        "startLine": 60,
+        "startChar": 18,
+        "endLine": 60,
+        "endChar": 31
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ac549ed1_8a30751e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "this.masterCSR",
+      "range": {
+        "startLine": 70,
+        "startChar": 7,
+        "endLine": 70,
+        "endChar": 12
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "10182917_efae4de1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "check if we can close masterShipRegistration here",
+      "range": {
+        "startLine": 163,
+        "startChar": 7,
+        "endLine": 163,
+        "endChar": 9
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32e16625_83af4800",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "do we need if check?",
+      "range": {
+        "startLine": 208,
+        "startChar": 8,
+        "endLine": 208,
+        "endChar": 69
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6c169f78_5242613a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 221,
+        "startChar": 8,
+        "endLine": 221,
+        "endChar": 68
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a320ad5e_d97841bb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "deviceMastership for device",
+      "range": {
+        "startLine": 226,
+        "startChar": 40,
+        "endLine": 226,
+        "endChar": 84
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ec991ec2_9a2a016d",
+        "filename": "applications/forwardingrules-manager/src/test/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManagerTest.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T08:46:32Z",
+      "side": 1,
+      "message": "not used",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 65
+      },
+      "revId": "942c33beba4db0846976f2e2da5a9b6c62e6eb9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
