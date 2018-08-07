@@ -19,10 +19,10 @@ import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -76,9 +76,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalMeterService salMeterService;
     private final SalTableService salTableService;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
-    private final NotificationProviderService notificationService;
     private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
+    private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private final RpcProviderRegistry rpcRegistry;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
@@ -101,8 +101,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
+                                      final MastershipChangeServiceManager mastershipChangeServiceManager,
                                       final ClusterSingletonServiceProvider clusterSingletonService,
-                                      final NotificationProviderService notificationService,
                                       final ConfigurationService configurationService,
                                       final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
@@ -115,10 +115,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
-        this.notificationService = Preconditions.checkNotNull(notificationService,
-                "Notification publisher configurationService is" + " not available");
         this.reconciliationManager = reconciliationManager;
         this.rpcRegistry = rpcRegistry;
+        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
@@ -154,8 +153,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
             this.reconciliationNotificationRegistration = reconciliationManager.registerService(this.nodeListener);
             LOG.debug("Reconciliation is enabled by user and successfully registered to the reconciliation framework");
         }
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, notificationService,
-                this.nodeListener, dataService);
+        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, this.nodeListener,
+                dataService, mastershipChangeServiceManager);
         this.deviceMastershipManager.setRoutedRpcReg(rpcRegistry.addRoutedRpcImplementation(
                 FrmReconciliationService.class, new FrmReconciliationServiceImpl(this)));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);

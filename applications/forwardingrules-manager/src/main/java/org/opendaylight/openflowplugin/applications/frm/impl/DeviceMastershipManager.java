@@ -24,18 +24,16 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -46,14 +44,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Manager for clustering service registrations of {@link DeviceMastership}.
  */
-public class DeviceMastershipManager
-        implements ClusteredDataTreeChangeListener<FlowCapableNode>, OpendaylightInventoryListener, AutoCloseable {
+public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable,
+        MastershipChangeService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE = InstanceIdentifier
             .builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
 
     private final ClusterSingletonServiceProvider clusterSingletonService;
-    private final ListenerRegistration<?> notifListenerRegistration;
     private final FlowNodeReconciliation reconcliationAgent;
     private final DataBroker dataBroker;
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap();
@@ -61,16 +58,17 @@ public class DeviceMastershipManager
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
     private RoutedRpcRegistration routedRpcReg;
+    private MastershipChangeRegistration mastershipChangeServiceRegistration;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-                                   final NotificationProviderService notificationService,
                                    final FlowNodeReconciliation reconcliationAgent,
-                                   final DataBroker dataBroker) {
+                                   final DataBroker dataBroker,
+                                   final MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.clusterSingletonService = clusterSingletonService;
-        this.notifListenerRegistration = notificationService.registerNotificationListener(this);
         this.reconcliationAgent = reconcliationAgent;
         this.dataBroker = dataBroker;
         registerNodeListener();
+        this.mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
     }
 
     public boolean isDeviceMastered(final NodeId nodeId) {
@@ -87,45 +85,6 @@ public class DeviceMastershipManager
     @VisibleForTesting
     ConcurrentHashMap<NodeId, DeviceMastership> getDeviceMasterships() {
         return deviceMasterships;
-    }
-
-    /**
-     * Temporary solution before Mastership manager from plugin. Remove notification
-     * after update. Update node notification should be send only when mastership in
-     * plugin was granted.
-     *
-     * @param notification
-     *            received notification
-     */
-    @Override
-    public void onNodeUpdated(NodeUpdated notification) {
-        LOG.debug("NodeUpdate notification received : {}", notification);
-        DeviceMastership membership = deviceMasterships.computeIfAbsent(notification.getId(),
-            device -> new DeviceMastership(notification.getId(), routedRpcReg));
-        membership.reconcile();
-        membership.registerReconciliationRpc();
-    }
-
-    @Override
-    public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
-        // Not published by plugin
-    }
-
-    @Override
-    public void onNodeRemoved(NodeRemoved notification) {
-        LOG.debug("NodeRemoved notification received : {}", notification);
-        NodeId nodeId = notification.getNodeRef().getValue().firstKeyOf(Node.class).getId();
-        final DeviceMastership mastership = deviceMasterships.remove(nodeId);
-        if (mastership != null) {
-            mastership.deregisterReconciliationRpc();
-            mastership.close();
-            LOG.info("Unregistered FRM cluster singleton service for service id : {}", nodeId.getValue());
-        }
-    }
-
-    @Override
-    public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
-        // Not published by plugin
     }
 
     @Override
@@ -198,13 +157,14 @@ public class DeviceMastershipManager
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         if (listenerRegistration != null) {
             listenerRegistration.close();
             listenerRegistration = null;
         }
-        if (notifListenerRegistration != null) {
-            notifListenerRegistration.close();
+        if (mastershipChangeServiceRegistration != null) {
+            mastershipChangeServiceRegistration.close();
+            mastershipChangeServiceRegistration = null;
         }
     }
 
@@ -245,6 +205,25 @@ public class DeviceMastershipManager
             LOG.warn("Data listener registration failed: {}", e.getMessage());
             LOG.debug("Data listener registration failed ", e);
             throw new IllegalStateException("Node listener registration failed!", e);
+        }
+    }
+
+    @Override
+    public void onBecomeOwner(@Nonnull final DeviceInfo deviceInfo) {
+        LOG.debug("Mastership role notification received for device : {}", deviceInfo.getDatapathId());
+        DeviceMastership membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
+            device -> new DeviceMastership(deviceInfo.getNodeId(), routedRpcReg));
+        membership.reconcile();
+        membership.registerReconciliationRpc();
+    }
+
+    @Override
+    public void onLoseOwnership(@Nonnull DeviceInfo deviceInfo) {
+        final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
+        if (mastership != null) {
+            mastership.deregisterReconciliationRpc();
+            mastership.close();
+            LOG.debug("Unregistered deviceMastership for device : {}", deviceInfo.getNodeId());
         }
     }
 }
