@@ -46,6 +46,7 @@
         <module>reconciliation-framework</module>
         <module>southbound-cli</module>
         <module>device-ownership-service</module>
+        <module>arbitratorreconciliation</module>
     </modules>
 
 </project>
