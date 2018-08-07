@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1993deb6_ff017aca",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43e170d6_a8fd13d5",
+      "range": {
+        "startLine": 13,
+        "startChar": 58,
+        "endLine": 13,
+        "endChar": 64
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ca997c2_85428d64",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-09T08:09:15Z",
       "side": 1,
       "message": "can you add the exact config knob that use should look for?",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 45
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "572c5780_e35be81a",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ca997c2_85428d64",
       "range": {
         "startLine": 15,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "b3490c4a_bb0cfef7",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "458e16ab_6e965620",
+      "range": {
+        "startLine": 17,
+        "startChar": 29,
+        "endLine": 17,
+        "endChar": 37
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2ada7ee4_b538e429",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -82,6 +154,30 @@
       "writtenOn": "2018-07-09T08:09:15Z",
       "side": 1,
       "message": "use the full words (datastore)",
+      "range": {
+        "startLine": 19,
+        "startChar": 50,
+        "endLine": 19,
+        "endChar": 52
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "04de9224_92e61438",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ada7ee4_b538e429",
       "range": {
         "startLine": 19,
         "startChar": 50,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "46d68a42_3d6ae65a",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4679b700_022b4c64",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 15
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a34e9cb3_94caff49",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -128,6 +248,30 @@
       "writtenOn": "2018-07-09T08:09:15Z",
       "side": 1,
       "message": "config events replayed by orchestrator. --\u003e configuration pushed by user or external orchestrator.",
+      "range": {
+        "startLine": 29,
+        "startChar": 13,
+        "endLine": 29,
+        "endChar": 52
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7876c0e6_dc468a40",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a34e9cb3_94caff49",
       "range": {
         "startLine": 29,
         "startChar": 13,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "f8c8a2d3_ca5ef2a6",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33631879_417eec1d",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 29
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "27a182a2_8c5f2074",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -174,6 +342,30 @@
       "writtenOn": "2018-07-09T08:09:15Z",
       "side": 1,
       "message": "that is applied\nas a single openflow operation on the switch. --\u003e that switch will apply in atomic transaction.",
+      "range": {
+        "startLine": 32,
+        "startChar": 101,
+        "endLine": 33,
+        "endChar": 45
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4df6d963_d086c344",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27a182a2_8c5f2074",
       "range": {
         "startLine": 32,
         "startChar": 101,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "a1fff3bb_09a7ccbf",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3d4e62d_26769aad",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 53
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fbf8c666_02f9ce24",
         "filename": "docs/specs/arbitrator-reconciliation.rst",
         "patchSetId": 4
@@ -220,6 +436,30 @@
       "writtenOn": "2018-07-09T08:09:15Z",
       "side": 1,
       "message": "I think we should make the language of this spec more generic. What we are doing here is basically giving control to use on how/when they want to reconcile the device. It\u0027s out of scope for openflowplugin to mention whether it\u0027s replay based or some other mechanism. We are exposing generic functionality and user can consume it in any fashion they want.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 80
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b6650cf7_0aab67af",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbf8c666_02f9ce24",
       "range": {
         "startLine": 41,
         "startChar": 0,
@@ -294,6 +534,54 @@
         "startChar": 35,
         "endLine": 66,
         "endChar": 46
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7822a8f2_32f59ac5",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a58210ea_56c14341",
+      "range": {
+        "startLine": 66,
+        "startChar": 35,
+        "endLine": 66,
+        "endChar": 46
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8d82f084_e1bffce1",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "261264ce_3bd414c4",
+      "range": {
+        "startLine": 66,
+        "startChar": 75,
+        "endLine": 66,
+        "endChar": 99
       },
       "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
@@ -902,6 +1190,30 @@
       "writtenOn": "2018-07-09T08:09:15Z",
       "side": 1,
       "message": "probably returning the number of flows/groups will be really helpful here for the user to debug the reconciliation here.",
+      "range": {
+        "startLine": 174,
+        "startChar": 7,
+        "endLine": 178,
+        "endChar": 8
+      },
+      "revId": "0f558abea37970f46a1fefcbd36375433af68a80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "009aeb50_17b7ff07",
+        "filename": "docs/specs/arbitrator-reconciliation.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-08-07T10:10:20Z",
+      "side": 1,
+      "message": "Currently we don\u0027t maintain the list of flows/groups being pushed during this phase.",
+      "parentUuid": "3618cff4_74b898a2",
       "range": {
         "startLine": 174,
         "startChar": 7,
