@@ -20,8 +20,8 @@
             <!-- MD-SAL models -->
             <dependency>
                 <groupId>org.opendaylight.mdsal.model</groupId>
-                <artifactId>mdsal-model-artifacts</artifactId>
-                <version>0.14.0-SNAPSHOT</version>
+                <artifactId>mdsal-artifacts</artifactId>
+                <version>2.6.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
