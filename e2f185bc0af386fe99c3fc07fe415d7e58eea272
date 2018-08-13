@@ -52,6 +52,24 @@
       "revId": "e2f185bc0af386fe99c3fc07fe415d7e58eea272",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4ea011c_1aa2a9f4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/DeviceMastershipManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-08-13T16:26:54Z",
+      "side": 1,
+      "message": "okay got the issue. As discussed in the OFP meeting, i think in long term we need to expose proper interfaces that OFP application can leverage when it comes to device ownership.",
+      "parentUuid": "7fae2317_525f2ed3",
+      "revId": "e2f185bc0af386fe99c3fc07fe415d7e58eea272",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
