@@ -14,20 +14,14 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 
 public class ReconciliationServiceDelegate implements NotificationRegistration {
 
-    private final ReconciliationNotificationListener reconciliationNotificationListener;
     private final AutoCloseable unregisterService;
 
-    public ReconciliationServiceDelegate(ReconciliationNotificationListener reconciliationNotificationListener,
-                                         AutoCloseable unregisterService) {
-        this.reconciliationNotificationListener = Preconditions.checkNotNull(reconciliationNotificationListener,
-                                                                             "ReconciliationNotificationListener can "
-                                                                                     + "not be null!");
+    public ReconciliationServiceDelegate(AutoCloseable unregisterService) {
         this.unregisterService = unregisterService;
     }
 
     @Override
     public void close() throws Exception {
         this.unregisterService.close();
-        this.reconciliationNotificationListener.close();
     }
 }

@@ -58,7 +58,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
                   reconciliationTask.getPriority(), reconciliationTask.getResultState());
         registeredServices.computeIfAbsent(reconciliationTask.getPriority(), services -> new ArrayList<>())
                 .add(reconciliationTask);
-        ReconciliationServiceDelegate registration = new ReconciliationServiceDelegate(reconciliationTask, () -> {
+        ReconciliationServiceDelegate registration = new ReconciliationServiceDelegate(() -> {
             LOG.debug("Service un-registered from Reconciliation framework {}", reconciliationTask.getName());
             registeredServices.computeIfPresent(reconciliationTask.getPriority(), (priority, services) -> services)
                     .remove(reconciliationTask);
