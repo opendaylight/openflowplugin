@@ -122,8 +122,10 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     @Override
     public void close() throws Exception {
         executor.shutdown();
-        registration.close();
-
+        if (registration != null) {
+            registration.close();
+            registration = null;
+        }
     }
 
     @Override
