@@ -13,15 +13,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.inject.Singleton;
 
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryInterface;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
-import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@OsgiServiceProvider(classes = ServiceRecoveryRegistry.class)
+@Service(classes = ServiceRecoveryRegistry.class)
 public class ServiceRecoveryRegistryImpl implements ServiceRecoveryRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceRecoveryRegistryImpl.class);
