@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class ContextChainImpl implements ContextChain {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     private final AtomicBoolean masterStateOnDevice = new AtomicBoolean(false);
     private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
@@ -69,6 +70,7 @@ public class ContextChainImpl implements ContextChain {
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void instantiateServiceInstance() {
+        OF_EVENT_LOG.debug("Clustering Service Invocation, Node: {}", deviceInfo);
         try {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
@@ -89,6 +91,7 @@ public class ContextChainImpl implements ContextChain {
             .collect(Collectors.toList()));
 
         return Futures.transform(servicesToBeClosed, (input) -> {
+            OF_EVENT_LOG.debug("Closing clustering Services, Node: {}", deviceInfo);
             LOG.info("Closed clustering services for node {}", deviceInfo);
             return null;
         }, executorService);
@@ -121,6 +124,7 @@ public class ContextChainImpl implements ContextChain {
                 registration.close();
                 registration = null;
                 LOG.info("Closed clustering services registration for node {}", deviceInfo);
+                OF_EVENT_LOG.debug("Closed clustering services registration for node {}", deviceInfo);
             } catch (final Exception e) {
                 LOG.warn("Failed to close clustering services registration for node {} with exception: ",
                         deviceInfo, e);
@@ -151,6 +155,7 @@ public class ContextChainImpl implements ContextChain {
         registration = Objects.requireNonNull(clusterSingletonServiceProvider
                 .registerClusterSingletonService(this));
         LOG.debug("Registered clustering services for node {}", deviceInfo);
+        OF_EVENT_LOG.debug("Registered Clustering Services, Node: {}", deviceInfo);
     }
 
     @Override
@@ -159,14 +164,17 @@ public class ContextChainImpl implements ContextChain {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo);
+                OF_EVENT_LOG.debug("Device {}, initial submit OK.", deviceInfo);
                 this.initialSubmitting.set(true);
                 break;
             case MASTER_ON_DEVICE:
                 LOG.debug("Device {}, master state OK.", deviceInfo);
+                OF_EVENT_LOG.debug("Device {}, master state OK.", deviceInfo);
                 this.masterStateOnDevice.set(true);
                 break;
             case RPC_REGISTRATION:
                 LOG.debug("Device {}, RPC registration OK.", deviceInfo);
+                OF_EVENT_LOG.debug("Device {}, RPC registration OK.", deviceInfo);
                 this.rpcRegistration.set(true);
                 break;
             case CHECK:
