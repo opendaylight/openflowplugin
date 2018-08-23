@@ -13,8 +13,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -36,10 +41,16 @@ public class SalPortServiceImplTest extends ServiceMocking {
     private static final Long DUMMY_XID = 55L;
     private static final Long DUMMY_PORT_NUMBER = 66L;
     private static final String DUMMY_MAC_ADDRESS = "AA:BB:CC:DD:EE:FF";
+    private OfEventLogUtil ofEventLogUtil;
     SalPortServiceImpl salPortService;
+    @Mock
+    ConfigurationService configurationService;
 
     @Override
     protected void setup() {
+        Mockito.lenient().when(configurationService.getProperty(ConfigurationProperty.OF_EVENT_LOGGER_NAME.toString(),
+                String::valueOf)).thenReturn("OfEventLog");
+        ofEventLogUtil = new OfEventLogUtil(configurationService);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salPortService = new SalPortServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }

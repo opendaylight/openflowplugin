@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public class HandshakeListenerImpl implements HandshakeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeListenerImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger(OfEventLogUtil.getLoggerName());
 
     private final ConnectionContext connectionContext;
     private final DeviceConnectedHandler deviceConnectedHandler;
@@ -53,6 +55,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         if (LOG.isDebugEnabled()) {
             LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         }
+        OF_EVENT_LOG.debug("Connect, Node: {}", featureOutput.getDatapathId());
         this.handshakeContext.close();
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);

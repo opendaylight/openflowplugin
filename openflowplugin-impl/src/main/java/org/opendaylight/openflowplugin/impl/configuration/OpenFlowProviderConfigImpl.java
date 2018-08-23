@@ -177,4 +177,10 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
         return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
                 Integer::valueOf);
     }
+
+    @Override
+    public String getOfEventLoggerName() {
+        return service.getProperty(ConfigurationProperty.OF_EVENT_LOGGER_NAME.toString(),
+                String::valueOf);
+    }
 }
