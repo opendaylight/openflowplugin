@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.common.util.OfEventLogger;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -186,6 +187,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
 
         // Save packet to node connector id -> packet map to transmit it periodically on the configured interval.
         nodeConnectorMap.put(nodeConnectorInstanceId, packet);
+        OfEventLogger.logEvent(getClass(), "Node connector added DPNID:", nodeConnectorId.getValue());
         LOG.debug("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
 
         // Transmit packet for first time immediately
@@ -200,6 +202,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         nodeConnectorMap.remove(nodeConnectorInstanceId);
         NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
         LOG.trace("Port removed from node-connector map : {}", nodeConnectorId.getValue());
+        OfEventLogger.logEvent(getClass(), "Node connector removed DPNID:", nodeConnectorId.getValue());
     }
 
     private int getOwnedPorts() {

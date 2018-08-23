@@ -46,6 +46,7 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
+import org.opendaylight.openflowplugin.common.util.OfEventLogger;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -63,6 +64,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
+    private static final String SEPARATOR = ":";
 
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
@@ -224,6 +226,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 }
             } else if (contextChain.isMastered(mastershipState, false)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo);
+                OfEventLogger.logEvent(getClass(), "EOS ROLE Master DPNID:",
+                        deviceInfo.getDatapathId().toString());
                 ownershipChangeListener.becomeMaster(deviceInfo);
                 deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
             }
@@ -304,6 +308,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 LOG.info("Try to remove device {} from operational DS", entityName);
                 deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier)
                         .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+                OfEventLogger.logEvent(getClass(), "Node removed DPNID:",
+                        nodeInstanceIdentifier.firstKeyOf(Node.class).getId().getValue());
                 LOG.info("Removing device from operational DS {} was successful", entityName);
             } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
                 LOG.warn("Not able to remove device {} from operational DS. ", entityName, e);

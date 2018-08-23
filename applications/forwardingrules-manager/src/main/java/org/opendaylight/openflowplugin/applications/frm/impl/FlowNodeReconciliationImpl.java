@@ -39,6 +39,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.common.util.OfEventLogger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -312,6 +313,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
+            OfEventLogger.logEvent(getClass(), "OF-RESYNC START", dpnId.toString());
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode;
@@ -455,19 +457,23 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Flows */
                 List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
                         : Collections.<Table>emptyList();
+                int flowCount = 0;
                 for (Table table : tables) {
                     final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
                             table.key());
                     List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
+                    flowCount += flows.size();
                     for (Flow flow : flows) {
                         final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
                                 flow.key());
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
+                OfEventLogger.logEvent(getClass(), "OF-RESYNC FINISH, Resync flow count:", String.valueOf(flowCount));
             }
             /* clean transaction */
             trans.close();
+            OfEventLogger.logEvent(getClass(), "OF-RESYNC FINISH, DPN:", dpnId.toString());
             return true;
         }
 
