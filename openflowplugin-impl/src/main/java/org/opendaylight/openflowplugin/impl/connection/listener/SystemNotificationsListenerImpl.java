@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.common.util.OfEventLogger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -50,6 +51,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
+
+        OfEventLogger.logEvent("DISCONNECT DPNID: {}", connectionContext.getSafeNodeIdForLOG());
         LOG.info("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getSafeNodeIdForLOG());
         connectionContext.onConnectionClosed();
