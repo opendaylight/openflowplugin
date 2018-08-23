@@ -76,6 +76,11 @@
         <argument ref="systemReadyMonitor"/>
     </bean>
 
+    <bean id="ofEventLogger"
+          class="org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil">
+        <argument ref="configurationService"/>
+    </bean>
+
     <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
         <interfaces>
             <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>

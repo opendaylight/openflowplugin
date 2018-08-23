@@ -115,7 +115,11 @@ public enum ConfigurationProperty {
     /**
      * Device connection rate limit property type.
      */
-    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN;
+    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN,
+    /**
+     * Openflow event logger name property type.
+     */
+    OF_EVENT_LOGGER_NAME;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 

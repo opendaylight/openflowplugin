@@ -10,9 +10,12 @@ package test.mock;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +28,10 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
@@ -78,9 +84,14 @@ public class FlowListenerTest extends FRMTest {
     private ServiceRecoveryRegistry serviceRecoveryRegistry;
     @Mock
     private MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    ConfigurationService config;
 
     @Before
     public void setUp() {
+        Mockito.when(config.getProperty(eq(ConfigurationProperty.OF_EVENT_LOGGER_NAME.toString()),
+                any(Function.class))).thenReturn("OfEventLog");
+        OfEventLogUtil logUtil = new OfEventLogUtil(config);
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
                 mastershipChangeServiceManager, clusterSingletonService, getConfigurationService(),
                 reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry);
