@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 public class HandshakeListenerImpl implements HandshakeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeListenerImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     private final ConnectionContext connectionContext;
     private final DeviceConnectedHandler deviceConnectedHandler;
@@ -53,6 +54,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         if (LOG.isDebugEnabled()) {
             LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         }
+        OF_EVENT_LOG.debug("Connect, Node: {}", featureOutput.getDatapathId());
         this.handshakeContext.close();
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);

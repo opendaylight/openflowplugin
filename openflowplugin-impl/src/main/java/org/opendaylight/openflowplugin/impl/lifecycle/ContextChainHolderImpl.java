@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
@@ -273,6 +274,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         copyOfChains.clear();
         contextChainMap.clear();
         eosListenerRegistration.close();
+        OF_EVENT_LOG.debug("EOS registration closed for all devices");
     }
 
     @Override
@@ -302,6 +304,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 LOG.info("Try to remove device {} from operational DS", entityName);
                 deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier)
                         .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+                OF_EVENT_LOG.debug("Node removed from Oper DS, Node: {}", entityName);
                 LOG.info("Removing device from operational DS {} was successful", entityName);
             } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
                 LOG.warn("Not able to remove device {} from operational DS. ", entityName, e);
@@ -310,6 +313,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private void destroyContextChain(final DeviceInfo deviceInfo) {
+        OF_EVENT_LOG.debug("Destroying context chain for device {}", deviceInfo.getDatapathId());
         ownershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
@@ -345,9 +349,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             @Override
             public void onSuccess(ResultState result) {
                 if (ResultState.DONOTHING == result) {
+                    OF_EVENT_LOG.debug("Device {} connection is enabled by reconciliation framework", deviceInfo);
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
                     contextChain.continueInitializationAfterReconciliation();
                 } else {
+                    OF_EVENT_LOG.debug("Reconciliation framework failure for device {}", deviceInfo);
                     LOG.warn("Reconciliation framework failure for device {}", deviceInfo);
                     destroyContextChain(deviceInfo);
                 }
@@ -355,6 +361,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
             @Override
             public void onFailure(Throwable throwable) {
+                OF_EVENT_LOG.debug("Reconciliation framework failure for device {} with error {}", deviceInfo,
+                        throwable.getMessage());
                 LOG.warn("Reconciliation framework failure.");
                 destroyContextChain(deviceInfo);
             }
