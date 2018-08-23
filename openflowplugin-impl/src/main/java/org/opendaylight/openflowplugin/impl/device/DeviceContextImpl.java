@@ -109,6 +109,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     // TODO: drain factor should be parametrized
     private static final float REJECTED_DRAIN_FACTOR = 0.25f;
@@ -340,6 +341,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
         final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                 .translate(portStatusMessage, getDeviceInfo(), null);
+        OF_EVENT_LOG.info("Event: Node Connector Status, Node: {}, Port: {}, Reason: {}",
+                deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getReason());
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
                 .getNodeInstanceIdentifier()
