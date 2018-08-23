@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
     private static final Xid ECHO_XID = new Xid(0L);
 
     private final ConnectionContext connectionContext;
@@ -50,6 +51,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
+        OF_EVENT_LOG.info("Class: {}, Event: DISCONNECT, DPN: {}", getClass().getSimpleName(),
+                connectionContext.getSafeNodeIdForLOG());
         LOG.info("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getSafeNodeIdForLOG());
         connectionContext.onConnectionClosed();
