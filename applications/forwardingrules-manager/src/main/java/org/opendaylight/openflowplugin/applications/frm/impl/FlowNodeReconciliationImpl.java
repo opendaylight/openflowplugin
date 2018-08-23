@@ -37,6 +37,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
@@ -108,6 +109,7 @@ import org.slf4j.LoggerFactory;
 public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger(OfEventLogUtil.getLoggerName());
 
     // The number of nanoseconds to wait for a single group to be added.
     private static final long ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(3);
@@ -188,6 +190,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             if (flowNode.isPresent()) {
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
+                OF_EVENT_LOG.info("Bundle Reconciliation Start, Node: {}", dpnId);
                 final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
                 final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
@@ -252,6 +255,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 try {
                     if (commitBundleFuture.get().isSuccessful()) {
                         LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
+                        OF_EVENT_LOG.info("Bundle Reconciliation Finish, Node: {}", dpnId);
                         return true;
                     } else {
                         return false;
@@ -309,6 +313,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
+            OF_EVENT_LOG.info("Reconciliation Start, Node: {}", dpnId);
 
             Optional<FlowCapableNode> flowNode;
             // initialize the counter
@@ -451,16 +456,19 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Flows */
                 List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
                         : Collections.<Table>emptyList();
+                int flowCount = 0;
                 for (Table table : tables) {
                     final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
                             table.key());
                     List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
+                    flowCount += flows.size();
                     for (Flow flow : flows) {
                         final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
                                 flow.key());
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
+                OF_EVENT_LOG.info("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
             }
             return true;
         }
@@ -722,9 +730,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(getDeleteAllGroup()).build()).build())
                 .build());
 
+        NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class).getId();
         if (flowNode.get().getGroup() != null) {
             for (Group gr : flowNode.get().getGroup()) {
-                NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class).getId();
                 provider.getDevicesGroupRegistry().storeGroup(nodeId,gr.getGroupId().getValue());
                 messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
                         .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());
@@ -742,8 +750,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 }
             }
         }
-
         LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
+        OF_EVENT_LOG.info("Bundle Reconciliation, Node: {}, flow/group count: {}",
+                getDpnIdFromNodeName(nodeId.getValue()), messages.size());
         return new MessagesBuilder().setMessage(messages).build();
     }
 }

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -24,9 +25,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartReplyPortDesc> {
 
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger(OfEventLogUtil.getLoggerName());
     private final FeaturesReply features;
 
     public PortDescMultipartWriter(final TxFacade txFacade,
@@ -45,13 +49,15 @@ public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartRe
     public void storeStatistics(final MultipartReplyPortDesc statistics, final boolean withParents) {
         statistics.getPorts()
             .forEach(stat -> {
+                long portNumber = OpenflowPortsUtil.getProtocolPortNumber(
+                        OpenflowVersion.get(features.getVersion()),
+                        stat.getPortNumber());
                 final NodeConnectorId id = InventoryDataServiceUtil
                     .nodeConnectorIdfromDatapathPortNo(
-                        features.getDatapathId(),
-                        OpenflowPortsUtil.getProtocolPortNumber(
-                            OpenflowVersion.get(features.getVersion()),
-                            stat.getPortNumber()),
+                        features.getDatapathId(), portNumber,
                         OpenflowVersion.get(features.getVersion()));
+                OF_EVENT_LOG.info("Node Connector Status, Node: {}, Port: {}, Status: {}",
+                        features.getDatapathId(), portNumber, stat.getConfiguration().isPORTDOWN() ? "Down" : "Up");
 
                 writeToTransaction(
                     getInstanceIdentifier()

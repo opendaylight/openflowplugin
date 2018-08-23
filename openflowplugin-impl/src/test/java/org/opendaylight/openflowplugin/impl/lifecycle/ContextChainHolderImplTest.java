@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
 import java.util.concurrent.ExecutorService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,6 +104,7 @@ public class ContextChainHolderImplTest {
                 .thenReturn(entityOwnershipListenerRegistration);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
 
         registration = manager.reconciliationFrameworkRegistration(reconciliationFrameworkEvent);
 

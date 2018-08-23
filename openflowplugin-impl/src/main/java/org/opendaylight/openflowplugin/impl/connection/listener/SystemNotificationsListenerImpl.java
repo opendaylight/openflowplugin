@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger(OfEventLogUtil.getLoggerName());
     private static final Xid ECHO_XID = new Xid(0L);
 
     private final ConnectionContext connectionContext;
@@ -50,6 +52,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
+        OF_EVENT_LOG.info("Disconnect, Node: {}", connectionContext.getSafeNodeIdForLOG());
         LOG.debug("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getSafeNodeIdForLOG());
         connectionContext.onConnectionClosed();
@@ -69,6 +72,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         if (ConnectionContext.CONNECTION_STATE.WORKING.equals(connectionContext.getConnectionState())) {
             FeaturesReply features = connectionContext.getFeatures();
             LOG.info("Switch Idle state occurred, node={}|auxId={}", remoteAddress, features.getAuxiliaryId());
+            OF_EVENT_LOG.info("Switch idle state, Node: {}", features.getDatapathId());
             connectionContext.changeStateToTimeouting();
             EchoInputBuilder builder = new EchoInputBuilder();
             builder.setVersion(features.getVersion());
