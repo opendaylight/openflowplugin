@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPSpeaker.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     private static final long LLDP_FLOOD_PERIOD = 5;
     private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
@@ -187,6 +188,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         // Save packet to node connector id -> packet map to transmit it periodically on the configured interval.
         nodeConnectorMap.put(nodeConnectorInstanceId, packet);
         LOG.debug("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
+        OF_EVENT_LOG.info("Event: Node connector added, Node: {}", nodeConnectorId.getValue());
 
         // Transmit packet for first time immediately
         final Future<RpcResult<TransmitPacketOutput>> resultFuture = packetProcessingService.transmitPacket(packet);
@@ -200,6 +202,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         nodeConnectorMap.remove(nodeConnectorInstanceId);
         NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
         LOG.trace("Port removed from node-connector map : {}", nodeConnectorId.getValue());
+        OF_EVENT_LOG.info("Event: Node connector removed, Node: {}", nodeConnectorId.getValue());
     }
 
     private int getOwnedPorts() {
