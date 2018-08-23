@@ -109,6 +109,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     // TODO: drain factor should be parametrized
     private static final float REJECTED_DRAIN_FACTOR = 0.25f;
@@ -359,6 +360,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
             addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
             syncSubmitTransaction();
+            OF_EVENT_LOG.info("Event: Node connector removed, Node: {}", deviceInfo.getDatapathId());
+        } else {
+            OF_EVENT_LOG.info("Event: Node connector added, Node: {}", deviceInfo.getDatapathId());
         }
     }
 

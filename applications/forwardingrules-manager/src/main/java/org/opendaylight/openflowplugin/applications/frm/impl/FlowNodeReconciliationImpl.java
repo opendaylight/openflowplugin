@@ -109,6 +109,7 @@ import org.slf4j.LoggerFactory;
 public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     // The number of nanoseconds to wait for a single group to be added.
     private static final long ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(3);
@@ -190,7 +191,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             if (flowNode.isPresent()) {
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
+                OF_EVENT_LOG.info("Event: Bundle based reconciliation Start, Node: {}", dpnId);
                 final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+                Messages messages = createMessages(nodeRef, flowNode);
 
                 final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
@@ -206,7 +209,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                 final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                        .setMessages(createMessages(nodeRef, flowNode)).build();
+                        .setMessages(messages).build();
 
                 /* Close previously opened bundle on the openflow switch if any */
                 ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
@@ -235,6 +238,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
+                OF_EVENT_LOG.info("Event: Bundle based reconciliation Finish, Node: {}, flow count: {}", dpnId,
+                        messages.getMessage().size());
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
@@ -312,6 +317,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
+            OF_EVENT_LOG.info("Event: Reconciliation Start, Node: {}", dpnId);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode;
@@ -455,16 +461,19 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Flows */
                 List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
                         : Collections.<Table>emptyList();
+                int flowCount = 0;
                 for (Table table : tables) {
                     final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
                             table.key());
                     List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
+                    flowCount += flows.size();
                     for (Flow flow : flows) {
                         final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
                                 flow.key());
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
+                OF_EVENT_LOG.info("Event: Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
             }
             /* clean transaction */
             trans.close();
@@ -752,7 +761,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 }
             }
         }
-
         LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
         return new MessagesBuilder().setMessage(messages).build();
     }
