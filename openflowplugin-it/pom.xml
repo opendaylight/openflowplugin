@@ -150,17 +150,6 @@
         </dependency>
 
         <dependency>
-            <groupId>openexi</groupId>
-            <artifactId>nagasena</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>openexi</groupId>
-            <artifactId>nagasena-rta</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
             <scope>test</scope>
