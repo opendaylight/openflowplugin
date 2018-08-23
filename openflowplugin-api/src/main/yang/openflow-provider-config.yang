@@ -202,5 +202,13 @@ module openflow-provider-config {
             type uint16;
             default 0;
         }
+
+        leaf of-event-logger-name {
+            description "To set the openflow event logger name. This can be configured in
+            etc/org.ops4j.pax.logging file. Default logger name OfEventLog will be considered
+            if not configured";
+            type string;
+            default "OfEventLog";
+        }
     }
 }

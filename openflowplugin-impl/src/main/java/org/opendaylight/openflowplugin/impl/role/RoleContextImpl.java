@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 public class RoleContextImpl implements RoleContext {
     private static final Logger LOG = LoggerFactory.getLogger(RoleContextImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger(OfEventLogUtil.getLoggerName());
 
     // Timeout  after what we will give up on propagating role
     private static final long SET_ROLE_TIMEOUT = 10000;
@@ -183,6 +185,7 @@ public class RoleContextImpl implements RoleContext {
             contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE);
+            OF_EVENT_LOG.debug("Master Elected, Node: {}", deviceInfo.getDatapathId());
             LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo);
         }
 
@@ -201,6 +204,7 @@ public class RoleContextImpl implements RoleContext {
         public void onSuccess(final RpcResult<SetRoleOutput> result) {
             contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
             LOG.debug("Role SLAVE was successfully set on device, node {}", deviceInfo);
+            OF_EVENT_LOG.debug("Role SLAVE was successfully set on device, node {}", deviceInfo);
         }
 
         @Override

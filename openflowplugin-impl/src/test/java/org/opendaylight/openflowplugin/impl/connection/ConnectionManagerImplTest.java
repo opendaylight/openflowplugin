@@ -8,12 +8,15 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +30,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.impl.util.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
@@ -57,6 +63,8 @@ public class ConnectionManagerImplTest {
     private ConnectionAdapter connection;
     @Mock
     private DeviceConnectedHandler deviceConnectedHandler;
+    @Mock
+    ConfigurationService config;
     @Captor
     private ArgumentCaptor<ConnectionReadyListener> connectionReadyListenerAC;
     @Captor
@@ -82,6 +90,9 @@ public class ConnectionManagerImplTest {
         Mockito.when(connection.isAlive()).thenReturn(true);
         Mockito.when(connection.barrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
+        Mockito.when(config.getProperty(eq(ConfigurationProperty.OF_EVENT_LOGGER_NAME.toString()),
+                any(Function.class))).thenReturn("OfEventLog");
+        OfEventLogUtil logUtil = new OfEventLogUtil(config);
     }
 
     @After

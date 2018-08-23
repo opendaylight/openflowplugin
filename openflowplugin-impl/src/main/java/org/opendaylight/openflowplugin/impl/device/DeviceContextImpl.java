@@ -55,6 +55,7 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.api.openflow.util.OfEventLogUtil;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
@@ -108,6 +109,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger(OfEventLogUtil.getLoggerName());
 
     // TODO: drain factor should be parametrized
     private static final float REJECTED_DRAIN_FACTOR = 0.25f;
@@ -339,6 +341,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
         final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                 .translate(portStatusMessage, getDeviceInfo(), null);
+        OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
+                portStatusMessage.getReason());
 
         final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
                 .getNodeInstanceIdentifier()
