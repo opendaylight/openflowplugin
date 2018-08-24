@@ -12,3 +12,4 @@ Contents:
    southbound-cli
    reconciliation-cli
    arbitrator-reconciliation
+   device-connection-rate-limiter
