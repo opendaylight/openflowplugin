@@ -1,9 +1,6 @@
 Openflowplugin Test Plans
 =========================
 
-Starting from Nitrogen, Openflowplugin uses RST format Test Plan document for
-all new Test Suites.
-
 Contents:
 
 .. toctree::
