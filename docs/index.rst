@@ -5,13 +5,13 @@
 
 Openflowplugin Documentation
 ============================
-This documentation provides information needed to help you write ODL
-Applications/Projects that can co-exist with other ODL Projects.
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   users/index
+   devs/index
    specs/index
    testplans/index
