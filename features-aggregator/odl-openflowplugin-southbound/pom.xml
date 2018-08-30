@@ -11,15 +11,15 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-southbound</artifactId>
     <packaging>feature</packaging>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.7.1-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Li southbound API implementation</name>
 
     <properties>
-        <mdsal.version>1.8.0-SNAPSHOT</mdsal.version>
-        <lldp.version>0.15.0-SNAPSHOT</lldp.version>
-        <infrautils.version>1.4.0-SNAPSHOT</infrautils.version>
-        <serviceutils.version>0.2.0-SNAPSHOT</serviceutils.version>
+        <mdsal.version>1.8.1-SNAPSHOT</mdsal.version>
+        <lldp.version>0.15.1-SNAPSHOT</lldp.version>
+        <infrautils.version>1.4.1-SNAPSHOT</infrautils.version>
+        <serviceutils.version>0.2.1-SNAPSHOT</serviceutils.version>
     </properties>
 
     <dependencyManagement>
