@@ -1,9 +1,6 @@
 Openflowplugin Design Specifications
 ====================================
 
-Starting from Nitrogen, Openflowplugin uses RST format Design Specification document for all new features.
-These specifications are perfect way to understand various Openflowplugin features.
-
 Contents:
 
 .. toctree::
