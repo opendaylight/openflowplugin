@@ -18,7 +18,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(OperationProcessor.class);
     private static final int MAX_TRANSACTION_OPERATIONS = 100;
     private static final int OPERATION_QUEUE_DEPTH = 500;
-    private static final String TOPOLOGY_MANAGER = "topology-manager";
+    private static final String TOPOLOGY_MANAGER = "ofp-topo-processor";
 
     private final BlockingQueue<TopologyOperation> queue = new LinkedBlockingQueue<>(OPERATION_QUEUE_DEPTH);
     private final Thread thread;
@@ -32,7 +32,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
 
         thread = new Thread(this);
         thread.setDaemon(true);
-        thread.setName("FlowCapableTopologyExporter-" + FlowCapableTopologyProvider.TOPOLOGY_ID);
+        thread.setName("ofp-topo-expo-" + FlowCapableTopologyProvider.TOPOLOGY_ID);
     }
 
     void enqueueOperation(final TopologyOperation task) {
