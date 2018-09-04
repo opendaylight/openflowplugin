@@ -27,19 +27,20 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
         this.dataBroker = dataBroker;
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
     protected Object doExecute() {
         List<OFNode> ofNodeList = ShellUtil.getAllNodes(dataBroker);
         if (ofNodeList.isEmpty()) {
-            session.getConsole().println("No node is connected yet");
+            System.out.println("No node is connected yet");
         } else {
             StringBuilder stringBuilder = new StringBuilder();
             Formatter formatter = new Formatter(stringBuilder);
-            session.getConsole().println("Number of nodes: " + ofNodeList.size());
-            session.getConsole().println(getAllLocalNodesHeaderOutput());
-            session.getConsole().println("--------------------------------------------------------------------------");
+            System.out.println("Number of nodes: " + ofNodeList.size());
+            System.out.println(getAllLocalNodesHeaderOutput());
+            System.out.println("--------------------------------------------------------------------------");
             for (OFNode ofNode : ofNodeList) {
-                session.getConsole().println(formatter.format("%-15s %3s %-15s %n",
+                System.out.println(formatter.format("%-15s %3s %-15s %n",
                         ofNode.getNodeId(), "", ofNode.getNodeName()).toString());
                 stringBuilder.setLength(0);
             }
