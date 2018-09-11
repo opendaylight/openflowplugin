@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c0bfb143_ade2cfcb",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "openflow plugin don\u0027t have any context of tunnel, please replace it with \"switch feature information and supported statistics\"",
+      "range": {
+        "startLine": 20,
+        "startChar": 67,
+        "endLine": 20,
+        "endChar": 89
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2fe37867_682b0463",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "--\u003e \"overwhelmed, that can result in device disconnection and message drops\"",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 11
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a1576a0_d70529fc",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "\"configured number of devices\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 98,
+        "endLine": 24,
+        "endChar": 110
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "897f2688_c2910ff5",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "remove \"at the interval of every 8 seconds\".. as the time can differ from device to device.",
+      "range": {
+        "startLine": 26,
+        "startChar": 89,
+        "endLine": 26,
+        "endChar": 115
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f44b189a_c78ff8dd",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "remove \"be\"",
+      "range": {
+        "startLine": 26,
+        "startChar": 60,
+        "endLine": 26,
+        "endChar": 63
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c0d1e81f_de3a1197",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "I think we don\u0027t need this detail here as the gerrit patch is already mentioned at the start of the document.",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 40
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da555c51_60d93368",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-09-11T07:08:13Z",
+      "side": 1,
+      "message": "cluster --\u003econtroller/cluster",
+      "range": {
+        "startLine": 142,
+        "startChar": 87,
+        "endLine": 142,
+        "endChar": 94
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
