@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5acf3195_386a8bc9",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-09-11T09:40:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0bfb143_ade2cfcb",
+      "range": {
+        "startLine": 20,
+        "startChar": 67,
+        "endLine": 20,
+        "endChar": 89
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2fe37867_682b0463",
         "filename": "docs/specs/device-connection-rate-limiter.rst",
         "patchSetId": 11
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "40d752e9_30147504",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-09-11T09:40:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2fe37867_682b0463",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 11
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a1576a0_d70529fc",
         "filename": "docs/specs/device-connection-rate-limiter.rst",
         "patchSetId": 11
@@ -59,6 +107,30 @@
       "writtenOn": "2018-09-11T07:08:13Z",
       "side": 1,
       "message": "\"configured number of devices\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 98,
+        "endLine": 24,
+        "endChar": 110
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f38b45fc_374a63e3",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-09-11T09:40:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a1576a0_d70529fc",
       "range": {
         "startLine": 24,
         "startChar": 98,
@@ -117,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "eb26a9d5_3642126f",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-09-11T09:40:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "897f2688_c2910ff5",
+      "range": {
+        "startLine": 26,
+        "startChar": 89,
+        "endLine": 26,
+        "endChar": 115
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c0d1e81f_de3a1197",
         "filename": "docs/specs/device-connection-rate-limiter.rst",
         "patchSetId": 11
@@ -140,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "ee3d6a79_0b0364b5",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-09-11T09:40:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0d1e81f_de3a1197",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 40
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da555c51_60d93368",
         "filename": "docs/specs/device-connection-rate-limiter.rst",
         "patchSetId": 11
@@ -151,6 +271,30 @@
       "writtenOn": "2018-09-11T07:08:13Z",
       "side": 1,
       "message": "cluster --\u003econtroller/cluster",
+      "range": {
+        "startLine": 142,
+        "startChar": 87,
+        "endLine": 142,
+        "endChar": 94
+      },
+      "revId": "689a832bec216c3b8ef6a621155b635458b6215d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d69b096f_0ad98515",
+        "filename": "docs/specs/device-connection-rate-limiter.rst",
+        "patchSetId": 11
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2018-09-11T09:40:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da555c51_60d93368",
       "range": {
         "startLine": 142,
         "startChar": 87,
