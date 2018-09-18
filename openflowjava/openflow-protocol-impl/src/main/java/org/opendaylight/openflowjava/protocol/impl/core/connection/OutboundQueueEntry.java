@@ -42,7 +42,6 @@ final class OutboundQueueEntry {
     private boolean completed;
     private boolean barrier;
     private volatile boolean committed;
-    private OutboundQueueException lastException = null;
     private Function<OfHeader, Boolean> isCompletedFunction = DEFAULT_IS_COMPLETE;
 
     void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback) {
@@ -54,7 +53,7 @@ final class OutboundQueueEntry {
         if (this.completed) {
             LOG.warn("Can't commit a completed message.");
             if (commitCallback != null) {
-                commitCallback.onFailure(lastException);
+                commitCallback.onFailure(new OutboundQueueException("Can't commit a completed message."));
             }
         } else {
             this.message = messageToCommit;
@@ -130,7 +129,6 @@ final class OutboundQueueEntry {
 
     void fail(final OutboundQueueException cause) {
         if (!completed) {
-            lastException = cause;
             completed = true;
             if (callback != null) {
                 callback.onFailure(cause);
