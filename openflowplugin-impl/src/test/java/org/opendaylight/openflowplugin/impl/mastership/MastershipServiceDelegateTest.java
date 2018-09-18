@@ -45,7 +45,6 @@ public class MastershipServiceDelegateTest {
     @Test
     public void close() throws Exception {
         mastershipServiceDelegate.close();
-        verify(mastershipChangeService).close();
         verify(unregisterService).close();
     }
 
