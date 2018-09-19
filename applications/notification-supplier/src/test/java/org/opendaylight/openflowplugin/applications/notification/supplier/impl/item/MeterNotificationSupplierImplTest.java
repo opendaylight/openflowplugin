@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl.
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -83,10 +83,10 @@ public class MeterNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(METER_ID, notification.getMeterId().getValue());
         assertEquals(METER_ID,
-                     notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId()
+                     notification.getMeterRef().getValue().firstKeyOf(Meter.class).getMeterId()
                              .getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class MeterNotificationSupplierImplTest {
         Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(MeterAdded.class));
+        verify(notifProviderService, times(1)).publish(any(MeterAdded.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -116,10 +116,10 @@ public class MeterNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(METER_ID, notification.getMeterId().getValue());
         assertEquals(METER_ID,
-                     notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId()
+                     notification.getMeterRef().getValue().firstKeyOf(Meter.class).getMeterId()
                              .getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class MeterNotificationSupplierImplTest {
         Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(MeterUpdated.class));
+        verify(notifProviderService, times(1)).publish(any(MeterUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -148,10 +148,10 @@ public class MeterNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(METER_ID, notification.getMeterId().getValue());
         assertEquals(METER_ID,
-                     notification.getMeterRef().getValue().firstKeyOf(Meter.class, MeterKey.class).getMeterId()
+                     notification.getMeterRef().getValue().firstKeyOf(Meter.class).getMeterId()
                              .getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class MeterNotificationSupplierImplTest {
         Collection<DataTreeModification<Meter>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(MeterRemoved.class));
+        verify(notifProviderService, times(1)).publish(any(MeterRemoved.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

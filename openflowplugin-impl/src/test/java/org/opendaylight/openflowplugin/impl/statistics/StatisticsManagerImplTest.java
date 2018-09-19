@@ -8,13 +8,13 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -32,7 +32,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -42,7 +41,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkRegistrar;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -110,37 +108,9 @@ public class StatisticsManagerImplTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
 
-        when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-        when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        when(mockedPrimConnectionContext.getNodeId()).thenReturn(NODE_ID);
-        when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueue);
-
-        when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.isGroupAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.isMetersAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.isPortStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.isQueueStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
-        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
-        when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
-        when(mockedDeviceInfo.getNodeId()).thenReturn(NODE_ID);
-
-        when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
-        when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry())
-            .thenReturn(new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodePath));
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        when(mockedDeviceContext.getMultiMsgCollector(
-            Matchers.<RequestContext<List<MultipartReply>>>any())).thenAnswer(
-                invocation -> {
-                    currentRequestContext = (RequestContext<List<MultipartReply>>) invocation.getArguments()[0];
-                    return multiMagCollector;
-                });
         when(rpcProviderRegistry.addRpcImplementation(
-                Matchers.eq(StatisticsManagerControlService.class),
-                Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
+                eq(StatisticsManagerControlService.class),
+                ArgumentMatchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;

@@ -22,8 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -101,7 +101,7 @@ public class SalBulkFlowServiceImplTest {
     public void setUp() throws Exception {
         when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
+        Mockito.lenient().when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNode)));
         salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
     }
@@ -127,7 +127,8 @@ public class SalBulkFlowServiceImplTest {
         salBulkFlowService.addFlowsDs(addFlowsDsInput);
 
         verify(writeTransaction).submit();
-        verify(writeTransaction).put(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<Flow>>any(),
+        verify(writeTransaction).put(ArgumentMatchers.<LogicalDatastoreType>any(),
+                ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
                 flowArgumentCaptor.capture(), Mockito.anyBoolean());
 
         Flow flow = flowArgumentCaptor.getValue();
@@ -140,16 +141,17 @@ public class SalBulkFlowServiceImplTest {
         final RemoveFlowsDsInput removeFlowsDsInput = removeFlowsDsInputBuilder.build();
 
         salBulkFlowService.removeFlowsDs(removeFlowsDsInput);
-        verify(writeTransaction).delete(Matchers.<LogicalDatastoreType>any(), Matchers.<InstanceIdentifier<Flow>>any());
+        verify(writeTransaction).delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+                ArgumentMatchers.<InstanceIdentifier<Flow>>any());
         verify(writeTransaction, times(2)).submit();
     }
 
     @Test
     public void testAddRemoveFlowsRpc() throws Exception {
-        Mockito.when(mockSalFlowService.addFlow(Matchers.<AddFlowInput>any()))
+        Mockito.when(mockSalFlowService.addFlow(ArgumentMatchers.<AddFlowInput>any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 
-        Mockito.when(mockSalFlowService.removeFlow(Matchers.<RemoveFlowInput>any()))
+        Mockito.when(mockSalFlowService.removeFlow(ArgumentMatchers.<RemoveFlowInput>any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
 
         final BulkFlowItemBuilder bulkFlowItemBuilder = new BulkFlowItemBuilder();
@@ -166,7 +168,7 @@ public class SalBulkFlowServiceImplTest {
         final AddFlowsRpcInput addFlowsRpcInput = addFlowsRpcInputBuilder.build();
         salBulkFlowService.addFlowsRpc(addFlowsRpcInput);
 
-        verify(mockSalFlowService).addFlow(Matchers.<AddFlowInput>any());
+        verify(mockSalFlowService).addFlow(ArgumentMatchers.<AddFlowInput>any());
 
         final RemoveFlowsRpcInputBuilder removeFlowsRpcInputBuilder = new RemoveFlowsRpcInputBuilder();
         removeFlowsRpcInputBuilder.setBulkFlowItem(bulkFlowItems);
@@ -174,7 +176,7 @@ public class SalBulkFlowServiceImplTest {
         final RemoveFlowsRpcInput removeFlowsRpcInput = removeFlowsRpcInputBuilder.build();
         salBulkFlowService.removeFlowsRpc(removeFlowsRpcInput);
 
-        verify(mockSalFlowService).removeFlow(Matchers.<RemoveFlowInput>any());
+        verify(mockSalFlowService).removeFlow(ArgumentMatchers.<RemoveFlowInput>any());
     }
 
     @Test

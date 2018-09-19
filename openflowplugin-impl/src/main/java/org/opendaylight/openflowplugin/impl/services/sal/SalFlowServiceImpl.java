@@ -31,7 +31,6 @@ import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -207,7 +206,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 final FlowDescriptor flowDescriptor;
 
                 if (Objects.nonNull(input.getFlowRef())) {
-                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
                     flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
                     deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
                 } else {

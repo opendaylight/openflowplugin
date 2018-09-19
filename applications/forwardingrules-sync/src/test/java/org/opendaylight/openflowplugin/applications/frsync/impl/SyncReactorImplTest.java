@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -106,9 +106,9 @@ public class SyncReactorImplTest {
                                                         operationalFcn, LogicalDatastoreType.OPERATIONAL);
 
         Mockito.when(syncPlanPushStrategy.executeSyncStrategy(
-                Matchers.<ListenableFuture<RpcResult<Void>>>any(),
-                Matchers.<SynchronizationDiffInput>any(),
-                Matchers.<SyncCrudCounters>any()))
+                ArgumentMatchers.<ListenableFuture<RpcResult<Void>>>any(),
+                ArgumentMatchers.<SynchronizationDiffInput>any(),
+                ArgumentMatchers.<SyncCrudCounters>any()))
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 
         final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, syncupEntry);
@@ -117,9 +117,9 @@ public class SyncReactorImplTest {
         Assert.assertTrue(voidRpcResult);
 
         Mockito.verify(syncPlanPushStrategy).executeSyncStrategy(
-                Matchers.<ListenableFuture<RpcResult<Void>>>any(),
+                ArgumentMatchers.<ListenableFuture<RpcResult<Void>>>any(),
                 syncDiffInputCaptor.capture(),
-                Matchers.<SyncCrudCounters>any());
+                ArgumentMatchers.<SyncCrudCounters>any());
 
         final SynchronizationDiffInput diffInput = syncDiffInputCaptor.getValue();
         Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getFlowsToAddOrUpdate().values()));

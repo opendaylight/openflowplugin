@@ -10,8 +10,9 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct.singlela
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,7 +50,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     public void testBuildRequestBody() throws Exception {
         final GetGroupStatisticsInput input = mock(GetGroupStatisticsInput.class);
 
-        when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
+        lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
         when(input.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
         final MultipartRequestGroupStats body = (MultipartRequestGroupStats) ((MultipartRequest) service
