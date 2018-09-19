@@ -186,7 +186,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
             getBandsFromSAL(source.getMeterBandHeaders(), bands);
             meterModInputBuilder.setBands(bands);
         } else {
-            LOG.error("For this meter Id" + source.getMeterId().getValue() + ",no associated band data found!");
+            LOG.error("For this meter Id {}, no associated band data found!", source.getMeterId().getValue());
         }
 
         meterModInputBuilder.setVersion(data.getVersion());

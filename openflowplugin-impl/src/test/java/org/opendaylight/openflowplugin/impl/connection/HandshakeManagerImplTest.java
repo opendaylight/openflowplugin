@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyShort;
+
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
@@ -17,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -79,7 +81,7 @@ public class HandshakeManagerImplTest {
 
         resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
 
-        Mockito.when(adapter.hello(Matchers.any(HelloInput.class)))
+        Mockito.when(adapter.hello(any(HelloInput.class)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success((HelloOutput) null).build()));
     }
 
@@ -95,7 +97,7 @@ public class HandshakeManagerImplTest {
             LOG.warn(problem.getMessage(), problem);
         }
 
-        Mockito.verify(errorHandler, Mockito.times(expectedErrors)).handleException(Matchers.any(Throwable.class));
+        Mockito.verify(errorHandler, Mockito.times(expectedErrors)).handleException(any(Throwable.class));
     }
 
     /**
@@ -153,7 +155,7 @@ public class HandshakeManagerImplTest {
         LOG.debug("testVersionNegotiation10");
         Short version = OFConstants.OFP_VERSION_1_0;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(null);
@@ -172,7 +174,7 @@ public class HandshakeManagerImplTest {
         LOG.debug("testVersionNegotiation10-ss");
         Short version = OFConstants.OFP_VERSION_1_0;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
@@ -193,7 +195,7 @@ public class HandshakeManagerImplTest {
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
         Mockito.verify(handshakeListener, Mockito.never())
-                .onHandshakeSuccessful(Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+                .onHandshakeSuccessful(any(GetFeaturesOutput.class), anyShort());
     }
 
     /**
@@ -211,7 +213,7 @@ public class HandshakeManagerImplTest {
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
         Mockito.verify(handshakeListener, Mockito.never())
-                .onHandshakeSuccessful(Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+                .onHandshakeSuccessful(any(GetFeaturesOutput.class), anyShort());
     }
 
     /**
@@ -224,7 +226,7 @@ public class HandshakeManagerImplTest {
         Short version = (short) 0x02;
         Short expVersion = (short) 0x01;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
@@ -243,7 +245,7 @@ public class HandshakeManagerImplTest {
         final Short version = (short) 0x02;
         final Short expVersion = (short) 0x01;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(null);
@@ -264,7 +266,7 @@ public class HandshakeManagerImplTest {
         LOG.debug("testVersionNegotiation13");
         Short version = OFConstants.OFP_VERSION_1_3;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
@@ -281,7 +283,7 @@ public class HandshakeManagerImplTest {
         LOG.debug("testVersionNegotiation13-ss");
         Short version = OFConstants.OFP_VERSION_1_3;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(null);
@@ -301,7 +303,7 @@ public class HandshakeManagerImplTest {
         Short version = (short) 0x06;
         Short expVersion = OFConstants.OFP_VERSION_1_3;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
@@ -321,7 +323,7 @@ public class HandshakeManagerImplTest {
         Short version = (short) 0x06;
         Short expVersion = OFConstants.OFP_VERSION_1_3;
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
@@ -346,7 +348,7 @@ public class HandshakeManagerImplTest {
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
         Mockito.verify(handshakeListener, Mockito.never())
-                .onHandshakeSuccessful(Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+                .onHandshakeSuccessful(any(GetFeaturesOutput.class), anyShort());
     }
 
     /**
@@ -366,7 +368,7 @@ public class HandshakeManagerImplTest {
         handshakeManager.shake(createHelloMessage(version, helloXid).build());
 
         Mockito.verify(handshakeListener, Mockito.never())
-                .onHandshakeSuccessful(Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+                .onHandshakeSuccessful(any(GetFeaturesOutput.class), anyShort());
     }
 
     /**
@@ -382,7 +384,7 @@ public class HandshakeManagerImplTest {
         HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
         addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_0), helloMessage);
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(helloMessage.build());
@@ -403,7 +405,7 @@ public class HandshakeManagerImplTest {
         HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
         addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_0), helloMessage);
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(null);
@@ -426,7 +428,7 @@ public class HandshakeManagerImplTest {
         HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
         addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_3), helloMessage);
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(helloMessage.build());
@@ -447,7 +449,7 @@ public class HandshakeManagerImplTest {
         HelloMessageBuilder helloMessage = createHelloMessage(version, helloXid);
         addVersionBitmap(Lists.newArrayList((short) 0x05, OFConstants.OFP_VERSION_1_3), helloMessage);
 
-        Mockito.when(adapter.getFeatures(Matchers.any(GetFeaturesInput.class)))
+        Mockito.when(adapter.getFeatures(any(GetFeaturesInput.class)))
                 .thenReturn(Futures.immediateFuture(resultFeatures));
 
         handshakeManager.shake(null);
@@ -474,7 +476,7 @@ public class HandshakeManagerImplTest {
         handshakeManager.shake(helloMessage.build());
 
         Mockito.verify(handshakeListener, Mockito.never())
-                .onHandshakeSuccessful(Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+                .onHandshakeSuccessful(any(GetFeaturesOutput.class), anyShort());
     }
 
     /**
@@ -496,7 +498,7 @@ public class HandshakeManagerImplTest {
         handshakeManager.shake(helloMessage.build());
 
         Mockito.verify(handshakeListener, Mockito.never())
-                .onHandshakeSuccessful(Matchers.any(GetFeaturesOutput.class), Matchers.anyShort());
+                .onHandshakeSuccessful(any(GetFeaturesOutput.class), anyShort());
     }
 
 

@@ -92,8 +92,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         int code = rawMessage.readUnsignedShort();
         if (type != null) {
             switch (type) {
-                case HELLOFAILED:
-                {
+                case HELLOFAILED: {
                     HelloFailedCode errorCode = HelloFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -102,8 +101,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case BADREQUEST:
-                {
+                case BADREQUEST: {
                     BadRequestCode errorCode = BadRequestCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -112,8 +110,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case BADACTION:
-                {
+                case BADACTION: {
                     BadActionCode errorCode = BadActionCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -122,8 +119,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case BADINSTRUCTION:
-                {
+                case BADINSTRUCTION: {
                     BadInstructionCode errorCode = BadInstructionCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -132,8 +128,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case BADMATCH:
-                {
+                case BADMATCH: {
                     BadMatchCode errorCode = BadMatchCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -142,8 +137,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case FLOWMODFAILED:
-                {
+                case FLOWMODFAILED: {
                     FlowModFailedCode errorCode = FlowModFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -152,8 +146,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case GROUPMODFAILED:
-                {
+                case GROUPMODFAILED: {
                     GroupModFailedCode errorCode = GroupModFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -162,8 +155,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case PORTMODFAILED:
-                {
+                case PORTMODFAILED: {
                     PortModFailedCode errorCode = PortModFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -172,8 +164,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case TABLEMODFAILED:
-                {
+                case TABLEMODFAILED: {
                     TableModFailedCode errorCode = TableModFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -182,8 +173,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case QUEUEOPFAILED:
-                {
+                case QUEUEOPFAILED: {
                     QueueOpFailedCode errorCode = QueueOpFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -192,8 +182,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case SWITCHCONFIGFAILED:
-                {
+                case SWITCHCONFIGFAILED: {
                     SwitchConfigFailedCode errorCode = SwitchConfigFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -202,8 +191,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case ROLEREQUESTFAILED:
-                {
+                case ROLEREQUESTFAILED: {
                     RoleRequestFailedCode errorCode = RoleRequestFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -212,8 +200,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case METERMODFAILED:
-                {
+                case METERMODFAILED: {
                     MeterModFailedCode errorCode = MeterModFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -222,8 +209,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
                     }
                     break;
                 }
-                case TABLEFEATURESFAILED:
-                {
+                case TABLEFEATURESFAILED: {
                     TableFeaturesFailedCode errorCode = TableFeaturesFailedCode.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());

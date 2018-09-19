@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frsync.util;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -24,7 +23,7 @@ public final class PathUtil {
     }
 
     public static NodeId digNodeId(final InstanceIdentifier<?> nodeIdent) {
-        return nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId();
+        return nodeIdent.firstKeyOf(Node.class).getId();
     }
 
     public static InstanceIdentifier<Node> digNodePath(final InstanceIdentifier<FlowCapableNode> nodeIdent) {

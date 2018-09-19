@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * convert primitive data types to stream of bits.
  */
 public abstract class BitBufferHelper {
-    protected static final Logger LOG = LoggerFactory.getLogger(BitBufferHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BitBufferHelper.class);
 
     public static final long BYTE_MASK = 0xFF;
 

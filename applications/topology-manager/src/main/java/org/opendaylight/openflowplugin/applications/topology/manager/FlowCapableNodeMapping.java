@@ -36,15 +36,15 @@ public final class FlowCapableNodeMapping {
     }
 
     public static NodeKey getNodeKey(final NodeRef ref) {
-        return ref.getValue().firstKeyOf(Node.class, NodeKey.class);
+        return ref.getValue().firstKeyOf(Node.class);
     }
 
     public static NodeKey getNodeKey(final NodeConnectorRef ref) {
-        return ref.getValue().firstKeyOf(Node.class, NodeKey.class);
+        return ref.getValue().firstKeyOf(Node.class);
     }
 
     public static NodeConnectorKey getNodeConnectorKey(final NodeConnectorRef ref) {
-        return ref.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+        return ref.getValue().firstKeyOf(NodeConnector.class);
     }
 
     public static NodeId toTopologyNodeId(

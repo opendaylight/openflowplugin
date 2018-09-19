@@ -8,11 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.google.common.util.concurrent.FutureCallback;
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -77,21 +78,21 @@ public abstract class AbstractStatsServiceTest {
 
     @Before
     public void init() throws Exception {
-        Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
+        Mockito.lenient().when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-        Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class)))
+        Mockito.lenient().when(deviceContext.getMultiMsgCollector(any(RequestContext.class)))
                 .thenReturn(multiMsgCollector);
-        Mockito.when(deviceContext.oook()).thenReturn(translatorLibrary);
-        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
+        Mockito.lenient().when(deviceContext.oook()).thenReturn(translatorLibrary);
+        Mockito.lenient().when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
-        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
-        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
-        Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        Mockito.when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
-        Mockito.when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
+        Mockito.lenient().when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        Mockito.lenient().when(connectionContext.getFeatures()).thenReturn(features);
+        Mockito.lenient().when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
+        Mockito.lenient().when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
+        Mockito.lenient().when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         setUp();
     }

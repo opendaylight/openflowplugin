@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
@@ -29,12 +29,8 @@
             <artifactId>yang-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal.model</groupId>
-            <artifactId>ietf-inet-types-2013-07-15</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal.model</groupId>
-            <artifactId>ietf-yang-types-20130715</artifactId>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>

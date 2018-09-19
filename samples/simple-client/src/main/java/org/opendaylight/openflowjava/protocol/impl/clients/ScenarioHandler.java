@@ -62,7 +62,7 @@ public class ScenarioHandler extends Thread {
                     WaitForMessageEvent event = (WaitForMessageEvent) peek;
                     event.setHeaderReceived(ofMsg.poll(2000, TimeUnit.MILLISECONDS));
                 } catch (InterruptedException e) {
-                    LOG.error(e.getMessage(), e);
+                    LOG.error("Error {}", e);
                     break;
                 }
             } else if (peek instanceof SendEvent) {
@@ -81,14 +81,14 @@ public class ScenarioHandler extends Thread {
             }
             if (freezeCounter > freeze) {
                 LOG.warn("Scenario frozen: {}", freezeCounter);
-                LOG.warn("Scenario step not finished NOT OK!", freezeCounter);
+                LOG.warn("Scenario step not finished NOT OK! {}", freezeCounter);
                 this.finishedOK = false;
                 break;
             }
             try {
                 sleep(sleepBetweenTries);
             } catch (InterruptedException e) {
-                LOG.error(e.getMessage(), e);
+                LOG.error("Error {}", e);
             }
         }
         LOG.debug("Scenario finished");

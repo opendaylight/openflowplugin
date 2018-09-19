@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 import com.google.common.util.concurrent.FutureCallback;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -17,8 +20,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
@@ -73,12 +76,12 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
                 new AtomicLong(), notificationPublishService, convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
     }
 
     @After
     public void tearDown() throws Exception {
-        Mockito.verify(notificationPublishService).offerNotification(Matchers.<Notification>any());
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.<Notification>any());
     }
 
     @Test

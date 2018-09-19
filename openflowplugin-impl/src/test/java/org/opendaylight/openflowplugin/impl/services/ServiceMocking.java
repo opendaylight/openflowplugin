@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
@@ -97,34 +98,35 @@ public abstract class ServiceMocking {
     @Before
     @SuppressWarnings("unchecked")
     public void initialization() throws Exception {
-        when(mockedExtensionConverter.getExperimenterId())
+        lenient().when(mockedExtensionConverter.getExperimenterId())
                 .thenReturn(new ExperimenterId(DUMMY_EXPERIMENTER_ID));
-        when(mockedExtensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
+        lenient().when(mockedExtensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
                 .thenReturn(mockedExtensionConverter);
-        when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
-        when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
-        when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
+        lenient().when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
+        lenient().when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
+        lenient().when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        lenient().when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
 
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
+        lenient().when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        lenient().when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
 
-        when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-        when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
+        lenient().when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
+        lenient().when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
+        lenient().when(mockedPrimConnectionContext.getConnectionState())
+                .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
+        lenient().when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
-        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
+        lenient().when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
 
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
+        lenient().when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry())
+        lenient().when(mockedDeviceContext.getDeviceFlowRegistry())
                 .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II));
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        lenient().when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
-        when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
+        lenient().when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
 
         setup();
     }
