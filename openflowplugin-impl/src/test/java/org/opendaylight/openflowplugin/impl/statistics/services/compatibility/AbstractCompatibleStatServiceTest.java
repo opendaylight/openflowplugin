@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
@@ -17,7 +20,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -27,7 +29,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.impl.statistics.services.AbstractStatsServiceTest;
 import org.opendaylight.openflowplugin.impl.statistics.services.AggregateFlowsInTableService;
@@ -91,20 +92,16 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
             return null;
         };
 
-        Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
-        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(null);
-        Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector)
-                .endCollecting(Matchers.any(EventIdentifier.class));
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
 
-        Mockito.when(translatorLibrary.lookupTranslator(Matchers.any(TranslatorKey.class))).thenReturn(translator);
+        Mockito.when(translatorLibrary.lookupTranslator(any(TranslatorKey.class))).thenReturn(translator);
 
         service = AggregateFlowsInTableService.createWithOook(rqContextStack, deviceContext, new AtomicLong(20L));
     }
@@ -140,7 +137,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
                 .setFlowCount(new Counter32(12L))
                 .setPacketCount(new Counter64(BigInteger.valueOf(13L)))
                 .build();
-        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceInfo), Matchers.any()))
+        Mockito.when(translator.translate(any(MultipartReply.class), eq(deviceInfo), any()))
                 .thenReturn(aggregatedStats);
 
 
@@ -152,6 +149,6 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         Assert.assertTrue(result.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
         Mockito.verify(notificationPublishService, Mockito.timeout(500))
-                .offerNotification(Matchers.any(AggregateFlowStatisticsUpdate.class));
+                .offerNotification(any(AggregateFlowStatisticsUpdate.class));
     }
 }

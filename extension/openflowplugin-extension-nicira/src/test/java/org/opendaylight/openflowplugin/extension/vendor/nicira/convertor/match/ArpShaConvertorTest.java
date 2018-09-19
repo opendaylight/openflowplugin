@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -61,7 +61,7 @@ public class ArpShaConvertorTest {
                 .setNxmNxArpSha(nxmNxArpShaBuilder.build());
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
 
-        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
             .thenReturn(extensionAugmentation);
 
         arpShaConvertor = new ArpShaConvertor();

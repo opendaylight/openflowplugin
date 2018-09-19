@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.mockito.ArgumentMatchers.matches;
+
 import com.google.common.base.Function;
 import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -46,7 +47,7 @@ public class ShowStatsCommandProviderTest extends AbstractKarafTest {
     @After
     public void tearDown() throws Exception {
         // Pattern.DOTALL is set inline via "(?s)" at the beginning
-        Mockito.verify(console).print(Matchers.matches("(?s).+"));
+        Mockito.verify(console).print(matches("(?s).+"));
         messageIntelligenceAgency.resetStatistics();
     }
 

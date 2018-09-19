@@ -12,7 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -61,7 +61,7 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         openflowProtocolListenerInitial.onEchoRequestMessage(echoRequestMessageBld.build());
 
-        Mockito.verify(connectionAdapter).echoReply(Matchers.<EchoReplyInput>any());
+        Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.<EchoReplyInput>any());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         openflowProtocolListenerInitial.onHelloMessage(helloMessageBld.build());
 
-        Mockito.verify(handshakeManager).shake(Matchers.<HelloMessage>any());
+        Mockito.verify(handshakeManager).shake(ArgumentMatchers.<HelloMessage>any());
     }
 
     @Test

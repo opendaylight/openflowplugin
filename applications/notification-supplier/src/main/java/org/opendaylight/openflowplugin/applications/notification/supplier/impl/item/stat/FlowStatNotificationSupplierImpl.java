@@ -15,7 +15,6 @@ import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
@@ -59,7 +58,7 @@ public class FlowStatNotificationSupplierImpl extends AbstractNotificationSuppli
         Preconditions.checkArgument(path != null);
 
         final FlowAndStatisticsMapListBuilder fsmlBuilder = new FlowAndStatisticsMapListBuilder(flowStatistics);
-        fsmlBuilder.setFlowId(new FlowId(path.firstKeyOf(Flow.class, FlowKey.class).getId().getValue()));
+        fsmlBuilder.setFlowId(new FlowId(path.firstKeyOf(Flow.class).getId().getValue()));
 
         final FlowsStatisticsUpdateBuilder builder = new FlowsStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));

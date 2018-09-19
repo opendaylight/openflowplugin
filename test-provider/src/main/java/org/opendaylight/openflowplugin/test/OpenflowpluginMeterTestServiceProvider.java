@@ -119,8 +119,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      */
     @Override
     public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        String plus = "addMeter - " + input;
-        OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
+        OpenflowpluginMeterTestServiceProvider.LOG.info("addMeter - {}", input);
         return null;
     }
 
@@ -136,8 +135,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     @Override
     public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(
             final RemoveMeterInput input) {
-        String plus = "removeMeter - " + input;
-        OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
+        OpenflowpluginMeterTestServiceProvider.LOG.info("removeMeter - {}", input);
         return null;
     }
 
@@ -153,8 +151,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     @Override
     public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(
             final UpdateMeterInput input) {
-        String plus = "updateMeter - " + input;
-        OpenflowpluginMeterTestServiceProvider.LOG.info(plus);
+        OpenflowpluginMeterTestServiceProvider.LOG.info("updateMeter - {}", input);
         return null;
     }
 
