@@ -77,14 +77,14 @@ public final class InstanceIdentifierUtils {
      * @param tablePath the table path
      */
     public static Short getTableId(final InstanceIdentifier<Table> tablePath) {
-        return tablePath.firstKeyOf(Table.class, TableKey.class).getId();
+        return tablePath.firstKeyOf(Table.class).getId();
     }
 
     /**
      * Extracts NodeConnectorKey from node connector path.
      */
     public static NodeConnectorKey getNodeConnectorKey(final InstanceIdentifier<?> nodeConnectorPath) {
-        return nodeConnectorPath.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+        return nodeConnectorPath.firstKeyOf(NodeConnector.class);
     }
 
     public static InstanceIdentifier<NodeConnector> createNodeConnectorPath(final InstanceIdentifier<Node> nodeKey,

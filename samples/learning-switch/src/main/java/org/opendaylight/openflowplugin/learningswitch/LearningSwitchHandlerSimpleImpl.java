@@ -96,7 +96,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
         tablePath = appearedTablePath;
         nodePath = tablePath.firstIdentifierOf(Node.class);
-        nodeId = nodePath.firstKeyOf(Node.class, NodeKey.class).getId();
+        nodeId = nodePath.firstKeyOf(Node.class).getId();
         mac2portMapping = new HashMap<>();
 
         // start forwarding all packages to controller
@@ -181,7 +181,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
             String macPath = srcMac.toString() + dstMac.toString();
             if (!coveredMacPaths.contains(macPath)) {
                 LOG.debug("covering mac path: {} by [{}]", macPath,
-                        destNodeConnector.getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId());
+                        destNodeConnector.getValue().firstKeyOf(NodeConnector.class).getId());
 
                 coveredMacPaths.add(macPath);
                 FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
@@ -211,7 +211,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     }
 
     private NodeConnectorId nodeConnectorId(String connectorId) {
-        NodeKey nodeKey = nodePath.firstKeyOf(Node.class, NodeKey.class);
+        NodeKey nodeKey = nodePath.firstKeyOf(Node.class);
         StringBuilder stringId = new StringBuilder(nodeKey.getId().getValue()).append(":").append(connectorId);
         return new NodeConnectorId(stringId.toString());
     }

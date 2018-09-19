@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -91,7 +92,7 @@ public class PacketInRateLimiterTest {
         Assert.assertEquals(6, rateLimiter.getOccupiedPermits());
         Assert.assertFalse(rateLimiter.isLimited());
 
-        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(Matchers.anyBoolean());
+        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(anyBoolean());
     }
 
     private void acquirePermits(int permits) {
@@ -136,7 +137,7 @@ public class PacketInRateLimiterTest {
         Assert.assertFalse(rateLimiter.isLimited());
         caOrdered.verify(connectionAdapter).setPacketInFiltering(false);
 
-        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(Matchers.anyBoolean());
+        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(anyBoolean());
     }
 
     @Test
@@ -163,7 +164,7 @@ public class PacketInRateLimiterTest {
         Assert.assertFalse(rateLimiter.isLimited());
         caOrdered.verify(connectionAdapter).setPacketInFiltering(false);
 
-        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(Matchers.anyBoolean());
+        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(anyBoolean());
     }
 
     @Test
@@ -195,6 +196,6 @@ public class PacketInRateLimiterTest {
         Assert.assertEquals(12, rateLimiter.getOccupiedPermits());
         Assert.assertFalse(rateLimiter.isLimited());
 
-        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(Matchers.anyBoolean());
+        Mockito.verify(connectionAdapter, Mockito.times(2)).setPacketInFiltering(anyBoolean());
     }
 }

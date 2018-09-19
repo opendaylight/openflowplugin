@@ -101,7 +101,7 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
      * @return Keyed InstanceIdentifier for Node
      */
     protected static KeyedInstanceIdentifier<Node, NodeKey> getNodeII(final InstanceIdentifier<?> ii) {
-        final NodeKey key = ii.firstKeyOf(Node.class, NodeKey.class);
+        final NodeKey key = ii.firstKeyOf(Node.class);
         Preconditions.checkArgument(key != null);
         return InstanceIdentifier.create(Nodes.class).child(Node.class, key);
     }
@@ -124,7 +124,7 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
      * @return extracted {@link NodeId}
      */
     public static NodeId getNodeId(InstanceIdentifier<?> path) {
-        final NodeKey nodeKey = Preconditions.checkNotNull(path.firstKeyOf(Node.class, NodeKey.class));
+        final NodeKey nodeKey = Preconditions.checkNotNull(path.firstKeyOf(Node.class));
         return nodeKey.getId();
     }
 }
