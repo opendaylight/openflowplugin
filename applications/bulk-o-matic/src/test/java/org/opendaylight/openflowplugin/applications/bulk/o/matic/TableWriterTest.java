@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -57,7 +57,7 @@ public class TableWriterTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
-        }).when(mockTablePusher).execute(Matchers.<Runnable>any());
+        }).when(mockTablePusher).execute(ArgumentMatchers.<Runnable>any());
 
         tableWriter = new TableWriter(mockDataBroker, mockTablePusher);
     }
@@ -65,14 +65,17 @@ public class TableWriterTest {
     @Test
     public void testAddTables() throws Exception {
         tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
-        Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(),
-                Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
+        Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
+                .put(ArgumentMatchers.<LogicalDatastoreType>any(),
+                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any(), ArgumentMatchers.<DataObject>any(),
+                        ArgumentMatchers.anyBoolean());
     }
 
     @Test
     public void testDeleteTables() throws Exception {
         tableWriter.deleteTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
-        Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(),
-                Matchers.<InstanceIdentifier<DataObject>>any());
+        Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
+                .delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
     }
 }

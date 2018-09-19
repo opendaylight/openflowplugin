@@ -46,7 +46,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 //NOOP
             }
         };
-        Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
+        //Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
     }
 
     @Test(expected = IllegalAccessError.class)

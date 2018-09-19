@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper;
 
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
@@ -23,7 +23,7 @@ public final class TestSupplierVerifyHelper {
     public static void verifyDataTreeChangeListenerRegistration(DataBroker dataBroker) {
 
         Mockito.verify(dataBroker).registerDataTreeChangeListener(
-                Matchers.<DataTreeIdentifier>any(),
-                Matchers.<DataTreeChangeListener>any());
+                ArgumentMatchers.<DataTreeIdentifier>any(),
+                ArgumentMatchers.<DataTreeChangeListener>any());
     }
 }

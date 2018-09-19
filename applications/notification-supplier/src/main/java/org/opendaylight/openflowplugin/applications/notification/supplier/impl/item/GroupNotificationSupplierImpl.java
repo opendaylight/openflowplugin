@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Gro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.GroupUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -72,7 +71,7 @@ public class GroupNotificationSupplierImpl extends AbstractNotificationSupplierF
     public GroupRemoved deleteNotification(final InstanceIdentifier<Group> path) {
         Preconditions.checkArgument(path != null);
         final GroupRemovedBuilder builder = new GroupRemovedBuilder();
-        builder.setGroupId(path.firstKeyOf(Group.class, GroupKey.class).getGroupId());
+        builder.setGroupId(path.firstKeyOf(Group.class).getGroupId());
         builder.setGroupRef(new GroupRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();

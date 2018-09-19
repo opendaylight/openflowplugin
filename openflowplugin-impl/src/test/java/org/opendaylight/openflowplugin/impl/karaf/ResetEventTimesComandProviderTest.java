@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.mockito.ArgumentMatchers.anyString;
+
 import com.google.common.base.Function;
 import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
@@ -41,7 +42,7 @@ public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
 
     @After
     public void tearDown() {
-        Mockito.verify(console).print(Matchers.anyString());
+        Mockito.verify(console).print(anyString());
         EventsTimeCounter.resetAllCounters();
     }
 

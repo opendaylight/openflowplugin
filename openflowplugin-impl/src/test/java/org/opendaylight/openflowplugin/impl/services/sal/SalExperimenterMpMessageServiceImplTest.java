@@ -27,8 +27,6 @@ public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
     @SuppressWarnings("unchecked")
     protected void setup() {
         this.<List<MultipartReply>>mockSuccessfulFuture();
-        when(mockedExtensionConverter.getType())
-                .thenReturn((long) MultipartType.OFPMPEXPERIMENTER.getIntValue());
 
         salExperimenterMpMessageService = new SalExperimenterMpMessageServiceImpl(
                 mockedRequestContextStack,
