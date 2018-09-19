@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -73,7 +73,7 @@ public class NodeNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNodeRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNodeRef().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class NodeNotificationSupplierImplTest {
         Collection<DataTreeModification<FlowCapableNode>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(NodeUpdated.class));
+        verify(notifProviderService, times(1)).publish(any(NodeUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -101,7 +101,7 @@ public class NodeNotificationSupplierImplTest {
         final NodeRemoved notification = notifSupplierImpl.deleteNotification(createTestFlowCapableNodePath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID,
-                     notification.getNodeRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNodeRef().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class NodeNotificationSupplierImplTest {
         Collection<DataTreeModification<FlowCapableNode>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(NodeRemoved.class));
+        verify(notifProviderService, times(1)).publish(any(NodeRemoved.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

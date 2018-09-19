@@ -63,7 +63,6 @@ public class RegMoveConvertorTest {
         when(nxRegMove.getSrc()).thenReturn(src);
         when(nxRegMove.getDst()).thenReturn(dst);
         when(nxRegMove.getSrc().getStart()).thenReturn(1);
-        when(nxRegMove.getSrc().getEnd()).thenReturn(2);
         when(nxRegMove.getDst().getStart()).thenReturn(3);
         when(nxRegMove.getDst().getEnd()).thenReturn(4);
         when(nxRegMove.getDst().getDstChoice()).thenReturn(new DstNxTunIdCaseBuilder().build());

@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,6 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -113,11 +113,7 @@ public class SalFlowServiceImplTest extends TestCase {
 
     @Before
     public void initialization() {
-        when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
-        when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(outboundQueue);
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
@@ -128,10 +124,8 @@ public class SalFlowServiceImplTest extends TestCase {
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
         when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
-        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
     }
 
@@ -307,10 +301,9 @@ public class SalFlowServiceImplTest extends TestCase {
         FlowDescriptor mockedFlowDescriptor = mock(FlowDescriptor.class);
         FlowId flowId = new FlowId(DUMMY_FLOW_ID);
         when(mockedFlowDescriptor.getFlowId()).thenReturn(flowId);
-        when(mockedFlowDescriptor.getTableKey()).thenReturn(new TableKey(DUMMY_TABLE_ID));
 
         when(deviceFlowRegistry
-                .retrieveDescriptor(Matchers.any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
+                .retrieveDescriptor(any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
     }
 
     private <T extends DataObject> void verifyOutput(Future<RpcResult<T>> rpcResultFuture) throws ExecutionException,

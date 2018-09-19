@@ -57,7 +57,7 @@ public class NodeConnectorStatNotificationSupplierImpl extends
         Preconditions.checkArgument(path != null);
 
         final NodeConnectorBuilder ncBuilder = new NodeConnectorBuilder();
-        final NodeConnectorKey ncKey = path.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+        final NodeConnectorKey ncKey = path.firstKeyOf(NodeConnector.class);
         ncBuilder.setId(ncKey.getId());
         ncBuilder.withKey(ncKey);
 

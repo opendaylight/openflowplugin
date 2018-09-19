@@ -38,12 +38,9 @@ public class DecNshTtlConvertorTest {
     @Before
     public void setUp() throws Exception {
         NxDecNshTtl nxDecNshTtl = Mockito.mock(NxDecNshTtl.class);
-        when(actionsCase.getNxDecNshTtl()).thenReturn(nxDecNshTtl);
 
         NxActionDecNshTtl nxActionDecNshTtl = Mockito.mock(NxActionDecNshTtl.class);
         ActionDecNshTtl actionDecNshTtl = Mockito.mock(ActionDecNshTtl.class);
-        when(actionDecNshTtl.getNxActionDecNshTtl()).thenReturn(nxActionDecNshTtl);
-        when(action.getActionChoice()).thenReturn(actionDecNshTtl);
 
         decNshTtlConvertor = new DecNshTtlConvertor();
     }
