@@ -48,9 +48,8 @@ public class LLDPDiscoveryUtilsTest {
 
         NodeConnectorRef nodeConnectorRef = LLDPDiscoveryUtils.lldpToNodeConnectorRef(packetLLDP, false);
 
-        NodeKey nodeKey = nodeConnectorRef.getValue().firstKeyOf(Node.class, NodeKey.class);
-        NodeConnectorKey nodeConnectorKey = nodeConnectorRef.getValue().firstKeyOf(NodeConnector.class,
-                NodeConnectorKey.class);
+        NodeKey nodeKey = nodeConnectorRef.getValue().firstKeyOf(Node.class);
+        NodeConnectorKey nodeConnectorKey = nodeConnectorRef.getValue().firstKeyOf(NodeConnector.class);
 
         assertEquals(nodeKey.getId().getValue(), "openflow:2");
         assertEquals(nodeConnectorKey.getId().getValue(), "openflow:2:2");

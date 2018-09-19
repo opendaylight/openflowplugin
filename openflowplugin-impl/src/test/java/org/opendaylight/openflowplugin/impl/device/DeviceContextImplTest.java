@@ -11,9 +11,10 @@ package org.opendaylight.openflowplugin.impl.device;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -183,38 +184,39 @@ public class DeviceContextImplTest {
     public void setUp() throws Exception {
         final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture =
                 Futures.immediateCheckedFuture(Optional.<Node>absent());
-        Mockito.when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
+        Mockito.lenient().when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent))
+                .thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
-        Mockito.when(dataBroker.createTransactionChain(Mockito.any(TransactionChainManager.class)))
+        Mockito.when(dataBroker.createTransactionChain(any(TransactionChainManager.class)))
                 .thenReturn(txChainFactory);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
-        Mockito.when(requestContext.getFuture()).thenReturn(settableFuture);
-        Mockito.doAnswer(invocation -> {
+        Mockito.lenient().when(requestContext.getFuture()).thenReturn(settableFuture);
+        Mockito.lenient().doAnswer(invocation -> {
             settableFuture.set((RpcResult<GetAsyncReply>) invocation.getArguments()[0]);
             return null;
-        }).when(requestContext).setResult(any(RpcResult.class));
+        }).when(requestContext).setResult(Mockito.<RpcResult>any());
 
-        Mockito.when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
-        Mockito.doAnswer(invocation -> {
+        Mockito.lenient().when(requestContextMultiReply.getFuture()).thenReturn(settableFutureMultiReply);
+        Mockito.lenient().doAnswer(invocation -> {
             settableFutureMultiReply.set((RpcResult<MultipartReply>) invocation.getArguments()[0]);
             return null;
         }).when(requestContextMultiReply).setResult(any(RpcResult.class));
         Mockito.when(txChainFactory.newReadWriteTransaction()).thenReturn(writeTx);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
-        Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
+        Mockito.lenient().when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(connectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
-        when(connectionContext.getFeatures().getCapabilities()).thenReturn(mock(Capabilities.class));
+        lenient().when(connectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
+        lenient().when(connectionContext.getFeatures().getCapabilities()).thenReturn(mock(Capabilities.class));
 
-        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(featuresOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        Mockito.when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(featuresOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(contextChainHolder.getContextChain(deviceInfo)).thenReturn(contextChain);
         Mockito.when(contextChain.isMastered(ContextChainMastershipState.CHECK, false)).thenReturn(true);
 
@@ -225,10 +227,11 @@ public class DeviceContextImplTest {
                         .build())
                 .build();
 
-        Mockito.when(messageTranslatorPacketReceived.translate(any(Object.class), any(DeviceInfo.class),
-                any(Object.class))).thenReturn(packetReceived);
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(any(Object.class), any(DeviceInfo.class),
-                any(Object.class))).thenReturn(mock(FlowCapableNodeConnector.class));
+        Mockito.when(messageTranslatorPacketReceived.translate(Mockito.<Object>any(), Mockito.<DeviceInfo>any(),
+                Mockito.<Object>any())).thenReturn(packetReceived);
+        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.<Object>any(),
+                Mockito.<DeviceInfo>any(),
+                Mockito.<Object>any())).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
@@ -242,8 +245,9 @@ public class DeviceContextImplTest {
         final java.util.Optional<AbstractDeviceInitializer> deviceInitializer = java.util.Optional
                 .of(this.abstractDeviceInitializer);
 
-        Mockito.when(deviceInitializerProvider.lookup(OFConstants.OFP_VERSION_1_3)).thenReturn(deviceInitializer);
-        Mockito.when(salRoleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
+        Mockito.lenient().when(deviceInitializerProvider.lookup(OFConstants.OFP_VERSION_1_3))
+                .thenReturn(deviceInitializer);
+        Mockito.lenient().when(salRoleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
 
         deviceContext = new DeviceContextImpl(
                 connectionContext,
@@ -336,10 +340,12 @@ public class DeviceContextImplTest {
     public void testProcessReply() {
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(mockedError);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
+        verify(messageSpy).spyMessage(Mockito.<Class>any(),
+                eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
         final OfHeader mockedOfHeader = mock(OfHeader.class);
         deviceContext.processReply(mockedOfHeader);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(Mockito.<Class>any(),
+                eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -348,11 +354,13 @@ public class DeviceContextImplTest {
 
         final Error mockedError = mock(Error.class);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedError));
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
+        verify(messageSpy).spyMessage(Mockito.<Class>any(),
+                eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
 
         final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
         deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(Mockito.<Class>any(),
+                eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -365,8 +373,9 @@ public class DeviceContextImplTest {
                 .thenReturn(stringListenableFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH));
-        verify(messageSpy).spyMessage(any(Class.class), eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
+        verify(messageSpy).spyMessage(Mockito.<Class>any(), eq(MessageSpy.StatisticsGroup.FROM_SWITCH));
+        verify(messageSpy).spyMessage(Mockito.<Class>any(),
+                eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }
 
     @Test
@@ -375,10 +384,10 @@ public class DeviceContextImplTest {
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
         final ListenableFuture dummyFuture = Futures.immediateFailedFuture(new IllegalStateException());
 
-        when(mockedNotificationPublishService.offerNotification(any(PacketReceived.class))).thenReturn(dummyFuture);
+        when(mockedNotificationPublishService.offerNotification(Mockito.<PacketReceived>any())).thenReturn(dummyFuture);
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processPacketInMessage(mockedPacketInMessage);
-        verify(messageSpy).spyMessage(any(Class.class),
+        verify(messageSpy).spyMessage(Mockito.<Class>any(),
                 eq(MessageSpy.StatisticsGroup.FROM_SWITCH_NOTIFICATION_REJECTED));
     }
 
@@ -411,9 +420,9 @@ public class DeviceContextImplTest {
 
 
         final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
-        when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
+        lenient().when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
-        when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
         when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
 
@@ -431,7 +440,7 @@ public class DeviceContextImplTest {
                 .setMatch(new MatchBuilder().build());
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
 
-        Mockito.when(messageTranslatorFlowRemoved
+        Mockito.lenient().when(messageTranslatorFlowRemoved
                 .translate(any(Object.class), any(DeviceInfo.class), any(Object.class)))
                 .thenReturn(flowRemovedMdsalBld.build());
 

@@ -155,7 +155,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
     private ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
         SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
-        LOG.error(msg);
+        LOG.error("Error {}", msg);
         RpcError error = RpcResultBuilder.newError(RpcError.ErrorType.PROTOCOL, "reconcile", msg);
         result.set(RpcResultBuilder.<ReconcileOutput>failed().withRpcError(error).build());
         return result;

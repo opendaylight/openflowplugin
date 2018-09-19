@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.Test;
@@ -17,7 +16,6 @@ import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
 public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
@@ -27,8 +25,6 @@ public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
     @SuppressWarnings("unchecked")
     protected void setup() {
         this.<List<MultipartReply>>mockSuccessfulFuture();
-        when(mockedExtensionConverter.getType())
-                .thenReturn((long) MultipartType.OFPMPEXPERIMENTER.getIntValue());
 
         salExperimenterMpMessageService = new SalExperimenterMpMessageServiceImpl(
                 mockedRequestContextStack,

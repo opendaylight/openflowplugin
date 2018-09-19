@@ -76,7 +76,7 @@ public class ListeningSimpleClient implements OFClient {
                 }
             }
         } catch (InterruptedException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error("Error {}", ex);
         } finally {
             LOG.debug("listening client shutting down");
             try {
@@ -84,7 +84,7 @@ public class ListeningSimpleClient implements OFClient {
                 bossGroup.shutdownGracefully().get();
                 LOG.debug("listening client shutdown succesful");
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error(e.getMessage(), e);
+                LOG.error("Error {}", e);
             }
         }
         scenarioDone.set(true);

@@ -48,7 +48,6 @@ public class PortUpdateTranslatorTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         portUpdateTranslator = new PortUpdateTranslator();
 
         portStateBld = new StateBuilder().setLive(true);

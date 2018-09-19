@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilay
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,7 +60,6 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     public void testBuildRequestBody() throws Exception {
         final GetFlowStatisticsInput input = mock(GetFlowStatisticsInput.class);
 
-        when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
         when(input.getTableId()).thenReturn(TABLE_NO);
 
         final MultipartRequestFlowCase body = (MultipartRequestFlowCase) ((MultipartRequestInput) service

@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.mockito.ArgumentMatchers.contains;
+
 import com.google.common.base.Function;
 import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
@@ -69,6 +70,6 @@ public class ShowEventTimesComandProviderTest extends AbstractKarafTest {
 
         showEventTimesComandProvider.execute(cmdSession);
         Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print(Matchers.contains("junitDevice"));
+        Mockito.verify(console).print(contains("junitDevice"));
     }
 }

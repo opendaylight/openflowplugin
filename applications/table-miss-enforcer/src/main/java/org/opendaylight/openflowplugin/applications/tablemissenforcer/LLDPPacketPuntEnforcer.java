@@ -52,7 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -106,7 +105,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 String nodeId = modification.getRootPath().getRootIdentifier()
-                        .firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+                        .firstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
                     addFlowInput.setNode(new NodeRef(modification.getRootPath()
