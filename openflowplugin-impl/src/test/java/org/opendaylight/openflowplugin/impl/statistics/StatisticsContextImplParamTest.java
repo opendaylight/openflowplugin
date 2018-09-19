@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static com.google.common.util.concurrent.Futures.immediateFuture;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
@@ -113,9 +112,9 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         statisticsContext.instantiateServiceInstance();
 
         verify(mockedStatisticsGatheringService, times(7))
-                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
+                .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class));
         verify(mockedStatisticsOnFlyGatheringService)
-                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
+                .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class));
     }
 
 }

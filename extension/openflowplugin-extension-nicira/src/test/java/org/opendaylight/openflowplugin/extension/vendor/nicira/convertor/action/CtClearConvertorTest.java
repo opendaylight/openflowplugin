@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
-import static org.mockito.Mockito.when;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,12 +43,9 @@ public class CtClearConvertorTest {
     @Before
     public void setUp() throws Exception {
         final NxCtClear nxCtClear = Mockito.mock(NxCtClear.class);
-        when(actionsCase.getNxCtClear()).thenReturn(nxCtClear);
 
         final ActionCtClear actionCtClear = Mockito.mock(ActionCtClear.class);
         final NxActionCtClear nxActionCtClear = Mockito.mock(NxActionCtClear.class);
-        when(actionCtClear.getNxActionCtClear()).thenReturn(nxActionCtClear);
-        when(action.getActionChoice()).thenReturn(actionCtClear);
 
         ctClearConvertor = new CtClearConvertor();
     }

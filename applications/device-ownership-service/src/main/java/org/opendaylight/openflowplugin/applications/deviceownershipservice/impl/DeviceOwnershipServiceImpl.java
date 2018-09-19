@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.deviceownershipservice.impl;
 
-import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
@@ -22,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, EntityOwnershipListener {
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipServiceImpl.class);
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final Pattern NODE_ID_PATTERN = Pattern.compile("^openflow:\\d+");
 

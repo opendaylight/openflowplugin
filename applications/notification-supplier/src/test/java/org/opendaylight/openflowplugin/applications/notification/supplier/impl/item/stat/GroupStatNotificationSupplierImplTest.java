@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl.
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -86,7 +86,7 @@ public class GroupStatNotificationSupplierImplTest {
         Collection<DataTreeModification<GroupStatistics>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(GroupStatisticsUpdated.class));
+        verify(notifProviderService, times(1)).publish(any(GroupStatisticsUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

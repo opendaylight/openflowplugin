@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 
@@ -48,7 +49,7 @@ public class IdleHandlerTest {
         idleHandler.channelRead(mockChHndlrCtx, new Object());
 
         // Verify that a read was fired for the next handler ...
-        verify(mockChHndlrCtx, times(1)).fireChannelRead(any(SwitchIdleEvent.class)) ;
+        verify(mockChHndlrCtx, times(1)).fireChannelRead(Mockito.<SwitchIdleEvent>any()) ;
     }
 
     /**

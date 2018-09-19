@@ -8,6 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 import com.google.common.util.concurrent.FutureCallback;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -16,8 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -54,7 +57,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
     @Test
     public void testGetFlowTablesStatistics() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
 
         GetFlowTablesStatisticsInputBuilder input = new GetFlowTablesStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
@@ -87,7 +90,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPTABLE, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService).offerNotification(Matchers.<Notification>any());
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.<Notification>any());
     }
 
     @Test

@@ -99,8 +99,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     @Override
     public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(
             UpdateTableInput input) {
-        String plus = "updateTable - " + input;
-        OpenflowpluginTableFeaturesTestServiceProvider.LOG.info(plus);
+        OpenflowpluginTableFeaturesTestServiceProvider.LOG.info("updateTable - {}", input);
         return null;
     }
 
