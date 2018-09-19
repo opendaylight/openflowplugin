@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -18,10 +20,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
@@ -92,8 +93,8 @@ public class SystemNotificationsListenerImplTest {
      */
     @Test
     public void testOnDisconnectEvent1() throws Exception {
-        Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
-        Mockito.when(connectionAdapter.disconnect()).thenReturn(Futures.immediateFuture(Boolean.TRUE));
+//        Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
+//        Mockito.when(connectionAdapter.disconnect()).thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
@@ -166,7 +167,7 @@ public class SystemNotificationsListenerImplTest {
         final ListenableFuture<RpcResult<EchoOutput>> echoReply =
                 Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().setXid(0L).build()).build());
 
-        Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);
+        Mockito.when(connectionAdapter.echo(any(EchoInput.class))).thenReturn(echoReply);
 
         SwitchIdleEvent notification = new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build();
         systemNotificationsListener.onSwitchIdleEvent(notification);
@@ -175,7 +176,7 @@ public class SystemNotificationsListenerImplTest {
         Thread.sleep(SAFE_TIMEOUT);
 
         verifyCommonInvocations();
-        Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
+        Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(any(EchoInput.class));
         Mockito.verify(connectionAdapter, Mockito.never()).disconnect();
         Mockito.verify(connectionContext).changeStateToTimeouting();
         Mockito.verify(connectionContext).changeStateToWorking();
@@ -187,7 +188,7 @@ public class SystemNotificationsListenerImplTest {
     @Test
     public void testOnSwitchIdleEvent2() throws Exception {
         final SettableFuture<RpcResult<EchoOutput>> echoReply = SettableFuture.create();
-        Mockito.when(connectionAdapter.echo(Matchers.any(EchoInput.class))).thenReturn(echoReply);
+        Mockito.when(connectionAdapter.echo(any(EchoInput.class))).thenReturn(echoReply);
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
         Mockito.when(connectionAdapter.disconnect())
                 .thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
@@ -198,7 +199,7 @@ public class SystemNotificationsListenerImplTest {
         Thread.sleep(SystemNotificationsListenerImpl.MAX_ECHO_REPLY_TIMEOUT + SAFE_TIMEOUT);
 
         verifyCommonInvocations();
-        Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(Matchers.any(EchoInput.class));
+        Mockito.verify(connectionAdapter, Mockito.timeout(SAFE_TIMEOUT)).echo(any(EchoInput.class));
         Mockito.verify(connectionAdapter).disconnect();
         Mockito.verify(connectionContext).changeStateToTimeouting();
         Mockito.verify(connectionContext).closeConnection(true);

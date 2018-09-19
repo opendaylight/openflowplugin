@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -36,7 +36,7 @@ public class VendorMessageFactoryTest {
      */
     @Test
     public void test() {
-        Mockito.when(registry.getDeserializer(Matchers.<MessageCodeKey>any())).thenReturn(deserializer);
+        Mockito.when(registry.getDeserializer(ArgumentMatchers.<MessageCodeKey>any())).thenReturn(deserializer);
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("01 02 03 04 FF FF FF FF 80 00 00 00");
         VendorMessageFactory factory = new VendorMessageFactory();
         factory.injectDeserializerRegistry(registry);

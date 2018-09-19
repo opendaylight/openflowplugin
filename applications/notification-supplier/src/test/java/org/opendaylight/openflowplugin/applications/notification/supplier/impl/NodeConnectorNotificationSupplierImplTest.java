@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -77,9 +77,9 @@ public class NodeConnectorNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getId().getValue());
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnectorRef().getValue()
-                .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue());
+                .firstKeyOf(NodeConnector.class).getId().getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId()
+                     notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class).getId()
                              .getValue());
     }
 
@@ -91,7 +91,7 @@ public class NodeConnectorNotificationSupplierImplTest {
         Collection<DataTreeModification<FlowCapableNodeConnector>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(NodeConnectorUpdated.class));
+        verify(notifProviderService, times(1)).publish(any(NodeConnectorUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -110,9 +110,9 @@ public class NodeConnectorNotificationSupplierImplTest {
                 .deleteNotification(createTestFlowCapableConnectorNodePath());
         assertNotNull(notification);
         assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnectorRef().getValue()
-                .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue());
+                .firstKeyOf(NodeConnector.class).getId().getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class, NodeKey.class).getId()
+                     notification.getNodeConnectorRef().getValue().firstKeyOf(Node.class).getId()
                              .getValue());
     }
 
@@ -124,7 +124,7 @@ public class NodeConnectorNotificationSupplierImplTest {
         Collection<DataTreeModification<FlowCapableNodeConnector>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(NodeConnectorRemoved.class));
+        verify(notifProviderService, times(1)).publish(any(NodeConnectorRemoved.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
