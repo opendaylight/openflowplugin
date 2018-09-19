@@ -23,8 +23,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -87,7 +87,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry zipped = new SyncupEntry(dataAfter2, configDS, dataBefore, configDS);
         final List<ListenableFuture<Boolean>> allResults = new ArrayList<>();
 
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
                 .thenAnswer(invocationOnMock -> {
                     LOG.info("unlocking next configs");
                     latchForNext.countDown();
@@ -131,7 +131,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry first = new SyncupEntry(dataBefore, configDS, null, configDS);
         final SyncupEntry second = new SyncupEntry(dataAfter, configDS, dataBefore, configDS);
 
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
                 .thenAnswer(invocationOnMock -> {
                     LOG.info("unlocking next config");
                     latchForNext.countDown();
@@ -166,7 +166,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry first = new SyncupEntry(configAfter, configDS, configBefore, configDS);
         final SyncupEntry second = new SyncupEntry(configActual, configDS, freshOperational, operationalDS);
 
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
                 .thenAnswer(invocationOnMock -> {
                     LOG.info("unlocking for fresh operational");
                     latchForNext.countDown();
@@ -192,7 +192,7 @@ public class SyncReactorFutureZipDecoratorTest {
     }
 
     private void mockSyncupWithEntry(final SyncupEntry entry) {
-        Mockito.when(delegate.syncup(Matchers.any(), Mockito.eq(entry)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.any(), Mockito.eq(entry)))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
     }
 

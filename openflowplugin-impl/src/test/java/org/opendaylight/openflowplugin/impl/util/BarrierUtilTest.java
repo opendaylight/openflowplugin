@@ -17,8 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -53,7 +53,7 @@ public class BarrierUtilTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(transactionService.sendBarrier(Matchers.<SendBarrierInput>any()))
+        Mockito.when(transactionService.sendBarrier(ArgumentMatchers.<SendBarrierInput>any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
@@ -69,7 +69,7 @@ public class BarrierUtilTest {
         final ListenableFuture<RpcResult<String>> chainResult =
                 BarrierUtil.chainBarrier(input, NODE_REF, transactionService, compositeTransform);
 
-        Mockito.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        Mockito.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
         Mockito.verify(compositeTransform).apply(pairCpt.capture());
 
         final Pair<RpcResult<String>, RpcResult<SendBarrierOutput>> value = pairCpt.getValue();

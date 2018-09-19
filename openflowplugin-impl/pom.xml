@@ -63,8 +63,8 @@
             <version>${infrautils.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.cdi</groupId>
-            <artifactId>pax-cdi-api</artifactId>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-maven-plugin-annotation</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

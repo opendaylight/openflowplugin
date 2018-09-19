@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -43,7 +43,7 @@ public class MultipartReplyExperimenterTest {
      */
     @Test
     public void testMultipartReplyExperimenter() {
-        Mockito.when(registry.getDeserializer(Matchers.<MessageCodeKey>any())).thenReturn(vendorDeserializer);
+        Mockito.when(registry.getDeserializer(ArgumentMatchers.<MessageCodeKey>any())).thenReturn(vendorDeserializer);
         factory.injectDeserializerRegistry(registry);
         ByteBuf bb = BufferHelper.buildBuffer("FF FF 00 01 00 00 00 00 "
                                             + "00 00 00 01 00 00 00 02"); // expID, expType

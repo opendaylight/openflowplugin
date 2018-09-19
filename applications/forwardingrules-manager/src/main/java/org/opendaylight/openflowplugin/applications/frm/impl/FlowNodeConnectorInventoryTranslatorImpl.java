@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -88,7 +87,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector removed");
-            String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class, NodeConnectorKey.class)
+            String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class)
                     .getId().getValue();
             BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
@@ -111,7 +110,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector added");
             String nodeConnectorIdentifier = nodeConnIdent
-                    .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
+                    .firstKeyOf(NodeConnector.class).getId().getValue();
             BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
             if (!dpnToPortMultiMap.containsEntry(dpId, nodeConnectorIdentifier)) {

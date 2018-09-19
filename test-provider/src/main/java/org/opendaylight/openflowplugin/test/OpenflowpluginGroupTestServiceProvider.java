@@ -102,8 +102,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      */
     @Override
     public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
-        String plus = "addGroup - " + input;
-        OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
+        OpenflowpluginGroupTestServiceProvider.LOG.info("addGroup - {}", input);
         return null;
     }
 
@@ -119,8 +118,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     @Override
     public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(
             RemoveGroupInput input) {
-        String plus = "removeGroup - " + input;
-        OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
+        OpenflowpluginGroupTestServiceProvider.LOG.info("removeGroup - {}", input);
         return null;
     }
 
@@ -136,8 +134,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
     @Override
     public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(
             UpdateGroupInput input) {
-        String plus = "updateGroup - " + input;
-        OpenflowpluginGroupTestServiceProvider.LOG.info(plus);
+        OpenflowpluginGroupTestServiceProvider.LOG.info("updateGroup - {}", input);
         return null;
     }
 

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl.
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -85,11 +85,11 @@ public class FlowNotificationSupplierImplTest {
         final FlowAdded notification = notifSupplierImpl.createNotification(createTestFlow(), createTestFlowPath());
         assertNotNull(notification);
         assertEquals(FLOW_ID,
-                     notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
+                     notification.getFlowRef().getValue().firstKeyOf(Flow.class).getId().getValue());
         assertEquals(FLOW_TABLE_ID,
-                     notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
+                     notification.getFlowRef().getValue().firstKeyOf(Table.class).getId());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class FlowNotificationSupplierImplTest {
         Collection<DataTreeModification<Flow>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(FlowAdded.class));
+        verify(notifProviderService, times(1)).publish(any(FlowAdded.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -117,11 +117,11 @@ public class FlowNotificationSupplierImplTest {
         final FlowUpdated notification = notifSupplierImpl.updateNotification(createTestFlow(), createTestFlowPath());
         assertNotNull(notification);
         assertEquals(FLOW_ID,
-                     notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
+                     notification.getFlowRef().getValue().firstKeyOf(Flow.class).getId().getValue());
         assertEquals(FLOW_TABLE_ID,
-                     notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
+                     notification.getFlowRef().getValue().firstKeyOf(Table.class).getId());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class FlowNotificationSupplierImplTest {
         Collection<DataTreeModification<Flow>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(FlowUpdated.class));
+        verify(notifProviderService, times(1)).publish(any(FlowUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -149,11 +149,11 @@ public class FlowNotificationSupplierImplTest {
         final FlowRemoved notification = notifSupplierImpl.deleteNotification(createTestFlowPath());
         assertNotNull(notification);
         assertEquals(FLOW_ID,
-                     notification.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue());
+                     notification.getFlowRef().getValue().firstKeyOf(Flow.class).getId().getValue());
         assertEquals(FLOW_TABLE_ID,
-                     notification.getFlowRef().getValue().firstKeyOf(Table.class, TableKey.class).getId());
+                     notification.getFlowRef().getValue().firstKeyOf(Table.class).getId());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -163,7 +163,7 @@ public class FlowNotificationSupplierImplTest {
         Collection<DataTreeModification<Flow>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(FlowRemoved.class));
+        verify(notifProviderService, times(1)).publish(any(FlowRemoved.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

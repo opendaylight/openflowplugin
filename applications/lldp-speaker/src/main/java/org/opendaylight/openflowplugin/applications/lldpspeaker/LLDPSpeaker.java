@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
@@ -129,7 +128,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
             LOG.debug("Sending LLDP frames to total {} ports", getOwnedPorts());
             nodeConnectorMap.keySet().forEach(ncIID -> {
                 NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(ncIID).getId();
-                NodeId nodeId = ncIID.firstKeyOf(Node.class, NodeKey.class).getId();
+                NodeId nodeId = ncIID.firstKeyOf(Node.class).getId();
                 if (deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
                     LOG.debug("Node is owned by this controller, sending LLDP packet through port {}",
                             nodeConnectorId.getValue());
@@ -205,7 +204,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     private int getOwnedPorts() {
         AtomicInteger ownedPorts = new AtomicInteger();
         nodeConnectorMap.keySet().forEach(ncIID -> {
-            NodeId nodeId = ncIID.firstKeyOf(Node.class, NodeKey.class).getId();
+            NodeId nodeId = ncIID.firstKeyOf(Node.class).getId();
             if (deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
                 ownedPorts.incrementAndGet();
             }

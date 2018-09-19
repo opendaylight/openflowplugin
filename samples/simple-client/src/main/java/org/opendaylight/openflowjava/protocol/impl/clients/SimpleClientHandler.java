@@ -44,7 +44,7 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf bb = (ByteBuf) msg;
         if (LOG.isDebugEnabled()) {
-            LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(bb));
+            LOG.debug("Message {}", ByteBufUtils.byteBufToHexString(bb));
         }
         int length = bb.getUnsignedShort(bb.readerIndex() + LENGTH_INDEX_IN_HEADER);
         LOG.trace("SimpleClientHandler - start of read");

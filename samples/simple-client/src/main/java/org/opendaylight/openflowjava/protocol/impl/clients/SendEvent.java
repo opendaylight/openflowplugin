@@ -44,7 +44,7 @@ public class SendEvent implements ClientEvent {
         ctx.writeAndFlush(buffer);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug(">> {}", ByteBufUtils.bytesToHexString(msgToSend));
+            LOG.debug("Message to send {}", ByteBufUtils.bytesToHexString(msgToSend));
             LOG.debug("message sent");
         }
         return true;
