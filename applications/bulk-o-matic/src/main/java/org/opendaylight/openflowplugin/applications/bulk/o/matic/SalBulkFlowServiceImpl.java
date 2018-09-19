@@ -216,7 +216,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException
                 | NotCompliantMBeanException e) {
             rpcResultBuilder = RpcResultBuilder.failed();
-            LOG.warn("Exception occurred: {} ", e.getMessage(), e);
+            LOG.warn("Exception occurred: {} ", e);
         }
         return Futures.immediateFuture(rpcResultBuilder.build());
     }

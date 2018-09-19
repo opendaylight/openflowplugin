@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -45,7 +45,7 @@ public class VendorInputMessageFactoryTest {
      */
     @Test
     public void test() {
-        Mockito.when(registry.getSerializer(Matchers.<MessageTypeKey<?>>any()))
+        Mockito.when(registry.getSerializer(ArgumentMatchers.<MessageTypeKey<?>>any()))
             .thenReturn(serializer);
         VendorInputMessageFactory factory = new VendorInputMessageFactory();
         factory.injectSerializerRegistry(registry);
@@ -58,7 +58,8 @@ public class VendorInputMessageFactoryTest {
         builder.setExperimenterDataOfChoice(vendorData);
         ExperimenterInput experimenterInput = builder.build();
 
-        Mockito.when(registry.getSerializer(Matchers.<ExperimenterIdSerializerKey<ExperimenterDataOfChoice>>any()))
+        Mockito.when(registry.getSerializer(
+                ArgumentMatchers.<ExperimenterIdSerializerKey<ExperimenterDataOfChoice>>any()))
                 .thenReturn(foundSerializer);
         factory.serialize(experimenterInput, buffer);
         Mockito.verify(foundSerializer, Mockito.times(1))

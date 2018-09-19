@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
@@ -14,7 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -97,34 +98,12 @@ public abstract class ServiceMocking {
     @Before
     @SuppressWarnings("unchecked")
     public void initialization() throws Exception {
-        when(mockedExtensionConverter.getExperimenterId())
-                .thenReturn(new ExperimenterId(DUMMY_EXPERIMENTER_ID));
-        when(mockedExtensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
-                .thenReturn(mockedExtensionConverter);
-        when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
-        when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
-        when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
 
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
-
-        when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-        when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
-
-        when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
         when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
 
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry())
-                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II));
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
-        when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
 
         setup();
     }
@@ -136,7 +115,6 @@ public abstract class ServiceMocking {
     protected  <T> void mockSuccessfulFuture() {
         ListenableFuture<RpcResult<T>> dummySuccessfulFuture =
                 Futures.immediateFuture(RpcResultBuilder.success((T) null).build());
-        when(mockedRequestContext.getFuture()).thenReturn(dummySuccessfulFuture);
     }
 
     protected  <T> void mockSuccessfulFuture(T result) {

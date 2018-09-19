@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -137,11 +137,11 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         initStatisticsContext();
 
         when(mockedStatisticsGatheringService
-                     .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
+                     .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class)))
                 .thenReturn(Futures.immediateFuture(
                         RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build()));
         when(mockedStatisticsOnFlyGatheringService
-                     .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class)))
+                     .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class)))
                 .thenReturn(Futures.immediateFuture(
                         RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build()));
 
@@ -151,9 +151,9 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         statisticsContext.instantiateServiceInstance();
 
         verify(mockedStatisticsGatheringService, times(7))
-                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
+                .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class));
         verify(mockedStatisticsOnFlyGatheringService)
-                .getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.any(MultipartType.class));
+                .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class));
         Mockito.verifyNoMoreInteractions(mockedStatisticsGatheringService, mockedStatisticsOnFlyGatheringService);
     }
 }

@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
@@ -105,25 +105,13 @@ public abstract class AbstractDirectStatisticsServiceTest {
                 .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
 
         convertorManager = ConvertorManagerFactory.createDefaultManager();
-        when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
-        when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
-        when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-        when(deviceContext.getMultiMsgCollector(any())).thenReturn(multiMsgCollector);
-        when(deviceContext.oook()).thenReturn(translatorLibrary);
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
-        when(deviceInfo.getNodeId()).thenReturn(new NodeId(NODE_ID));
         when(deviceInfo.getVersion()).thenReturn(OF_VERSION);
         when(deviceInfo.getDatapathId()).thenReturn(DATAPATH_ID);
-        when(getFeaturesOutput.getVersion()).thenReturn(OF_VERSION);
-        when(getFeaturesOutput.getDatapathId()).thenReturn(DATAPATH_ID);
         when(connectionContext.getFeatures()).thenReturn(features);
-        when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        when(features.getVersion()).thenReturn(OF_VERSION);
-        when(features.getDatapathId()).thenReturn(DATAPATH_ID);
         multipartWriterProvider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);
         setUp();
     }
