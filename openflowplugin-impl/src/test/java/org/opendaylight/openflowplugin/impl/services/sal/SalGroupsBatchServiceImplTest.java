@@ -17,9 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -93,7 +93,7 @@ public class SalGroupsBatchServiceImplTest {
     public void setUp() throws Exception {
         salGroupsBatchService = new SalGroupsBatchServiceImpl(salGroupService, transactionService);
 
-        Mockito.when(transactionService.sendBarrier(Matchers.<SendBarrierInput>any()))
+        Mockito.when(transactionService.sendBarrier(ArgumentMatchers.<SendBarrierInput>any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
@@ -129,7 +129,7 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalGroup().getGroupId().getValue().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedGroup().getGroupId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalGroup().getGroupId().getValue().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedGroup().getGroupId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
 
@@ -197,7 +197,7 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getGroupId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getGroupId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -234,7 +234,7 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getGroupId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getGroupId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getGroupId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getGroupId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -300,7 +300,7 @@ public class SalGroupsBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getGroupId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getGroupId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     private static BatchAddGroups createEmptyBatchAddGroup(final long groupIdValue) {

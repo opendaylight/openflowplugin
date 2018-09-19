@@ -31,7 +31,7 @@ public class BarrierReplyMessageFactoryTest extends DefaultDeserializerFactoryTe
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public BarrierReplyMessageFactoryTest() {
-       super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 21, BarrierOutput.class));
+        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 21, BarrierOutput.class));
     }
 
     /**

@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -83,11 +83,11 @@ public class ReconcileUtilTest {
         Mockito.when(flowCapableService.sendBarrier(barrierInputCaptor.capture()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
 
-        Mockito.verify(flowCapableService, Mockito.never()).sendBarrier(Matchers.<SendBarrierInput>any());
+        Mockito.verify(flowCapableService, Mockito.never()).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
         Assert.assertFalse(vehicle.isDone());
 
         testRabbit.set(RpcResultBuilder.<Void>success().build());
-        Mockito.verify(flowCapableService).sendBarrier(Matchers.<SendBarrierInput>any());
+        Mockito.verify(flowCapableService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
         Assert.assertTrue(vehicle.isDone());
         Assert.assertTrue(vehicle.get().isSuccessful());
     }

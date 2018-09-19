@@ -56,7 +56,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
         LOG.trace("Forwarding Flow REMOVE request Tbl id, node Id {} {}",
                 identifier, nodeIdent);
 
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
             builder.setFlowRef(new FlowRef(identifier));
@@ -81,7 +81,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
                 identifier, nodeIdent, update);
 
         final Future<RpcResult<UpdateFlowOutput>> output;
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
             final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
 
@@ -110,7 +110,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
                 identifier, nodeIdent, addDataObj);
 
         final Future<RpcResult<AddFlowOutput>> output;
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 

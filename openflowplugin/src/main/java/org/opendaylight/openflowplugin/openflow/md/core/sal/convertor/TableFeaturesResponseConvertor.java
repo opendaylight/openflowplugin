@@ -440,7 +440,7 @@ public class TableFeaturesResponseConvertor
             if (actionExecutor != null) {
                 actionExecutor.execute(property, propBuilder);
             } else {
-                LOG.error("Unsupported table feature property : " + propType);
+                LOG.error("Unsupported table feature property : {}" + propType);
             }
 
             propBuilder.setOrder(index);

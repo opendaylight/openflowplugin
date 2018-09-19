@@ -10,13 +10,14 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -71,7 +72,7 @@ public class LLDPLinkAgerTest {
         lldpLinkAger = new LLDPLinkAger(getConfig(), notificationService, getConfigurationService(), eos);
         Mockito.when(link.getDestination()).thenReturn(new NodeConnectorRef(
                 InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1")))));
-        Mockito.when(eos.getOwnershipState(Mockito.any(Entity.class))).thenReturn(
+        Mockito.when(eos.getOwnershipState(any(Entity.class))).thenReturn(
                 Optional.of(EntityOwnershipState.IS_OWNER));
     }
 
@@ -95,7 +96,7 @@ public class LLDPLinkAgerTest {
     public void testLLDPAgingTask() throws InterruptedException {
         lldpLinkAger.put(link);
         Thread.sleep(SLEEP);
-        verify(notificationService).publish(Matchers.any(LinkRemoved.class));
+        verify(notificationService).publish(any(LinkRemoved.class));
     }
 
     private TopologyLldpDiscoveryConfig getConfig() {
@@ -109,13 +110,13 @@ public class LLDPLinkAgerTest {
         final ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
         final TopologyLldpDiscoveryConfig config = getConfig();
 
-        Mockito.when(configurationService.registerListener(Mockito.any())).thenReturn(() -> {
+        Mockito.when(configurationService.registerListener(any())).thenReturn(() -> {
         });
 
-        Mockito.when(configurationService.getProperty(Mockito.eq("topology-lldp-interval"), Mockito.any()))
+        Mockito.when(configurationService.getProperty(Mockito.eq("topology-lldp-interval"), any()))
                 .thenReturn(config.getTopologyLldpInterval());
 
-        Mockito.when(configurationService.getProperty(Mockito.eq("topology-lldp-expiration-interval"), Mockito.any()))
+        Mockito.when(configurationService.getProperty(Mockito.eq("topology-lldp-expiration-interval"), any()))
                 .thenReturn(config.getTopologyLldpExpirationInterval());
 
         return configurationService;

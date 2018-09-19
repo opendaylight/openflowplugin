@@ -13,7 +13,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -51,7 +51,8 @@ public class OF10StatsRequestExperimenterTest {
     @Test
     public void testExperimenter() throws Exception {
         Mockito.when(mockRegistry.getSerializer(
-                Matchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any())).thenReturn(serializer);
+                ArgumentMatchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any()))
+                .thenReturn(serializer);
         OF10StatsRequestInputFactory multipartFactory = new OF10StatsRequestInputFactory();
         multipartFactory.injectSerializerRegistry(mockRegistry);
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();

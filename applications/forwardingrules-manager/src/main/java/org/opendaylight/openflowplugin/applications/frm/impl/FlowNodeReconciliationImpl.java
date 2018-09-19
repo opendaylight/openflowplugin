@@ -68,7 +68,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
@@ -176,7 +175,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         @Override
         public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             Optional<FlowCapableNode> flowNode = Optional.absent();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
@@ -310,7 +309,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         @Override
         public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
@@ -734,7 +733,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         if (flowNode.get().getGroup() != null) {
             for (Group gr : flowNode.get().getGroup()) {
-                NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class, NodeKey.class).getId();
+                NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class).getId();
                 provider.getDevicesGroupRegistry().storeGroup(nodeId,gr.getGroupId().getValue());
                 messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
                         .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());

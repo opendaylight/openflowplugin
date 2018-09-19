@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
@@ -83,7 +82,7 @@ public class MdSalRegistrationUtilsTest {
                                                 extensionConverterProvider,
                                                 convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
-                Matchers.any(), any(RpcService.class));
+                any(), any(RpcService.class));
     }
 
     @Test
@@ -98,7 +97,7 @@ public class MdSalRegistrationUtilsTest {
                                                                  notificationPublishService,
                                                                  convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION))
-                .registerRpcServiceImplementation(Matchers.any(), any(RpcService.class));
+                .registerRpcServiceImplementation(any(), any(RpcService.class));
     }
 
 }
