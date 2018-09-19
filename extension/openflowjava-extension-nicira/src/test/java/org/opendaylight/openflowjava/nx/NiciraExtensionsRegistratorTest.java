@@ -7,10 +7,12 @@
  */
 package org.opendaylight.openflowjava.nx;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -141,242 +143,242 @@ public class NiciraExtensionsRegistratorTest {
     @Test
     public void registerNiciraExtensionsTest() {
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 7)),
-                Matchers.any(RegLoadCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 7)),
+                any(RegLoadCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegLoad.class)),
-                Matchers.any(RegLoadCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegLoad.class)),
+                any(RegLoadCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 33)),
-                Matchers.any(RegLoad2Codec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 33)),
+                any(RegLoad2Codec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegLoad2.class)),
-                Matchers.any(RegLoad2Codec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegLoad2.class)),
+                any(RegLoad2Codec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 6)),
-                Matchers.any(RegMoveCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 6)),
+                any(RegMoveCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegMove.class)),
-                Matchers.any(RegMoveCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionRegMove.class)),
+                any(RegMoveCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 15)),
-                Matchers.any(OutputRegCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 15)),
+                any(OutputRegCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionOutputReg.class)),
-                Matchers.any(OutputRegCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionOutputReg.class)),
+                any(OutputRegCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 32)),
-                Matchers.any(OutputReg2Codec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 32)),
+                any(OutputReg2Codec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionOutputReg2.class)),
-                Matchers.any(OutputReg2Codec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionOutputReg2.class)),
+                any(OutputReg2Codec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionResubmit.class)),
-                Matchers.any(ResubmitCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionResubmit.class)),
+                any(ResubmitCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 1)),
-                Matchers.any(ResubmitCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 1)),
+                any(ResubmitCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 14)),
-                Matchers.any(ResubmitCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 14)),
+                any(ResubmitCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionMultipath.class)),
-                Matchers.any(MultipathCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionMultipath.class)),
+                any(MultipathCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 10)),
-                Matchers.any(MultipathCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 10)),
+                any(MultipathCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 46)),
-                Matchers.any(EncapCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 46)),
+                any(EncapCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionEncap.class)),
-                Matchers.any(EncapCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionEncap.class)),
+                any(EncapCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 47)),
-                Matchers.any(DecapCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 47)),
+                any(DecapCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionDecap.class)),
-                Matchers.any(DecapCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg0.class)),
-                Matchers.any(Reg0Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 0)),
-                Matchers.any(Reg0Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg1.class)),
-                Matchers.any(Reg1Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 1)),
-                Matchers.any(Reg1Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg2.class)),
-                Matchers.any(Reg2Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 2)),
-                Matchers.any(Reg2Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg3.class)),
-                Matchers.any(Reg3Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 3)),
-                Matchers.any(Reg3Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg4.class)),
-                Matchers.any(Reg4Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 4)),
-                Matchers.any(Reg4Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg5.class)),
-                Matchers.any(Reg5Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 5)),
-                Matchers.any(Reg5Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg6.class)),
-                Matchers.any(Reg6Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 6)),
-                Matchers.any(Reg6Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg7.class)),
-                Matchers.any(Reg7Codec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 7)),
-                Matchers.any(Reg7Codec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxTunId.class)),
-                Matchers.any(TunIdCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 16)),
-                Matchers.any(TunIdCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfArpOp.class)),
-                Matchers.any(ArpOpCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 15)),
-                Matchers.any(ArpOpCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxArpSha.class)),
-                Matchers.any(ArpShaCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 17)),
-                Matchers.any(ArpShaCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfArpSpa.class)),
-                Matchers.any(ArpSpaCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 16)),
-                Matchers.any(ArpSpaCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxArpTha.class)),
-                Matchers.any(ArpThaCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 18)),
-                Matchers.any(ArpThaCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfArpTpa.class)),
-                Matchers.any(ArpTpaCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 17)),
-                Matchers.any(ArpTpaCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfEthDst.class)),
-                Matchers.any(EthDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 1)),
-                Matchers.any(EthDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfEthSrc.class)),
-                Matchers.any(EthSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 2)),
-                Matchers.any(EthSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionDecap.class)),
+                any(DecapCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg0.class)),
+                any(Reg0Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 0)),
+                any(Reg0Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg1.class)),
+                any(Reg1Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 1)),
+                any(Reg1Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg2.class)),
+                any(Reg2Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 2)),
+                any(Reg2Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg3.class)),
+                any(Reg3Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 3)),
+                any(Reg3Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg4.class)),
+                any(Reg4Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 4)),
+                any(Reg4Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg5.class)),
+                any(Reg5Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 5)),
+                any(Reg5Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg6.class)),
+                any(Reg6Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 6)),
+                any(Reg6Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg7.class)),
+                any(Reg7Codec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 7)),
+                any(Reg7Codec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxTunId.class)),
+                any(TunIdCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 16)),
+                any(TunIdCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfArpOp.class)),
+                any(ArpOpCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 15)),
+                any(ArpOpCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxArpSha.class)),
+                any(ArpShaCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 17)),
+                any(ArpShaCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfArpSpa.class)),
+                any(ArpSpaCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 16)),
+                any(ArpSpaCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxArpTha.class)),
+                any(ArpThaCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 18)),
+                any(ArpThaCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfArpTpa.class)),
+                any(ArpTpaCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 17)),
+                any(ArpTpaCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfEthDst.class)),
+                any(EthDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 1)),
+                any(EthDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(
+                eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfEthSrc.class)),
+                any(EthSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 2)),
+                any(EthSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfEthType.class)),
-                Matchers.any(EthTypeCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 3)),
-                Matchers.any(EthTypeCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(
+                any(EthTypeCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 3)),
+                any(EthTypeCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxTunIpv4Dst.class)),
-                Matchers.any(TunIpv4DstCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 32)),
-                Matchers.any(TunIpv4DstCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(
+                any(TunIpv4DstCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 32)),
+                any(TunIpv4DstCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxTunIpv4Src.class)),
-                Matchers.any(TunIpv4SrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 31)),
-                Matchers.any(TunIpv4SrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfTcpSrc.class)),
-                Matchers.any(TcpSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 9)),
-                Matchers.any(TcpSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfTcpDst.class)),
-                Matchers.any(TcpDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 10)),
-                Matchers.any(TcpDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfUdpSrc.class)),
-                Matchers.any(UdpSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 11)),
-                Matchers.any(UdpSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfUdpDst.class)),
-                Matchers.any(UdpDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 12)),
-                Matchers.any(UdpDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers.eq(
+                any(TunIpv4SrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 31)),
+                any(TunIpv4SrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfTcpSrc.class)),
+                any(TcpSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 9)),
+                any(TcpSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfTcpDst.class)),
+                any(TcpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 10)),
+                any(TcpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfUdpSrc.class)),
+                any(UdpSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 11)),
+                any(UdpSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfUdpDst.class)),
+                any(UdpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, 12)),
+                any(UdpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtState.class)),
-                Matchers.any(CtStateCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 105)),
-                Matchers.any(CtStateCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtZone.class)),
-                Matchers.any(CtZoneCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 106)),
-                Matchers.any(CtZoneCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtMark.class)),
-                Matchers.any(CtMarkCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 107)),
-                Matchers.any(CtMarkCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                        .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
-                                NxmNxCtTpSrc.class)), Matchers.any(CtTpSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                        .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                                OxmMatchConstants.NXM_1_CLASS, 124)), Matchers.any(CtTpSrcCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                        .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
-                                NxmNxCtTpDst.class)), Matchers.any(CtTpDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                        .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                                OxmMatchConstants.NXM_1_CLASS, 125)), Matchers.any(CtTpDstCodec.class));
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
-                        NxmNxPktMark.class)), Matchers.any(PktMarkCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                        OxmMatchConstants.NXM_1_CLASS, 33)), Matchers.any(PktMarkCodec.class));
+                any(CtStateCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 105)),
+                any(CtStateCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtZone.class)),
+                any(CtZoneCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 106)),
+                any(CtZoneCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtMark.class)),
+                any(CtMarkCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, 107)),
+                any(CtMarkCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
+                                NxmNxCtTpSrc.class)), any(CtTpSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+                                OxmMatchConstants.NXM_1_CLASS, 124)), any(CtTpSrcCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
+                                NxmNxCtTpDst.class)), any(CtTpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+                                OxmMatchConstants.NXM_1_CLASS, 125)), any(CtTpDstCodec.class));
+        Mockito.verify(registrator).registerMatchEntrySerializer(eq(
+                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class,
+                        NxmNxPktMark.class)), any(PktMarkCodec.class));
+        Mockito.verify(registrator).registerMatchEntryDeserializer(eq(
+                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+                        OxmMatchConstants.NXM_1_CLASS, 33)), any(PktMarkCodec.class));
         Mockito.verify(registrator).registerActionDeserializer(
-                Matchers.eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 48)),
-                Matchers.any(DecNshTtlCodec.class));
+                eq(new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, 48)),
+                any(DecNshTtlCodec.class));
         Mockito.verify(registrator).registerActionSerializer(
-                Matchers.eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionDecNshTtl.class)),
-                Matchers.any(DecNshTtlCodec.class));
+                eq(new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionDecNshTtl.class)),
+                any(DecNshTtlCodec.class));
 
         // experimenters
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshFlags> nshFlagsSerializerKey = new MatchEntrySerializerKey<>(
@@ -385,160 +387,160 @@ public class NiciraExtensionsRegistratorTest {
                 NxmNxNshFlags.class);
         nshFlagsSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshFlagsSerializerKey),
-                Matchers.any(NshFlagsCodec.class));
+                eq(nshFlagsSerializerKey),
+                any(NshFlagsCodec.class));
         MatchEntryDeserializerKey nshFlagsDeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 1);
         nshFlagsDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshFlagsDeserializerKey),
-                Matchers.any(NshFlagsCodec.class));
+                eq(nshFlagsDeserializerKey),
+                any(NshFlagsCodec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshMdtype> mdtypeSerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshMdtype.class);
         mdtypeSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(mdtypeSerializerKey),
-                Matchers.any(NshMdtypeCodec.class));
+                eq(mdtypeSerializerKey),
+                any(NshMdtypeCodec.class));
         MatchEntryDeserializerKey mdtypeDeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 2);
         mdtypeDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(mdtypeDeserializerKey),
-                Matchers.any(NshMdtypeCodec.class));
+                eq(mdtypeDeserializerKey),
+                any(NshMdtypeCodec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshNp> nshNpSerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshNp.class);
         nshNpSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshNpSerializerKey),
-                Matchers.any(NshNpCodec.class));
+                eq(nshNpSerializerKey),
+                any(NshNpCodec.class));
         MatchEntryDeserializerKey nshNpDeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 3);
         nshNpDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshNpDeserializerKey),
-                Matchers.any(NshNpCodec.class));
+                eq(nshNpDeserializerKey),
+                any(NshNpCodec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNsp> nspSerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNsp.class);
         nspSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nspSerializerKey),
-                Matchers.any(NspCodec.class));
+                eq(nspSerializerKey),
+                any(NspCodec.class));
         MatchEntryDeserializerKey nspDeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 4);
         nspDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nspDeserializerKey),
-                Matchers.any(NspCodec.class));
+                eq(nspDeserializerKey),
+                any(NspCodec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNsi> nsiSerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNsi.class);
         nsiSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nsiSerializerKey),
-                Matchers.any(NsiCodec.class));
+                eq(nsiSerializerKey),
+                any(NsiCodec.class));
         MatchEntryDeserializerKey nsiDeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 5);
         nsiDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nsiDeserializerKey),
-                Matchers.any(NsiCodec.class));
+                eq(nsiDeserializerKey),
+                any(NsiCodec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshc1> nshc1SerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshc1.class);
         nshc1SerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshc1SerializerKey),
-                Matchers.any(Nshc1Codec.class));
+                eq(nshc1SerializerKey),
+                any(Nshc1Codec.class));
         MatchEntryDeserializerKey nshc1DeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 6);
         nshc1DeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshc1DeserializerKey),
-                Matchers.any(Nshc1Codec.class));
+                eq(nshc1DeserializerKey),
+                any(Nshc1Codec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshc2> nshc2SerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshc2.class);
         nshc2SerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshc2SerializerKey),
-                Matchers.any(Nshc2Codec.class));
+                eq(nshc2SerializerKey),
+                any(Nshc2Codec.class));
         MatchEntryDeserializerKey nshc2DeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 7);
         nshc2DeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshc2DeserializerKey),
-                Matchers.any(Nshc2Codec.class));
+                eq(nshc2DeserializerKey),
+                any(Nshc2Codec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshc3> nshc3SerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshc3.class);
         nshc3SerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshc3SerializerKey),
-                Matchers.any(Nshc3Codec.class));
+                eq(nshc3SerializerKey),
+                any(Nshc3Codec.class));
         MatchEntryDeserializerKey nshc3DeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 8);
         nshc3DeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshc3DeserializerKey),
-                Matchers.any(Nshc3Codec.class));
+                eq(nshc3DeserializerKey),
+                any(Nshc3Codec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshc4> nshc4SerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshc4.class);
         nshc4SerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshc4SerializerKey),
-                Matchers.any(Nshc4Codec.class));
+                eq(nshc4SerializerKey),
+                any(Nshc4Codec.class));
         MatchEntryDeserializerKey nshc4DeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 9);
         nshc4DeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshc4DeserializerKey),
-                Matchers.any(Nshc4Codec.class));
+                eq(nshc4DeserializerKey),
+                any(Nshc4Codec.class));
         MatchEntrySerializerKey<ExperimenterClass, NxmNxNshTtl> nshTtlSerializerKey = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class,
                 NxmNxNshTtl.class);
         nshTtlSerializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntrySerializer(
-                Matchers.eq(nshTtlSerializerKey),
-                Matchers.any(NshTtlCodec.class));
+                eq(nshTtlSerializerKey),
+                any(NshTtlCodec.class));
         MatchEntryDeserializerKey nshTtlDeserializerKey = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 OxmMatchConstants.EXPERIMENTER_CLASS,
                 10);
         nshTtlDeserializerKey.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         Mockito.verify(registrator).registerMatchEntryDeserializer(
-                Matchers.eq(nshTtlDeserializerKey),
-                Matchers.any(NshTtlCodec.class));
+                eq(nshTtlDeserializerKey),
+                any(NshTtlCodec.class));
     }
 
     @Test

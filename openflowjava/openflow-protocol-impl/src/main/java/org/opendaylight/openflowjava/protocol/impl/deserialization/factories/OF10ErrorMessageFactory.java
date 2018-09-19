@@ -64,8 +64,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
         int code = rawMessage.readUnsignedShort();
         if (type != null) {
             switch (type) {
-                case HELLOFAILED:
-                {
+                case HELLOFAILED: {
                     HelloFailedCodeV10 errorCode = HelloFailedCodeV10.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -74,8 +73,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
                     }
                     break;
                 }
-                case BADREQUEST:
-                {
+                case BADREQUEST: {
                     BadRequestCodeV10 errorCode = BadRequestCodeV10.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -84,8 +82,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
                     }
                     break;
                 }
-                case BADACTION:
-                {
+                case BADACTION: {
                     BadActionCodeV10 errorCode = BadActionCodeV10.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -94,8 +91,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
                     }
                     break;
                 }
-                case FLOWMODFAILED:
-                {
+                case FLOWMODFAILED: {
                     FlowModFailedCodeV10 errorCode = FlowModFailedCodeV10.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -104,8 +100,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
                     }
                     break;
                 }
-                case PORTMODFAILED:
-                {
+                case PORTMODFAILED: {
                     PortModFailedCodeV10 errorCode = PortModFailedCodeV10.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());
@@ -114,8 +109,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
                     }
                     break;
                 }
-                case QUEUEOPFAILED:
-                {
+                case QUEUEOPFAILED: {
                     QueueOpFailedCodeV10 errorCode = QueueOpFailedCodeV10.forValue(code);
                     if (errorCode != null) {
                         setCode(builder, errorCode.getIntValue(), errorCode.name());

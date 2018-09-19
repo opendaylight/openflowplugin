@@ -91,10 +91,8 @@ class StatisticsContextImpMockInitiation {
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
         when(mockedDeviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID.getKey().getId());
 
-        when(mockedConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID.getKey().getId());
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
-        when(mockedConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
     }
 }

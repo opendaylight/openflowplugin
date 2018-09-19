@@ -148,7 +148,7 @@ public class FlowWriterDirectOFRpc {
 
                         TimeUnit.MILLISECONDS.sleep(PAUSE_BETWEEN_BATCH_MILLIS);
                     } catch (InterruptedException iEx) {
-                        LOG.error("Interrupted while pausing after batched push upto {}. Ex {}", i, iEx);
+                        LOG.error("Interrupted while pausing after batched push upto {} Ex ", i, iEx);
                     }
                 }
             }

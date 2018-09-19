@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.mockito.ArgumentMatchers.contains;
+
 import com.google.common.base.Function;
 import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
@@ -67,6 +68,6 @@ public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
 
         showSessionStatsCommandProvider.execute(cmdSession);
         Assert.assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print(Matchers.contains(dummySessionId));
+        Mockito.verify(console).print(contains(dummySessionId));
     }
 }

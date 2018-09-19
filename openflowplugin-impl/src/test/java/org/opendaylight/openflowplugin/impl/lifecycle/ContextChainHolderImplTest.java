@@ -89,11 +89,6 @@ public class ContextChainHolderImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.doAnswer(invocation -> {
-            invocation.getArgumentAt(0, Runnable.class).run();
-            return null;
-        }).when(executorService).submit(Mockito.<Runnable>any());
-
 
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
@@ -178,8 +173,6 @@ public class ContextChainHolderImplTest {
     @Test
     public void reconciliationFrameworkSuccessButNotSubmit() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
-        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
-            .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);

@@ -121,7 +121,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     public void remove(final InstanceIdentifier<Flow> identifier, final Flow removeDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {
@@ -151,7 +151,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         Future<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
             builder.setFlowRef(new FlowRef(identifier));
@@ -173,7 +173,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     public void update(final InstanceIdentifier<Flow> identifier, final Flow original, final Flow update,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {
@@ -227,7 +227,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
-        final TableKey tableKey = identifier.firstKeyOf(Table.class, TableKey.class);
+        final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {

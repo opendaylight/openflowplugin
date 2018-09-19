@@ -10,13 +10,14 @@ package org.opendaylight.openflowjava.nx;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -84,17 +85,17 @@ public class NiciraExtensionCodecRegistratorImplTest {
 
     @Test
     public void niciraExtensionsCodecRegistratorImplTest() {
-        Mockito.verify(provider).registerActionDeserializer(Matchers.eq(ActionDeserializer.OF10_DESERIALIZER_KEY),
-                Matchers.any(ActionDeserializer.class));
-        Mockito.verify(provider).registerActionDeserializer(Matchers.eq(ActionDeserializer.OF13_DESERIALIZER_KEY),
-                Matchers.any(ActionDeserializer.class));
+        Mockito.verify(provider).registerActionDeserializer(eq(ActionDeserializer.OF10_DESERIALIZER_KEY),
+                any(ActionDeserializer.class));
+        Mockito.verify(provider).registerActionDeserializer(eq(ActionDeserializer.OF13_DESERIALIZER_KEY),
+                any(ActionDeserializer.class));
     }
 
     @Test
     public void registerActionSerializerTest() {
         niciraExtensionCodecRegistrator.registerActionSerializer(actionSerializerKey, actionSerializer);
         ActionSerializerKey key1 = NiciraUtil.createOfJavaKeyFrom(actionSerializerKey);
-        Mockito.verify(provider).registerActionSerializer(Matchers.eq(key1), Matchers.any(OFGeneralSerializer.class));
+        Mockito.verify(provider).registerActionSerializer(eq(key1), any(OFGeneralSerializer.class));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class NiciraExtensionCodecRegistratorImplTest {
         niciraExtensionCodecRegistrator.registerActionSerializer(actionSerializerKey, actionSerializer);
         ActionSerializerKey key1 = NiciraUtil.createOfJavaKeyFrom(actionSerializerKey);
         niciraExtensionCodecRegistrator.unregisterActionSerializer(actionSerializerKey);
-        Mockito.verify(provider).unregisterSerializer(Matchers.eq(key1));
+        Mockito.verify(provider).unregisterSerializer(eq(key1));
     }
 
     @Test
@@ -111,7 +112,7 @@ public class NiciraExtensionCodecRegistratorImplTest {
         niciraExtensionCodecRegistrator.registerActionDeserializer(actionDeserializerKey, actionDeserializer);
         assertFalse(niciraExtensionCodecRegistrator.isEmptyActionDeserializers());
         Mockito.verify((DeserializerRegistryInjector) actionDeserializer)
-                .injectDeserializerRegistry(Matchers.any());
+                .injectDeserializerRegistry(any());
     }
 
     @Test
