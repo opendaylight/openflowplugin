@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -42,7 +43,7 @@ public class ErrorMessageFactoryTest {
     @Before
     public void startUp() {
         errorFactory = new ErrorMessageFactory();
-        Mockito.when(registry.getDeserializer(Matchers.any(MessageCodeKey.class))).thenReturn(deserializer);
+        Mockito.when(registry.getDeserializer(any(MessageCodeKey.class))).thenReturn(deserializer);
         errorFactory.injectDeserializerRegistry(registry);
     }
 

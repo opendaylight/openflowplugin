@@ -142,7 +142,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         } catch (RejectedExecutionException e) {
             incrementRunableRejected();
         }
-        LOG.debug("onPacketReceived - Leaving", notification);
+        LOG.debug("onPacketReceived - {} Leaving", notification);
     }
 
     private static final Instructions DROP_INSTRUCTIONS = makeStaticDropActionInstructions();

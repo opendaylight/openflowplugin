@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Packet {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(Packet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Packet.class);
 
     // Access level granted to this packet
     protected boolean writeAccess;
@@ -195,7 +195,7 @@ public abstract class Packet {
         postSerializeCustomOperation(packetBytes);
 
         if (LOG.isTraceEnabled()) {
-            LOG.trace("{}: {}", this.getClass().getSimpleName(),
+            LOG.trace("packet {}: {}", this.getClass().getSimpleName(),
                     HexEncode.bytesToHexString(packetBytes));
         }
 

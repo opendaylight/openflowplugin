@@ -107,8 +107,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     @Override
     public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
-        String plus = "addFlow - " + input;
-        OpenflowpluginTestServiceProvider.LOG.info(plus);
+        OpenflowpluginTestServiceProvider.LOG.info("addFlow - {}", input);
         return null;
     }
 
@@ -123,8 +122,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     @Override
     public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
-        String plus = "removeFlow - " + input;
-        OpenflowpluginTestServiceProvider.LOG.info(plus);
+        OpenflowpluginTestServiceProvider.LOG.info("removeFlow - {}", input);
         return null;
     }
 
@@ -139,8 +137,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      */
     @Override
     public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
-        String plus = "updateFlow - " + input;
-        OpenflowpluginTestServiceProvider.LOG.info(plus);
+        OpenflowpluginTestServiceProvider.LOG.info("updateFlow - {}", input);
         return null;
     }
 

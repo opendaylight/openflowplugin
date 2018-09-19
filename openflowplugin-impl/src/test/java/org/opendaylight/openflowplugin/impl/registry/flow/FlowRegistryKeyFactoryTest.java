@@ -62,7 +62,6 @@ public class FlowRegistryKeyFactoryTest {
             flowAndStatisticsMapListList.add(TestFlowHelper.createFlowAndStatisticsMapListBuilder(i).build());
         }
         FLOWS_STATISTICS_UPDATE_BUILDER.setFlowAndStatisticsMapList(flowAndStatisticsMapListList);
-        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
     }
 

@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -58,7 +58,7 @@ public class TcpDstConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfTcpDst(nxmOfTcpDstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
             .thenReturn(extensionAugmentation);
 
         tcpDstConvertor = new TcpDstConvertor();

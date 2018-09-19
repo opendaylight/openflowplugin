@@ -214,8 +214,8 @@ public final class LearnCodecUtil {
         }
 
         if (LearnCodecUtil.length != 0) {
-            LOG.error("Learn Codec read " + Math.abs(messageLength)
-                    + " bytes more than needed from stream. Packet might be corrupted");
+            LOG.error("Learn Codec read {} bytes more than needed from stream. Packet might be corrupted",
+                    Math.abs(messageLength));
         }
         nxActionLearnBuilder.setFlowMods(flowModeList);
     }

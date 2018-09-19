@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -42,7 +41,6 @@ public class SalMeterServiceImplTest extends ServiceMocking {
 
     @Override
     protected void setup() {
-        when(mockedDeviceContext.getDeviceMeterRegistry()).thenReturn(mockedDeviceMeterRegistry);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salMeterService = new SalMeterServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }

@@ -258,7 +258,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         public Boolean call() {
             InstanceIdentifier<FlowCapableNode> nodeIdentity = deviceInfo.getNodeInstanceIdentifier()
                     .augmentation(FlowCapableNode.class);
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
             final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));

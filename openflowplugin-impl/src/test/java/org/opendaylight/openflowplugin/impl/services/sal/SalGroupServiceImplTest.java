@@ -8,10 +8,8 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Test;
-
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -43,7 +41,6 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
     @Override
     protected void setup() {
-        when(mockedDeviceContext.getDeviceGroupRegistry()).thenReturn(mockedDeviceGroupRegistry);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }

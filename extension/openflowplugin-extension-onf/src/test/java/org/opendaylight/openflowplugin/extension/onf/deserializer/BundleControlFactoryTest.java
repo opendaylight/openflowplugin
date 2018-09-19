@@ -8,11 +8,12 @@
 
 package org.opendaylight.openflowplugin.extension.onf.deserializer;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -72,7 +73,7 @@ public class BundleControlFactoryTest {
                                                        + "00 00 " // type 2
                                                        + "00 04 " // length 2
                                                        + "00 00 00 00"); // data 2
-        Mockito.when(registry.getDeserializer(Matchers.any(MessageCodeKey.class)))
+        Mockito.when(registry.getDeserializer(any(MessageCodeKey.class)))
                 .thenReturn(experimenterPropertyDeserializer);
         ((DeserializerRegistryInjector)factory).injectDeserializerRegistry(registry);
         BundleControlOnf builtByFactory = factory.deserialize(buffer);

@@ -10,7 +10,7 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +80,7 @@ public class RegLoad2CodecTest {
         final MatchEntry matchEntry = new MatchEntryBuilder().build();
         when(deserializerRegistry.getDeserializer(key)).thenReturn(ofDeserializer);
         when(ofDeserializer.deserialize(byteBuf)).thenAnswer(invocationOnMock -> {
-            invocationOnMock.getArgumentAt(0, ByteBuf.class).skipBytes(8);
+            invocationOnMock.<ByteBuf>getArgument(0).skipBytes(8);
             return matchEntry;
         });
 

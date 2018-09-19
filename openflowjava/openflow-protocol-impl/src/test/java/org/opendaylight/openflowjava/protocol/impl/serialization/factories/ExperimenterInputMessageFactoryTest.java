@@ -8,9 +8,10 @@
 
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -108,7 +109,7 @@ public class ExperimenterInputMessageFactoryTest {
         ExperimenterInput input = builder.build();
 
         Mockito.when(registry.getSerializer(
-                (ExperimenterIdSerializerKey<?>) Matchers.any())).thenReturn(serializer);
+                (ExperimenterIdSerializerKey<?>) any())).thenReturn(serializer);
 
         expFactory.serialize(input, out);
         Mockito.verify(serializer, Mockito.times(1)).serialize(input.getExperimenterDataOfChoice(), out);
@@ -129,7 +130,7 @@ public class ExperimenterInputMessageFactoryTest {
         ExperimenterInput input = builder.build();
 
         Mockito.when(registry.getSerializer(
-                (ExperimenterIdSerializerKey<?>) Matchers.any())).thenReturn(serializer);
+                (ExperimenterIdSerializerKey<?>) any())).thenReturn(serializer);
 
         expFactory.serialize(input, out);
         Mockito.verify(serializer, Mockito.times(1)).serialize(input.getExperimenterDataOfChoice(), out);
