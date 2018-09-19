@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,8 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -177,7 +179,7 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
         when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
         when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
-        when(deviceFlowRegistry.retrieveDescriptor(Matchers.any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
+        when(deviceFlowRegistry.retrieveDescriptor(any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
@@ -205,7 +207,7 @@ public class StatisticsGatheringUtilsTest {
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
         Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, dataStoreType.getValue());
         final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
-        Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.firstKeyOf(Node.class, NodeKey.class).getId());
+        Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.firstKeyOf(Node.class).getId());
         Assert.assertEquals(42, flow.getValue().getTableId().intValue());
     }
 
@@ -249,8 +251,8 @@ public class StatisticsGatheringUtilsTest {
                         .opendaylight.group.types.rev131018.GroupId(groupIdValue)))
                 .augmentation(NodeGroupStatistics.class)
                 .child(GroupStatistics.class);
-        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.eq(groupPath), Matchers.any(GroupStatistics.class));
+        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                eq(groupPath), any(GroupStatistics.class));
     }
 
     @Test
@@ -279,11 +281,11 @@ public class StatisticsGatheringUtilsTest {
         final KeyedInstanceIdentifier<Group, GroupKey> groupPath =
                 dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
 
-        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                                                                  Matchers.<InstanceIdentifier<?>>any());
+        verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
+                ArgumentMatchers.<InstanceIdentifier<?>>any());
         verify(deviceGroupRegistry).store(storedGroupId);
-        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                                                 Matchers.eq(groupPath), Matchers.any(Group.class));
+        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                                                 eq(groupPath), any(Group.class));
     }
 
     @Test
@@ -317,8 +319,8 @@ public class StatisticsGatheringUtilsTest {
                         .opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
                 .augmentation(NodeMeterStatistics.class)
                 .child(MeterStatistics.class);
-        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.eq(meterPath), Matchers.any(MeterStatistics.class));
+        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                eq(meterPath), any(MeterStatistics.class));
     }
 
     @Test
@@ -343,9 +345,9 @@ public class StatisticsGatheringUtilsTest {
                 .augmentation(FlowCapableNodeConnectorStatisticsData.class)
                 .child(FlowCapableNodeConnectorStatistics.class);
         verify(deviceContext).writeToTransaction(
-                Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.eq(portPath),
-                Matchers.any(FlowCapableNodeConnectorStatistics.class));
+                eq(LogicalDatastoreType.OPERATIONAL),
+                eq(portPath),
+                any(FlowCapableNodeConnectorStatistics.class));
     }
 
     @Test
@@ -373,9 +375,9 @@ public class StatisticsGatheringUtilsTest {
                 .augmentation(FlowTableStatisticsData.class)
                 .child(FlowTableStatistics.class);
         verify(deviceContext).writeToTransaction(
-                Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.eq(tablePath),
-                Matchers.any(FlowTableStatistics.class));
+                eq(LogicalDatastoreType.OPERATIONAL),
+                eq(tablePath),
+                any(FlowTableStatistics.class));
     }
 
     @Test
@@ -408,9 +410,9 @@ public class StatisticsGatheringUtilsTest {
                 .augmentation(FlowCapableNodeConnector.class)
                 .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
         verify(deviceContext).writeToTransaction(
-                Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                Matchers.eq(queuePath),
-                Matchers.any(Queue.class));
+                eq(LogicalDatastoreType.OPERATIONAL),
+                eq(queuePath),
+                any(Queue.class));
     }
 
     @Test
@@ -459,13 +461,13 @@ public class StatisticsGatheringUtilsTest {
                 .child(Table.class, new TableKey((short) 0));
         final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =  tablePath.child(Flow.class, new FlowKey(flowId));
 
-        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                                                                  Matchers.<InstanceIdentifier<?>>any());
+        verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
+                ArgumentMatchers.<InstanceIdentifier<?>>any());
 
         final InOrder inOrder = Mockito.inOrder(deviceContext);
-        inOrder.verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                                                         Matchers.any(),
-                                                         Matchers.any());
+        inOrder.verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                                                         any(),
+                                                         any());
     }
 
     @Test
@@ -493,16 +495,16 @@ public class StatisticsGatheringUtilsTest {
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue);
         final KeyedInstanceIdentifier<Meter, MeterKey> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(meterId));
-        verify(deviceContext, Mockito.never()).addDeleteToTxChain(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                                                                  Matchers.<InstanceIdentifier<?>>any());
+        verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
+                ArgumentMatchers.<InstanceIdentifier<?>>any());
         verify(deviceMeterRegistry).store(meterId);
-        verify(deviceContext).writeToTransaction(Matchers.eq(LogicalDatastoreType.OPERATIONAL),
-                                                 Matchers.eq(meterPath), Matchers.any(Meter.class));
+        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                                                 eq(meterPath), any(Meter.class));
     }
 
     private void fireAndCheck(final MultipartType type, final List<MultipartReply> statsData)
             throws InterruptedException, ExecutionException, TimeoutException {
-        when(statisticsService.getStatisticsOfType(Matchers.any(EventIdentifier.class), Matchers.eq(type)))
+        when(statisticsService.getStatisticsOfType(any(EventIdentifier.class),eq(type)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success(statsData).build()));
 
         final ListenableFuture<Boolean> gatherStatisticsResult = StatisticsGatheringUtils.gatherStatistics(
@@ -552,8 +554,6 @@ public class StatisticsGatheringUtilsTest {
 
         verify(deviceContext).isTransactionsEnabled();
         verify(deviceContext).getReadTransaction();
-        verify(deviceContext).writeToTransaction(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
-                                                 Mockito.any(),
-                                                 Mockito.any());
+        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

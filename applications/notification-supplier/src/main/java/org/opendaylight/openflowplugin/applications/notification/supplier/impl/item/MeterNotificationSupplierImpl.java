@@ -13,7 +13,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAddedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
@@ -72,7 +71,7 @@ public class MeterNotificationSupplierImpl extends
     public MeterRemoved deleteNotification(final InstanceIdentifier<Meter> path) {
         Preconditions.checkArgument(path != null);
         final MeterRemovedBuilder builder = new MeterRemovedBuilder();
-        builder.setMeterId(path.firstKeyOf(Meter.class, MeterKey.class).getMeterId());
+        builder.setMeterId(path.firstKeyOf(Meter.class).getMeterId());
         builder.setMeterRef(new MeterRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();
