@@ -14,7 +14,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsUpdateBuilder;
@@ -60,7 +59,7 @@ public class FlowTableStatNotificationSupplierImpl extends
 
         final FlowTableAndStatisticsMapBuilder ftsmBuilder = new FlowTableAndStatisticsMapBuilder(flowTableStatistics);
         ftsmBuilder.withKey(new FlowTableAndStatisticsMapKey(
-                new TableId(path.firstKeyOf(Table.class, TableKey.class).getId())));
+                new TableId(path.firstKeyOf(Table.class).getId())));
 
         final FlowTableStatisticsUpdateBuilder builder = new FlowTableStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));

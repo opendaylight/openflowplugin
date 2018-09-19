@@ -29,7 +29,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
@@ -109,8 +108,7 @@ public class PacketReceivedTranslatorTest {
         Assert.assertEquals("org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController",
                 packetReceived.getPacketInReason().getName());
         Assert.assertEquals("openflow:10:" + PORT_NO,
-                packetReceived.getIngress().getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class)
-                        .getId().getValue());
+                packetReceived.getIngress().getValue().firstKeyOf(NodeConnector.class).getId().getValue());
         Assert.assertEquals(0L, packetReceived.getFlowCookie().getValue().longValue());
         Assert.assertEquals(42L, packetReceived.getTableId().getValue().longValue());
     }

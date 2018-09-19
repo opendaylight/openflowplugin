@@ -66,7 +66,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
             String msg = input.getOxmMatchField()
                     + " does not implement "
                     + org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg.class;
-            LOG.warn(msg);
+            LOG.warn("Warning {}",msg);
             throw new IllegalStateException(msg);
         }
         nxRegBuilder.setReg((Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match

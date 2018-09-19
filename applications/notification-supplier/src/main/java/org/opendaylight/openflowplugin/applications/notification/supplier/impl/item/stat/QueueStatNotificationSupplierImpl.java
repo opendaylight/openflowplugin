@@ -59,7 +59,7 @@ public class QueueStatNotificationSupplierImpl extends
         Preconditions.checkArgument(path != null);
 
         final NodeConnectorBuilder connBuilder = new NodeConnectorBuilder();
-        final NodeConnectorKey key = path.firstKeyOf(NodeConnector.class, NodeConnectorKey.class);
+        final NodeConnectorKey key = path.firstKeyOf(NodeConnector.class);
         connBuilder.setId(key.getId());
         connBuilder.withKey(key);
 
