@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -104,12 +104,6 @@ public class OpenFlowPluginProviderImplTest {
                 .thenReturn(THREAD_POOL_MAX_THREADS);
         when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString()), any()))
                 .thenReturn(THREAD_POOL_TIMEOUT);
-        when(configurationService.getProperty(eq(ConfigurationProperty.RPC_REQUESTS_QUOTA.toString()), any()))
-                .thenReturn(RPC_REQUESTS_QUOTA);
-        when(configurationService.getProperty(eq(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString()), any()))
-                .thenReturn(GLOBAL_NOTIFICATION_QUOTA);
-        when(configurationService.getProperty(eq(ConfigurationProperty.BASIC_TIMER_DELAY.toString()), any()))
-                .thenReturn(BASIC_TIMER_DELAY);
         when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString()),
                 any())).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
     }

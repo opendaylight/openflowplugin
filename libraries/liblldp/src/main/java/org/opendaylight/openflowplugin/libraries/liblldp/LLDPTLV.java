@@ -18,12 +18,15 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class that represents the LLDPTLV objects.
  */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class LLDPTLV extends Packet {
+    private static final Logger LOG = LoggerFactory.getLogger(LLDPTLV.class);
     private static final String TYPE = "Type";
     private static final String LENGTH = "Length";
     private static final String VALUE = "Value";
