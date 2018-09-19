@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -81,7 +81,7 @@ public class FlowWriterDirectOFRpcTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable)invocation.getArguments()[0]).run();
             return null;
-        }).when(mockFlowPusher).execute(Matchers.<Runnable>any());
+        }).when(mockFlowPusher).execute(ArgumentMatchers.<Runnable>any());
 
         flowWriterDirectOFRpc = new FlowWriterDirectOFRpc(mockDataBroker, mockSalFlowService, mockFlowPusher);
     }

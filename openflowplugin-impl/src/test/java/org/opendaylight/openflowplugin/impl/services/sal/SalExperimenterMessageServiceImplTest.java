@@ -10,10 +10,11 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -48,7 +49,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
         salExperimenterMessageService = new SalExperimenterMessageServiceImpl(mockedRequestContextStack,
                                                                               mockedDeviceContext,
                                                                               extensionConverterProvider);
-        Mockito.when(extensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
+        Mockito.when(extensionConverterProvider.getMessageConverter(ArgumentMatchers.<TypeVersionKey>any()))
                 .thenReturn(extensionConverter);
         Mockito.when(extensionConverter.getExperimenterId()).thenReturn(new ExperimenterId(43L));
         Mockito.when(extensionConverter.getType()).thenReturn(44L);
@@ -71,8 +72,8 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
         final ExperimenterInput input = (ExperimenterInput) request;
         assertEquals(43L, input.getExperimenter().getValue().longValue());
         assertEquals(44L, input.getExpType().longValue());
-        Mockito.verify(extensionConverter).convert(Matchers.eq(sendExperimenterInput.getExperimenterMessageOfChoice()),
-                Matchers.any(ExtensionConvertorData.class));
+        Mockito.verify(extensionConverter).convert(eq(sendExperimenterInput.getExperimenterMessageOfChoice()),
+                ArgumentMatchers.any(ExtensionConvertorData.class));
     }
 
     private SendExperimenterInput buildSendExperimenterInput() {

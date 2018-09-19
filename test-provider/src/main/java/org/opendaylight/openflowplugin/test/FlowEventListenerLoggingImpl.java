@@ -27,23 +27,20 @@ public class FlowEventListenerLoggingImpl implements SalFlowListener {
 
     @Override
     public void onFlowAdded(FlowAdded notification) {
-        LOG.info("flow to be added.........................." + notification.toString());
-        LOG.info("added flow Xid........................." + notification.getTransactionId().getValue());
-        LOG.info("-----------------------------------------------------------------------------------");
+        LOG.info("flow to be added {}", notification.toString());
+        LOG.info("added flow Xid {}", notification.getTransactionId().getValue());
     }
 
     @Override
     public void onFlowRemoved(FlowRemoved notification) {
-        LOG.debug("removed flow.........................." + notification.toString());
-        LOG.debug("remove flow Xid........................." + notification.getTransactionId().getValue());
-        LOG.debug("-----------------------------------------------------------------------------------");
+        LOG.debug("removed flow {}", notification.toString());
+        LOG.debug("remove flow Xid {}", notification.getTransactionId().getValue());
     }
 
     @Override
     public void onFlowUpdated(FlowUpdated notification) {
-        LOG.debug("updated flow.........................." + notification.toString());
-        LOG.debug("updated flow Xid........................." + notification.getTransactionId().getValue());
-        LOG.debug("-----------------------------------------------------------------------------------");
+        LOG.debug("updated flow {}", notification.toString());
+        LOG.debug("updated flow Xid {}", notification.getTransactionId().getValue());
     }
 
     @Override
@@ -66,8 +63,6 @@ public class FlowEventListenerLoggingImpl implements SalFlowListener {
 
     @Override
     public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
-        LOG.debug("Switch flow removed : Cookies..................."
-                + notification.getCookie().toString());
-        LOG.debug("-----------------------------------------------------------------------------------");
+        LOG.debug("Switch flow removed : Cookies {}", notification.getCookie().toString());
     }
 }
