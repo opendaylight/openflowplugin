@@ -14,7 +14,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -51,6 +50,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+import static org.mockito.ArgumentMatchers.any;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SalBundleServiceImplTest {
 
@@ -84,7 +85,7 @@ public class SalBundleServiceImplTest {
         experimenterBuilder.setExperimenterMessageOfChoice(new BundleControlSalBuilder()
                 .setSalControlData(new SalControlDataBuilder(input).build())
                 .build());
-        Mockito.when(experimenterMessageService.sendExperimenter(Matchers.any())).thenReturn(SettableFuture.create());
+        Mockito.when(experimenterMessageService.sendExperimenter(any())).thenReturn(SettableFuture.create());
         service.controlBundle(input);
         Mockito.verify(experimenterMessageService).sendExperimenter(experimenterBuilder.build());
     }
@@ -106,7 +107,7 @@ public class SalBundleServiceImplTest {
         final BundleAddMessageSalBuilder addMessageBuilder = new BundleAddMessageSalBuilder();
         final SendExperimenterInputBuilder experimenterBuilder = new SendExperimenterInputBuilder()
                 .setNode(NODE_REF);
-        Mockito.when(experimenterMessageService.sendExperimenter(Matchers.any())).thenReturn(SettableFuture.create());
+        Mockito.when(experimenterMessageService.sendExperimenter(any())).thenReturn(SettableFuture.create());
         service.addBundleMessages(input);
         for (Message msg : innerMessages) {
             Mockito.verify(experimenterMessageService)

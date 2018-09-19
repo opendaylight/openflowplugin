@@ -12,7 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -37,7 +37,7 @@ public class DeviceMastershipManagerTest {
     @Before
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, new ReconciliationRegistry());
-        Mockito.when(clusterSingletonService.registerClusterSingletonService(Matchers.<ClusterSingletonService>any()))
+        Mockito.when(clusterSingletonService.registerClusterSingletonService(ArgumentMatchers.<ClusterSingletonService>any()))
                 .thenReturn(registration);
     }
 

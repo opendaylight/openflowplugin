@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Test for {@link HandshakeListenerImpl}.
@@ -56,7 +58,7 @@ public class HandshakeListenerImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(connectionAdapter.barrier(Matchers.<BarrierInput>any()))
+        Mockito.when(connectionAdapter.barrier(ArgumentMatchers.<BarrierInput>any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);
@@ -74,7 +76,7 @@ public class HandshakeListenerImplTest {
     public void testOnHandshakeSuccessfull() throws Exception {
         handshakeListener.onHandshakeSuccessful(features, OFConstants.OFP_VERSION_1_3);
         Mockito.verify(connectionContextSpy).changeStateToWorking();
-        Mockito.verify(connectionContextSpy).setFeatures(Matchers.any(FeaturesReply.class));
+        Mockito.verify(connectionContextSpy).setFeatures(any(FeaturesReply.class));
         Mockito.verify(connectionContextSpy).setNodeId(nodeIdCaptor.capture());
         Mockito.verify(connectionContextSpy).handshakeSuccessful();
         Mockito.verify(deviceConnectedHandler).deviceConnected(connectionContextSpy);

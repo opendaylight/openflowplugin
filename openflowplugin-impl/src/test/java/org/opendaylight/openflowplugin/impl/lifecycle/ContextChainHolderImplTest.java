@@ -90,7 +90,7 @@ public class ContextChainHolderImplTest {
     @Before
     public void setUp() throws Exception {
         Mockito.doAnswer(invocation -> {
-            invocation.getArgumentAt(0, Runnable.class).run();
+            invocation.getArgument(0)
             return null;
         }).when(executorService).submit(Mockito.<Runnable>any());
 

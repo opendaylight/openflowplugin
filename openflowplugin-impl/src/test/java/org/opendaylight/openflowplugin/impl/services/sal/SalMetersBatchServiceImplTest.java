@@ -17,9 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -64,6 +64,8 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
+import static org.mockito.ArgumentMatchers.any;
+
 /**
  * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl}.
  */
@@ -92,7 +94,7 @@ public class SalMetersBatchServiceImplTest {
     public void setUp() throws Exception {
         salMetersBatchService = new SalMetersBatchServiceImpl(salMeterService, transactionService);
 
-        Mockito.when(transactionService.sendBarrier(Matchers.any()))
+        Mockito.when(transactionService.sendBarrier(any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
@@ -128,7 +130,7 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalMeter().getMeterId().getValue().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedMeter().getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -167,7 +169,7 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalMeter().getMeterId().getValue().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedMeter().getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
 
@@ -196,7 +198,7 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -233,7 +235,7 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -262,7 +264,7 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     @Test
@@ -299,7 +301,7 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(Matchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
     }
 
     private static BatchAddMeters createEmptyBatchAddMeter(final long groupIdValue) {

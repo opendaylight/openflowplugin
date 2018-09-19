@@ -207,7 +207,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 final FlowDescriptor flowDescriptor;
 
                 if (Objects.nonNull(input.getFlowRef())) {
-                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class, FlowKey.class).getId();
+                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
                     flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
                     deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
                 } else {

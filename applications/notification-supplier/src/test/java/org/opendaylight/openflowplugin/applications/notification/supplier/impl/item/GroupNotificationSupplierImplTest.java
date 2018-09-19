@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.notification.supplier.impl.
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -82,10 +82,10 @@ public class GroupNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(GROUP_ID, notification.getGroupId().getValue());
         assertEquals(GROUP_ID,
-                     notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId()
+                     notification.getGroupRef().getValue().firstKeyOf(Group.class).getGroupId()
                              .getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class GroupNotificationSupplierImplTest {
         Collection<DataTreeModification<Group>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(GroupAdded.class));
+        verify(notifProviderService, times(1)).publish(any(GroupAdded.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -115,10 +115,10 @@ public class GroupNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(GROUP_ID, notification.getGroupId().getValue());
         assertEquals(GROUP_ID,
-                     notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId()
+                     notification.getGroupRef().getValue().firstKeyOf(Group.class).getGroupId()
                              .getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class GroupNotificationSupplierImplTest {
         Collection<DataTreeModification<Group>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(GroupUpdated.class));
+        verify(notifProviderService, times(1)).publish(any(GroupUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -147,10 +147,10 @@ public class GroupNotificationSupplierImplTest {
         assertNotNull(notification);
         assertEquals(GROUP_ID, notification.getGroupId().getValue());
         assertEquals(GROUP_ID,
-                     notification.getGroupRef().getValue().firstKeyOf(Group.class, GroupKey.class).getGroupId()
+                     notification.getGroupRef().getValue().firstKeyOf(Group.class).getGroupId()
                              .getValue());
         assertEquals(FLOW_NODE_ID,
-                     notification.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId().getValue());
+                     notification.getNode().getValue().firstKeyOf(Node.class).getId().getValue());
     }
 
     @Test
@@ -160,7 +160,7 @@ public class GroupNotificationSupplierImplTest {
         Collection<DataTreeModification<Group>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(Matchers.any(GroupRemoved.class));
+        verify(notifProviderService, times(1)).publish(any(GroupRemoved.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

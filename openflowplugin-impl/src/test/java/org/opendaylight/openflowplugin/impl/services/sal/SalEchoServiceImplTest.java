@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -16,7 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInput;
@@ -57,6 +58,6 @@ public class SalEchoServiceImplTest extends ServiceMocking {
         Assert.assertTrue(echoOutput.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
         verify(mockedOutboundQueue)
-                .commitEntry(Matchers.eq(2121L), Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
+                .commitEntry(eq(2121L), ArgumentMatchers.<OfHeader>any(), ArgumentMatchers.<FutureCallback<OfHeader>>any());
     }
 }

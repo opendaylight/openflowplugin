@@ -15,7 +15,6 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -28,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory}.
@@ -56,7 +57,7 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
         if (withProperty) {
             dataBuilder.setBundleProperty(new ArrayList<>(Collections.singleton(
                     BundleTestUtils.createExperimenterProperty(propertyExperimenterData))));
-            Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(propertySerializer);
+            Mockito.when(registry.getSerializer(any())).thenReturn(propertySerializer);
             ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         }
 

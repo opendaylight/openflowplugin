@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -26,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterOfMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Unit tests for ExperimenterInputMessageFactory.
@@ -108,7 +109,7 @@ public class ExperimenterInputMessageFactoryTest {
         ExperimenterInput input = builder.build();
 
         Mockito.when(registry.getSerializer(
-                (ExperimenterIdSerializerKey<?>) Matchers.any())).thenReturn(serializer);
+                (ExperimenterIdSerializerKey<?>) any())).thenReturn(serializer);
 
         expFactory.serialize(input, out);
         Mockito.verify(serializer, Mockito.times(1)).serialize(input.getExperimenterDataOfChoice(), out);
@@ -129,7 +130,7 @@ public class ExperimenterInputMessageFactoryTest {
         ExperimenterInput input = builder.build();
 
         Mockito.when(registry.getSerializer(
-                (ExperimenterIdSerializerKey<?>) Matchers.any())).thenReturn(serializer);
+                (ExperimenterIdSerializerKey<?>) any())).thenReturn(serializer);
 
         expFactory.serialize(input, out);
         Mockito.verify(serializer, Mockito.times(1)).serialize(input.getExperimenterDataOfChoice(), out);

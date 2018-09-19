@@ -13,12 +13,13 @@ import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+
+import static org.mockito.ArgumentMatchers.matches;
 
 /**
  * Test for {@link ShowStatsCommandProvider}.
@@ -46,7 +47,7 @@ public class ShowStatsCommandProviderTest extends AbstractKarafTest {
     @After
     public void tearDown() throws Exception {
         // Pattern.DOTALL is set inline via "(?s)" at the beginning
-        Mockito.verify(console).print(Matchers.matches("(?s).+"));
+        Mockito.verify(console).print(matches("(?s).+"));
         messageIntelligenceAgency.resetStatistics();
     }
 

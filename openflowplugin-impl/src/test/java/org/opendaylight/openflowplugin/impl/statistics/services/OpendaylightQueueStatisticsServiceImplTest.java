@@ -17,8 +17,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.QueueId;
@@ -39,6 +39,9 @@ import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 /**
  * Test for {@link OpendaylightQueueStatisticsServiceImpl}.
  */
@@ -56,13 +59,13 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
     @After
     public void tearDown() throws Exception {
-        Mockito.verify(notificationPublishService).offerNotification(Matchers.<Notification>any());
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.<Notification>any());
     }
 
     @Test
     public void testGetAllQueuesStatisticsFromAllPorts() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
 
         GetAllQueuesStatisticsFromAllPortsInputBuilder input = new GetAllQueuesStatisticsFromAllPortsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
@@ -102,7 +105,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
     @Test
     public void testGetAllQueuesStatisticsFromGivenPort() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
 
         GetAllQueuesStatisticsFromGivenPortInputBuilder input = new GetAllQueuesStatisticsFromGivenPortInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
@@ -122,7 +125,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
     @Test
     public void testGetQueueStatisticsFromGivenPort() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
 
         GetQueueStatisticsFromGivenPortInputBuilder input = new GetQueueStatisticsFromGivenPortInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))

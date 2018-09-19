@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -54,7 +54,7 @@ public class Nshc4ConvertorTest {
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNshc4(nxmNxNshc4)
                 .build();
-        when(extension.augmentation(Matchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
                 .thenReturn(nxAugMatchNotifUpdateFlowStats);
 
         nshc4Convertor = new Nshc4Convertor();

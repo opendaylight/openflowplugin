@@ -15,7 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -39,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionChainManagerTest {
@@ -68,7 +69,7 @@ public class TransactionChainManagerTest {
                 .immediateCheckedFuture(Optional.<Node>absent());
         Mockito.when(readOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTx);
-        Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
+        Mockito.when(dataBroker.createTransactionChain(any(TransactionChainListener.class)))
                 .thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);

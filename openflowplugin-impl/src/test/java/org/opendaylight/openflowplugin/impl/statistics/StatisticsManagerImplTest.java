@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -133,14 +134,14 @@ public class StatisticsManagerImplTest {
             .thenReturn(new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodePath));
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getMultiMsgCollector(
-            Matchers.<RequestContext<List<MultipartReply>>>any())).thenAnswer(
+                ArgumentMatchers.<RequestContext<List<MultipartReply>>>any())).thenAnswer(
                 invocation -> {
                     currentRequestContext = (RequestContext<List<MultipartReply>>) invocation.getArguments()[0];
                     return multiMagCollector;
                 });
         when(rpcProviderRegistry.addRpcImplementation(
-                Matchers.eq(StatisticsManagerControlService.class),
-                Matchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
+                eq(StatisticsManagerControlService.class),
+                ArgumentMatchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
