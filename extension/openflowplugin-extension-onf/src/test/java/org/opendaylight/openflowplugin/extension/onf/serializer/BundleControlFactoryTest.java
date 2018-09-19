@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.extension.onf.serializer;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -56,7 +57,7 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
         if (withProperty) {
             dataBuilder.setBundleProperty(new ArrayList<>(Collections.singleton(
                     BundleTestUtils.createExperimenterProperty(propertyExperimenterData))));
-            Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(propertySerializer);
+            Mockito.when(registry.getSerializer(any())).thenReturn(propertySerializer);
             ((SerializerRegistryInjector) factory).injectSerializerRegistry(registry);
         }
 

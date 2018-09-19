@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,7 +97,6 @@ public class OF13DeviceInitializerTest {
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-        when(translatorLibrary.lookupTranslator(any())).thenReturn(messageTranslator);
         when(deviceContext.oook()).thenReturn(translatorLibrary);
         when(requestContext.getXid()).thenReturn(new Xid(42L));
         when(deviceContext.createRequestContext()).thenReturn(requestContext);

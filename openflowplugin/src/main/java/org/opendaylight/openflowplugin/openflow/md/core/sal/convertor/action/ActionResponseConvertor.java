@@ -123,7 +123,7 @@ public final class ActionResponseConvertor extends Convertor<
                 if (convertedAction.isPresent()) {
                     result.add(convertedAction.get());
                 } else {
-                    /**
+                    /*
                      * TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
                      * - we might also need a way on how to identify exact type of augmentation to be
                      *   used as match can be bound to multiple models

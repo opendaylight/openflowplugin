@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilay
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,7 +49,6 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     public void testBuildRequestBody() throws Exception {
         final GetMeterStatisticsInput input = mock(GetMeterStatisticsInput.class);
 
-        when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
         when(input.getMeterId()).thenReturn(new MeterId(METER_NO));
 
         final MultipartRequestMeterCase body = (MultipartRequestMeterCase) ((MultipartRequestInput) service
