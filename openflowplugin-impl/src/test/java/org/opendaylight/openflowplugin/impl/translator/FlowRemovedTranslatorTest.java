@@ -73,9 +73,7 @@ public class FlowRemovedTranslatorTest {
         translator = new FlowRemovedTranslator(convertorManager);
         translatorV10 = new FlowRemovedV10Translator(convertorManager);
 
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeId);
-        when(features.getDatapathId()).thenReturn(BigInteger.TEN);
     }
 
     @Test

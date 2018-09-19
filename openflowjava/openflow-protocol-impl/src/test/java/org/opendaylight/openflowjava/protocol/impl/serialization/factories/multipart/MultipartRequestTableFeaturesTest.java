@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories.multipart;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.math.BigInteger;
@@ -16,7 +18,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -94,7 +95,7 @@ public class MultipartRequestTableFeaturesTest {
      */
     @Before
     public void startUp() {
-        Mockito.when(mockRegistry.getSerializer((MessageTypeKey<?>)Matchers.any())).thenReturn(serializer);
+        Mockito.when(mockRegistry.getSerializer((MessageTypeKey<?>)any())).thenReturn(serializer);
         registry = new SerializerRegistryImpl();
         registry.init();
         multipartFactory = registry.getSerializer(
@@ -463,7 +464,7 @@ public class MultipartRequestTableFeaturesTest {
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}, metadataWrite);
         Assert.assertEquals("Wrong config", 8, out.readUnsignedInt());
         Assert.assertEquals("Wrong max-entries", 65, out.readUnsignedInt());
-        Mockito.verify(serializer, Mockito.times(2)).serialize(Matchers.any(TableFeatureProperties.class),
-                Matchers.any(ByteBuf.class));
+        Mockito.verify(serializer, Mockito.times(2)).serialize(any(TableFeatureProperties.class),
+                any(ByteBuf.class));
     }
 }

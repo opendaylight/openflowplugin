@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -31,15 +30,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgColl
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorData;
-import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
-import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
@@ -97,21 +93,9 @@ public abstract class ServiceMocking {
     @Before
     @SuppressWarnings("unchecked")
     public void initialization() throws Exception {
-        when(mockedExtensionConverter.getExperimenterId())
-                .thenReturn(new ExperimenterId(DUMMY_EXPERIMENTER_ID));
-        when(mockedExtensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
-                .thenReturn(mockedExtensionConverter);
         when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
         when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
-        when(mockedFeatures.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeatures.getVersion()).thenReturn(DUMMY_VERSION);
 
-        when(mockedFeaturesOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(DUMMY_VERSION);
-
-        when(mockedPrimConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedPrimConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-        when(mockedPrimConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
         when(mockedPrimConnectionContext.getOutboundQueueProvider()).thenReturn(mockedOutboundQueue);
 
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
@@ -120,11 +104,7 @@ public abstract class ServiceMocking {
 
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
-        when(mockedDeviceContext.getDeviceFlowRegistry())
-                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II));
-        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
-        when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
 
         setup();
     }
