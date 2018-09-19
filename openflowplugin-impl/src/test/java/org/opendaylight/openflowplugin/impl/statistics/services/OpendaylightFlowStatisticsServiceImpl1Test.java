@@ -12,7 +12,6 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -46,7 +45,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 //NOOP
             }
         };
-        Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
+        //Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
     }
 
     @Test(expected = IllegalAccessError.class)

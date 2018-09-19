@@ -18,7 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -289,8 +289,8 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(roTx.read(LogicalDatastoreType.CONFIGURATION, fcNodePath))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(configNode)));
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);
-        Mockito.when(reactor.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(syncupEntry)))
-                .thenReturn(Futures.immediateFuture(Boolean.TRUE));
+        Mockito.when(reactor.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(),
+                Mockito.eq(syncupEntry))).thenReturn(Futures.immediateFuture(Boolean.TRUE));
         return syncupEntry;
     }
 }

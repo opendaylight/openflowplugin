@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -97,7 +97,7 @@ public class TableForwarderTest {
         final Future<RpcResult<UpdateTableOutput>> updateResult = tableForwarder.update(
                 tableFeaturesPath, tableFeatures, tableFeaturesUpdate, flowCapableNodePath);
 
-        Mockito.verify(salTableService).updateTable(Matchers.<UpdateTableInput>any());
+        Mockito.verify(salTableService).updateTable(ArgumentMatchers.<UpdateTableInput>any());
 
         Assert.assertTrue(updateResult.isDone());
         final RpcResult<UpdateTableOutput> updateTableResult = updateResult.get(2, TimeUnit.SECONDS);

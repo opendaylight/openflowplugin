@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import org.junit.Assert;
@@ -36,7 +35,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -106,22 +104,14 @@ public class DeviceManagerImplTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mockConnectionContext.getNodeId()).thenReturn(DUMMY_NODE_ID);
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
-        when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_IDENTIFIER);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
 
-        when(mockFeatures.getCapabilities()).thenReturn(capabilities);
-        when(mockFeatures.getCapabilitiesV10()).thenReturn(capabilitiesV10);
-        when(mockFeatures.getDatapathId()).thenReturn(BigInteger.valueOf(21L));
-
         when(mockedFuture.isDone()).thenReturn(true);
         when(writeTransaction.submit()).thenReturn(mockedFuture);
-        when(transactionChain.newWriteOnlyTransaction()).thenReturn(writeTransaction);
-        when(dataBroker.createTransactionChain(any(TransactionChainListener.class))).thenReturn(transactionChain);
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         deviceManager = new DeviceManagerImpl(

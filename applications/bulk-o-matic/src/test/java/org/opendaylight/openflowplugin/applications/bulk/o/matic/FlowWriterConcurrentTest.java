@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -57,7 +57,7 @@ public class FlowWriterConcurrentTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
-        }).when(mockFlowPusher).execute(Matchers.<Runnable>any());
+        }).when(mockFlowPusher).execute(ArgumentMatchers.<Runnable>any());
 
         flowWriterConcurrent = new FlowWriterConcurrent(mockDataBroker, mockFlowPusher);
     }
@@ -65,14 +65,16 @@ public class FlowWriterConcurrentTest {
     @Test
     public void testAddFlows() throws Exception {
         flowWriterConcurrent.addFlows(1, FLOWS_PER_DPN, 10, 10, 10, (short) 0, (short) 1, true);
-        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(),
-                Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.<LogicalDatastoreType>any(),
+                ArgumentMatchers.<InstanceIdentifier<DataObject>>any(), ArgumentMatchers.<DataObject>any(),
+                ArgumentMatchers.anyBoolean());
     }
 
     @Test
     public void testDeleteFlows() throws Exception {
         flowWriterConcurrent.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
-        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(),
-                Matchers.<InstanceIdentifier<DataObject>>any());
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN))
+                .delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
     }
 }

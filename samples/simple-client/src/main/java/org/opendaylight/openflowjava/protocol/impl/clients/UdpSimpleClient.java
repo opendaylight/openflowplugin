@@ -76,14 +76,14 @@ public class UdpSimpleClient implements OFClient {
                 }
             }
         } catch (InterruptedException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error("Error {}", ex);
         } finally {
             LOG.debug("shutting down");
             try {
                 group.shutdownGracefully().get();
                 LOG.debug("shutdown succesful");
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error(e.getMessage(), e);
+                LOG.error("Error {}", e);
             }
         }
         scenarioDone.set(true);

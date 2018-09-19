@@ -17,8 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -110,7 +110,7 @@ public class FlowForwarderTest {
 
         final Future<RpcResult<AddFlowOutput>> addResult = flowForwarder.add(flowPath, flow, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).addFlow(Matchers.<AddFlowInput>any());
+        Mockito.verify(salFlowService).addFlow(ArgumentMatchers.<AddFlowInput>any());
         final AddFlowInput flowInput = addFlowInputCpt.getValue();
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());
@@ -155,7 +155,7 @@ public class FlowForwarderTest {
         final Future<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow,
                 flowUpdated, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).updateFlow(Matchers.<UpdateFlowInput>any());
+        Mockito.verify(salFlowService).updateFlow(ArgumentMatchers.<UpdateFlowInput>any());
         final UpdateFlowInput updateFlowInput = updateFlowInputCpt.getValue();
         final OriginalFlow flowOrigInput = updateFlowInput.getOriginalFlow();
         final UpdatedFlow flowInput = updateFlowInput.getUpdatedFlow();
@@ -192,7 +192,7 @@ public class FlowForwarderTest {
         final Future<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath,
                 removeFlow, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).removeFlow(Matchers.<RemoveFlowInput>any());
+        Mockito.verify(salFlowService).removeFlow(ArgumentMatchers.<RemoveFlowInput>any());
         final RemoveFlowInput flowInput = removeFlowInputCpt.getValue();
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());

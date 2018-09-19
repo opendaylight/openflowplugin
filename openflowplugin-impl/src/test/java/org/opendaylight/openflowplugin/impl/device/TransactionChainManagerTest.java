@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
@@ -15,7 +17,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -66,14 +67,10 @@ public class TransactionChainManagerTest {
         final ReadOnlyTransaction readOnlyTx = Mockito.mock(ReadOnlyTransaction.class);
         final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures
                 .immediateCheckedFuture(Optional.<Node>absent());
-        Mockito.when(readOnlyTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent)).thenReturn(noExistNodeFuture);
-        Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTx);
-        Mockito.when(dataBroker.createTransactionChain(Matchers.any(TransactionChainListener.class)))
+        Mockito.when(dataBroker.createTransactionChain(any(TransactionChainListener.class)))
                 .thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
-        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
-        Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         txChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());
         Mockito.when(txChain.newReadWriteTransaction()).thenReturn(writeTx);
 
@@ -187,9 +184,6 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testDeactivateTransactionChainManagerFailed() throws Exception {
-        Mockito.when(writeTx.submit()).thenReturn(
-                Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(
-                        new TransactionCommitFailedException("mock")));
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
 

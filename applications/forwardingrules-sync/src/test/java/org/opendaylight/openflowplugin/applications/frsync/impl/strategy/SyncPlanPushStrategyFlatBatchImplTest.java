@@ -20,8 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -123,7 +123,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
                 groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
                 flowsToRemove, metersToRemove, groupsToRemove);
 
-        Mockito.when(flatBatchService.processFlatBatch(Matchers.<ProcessFlatBatchInput>any()))
+        Mockito.when(flatBatchService.processFlatBatch(ArgumentMatchers.<ProcessFlatBatchInput>any()))
                 .thenReturn(RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture());
 
         final SyncCrudCounters counters = new SyncCrudCounters();

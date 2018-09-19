@@ -40,7 +40,6 @@ public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
                                                          convertorManager,
                                                          MultipartWriterProviderFactory
                                                                  .createDefaultProvider(mockedDeviceContext));
-        Mockito.doReturn(NODE_ID).when(mockedPrimConnectionContext).getNodeId();
         Mockito.when(mockedDeviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.when(mockedDeviceContext.getDeviceInfo().getNodeId()).thenReturn(NODE_ID);
     }

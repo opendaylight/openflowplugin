@@ -13,11 +13,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class that represents the LLDP frame objects.
  */
 public class LLDP extends Packet {
+    private static final Logger LOG = LoggerFactory.getLogger(LLDP.class);
     private static final String CHASSISID = "ChassisId";
     private static final String SYSTEMNAMEID = "SystemNameID";
     private static final String PORTID = "PortId";
