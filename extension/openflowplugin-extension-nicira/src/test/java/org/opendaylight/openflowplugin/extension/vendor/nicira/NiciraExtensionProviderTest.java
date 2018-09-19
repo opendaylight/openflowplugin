@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -45,8 +45,8 @@ public class NiciraExtensionProviderTest {
     @Test
     public void testRegisterConverters() throws Exception {
         Mockito.verify(extensionConverterRegistrator, Mockito.atLeastOnce()).registerActionConvertor(
-                Matchers.<TypeVersionKey<? extends Action>>any(),
-                Matchers.<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
+                ArgumentMatchers.<TypeVersionKey<? extends Action>>any(),
+                ArgumentMatchers.<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
                     .common.action.rev150203.actions.grouping.Action>>any());
     }
 }

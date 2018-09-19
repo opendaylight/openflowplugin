@@ -75,7 +75,6 @@ public class RpcContextImplTest {
         final NodeId nodeId = new NodeId("openflow:1");
         nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
 
-        when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);

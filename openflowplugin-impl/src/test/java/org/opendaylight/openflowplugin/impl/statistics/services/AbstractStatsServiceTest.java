@@ -8,17 +8,16 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -79,20 +78,10 @@ public abstract class AbstractStatsServiceTest {
     public void init() throws Exception {
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-        Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class)))
+        Mockito.when(deviceContext.getMultiMsgCollector(any(RequestContext.class)))
                 .thenReturn(multiMsgCollector);
-        Mockito.when(deviceContext.oook()).thenReturn(translatorLibrary);
-        Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
-        Mockito.when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
-        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
-        Mockito.when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        Mockito.when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
-        Mockito.when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-
         setUp();
     }
 

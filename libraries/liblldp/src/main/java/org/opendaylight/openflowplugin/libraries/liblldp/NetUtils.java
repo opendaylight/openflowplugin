@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * Utility class containing the common utility functions needed for operating on networking data structures.
  */
 public abstract class NetUtils {
-    protected static final Logger LOG = LoggerFactory.getLogger(NetUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetUtils.class);
 
     /**
      * Constant holding the number of bits in a byte.
