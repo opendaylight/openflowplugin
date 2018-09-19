@@ -88,7 +88,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector removed");
-            String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class, NodeConnectorKey.class)
+            String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class)
                     .getId().getValue();
             BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
@@ -111,7 +111,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector added");
             String nodeConnectorIdentifier = nodeConnIdent
-                    .firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId().getValue();
+                    .firstKeyOf(NodeConnector.class).getId().getValue();
             BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
             if (!dpnToPortMultiMap.containsEntry(dpId, nodeConnectorIdentifier)) {

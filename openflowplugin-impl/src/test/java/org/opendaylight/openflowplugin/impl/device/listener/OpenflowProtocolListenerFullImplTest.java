@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -36,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * openflowplugin-impl
@@ -64,7 +66,7 @@ public class OpenflowProtocolListenerFullImplTest {
         connectionAdapter.setMessageListener(ofProtocolListener);
         Mockito.when(connectionAdapter.getRemoteAddress())
                 .thenReturn(InetSocketAddress.createUnresolved("ofp-junit.example.org", 6663));
-        Mockito.verify(connectionAdapter).setMessageListener(Matchers.any(OpenflowProtocolListener.class));
+        Mockito.verify(connectionAdapter).setMessageListener(any(OpenflowProtocolListener.class));
     }
 
     @After
@@ -83,7 +85,7 @@ public class OpenflowProtocolListenerFullImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onEchoRequestMessage(echoRequestMessage);
 
-        Mockito.verify(connectionAdapter).echoReply(Matchers.any(EchoReplyInput.class));
+        Mockito.verify(connectionAdapter).echoReply(any(EchoReplyInput.class));
     }
 
     /**
@@ -97,7 +99,7 @@ public class OpenflowProtocolListenerFullImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onErrorMessage(errorMessage);
 
-        Mockito.verify(deviceReplyProcessor).processReply(Matchers.any(ErrorMessage.class));
+        Mockito.verify(deviceReplyProcessor).processReply(any(ErrorMessage.class));
     }
 
     /**
@@ -111,7 +113,7 @@ public class OpenflowProtocolListenerFullImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onExperimenterMessage(experimenterMessage);
 
-        Mockito.verify(deviceReplyProcessor).processExperimenterMessage(Matchers.<ExperimenterMessage>any());
+        Mockito.verify(deviceReplyProcessor).processExperimenterMessage(ArgumentMatchers.<ExperimenterMessage>any());
     }
 
     /**
@@ -125,7 +127,7 @@ public class OpenflowProtocolListenerFullImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onFlowRemovedMessage(flowRemovedMessage);
 
-        Mockito.verify(deviceReplyProcessor).processFlowRemovedMessage(Matchers.any(FlowRemovedMessage.class));
+        Mockito.verify(deviceReplyProcessor).processFlowRemovedMessage(any(FlowRemovedMessage.class));
     }
 
     /**
@@ -154,7 +156,7 @@ public class OpenflowProtocolListenerFullImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onPacketInMessage(packetInMessage);
 
-        Mockito.verify(deviceReplyProcessor).processPacketInMessage(Matchers.any(PacketInMessage.class));
+        Mockito.verify(deviceReplyProcessor).processPacketInMessage(any(PacketInMessage.class));
     }
 
     /**
@@ -168,7 +170,7 @@ public class OpenflowProtocolListenerFullImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3).setXid(xid).build();
         ofProtocolListener.onPortStatusMessage(portStatusMessage);
 
-        Mockito.verify(deviceReplyProcessor).processPortStatusMessage(Matchers.any(PortStatusMessage.class));
+        Mockito.verify(deviceReplyProcessor).processPortStatusMessage(any(PortStatusMessage.class));
     }
 
 }

@@ -176,7 +176,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         @Override
         public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             Optional<FlowCapableNode> flowNode = Optional.absent();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
@@ -310,7 +310,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         @Override
         public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
 
             ReadOnlyTransaction trans = provider.getReadTranaction();
@@ -734,7 +734,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
         if (flowNode.get().getGroup() != null) {
             for (Group gr : flowNode.get().getGroup()) {
-                NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class, NodeKey.class).getId();
+                NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class).getId();
                 provider.getDevicesGroupRegistry().storeGroup(nodeId,gr.getGroupId().getValue());
                 messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
                         .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());

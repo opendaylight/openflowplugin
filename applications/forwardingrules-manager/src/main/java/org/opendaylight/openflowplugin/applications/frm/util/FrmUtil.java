@@ -50,15 +50,15 @@ public final class FrmUtil {
     }
 
     public static NodeId getNodeIdFromNodeIdentifier(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId();
+        return nodeIdent.firstKeyOf(Node.class).getId();
     }
 
     public static String getFlowId(final FlowRef flowRef) {
-        return flowRef.getValue().firstKeyOf(Flow.class, FlowKey.class).getId().getValue();
+        return flowRef.getValue().firstKeyOf(Flow.class).getId().getValue();
     }
 
     public static BigInteger getDpnIdFromNodeName(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        String nodeId = nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+        String nodeId = nodeIdent.firstKeyOf(Node.class).getId().getValue();
         String dpId = nodeId.substring(nodeId.lastIndexOf(SEPARATOR) + 1);
         return new BigInteger(dpId);
     }

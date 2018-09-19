@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -37,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+
+import static org.mockito.ArgumentMatchers.*;
 
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only not delegated method.
@@ -67,14 +68,14 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
         };
         Mockito.when(rqContextStack.<List<MultipartReply>>createRequestContext()).thenReturn(rqContextMp);
         Mockito.when(translatorLibrary
-                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Matchers.any(TranslatorKey.class)))
+                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(any(TranslatorKey.class)))
                 .thenReturn(translator);
     }
 
     @Test
     public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
         Mockito.doAnswer((Answer<Void>) invocation -> {
             final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
                     .setVersion(OFConstants.OFP_VERSION_1_3);
@@ -83,9 +84,9 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                     .success(Collections.<MultipartReply>singletonList(messageBuilder.build()))
                     .build());
             return null;
-        }).when(multiMsgCollector).endCollecting(Matchers.any(EventIdentifier.class));
+        }).when(multiMsgCollector).endCollecting(any(EventIdentifier.class));
         Mockito.when(translator.translate(
-                        Matchers.any(MultipartReply.class), Matchers.same(deviceInfo), Matchers.isNull())
+                        any(MultipartReply.class), same(deviceInfo), isNull())
         ).thenReturn(new AggregatedFlowStatisticsBuilder().build());
 
         GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input =

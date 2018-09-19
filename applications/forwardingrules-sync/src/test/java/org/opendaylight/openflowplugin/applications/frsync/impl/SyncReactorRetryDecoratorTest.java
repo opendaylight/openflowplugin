@@ -12,7 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -53,7 +53,7 @@ public class SyncReactorRetryDecoratorTest {
 
     @Test
     public void testSyncupSuccess() {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), ArgumentMatchers.<SyncupEntry>any()))
                 .thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         reactor.syncup(fcNodePath, syncupEntry);
@@ -65,7 +65,7 @@ public class SyncReactorRetryDecoratorTest {
 
     @Test
     public void testSyncupFail() {
-        Mockito.when(delegate.syncup(Matchers.<InstanceIdentifier<FlowCapableNode>>any(), Matchers.<SyncupEntry>any()))
+        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), ArgumentMatchers.<SyncupEntry>any()))
                 .thenReturn(Futures.immediateFuture(Boolean.FALSE));
 
         reactor.syncup(fcNodePath, syncupEntry);

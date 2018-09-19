@@ -15,7 +15,6 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -31,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.add.message.onf.OnfAddMessageGroupingDataBuilder;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory}.
@@ -86,11 +87,11 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
         if (withProperty) {
             dataBuilder.setBundleProperty(new ArrayList<>(Collections.singleton(
                     BundleTestUtils.createExperimenterProperty(propertyExperimenterData))));
-            Mockito.when(registry.getSerializer(Matchers.any()))
+            Mockito.when(registry.getSerializer(any()))
                     .thenReturn(caseSerializer)
                     .thenReturn(propertySerializer);
         } else {
-            Mockito.when(registry.getSerializer(Matchers.any())).thenReturn(caseSerializer);
+            Mockito.when(registry.getSerializer(any())).thenReturn(caseSerializer);
         }
 
         builder.setOnfAddMessageGroupingData(dataBuilder.build());
@@ -102,7 +103,7 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
         Assert.assertEquals("Wrong bundle ID", 1L, out.readUnsignedInt());
         long padding = out.readUnsignedShort();
         Assert.assertEquals("Wrong flags", 1, out.readUnsignedShort());
-        Mockito.verify(caseSerializer).serialize(Mockito.any(), Mockito.any());
+        Mockito.verify(caseSerializer).serialize(any(), any());
 
         if (withProperty) {
             Mockito.verify(propertySerializer).serialize(propertyExperimenterData, out);

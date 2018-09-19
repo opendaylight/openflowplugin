@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -17,6 +16,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import static org.mockito.ArgumentMatchers.any;
 
 public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServiceTest {
 
@@ -45,6 +46,6 @@ public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServic
         Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(null);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector)
-                .endCollecting(Matchers.any(EventIdentifier.class));
+                .endCollecting(any(EventIdentifier.class));
     }
 }

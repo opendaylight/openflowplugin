@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -37,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Created by mirehak on 7/23/15.
@@ -79,7 +80,7 @@ public abstract class AbstractStatsServiceTest {
     public void init() throws Exception {
         Mockito.when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
-        Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any(RequestContext.class)))
+        Mockito.when(deviceContext.getMultiMsgCollector(any(RequestContext.class)))
                 .thenReturn(multiMsgCollector);
         Mockito.when(deviceContext.oook()).thenReturn(translatorLibrary);
         Mockito.when(deviceContext.getDeviceState()).thenReturn(deviceState);

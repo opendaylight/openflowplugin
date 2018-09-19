@@ -12,7 +12,6 @@ import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -28,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Tests for {@link org.opendaylight.openflowplugin.extension.onf.deserializer.BundleControlFactory}.
@@ -72,7 +73,7 @@ public class BundleControlFactoryTest {
                                                        + "00 00 " // type 2
                                                        + "00 04 " // length 2
                                                        + "00 00 00 00"); // data 2
-        Mockito.when(registry.getDeserializer(Matchers.any(MessageCodeKey.class)))
+        Mockito.when(registry.getDeserializer(any(MessageCodeKey.class)))
                 .thenReturn(experimenterPropertyDeserializer);
         ((DeserializerRegistryInjector)factory).injectDeserializerRegistry(registry);
         BundleControlOnf builtByFactory = factory.deserialize(buffer);

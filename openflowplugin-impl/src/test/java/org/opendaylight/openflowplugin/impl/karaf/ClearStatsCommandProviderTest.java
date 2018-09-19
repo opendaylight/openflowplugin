@@ -13,12 +13,13 @@ import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+
+import static org.mockito.ArgumentMatchers.anyString;
 
 /**
  * Test for {@link ClearStatsCommandProvider}.
@@ -45,7 +46,7 @@ public class ClearStatsCommandProviderTest extends AbstractKarafTest {
 
     @After
     public void tearDown() {
-        Mockito.verify(console).print(Matchers.anyString());
+        Mockito.verify(console).print(anyString());
         mi5.resetStatistics();
     }
 

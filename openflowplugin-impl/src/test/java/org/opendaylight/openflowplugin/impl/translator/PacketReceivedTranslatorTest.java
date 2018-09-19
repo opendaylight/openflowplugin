@@ -109,8 +109,7 @@ public class PacketReceivedTranslatorTest {
         Assert.assertEquals("org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController",
                 packetReceived.getPacketInReason().getName());
         Assert.assertEquals("openflow:10:" + PORT_NO,
-                packetReceived.getIngress().getValue().firstKeyOf(NodeConnector.class, NodeConnectorKey.class)
-                        .getId().getValue());
+                packetReceived.getIngress().getValue().firstKeyOf(NodeConnector.class).getId().getValue());
         Assert.assertEquals(0L, packetReceived.getFlowCookie().getValue().longValue());
         Assert.assertEquals(42L, packetReceived.getTableId().getValue().longValue());
     }

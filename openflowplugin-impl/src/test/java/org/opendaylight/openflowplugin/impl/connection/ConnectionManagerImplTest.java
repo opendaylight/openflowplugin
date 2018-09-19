@@ -17,8 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -42,6 +42,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Test of {@link ConnectionManagerImpl} - lightweight version, using basic ways (TDD).
@@ -79,7 +81,7 @@ public class ConnectionManagerImplTest {
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);
         Mockito.when(connection.isAlive()).thenReturn(true);
-        Mockito.when(connection.barrier(Matchers.<BarrierInput>any()))
+        Mockito.when(connection.barrier(ArgumentMatchers.<BarrierInput>any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
     }
 
@@ -110,11 +112,11 @@ public class ConnectionManagerImplTest {
 
         // prepare void reply (hello rpc output)
         final SettableFuture<RpcResult<HelloOutput>> voidResponseFx = SettableFuture.create();
-        Mockito.when(connection.hello(Matchers.any(HelloInput.class))).thenReturn(voidResponseFx);
+        Mockito.when(connection.hello(any(HelloInput.class))).thenReturn(voidResponseFx);
         // prepare getFeature reply (getFeture rpc output)
         final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx =
                 SettableFuture.<RpcResult<GetFeaturesOutput>>create();
-        Mockito.when(connection.getFeatures(Matchers.any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
+        Mockito.when(connection.getFeatures(any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
 
 
         // fire handshake
@@ -141,7 +143,7 @@ public class ConnectionManagerImplTest {
         featureResponseFx.set(rpcFeaturesOutput);
 
         Mockito.verify(deviceConnectedHandler,
-                Mockito.timeout(500)).deviceConnected(Matchers.any(ConnectionContext.class));
+                Mockito.timeout(500)).deviceConnected(any(ConnectionContext.class));
     }
 
     /**
@@ -166,11 +168,11 @@ public class ConnectionManagerImplTest {
 
         // prepare void reply (hello rpc output)
         final SettableFuture<RpcResult<HelloOutput>> voidResponseFx = SettableFuture.create();
-        Mockito.when(connection.hello(Matchers.any(HelloInput.class))).thenReturn(voidResponseFx);
+        Mockito.when(connection.hello(any(HelloInput.class))).thenReturn(voidResponseFx);
         // prepare getFeature reply (getFeture rpc output)
         final SettableFuture<RpcResult<GetFeaturesOutput>> featureResponseFx =
                 SettableFuture.<RpcResult<GetFeaturesOutput>>create();
-        Mockito.when(connection.getFeatures(Matchers.any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
+        Mockito.when(connection.getFeatures(any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
 
 
         // fire handshake - send hello reply
@@ -197,6 +199,6 @@ public class ConnectionManagerImplTest {
         featureResponseFx.set(rpcFeaturesOutput);
 
         Mockito.verify(deviceConnectedHandler,
-                Mockito.timeout(FINAL_STEP_TIMEOUT)).deviceConnected(Matchers.any(ConnectionContext.class));
+                Mockito.timeout(FINAL_STEP_TIMEOUT)).deviceConnected(any(ConnectionContext.class));
     }
 }

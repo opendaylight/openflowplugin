@@ -60,7 +60,7 @@ public class FlowTableStatNotificationSupplierImpl extends
 
         final FlowTableAndStatisticsMapBuilder ftsmBuilder = new FlowTableAndStatisticsMapBuilder(flowTableStatistics);
         ftsmBuilder.withKey(new FlowTableAndStatisticsMapKey(
-                new TableId(path.firstKeyOf(Table.class, TableKey.class).getId())));
+                new TableId(path.firstKeyOf(Table.class).getId())));
 
         final FlowTableStatisticsUpdateBuilder builder = new FlowTableStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));

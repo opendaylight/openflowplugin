@@ -83,7 +83,7 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 String nodeId = modification.getRootPath().getRootIdentifier()
-                        .firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+                        .firstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
                     setConfigInputBuilder.setFlag(SwitchConfigFlag.FRAGNORMAL.toString());

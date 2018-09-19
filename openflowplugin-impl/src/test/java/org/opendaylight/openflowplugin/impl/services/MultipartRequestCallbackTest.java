@@ -14,8 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -58,7 +58,7 @@ public class MultipartRequestCallbackTest {
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(spy);
 
         final OngoingStubbing<MultiMsgCollector<MultipartReply>> when =
-            Mockito.when(deviceContext.getMultiMsgCollector(Matchers.any()));
+            Mockito.when(deviceContext.getMultiMsgCollector(ArgumentMatchers.any()));
         when.thenReturn(multiMsgCollector);
         multipartRequestCallback = new MultiLayerMultipartRequestCallback<>(requestContext,
                                                                             MultipartRequestInput.class,
@@ -72,7 +72,7 @@ public class MultipartRequestCallbackTest {
     @Test
     public void testOnSuccess1() throws Exception {
         multipartRequestCallback.onSuccess(null);
-        Mockito.verify(multiMsgCollector).endCollecting(Matchers.<EventIdentifier>any());
+        Mockito.verify(multiMsgCollector).endCollecting(ArgumentMatchers.<EventIdentifier>any());
     }
 
     /**
@@ -94,6 +94,6 @@ public class MultipartRequestCallbackTest {
         final MultipartReplyMessage replyMessage = new MultipartReplyMessageBuilder().build();
         multipartRequestCallback.onSuccess(replyMessage);
         Mockito.verify(multiMsgCollector)
-                .addMultipartMsg(Matchers.eq(replyMessage), Matchers.eq(false), Matchers.any());
+                .addMultipartMsg(ArgumentMatchers.eq(replyMessage), ArgumentMatchers.eq(false), ArgumentMatchers.any());
     }
 }

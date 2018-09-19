@@ -11,7 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -41,7 +41,7 @@ public class ForwardingRulesSyncProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(rpcRegistry.getRpcService(Matchers.<Class<? extends RpcService>>any()))
+        Mockito.when(rpcRegistry.getRpcService(ArgumentMatchers.<Class<? extends RpcService>>any()))
                 .thenAnswer(invocation -> {
                     Class<? extends RpcService> serviceType =
                             (Class<? extends RpcService>) invocation.getArguments()[0];
@@ -58,8 +58,8 @@ public class ForwardingRulesSyncProviderTest {
         provider.init();
 
         Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(
-                Matchers.<DataTreeIdentifier<FlowCapableNode>>any(),
-                Matchers.<DataTreeChangeListener<FlowCapableNode>>any());
+                ArgumentMatchers.<DataTreeIdentifier<FlowCapableNode>>any(),
+                ArgumentMatchers.<DataTreeChangeListener<FlowCapableNode>>any());
     }
 
     @After

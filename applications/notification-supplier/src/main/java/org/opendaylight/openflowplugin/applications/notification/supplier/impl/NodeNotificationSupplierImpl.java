@@ -55,7 +55,7 @@ public class NodeNotificationSupplierImpl extends AbstractNotificationSupplierFo
         Preconditions.checkArgument(ii != null);
         final FlowCapableNodeUpdatedBuilder flowNodeNotifBuilder = new FlowCapableNodeUpdatedBuilder(flowCapableNode);
         final NodeUpdatedBuilder notifBuilder = new NodeUpdatedBuilder();
-        notifBuilder.setId(ii.firstKeyOf(Node.class, NodeKey.class).getId());
+        notifBuilder.setId(ii.firstKeyOf(Node.class).getId());
         notifBuilder.setNodeRef(new NodeRef(getNodeII(ii)));
         notifBuilder.addAugmentation(FlowCapableNodeUpdated.class, flowNodeNotifBuilder.build());
         return notifBuilder.build();

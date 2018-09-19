@@ -57,7 +57,7 @@ public class NodeConnectorNotificationSupplierImpl extends
         final NodeConnectorUpdatedBuilder notifBuilder = new NodeConnectorUpdatedBuilder();
         final FlowCapableNodeConnectorUpdatedBuilder connNotifBuilder = new FlowCapableNodeConnectorUpdatedBuilder(
                 flowCapableNodeConnector);
-        notifBuilder.setId(path.firstKeyOf(NodeConnector.class, NodeConnectorKey.class).getId());
+        notifBuilder.setId(path.firstKeyOf(NodeConnector.class).getId());
         notifBuilder.setNodeConnectorRef(new NodeConnectorRef(path));
         notifBuilder.addAugmentation(FlowCapableNodeConnectorUpdated.class, connNotifBuilder.build());
         return notifBuilder.build();

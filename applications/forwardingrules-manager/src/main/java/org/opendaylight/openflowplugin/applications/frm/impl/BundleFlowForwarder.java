@@ -81,7 +81,7 @@ public class BundleFlowForwarder {
     public void remove(final InstanceIdentifier<Flow> identifier, final Flow flow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final List<Message> messages = new ArrayList<>(1);
-        String node = nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+        String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
         BundleInnerMessage bundleInnerMessage = new BundleRemoveFlowCaseBuilder()
                 .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flow).build()).build();
         Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))

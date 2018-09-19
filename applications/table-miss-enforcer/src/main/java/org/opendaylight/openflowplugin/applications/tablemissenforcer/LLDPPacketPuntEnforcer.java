@@ -106,7 +106,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 String nodeId = modification.getRootPath().getRootIdentifier()
-                        .firstKeyOf(Node.class, NodeKey.class).getId().getValue();
+                        .firstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
                     addFlowInput.setNode(new NodeRef(modification.getRootPath()

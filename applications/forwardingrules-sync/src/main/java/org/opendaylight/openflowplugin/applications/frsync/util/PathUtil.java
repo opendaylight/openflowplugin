@@ -24,7 +24,7 @@ public final class PathUtil {
     }
 
     public static NodeId digNodeId(final InstanceIdentifier<?> nodeIdent) {
-        return nodeIdent.firstKeyOf(Node.class, NodeKey.class).getId();
+        return nodeIdent.firstKeyOf(Node.class).getId();
     }
 
     public static InstanceIdentifier<Node> digNodePath(final InstanceIdentifier<FlowCapableNode> nodeIdent) {

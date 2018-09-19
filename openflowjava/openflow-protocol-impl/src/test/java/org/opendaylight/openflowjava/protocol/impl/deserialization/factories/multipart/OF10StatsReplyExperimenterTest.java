@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -40,7 +40,7 @@ public class OF10StatsReplyExperimenterTest {
      */
     @Test
     public void test() {
-        Mockito.when(registry.getDeserializer(Matchers.<MessageCodeKey>any())).thenReturn(vendorDeserializer);
+        Mockito.when(registry.getDeserializer(ArgumentMatchers.<MessageCodeKey>any())).thenReturn(vendorDeserializer);
         OF10StatsReplyMessageFactory factory = new OF10StatsReplyMessageFactory();
         factory.injectDeserializerRegistry(registry);
 

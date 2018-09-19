@@ -72,7 +72,7 @@ public class MeterNotificationSupplierImpl extends
     public MeterRemoved deleteNotification(final InstanceIdentifier<Meter> path) {
         Preconditions.checkArgument(path != null);
         final MeterRemovedBuilder builder = new MeterRemovedBuilder();
-        builder.setMeterId(path.firstKeyOf(Meter.class, MeterKey.class).getMeterId());
+        builder.setMeterId(path.firstKeyOf(Meter.class).getMeterId());
         builder.setMeterRef(new MeterRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();

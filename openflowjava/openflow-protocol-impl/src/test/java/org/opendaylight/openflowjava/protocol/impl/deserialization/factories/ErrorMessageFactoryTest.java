@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -21,6 +20,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
+
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Unit tests for ErrorMessageFactory.
@@ -42,7 +43,7 @@ public class ErrorMessageFactoryTest {
     @Before
     public void startUp() {
         errorFactory = new ErrorMessageFactory();
-        Mockito.when(registry.getDeserializer(Matchers.any(MessageCodeKey.class))).thenReturn(deserializer);
+        Mockito.when(registry.getDeserializer(any(MessageCodeKey.class))).thenReturn(deserializer);
         errorFactory.injectDeserializerRegistry(registry);
     }
 

@@ -16,8 +16,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -62,6 +62,9 @@ import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceDelegateImpl}.
  * Skipping notification verification. This will be tested in tests of underlying single task oriented services.
@@ -83,8 +86,8 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 rqContextStack, deviceContext, notificationPublishService, new AtomicLong(21), convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(Matchers.eq(42L), requestInput.capture(), Matchers.any(FutureCallback.class));
-        Mockito.when(translatorLibrary.lookupTranslator(Matchers.<TranslatorKey>any())).thenReturn(translator);
+                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
+        Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.<TranslatorKey>any())).thenReturn(translator);
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -99,7 +102,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId((short) 1));
 
-        Mockito.when(translator.translate(Matchers.any(MultipartReply.class), Matchers.eq(deviceInfo), Matchers.any()))
+        Mockito.when(translator.translate(any(MultipartReply.class), eq(deviceInfo),any()))
                 .thenReturn(new AggregatedFlowStatisticsBuilder()
                         .setByteCount(new Counter64(BigInteger.valueOf(50L)))
                         .setPacketCount(new Counter64(BigInteger.valueOf(51L)))
@@ -130,7 +133,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
 
         Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+                .offerNotification(any(Notification.class));
     }
 
     @Test
@@ -150,7 +153,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
         Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+                .offerNotification(any(Notification.class));
     }
 
     private static RpcResult<Object> buildFlowStatsReply() {
@@ -213,7 +216,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
         Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+                .offerNotification(any(Notification.class));
     }
 
     @Test
@@ -235,6 +238,6 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
         Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
-                .offerNotification(Matchers.any(Notification.class));
+                .offerNotification(any(Notification.class));
     }
 }

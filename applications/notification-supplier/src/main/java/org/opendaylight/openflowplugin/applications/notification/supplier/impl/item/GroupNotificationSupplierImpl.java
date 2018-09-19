@@ -72,7 +72,7 @@ public class GroupNotificationSupplierImpl extends AbstractNotificationSupplierF
     public GroupRemoved deleteNotification(final InstanceIdentifier<Group> path) {
         Preconditions.checkArgument(path != null);
         final GroupRemovedBuilder builder = new GroupRemovedBuilder();
-        builder.setGroupId(path.firstKeyOf(Group.class, GroupKey.class).getGroupId());
+        builder.setGroupId(path.firstKeyOf(Group.class).getGroupId());
         builder.setGroupRef(new GroupRef(path));
         builder.setNode(createNodeRef(path));
         return builder.build();

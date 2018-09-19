@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -55,11 +55,11 @@ public class FlowWriterTxChainTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
-        }).when(mockFlowPusher).execute(Matchers.<Runnable>any());
+        }).when(mockFlowPusher).execute(ArgumentMatchers.<Runnable>any());
 
         final BindingTransactionChain mockedTxChain = mock(BindingTransactionChain.class);
         when(mockedTxChain.newWriteOnlyTransaction()).thenReturn(writeTransaction);
-        doReturn(mockedTxChain).when(mockDataBroker).createTransactionChain(Matchers.<TransactionChainListener>any());
+        doReturn(mockedTxChain).when(mockDataBroker).createTransactionChain(ArgumentMatchers.<TransactionChainListener>any());
 
         when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
 
@@ -69,14 +69,14 @@ public class FlowWriterTxChainTest {
     @Test
     public void testAddFlows() throws Exception {
         flowWriterTxChain.addFlows(1, FLOWS_PER_DPN, 10, 10, 10, (short) 0, (short) 1, true);
-        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(Matchers.<LogicalDatastoreType>any(),
-                Matchers.<InstanceIdentifier<DataObject>>any(), Matchers.<DataObject>any(), Matchers.anyBoolean());
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.<LogicalDatastoreType>any(),
+                ArgumentMatchers.<InstanceIdentifier<DataObject>>any(), ArgumentMatchers.<DataObject>any(), ArgumentMatchers.anyBoolean());
     }
 
     @Test
     public void testDeleteFlows() throws Exception {
         flowWriterTxChain.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
-        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).delete(Matchers.<LogicalDatastoreType>any(),
-                Matchers.<InstanceIdentifier<DataObject>>any());
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+                ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
     }
 }

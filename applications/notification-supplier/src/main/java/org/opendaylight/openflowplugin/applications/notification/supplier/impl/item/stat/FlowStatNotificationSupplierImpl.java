@@ -59,7 +59,7 @@ public class FlowStatNotificationSupplierImpl extends AbstractNotificationSuppli
         Preconditions.checkArgument(path != null);
 
         final FlowAndStatisticsMapListBuilder fsmlBuilder = new FlowAndStatisticsMapListBuilder(flowStatistics);
-        fsmlBuilder.setFlowId(new FlowId(path.firstKeyOf(Flow.class, FlowKey.class).getId().getValue()));
+        fsmlBuilder.setFlowId(new FlowId(path.firstKeyOf(Flow.class).getId().getValue()));
 
         final FlowsStatisticsUpdateBuilder builder = new FlowsStatisticsUpdateBuilder();
         builder.setId(getNodeId(path));
