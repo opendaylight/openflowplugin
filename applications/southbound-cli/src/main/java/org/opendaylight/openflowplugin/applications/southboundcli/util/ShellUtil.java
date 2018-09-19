@@ -110,7 +110,7 @@ public final class ShellUtil {
                 if (flowCapableNode != null) {
                     name = node.<FlowCapableNode>augmentation(FlowCapableNode.class).getDescription();
                 } else {
-                    LOG.error("Error while converting OFNode:{} to FlowCapableNode: {}", node.getId());
+                    LOG.error("Error while converting OFNode:{} to FlowCapableNode", node.getId());
                     return null;
                 }
                 nodeConnectors = node.getNodeConnector();
@@ -118,7 +118,7 @@ public final class ShellUtil {
                     FlowCapableNodeConnector flowCapableNodeConnector =
                             nodeConnector.augmentation(FlowCapableNodeConnector.class);
                     if (flowCapableNodeConnector == null) {
-                        LOG.error("Error for OFNode:{} while reading nodeConnectors {}", node.getId());
+                        LOG.error("Error for OFNode:{} while reading nodeConnectors", node.getId());
                         return null;
                     } else {
                         String portName = flowCapableNodeConnector.getName();
@@ -127,11 +127,11 @@ public final class ShellUtil {
                 }
                 ofNode = new OFNode(nodeId, name, portList);
             } else {
-                LOG.error("OFNode with nodeId {} not present Inventory DS: {}", nodeId);
+                LOG.error("OFNode with nodeId {} not present Inventory DS", nodeId);
                 return null;
             }
         } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Error reading node {} from Inventory DS: {}", nodeId, e);
+            LOG.error("Error reading node {} from Inventory DS", nodeId, e);
         }
         return ofNode;
     }

@@ -164,7 +164,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         @Override
         public void onTransactionChainFailed(TransactionChain<?, ?> transactionChain,
                 AsyncTransaction<?, ?> asyncTransaction, Throwable throwable) {
-            LOG.error("Transaction chain: {} FAILED at asyncTransaction: {} due to: {}", transactionChain,
+            LOG.error("Transaction chain: {} FAILED at asyncTransaction: {} due to: ", transactionChain,
                     asyncTransaction.getIdentifier(), throwable);
             transactionChain.close();
         }

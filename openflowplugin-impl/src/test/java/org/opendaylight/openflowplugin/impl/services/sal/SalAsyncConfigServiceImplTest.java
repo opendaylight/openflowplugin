@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -17,7 +18,7 @@ import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -76,7 +77,7 @@ public class SalAsyncConfigServiceImplTest extends ServiceMocking {
         Assert.assertTrue(getAsyncResult.isDone());
         Assert.assertTrue(getAsyncResult.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedOutboundQueue).commitEntry(Matchers.eq(ServiceMocking.DUMMY_XID_VALUE),
-                Matchers.<OfHeader>any(), Matchers.<FutureCallback<OfHeader>>any());
+        verify(mockedOutboundQueue).commitEntry(eq(ServiceMocking.DUMMY_XID_VALUE),
+                ArgumentMatchers.<OfHeader>any(), ArgumentMatchers.<FutureCallback<OfHeader>>any());
     }
 }

@@ -102,23 +102,20 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         @Override
         public void onMeterAdded(MeterAdded notification) {
-            LOG.info("Meter to be added.........................." + notification.toString());
-            LOG.info("Meter  Xid........................." + notification.getTransactionId().getValue());
-            LOG.info("-----------------------------------------------------------------------------------");
+            LOG.info("Meter to be added {}", notification.toString());
+            LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
         @Override
         public void onMeterRemoved(MeterRemoved notification) {
-            LOG.info("Meter to be removed.........................." + notification.toString());
-            LOG.info("Meter  Xid........................." + notification.getTransactionId().getValue());
-            LOG.info("-----------------------------------------------------------------------------------");
+            LOG.info("Meter to be removed {}", notification.toString());
+            LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
         @Override
         public void onMeterUpdated(MeterUpdated notification) {
-            LOG.info("Meter to be updated.........................." + notification.toString());
-            LOG.info("Meter  Xid........................." + notification.getTransactionId().getValue());
-            LOG.info("-----------------------------------------------------------------------------------");
+            LOG.info("Meter to be updated {}", notification.toString());
+            LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
     }
