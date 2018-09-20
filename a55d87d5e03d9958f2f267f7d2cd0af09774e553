@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75a9cb9e_10bc2bd2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 460,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-20T09:46:20Z",
+      "side": 1,
+      "message": "add one for flow count for bundle resync as well",
+      "range": {
+        "startLine": 460,
+        "startChar": 16,
+        "endLine": 460,
+        "endChar": 34
+      },
+      "revId": "a55d87d5e03d9958f2f267f7d2cd0af09774e553",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bed44d3d_947dab91",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-20T09:46:20Z",
+      "side": 1,
+      "message": "flow count",
+      "range": {
+        "startLine": 472,
+        "startChar": 75,
+        "endLine": 472,
+        "endChar": 100
+      },
+      "revId": "a55d87d5e03d9958f2f267f7d2cd0af09774e553",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2c03a462_95a2eafc",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-20T09:46:20Z",
+      "side": 1,
+      "message": "why do we need this in lldp?",
+      "range": {
+        "startLine": 191,
+        "startChar": 8,
+        "endLine": 191,
+        "endChar": 95
+      },
+      "revId": "a55d87d5e03d9958f2f267f7d2cd0af09774e553",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "02e10e6b_d77f523a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/SystemNotificationsListenerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-20T09:46:20Z",
+      "side": 1,
+      "message": "add one for SwitchIdleEvent as well",
+      "range": {
+        "startLine": 61,
+        "startChar": 4,
+        "endLine": 61,
+        "endChar": 71
+      },
+      "revId": "a55d87d5e03d9958f2f267f7d2cd0af09774e553",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0fa987d9_1224596a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-20T09:46:20Z",
+      "side": 1,
+      "message": "why this separator needed?",
+      "range": {
+        "startLine": 67,
+        "startChar": 4,
+        "endLine": 67,
+        "endChar": 48
+      },
+      "revId": "a55d87d5e03d9958f2f267f7d2cd0af09774e553",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "04a8f5f7_f56adbc5",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImplTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-20T09:46:20Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "a55d87d5e03d9958f2f267f7d2cd0af09774e553",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
