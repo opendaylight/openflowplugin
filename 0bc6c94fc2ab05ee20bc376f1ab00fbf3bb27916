@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e30720f9_c917a859",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-21T05:19:34Z",
+      "side": 1,
+      "message": "Bundle Reconciliation Start",
+      "range": {
+        "startLine": 194,
+        "startChar": 42,
+        "endLine": 194,
+        "endChar": 75
+      },
+      "revId": "0bc6c94fc2ab05ee20bc376f1ab00fbf3bb27916",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "228a63dd_eb330bf7",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-21T05:19:34Z",
+      "side": 1,
+      "message": "you don\u0027t need this",
+      "range": {
+        "startLine": 196,
+        "startChar": 16,
+        "endLine": 196,
+        "endChar": 70
+      },
+      "revId": "0bc6c94fc2ab05ee20bc376f1ab00fbf3bb27916",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a34869fe_997234bb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-21T05:19:34Z",
+      "side": 1,
+      "message": "add finish log here without flow count",
+      "range": {
+        "startLine": 262,
+        "startChar": 24,
+        "endLine": 262,
+        "endChar": 100
+      },
+      "revId": "0bc6c94fc2ab05ee20bc376f1ab00fbf3bb27916",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1bbb7c8e_e4a6476e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 764,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-21T05:19:34Z",
+      "side": 1,
+      "message": "flow/group count here",
+      "range": {
+        "startLine": 764,
+        "startChar": 8,
+        "endLine": 764,
+        "endChar": 109
+      },
+      "revId": "0bc6c94fc2ab05ee20bc376f1ab00fbf3bb27916",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ceb91bbb_bc3dd202",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-21T05:19:34Z",
+      "side": 1,
+      "message": "specify the nodeConnector details and print the reason directly.",
+      "revId": "0bc6c94fc2ab05ee20bc376f1ab00fbf3bb27916",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a38782b_603cf54b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-09-21T05:19:34Z",
+      "side": 1,
+      "message": "We dont need to have if else check",
+      "range": {
+        "startLine": 363,
+        "startChar": 10,
+        "endLine": 366,
+        "endChar": 9
+      },
+      "revId": "0bc6c94fc2ab05ee20bc376f1ab00fbf3bb27916",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
