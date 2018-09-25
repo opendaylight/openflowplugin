@@ -198,9 +198,9 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 }
             } catch (ExecutionException | InterruptedException e) {
                 increaseReconcileCount(false);
+                updateReconciliationState(FAILED);
                 LOG.error("Error occurred while invoking reconcile RPC for node {}", this.nodeId, e);
-            }
-            finally {
+            } finally {
                 alarmAgent.clearNodeReconciliationAlarm(nodeId.longValue());
             }
         }
@@ -259,8 +259,12 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             ReconciliationStateListBuilder stateBuilder = new ReconciliationStateListBuilder()
                     .withKey(new ReconciliationStateListKey(nodeId))
                     .setState(state);
-            tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, stateBuilder.build(), true);
-            tx.submit();
+            try {
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, stateBuilder.build(), true);
+                tx.submit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while updating reconciliation state in the datastore: {}", nodeId, e);
+            }
         }
     }
 }
