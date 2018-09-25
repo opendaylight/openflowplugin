@@ -198,11 +198,75 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                     LOG.error("Reconciliation failed for node {} with error {}", nodeId, rpcResult.getErrors());
                 }
             } catch (ExecutionException | InterruptedException e) {
-                increaseReconcileCount(node, false);
-                LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
+                increaseReconcileCount(false);
+                updateReconciliationState(FAILED);
+                LOG.error("Error occurred while invoking reconcile RPC for node {}", this.nodeId, e);
             } finally {
-                alarmAgent.clearNodeReconciliationAlarm(nodeId);
+                alarmAgent.clearNodeReconciliationAlarm(nodeId.longValue());
             }
+        }
+
+        private void increaseReconcileCount(final boolean isSuccess) {
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
+            InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier
+                    .builder(ReconciliationCounter.class).child(ReconcileCounter.class,
+                            new ReconcileCounterKey(nodeId)).build();
+            ReadWriteTransaction tx = broker.newReadWriteTransaction();
+            Optional<ReconcileCounter> count = getReconciliationCount(tx, instanceIdentifier);
+            ReconcileCounterBuilder counterBuilder = new ReconcileCounterBuilder()
+                    .withKey(new ReconcileCounterKey(nodeId))
+                    .setLastRequestTime(new DateAndTime(simpleDateFormat.format(new Date())));
+
+            if (isSuccess) {
+                if (count.isPresent()) {
+                    Long successCount = count.get().getSuccessCount();
+                    counterBuilder.setSuccessCount(++successCount);
+                    LOG.debug("Reconcile success count {} for the node: {} ", successCount, nodeId);
+                } else {
+                    counterBuilder.setSuccessCount(startCount);
+                }
+            } else {
+                if (count.isPresent()) {
+                    Long failureCount = count.get().getFailureCount();
+                    counterBuilder.setFailureCount(++failureCount);
+                    LOG.debug("Reconcile failure count {} for the node: {} ", failureCount, nodeId);
+                } else {
+                    counterBuilder.setFailureCount(startCount);
+                }
+            }
+            try {
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
+                tx.submit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while submitting counter for {}", nodeId, e);
+            }
+        }
+
+        private Optional<ReconcileCounter> getReconciliationCount(ReadWriteTransaction tx,
+                                InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
+            try {
+                return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while reading counter for node: {}", nodeId, e);
+            }
+            return Optional.absent();
+        }
+
+        private void updateReconciliationState(State state) {
+            ReadWriteTransaction tx = broker.newReadWriteTransaction();
+            InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
+                    .builder(ReconciliationState.class).child(ReconciliationStateList.class,
+                            new ReconciliationStateListKey(nodeId)).build();
+            ReconciliationStateListBuilder stateBuilder = new ReconciliationStateListBuilder()
+                    .withKey(new ReconciliationStateListKey(nodeId))
+                    .setState(state);
+            try {
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, stateBuilder.build(), true);
+                tx.submit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while updating reconciliation state: {}", nodeId, e);
+            }
+>>>>>>> 9198accbc... Refactoring the code for updating the reconciliation state
         }
     }
 }
