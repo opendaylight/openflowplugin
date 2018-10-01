@@ -274,7 +274,7 @@ public class OpenFlowPluginProviderImpl implements
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(roleManager);
 
-        connectionManager = new ConnectionManagerImpl(config, executorService);
+        connectionManager = new ConnectionManagerImpl(config, executorService, dataBroker);
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 

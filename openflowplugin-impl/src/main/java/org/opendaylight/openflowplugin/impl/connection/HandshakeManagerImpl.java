@@ -15,23 +15,36 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 import org.opendaylight.openflowplugin.impl.common.DeviceConnectionRateLimiter;
+import org.opendaylight.openflowplugin.impl.connection.listener.DeviceIncarnationIdListener;
 import org.opendaylight.openflowplugin.impl.util.MessageFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.DeviceIncarnationIds;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.device.incarnation.ids.DeviceIncarnationId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.device.incarnation.ids.DeviceIncarnationIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.device.incarnation.ids.DeviceIncarnationIdKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -40,6 +53,8 @@ import org.slf4j.LoggerFactory;
 public class HandshakeManagerImpl implements HandshakeManager {
 
     private static final long ACTIVE_XID = 20L;
+    private static final Long INITIAL_ID = 1L;
+    private final int deviceConnectionHoldTimeInSeconds;
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeManagerImpl.class);
 
@@ -60,6 +75,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private boolean useVersionBitmap; // not final just for unit test
 
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
+    private final DeviceIncarnationIdListener deviceIncarnationIdListener;
+    private final DataBroker dataBroker;
 
     /**
      * Constructor.
@@ -73,7 +90,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      */
     public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
                                 ErrorHandler errorHandler, HandshakeListener handshakeListener,
-                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter) {
+                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter,
+                                DataBroker dataBroker, int deviceConnectionHoldTimeInSeconds,
+                                DeviceIncarnationIdListener deviceIncarnationIdListener) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
@@ -81,6 +100,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
         this.handshakeListener = handshakeListener;
         this.useVersionBitmap = useVersionBitmap;
         this.deviceConnectionRateLimiter = deviceConnectionRateLimiter;
+        this.dataBroker = dataBroker;
+        this.deviceConnectionHoldTimeInSeconds = deviceConnectionHoldTimeInSeconds;
+        this.deviceIncarnationIdListener = deviceIncarnationIdListener;
     }
 
     @Override
@@ -392,10 +414,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
-                            if (!deviceConnectionRateLimiter.tryAquire()) {
-                                LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
-                                        + " the connection from device {}", featureOutput.getDatapathId());
-                                connectionAdapter.disconnect();
+                            BigInteger nodeId = featureOutput.getDatapathId();
+                            if (!isAllowedToConnect(nodeId)) {
                                 return;
                             }
 
@@ -428,6 +448,57 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     }
                 }, MoreExecutors.directExecutor());
         LOG.debug("future features [{}] hooked ..", xid);
+    }
+
+    public boolean isAllowedToConnect(BigInteger nodeId) {
+        LocalDateTime deviceAdminTime = LocalDateTime.now();
+        LOG.debug("processing incarnation id for the node: {} at time {}", nodeId, deviceAdminTime);
+
+        InstanceIdentifier<DeviceIncarnationId> instanceIdentifier =
+                InstanceIdentifier.builder(DeviceIncarnationIds.class).child(DeviceIncarnationId.class,
+                        new DeviceIncarnationIdKey(nodeId)).build();
+
+        DeviceIncarnationIdBuilder incarnationIdBuilder = new DeviceIncarnationIdBuilder()
+                .withKey(new DeviceIncarnationIdKey(nodeId)).setNodeId(nodeId).setIncarnationId(INITIAL_ID)
+                .setDeviceAdminTime(deviceAdminTime.toString());
+
+        DeviceIncarnationId id = deviceIncarnationIdListener.getDeviceIncarnationIdFromCache(nodeId);
+
+        if (id != null) {
+            Long incarValue = id.getIncarnationId();
+            LocalDateTime deviceIncarTime = LocalDateTime.parse(id.getDeviceAdminTime());
+            Long timeDiff = ChronoUnit.MILLIS.between(deviceIncarTime, deviceAdminTime);
+            LOG.debug("Incarnation id: {}, incarnation time: {}, adminTime: {}, timeDiff: {} "
+                    + "for device: {}", incarValue, deviceIncarTime, deviceAdminTime, timeDiff, nodeId);
+            if (Math.abs(timeDiff) < deviceConnectionHoldTimeInSeconds * 1000L) {
+                LOG.error("Disconnecting the device as the connection established with the dpn hold time: {} for "
+                        + "device: {} and incarnation time: {}", timeDiff, nodeId, deviceIncarTime);
+                connectionAdapter.disconnect();
+                return false;
+            }
+            incarnationIdBuilder.setIncarnationId(++incarValue);
+        }
+
+        if (!deviceConnectionRateLimiter.tryAquire()) {
+            LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
+                    + " the connection from device {}", nodeId);
+            connectionAdapter.disconnect();
+            return false;
+        }
+
+        ReadWriteTransaction tx = dataBroker.newReadWriteTransaction();
+        try {
+            tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, incarnationIdBuilder.build(), true);
+            tx.submit().get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Exception while writing dpn incarnation id: {} for node {}. Disconnecting the device",
+                    incarnationIdBuilder.getIncarnationId(), nodeId, e);
+            connectionAdapter.disconnect();
+            tx.cancel();
+            return false;
+        }
+
+        return true;
     }
 
     /**

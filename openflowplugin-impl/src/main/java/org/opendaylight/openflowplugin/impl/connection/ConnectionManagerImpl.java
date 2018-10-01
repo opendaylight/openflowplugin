@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -22,6 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 import org.opendaylight.openflowplugin.impl.common.DeviceConnectionRateLimiter;
 import org.opendaylight.openflowplugin.impl.connection.listener.ConnectionReadyListenerImpl;
+import org.opendaylight.openflowplugin.impl.connection.listener.DeviceIncarnationIdListener;
 import org.opendaylight.openflowplugin.impl.connection.listener.HandshakeListenerImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocolListenerInitialImpl;
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
@@ -39,12 +41,19 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
+    private final DataBroker dataBroker;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
+    private final int deviceConnectionHoldTimeInSeconds;
+    private final DeviceIncarnationIdListener deviceIncarnationIdListener;
 
-    public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService) {
+    public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService,
+                                 final DataBroker dataBroker) {
         this.config = config;
         this.executorService = executorService;
         this.deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
+        this.dataBroker = dataBroker;
+        this.deviceConnectionHoldTimeInSeconds = config.getDeviceConnectionHoldTimeInSeconds();
+        this.deviceIncarnationIdListener = new DeviceIncarnationIdListener(dataBroker);
     }
 
     @Override
@@ -82,7 +91,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
         HandshakeManagerImpl handshakeManager = new HandshakeManagerImpl(connectionAdapter,
                 OFConstants.VERSION_ORDER.get(0),
                 OFConstants.VERSION_ORDER, new ErrorHandlerSimpleImpl(), handshakeListener, BITMAP_NEGOTIATION_ENABLED,
-                deviceConnectionRateLimiter);
+                deviceConnectionRateLimiter, dataBroker, deviceConnectionHoldTimeInSeconds,
+                deviceIncarnationIdListener);
 
         return handshakeManager;
     }
