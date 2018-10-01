@@ -9,9 +9,14 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
@@ -24,12 +29,19 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.impl.util.ThreadPoolLoggingExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.DeviceIncarnationIds;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.DeviceIncarnationIdsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.device.incarnation.ids.DeviceIncarnationId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
@@ -62,9 +74,22 @@ public class ConnectionManagerImplTest {
     private ArgumentCaptor<ConnectionReadyListener> connectionReadyListenerAC;
     @Captor
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
+    @Mock
+    HandshakeContextImpl handshakeManager;
+    @Mock
+    private ReadWriteTransaction txn;
+    @Mock
+    DataBroker dataBroker;
+    @Mock
+    Optional<DeviceIncarnationId> optional;
+    @Mock
+    CheckedFuture<Void, TransactionCommitFailedException> checkedFuture;
 
     private static final long ECHO_REPLY_TIMEOUT = 500;
     private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final int DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = 90;
+    private static final boolean ENABLE_CLUSTERWIDE_HOLD_TIME = false;
+    private static final int BUFFER_TIME = 2;
 
     @Before
     public void setUp() {
@@ -72,17 +97,30 @@ public class ConnectionManagerImplTest {
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
 
-        connectionManagerImpl = new ConnectionManagerImpl(new OpenflowProviderConfigBuilder()
-                .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
-                .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
-                .build(), threadPool);
 
-        connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
+
+        DeviceIncarnationIdsBuilder deviceIncarnationIdsBuilder = new DeviceIncarnationIdsBuilder();
+        List<DeviceIncarnationId> incarnationIdsList = new ArrayList<>();
+        deviceIncarnationIdsBuilder.setDeviceIncarnationId(incarnationIdsList);
+        DeviceIncarnationIds incarnationIds = deviceIncarnationIdsBuilder.build();
+
+        Optional<DeviceIncarnationIds> deviceIncarnationIdsOptional = Optional.of(incarnationIds);
+        CheckedFuture<Optional<DeviceIncarnationIds>, ReadFailedException> deviceIncarnationIdsFuture =
+                Futures.immediateCheckedFuture(deviceIncarnationIdsOptional);
         Mockito.when(connection.getRemoteAddress()).thenReturn(deviceAddress);
         Mockito.when(connection.isAlive()).thenReturn(true);
         Mockito.when(connection.barrier(ArgumentMatchers.<BarrierInput>any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
+        Mockito.when(dataBroker.newReadWriteTransaction()).thenReturn(txn);
+        connectionManagerImpl = new ConnectionManagerImpl(new OpenflowProviderConfigBuilder()
+                .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
+                .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
+                .setDeviceConnectionHoldTimeInSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS)
+                .setEnableClusterwideHoldTime(ENABLE_CLUSTERWIDE_HOLD_TIME)
+                .build(), threadPool, dataBroker);
+
+        connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
     }
 
     @After
