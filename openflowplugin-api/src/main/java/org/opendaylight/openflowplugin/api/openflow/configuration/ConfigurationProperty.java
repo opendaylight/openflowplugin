@@ -109,13 +109,21 @@ public enum ConfigurationProperty {
      */
     THREAD_POOL_TIMEOUT,
     /**
-     * Enable or disable equal role functionality.
+     * Enaopenflow-provider-config.yangble or disable equal role functionality.
      */
     ENABLE_EQUAL_ROLE,
     /**
      * Device connection rate limit property type.
      */
-    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN;
+    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN,
+    /**
+     * Device connection hold time property type.
+     */
+    DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS,
+    /**
+     * Enable clusterwide hold time property type.
+     */
+    ENABLE_CLUSTERWIDE_HOLD_TIME;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
