@@ -267,6 +267,21 @@ module flow-node-inventory {
         }
     }
 
+    container device-incarnation-ids {
+        config false;
+        description "device incarnation id";
+        list device-incarnation-id {
+            key node-id;
+            uses device-incarnation;
+        }
+    }
+
+    grouping device-incarnation {
+        leaf node-id { type uint64; }
+        leaf incarnation-id { type uint32; }
+        leaf deviceAdminTime { type string; }
+    }
+
     augment "/inv:nodes/inv:node" {
         ext:augment-identifier "flow-capable-node";
         description "Top attach point of openflow node into node inventory tree.";
