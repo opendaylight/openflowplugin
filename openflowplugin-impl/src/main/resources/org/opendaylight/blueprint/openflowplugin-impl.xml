@@ -7,7 +7,9 @@
   <bean id="ofPluginProviderFactory" class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderFactoryImpl"/>
   <service ref="ofPluginProviderFactory" interface="org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProviderFactory"/>
 
-  <bean id="configurationServiceFactory" class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryImpl"/>
+  <bean id="configurationServiceFactory" class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryOsgiImpl">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
   <service ref="configurationServiceFactory" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
 
   <bean id="mastershipChangeServiceManager" class="org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl"/>

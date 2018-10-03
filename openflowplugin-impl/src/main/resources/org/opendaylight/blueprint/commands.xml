@@ -32,6 +32,4 @@
             <action class="org.opendaylight.openflowplugin.impl.karaf.ResetSessionStatsComandProvider"/>
         </command>
     </command-bundle>
-
-
 </blueprint>
