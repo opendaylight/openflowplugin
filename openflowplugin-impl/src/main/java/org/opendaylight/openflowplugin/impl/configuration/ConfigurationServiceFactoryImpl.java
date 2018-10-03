@@ -5,30 +5,23 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.configuration;
 
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableMap;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +30,15 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
 
     @Override
     public ConfigurationService newInstance(
-            final OpenflowProviderConfig providerConfig,
-            final BundleContext bundleContext) {
-        return new ConfigurationServiceImpl(providerConfig, bundleContext);
+            final OpenflowProviderConfig providerConfig) {
+        return new ConfigurationServiceImpl(providerConfig);
     }
 
     private static final class ConfigurationServiceImpl implements ConfigurationService {
         private final Map<String, String> propertyMap = new HashMap<>();
         private final List<ConfigurationListener> listeners = new ArrayList<>();
 
-        ConfigurationServiceImpl(final OpenflowProviderConfig providerConfig, final BundleContext bundleContext) {
+        ConfigurationServiceImpl(final OpenflowProviderConfig providerConfig) {
             LOG.info("Loading properties from '{}' YANG file", OpenflowProviderConfig.QNAME);
             update(ImmutableMap
                     .<String, String>builder()
@@ -97,32 +89,6 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                     .put(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
                             providerConfig.getDeviceConnectionRateLimitPerMin().toString())
                     .build());
-
-            LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
-            Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class))
-                    .ifPresent(serviceReference -> {
-                        final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
-
-                        try {
-                            final Configuration configuration
-                                    = configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID);
-
-                            Optional.ofNullable(configuration.getProperties()).ifPresent(properties -> {
-                                final Enumeration<String> keys = properties.keys();
-                                final Map<String, String> mapProperties = new HashMap<>(properties.size());
-
-                                while (keys.hasMoreElements()) {
-                                    final String key = keys.nextElement();
-                                    final String value = properties.get(key).toString();
-                                    mapProperties.put(key, value);
-                                }
-
-                                update(mapProperties);
-                            });
-                        } catch (IOException e) {
-                            LOG.debug("Failed to load {} configuration file. Error {}", OFConstants.CONFIG_FILE_ID, e);
-                        }
-                    });
         }
 
         @Override

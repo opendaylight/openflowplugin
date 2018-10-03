@@ -35,7 +35,6 @@
           factory-method="newInstance"
           destroy-method="close">
         <argument ref="openflowProviderConfig" />
-        <argument ref="blueprintBundleContext" />
         <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
                                update-strategy="component-managed"
                                update-method="update"/>
