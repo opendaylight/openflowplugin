@@ -16,24 +16,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
@@ -61,19 +56,7 @@ public class ConfigurationServiceFactoryImplTest {
     private OpenflowProviderConfig config;
 
     @Mock
-    private BundleContext bundleContext;
-
-    @Mock
     private ConfigurationListener configurationListener;
-
-    @Mock
-    private ConfigurationAdmin configurationAdmin;
-
-    @Mock
-    private ServiceReference<ConfigurationAdmin> serviceReference;
-
-    @Mock
-    private Configuration configuration;
 
     private ConfigurationService configurationService;
 
@@ -104,16 +87,12 @@ public class ConfigurationServiceFactoryImplTest {
         when(config.getThreadPoolTimeout()).thenReturn(THREAD_POOL_TIMEOUT);
         when(config.getDeviceConnectionRateLimitPerMin()).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
 
-        final Dictionary<String, Object> properties = new Hashtable<>();
-        properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(), IS_STATISTICS_POLLING_ON);
+        final Map<String, String> properties = new Hashtable<>();
+        properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
+                Boolean.toString(IS_STATISTICS_POLLING_ON));
 
-        when(configuration.getProperties()).thenReturn(properties);
-        when(configurationAdmin.getConfiguration(OFConstants.CONFIG_FILE_ID)).thenReturn(configuration);
-        when(bundleContext.getService(serviceReference)).thenReturn(configurationAdmin);
-        when(bundleContext.getServiceReference(ConfigurationAdmin.class)).thenReturn(serviceReference);
-
-        configurationService = new ConfigurationServiceFactoryImpl()
-                .newInstance(config, bundleContext);
+        configurationService = new ConfigurationServiceFactoryImpl().newInstance(config);
+        configurationService.update(properties);
     }
 
     @Test
@@ -153,5 +132,4 @@ public class ConfigurationServiceFactoryImplTest {
         configurationService.close();
         configurationService.getProperty(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(), Integer::valueOf);
     }
-
 }
