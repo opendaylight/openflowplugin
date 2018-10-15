@@ -2,8 +2,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
 
-  <reference id="switchConnectionProviderFactory" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"
-          odl:type="default"/>
+  <reference id="switchConnectionProviderFactory" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"/>
 
   <!-- Create OF switch connection provider on port 6653 (default) -->
   <odl:clustered-app-config id="defaultSwitchConnConfig" default-config-file-name="default-openflow-connection-config.xml"
