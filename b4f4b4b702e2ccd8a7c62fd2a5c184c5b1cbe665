@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f129f1c_6be58f70",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 27
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 6258
+      },
+      "writtenOn": "2018-10-26T09:55:26Z",
+      "side": 1,
+      "message": "minor nit, dup signed-of-by lines",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 47
+      },
+      "revId": "b4f4b4b702e2ccd8a7c62fd2a5c184c5b1cbe665",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
