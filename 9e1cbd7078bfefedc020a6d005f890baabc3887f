@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "737aa465_89e62a4f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-10-29T06:37:58Z",
+      "side": 1,
+      "message": "I think either we can this OfEventLog input through the configuration or we should not expose it as a config for user and keep it hardcoded. I would prefer the first approach if possible.",
+      "revId": "9e1cbd7078bfefedc020a6d005f890baabc3887f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3e0da86_a5db388e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-10-29T06:37:58Z",
+      "side": 1,
+      "message": "I think \"Event\" prefix is not needed? Given that it\u0027s going to be logged in teh event file anyways.",
+      "revId": "9e1cbd7078bfefedc020a6d005f890baabc3887f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4e460158_5be4ebd7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2018-10-29T06:37:58Z",
+      "side": 1,
+      "message": "same here .",
+      "revId": "9e1cbd7078bfefedc020a6d005f890baabc3887f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
