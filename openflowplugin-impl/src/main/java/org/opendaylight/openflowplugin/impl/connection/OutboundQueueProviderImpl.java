@@ -78,6 +78,9 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
 
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback) {
+        if (message.getClass().getSimpleName().equals("RoleRequestInputImpl")) {
+            LOG.error("commit entry for role ");
+        }
         outboundQueue.commitEntry(xid, message, callback);
     }
 

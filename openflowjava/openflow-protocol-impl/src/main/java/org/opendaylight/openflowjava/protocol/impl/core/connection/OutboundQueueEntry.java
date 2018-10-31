@@ -50,6 +50,12 @@ final class OutboundQueueEntry {
 
     void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback,
             final Function<OfHeader, Boolean> isCommitCompletedFunction) {
+        if (messageToCommit != null && messageToCommit.getClass() != null
+                && messageToCommit.getClass().getSimpleName() != null
+                && messageToCommit.getClass().getSimpleName().equals("RoleRequestInputImpl")) {
+            LOG.error("the entry is reset before sending the role request");
+            reset();
+        }
         if (this.completed) {
             LOG.warn("Can't commit a completed message.");
             if (commitCallback != null) {
