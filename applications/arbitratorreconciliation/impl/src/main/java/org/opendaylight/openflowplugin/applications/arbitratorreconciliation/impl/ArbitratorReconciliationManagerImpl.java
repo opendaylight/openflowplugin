@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +26,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -82,6 +85,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileService,
         ReconciliationNotificationListener, AutoCloseable {
 
@@ -102,8 +106,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
     private final Map<BigInteger, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
 
-    public ArbitratorReconciliationManagerImpl(final RpcProviderRegistry rpcRegistry,
-            final ReconciliationManager reconciliationManager, final UpgradeState upgradeState) {
+    @Inject
+    public ArbitratorReconciliationManagerImpl(@Reference RpcProviderRegistry rpcRegistry,
+            @Reference ReconciliationManager reconciliationManager, @Reference UpgradeState upgradeState) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
         this.reconciliationManager = Preconditions.checkNotNull(reconciliationManager,
                 "ReconciliationManager cannot be null!");
@@ -114,12 +119,14 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         this.upgradeState = Preconditions.checkNotNull(upgradeState, "UpgradeState cannot be null!");
     }
 
+    @PostConstruct
     public void start() {
         registration = reconciliationManager.registerService(this);
         LOG.info("ArbitratorReconciliationManager has started successfully.");
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         executor.shutdown();
         if (registration != null) {
@@ -150,8 +157,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         MoreExecutors.directExecutor());
             }
         }
-        return RpcResultBuilder.success((new CommitActiveBundleOutputBuilder()
-                .setResult(null).build()))
+        return RpcResultBuilder.success(new CommitActiveBundleOutputBuilder()
+                .setResult(null).build())
                 .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
                 null, "No active bundle found for the node" + nodeId.toString()))).buildFuture();
     }
@@ -165,16 +172,16 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 //This blocking call is used to prevent the applications from pushing flows and groups via the default
                 // pipeline when the commit bundle is ongoing.
                 bundleDetails.getResult().get();
-                return RpcResultBuilder.success((new GetActiveBundleOutputBuilder()
-                        .setResult(bundleDetails.getBundleId()).build())).buildFuture();
+                return RpcResultBuilder.success(new GetActiveBundleOutputBuilder()
+                        .setResult(bundleDetails.getBundleId()).build()).buildFuture();
             } catch (InterruptedException | ExecutionException | NullPointerException e) {
                 return RpcResultBuilder.<GetActiveBundleOutput>failed()
                         .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
                                 null, e.getMessage()))).buildFuture();
             }
         }
-        return RpcResultBuilder.success((new GetActiveBundleOutputBuilder()
-                .setResult(null).build())).buildFuture();
+        return RpcResultBuilder.success(new GetActiveBundleOutputBuilder()
+                .setResult(null).build()).buildFuture();
     }
 
     @Override
