@@ -22,6 +22,7 @@ final class OutboundQueueManager<T extends OutboundQueueHandler> extends
 
     private final int maxNonBarrierMessages;
     private final long maxBarrierNanos;
+    private final InetSocketAddress address;
 
     // Updated from netty only
     private boolean barrierTimerEnabled;
@@ -34,6 +35,7 @@ final class OutboundQueueManager<T extends OutboundQueueHandler> extends
     OutboundQueueManager(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler,
         final int maxNonBarrierMessages, final long maxBarrierNanos) {
         super(parent, address, handler);
+        this.address = address;
         Preconditions.checkArgument(maxNonBarrierMessages > 0);
         this.maxNonBarrierMessages = maxNonBarrierMessages;
         Preconditions.checkArgument(maxBarrierNanos > 0);
@@ -65,6 +67,9 @@ final class OutboundQueueManager<T extends OutboundQueueHandler> extends
             return;
         }
 
+
+        LOG.error("scheduleBarrierMessage for service call for txnId={} and message : {} and dpnId(ip)={}",
+                xid, getHandler(), address.getAddress());
         currentQueue.commitEntry(xid, getHandler().createBarrierRequest(xid), null);
         LOG.trace("Barrier XID {} scheduled", xid);
     }

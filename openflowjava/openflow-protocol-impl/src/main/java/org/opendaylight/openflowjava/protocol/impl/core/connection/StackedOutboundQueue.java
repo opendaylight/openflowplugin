@@ -32,6 +32,11 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
             final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid);
+        if (message.getClass().getSimpleName().equals("RoleRequestInputImpl")) {
+            LOG.error("the entry fetched before loading the commit message, isCommitted:{}, isCompleted:{}",
+                    entry.isCommitted(), entry.isCompleted());
+        }
+        LOG.error("OutboundQueue getEntry fetched with txnId={} for message {}", xid, message);
 
         entry.commit(message, callback, isCompletedFunction);
         if (entry.isBarrier()) {

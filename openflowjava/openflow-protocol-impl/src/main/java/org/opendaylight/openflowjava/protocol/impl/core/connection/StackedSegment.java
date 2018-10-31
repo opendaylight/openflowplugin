@@ -36,7 +36,7 @@ final class StackedSegment {
     /**
      * Size of each individual segment.
      */
-    static final int SEGMENT_SIZE = 4096;
+    static final int SEGMENT_SIZE = 30;
 
     private static final Logger LOG = LoggerFactory.getLogger(StackedSegment.class);
     private static final FinalizableReferenceQueue REF_QUEUE = new FinalizableReferenceQueue();
@@ -67,7 +67,7 @@ final class StackedSegment {
             final OutboundQueueEntry[] cached = item.get();
             if (cached != null) {
                 ret = new StackedSegment(baseXid, cached);
-                LOG.trace("Reusing array {} in segment {}", cached, ret);
+                LOG.error("Reusing array {} in segment {}", cached, ret);
                 return ret;
             }
         }
@@ -78,7 +78,7 @@ final class StackedSegment {
         }
 
         ret = new StackedSegment(baseXid, entries);
-        LOG.trace("Allocated new segment {}", ret);
+        LOG.error("Allocated new segment {}", ret);
         return ret;
     }
 
@@ -107,7 +107,7 @@ final class StackedSegment {
     private static boolean completeEntry(final OutboundQueueEntry entry, final OfHeader response) {
         if (response instanceof Error) {
             final Error err = (Error)response;
-            LOG.debug("Device-reported request XID {} failed {}:{}", response.getXid(), err.getTypeString(),
+            LOG.error("Device-reported request XID {} failed {}:{}", response.getXid(), err.getTypeString(),
                     err.getCodeString());
             entry.fail(new DeviceRequestFailedException("Device-side failure", err));
             return true;

@@ -3,7 +3,7 @@
   <port>6653</port>
   <transport-protocol>TCP</transport-protocol>
   <group-add-mod-enabled>false</group-add-mod-enabled>
-  <channel-outbound-queue-size>1024</channel-outbound-queue-size>
+  <channel-outbound-queue-size>30</channel-outbound-queue-size>
   <tls>
      <keystore>configuration/ssl/ctl.jks</keystore>
      <keystore-type>JKS</keystore-type>

@@ -36,6 +36,7 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
             final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid);
+        LOG.error("OutboundQueue getEntry fetched with txnId={} for message {}", xid, message);
 
         if (message instanceof FlowModInput) {
             callback.onSuccess(null);
@@ -82,7 +83,7 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
                  * so let's keep things simple.
                  */
                 synchronized (unflushedSegments) {
-                    LOG.debug("Flush offset {} unflushed segments {}", flushOffset, unflushedSegments.size());
+                    LOG.error("Flush offset {} unflushed segments {}", flushOffset, unflushedSegments.size());
 
                     // We may have raced ahead of reservation code and need to allocate a segment
                     ensureSegment(segment, flushOffset);

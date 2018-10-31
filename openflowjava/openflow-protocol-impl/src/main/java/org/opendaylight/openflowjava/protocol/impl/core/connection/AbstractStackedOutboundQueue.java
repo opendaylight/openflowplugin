@@ -167,6 +167,8 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
                     // Remove the segment, update the firstSegment and reset flushOffset
                     final StackedSegment oldSegment = unflushedSegments.remove(0);
                     if (oldSegment.isComplete()) {
+                        LOG.error("Flush offset {} unflushed segments {}, recycling old segment", flushOffset,
+                                unflushedSegments.size());
                         uncompletedSegments.remove(oldSegment);
                         oldSegment.recycle();
                     }
@@ -215,7 +217,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
                     // We want to complete all queues before the current one, we will
                     // complete the current queue below
                     if (!queue.equals(q)) {
-                        LOG.trace("Queue {} is implied finished", q);
+                        LOG.error("Queue {} is implied finished, because of barrier", q);
                         q.completeAll();
                         it.remove();
                         q.recycle();
@@ -226,7 +228,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
             }
 
             if (queue.isComplete()) {
-                LOG.trace("Queue {} is finished", queue);
+                LOG.error("Queue {} is finished", queue);
                 it.remove();
                 queue.recycle();
             }
@@ -324,8 +326,10 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
             final int segOffset = slowOffset % StackedSegment.SEGMENT_SIZE;
             LOG.debug("Queue {} slow commit of XID {} completed at offset {} (segment {} offset {})", this,
                     xid, slowOffset, segment, segOffset);
+            LOG.error("Queue getEntry fetched with txnId={} at offset {}", xid, fastOffset);
             return segment.getEntry(segOffset);
         }
+        LOG.error("Queue getEntry fetched with txnId={} at offset {}", xid, fastOffset);
         return fastSegment.getEntry(fastOffset);
     }
 
