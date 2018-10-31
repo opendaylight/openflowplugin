@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProv
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,9 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
 
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback) {
+        if (message.getClass().getSimpleName().equals("RoleRequestInputImpl")) {
+            LOG.error("commit entry for role ");
+        }
         outboundQueue.commitEntry(xid, message, callback);
     }
 

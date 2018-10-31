@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.function.Function;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,10 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
             final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid);
+        if (message.getClass().getSimpleName().equals("RoleRequestInputImpl")) {
+            LOG.error("the entry fetched before loading the commit message, isCommitted:{}",
+                    entry.isCommitted());
+        }
 
         entry.commit(message, callback, isCompletedFunction);
         if (entry.isBarrier()) {
