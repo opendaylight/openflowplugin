@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInputBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -107,6 +108,11 @@ public abstract class AbstractService<I, O> {
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
     public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {
+        if (input instanceof RoleRequestInputBuilder) {
+            LOG.error("handle service call for the role : {}, for the device {}",
+                    ((RoleRequestInputBuilder) input).getRole().getName(),
+                    getDatapathId());
+        }
         return handleServiceCall(input, null);
     }
 
@@ -124,6 +130,11 @@ public abstract class AbstractService<I, O> {
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
 
         if (Objects.isNull(requestContext)) {
+            if (input instanceof RoleRequestInputBuilder) {
+                LOG.error("Request context refused for service call for the role : {}, for the device {}",
+                        ((RoleRequestInputBuilder) input).getRole().getName(),
+                        getDatapathId());
+            }
             LOG.trace("Request context refused.");
             getMessageSpy().spyMessage(AbstractService.class, MessageSpy.StatisticsGroup.TO_SWITCH_DISREGARDED);
             return Futures.immediateFuture(RpcResultBuilder
@@ -133,6 +144,12 @@ public abstract class AbstractService<I, O> {
         }
 
         if (Objects.isNull(requestContext.getXid())) {
+            if (input instanceof RoleRequestInputBuilder) {
+                LOG.error("Outbound queue wasn't able to reserve XID for service call for the role : {}, for the "
+                                + "device {}",
+                        ((RoleRequestInputBuilder) input).getRole().getName(),
+                        getDatapathId());
+            }
             getMessageSpy().spyMessage(requestContext.getClass(),
                                        MessageSpy.StatisticsGroup.TO_SWITCH_RESERVATION_REJECTED);
             return RequestContextUtil
@@ -157,12 +174,34 @@ public abstract class AbstractService<I, O> {
             final OutboundQueue outboundQueue =
                     getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
+
+            if (input instanceof RoleRequestInputBuilder) {
+                LOG.error("commitEntry for service call for the role : {}, for the device {}",
+                        ((RoleRequestInputBuilder) input).getRole().getName(),
+                        getDatapathId());
+            }
             if (Objects.nonNull(isComplete)) {
+                if (input instanceof RoleRequestInputBuilder) {
+                    LOG.error("Objects.nonNull(isComplete)-nonNull for the role : {}, for the device {}",
+                            ((RoleRequestInputBuilder) input).getRole().getName(),
+                            getDatapathId());
+                }
                 outboundQueue.commitEntry(xid.getValue(),
                                           request,
                                           createCallback(requestContext, requestType), isComplete);
             } else {
+                if (input instanceof RoleRequestInputBuilder) {
+                    LOG.error("Objects.nonNull(isComplete)-Null for the role : {}, for the device {}",
+                            ((RoleRequestInputBuilder) input).getRole().getName(),
+                            getDatapathId());
+                }
                 outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
+            }
+
+            if (input instanceof RoleRequestInputBuilder) {
+                LOG.error("commitEntry finished for service call for the role : {}, for the device {}",
+                        ((RoleRequestInputBuilder) input).getRole().getName(),
+                        getDatapathId());
             }
         }
 
