@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9e531f51_e3308fa8",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-10-31T18:24:06Z",
+      "side": 1,
+      "message": "Not really.  All this really is an annotation used (only) at build-time.  The dependency is even intentionally \u003coptional\u003etrue, and not required at runtime, so does no harm either.  In fact, https://github.com/vorburger/opendaylight-simple/ does not use Apache Aries at all, so it\u0027s all good.  As for the dependency on Java CDI (JSR 365), that to me is as low-level and core as it gets.  You need some common denonminator, and this is it.",
+      "parentUuid": "36a4a7a4_a2d65c2e",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 63
+      },
+      "revId": "0b9d04b9ac641e3aacb8509bf055f9396c28d83b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4cda0e56_4b271bfb",
         "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f34b9475_884000d7",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-10-31T18:24:06Z",
+      "side": 1,
+      "message": "Thanks! Appreciate your vote of support.",
+      "parentUuid": "4cda0e56_4b271bfb",
+      "range": {
+        "startLine": 109,
+        "startChar": 4,
+        "endLine": 109,
+        "endChar": 11
+      },
+      "revId": "0b9d04b9ac641e3aacb8509bf055f9396c28d83b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "888cce59_783cd828",
         "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2018-10-31T18:11:14Z",
       "side": 1,
       "message": "It will be great if you can achieve dependency injection without apache aries annotations.\nPlease remove this dependency if possible.",
+      "range": {
+        "startLine": 110,
+        "startChar": 47,
+        "endLine": 110,
+        "endChar": 57
+      },
+      "revId": "0b9d04b9ac641e3aacb8509bf055f9396c28d83b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "df44b042_395a2da1",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-10-31T18:24:06Z",
+      "side": 1,
+      "message": "Unfortunately I don\u0027t know of a better way to do this; and I\u0027ve wokred in this area for the last 2 years... ;-)  The main point is that we want to avoid duplicating information between BP XML and annotations.  This approach is, to the best of my knowledge, the best way to do this.  It\u0027s also already widely used and done like this in a number of other projects in ODL... :-)",
+      "parentUuid": "888cce59_783cd828",
       "range": {
         "startLine": 110,
         "startChar": 47,
