@@ -61,7 +61,7 @@ public class ArpShaConvertorTest {
                 .setNxmNxArpSha(nxmNxArpShaBuilder.build());
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
 
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
         arpShaConvertor = new ArpShaConvertor();

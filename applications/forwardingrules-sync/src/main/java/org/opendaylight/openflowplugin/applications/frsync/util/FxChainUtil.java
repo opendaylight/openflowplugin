@@ -41,7 +41,7 @@ public final class FxChainUtil {
                         LOG.debug(prefix + " finished successfully: {}", nodeId.getValue());
                     } else {
                         final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(),
-                                ImmutableList.<RpcError>of());
+                                ImmutableList.of());
                         LOG.debug(prefix + " failed: {} -> {}", nodeId.getValue(), Arrays.toString(errors.toArray()));
                     }
                 } else {

@@ -97,7 +97,7 @@ public class TableForwarderTest {
         final Future<RpcResult<UpdateTableOutput>> updateResult = tableForwarder.update(
                 tableFeaturesPath, tableFeatures, tableFeaturesUpdate, flowCapableNodePath);
 
-        Mockito.verify(salTableService).updateTable(ArgumentMatchers.<UpdateTableInput>any());
+        Mockito.verify(salTableService).updateTable(ArgumentMatchers.any());
 
         Assert.assertTrue(updateResult.isDone());
         final RpcResult<UpdateTableOutput> updateTableResult = updateResult.get(2, TimeUnit.SECONDS);

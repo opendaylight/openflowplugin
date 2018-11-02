@@ -125,7 +125,7 @@ public class FlowUtilTest {
 
     private RpcResult<List<BatchFailedFlowsOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
-                .<List<BatchFailedFlowsOutput>>success(Collections.<BatchFailedFlowsOutput>emptyList())
+                .success(Collections.<BatchFailedFlowsOutput>emptyList())
                 .build();
     }
 
@@ -220,7 +220,7 @@ public class FlowUtilTest {
     private RpcResult<AddFlowsBatchOutput> createAddFlowsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(Collections.<BatchFailedFlowsOutput>emptyList())
+                        .setBatchFailedFlowsOutput(Collections.emptyList())
                         .build())
                 .build();
     }

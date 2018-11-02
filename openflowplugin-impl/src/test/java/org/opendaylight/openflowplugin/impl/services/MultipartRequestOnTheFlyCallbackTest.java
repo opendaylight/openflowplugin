@@ -50,7 +50,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -59,7 +58,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
@@ -69,7 +67,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStatsBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -133,7 +130,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.<Table>emptyList());
+        flowNodeBuilder.setTable(Collections.emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
                 Futures.immediateCheckedFuture(flowNodeOpt);
@@ -189,7 +186,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
         Mockito.verify(mockedDeviceContext, Mockito.never())
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
-                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.<DataObject>any());
+                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.any());
         Mockito.verify(mockedDeviceContext).submitTransaction();
     }
 
@@ -199,7 +196,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Test
     public void testOnSuccessWithValidMultipart1() throws Exception {
         final MatchBuilder matchBuilder = new MatchBuilder()
-                .setMatchEntry(Collections.<MatchEntry>emptyList());
+                .setMatchEntry(Collections.emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
                 .setTableId(tableId)
                 .setPriority(2)
@@ -257,6 +254,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
         Mockito.verify(mockedFlowRegistry, Mockito.never()).store(any());
         Mockito.verify(mockedDeviceContext, Mockito.never())
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
-                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.<DataObject>any());
+                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.any());
     }
 }

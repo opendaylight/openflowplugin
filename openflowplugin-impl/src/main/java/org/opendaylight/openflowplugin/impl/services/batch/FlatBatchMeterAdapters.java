@@ -173,7 +173,7 @@ public final class FlatBatchMeterAdapters {
         convertMeterBatchFutureForChain(final Future<RpcResult<T>> resultUpdateMeterFuture,
                                     final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateMeterFuture),
-                FlatBatchMeterAdapters.<T>convertBatchMeterResult(currentOffset),
+                FlatBatchMeterAdapters.convertBatchMeterResult(currentOffset),
                 MoreExecutors.directExecutor());
     }
 }

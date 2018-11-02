@@ -95,7 +95,7 @@ public class MultipartRequestTableFeaturesTest {
      */
     @Before
     public void startUp() {
-        Mockito.when(mockRegistry.getSerializer((MessageTypeKey<?>)any())).thenReturn(serializer);
+        Mockito.when(mockRegistry.getSerializer(any())).thenReturn(serializer);
         registry = new SerializerRegistryImpl();
         registry.init();
         multipartFactory = registry.getSerializer(

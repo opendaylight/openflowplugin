@@ -42,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
@@ -138,27 +137,27 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         final ListenableFuture<RpcResult<Void>> rpcResult = syncPlanPushStrategy.executeSyncStrategy(
                 RpcResultBuilder.<Void>success().buildFuture(), diffInput, syncCounters);
 
-        Mockito.verify(groupCommitter, Mockito.times(6)).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(groupCommitter, Mockito.times(3)).update(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.<Group>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(groupCommitter, Mockito.times(6)).remove(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(flowCommitter, Mockito.times(6)).add(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(flowCommitter, Mockito.times(3)).update(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.<Flow>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(flowCommitter, Mockito.times(6)).remove(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(meterCommitter, Mockito.times(3)).add(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(meterCommitter, Mockito.times(3)).update(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.<Meter>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
-        Mockito.verify(meterCommitter, Mockito.times(3)).remove(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+        Mockito.verify(groupCommitter, Mockito.times(6)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.verify(groupCommitter, Mockito.times(3)).update(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
+        Mockito.verify(groupCommitter, Mockito.times(6)).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.verify(flowCommitter, Mockito.times(6)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.verify(flowCommitter, Mockito.times(3)).update(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
+        Mockito.verify(flowCommitter, Mockito.times(6)).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.verify(meterCommitter, Mockito.times(3)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.verify(meterCommitter, Mockito.times(3)).update(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
+        Mockito.verify(meterCommitter, Mockito.times(3)).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
 
         Assert.assertTrue(rpcResult.isDone());
         Assert.assertTrue(rpcResult.get().isSuccessful());
@@ -178,43 +177,43 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(flowCapableTxService.sendBarrier(ArgumentMatchers.<SendBarrierInput>any()))
+        Mockito.when(flowCapableTxService.sendBarrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success((SendBarrierOutput) null).buildFuture());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(groupCommitter).add(
-                ArgumentMatchers.<InstanceIdentifier<Group>>any(), ArgumentMatchers.<Group>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(groupCommitter).update(
-                ArgumentMatchers.<InstanceIdentifier<Group>>any(), ArgumentMatchers.<Group>any(),
-                ArgumentMatchers.<Group>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any());
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(groupCommitter).remove(
-                ArgumentMatchers.<InstanceIdentifier<Group>>any(), ArgumentMatchers.<Group>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(flowCommitter).add(
-                ArgumentMatchers.<InstanceIdentifier<Flow>>any(), ArgumentMatchers.<Flow>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(flowCommitter).update(
-                ArgumentMatchers.<InstanceIdentifier<Flow>>any(), ArgumentMatchers.<Flow>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(flowCommitter).remove(
-                ArgumentMatchers.<InstanceIdentifier<Flow>>any(), ArgumentMatchers.<Flow>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(meterCommitter).add(
-                ArgumentMatchers.<InstanceIdentifier<Meter>>any(), ArgumentMatchers.<Meter>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(meterCommitter).update(
-                ArgumentMatchers.<InstanceIdentifier<Meter>>any(), ArgumentMatchers.<Meter>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(meterCommitter).remove(
-                ArgumentMatchers.<InstanceIdentifier<Meter>>any(), ArgumentMatchers.<Meter>any(),
-                ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(tableCommitter).update(
-                ArgumentMatchers.<InstanceIdentifier<TableFeatures>>any(), ArgumentMatchers.<TableFeatures>any(),
-                ArgumentMatchers.<TableFeatures>any(), ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any());
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
 
         syncPlanPushStrategy = new SyncPlanPushStrategyIncrementalImpl()
                 .setMeterForwarder(meterCommitter)
@@ -232,7 +231,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testAddMissingFlows() throws Exception {
-        Mockito.when(flowCommitter.add(ArgumentMatchers.<InstanceIdentifier<Flow>>any(), flowCaptor.capture(),
+        Mockito.when(flowCommitter.add(ArgumentMatchers.any(), flowCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 
@@ -255,8 +254,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals("f4", flowCaptorAllValues.get(1).getId().getValue());
 
         final InOrder inOrderFlow = Mockito.inOrder(flowCapableTxService, flowCommitter);
-        inOrderFlow.verify(flowCommitter, Mockito.times(2)).add(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderFlow.verify(flowCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         //TODO: uncomment when enabled in impl
 //        inOrderFlow.verify(flowCapableTxService).sendBarrier(Matchers.<SendBarrierInput>any());
         inOrderFlow.verifyNoMoreInteractions();
@@ -264,7 +263,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testRemoveRedundantFlows() throws Exception {
-        Mockito.when(flowCommitter.remove(ArgumentMatchers.<InstanceIdentifier<Flow>>any(), flowCaptor.capture(),
+        Mockito.when(flowCommitter.remove(ArgumentMatchers.any(), flowCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
 
@@ -287,20 +286,20 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals("f4", flowCaptorAllValues.get(1).getId().getValue());
 
         final InOrder inOrderFlow = Mockito.inOrder(flowCapableTxService, flowCommitter);
-        inOrderFlow.verify(flowCommitter, Mockito.times(2)).remove(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderFlow.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderFlow.verify(flowCommitter, Mockito.times(2)).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderFlow.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
         inOrderFlow.verifyNoMoreInteractions();
     }
 
 
     @Test
     public void testAddMissingFlows_withUpdate() throws Exception {
-        Mockito.when(flowCommitter.add(ArgumentMatchers.<InstanceIdentifier<Flow>>any(), flowCaptor.capture(),
+        Mockito.when(flowCommitter.add(ArgumentMatchers.any(), flowCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 
-        Mockito.when(flowCommitter.update(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
+        Mockito.when(flowCommitter.update(ArgumentMatchers.any(),
                 flowUpdateCaptor.capture(), flowUpdateCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new UpdateFlowOutputBuilder().build()).buildFuture());
@@ -334,11 +333,11 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
         final InOrder inOrderFlow = Mockito.inOrder(flowCapableTxService, flowCommitter);
         // add f3, f4
-        inOrderFlow.verify(flowCommitter, Mockito.times(2)).add(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderFlow.verify(flowCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         // update f1
-        inOrderFlow.verify(flowCommitter).update(ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
-                ArgumentMatchers.<Flow>any(), ArgumentMatchers.<Flow>any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderFlow.verify(flowCommitter).update(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         //TODO: uncomment when enabled in impl
 //        inOrderFlow.verify(flowCapableTxService).sendBarrier(Matchers.<SendBarrierInput>any());
 
@@ -347,7 +346,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testAddMissingMeters() throws Exception {
-        Mockito.when(meterCommitter.add(ArgumentMatchers.<InstanceIdentifier<Meter>>any(), meterCaptor.capture(),
+        Mockito.when(meterCommitter.add(ArgumentMatchers.any(), meterCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new AddMeterOutputBuilder().build()).buildFuture());
 
@@ -367,8 +366,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals(4L, metercaptorAllValues.get(1).getMeterId().getValue().longValue());
 
         final InOrder inOrderMeter = Mockito.inOrder(flowCapableTxService, meterCommitter);
-        inOrderMeter.verify(meterCommitter, Mockito.times(2)).add(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderMeter.verify(meterCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         //TODO: uncomment when enabled in impl
 //        inOrderMeter.verify(flowCapableTxService).sendBarrier(Matchers.<SendBarrierInput>any());
         inOrderMeter.verifyNoMoreInteractions();
@@ -376,11 +375,11 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testAddMissingMeters_withUpdate() throws Exception {
-        Mockito.when(meterCommitter.add(ArgumentMatchers.<InstanceIdentifier<Meter>>any(), meterCaptor.capture(),
+        Mockito.when(meterCommitter.add(ArgumentMatchers.any(), meterCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new AddMeterOutputBuilder().build()).buildFuture());
 
-        Mockito.when(meterCommitter.update(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
+        Mockito.when(meterCommitter.update(ArgumentMatchers.any(),
                 meterUpdateCaptor.capture(), meterUpdateCaptor.capture(), ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new UpdateMeterOutputBuilder().build()).buildFuture());
 
@@ -408,10 +407,10 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals(1L, meterUpdateCaptorAllValues.get(1).getMeterId().getValue().longValue());
 
         final InOrder inOrderMeters = Mockito.inOrder(flowCapableTxService, meterCommitter);
-        inOrderMeters.verify(meterCommitter, Mockito.times(2)).add(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderMeters.verify(meterCommitter).update(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.<Meter>any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderMeters.verify(meterCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderMeters.verify(meterCommitter).update(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         //TODO: uncomment when enabled in impl
 //        inOrderMeters.verify(flowCapableTxService).sendBarrier(Matchers.<SendBarrierInput>any());
 
@@ -420,7 +419,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testRemoveRedundantMeters() throws Exception {
-        Mockito.when(meterCommitter.remove(ArgumentMatchers.<InstanceIdentifier<Meter>>any(), meterCaptor.capture(),
+        Mockito.when(meterCommitter.remove(ArgumentMatchers.any(), meterCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new RemoveMeterOutputBuilder().build()).buildFuture());
 
@@ -442,8 +441,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals(4L, metercaptorAllValues.get(1).getMeterId().getValue().longValue());
 
         final InOrder inOrderMeter = Mockito.inOrder(flowCapableTxService, meterCommitter);
-        inOrderMeter.verify(meterCommitter, Mockito.times(2)).remove(ArgumentMatchers.<InstanceIdentifier<Meter>>any(),
-                ArgumentMatchers.<Meter>any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderMeter.verify(meterCommitter, Mockito.times(2)).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         //TODO: uncomment when enabled in impl
 //        inOrderMeter.verify(flowCapableTxService).sendBarrier(Matchers.<SendBarrierInput>any());
         inOrderMeter.verifyNoMoreInteractions();
@@ -451,7 +450,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testAddMissingGroups() throws Exception {
-        Mockito.when(groupCommitter.add(ArgumentMatchers.<InstanceIdentifier<Group>>any(), groupCaptor.capture(),
+        Mockito.when(groupCommitter.add(ArgumentMatchers.any(), groupCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new AddGroupOutputBuilder().build()).buildFuture());
 
@@ -482,28 +481,28 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
         final InOrder inOrderGroups = Mockito.inOrder(flowCapableTxService, groupCommitter);
         // add 2
-        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
         // add 3, 4
-        inOrderGroups.verify(groupCommitter, Mockito.times(2)).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroups.verify(groupCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
         // add 5
-        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
 
         inOrderGroups.verifyNoMoreInteractions();
     }
 
     @Test
     public void testAddMissingGroups_withUpdate() throws Exception {
-        Mockito.when(groupCommitter.add(ArgumentMatchers.<InstanceIdentifier<Group>>any(), groupCaptor.capture(),
+        Mockito.when(groupCommitter.add(ArgumentMatchers.any(), groupCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new AddGroupOutputBuilder().build()).buildFuture());
 
-        Mockito.when(groupCommitter.update(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
+        Mockito.when(groupCommitter.update(ArgumentMatchers.any(),
                 groupUpdateCaptor.capture(), groupUpdateCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new UpdateGroupOutputBuilder().build()).buildFuture());
@@ -542,27 +541,27 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         final InOrder inOrderGroups = Mockito.inOrder(flowCapableTxService, groupCommitter);
 
         // add 2, update 1
-        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(groupCommitter).update(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(groupCommitter).update(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
 
         // add 3, 4
-        inOrderGroups.verify(groupCommitter, Mockito.times(2)).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroups.verify(groupCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
         // add 5
-        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
 
         inOrderGroups.verifyNoMoreInteractions();
     }
 
     @Test
     public void testRemoveRedundantGroups() throws Exception {
-        Mockito.when(groupCommitter.remove(ArgumentMatchers.<InstanceIdentifier<Group>>any(), groupCaptor.capture(),
+        Mockito.when(groupCommitter.remove(ArgumentMatchers.any(), groupCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new RemoveGroupOutputBuilder().build()).buildFuture());
 
@@ -594,24 +593,24 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
         final InOrder inOrderGroup = Mockito.inOrder(flowCapableTxService, groupCommitter);
         // remove 5
-        inOrderGroup.verify(groupCommitter).remove(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroup.verify(groupCommitter).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
         // remove 3, 4
-        inOrderGroup.verify(groupCommitter, Mockito.times(2)).remove(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroup.verify(groupCommitter, Mockito.times(2)).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
         // remove 2
-        inOrderGroup.verify(groupCommitter).remove(ArgumentMatchers.<InstanceIdentifier<Group>>any(),
-                ArgumentMatchers.<Group>any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrderGroup.verify(groupCommitter).remove(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
+        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
 
         inOrderGroup.verifyNoMoreInteractions();
     }
 
     @Test
     public void testUpdateTableFeatures() throws Exception {
-        Mockito.lenient().when(tableCommitter.update(ArgumentMatchers.<InstanceIdentifier<TableFeatures>>any(),
+        Mockito.lenient().when(tableCommitter.update(ArgumentMatchers.any(),
                 ArgumentMatchers.isNull(TableFeatures.class), tableFeaturesCaptor.capture(),
                 ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture());
@@ -638,6 +637,6 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 //        Assert.assertEquals("test table features", groupCaptorAllValues.get(0).getName());
 //        Assert.assertEquals(1, groupCaptorAllValues.get(0).getTableId().intValue());
 
-        Mockito.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        Mockito.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
     }
 }

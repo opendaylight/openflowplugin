@@ -44,7 +44,7 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             builder.setState(PortTranslatorUtil.translatePortState(input.getState()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeatures()));
             builder.setQueue(Collections
-                    .<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue>emptyList());
+                    .emptyList());
         }
         if (input instanceof PortStatusMessage) {
             if (((PortStatusMessage) input).getReason() != null) {

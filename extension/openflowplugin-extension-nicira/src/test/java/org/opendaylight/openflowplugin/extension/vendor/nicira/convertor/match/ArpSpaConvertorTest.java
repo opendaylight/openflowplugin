@@ -63,7 +63,7 @@ public class ArpSpaConvertorTest {
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpSpa(nxmOfArpSpaBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
                 .thenReturn(extensionAugmentation);
 
         final MatchEntry converted = arpSpaConvertor.convert(extension);

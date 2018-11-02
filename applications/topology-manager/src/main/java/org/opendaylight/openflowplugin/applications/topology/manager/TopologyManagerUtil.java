@@ -80,7 +80,7 @@ final class TopologyManagerUtil {
         }
 
         List<Link> linkList = topologyOptional.get().getLink() != null ? topologyOptional.get()
-                .getLink() : Collections.<Link>emptyList();
+                .getLink() : Collections.emptyList();
         for (Link link : linkList) {
             if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));

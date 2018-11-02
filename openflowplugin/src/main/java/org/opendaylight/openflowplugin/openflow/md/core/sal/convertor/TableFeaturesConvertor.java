@@ -171,8 +171,7 @@ public class TableFeaturesConvertor extends Convertor<
     private static final Logger LOG = LoggerFactory.getLogger(TableFeaturesConvertor.class);
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features
         .table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
-            Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
-                    .features.table.features.table.properties.TableFeatureProperties>build());
+            Ordering.from(OrderComparator.build());
     private static final Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm
             .rev150225.MatchField>> SAL_TO_OF_TABLE_FEATURES;
     private static final List<Class<?>> TYPES = Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types

@@ -21,10 +21,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
-import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -34,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/19/14.
@@ -52,7 +49,7 @@ public class MatchExtensionHelperTest {
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
         when(extensionConverterProvider.getConverter(KEY))
-            .thenReturn((ConvertorFromOFJava<DataContainer, AugmentationPath>) (input, path) -> {
+            .thenReturn((input, path) -> {
                 MockAugmentation mockAugmentation = new MockAugmentation();
                 return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
             });
