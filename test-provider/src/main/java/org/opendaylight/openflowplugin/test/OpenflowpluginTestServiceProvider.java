@@ -148,13 +148,13 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
         setFlowRegistration(addRoutedRpcImplementation);
 
         InstanceIdentifierBuilder<Nodes> builderII = InstanceIdentifier
-                .<Nodes>builder(Nodes.class);
+                .builder(Nodes.class);
 
         NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         InstanceIdentifierBuilder<Node> nodeIdentifier = builderII
-                .<Node, NodeKey>child(Node.class, nodeKey);
+                .child(Node.class, nodeKey);
 
         InstanceIdentifier<Node> instance = nodeIdentifier.build();
 

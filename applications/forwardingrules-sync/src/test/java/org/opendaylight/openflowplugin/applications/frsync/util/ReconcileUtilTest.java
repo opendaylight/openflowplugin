@@ -83,11 +83,11 @@ public class ReconcileUtilTest {
         Mockito.when(flowCapableService.sendBarrier(barrierInputCaptor.capture()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
 
-        Mockito.verify(flowCapableService, Mockito.never()).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        Mockito.verify(flowCapableService, Mockito.never()).sendBarrier(ArgumentMatchers.any());
         Assert.assertFalse(vehicle.isDone());
 
         testRabbit.set(RpcResultBuilder.<Void>success().build());
-        Mockito.verify(flowCapableService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        Mockito.verify(flowCapableService).sendBarrier(ArgumentMatchers.any());
         Assert.assertTrue(vehicle.isDone());
         Assert.assertTrue(vehicle.get().isSuccessful());
     }
@@ -293,7 +293,7 @@ public class ReconcileUtilTest {
 
     private Group createGroup(final long groupIdValue) {
         final Buckets buckets = new BucketsBuilder()
-                .setBucket(Collections.<Bucket>emptyList())
+                .setBucket(Collections.emptyList())
                 .build();
         return new GroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))

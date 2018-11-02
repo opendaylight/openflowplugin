@@ -8,13 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -119,8 +117,6 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
     public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input),
-                     (Function<RpcResult<List<MultipartReply>>,
-                             RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>)
             result -> {
                 if (Preconditions.checkNotNull(result).isSuccessful()) {
                     final MessageTranslator<MultipartReply, AggregatedFlowStatistics>

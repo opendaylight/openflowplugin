@@ -58,7 +58,7 @@ public class TcpDstConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfTcpDst(nxmOfTcpDstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
         tcpDstConvertor = new TcpDstConvertor();

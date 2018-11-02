@@ -20,10 +20,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
-import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCaseBuilder;
@@ -45,7 +43,7 @@ public class ActionExtensionHelperTest {
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
         when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class)))
-            .thenReturn((ConvertorActionFromOFJava<DataContainer, AugmentationPath>) (input, path) -> new MockAction());
+            .thenReturn((input, path) -> new MockAction());
     }
 
     @Test

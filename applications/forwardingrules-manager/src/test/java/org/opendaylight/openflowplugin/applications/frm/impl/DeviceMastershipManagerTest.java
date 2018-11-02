@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -55,7 +54,7 @@ public class DeviceMastershipManagerTest {
                 mastershipChangeServiceManager);
         deviceMastershipManager.setRoutedRpcReg(routedRpcReg);
         Mockito.lenient().when(clusterSingletonService
-                .registerClusterSingletonService(ArgumentMatchers.<ClusterSingletonService>any()))
+                .registerClusterSingletonService(ArgumentMatchers.any()))
                 .thenReturn(registration);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(nodeId.getValue()).thenReturn("dummyValue");

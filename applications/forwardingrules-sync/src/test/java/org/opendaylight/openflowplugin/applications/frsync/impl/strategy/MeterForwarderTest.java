@@ -97,7 +97,7 @@ public class MeterForwarderTest {
 
         final Future<RpcResult<RemoveMeterOutput>> removeResult =
                 meterForwarder.remove(meterPath, removeMeter, flowCapableNodePath);
-        Mockito.verify(salMeterService).removeMeter(ArgumentMatchers.<RemoveMeterInput>any());
+        Mockito.verify(salMeterService).removeMeter(ArgumentMatchers.any());
 
         Assert.assertTrue(removeResult.isDone());
         final RpcResult<RemoveMeterOutput> meterResult = removeResult.get(2, TimeUnit.SECONDS);
@@ -127,7 +127,7 @@ public class MeterForwarderTest {
         final Future<RpcResult<UpdateMeterOutput>> updateResult =
                 meterForwarder.update(meterPath, meterOriginal, meterUpdate,
                 flowCapableNodePath);
-        Mockito.verify(salMeterService).updateMeter(ArgumentMatchers.<UpdateMeterInput>any());
+        Mockito.verify(salMeterService).updateMeter(ArgumentMatchers.any());
 
         Assert.assertTrue(updateResult.isDone());
         final RpcResult<UpdateMeterOutput> meterResult = updateResult.get(2, TimeUnit.SECONDS);
@@ -152,7 +152,7 @@ public class MeterForwarderTest {
         );
 
         final Future<RpcResult<AddMeterOutput>> addResult = meterForwarder.add(meterPath, meter, flowCapableNodePath);
-        Mockito.verify(salMeterService).addMeter(ArgumentMatchers.<AddMeterInput>any());
+        Mockito.verify(salMeterService).addMeter(ArgumentMatchers.any());
 
         Assert.assertTrue(addResult.isDone());
         final RpcResult<AddMeterOutput> meterResult = addResult.get(2, TimeUnit.SECONDS);

@@ -135,8 +135,7 @@ public final class ActionConvertor extends Convertor<
     private static final Set<Class<?>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight
             .action.types.rev131112.action.list.Action.class);
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-            .action.list.Action> ACTION_ORDERING = Ordering.from(OrderComparator.<org.opendaylight.yang.gen.v1.urn
-                    .opendaylight.action.types.rev131112.action.list.Action>build());
+            .action.list.Action> ACTION_ORDERING = Ordering.from(OrderComparator.build());
 
     @Override
     public Collection<Class<?>> getTypes() {

@@ -25,8 +25,6 @@ import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -70,7 +68,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
         };
         Mockito.when(rqContextStack.<List<MultipartReply>>createRequestContext()).thenReturn(rqContextMp);
         Mockito.when(translatorLibrary
-                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Mockito.<TranslatorKey>any()))
+                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Mockito.any()))
                 .thenReturn(translator);
     }
 
@@ -86,9 +84,9 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                     .success(Collections.<MultipartReply>singletonList(messageBuilder.build()))
                     .build());
             return null;
-        }).when(multiMsgCollector).endCollecting(Mockito.<EventIdentifier>any());
+        }).when(multiMsgCollector).endCollecting(Mockito.any());
         Mockito.when(translator.translate(
-                        Mockito.<MultipartReply>any(), same(deviceInfo), isNull())
+                        Mockito.any(), same(deviceInfo), isNull())
         ).thenReturn(new AggregatedFlowStatisticsBuilder().build());
 
         GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input =

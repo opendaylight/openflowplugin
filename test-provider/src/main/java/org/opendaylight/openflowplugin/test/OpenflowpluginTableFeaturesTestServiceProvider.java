@@ -111,13 +111,13 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
         setTableRegistration(addRoutedRpcImplementation);
 
         InstanceIdentifierBuilder<Nodes> builder1 = InstanceIdentifier
-                .<Nodes>builder(Nodes.class);
+                .builder(Nodes.class);
 
         NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         InstanceIdentifierBuilder<Node> nodeIndentifier = builder1
-                .<Node, NodeKey>child(Node.class, nodeKey);
+                .child(Node.class, nodeKey);
 
         InstanceIdentifier<Node> instance = nodeIndentifier.build();
 

@@ -53,7 +53,7 @@ public final class DSInputFactory {
 
     public static Group createGroup(final long groupIdValue) {
         final Buckets buckets = new BucketsBuilder()
-                .setBucket(Collections.<Bucket>emptyList())
+                .setBucket(Collections.emptyList())
                 .build();
         return new GroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))

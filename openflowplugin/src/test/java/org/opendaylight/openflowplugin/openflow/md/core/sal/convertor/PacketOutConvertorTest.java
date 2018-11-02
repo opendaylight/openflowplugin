@@ -221,10 +221,10 @@ public class PacketOutConvertorTest {
 
     private static NodeConnectorRef createNodeConnRef(final String nodeId, final NodeConnectorKey nodeConKey) {
         InstanceIdentifier<NodeConnector> path = InstanceIdentifier
-                .<Nodes>builder(Nodes.class)
-                .<Node, NodeKey>child(Node.class,
+                .builder(Nodes.class)
+                .child(Node.class,
                         new NodeKey(new NodeId(nodeId)))
-                .<NodeConnector, NodeConnectorKey>child(NodeConnector.class,
+                .child(NodeConnector.class,
                         nodeConKey).build();
 
         return new NodeConnectorRef(path);
@@ -239,8 +239,8 @@ public class PacketOutConvertorTest {
     private static NodeRef createNodeRef(final String nodeId) {
         NodeKey key = new NodeKey(new NodeId(nodeId));
         InstanceIdentifier<Node> path = InstanceIdentifier
-                .<Nodes>builder(Nodes.class)
-                .<Node, NodeKey>child(Node.class, key).build();
+                .builder(Nodes.class)
+                .child(Node.class, key).build();
         return new NodeRef(path);
     }
 

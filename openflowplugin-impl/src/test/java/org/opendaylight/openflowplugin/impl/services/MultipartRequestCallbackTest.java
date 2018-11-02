@@ -23,7 +23,6 @@ import org.mockito.stubbing.OngoingStubbing;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartRequestCallback;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutputBuilder;
@@ -72,7 +71,7 @@ public class MultipartRequestCallbackTest {
     @Test
     public void testOnSuccess1() throws Exception {
         multipartRequestCallback.onSuccess(null);
-        Mockito.verify(multiMsgCollector).endCollecting(ArgumentMatchers.<EventIdentifier>any());
+        Mockito.verify(multiMsgCollector).endCollecting(ArgumentMatchers.any());
     }
 
     /**

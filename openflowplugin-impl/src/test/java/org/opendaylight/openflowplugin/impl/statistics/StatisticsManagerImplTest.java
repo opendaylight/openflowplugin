@@ -110,7 +110,7 @@ public class StatisticsManagerImplTest {
 
         when(rpcProviderRegistry.addRpcImplementation(
                 eq(StatisticsManagerControlService.class),
-                ArgumentMatchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
+                ArgumentMatchers.any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;
