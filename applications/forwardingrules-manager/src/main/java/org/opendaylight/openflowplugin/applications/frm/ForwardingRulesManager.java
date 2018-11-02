@@ -70,7 +70,7 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      *
      * @return ReadOnlyTransaction
      */
-    ReadOnlyTransaction getReadTranaction();
+    ReadOnlyTransaction getReadTransaction();
 
     /**
      * Flow RPC service.

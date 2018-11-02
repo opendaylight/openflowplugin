@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
@@ -343,9 +344,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
         ListenableFuture<RpcResult<AddGroupOutput>> resultFuture;
         LOG.info("Reading the group from config inventory: {}", groupId);
-        try {
-            Optional<Group> group;
-            group = provider.getReadTranaction().read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
+        try (ReadOnlyTransaction readTransaction = provider.getReadTransaction()) {
+            Optional<Group> group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
             if (group.isPresent()) {
                 final AddGroupInputBuilder builder = new AddGroupInputBuilder(group.get());
                 builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
