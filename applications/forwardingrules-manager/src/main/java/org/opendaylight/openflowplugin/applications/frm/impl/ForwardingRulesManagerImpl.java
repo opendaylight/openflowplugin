@@ -218,10 +218,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident) {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
-        final ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction();
-        ListenableFuture<com.google.common.base.Optional<Node>> future = transaction
+        try (ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction()) {
+            ListenableFuture<com.google.common.base.Optional<Node>> future = transaction
                 .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
-        try {
             com.google.common.base.Optional<Node> optionalDataObject = future.get();
             if (optionalDataObject.isPresent()) {
                 result = true;
@@ -231,7 +230,6 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Failed to read {} ", nodeIid, e);
         }
-        transaction.close();
 
         return result;
     }

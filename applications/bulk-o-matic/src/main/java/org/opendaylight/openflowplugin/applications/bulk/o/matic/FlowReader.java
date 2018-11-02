@@ -79,8 +79,7 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
                 String flowId = "Flow-" + dpId + "." + tableId + "." + sourceIp;
                 InstanceIdentifier<Flow> flowIid = getFlowInstanceIdentifier(dpId, tableId, flowId);
 
-                ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
-                try {
+                try (ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
                     Optional<Flow> flowOptional;
                     if (isConfigDs) {
                         flowOptional = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, flowIid)

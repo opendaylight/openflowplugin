@@ -41,9 +41,8 @@ public final class ShellUtil {
     @Nonnull
     public static List<OFNode> getAllNodes(final DataBroker broker) {
         List<Node> nodes = null;
-        ReadOnlyTransaction tx = broker.newReadOnlyTransaction();
         InstanceIdentifier<Nodes> path = InstanceIdentifier.builder(Nodes.class).build();
-        try {
+        try (ReadOnlyTransaction tx = broker.newReadOnlyTransaction()) {
             Optional<Nodes> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 nodes = result.get().getNode();
@@ -95,11 +94,10 @@ public final class ShellUtil {
 
     public static OFNode getNodeInfo(final Long nodeId, final DataBroker broker) {
         OFNode ofNode = null;
-        ReadOnlyTransaction tx = broker.newReadOnlyTransaction();
         InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(NODE_PREFIX + nodeId))).build();
 
-        try {
+        try (ReadOnlyTransaction tx = broker.newReadOnlyTransaction()) {
             Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 Node node = result.get();
@@ -137,11 +135,10 @@ public final class ShellUtil {
     }
 
     public static List<ReconcileCounter> getReconcileCount(final DataBroker dataBroker) {
-        ReadOnlyTransaction tx = dataBroker.newReadOnlyTransaction();
         InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationCounter.class).build();
         List<ReconcileCounter> output = Collections.emptyList();
-        try {
+        try (ReadOnlyTransaction tx = dataBroker.newReadOnlyTransaction()) {
             Optional<ReconciliationCounter> result =
                     tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             if (result.isPresent()) {

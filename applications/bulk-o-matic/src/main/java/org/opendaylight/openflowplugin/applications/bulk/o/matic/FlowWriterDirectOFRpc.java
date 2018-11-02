@@ -76,9 +76,8 @@ public class FlowWriterDirectOFRpc {
 
         Set<String> nodeIds = new HashSet<>();
         InstanceIdentifier<Nodes> nodes = InstanceIdentifier.create(Nodes.class);
-        ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
 
-        try {
+        try (ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
             Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes)
                     .checkedGet();
             if (nodesDataNode.isPresent()) {
