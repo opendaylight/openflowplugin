@@ -87,7 +87,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.<UpdateGroupOutput>createCumulatingFunction(groups, batchUpdateGroups.size()));
+                           GroupUtil.createCumulatingFunction(groups, batchUpdateGroups.size()));
 
         ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBulkFuture = Futures
                 .transform(commonResult, GroupUtil.GROUP_UPDATE_TRANSFORM);
@@ -113,7 +113,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.<AddGroupOutput>createCumulatingFunction(input.getBatchAddGroups()));
+                           GroupUtil.createCumulatingFunction(input.getBatchAddGroups()));
 
         ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBulkFuture = Futures
                 .transform(commonResult, GroupUtil.GROUP_ADD_TRANSFORM);
@@ -139,7 +139,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.<RemoveGroupOutput>createCumulatingFunction(input.getBatchRemoveGroups()));
+                           GroupUtil.createCumulatingFunction(input.getBatchRemoveGroups()));
 
         ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBulkFuture = Futures
                 .transform(commonResult, GroupUtil.GROUP_REMOVE_TRANSFORM);

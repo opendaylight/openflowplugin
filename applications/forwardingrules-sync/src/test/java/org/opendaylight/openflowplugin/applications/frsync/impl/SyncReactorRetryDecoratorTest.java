@@ -53,8 +53,8 @@ public class SyncReactorRetryDecoratorTest {
 
     @Test
     public void testSyncupSuccess() {
-        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(),
-                ArgumentMatchers.<SyncupEntry>any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
+        Mockito.when(delegate.syncup(ArgumentMatchers.any(),
+                ArgumentMatchers.any())).thenReturn(Futures.immediateFuture(Boolean.TRUE));
 
         reactor.syncup(fcNodePath, syncupEntry);
 
@@ -65,8 +65,8 @@ public class SyncReactorRetryDecoratorTest {
 
     @Test
     public void testSyncupFail() {
-        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(),
-                ArgumentMatchers.<SyncupEntry>any())).thenReturn(Futures.immediateFuture(Boolean.FALSE));
+        Mockito.when(delegate.syncup(ArgumentMatchers.any(),
+                ArgumentMatchers.any())).thenReturn(Futures.immediateFuture(Boolean.FALSE));
 
         reactor.syncup(fcNodePath, syncupEntry);
 

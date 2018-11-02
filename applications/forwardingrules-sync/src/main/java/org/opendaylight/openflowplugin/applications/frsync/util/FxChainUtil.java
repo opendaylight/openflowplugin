@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -40,7 +40,7 @@ public final class FxChainUtil {
                         LOG.debug("{} finished successfully: {}", prefix, nodeId.getValue());
                     } else {
                         final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(),
-                                ImmutableList.<RpcError>of());
+                                ImmutableList.of());
                         LOG.debug("{} failed: {} -> {}", prefix, nodeId.getValue(), errors);
                     }
                 } else {

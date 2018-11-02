@@ -182,7 +182,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionAdapter.echo(any(EchoInput.class))).thenReturn(echoReply);
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
         Mockito.when(connectionAdapter.disconnect())
-                .thenReturn(Futures.<Boolean>immediateFailedFuture(new Exception("unit exception")));
+                .thenReturn(Futures.immediateFailedFuture(new Exception("unit exception")));
 
         SwitchIdleEvent notification = new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build();
         systemNotificationsListener.onSwitchIdleEvent(notification);

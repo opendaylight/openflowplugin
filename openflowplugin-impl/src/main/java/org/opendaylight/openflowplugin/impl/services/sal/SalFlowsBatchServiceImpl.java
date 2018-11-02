@@ -81,7 +81,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
                 Futures.transform(Futures.successfulAsList(resultsLot),
-                        FlowUtil.<RemoveFlowOutput>createCumulatingFunction(input.getBatchRemoveFlows()),
+                        FlowUtil.createCumulatingFunction(input.getBatchRemoveFlows()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBulkFuture =
@@ -109,7 +109,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
                 Futures.transform(Futures.successfulAsList(resultsLot),
-                        FlowUtil.<AddFlowOutput>createCumulatingFunction(input.getBatchAddFlows()),
+                        FlowUtil.createCumulatingFunction(input.getBatchAddFlows()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBulkFuture =
@@ -151,7 +151,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
                 Futures.transform(Futures.successfulAsList(resultsLot),
-                                  FlowUtil.<UpdateFlowOutput>createCumulatingFunction(input.getBatchUpdateFlows()),
+                                  FlowUtil.createCumulatingFunction(input.getBatchUpdateFlows()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBulkFuture =

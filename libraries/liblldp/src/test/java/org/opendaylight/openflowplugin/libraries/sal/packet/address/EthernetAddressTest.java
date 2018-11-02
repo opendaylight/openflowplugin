@@ -28,7 +28,7 @@ public class EthernetAddressTest {
         EthernetAddress ea1;
         // Null input array
         try {
-            ea1 = new EthernetAddress((byte[]) null);
+            ea1 = new EthernetAddress(null);
 
             // Exception is expected if NOT raised test will fail
             fail("Expected NullPointerException");

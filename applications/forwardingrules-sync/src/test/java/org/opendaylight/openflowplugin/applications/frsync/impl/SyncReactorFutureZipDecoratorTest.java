@@ -87,7 +87,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry zipped = new SyncupEntry(dataAfter2, configDS, dataBefore, configDS);
         final List<ListenableFuture<Boolean>> allResults = new ArrayList<>();
 
-        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.any(), Mockito.eq(first)))
                 .thenAnswer(invocationOnMock -> {
                     LOG.info("unlocking next configs");
                     latchForNext.countDown();
@@ -131,7 +131,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry first = new SyncupEntry(dataBefore, configDS, null, configDS);
         final SyncupEntry second = new SyncupEntry(dataAfter, configDS, dataBefore, configDS);
 
-        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.any(), Mockito.eq(first)))
                 .thenAnswer(invocationOnMock -> {
                     LOG.info("unlocking next config");
                     latchForNext.countDown();
@@ -166,7 +166,7 @@ public class SyncReactorFutureZipDecoratorTest {
         final SyncupEntry first = new SyncupEntry(configAfter, configDS, configBefore, configDS);
         final SyncupEntry second = new SyncupEntry(configActual, configDS, freshOperational, operationalDS);
 
-        Mockito.when(delegate.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(), Mockito.eq(first)))
+        Mockito.when(delegate.syncup(ArgumentMatchers.any(), Mockito.eq(first)))
                 .thenAnswer(invocationOnMock -> {
                     LOG.info("unlocking for fresh operational");
                     latchForNext.countDown();

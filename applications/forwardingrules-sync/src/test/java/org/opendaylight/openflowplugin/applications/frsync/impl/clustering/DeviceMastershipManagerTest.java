@@ -16,7 +16,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
@@ -38,7 +37,7 @@ public class DeviceMastershipManagerTest {
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, new ReconciliationRegistry());
         Mockito.when(clusterSingletonService
-                .registerClusterSingletonService(ArgumentMatchers.<ClusterSingletonService>any()))
+                .registerClusterSingletonService(ArgumentMatchers.any()))
                 .thenReturn(registration);
     }
 

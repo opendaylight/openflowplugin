@@ -59,7 +59,7 @@ public class EthDstConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfEthDst(nxmOfEthDstBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
         ethDstConvertor = new EthDstConvertor();
