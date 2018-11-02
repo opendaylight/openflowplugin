@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -150,8 +151,8 @@ public class BundleFlowForwarder {
                 LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
                 InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
                 LOG.info("Reading the group from config inventory: {}", groupId);
-                try {
-                    Optional<Group> group = forwardingRulesManager.getReadTranaction()
+                try (ReadOnlyTransaction readTransaction = forwardingRulesManager.getReadTransaction()) {
+                    Optional<Group> group = readTransaction
                             .read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
                     if (group.isPresent()) {
                         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group.get());

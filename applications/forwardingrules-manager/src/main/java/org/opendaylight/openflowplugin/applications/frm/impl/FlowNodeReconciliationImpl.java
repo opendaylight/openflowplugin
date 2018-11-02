@@ -179,9 +179,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             Optional<FlowCapableNode> flowNode = Optional.absent();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
-            LOG.info("Triggering bundle based reconciliation for device :{}", dpnId);
-            ReadOnlyTransaction trans = provider.getReadTranaction();
-            try {
+            LOG.info("Triggering bundle based reconciliation for device : {}", dpnId);
+            try (ReadOnlyTransaction trans = provider.getReadTransaction()) {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (ExecutionException | InterruptedException e) {
                 LOG.error("Error occurred while reading the configuration data store for node {}", nodeIdentity, e);
@@ -251,7 +250,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         return Futures.immediateFuture(null);
                     }, MoreExecutors.directExecutor());
 
-                trans.close();
                 try {
                     if (commitBundleFuture.get().isSuccessful()) {
                         LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
@@ -313,11 +311,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             String node = nodeIdentity.firstKeyOf(Node.class, NodeKey.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
 
-            ReadOnlyTransaction trans = provider.getReadTranaction();
             Optional<FlowCapableNode> flowNode;
             // initialize the counter
             int counter = 0;
-            try {
+            try (ReadOnlyTransaction trans = provider.getReadTransaction()) {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (ExecutionException | InterruptedException e) {
                 LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
@@ -466,8 +463,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     }
                 }
             }
-            /* clean transaction */
-            trans.close();
             return true;
         }
 
@@ -551,10 +546,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
         List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = Lists.newArrayList();
 
-        ReadOnlyTransaction trans = provider.getReadTranaction();
         Optional<FlowCapableNode> flowNode = Optional.absent();
 
-        try {
+        try (ReadOnlyTransaction trans = provider.getReadTransaction()) {
             flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Reconciliation Pre-Processing Fail with read Config/DS for Node {} !", nodeIdent, e);
@@ -629,8 +623,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
         }
-        /* clean transaction */
-        trans.close();
 
         LOG.debug("Deleting all stale-marked flows/groups/meters of for switch {} in Configuration DS",
                 nodeIdent.toString());
