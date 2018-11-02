@@ -200,7 +200,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public ReadOnlyTransaction getReadTranaction() {
+    public ReadOnlyTransaction getReadTransaction() {
         return dataService.newReadOnlyTransaction();
     }
 
