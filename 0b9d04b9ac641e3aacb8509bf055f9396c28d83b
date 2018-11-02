@@ -140,6 +140,30 @@
       "revId": "0b9d04b9ac641e3aacb8509bf055f9396c28d83b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f3895841_a589337f",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 4540
+      },
+      "writtenOn": "2018-11-02T08:31:37Z",
+      "side": 1,
+      "message": "Spring can ;-). But this is indeed the only way to currently generate BluePrint wiring automatically.",
+      "parentUuid": "df44b042_395a2da1",
+      "range": {
+        "startLine": 110,
+        "startChar": 47,
+        "endLine": 110,
+        "endChar": 57
+      },
+      "revId": "0b9d04b9ac641e3aacb8509bf055f9396c28d83b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
