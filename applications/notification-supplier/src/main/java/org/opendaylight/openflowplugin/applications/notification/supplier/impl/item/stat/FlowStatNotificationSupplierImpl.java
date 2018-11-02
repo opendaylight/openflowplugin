@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.F
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -64,7 +63,7 @@ public class FlowStatNotificationSupplierImpl extends AbstractNotificationSuppli
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.<NodeConnector>emptyList());
+        builder.setNodeConnector(Collections.emptyList());
         builder.setFlowAndStatisticsMapList(Collections.singletonList(fsmlBuilder.build()));
         return builder.build();
     }

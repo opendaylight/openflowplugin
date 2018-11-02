@@ -174,7 +174,7 @@ public final class FlatBatchFlowAdapters {
         convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
                                    final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
-                FlatBatchFlowAdapters.<T>convertBatchFlowResult(currentOffset),
+                FlatBatchFlowAdapters.convertBatchFlowResult(currentOffset),
                 MoreExecutors.directExecutor());
     }
 }

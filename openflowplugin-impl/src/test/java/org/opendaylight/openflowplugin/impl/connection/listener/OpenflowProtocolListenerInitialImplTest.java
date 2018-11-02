@@ -21,9 +21,7 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 
 /**
@@ -61,7 +59,7 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         openflowProtocolListenerInitial.onEchoRequestMessage(echoRequestMessageBld.build());
 
-        Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.<EchoReplyInput>any());
+        Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.any());
     }
 
     @Test
@@ -71,7 +69,7 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         openflowProtocolListenerInitial.onHelloMessage(helloMessageBld.build());
 
-        Mockito.verify(handshakeManager).shake(ArgumentMatchers.<HelloMessage>any());
+        Mockito.verify(handshakeManager).shake(ArgumentMatchers.any());
     }
 
     @Test

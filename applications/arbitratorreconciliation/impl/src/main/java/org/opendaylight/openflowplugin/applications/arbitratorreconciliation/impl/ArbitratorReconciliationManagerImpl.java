@@ -153,7 +153,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         MoreExecutors.directExecutor());
                 return Futures.transform(
                         rpcResult,
-                        this.<ControlBundleOutput>createRpcResultCondenser("committed active bundle"),
+                        this.createRpcResultCondenser("committed active bundle"),
                         MoreExecutors.directExecutor());
             }
         }
