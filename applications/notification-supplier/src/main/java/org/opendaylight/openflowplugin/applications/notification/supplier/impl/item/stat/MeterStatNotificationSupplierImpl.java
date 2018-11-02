@@ -59,7 +59,7 @@ public class MeterStatNotificationSupplierImpl extends AbstractNotificationSuppl
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.<NodeConnector>emptyList());
+        builder.setNodeConnector(Collections.emptyList());
         builder.setMeterStats(Collections.singletonList(new MeterStatsBuilder(meterStatistics).build()));
         return builder.build();
     }

@@ -57,7 +57,7 @@ public class TableWriterTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
-        }).when(mockTablePusher).execute(ArgumentMatchers.<Runnable>any());
+        }).when(mockTablePusher).execute(ArgumentMatchers.any());
 
         tableWriter = new TableWriter(mockDataBroker, mockTablePusher);
     }
@@ -66,8 +66,8 @@ public class TableWriterTest {
     public void testAddTables() throws Exception {
         tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
-                .put(ArgumentMatchers.<LogicalDatastoreType>any(),
-                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any(), ArgumentMatchers.<DataObject>any(),
+                .put(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any(),
                         ArgumentMatchers.anyBoolean());
     }
 
@@ -75,7 +75,7 @@ public class TableWriterTest {
     public void testDeleteTables() throws Exception {
         tableWriter.deleteTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
-                .delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+                .delete(ArgumentMatchers.any(),
                         ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
     }
 }

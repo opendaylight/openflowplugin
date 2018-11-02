@@ -133,7 +133,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.<Table>emptyList());
+        flowNodeBuilder.setTable(Collections.emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
                 Futures.immediateCheckedFuture(flowNodeOpt);
@@ -189,7 +189,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
         Mockito.verify(mockedDeviceContext, Mockito.never())
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
-                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.<DataObject>any());
+                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.any());
         Mockito.verify(mockedDeviceContext).submitTransaction();
     }
 
@@ -199,7 +199,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Test
     public void testOnSuccessWithValidMultipart1() throws Exception {
         final MatchBuilder matchBuilder = new MatchBuilder()
-                .setMatchEntry(Collections.<MatchEntry>emptyList());
+                .setMatchEntry(Collections.emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
                 .setTableId(tableId)
                 .setPriority(2)
@@ -257,6 +257,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
         Mockito.verify(mockedFlowRegistry, Mockito.never()).store(any());
         Mockito.verify(mockedDeviceContext, Mockito.never())
                 .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
-                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.<DataObject>any());
+                        ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.any());
     }
 }

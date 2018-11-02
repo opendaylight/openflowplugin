@@ -119,8 +119,6 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
     public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input),
-                     (Function<RpcResult<List<MultipartReply>>,
-                             RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>)
             result -> {
                 if (Preconditions.checkNotNull(result).isSuccessful()) {
                     final MessageTranslator<MultipartReply, AggregatedFlowStatistics>

@@ -58,8 +58,8 @@ public class ForwardingRulesSyncProviderTest {
         provider.init();
 
         Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(
-                ArgumentMatchers.<DataTreeIdentifier<FlowCapableNode>>any(),
-                ArgumentMatchers.<DataTreeChangeListener<FlowCapableNode>>any());
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any());
     }
 
     @After

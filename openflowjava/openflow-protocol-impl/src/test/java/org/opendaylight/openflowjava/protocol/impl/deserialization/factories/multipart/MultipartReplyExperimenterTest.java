@@ -43,7 +43,7 @@ public class MultipartReplyExperimenterTest {
      */
     @Test
     public void testMultipartReplyExperimenter() {
-        Mockito.when(registry.getDeserializer(ArgumentMatchers.<MessageCodeKey>any())).thenReturn(vendorDeserializer);
+        Mockito.when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(vendorDeserializer);
         factory.injectDeserializerRegistry(registry);
         ByteBuf bb = BufferHelper.buildBuffer("FF FF 00 01 00 00 00 00 "
                                             + "00 00 00 01 00 00 00 02"); // expID, expType

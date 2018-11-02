@@ -64,7 +64,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         // First process description reply, write data to DS and write consequent data if successful
         return Futures.transformAsync(
             requestMultipart(MultipartType.OFPMPDESC, deviceContext),
-            (AsyncFunction<RpcResult<List<OfHeader>>, Void>) input -> {
+            input -> {
                 translateAndWriteResult(
                     MultipartType.OFPMPDESC,
                     input.getResult(),

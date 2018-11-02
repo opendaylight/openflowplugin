@@ -58,7 +58,7 @@ public class SalEchoServiceImplTest extends ServiceMocking {
         Assert.assertTrue(echoOutput.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
         verify(mockedOutboundQueue)
-                .commitEntry(eq(2121L), ArgumentMatchers.<OfHeader>any(),
-                        ArgumentMatchers.<FutureCallback<OfHeader>>any());
+                .commitEntry(eq(2121L), ArgumentMatchers.any(),
+                        ArgumentMatchers.any());
     }
 }

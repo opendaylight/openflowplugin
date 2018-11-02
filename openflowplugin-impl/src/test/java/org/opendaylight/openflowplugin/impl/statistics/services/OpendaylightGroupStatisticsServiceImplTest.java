@@ -81,7 +81,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
     @After
     public void tearDown() throws Exception {
-        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.<Notification>any());
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
     }
 
     @Test

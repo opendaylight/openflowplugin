@@ -108,7 +108,7 @@ public class FlowRemovedTranslatorTest {
         if (isV10) {
             builder.setMatchV10(new MatchV10Builder().setWildcards(flowWildcards).build());
         } else {
-            builder.setMatch(new MatchBuilder().setMatchEntry(Collections.<MatchEntry>emptyList()).build())
+            builder.setMatch(new MatchBuilder().setMatchEntry(Collections.emptyList()).build())
                 .setTableId(new TableId(42L));
         }
 

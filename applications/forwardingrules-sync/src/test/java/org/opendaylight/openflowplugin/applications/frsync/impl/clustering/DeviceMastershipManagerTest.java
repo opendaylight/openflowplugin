@@ -38,7 +38,7 @@ public class DeviceMastershipManagerTest {
     public void setUp() throws Exception {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, new ReconciliationRegistry());
         Mockito.when(clusterSingletonService
-                .registerClusterSingletonService(ArgumentMatchers.<ClusterSingletonService>any()))
+                .registerClusterSingletonService(ArgumentMatchers.any()))
                 .thenReturn(registration);
     }
 

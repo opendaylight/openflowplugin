@@ -123,7 +123,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
                 groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
                 flowsToRemove, metersToRemove, groupsToRemove);
 
-        Mockito.when(flatBatchService.processFlatBatch(ArgumentMatchers.<ProcessFlatBatchInput>any()))
+        Mockito.when(flatBatchService.processFlatBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture());
 
         final SyncCrudCounters counters = new SyncCrudCounters();

@@ -45,7 +45,7 @@ public class ActionExtensionHelperTest {
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
         when(extensionConverterProvider.getActionConverter(any(MessageTypeKey.class)))
-            .thenReturn((ConvertorActionFromOFJava<DataContainer, AugmentationPath>) (input, path) -> new MockAction());
+            .thenReturn((input, path) -> new MockAction());
     }
 
     @Test

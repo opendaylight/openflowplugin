@@ -40,7 +40,7 @@ public class OF10StatsReplyExperimenterTest {
      */
     @Test
     public void test() {
-        Mockito.when(registry.getDeserializer(ArgumentMatchers.<MessageCodeKey>any())).thenReturn(vendorDeserializer);
+        Mockito.when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(vendorDeserializer);
         OF10StatsReplyMessageFactory factory = new OF10StatsReplyMessageFactory();
         factory.injectDeserializerRegistry(registry);
 

@@ -59,7 +59,7 @@ public class GroupStatNotificationSupplierImpl extends AbstractNotificationSuppl
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.<NodeConnector>emptyList());
+        builder.setNodeConnector(Collections.emptyList());
         builder.setGroupStats(Collections.singletonList(new GroupStatsBuilder(groupStatistics).build()));
         return builder.build();
     }

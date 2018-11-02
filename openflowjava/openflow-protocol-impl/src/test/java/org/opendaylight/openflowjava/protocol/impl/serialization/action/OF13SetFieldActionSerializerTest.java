@@ -85,8 +85,8 @@ public class OF13SetFieldActionSerializerTest {
         registry.registerSerializer(key, serializerMock);
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         ser.serialize(actionBuilder.build(), out);
-        Mockito.verify(serializerMock, Mockito.times(1)).serialize((MatchEntry)Mockito.anyObject(),
-                (ByteBuf)Mockito.anyObject());
+        Mockito.verify(serializerMock, Mockito.times(1)).serialize(Mockito.anyObject(),
+            Mockito.anyObject());
         int lenght = out.readableBytes();
         Assert.assertEquals("Wrong - bad field code", ActionConstants.SET_FIELD_CODE, out.readUnsignedShort());
         Assert.assertEquals("Wrong - bad lenght", lenght, out.readUnsignedShort());

@@ -433,7 +433,7 @@ public class StatisticsGatheringUtilsTest {
         final org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
-                        .setMatchEntry(Collections.<MatchEntry>emptyList());
+                        .setMatchEntry(Collections.emptyList());
         final FlowStatsBuilder flowStatsBld = new FlowStatsBuilder()
                 .setByteCount(BigInteger.valueOf(55L))
                 .setPacketCount(BigInteger.valueOf(56L))
@@ -476,7 +476,7 @@ public class StatisticsGatheringUtilsTest {
         final MeterConfigBuilder meterConfigBld = new MeterConfigBuilder()
                 .setMeterId(new MeterId(meterIdValue))
                 .setFlags(new MeterFlags(false, true, false, true))
-                .setBands(Collections.<Bands>emptyList());
+                .setBands(Collections.emptyList());
 
         final MultipartReplyMeterConfigBuilder mpReplyMeterConfigBld = new MultipartReplyMeterConfigBuilder();
         mpReplyMeterConfigBld.setMeterConfig(Lists.newArrayList(meterConfigBld.build()));

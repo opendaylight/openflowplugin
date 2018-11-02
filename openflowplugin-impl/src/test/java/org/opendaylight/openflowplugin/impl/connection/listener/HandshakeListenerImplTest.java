@@ -58,7 +58,7 @@ public class HandshakeListenerImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(connectionAdapter.barrier(ArgumentMatchers.<BarrierInput>any()))
+        Mockito.when(connectionAdapter.barrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);

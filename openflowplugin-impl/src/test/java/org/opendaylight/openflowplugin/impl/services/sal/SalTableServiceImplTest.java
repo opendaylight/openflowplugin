@@ -63,7 +63,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
             return null;
         })
                 .when(mockedOutboundQueue).commitEntry(
-                anyLong(), ArgumentMatchers.<OfHeader>any(), ArgumentMatchers.<FutureCallback<OfHeader>>any());
+                anyLong(), ArgumentMatchers.any(), ArgumentMatchers.any());
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
@@ -77,7 +77,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     RpcResultBuilder.<List<MultipartReply>>failed().build();
             handleResultFuture.set(rpcResult);
             return null;
-        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.<EventIdentifier>any());
+        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
@@ -92,7 +92,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     .build();
             handleResultFuture.set(rpcResult);
             return null;
-        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.<EventIdentifier>any());
+        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
@@ -106,7 +106,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     .setTableId((short) 0)
                     .setName("Zafod")
                     .setMaxEntries(42L)
-                    .setTableFeatureProperties(Collections.<TableFeatureProperties>emptyList());
+                    .setTableFeatureProperties(Collections.emptyList());
             MultipartReplyTableFeaturesBuilder mpTableFeaturesBld = new MultipartReplyTableFeaturesBuilder()
                     .setTableFeatures(Collections.singletonList(tableFeaturesBld.build()));
             MultipartReplyTableFeaturesCaseBuilder mpBodyBld = new MultipartReplyTableFeaturesCaseBuilder()
@@ -120,7 +120,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     .build();
             handleResultFuture.set(rpcResult);
             return null;
-        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.<EventIdentifier>any());
+        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
@@ -130,7 +130,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
     private UpdateTableInput prepareUpdateTable() {
         UpdateTableInputBuilder updateTableInputBuilder = new UpdateTableInputBuilder();
         UpdatedTableBuilder updatedTableBuilder = new UpdatedTableBuilder();
-        updatedTableBuilder.setTableFeatures(Collections.<TableFeatures>emptyList());
+        updatedTableBuilder.setTableFeatures(Collections.emptyList());
         updateTableInputBuilder.setUpdatedTable(updatedTableBuilder.build());
         return updateTableInputBuilder.build();
     }

@@ -46,7 +46,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public final class FlowUtil {
 
     private static final RpcResultBuilder<List<BatchFailedFlowsOutput>> SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT =
-            RpcResultBuilder.success(Collections.<BatchFailedFlowsOutput>emptyList());
+            RpcResultBuilder.success(Collections.emptyList());
 
     /**
      * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;.

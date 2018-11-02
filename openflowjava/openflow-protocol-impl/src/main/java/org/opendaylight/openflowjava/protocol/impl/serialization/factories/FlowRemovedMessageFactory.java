@@ -51,7 +51,7 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
         outBuffer.writeShort(message.getHardTimeout());
         outBuffer.writeLong(message.getPacketCount().longValue());
         outBuffer.writeLong(message.getByteCount().longValue());
-        OFSerializer<Match> matchSerializer = registry.<Match, OFSerializer<Match>>getSerializer(
+        OFSerializer<Match> matchSerializer = registry.getSerializer(
                 new MessageTypeKey<>(message.getVersion(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);

@@ -45,8 +45,7 @@ public class NiciraExtensionProviderTest {
     @Test
     public void testRegisterConverters() throws Exception {
         Mockito.verify(extensionConverterRegistrator, Mockito.atLeastOnce()).registerActionConvertor(
-                ArgumentMatchers.<TypeVersionKey<? extends Action>>any(),
-                ArgumentMatchers.<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-                    .common.action.rev150203.actions.grouping.Action>>any());
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any());
     }
 }

@@ -64,7 +64,7 @@ public class FlowStatNotificationSupplierImpl extends AbstractNotificationSuppli
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.<NodeConnector>emptyList());
+        builder.setNodeConnector(Collections.emptyList());
         builder.setFlowAndStatisticsMapList(Collections.singletonList(fsmlBuilder.build()));
         return builder.build();
     }

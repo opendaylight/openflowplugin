@@ -36,7 +36,7 @@ public class VendorMessageFactoryTest {
      */
     @Test
     public void test() {
-        Mockito.when(registry.getDeserializer(ArgumentMatchers.<MessageCodeKey>any())).thenReturn(deserializer);
+        Mockito.when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(deserializer);
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("01 02 03 04 FF FF FF FF 80 00 00 00");
         VendorMessageFactory factory = new VendorMessageFactory();
         factory.injectDeserializerRegistry(registry);

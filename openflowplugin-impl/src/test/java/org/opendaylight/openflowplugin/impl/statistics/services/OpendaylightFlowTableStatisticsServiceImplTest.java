@@ -90,7 +90,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(MultipartType.OFPMPTABLE, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.<Notification>any());
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
     }
 
     @Test

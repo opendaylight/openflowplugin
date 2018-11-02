@@ -65,7 +65,7 @@ public class FlowTableStatNotificationSupplierImpl extends
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.<NodeConnector>emptyList());
+        builder.setNodeConnector(Collections.emptyList());
         builder.setFlowTableAndStatisticsMap(Collections.singletonList(ftsmBuilder.build()));
         return builder.build();
     }

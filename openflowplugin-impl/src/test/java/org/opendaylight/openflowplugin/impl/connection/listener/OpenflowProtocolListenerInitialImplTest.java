@@ -61,7 +61,7 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         openflowProtocolListenerInitial.onEchoRequestMessage(echoRequestMessageBld.build());
 
-        Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.<EchoReplyInput>any());
+        Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.any());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         openflowProtocolListenerInitial.onHelloMessage(helloMessageBld.build());
 
-        Mockito.verify(handshakeManager).shake(ArgumentMatchers.<HelloMessage>any());
+        Mockito.verify(handshakeManager).shake(ArgumentMatchers.any());
     }
 
     @Test

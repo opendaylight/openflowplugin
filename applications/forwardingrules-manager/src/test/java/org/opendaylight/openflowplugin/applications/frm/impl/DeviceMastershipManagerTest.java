@@ -55,7 +55,7 @@ public class DeviceMastershipManagerTest {
                 mastershipChangeServiceManager);
         deviceMastershipManager.setRoutedRpcReg(routedRpcReg);
         Mockito.lenient().when(clusterSingletonService
-                .registerClusterSingletonService(ArgumentMatchers.<ClusterSingletonService>any()))
+                .registerClusterSingletonService(ArgumentMatchers.any()))
                 .thenReturn(registration);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(nodeId.getValue()).thenReturn("dummyValue");

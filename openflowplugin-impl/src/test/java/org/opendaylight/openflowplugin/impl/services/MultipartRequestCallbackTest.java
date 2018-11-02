@@ -72,7 +72,7 @@ public class MultipartRequestCallbackTest {
     @Test
     public void testOnSuccess1() throws Exception {
         multipartRequestCallback.onSuccess(null);
-        Mockito.verify(multiMsgCollector).endCollecting(ArgumentMatchers.<EventIdentifier>any());
+        Mockito.verify(multiMsgCollector).endCollecting(ArgumentMatchers.any());
     }
 
     /**

@@ -34,7 +34,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void addFlowCapableNode(NodeKey nodeKey) {
-        Nodes nodes = new NodesBuilder().setNode(Collections.<Node>emptyList()).build();
+        Nodes nodes = new NodesBuilder().setNode(Collections.emptyList()).build();
 
         FlowCapableNodeBuilder fcnBuilder = new FlowCapableNodeBuilder();
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -60,7 +60,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void addTable(final TableKey tableKey, final NodeKey nodeKey) {
         addFlowCapableNode(nodeKey);
-        final Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        final Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.emptyList()).build();
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);

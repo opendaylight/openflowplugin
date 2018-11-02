@@ -87,7 +87,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
-        Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.<TranslatorKey>any())).thenReturn(translator);
+        Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.any())).thenReturn(translator);
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -172,7 +172,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                                         .setCookie(BigInteger.ZERO)
                                         .setPriority(14)
                                         .setMatch(new MatchBuilder()
-                                                .setMatchEntry(Collections.<MatchEntry>emptyList())
+                                                .setMatchEntry(Collections.emptyList())
                                                 .build())
                                         .setHardTimeout(15)
                                         .setIdleTimeout(16)

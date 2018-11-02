@@ -70,7 +70,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
         };
         Mockito.when(rqContextStack.<List<MultipartReply>>createRequestContext()).thenReturn(rqContextMp);
         Mockito.when(translatorLibrary
-                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Mockito.<TranslatorKey>any()))
+                .<MultipartReply, AggregatedFlowStatistics>lookupTranslator(Mockito.any()))
                 .thenReturn(translator);
     }
 
@@ -86,9 +86,9 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                     .success(Collections.<MultipartReply>singletonList(messageBuilder.build()))
                     .build());
             return null;
-        }).when(multiMsgCollector).endCollecting(Mockito.<EventIdentifier>any());
+        }).when(multiMsgCollector).endCollecting(Mockito.any());
         Mockito.when(translator.translate(
-                        Mockito.<MultipartReply>any(), same(deviceInfo), isNull())
+                        Mockito.any(), same(deviceInfo), isNull())
         ).thenReturn(new AggregatedFlowStatisticsBuilder().build());
 
         GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input =

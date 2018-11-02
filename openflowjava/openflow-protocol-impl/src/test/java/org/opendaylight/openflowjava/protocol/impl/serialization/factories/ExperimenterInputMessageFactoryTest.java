@@ -109,7 +109,7 @@ public class ExperimenterInputMessageFactoryTest {
         ExperimenterInput input = builder.build();
 
         Mockito.when(registry.getSerializer(
-                (ExperimenterIdSerializerKey<?>) any())).thenReturn(serializer);
+            any())).thenReturn(serializer);
 
         expFactory.serialize(input, out);
         Mockito.verify(serializer, Mockito.times(1)).serialize(input.getExperimenterDataOfChoice(), out);
@@ -130,7 +130,7 @@ public class ExperimenterInputMessageFactoryTest {
         ExperimenterInput input = builder.build();
 
         Mockito.when(registry.getSerializer(
-                (ExperimenterIdSerializerKey<?>) any())).thenReturn(serializer);
+            any())).thenReturn(serializer);
 
         expFactory.serialize(input, out);
         Mockito.verify(serializer, Mockito.times(1)).serialize(input.getExperimenterDataOfChoice(), out);

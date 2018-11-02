@@ -224,7 +224,7 @@ public class MultipartReplyTranslatorTest {
     private MultipartReplyBody prepareMultipartReplyGroupDesc() {
         GroupDescBuilder groupDescBuilder = new GroupDescBuilder();
         groupDescBuilder.setGroupId(DUMMY_GROUP_ID);
-        groupDescBuilder.setBucketsList(Collections.<BucketsList>emptyList());
+        groupDescBuilder.setBucketsList(Collections.emptyList());
         groupDescBuilder.setType(DUMMY_GROUP_TYPE);
         MultipartReplyGroupDescBuilder multipartReplyGroupDescBuilder = new MultipartReplyGroupDescBuilder();
         multipartReplyGroupDescBuilder.setGroupDesc(Lists.newArrayList(groupDescBuilder.build()));
@@ -237,7 +237,7 @@ public class MultipartReplyTranslatorTest {
     private MultipartReplyBody prepareMultipartReplyGroup() {
         GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
         groupStatsBuilder.setByteCount(DUMMY_BYTE_COUNT);
-        groupStatsBuilder.setBucketStats(Collections.<BucketStats>emptyList());
+        groupStatsBuilder.setBucketStats(Collections.emptyList());
         groupStatsBuilder.setDurationSec(DUMMY_DURATION_SEC);
         groupStatsBuilder.setDurationNsec(DUMMY_DURATION_NSEC);
         groupStatsBuilder.setGroupId(DUMMY_GROUP_ID);
@@ -288,7 +288,7 @@ public class MultipartReplyTranslatorTest {
     private MultipartReplyBody prepareMultipartReplyFlow() {
         MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder();
-        multipartReplyFlowBuilder.setFlowStats(Collections.<FlowStats>emptyList());
+        multipartReplyFlowBuilder.setFlowStats(Collections.emptyList());
         multipartReplyFlowCaseBuilder.setMultipartReplyFlow(multipartReplyFlowBuilder.build());
         return multipartReplyFlowCaseBuilder.build();
     }

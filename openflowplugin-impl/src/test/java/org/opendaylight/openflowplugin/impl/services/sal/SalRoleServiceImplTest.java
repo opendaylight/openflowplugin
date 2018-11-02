@@ -112,8 +112,8 @@ public class SalRoleServiceImplTest {
                 .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
 
         NodeKey key = new NodeKey(testNodeId);
-        InstanceIdentifier<Node> path = InstanceIdentifier.<Nodes>builder(Nodes.class)
-                .<Node, NodeKey>child(Node.class, key)
+        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, key)
                 .build();
         nodeRef = new NodeRef(path);
 

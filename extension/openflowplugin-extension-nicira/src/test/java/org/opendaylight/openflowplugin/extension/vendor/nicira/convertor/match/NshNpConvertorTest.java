@@ -52,7 +52,7 @@ public class NshNpConvertorTest {
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNshNp(nxmNxNshNp)
                 .build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
                 .thenReturn(nxAugMatchNotifUpdateFlowStats);
 
         convertor = new NshNpConvertor();

@@ -64,7 +64,7 @@ public class ArpOpConvertorTest {
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpOp(nxmOfArpOpBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
                 .thenReturn(extensionAugmentation);
 
         final MatchEntry converted = arpOpConvertor.convert(extension);

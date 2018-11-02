@@ -52,7 +52,7 @@ public class MatchExtensionHelperTest {
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
         when(extensionConverterProvider.getConverter(KEY))
-            .thenReturn((ConvertorFromOFJava<DataContainer, AugmentationPath>) (input, path) -> {
+            .thenReturn((input, path) -> {
                 MockAugmentation mockAugmentation = new MockAugmentation();
                 return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
             });
