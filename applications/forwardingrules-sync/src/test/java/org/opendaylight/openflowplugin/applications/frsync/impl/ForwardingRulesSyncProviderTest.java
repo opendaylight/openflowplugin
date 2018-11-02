@@ -16,12 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -58,8 +55,8 @@ public class ForwardingRulesSyncProviderTest {
         provider.init();
 
         Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(
-                ArgumentMatchers.<DataTreeIdentifier<FlowCapableNode>>any(),
-                ArgumentMatchers.<DataTreeChangeListener<FlowCapableNode>>any());
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any());
     }
 
     @After

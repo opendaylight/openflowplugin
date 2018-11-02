@@ -181,16 +181,16 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<AddFlowOutput>createRpcResultCondenser("flow adding"),
+                ReconcileUtil.createRpcResultCondenser("flow adding"),
                 MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults),
-                ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("flow updating"),
+                ReconcileUtil.createRpcResultCondenser("flow updating"),
                 MoreExecutors.directExecutor());
 
         return Futures.transform(Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
-                ReconcileUtil.<Void>createRpcResultCondenser("flow add/update"),
+                ReconcileUtil.createRpcResultCondenser("flow add/update"),
                 MoreExecutors.directExecutor());
     }
 
@@ -222,7 +222,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<RemoveFlowOutput>createRpcResultCondenser("flow remove"),
+                ReconcileUtil.createRpcResultCondenser("flow remove"),
                 MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
@@ -254,7 +254,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         }
 
         return Futures.transform(Futures.allAsList(allResults),
-                ReconcileUtil.<RemoveMeterOutput>createRpcResultCondenser("meter remove"),
+                ReconcileUtil.createRpcResultCondenser("meter remove"),
                 MoreExecutors.directExecutor());
     }
 
@@ -310,7 +310,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<RemoveGroupOutput>createRpcResultCondenser("group remove"),
+                ReconcileUtil.createRpcResultCondenser("group remove"),
                 MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
@@ -340,7 +340,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<UpdateTableOutput>createRpcResultCondenser("table update"),
+                ReconcileUtil.createRpcResultCondenser("table update"),
                 MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
@@ -371,17 +371,17 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<AddGroupOutput>createRpcResultCondenser("group add"),
+                ReconcileUtil.createRpcResultCondenser("group add"),
                 MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults),
-                ReconcileUtil.<UpdateGroupOutput>createRpcResultCondenser("group update"),
+                ReconcileUtil.createRpcResultCondenser("group update"),
                 MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> summaryResult = Futures.transform(
                 Futures.allAsList(singleVoidAddResult, singleVoidUpdateResult),
-                ReconcileUtil.<Void>createRpcResultCondenser("group add/update"),
+                ReconcileUtil.createRpcResultCondenser("group add/update"),
                 MoreExecutors.directExecutor());
 
 
@@ -423,16 +423,16 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
                 Futures.allAsList(allResults),
-                ReconcileUtil.<AddMeterOutput>createRpcResultCondenser("meter add"),
+                ReconcileUtil.createRpcResultCondenser("meter add"),
                 MoreExecutors.directExecutor());
 
         final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 Futures.allAsList(allUpdateResults),
-                ReconcileUtil.<UpdateMeterOutput>createRpcResultCondenser("meter update"),
+                ReconcileUtil.createRpcResultCondenser("meter update"),
                 MoreExecutors.directExecutor());
 
         return Futures.transform(Futures.allAsList(singleVoidUpdateResult, singleVoidAddResult),
-                ReconcileUtil.<Void>createRpcResultCondenser("meter add/update"),
+                ReconcileUtil.createRpcResultCondenser("meter add/update"),
                 MoreExecutors.directExecutor());
     }
 

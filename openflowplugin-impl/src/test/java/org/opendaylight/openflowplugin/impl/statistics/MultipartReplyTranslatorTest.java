@@ -37,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCaseBuilder;
@@ -46,10 +45,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyPortStatsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.group.stats.BucketStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.MultipartReplyGroupDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.multipart.reply.group.desc.GroupDescBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.MultipartReplyPortStatsBuilder;
@@ -224,7 +221,7 @@ public class MultipartReplyTranslatorTest {
     private MultipartReplyBody prepareMultipartReplyGroupDesc() {
         GroupDescBuilder groupDescBuilder = new GroupDescBuilder();
         groupDescBuilder.setGroupId(DUMMY_GROUP_ID);
-        groupDescBuilder.setBucketsList(Collections.<BucketsList>emptyList());
+        groupDescBuilder.setBucketsList(Collections.emptyList());
         groupDescBuilder.setType(DUMMY_GROUP_TYPE);
         MultipartReplyGroupDescBuilder multipartReplyGroupDescBuilder = new MultipartReplyGroupDescBuilder();
         multipartReplyGroupDescBuilder.setGroupDesc(Lists.newArrayList(groupDescBuilder.build()));
@@ -237,7 +234,7 @@ public class MultipartReplyTranslatorTest {
     private MultipartReplyBody prepareMultipartReplyGroup() {
         GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
         groupStatsBuilder.setByteCount(DUMMY_BYTE_COUNT);
-        groupStatsBuilder.setBucketStats(Collections.<BucketStats>emptyList());
+        groupStatsBuilder.setBucketStats(Collections.emptyList());
         groupStatsBuilder.setDurationSec(DUMMY_DURATION_SEC);
         groupStatsBuilder.setDurationNsec(DUMMY_DURATION_NSEC);
         groupStatsBuilder.setGroupId(DUMMY_GROUP_ID);
@@ -288,7 +285,7 @@ public class MultipartReplyTranslatorTest {
     private MultipartReplyBody prepareMultipartReplyFlow() {
         MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder();
-        multipartReplyFlowBuilder.setFlowStats(Collections.<FlowStats>emptyList());
+        multipartReplyFlowBuilder.setFlowStats(Collections.emptyList());
         multipartReplyFlowCaseBuilder.setMultipartReplyFlow(multipartReplyFlowBuilder.build());
         return multipartReplyFlowCaseBuilder.build();
     }

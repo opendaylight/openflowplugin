@@ -661,7 +661,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             flowStatsBuff.writeLong(flowStats.getCookie().longValue());
             flowStatsBuff.writeLong(flowStats.getPacketCount().longValue());
             flowStatsBuff.writeLong(flowStats.getByteCount().longValue());
-            OFSerializer<Match> matchSerializer = registry.<Match, OFSerializer<Match>>getSerializer(
+            OFSerializer<Match> matchSerializer = registry.getSerializer(
                     new MessageTypeKey<>(message.getVersion(), Match.class));
             matchSerializer.serialize(flowStats.getMatch(), flowStatsBuff);
             ListSerializer.serializeList(flowStats.getInstruction(),

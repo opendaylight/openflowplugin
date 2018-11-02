@@ -136,9 +136,9 @@ public final class ReconcileUtil {
 
             return Futures.transformAsync(result, input1 -> {
                 if (input1.isSuccessful()) {
-                    return Futures.<RpcResult<Void>>immediateFuture(RpcResultBuilder.<Void>success().build());
+                    return Futures.immediateFuture(RpcResultBuilder.<Void>success().build());
                 } else {
-                    return Futures.<RpcResult<Void>>immediateFailedFuture(null);
+                    return Futures.immediateFailedFuture(null);
                 }
             });
         };
@@ -360,7 +360,7 @@ public final class ReconcileUtil {
             return Collections.emptyList();
         }
 
-        return MoreObjects.firstNonNull(node.getGroup(), ImmutableList.<Group>of());
+        return MoreObjects.firstNonNull(node.getGroup(), ImmutableList.of());
     }
 
     public static List<Table> safeTables(FlowCapableNode node) {
@@ -368,7 +368,7 @@ public final class ReconcileUtil {
             return Collections.emptyList();
         }
 
-        return MoreObjects.firstNonNull(node.getTable(), ImmutableList.<Table>of());
+        return MoreObjects.firstNonNull(node.getTable(), ImmutableList.of());
     }
 
     public static List<Meter> safeMeters(FlowCapableNode node) {
@@ -376,6 +376,6 @@ public final class ReconcileUtil {
             return Collections.emptyList();
         }
 
-        return MoreObjects.firstNonNull(node.getMeter(), ImmutableList.<Meter>of());
+        return MoreObjects.firstNonNull(node.getMeter(), ImmutableList.of());
     }
 }

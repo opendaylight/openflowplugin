@@ -110,7 +110,7 @@ public class FlowForwarderTest {
 
         final Future<RpcResult<AddFlowOutput>> addResult = flowForwarder.add(flowPath, flow, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).addFlow(ArgumentMatchers.<AddFlowInput>any());
+        Mockito.verify(salFlowService).addFlow(ArgumentMatchers.any());
         final AddFlowInput flowInput = addFlowInputCpt.getValue();
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());
@@ -155,7 +155,7 @@ public class FlowForwarderTest {
         final Future<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow,
                 flowUpdated, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).updateFlow(ArgumentMatchers.<UpdateFlowInput>any());
+        Mockito.verify(salFlowService).updateFlow(ArgumentMatchers.any());
         final UpdateFlowInput updateFlowInput = updateFlowInputCpt.getValue();
         final OriginalFlow flowOrigInput = updateFlowInput.getOriginalFlow();
         final UpdatedFlow flowInput = updateFlowInput.getUpdatedFlow();
@@ -192,7 +192,7 @@ public class FlowForwarderTest {
         final Future<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath,
                 removeFlow, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).removeFlow(ArgumentMatchers.<RemoveFlowInput>any());
+        Mockito.verify(salFlowService).removeFlow(ArgumentMatchers.any());
         final RemoveFlowInput flowInput = removeFlowInputCpt.getValue();
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());

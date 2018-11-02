@@ -128,7 +128,7 @@ public class GroupUtilTest {
 
     private RpcResult<List<BatchFailedGroupsOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
-                .<List<BatchFailedGroupsOutput>>success(Collections.<BatchFailedGroupsOutput>emptyList())
+                .success(Collections.<BatchFailedGroupsOutput>emptyList())
                 .build();
     }
 
@@ -234,7 +234,7 @@ public class GroupUtilTest {
     private RpcResult<AddGroupsBatchOutput> createAddGroupsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(Collections.<BatchFailedGroupsOutput>emptyList())
+                        .setBatchFailedGroupsOutput(Collections.emptyList())
                         .build())
                 .build();
     }

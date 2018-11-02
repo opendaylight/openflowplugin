@@ -189,12 +189,12 @@ public class FlowCreatorUtilTest {
         final FlowModFlags none = new FlowModFlags(null, null, null, null, null);
 
         for (final FlowModFlags f : defaults) {
-            assertTrue(FlowCreatorUtil.equalsFlowModFlags(f, (FlowModFlags) null));
-            assertTrue(FlowCreatorUtil.equalsFlowModFlags((FlowModFlags) null, f));
-            assertFalse(FlowCreatorUtil.equalsFlowModFlags((FlowModFlags) null, all));
-            assertFalse(FlowCreatorUtil.equalsFlowModFlags(all, (FlowModFlags) null));
-            assertTrue(FlowCreatorUtil.equalsFlowModFlags((FlowModFlags) null, none));
-            assertTrue(FlowCreatorUtil.equalsFlowModFlags(none, (FlowModFlags) null));
+            assertTrue(FlowCreatorUtil.equalsFlowModFlags(f, null));
+            assertTrue(FlowCreatorUtil.equalsFlowModFlags(null, f));
+            assertFalse(FlowCreatorUtil.equalsFlowModFlags(null, all));
+            assertFalse(FlowCreatorUtil.equalsFlowModFlags(all, null));
+            assertTrue(FlowCreatorUtil.equalsFlowModFlags(null, none));
+            assertTrue(FlowCreatorUtil.equalsFlowModFlags(none, null));
         }
 
         final String[] bitNames = {"cHECKOVERLAP", "nOBYTCOUNTS", "nOPKTCOUNTS", "rESETCOUNTS", "sENDFLOWREM"};
