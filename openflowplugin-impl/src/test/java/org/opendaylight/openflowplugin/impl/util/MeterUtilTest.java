@@ -126,7 +126,7 @@ public class MeterUtilTest {
 
     private RpcResult<List<BatchFailedMetersOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
-                .<List<BatchFailedMetersOutput>>success(Collections.<BatchFailedMetersOutput>emptyList())
+                .success(Collections.<BatchFailedMetersOutput>emptyList())
                 .build();
     }
 
@@ -221,7 +221,7 @@ public class MeterUtilTest {
     private RpcResult<AddMetersBatchOutput> createAddMetersBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(Collections.<BatchFailedMetersOutput>emptyList())
+                        .setBatchFailedMetersOutput(Collections.emptyList())
                         .build())
                 .build();
     }

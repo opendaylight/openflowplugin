@@ -58,7 +58,7 @@ public class TcpSrcConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfTcpSrc(nxmOfTcpSrcBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
         tcpSrcConvertor = new TcpSrcConvertor();

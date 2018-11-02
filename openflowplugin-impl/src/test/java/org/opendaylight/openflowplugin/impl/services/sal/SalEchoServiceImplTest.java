@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
@@ -25,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.Send
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -58,7 +56,7 @@ public class SalEchoServiceImplTest extends ServiceMocking {
         Assert.assertTrue(echoOutput.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
         verify(mockedOutboundQueue)
-                .commitEntry(eq(2121L), ArgumentMatchers.<OfHeader>any(),
-                        ArgumentMatchers.<FutureCallback<OfHeader>>any());
+                .commitEntry(eq(2121L), ArgumentMatchers.any(),
+                        ArgumentMatchers.any());
     }
 }

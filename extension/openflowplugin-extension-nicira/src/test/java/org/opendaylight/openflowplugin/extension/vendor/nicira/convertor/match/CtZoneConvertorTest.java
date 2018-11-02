@@ -56,7 +56,7 @@ public class CtZoneConvertorTest {
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxCtZone(nxmNxCtZoneBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
         ctZoneConvertor = new CtZoneConvertor();

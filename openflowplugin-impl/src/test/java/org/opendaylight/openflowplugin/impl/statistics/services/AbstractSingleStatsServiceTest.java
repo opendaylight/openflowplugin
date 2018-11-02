@@ -39,7 +39,7 @@ public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServic
             return null;
         };
 
-        Mockito.when(rqContextStack.<Object>createRequestContext()).thenReturn(rqContext);
+        Mockito.when(rqContextStack.createRequestContext()).thenReturn(rqContext);
         Mockito.doAnswer(closeRequestFutureAnswer).when(multiMsgCollector).endCollecting(null);
     }
 }

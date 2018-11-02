@@ -59,7 +59,7 @@ public class ArpTpaConvertorTest {
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpTpa(nxmOfArpTpaBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
         arpTpaConvertor = new ArpTpaConvertor();

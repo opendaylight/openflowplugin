@@ -46,7 +46,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public final class MeterUtil {
 
     private static final RpcResultBuilder<List<BatchFailedMetersOutput>> SUCCESSFUL_METER_OUTPUT_RPC_RESULT =
-            RpcResultBuilder.success(Collections.<BatchFailedMetersOutput>emptyList());
+            RpcResultBuilder.success(Collections.emptyList());
 
     public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>
         METER_ADD_TRANSFORM = batchMetersCumulatedResult -> {

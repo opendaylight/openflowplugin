@@ -79,7 +79,7 @@ public class OutboundQueueEntryTest {
     public void takeMessage() throws Exception {
         outboundQueueEntry.commit(packetOutInput, futureCallback);
         outboundQueueEntry.takeMessage();
-        Mockito.verify(futureCallback).onSuccess(Mockito.<OfHeader>any());
+        Mockito.verify(futureCallback).onSuccess(Mockito.any());
     }
 
     @Test

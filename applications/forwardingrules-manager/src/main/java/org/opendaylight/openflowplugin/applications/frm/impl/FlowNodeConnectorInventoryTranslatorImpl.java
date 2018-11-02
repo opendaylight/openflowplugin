@@ -44,7 +44,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
             .build();
 
     private final Multimap<BigInteger, String> dpnToPortMultiMap = Multimaps
-            .synchronizedListMultimap(ArrayListMultimap.<BigInteger, String>create());
+            .synchronizedListMultimap(ArrayListMultimap.create());
 
     @SuppressWarnings("IllegalCatch")
     public FlowNodeConnectorInventoryTranslatorImpl(final DataBroker dataBroker) {
