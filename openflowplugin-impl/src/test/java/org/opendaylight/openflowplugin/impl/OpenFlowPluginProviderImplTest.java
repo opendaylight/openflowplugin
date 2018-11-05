@@ -31,7 +31,12 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+<<<<<<< HEAD
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
+=======
+import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -82,6 +87,9 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     MastershipChangeServiceManager mastershipChangeServiceManager;
 
+    @Mock
+    FlowGroupCacheManager flowGroupCacheManager;
+
     private static final int RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
     private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.ONE;
@@ -128,7 +136,8 @@ public class OpenFlowPluginProviderImplTest {
                 entityOwnershipService,
                 mastershipChangeServiceManager,
                 ofPluginDiagstatusProvider,
-                systemReadyMonitor);
+                systemReadyMonitor,
+                flowGroupCacheManager);
 
         provider.initialize();
         // Calling the onSystemBootReady() callback

@@ -9,8 +9,14 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Preconditions;
 import java.util.concurrent.atomic.AtomicLong;
+<<<<<<< HEAD
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+=======
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
@@ -89,19 +95,21 @@ public final class MdSalRegistrationUtils {
     public static void registerServices(@NonNull final RpcContext rpcContext,
                                         @NonNull final DeviceContext deviceContext,
                                         final ExtensionConverterProvider extensionConverterProvider,
-                                        final ConvertorExecutor convertorExecutor) {
+                                        final ConvertorExecutor convertorExecutor,
+                                        final FlowGroupCacheManager flowGroupCacheManager) {
         // TODO: Use multipart writer provider from device context
         final MultipartWriterProvider multipartWriterProvider = MultipartWriterProviderFactory
             .createDefaultProvider(deviceContext);
 
         // create service instances
-        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor,
+                flowGroupCacheManager);
         final FlowCapableTransactionServiceImpl flowCapableTransactionService =
                 new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
         final SalAsyncConfigServiceImpl salAsyncConfigService =
                 new SalAsyncConfigServiceImpl(rpcContext, deviceContext);
         final SalGroupServiceImpl salGroupService =
-                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
+                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor, flowGroupCacheManager);
         final SalMeterServiceImpl salMeterService =
                 new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
 

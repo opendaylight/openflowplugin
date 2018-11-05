@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -57,15 +58,25 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
+    private final  FlowGroupCacheManager flowGroupCacheManager;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     RpcContextImpl(@NonNull final RpcProviderService rpcProviderRegistry,
                    final int maxRequests,
+<<<<<<< HEAD
                    @NonNull final DeviceContext deviceContext,
                    @NonNull final ExtensionConverterProvider extensionConverterProvider,
                    @NonNull final ConvertorExecutor convertorExecutor,
                    @NonNull final NotificationPublishService notificationPublishService,
                    final boolean statisticsRpcEnabled) {
+=======
+                   @Nonnull final DeviceContext deviceContext,
+                   @Nonnull final ExtensionConverterProvider extensionConverterProvider,
+                   @Nonnull final ConvertorExecutor convertorExecutor,
+                   @Nonnull final NotificationPublishService notificationPublishService,
+                   final FlowGroupCacheManager flowGroupCacheManager,
+                   boolean statisticsRpcEnabled) {
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
         this.deviceContext = deviceContext;
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
@@ -74,6 +85,7 @@ class RpcContextImpl implements RpcContext {
         this.extensionConverterProvider = extensionConverterProvider;
         this.notificationPublishService = notificationPublishService;
         this.convertorExecutor = convertorExecutor;
+        this.flowGroupCacheManager = flowGroupCacheManager;
         this.isStatisticsRpcEnabled = statisticsRpcEnabled;
         this.tracker = new Semaphore(maxRequests, true);
     }
@@ -184,7 +196,8 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
-        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider,
+                convertorExecutor, flowGroupCacheManager);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(

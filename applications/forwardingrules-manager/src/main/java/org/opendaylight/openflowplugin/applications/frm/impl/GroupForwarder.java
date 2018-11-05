@@ -106,7 +106,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     @Override
     public void remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             provider.getBundleGroupListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
@@ -135,7 +135,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     // TODO: Pull this into ForwardingRulesCommiter and override it here
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
-            final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                                                                 final Group removeDataObj,
+                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group group = removeDataObj;
         final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
@@ -148,7 +149,12 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     @Override
     public void update(final InstanceIdentifier<Group> identifier, final Group original, final Group update,
+<<<<<<< HEAD
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+=======
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             provider.getBundleGroupListener().update(identifier, original, update, nodeIdent, bundleId);
@@ -196,6 +202,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                         Futures.addCallback(resultFuture,
                                 new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
                                 MoreExecutors.directExecutor());
+
                         return resultFuture;
                     });
         }
@@ -203,15 +210,20 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     @Override
     public void createStaleMarkEntity(InstanceIdentifier<Group> identifier, Group del,
+<<<<<<< HEAD
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent, del);
+=======
+                                      InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent.toString(), del.toString());
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
         StaleGroup staleGroup = makeStaleGroup(identifier, del, nodeIdent);
         persistStaleGroup(staleGroup, nodeIdent);
 
     }
 
     private StaleGroup makeStaleGroup(InstanceIdentifier<Group> identifier, Group del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                                      InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleGroupBuilder staleGroupBuilder = new StaleGroupBuilder(del);
         return staleGroupBuilder.setGroupId(del.getGroupId()).build();
     }
@@ -241,7 +253,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
-        .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
+            .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
             StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }

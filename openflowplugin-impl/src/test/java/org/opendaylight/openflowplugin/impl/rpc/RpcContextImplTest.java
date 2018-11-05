@@ -21,9 +21,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+<<<<<<< HEAD
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+=======
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -69,7 +77,8 @@ public class RpcContextImplTest {
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private ConvertorExecutor convertorExecutor;
-
+    @Mock
+    private FlowGroupCacheManager flowGroupCacheManager;
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
     @Before
@@ -88,7 +97,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true);
+                notificationPublishService, flowGroupCacheManager, true);
 
         when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
                 .thenReturn(routedRpcReg);
@@ -102,7 +111,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)) {
+                notificationPublishService,flowGroupCacheManager, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -116,7 +125,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)) {
+                notificationPublishService, flowGroupCacheManager, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -130,7 +139,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)) {
+                notificationPublishService, flowGroupCacheManager, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();

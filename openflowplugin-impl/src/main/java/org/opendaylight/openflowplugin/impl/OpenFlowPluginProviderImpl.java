@@ -49,7 +49,12 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+<<<<<<< HEAD
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
+=======
+import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -125,9 +130,14 @@ public class OpenFlowPluginProviderImpl implements
     private ConnectionManager connectionManager;
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
+<<<<<<< HEAD
     private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
+=======
+    private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private final FlowGroupCacheManager flowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -142,8 +152,14 @@ public class OpenFlowPluginProviderImpl implements
                                final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
                                final @Reference EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
+<<<<<<< HEAD
                                final @Reference OpenflowDiagStatusProvider openflowDiagStatusProvider,
                                final @Reference SystemReadyMonitor systemReadyMonitor) {
+=======
+                               final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
+                               final SystemReadyMonitor systemReadyMonitor,
+                               final FlowGroupCacheManager flowGroupCacheManager) {
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -155,7 +171,12 @@ public class OpenFlowPluginProviderImpl implements
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
+<<<<<<< HEAD
         this.openflowDiagStatusProvider = openflowDiagStatusProvider;
+=======
+        this.openflowPluginStatusMonitor = openflowPluginStatusMonitor;
+        this.flowGroupCacheManager = flowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
         systemReadyMonitor.registerListener(this);
         LOG.info("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
@@ -261,7 +282,8 @@ public class OpenFlowPluginProviderImpl implements
                 rpcProviderRegistry,
                 extensionConverterManager,
                 convertorManager,
-                notificationPublishService);
+                notificationPublishService,
+                flowGroupCacheManager);
 
         statisticsManager = new StatisticsManagerImpl(
                 config,

@@ -17,8 +17,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+<<<<<<< HEAD
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+=======
+import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -61,6 +67,7 @@ public class MdSalRegistrationUtilsTest {
     private NotificationPublishService notificationPublishService;
 
     private ConvertorManager convertorManager;
+    private FlowGroupCacheManager flowGroupCacheManager;
 
     @Before
     public void setUp() {
@@ -76,7 +83,8 @@ public class MdSalRegistrationUtilsTest {
         MdSalRegistrationUtils.registerServices(mockedRpcContext,
                                                 mockedDeviceContext,
                                                 extensionConverterProvider,
-                                                convertorManager);
+                                                convertorManager,
+                                                flowGroupCacheManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(), any(RpcService.class));
     }

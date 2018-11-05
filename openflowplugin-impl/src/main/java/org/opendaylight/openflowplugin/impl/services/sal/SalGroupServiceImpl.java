@@ -7,10 +7,23 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import com.google.common.collect.EvictingQueue;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+<<<<<<< HEAD
+=======
+import java.time.LocalDateTime;
+import java.util.Queue;
+import java.util.concurrent.Future;
+import javax.annotation.Nonnull;
+
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCache;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
@@ -25,9 +38,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SalGroupServiceImpl implements SalGroupService {
     private static final Logger LOG = LoggerFactory.getLogger(SalGroupServiceImpl.class);
@@ -39,11 +56,15 @@ public class SalGroupServiceImpl implements SalGroupService {
     private final SingleLayerGroupService<RemoveGroupOutput> removeGroupMessage;
 
     private final DeviceContext deviceContext;
+    private final FlowGroupCacheManager provider ;
+
+    public static final int FLOWGROUP_CACHE_SIZE = Integer.getInteger("flowgroup.cache.size", 10000);
 
     public SalGroupServiceImpl(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
-                               final ConvertorExecutor convertorExecutor) {
+                               final ConvertorExecutor convertorExecutor,final FlowGroupCacheManager provider) {
         this.deviceContext = deviceContext;
+        this.provider = provider;
         addGroup = new MultiLayerGroupService<>(requestContextStack,
                                                 deviceContext,
                                                 AddGroupOutput.class,
@@ -70,13 +91,30 @@ public class SalGroupServiceImpl implements SalGroupService {
             addGroupMessage.canUseSingleLayerSerialization()
             ? addGroupMessage.handleServiceCall(input)
             : addGroup.handleServiceCall(input);
-
+        NodeId nodeId = input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId();
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
             public void onSuccess(RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
+<<<<<<< HEAD
                     LOG.debug("adding group successful {}", input.getGroupId().getValue());
                 } else {
+=======
+                    LOG.trace("successfully added group {} ", input.getGroupId().getValue());
+                    FlowGroupCache cache = new FlowGroupCache(input.getGroupId().getValue().toString(),
+                            input.getGroupType().getName(), FlowGroupStatus.ADDED,
+                            LocalDateTime.now());
+                    if (provider.getFlowGroupCacheListForAllNodes().containsKey(nodeId.getValue())) {
+                        provider.getFlowGroupCacheListForAllNodes().get(nodeId.getValue()).add(cache);
+                    } else {
+                        Queue<FlowGroupCache> flowGroupCacheList =
+                                Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
+                        flowGroupCacheList.add(cache);
+                        provider.getFlowGroupCacheListForAllNodes().put(nodeId.getValue(), flowGroupCacheList);
+                    }
+                }
+                else {
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
                             ErrorUtil.errorsToString(result.getErrors()));
@@ -106,6 +144,19 @@ public class SalGroupServiceImpl implements SalGroupService {
             @Override
             public void onSuccess(RpcResult<UpdateGroupOutput> result) {
                 if (result.isSuccessful()) {
+                    NodeId nodeId = input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId();
+                    FlowGroupCache cache = new FlowGroupCache(
+                            input.getUpdatedGroup().getGroupId().getValue().toString(),
+                            input.getUpdatedGroup().getGroupType().getName(), FlowGroupStatus.MODIFIED,
+                            LocalDateTime.now());
+                    if (provider.getFlowGroupCacheListForAllNodes().containsKey(nodeId.getValue())) {
+                        provider.getFlowGroupCacheListForAllNodes().get(nodeId.getValue()).add(cache);
+                    } else {
+                        Queue<FlowGroupCache> flowGroupCacheList =
+                                Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
+                        flowGroupCacheList.add(cache);
+                        provider.getFlowGroupCacheListForAllNodes().put(nodeId.getValue(), flowGroupCacheList);
+                    }
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group update with original id={} finished without error",
                             input.getOriginalGroup().getGroupId().getValue());
@@ -129,22 +180,34 @@ public class SalGroupServiceImpl implements SalGroupService {
     @Override
     public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
-            removeGroupMessage.canUseSingleLayerSerialization()
-            ? removeGroupMessage.handleServiceCall(input)
-            : removeGroup.handleServiceCall(input);
+                removeGroupMessage.canUseSingleLayerSerialization()
+                        ? removeGroupMessage.handleServiceCall(input)
+                        : removeGroup.handleServiceCall(input);
 
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<RemoveGroupOutput>>() {
             @Override
             public void onSuccess(RpcResult<RemoveGroupOutput> result) {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
+                        NodeId nodeId = input.getNode().getValue().firstKeyOf(Node.class, NodeKey.class).getId();
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
+                        FlowGroupCache cache = new FlowGroupCache(input.getGroupId().getValue().toString(),
+                                input.getGroupType().getName(), FlowGroupStatus.REMOVED,
+                                LocalDateTime.now());
+                        if (provider.getFlowGroupCacheListForAllNodes().containsKey(nodeId.getValue())) {
+                            provider.getFlowGroupCacheListForAllNodes().get(nodeId.getValue()).add(cache);
+                        } else {
+                            Queue<FlowGroupCache> flowGroupCacheList =
+                                    Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
+                            flowGroupCacheList.add(cache);
+                            provider.getFlowGroupCacheListForAllNodes().put(nodeId.getValue(), flowGroupCacheList);
+                        }
                     }
-                } else {
-                    LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
-                        ErrorUtil.errorsToString(result.getErrors()));
-                    LOG.debug("Group input={}", input);
-                }
+                    } else {
+                        LOG.warn("Group remove with id={} failed, errors={}", input.getGroupId().getValue(),
+                                ErrorUtil.errorsToString(result.getErrors()));
+                        LOG.debug("Group input={}", input);
+                    }
             }
 
             @Override
@@ -155,5 +218,4 @@ public class SalGroupServiceImpl implements SalGroupService {
         }, MoreExecutors.directExecutor());
         return resultFuture;
     }
-
 }

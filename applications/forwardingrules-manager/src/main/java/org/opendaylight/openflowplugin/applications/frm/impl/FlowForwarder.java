@@ -119,7 +119,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     @Override
     public void remove(final InstanceIdentifier<Flow> identifier, final Flow removeDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
@@ -151,8 +151,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     // TODO: Pull this into ForwardingRulesCommiter and override it here
 
     @Override
+<<<<<<< HEAD
     public ListenableFuture<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
             final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+=======
+    public Future<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
+                   final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
 
         ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
@@ -175,7 +180,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     @Override
     public void update(final InstanceIdentifier<Flow> identifier, final Flow original, final Flow update,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
@@ -227,7 +232,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     @Override
     public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                                              final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
@@ -273,8 +278,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     @Override
     public void createStaleMarkEntity(InstanceIdentifier<Flow> identifier, Flow del,
+<<<<<<< HEAD
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent, del);
+=======
+                                      InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent.toString(), del.toString());
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
         StaleFlow staleFlow = makeStaleFlow(identifier, del, nodeIdent);
         persistStaleFlow(staleFlow, nodeIdent);
     }
@@ -297,7 +307,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                                    InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
         return staleFlowBuilder.setId(del.getId()).build();
     }
@@ -327,7 +337,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
+            .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
             StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
@@ -373,8 +383,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         private final Uint32 groupId;
         private final SettableFuture<RpcResult<AddFlowOutput>> resultFuture;
 
+<<<<<<< HEAD
         private AddFlowCallBack(final AddFlowInput addFlowInput, final String nodeId, Uint32 groupId,
                 SettableFuture<RpcResult<AddFlowOutput>> resultFuture) {
+=======
+        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId,
+                                ListenableFuture<RpcResult<AddFlowOutput>> future, Long groupId) {
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
             this.addFlowInput = addFlowInput;
             this.nodeId = nodeId;
             this.groupId = groupId;
@@ -423,8 +438,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         private final Uint32 groupId;
         private final SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture;
 
+<<<<<<< HEAD
         private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final String nodeId,
                 SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, Uint32 groupId) {
+=======
+        private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final NodeId nodeId,
+                                   ListenableFuture<RpcResult<UpdateFlowOutput>> future, Long groupId) {
+>>>>>>> b578c5f8c... TR: HX32917 Port cli getflownodecache from REL6.1 to sfi_oxygen
             this.updateFlowInput = updateFlowInput;
             this.nodeId = nodeId;
             this.groupId = groupId;
