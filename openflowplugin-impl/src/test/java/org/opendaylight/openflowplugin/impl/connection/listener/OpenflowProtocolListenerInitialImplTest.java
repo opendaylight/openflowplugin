@@ -42,7 +42,7 @@ public class OpenflowProtocolListenerInitialImplTest {
     private OpenflowProtocolListenerInitialImpl openflowProtocolListenerInitial;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getConnectionState())
@@ -53,7 +53,7 @@ public class OpenflowProtocolListenerInitialImplTest {
     }
 
     @Test
-    public void testOnEchoRequestMessage() throws Exception {
+    public void testOnEchoRequestMessage() {
         EchoRequestMessageBuilder echoRequestMessageBld = new EchoRequestMessageBuilder()
                 .setXid(42L)
                 .setVersion(OFConstants.OFP_VERSION_1_3);
@@ -63,7 +63,7 @@ public class OpenflowProtocolListenerInitialImplTest {
     }
 
     @Test
-    public void testOnHelloMessage() throws Exception {
+    public void testOnHelloMessage() {
         HelloMessageBuilder helloMessageBld = new HelloMessageBuilder()
                 .setXid(42L)
                 .setVersion(OFConstants.OFP_VERSION_1_3);
@@ -73,7 +73,7 @@ public class OpenflowProtocolListenerInitialImplTest {
     }
 
     @Test
-    public void testCheckState() throws Exception {
+    public void testCheckState() {
         Assert.assertFalse(openflowProtocolListenerInitial.checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING));
         Assert.assertTrue(openflowProtocolListenerInitial.checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING));
     }

@@ -144,7 +144,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) throws Exception {
+    public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
         final FeaturesReply featuresReply = connectionContext.getFeatures();
@@ -269,7 +269,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         Map<DeviceInfo, ContextChain> copyOfChains = new HashMap<>(contextChainMap);
         copyOfChains.keySet().forEach(this::destroyContextChain);
         copyOfChains.clear();

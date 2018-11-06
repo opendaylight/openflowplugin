@@ -61,7 +61,7 @@ public class ConfigurationServiceFactoryImplTest {
     private ConfigurationService configurationService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(config.isIsStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
         when(config.isIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
         when(config.isIsTableStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
@@ -96,7 +96,7 @@ public class ConfigurationServiceFactoryImplTest {
     }
 
     @Test
-    public void update() throws Exception {
+    public void update() {
         final int tpMinThreads = configurationService
                 .getProperty(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString(), Integer::valueOf);
 
@@ -114,7 +114,7 @@ public class ConfigurationServiceFactoryImplTest {
     }
 
     @Test
-    public void getProperty() throws Exception {
+    public void getProperty() {
         final int tpMaxThreads = configurationService
                 .getProperty(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(), Integer::valueOf);
 
@@ -122,7 +122,7 @@ public class ConfigurationServiceFactoryImplTest {
     }
 
     @Test
-    public void registerListener() throws Exception {
+    public void registerListener() {
         configurationService.registerListener(configurationListener);
         verify(configurationListener, times(CONFIG_PROP_COUNT)).onPropertyChanged(any(), any());
     }

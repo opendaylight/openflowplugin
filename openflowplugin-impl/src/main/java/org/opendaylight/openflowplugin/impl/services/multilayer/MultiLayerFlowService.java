@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
@@ -49,7 +48,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final FlowModInputBuilder input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final FlowModInputBuilder input) {
         input.setXid(xid.getValue());
         return input.build();
     }

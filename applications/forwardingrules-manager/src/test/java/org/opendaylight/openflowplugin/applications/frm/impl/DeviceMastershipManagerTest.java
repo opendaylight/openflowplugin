@@ -51,7 +51,7 @@ public class DeviceMastershipManagerTest {
     private FrmReconciliationService reconciliationService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, reconciliationAgent, dataBroker,
                 mastershipChangeServiceManager, rpcProviderService, reconciliationService);
         Mockito.lenient().when(clusterSingletonService
@@ -62,7 +62,7 @@ public class DeviceMastershipManagerTest {
     }
 
     @Test
-    public void testOnDeviceConnectedAndDisconnected() throws Exception {
+    public void testOnDeviceConnectedAndDisconnected() {
         // no context
         Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()));
         deviceMastershipManager.onBecomeOwner(deviceInfo);

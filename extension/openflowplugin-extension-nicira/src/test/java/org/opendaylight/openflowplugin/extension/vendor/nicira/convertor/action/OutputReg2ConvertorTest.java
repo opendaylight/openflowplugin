@@ -51,7 +51,7 @@ public class OutputReg2ConvertorTest {
     private OutputReg2Convertor outputReg2Convertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxOutputReg nxOutputReg = Mockito.mock(NxOutputReg.class);
         final Src src = Mockito.mock(Src.class);
 

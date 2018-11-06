@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 public class FlowDescriptorDtoTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 1, new FlowId("unit:1"));
         Assert.assertNotNull(flowDescriptor);
         Assert.assertNotNull(flowDescriptor.getFlowId());
@@ -29,7 +29,7 @@ public class FlowDescriptorDtoTest {
 
     @Test(expected = Exception.class)
     @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION") // that is the point of this test
-    public void testCreateNegative1() throws Exception {
+    public void testCreateNegative1() {
         FlowDescriptorFactory.create((short) 1, null);
     }
 }

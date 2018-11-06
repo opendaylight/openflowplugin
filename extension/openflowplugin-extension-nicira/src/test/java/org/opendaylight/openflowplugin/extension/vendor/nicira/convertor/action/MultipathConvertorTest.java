@@ -54,7 +54,7 @@ public class MultipathConvertorTest {
     private MultipathConvertor multipathConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxMultipath nxMultipath = Mockito.mock(NxMultipath.class);
         when(bucketActionsCase.getNxMultipath()).thenReturn(nxMultipath);
 
@@ -85,7 +85,7 @@ public class MultipathConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionMultipath actionMultipath =
                 (ActionMultipath) multipathConvertor.convert(bucketActionsCase).getActionChoice();
         Assert.assertEquals(OfjNxHashFields.NXHASHFIELDSETHSRC, actionMultipath.getNxActionMultipath().getFields());
@@ -97,7 +97,7 @@ public class MultipathConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = multipathConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1

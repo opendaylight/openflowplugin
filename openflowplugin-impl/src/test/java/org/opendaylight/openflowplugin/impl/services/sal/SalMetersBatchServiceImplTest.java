@@ -90,7 +90,7 @@ public class SalMetersBatchServiceImplTest {
     private SalMetersBatchServiceImpl salMetersBatchService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         salMetersBatchService = new SalMetersBatchServiceImpl(salMeterService, transactionService);
 
         Mockito.when(transactionService.sendBarrier(any()))
@@ -98,7 +98,7 @@ public class SalMetersBatchServiceImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(salMeterService, transactionService);
     }
 

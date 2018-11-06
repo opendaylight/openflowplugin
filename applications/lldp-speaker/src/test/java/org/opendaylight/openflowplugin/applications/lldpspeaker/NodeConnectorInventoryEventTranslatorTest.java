@@ -157,7 +157,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
      * observers are registered for notifications.
      */
     @Test
-    public void testMultipleObserversNotified() throws Exception {
+    public void testMultipleObserversNotified() {
         // Create prerequisites
         InstanceIdentifier<NodeConnector> id2 = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:2");
         InstanceIdentifier<FlowCapableNodeConnector> iiToConnector2 = id2.augmentation(FlowCapableNodeConnector.class);
@@ -173,7 +173,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     }
 
     @Test
-    public void tearDown() throws Exception {
+    public void tearDown() {
         translator.close();
     }
 

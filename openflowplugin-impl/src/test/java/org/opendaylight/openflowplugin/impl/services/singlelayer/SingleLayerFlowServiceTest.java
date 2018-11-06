@@ -24,13 +24,13 @@ public class SingleLayerFlowServiceTest extends ServiceMocking {
     private SingleLayerFlowService<AddFlowOutput> service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerFlowService<>(mockedRequestContextStack,
                 mockedDeviceContext, AddFlowOutput.class);
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final AddFlowInput input = new AddFlowInputBuilder()
                 .setTableId(TABLE_ID)
                 .build();

@@ -32,7 +32,7 @@ public class OnfExtensionProviderTest {
     private OnfExtensionProvider onfExtensionProvider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito
                 .when(openFlowPluginExtensionRegistratorProvider.getExtensionConverterRegistrator())
                 .thenReturn(extensionConverterRegistrator);
@@ -42,7 +42,7 @@ public class OnfExtensionProviderTest {
     }
 
     @Test
-    public void init() throws Exception {
+    public void init() {
         onfExtensionProvider.init();
         Mockito.verify(switchConnectionProvider, Mockito.times(2))
                 .registerExperimenterMessageSerializer(Mockito.any(), Mockito.any());

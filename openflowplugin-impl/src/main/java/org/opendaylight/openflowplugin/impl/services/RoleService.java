@@ -21,7 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.role.RoleChangeException;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
@@ -50,7 +49,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final RoleRequestInputBuilder input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final RoleRequestInputBuilder input) {
         input.setXid(xid.getValue());
         return input.build();
     }

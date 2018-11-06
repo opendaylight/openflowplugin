@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 public class ApplySetfieldTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final ApplySetfield property = new ApplySetfieldBuilder()
                 .setApplySetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                         .prop.type.table.feature.prop.type.apply.setfield

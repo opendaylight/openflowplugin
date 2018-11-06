@@ -40,7 +40,7 @@ public class MessageSerializerInjectorTest {
     }
 
     @Test
-    public void injectSerializers() throws Exception {
+    public void injectSerializers() {
         injector.apply(OfHeader.class).accept(ofSerializer);
         verify(switchConnectionProvider)
                 .registerSerializer(new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, OfHeader.class), ofSerializer);

@@ -56,7 +56,7 @@ public class HandshakeListenerImplTest {
     private HandshakeListenerImpl handshakeListener;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(connectionAdapter.barrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
@@ -67,12 +67,12 @@ public class HandshakeListenerImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verify(handshakeContext).close();
     }
 
     @Test
-    public void testOnHandshakeSuccessfull() throws Exception {
+    public void testOnHandshakeSuccessfull() {
         handshakeListener.onHandshakeSuccessful(features, OFConstants.OFP_VERSION_1_3);
         Mockito.verify(connectionContextSpy).changeStateToWorking();
         Mockito.verify(connectionContextSpy).setFeatures(any(FeaturesReply.class));
@@ -85,7 +85,7 @@ public class HandshakeListenerImplTest {
     }
 
     @Test
-    public void testOnHandshakeFailure1() throws Exception {
+    public void testOnHandshakeFailure1() {
         connectionContextSpy.setNodeId(new NodeId("ut-device:10"));
         handshakeListener.onHandshakeFailure();
         Mockito.verify(handshakeContext).close();
@@ -93,7 +93,7 @@ public class HandshakeListenerImplTest {
     }
 
     @Test
-    public void testOnHandshakeFailure2() throws Exception {
+    public void testOnHandshakeFailure2() {
         Mockito.when(connectionAdapter.getRemoteAddress())
                 .thenReturn(InetSocketAddress.createUnresolved("ut-ofp.example.org", 4242));
         connectionContextSpy.setNodeId(new NodeId("openflow:1"));

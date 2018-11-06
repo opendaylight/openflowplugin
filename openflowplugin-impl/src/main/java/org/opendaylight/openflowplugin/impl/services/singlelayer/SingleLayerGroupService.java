@@ -12,7 +12,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroup;
@@ -34,7 +33,7 @@ public final class SingleLayerGroupService<O extends DataObject> extends Abstrac
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final Group input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final Group input) {
         final GroupMessageBuilder groupMessageBuilder = new GroupMessageBuilder(input);
         final Class<? extends DataContainer> clazz = input.getImplementedInterface();
 

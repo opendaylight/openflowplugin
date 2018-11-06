@@ -51,12 +51,12 @@ public class ArpSpaConvertorTest {
     private ArpSpaConvertor arpSpaConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         arpSpaConvertor = new ArpSpaConvertor();
     }
 
     @Test
-    public void testConvertToOFJava() throws Exception {
+    public void testConvertToOFJava() {
         final NxmOfArpSpaBuilder nxmOfArpSpaBuilder = new NxmOfArpSpaBuilder()
                 .setIpv4Address(IPV4_ADDRESS);
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder();
@@ -72,7 +72,7 @@ public class ArpSpaConvertorTest {
     }
 
     @Test
-    public void testConvertFromOFJava() throws Exception {
+    public void testConvertFromOFJava() {
         final ArpSpaValuesBuilder arpSpaValuesBuilder = new ArpSpaValuesBuilder()
                 .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
         final ArpSpaCaseValueBuilder arpSpaCaseValueBuilder = new ArpSpaCaseValueBuilder()

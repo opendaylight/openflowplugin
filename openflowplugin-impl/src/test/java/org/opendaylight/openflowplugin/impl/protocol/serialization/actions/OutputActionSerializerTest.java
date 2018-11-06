@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 public class OutputActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final int length = 10;
         final String port = OutputPortValues.LOCAL.toString();
 

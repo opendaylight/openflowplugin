@@ -45,7 +45,7 @@ public class NshNpConvertorTest {
     private static final Short NP_VALUE = (short) 0x7B;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNshNp nxmNxNshNp = new NxmNxNshNpBuilder()
                 .setValue(NP_VALUE)
                 .build();

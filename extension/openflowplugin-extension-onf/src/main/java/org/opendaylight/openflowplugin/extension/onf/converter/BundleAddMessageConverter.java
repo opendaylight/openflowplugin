@@ -98,8 +98,7 @@ public class BundleAddMessageConverter implements
     }
 
     @Override
-    public BundleAddMessageSal convert(final BundleAddMessageOnf input, final MessagePath path)
-            throws ConversionException {
+    public BundleAddMessageSal convert(final BundleAddMessageOnf input, final MessagePath path) {
         return new BundleAddMessageSalBuilder()
                 .setSalAddMessageData(new SalAddMessageDataBuilder(input.getOnfAddMessageGroupingData())
                         .build())

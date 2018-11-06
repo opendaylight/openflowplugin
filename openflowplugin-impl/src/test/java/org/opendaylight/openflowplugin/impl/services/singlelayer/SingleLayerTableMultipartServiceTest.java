@@ -34,13 +34,13 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
     private SingleLayerTableMultipartService service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerTableMultipartService(mockedRequestContextStack, mockedDeviceContext,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final UpdateTableInput input = new UpdateTableInputBuilder()
                 .setUpdatedTable(new UpdatedTableBuilder()
                         .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()

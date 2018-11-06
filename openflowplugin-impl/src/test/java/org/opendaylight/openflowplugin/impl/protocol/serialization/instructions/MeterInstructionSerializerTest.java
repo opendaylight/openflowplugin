@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 public class MeterInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final long meter = 2;
 
         final Instruction instruction = new MeterCaseBuilder()

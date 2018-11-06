@@ -95,7 +95,7 @@ public class SalBulkFlowServiceImplTest {
     private SalBulkFlowServiceImpl salBulkFlowService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
 
@@ -105,7 +105,7 @@ public class SalBulkFlowServiceImplTest {
     }
 
     @Test
-    public void testAddRemoveFlowsDs() throws Exception {
+    public void testAddRemoveFlowsDs() {
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
 
         final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
@@ -144,7 +144,7 @@ public class SalBulkFlowServiceImplTest {
     }
 
     @Test
-    public void testAddRemoveFlowsRpc() throws Exception {
+    public void testAddRemoveFlowsRpc() {
         Mockito.when(mockSalFlowService.addFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 

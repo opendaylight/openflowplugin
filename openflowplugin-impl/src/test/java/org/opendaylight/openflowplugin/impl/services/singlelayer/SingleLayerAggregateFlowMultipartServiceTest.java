@@ -32,12 +32,12 @@ public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking
     private SingleLayerAggregateFlowMultipartService service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerAggregateFlowMultipartService(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input = new
                 GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder()
                 .setTableId(TABLE_ID)

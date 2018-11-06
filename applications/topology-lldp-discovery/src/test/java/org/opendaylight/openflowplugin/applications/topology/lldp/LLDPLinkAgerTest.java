@@ -67,7 +67,7 @@ public class LLDPLinkAgerTest {
     private LinkRemoved linkRemoved;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         lldpLinkAger = new LLDPLinkAger(getConfig(), notificationService, getConfigurationService(), eos);
         Mockito.when(link.getDestination()).thenReturn(new NodeConnectorRef(
                 InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1")))));

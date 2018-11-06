@@ -57,7 +57,7 @@ public class FlatBatchUtilTest {
     private static final Logger LOG = LoggerFactory.getLogger(FlatBatchUtilTest.class);
 
     @Test
-    public void testMarkBarriersWhereNeeded_noBarrier() throws Exception {
+    public void testMarkBarriersWhereNeeded_noBarrier() {
         final List<Batch> batches = Lists.newArrayList(
                 //general part - no flush required
                 createBatch(BatchStepType.GROUP_REMOVE),
@@ -87,7 +87,7 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testMarkBarriersWhereNeeded_allBarriers() throws Exception {
+    public void testMarkBarriersWhereNeeded_allBarriers() {
         // need to flush G+/F+
         checkBarriersBetween(BatchStepType.GROUP_ADD, BatchStepType.FLOW_ADD);
         // need to flush G+/F*
@@ -129,7 +129,7 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testMarkBarriersWhereNeeded_single() throws Exception {
+    public void testMarkBarriersWhereNeeded_single() {
         final List<Batch> batches = Lists.newArrayList(
                 //general part - no flush required
                 createBatch(BatchStepType.GROUP_REMOVE)
@@ -143,7 +143,7 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testDecideBarrier() throws Exception {
+    public void testDecideBarrier() {
         Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.GROUP_ADD), BatchStepType.FLOW_ADD));
         Assert.assertTrue(FlatBatchUtil.decideBarrier(EnumSet.of(BatchStepType.GROUP_ADD), BatchStepType.FLOW_UPDATE));
 
@@ -162,7 +162,7 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testAssembleBatchPlan() throws Exception {
+    public void testAssembleBatchPlan() {
         final List<Batch> batches = Lists.newArrayList(
                 createBatch(BatchStepType.GROUP_ADD),
                 createBatch(BatchStepType.GROUP_REMOVE, 2),
@@ -188,7 +188,7 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testDetectBatchStepType() throws Exception {
+    public void testDetectBatchStepType() {
         for (BatchStepType stepType : BatchStepType.values()) {
             LOG.debug("checking detection of: {}", stepType);
             final Batch batch = createBatch(stepType);
@@ -268,7 +268,7 @@ public class FlatBatchUtilTest {
     }
 
     @Test
-    public void testMergeJobsResultsFutures() throws Exception {
+    public void testMergeJobsResultsFutures() {
         final BatchFailure batchFailure = new BatchFailureBuilder()
                 .setBatchOrder(9)
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()

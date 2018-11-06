@@ -61,7 +61,7 @@ public class MultipartReplyTableFeaturesDeserializerTest extends AbstractMultipa
     private static final int OFPTFPT_APPLY_SETFIELD_MISS = 15;
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
 
         writeValues(buffer, OFPTFPT_INSTRUCTIONS);

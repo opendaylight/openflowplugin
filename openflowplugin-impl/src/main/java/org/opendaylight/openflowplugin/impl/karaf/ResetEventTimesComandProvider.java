@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCou
 public class ResetEventTimesComandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         EventsTimeCounter.resetAllCounters();
         out.print("Events time counters reset.\n");

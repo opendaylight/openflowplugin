@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 public class InPortEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final int port = 42;
 
         final Match match = new MatchBuilder()

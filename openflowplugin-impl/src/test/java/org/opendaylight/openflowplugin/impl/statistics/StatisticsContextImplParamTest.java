@@ -80,7 +80,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
     }
 
     @Test
-    public void gatherDynamicDataTest() throws InterruptedException {
+    public void gatherDynamicDataTest() {
 
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);

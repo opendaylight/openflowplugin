@@ -32,7 +32,7 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         if (nodeId == null) {
             session.getConsole().println("NodeID not specified");
             return null;

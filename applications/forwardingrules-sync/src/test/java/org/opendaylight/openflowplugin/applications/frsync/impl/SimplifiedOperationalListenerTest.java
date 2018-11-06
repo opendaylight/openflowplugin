@@ -88,7 +88,7 @@ public class SimplifiedOperationalListenerTest {
     private Node operationalNodeEmpty;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final DataBroker db = Mockito.mock(DataBroker.class);
         final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
         final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
@@ -112,7 +112,7 @@ public class SimplifiedOperationalListenerTest {
     }
 
     @Test
-    public void testDSLogicalType() throws Exception {
+    public void testDSLogicalType() {
         Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, nodeListenerOperational.dsType());
     }
 
@@ -125,7 +125,7 @@ public class SimplifiedOperationalListenerTest {
     }
 
     @Test
-    public void testOnDataTreeChangedDeletePhysical() throws Exception {
+    public void testOnDataTreeChangedDeletePhysical() {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
 

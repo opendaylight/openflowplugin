@@ -373,7 +373,7 @@ public class TableFeaturesConvertorTest {
     }
 
     @Test
-    public void testToTableFeaturesRequest() throws Exception {
+    public void testToTableFeaturesRequest() {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures>
             tableFeaturesList = new ArrayList<>();
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder

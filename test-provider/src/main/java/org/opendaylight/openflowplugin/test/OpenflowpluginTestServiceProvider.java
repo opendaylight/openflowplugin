@@ -86,7 +86,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * @see java.lang.AutoCloseable#close()
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         OpenflowpluginTestServiceProvider.LOG
                 .info("SalFlowServiceProvide stopped.");
         flowRegistration.close();

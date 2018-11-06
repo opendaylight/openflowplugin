@@ -47,7 +47,7 @@ public class CtZoneConvertorTest {
     private CtZoneConvertor ctZoneConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final NxmNxCtZoneBuilder nxmNxCtZoneBuilder = new NxmNxCtZoneBuilder()
                 .setCtZone(1);
@@ -64,14 +64,14 @@ public class CtZoneConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = ctZoneConvertor.convert(extension);
         Assert.assertEquals(1L,
                 ((CtZoneCaseValue) converted.getMatchEntryValue()).getCtZoneValues().getCtZone().longValue());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final CtZoneValuesBuilder ctZoneValuesBuilder = new CtZoneValuesBuilder()
                 .setCtZone(2);
         final CtZoneCaseValueBuilder ctZoneCaseValueBuilder = new CtZoneCaseValueBuilder()

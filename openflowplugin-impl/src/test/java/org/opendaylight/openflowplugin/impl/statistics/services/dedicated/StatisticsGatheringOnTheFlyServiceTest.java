@@ -45,14 +45,14 @@ public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
     }
 
     @Test
-    public void testGetStatisticsOfType() throws Exception {
+    public void testGetStatisticsOfType() {
         final EventIdentifier eventIdentifier = new EventIdentifier("ut-event", "ut-device-id:1");
         statisticsGatheringService.getStatisticsOfType(eventIdentifier, MultipartType.OFPMPFLOW);
         Mockito.verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         final long xidValue = 21L;
         Xid xid = new Xid(xidValue);
         final OfHeader request = statisticsGatheringService.buildRequest(xid, MultipartType.OFPMPFLOW);

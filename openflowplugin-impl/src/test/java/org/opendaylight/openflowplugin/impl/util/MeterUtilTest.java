@@ -44,7 +44,7 @@ public class MeterUtilTest {
     private static final MeterId DUMMY_METER_ID_2 = new MeterId(43L);
 
     @Test
-    public void testBuildGroupPath() throws Exception {
+    public void testBuildGroupPath() {
         final InstanceIdentifier<Node> nodePath = InstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
@@ -56,7 +56,7 @@ public class MeterUtilTest {
     }
 
     @Test
-    public void testCreateCumulatingFunction() throws Exception {
+    public void testCreateCumulatingFunction() {
         final Function<List<RpcResult<String>>, RpcResult<List<BatchFailedMetersOutput>>> function =
                 MeterUtil.createCumulativeFunction(Lists.newArrayList(
                         createBatchMeter(DUMMY_METER_ID),
@@ -82,37 +82,37 @@ public class MeterUtilTest {
     }
 
     @Test
-    public void testMeterAddTransformFailure() throws Exception {
+    public void testMeterAddTransformFailure() {
         final RpcResult<List<BatchFailedMetersOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(MeterUtil.METER_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testMeterAddTransformSuccess() throws Exception {
+    public void testMeterAddTransformSuccess() {
         final RpcResult<List<BatchFailedMetersOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testMeterRemoveTransformFailure() throws Exception {
+    public void testMeterRemoveTransformFailure() {
         final RpcResult<List<BatchFailedMetersOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(MeterUtil.METER_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowRemoveTransformSuccess() throws Exception {
+    public void testFlowRemoveTransformSuccess() {
         final RpcResult<List<BatchFailedMetersOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowUpdateTransformFailure() throws Exception {
+    public void testFlowUpdateTransformFailure() {
         final RpcResult<List<BatchFailedMetersOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(MeterUtil.METER_UPDATE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowUpdateTransformSuccess() throws Exception {
+    public void testFlowUpdateTransformSuccess() {
         final RpcResult<List<BatchFailedMetersOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_UPDATE_TRANSFORM.apply(input));
     }
@@ -149,7 +149,7 @@ public class MeterUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_success_success() throws Exception {
+    public void testCreateComposingFunction_success_success() {
         final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
@@ -165,7 +165,7 @@ public class MeterUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_failure_success() throws Exception {
+    public void testCreateComposingFunction_failure_success() {
         final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
@@ -181,7 +181,7 @@ public class MeterUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_success_failure() throws Exception {
+    public void testCreateComposingFunction_success_failure() {
         final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 
@@ -197,7 +197,7 @@ public class MeterUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_failure_failure() throws Exception {
+    public void testCreateComposingFunction_failure_failure() {
         final Function<Pair<RpcResult<AddMetersBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddMetersBatchOutput>> compositeFunction = MeterUtil.createComposingFunction();
 

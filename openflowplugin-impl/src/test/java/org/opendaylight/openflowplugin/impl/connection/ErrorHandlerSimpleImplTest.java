@@ -18,7 +18,7 @@ public class ErrorHandlerSimpleImplTest extends TestCase {
     ErrorHandler errorHandler = new ErrorHandlerSimpleImpl();
 
     @Test
-    public void testHandleException() throws Exception {
+    public void testHandleException() {
         ConnectionException connectionException = new ConnectionException("Exception for testing purpose only.");
         errorHandler.handleException(connectionException);
 

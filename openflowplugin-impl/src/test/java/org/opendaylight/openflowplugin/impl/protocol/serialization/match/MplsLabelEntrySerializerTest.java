@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class MplsLabelEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final long mplsLabel = 10L;
 
         final Match mplsLabelMatch = new MatchBuilder()

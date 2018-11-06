@@ -60,7 +60,7 @@ public class PortMessageDeserializerTest extends AbstractDeserializerTest {
     }
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         buffer.writeByte(TYPE);
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         buffer.writeInt(XID);

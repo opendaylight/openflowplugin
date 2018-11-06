@@ -36,13 +36,13 @@ public class SimpleClientFramer extends ByteToMessageDecoder {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.warn("Unexpected exception from downstream.", cause);
         ctx.close();
     }
 
     @Override
-    protected void decode(ChannelHandlerContext chc, ByteBuf bb, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext chc, ByteBuf bb, List<Object> list) {
         if (bb.readableBytes() < LENGTH_OF_HEADER) {
             LOG.debug("skipping bb - too few data for header: {}", bb.readableBytes());
             return;

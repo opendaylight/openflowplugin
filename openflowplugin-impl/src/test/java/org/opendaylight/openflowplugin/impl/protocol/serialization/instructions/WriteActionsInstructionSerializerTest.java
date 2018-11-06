@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class WriteActionsInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final int order = 0;
         final Ipv4Prefix prefix = new Ipv4Prefix("192.168.76.0/32");
 

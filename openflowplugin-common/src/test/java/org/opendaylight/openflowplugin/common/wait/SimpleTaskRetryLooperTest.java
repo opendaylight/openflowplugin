@@ -47,7 +47,7 @@ public class SimpleTaskRetryLooperTest {
             private int counter = 0;
 
             @Override
-            public String call() throws Exception {
+            public String call() {
                 counter++;
                 if (counter < retryCountToSucceed) {
                     throw new IllegalStateException("service is not ready");

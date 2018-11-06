@@ -91,7 +91,7 @@ public class SalBundleServiceImplTest {
     }
 
     @Test
-    public void testAddBundleMessages() throws Exception {
+    public void testAddBundleMessages() {
         final List<Message> innerMessages = createMessages();
         final Messages messages = new MessagesBuilder().setMessage(innerMessages).build();
         final AddBundleMessagesInput input = new AddBundleMessagesInputBuilder()

@@ -23,7 +23,7 @@ public class DeviceMastershipTest {
     private DeviceMastership deviceMastership;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceMastership = new DeviceMastership(NODE_ID);
     }
 

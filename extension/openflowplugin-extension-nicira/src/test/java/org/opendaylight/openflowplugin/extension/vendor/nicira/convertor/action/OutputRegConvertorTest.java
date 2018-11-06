@@ -52,7 +52,7 @@ public class OutputRegConvertorTest {
     private OutputRegConvertor outputRegConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxOutputReg nxOutputReg = Mockito.mock(NxOutputReg.class);
         final Src src = Mockito.mock(Src.class);
 
@@ -74,7 +74,7 @@ public class OutputRegConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionOutputReg actionOutputReg =
                 (ActionOutputReg) outputRegConvertor.convert(actionsCase).getActionChoice();
         Assert.assertEquals(Integer.valueOf(1), actionOutputReg.getNxActionOutputReg().getNBits());
@@ -82,7 +82,7 @@ public class OutputRegConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = outputRegConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1

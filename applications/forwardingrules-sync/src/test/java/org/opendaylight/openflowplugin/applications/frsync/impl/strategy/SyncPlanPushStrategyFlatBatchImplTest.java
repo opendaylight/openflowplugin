@@ -109,7 +109,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl();
         syncPlanPushStrategy.setFlatBatchService(flatBatchService);
         syncPlanPushStrategy.setTableForwarder(tableForwarder);
@@ -153,7 +153,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testAssembleRemoveFlows() throws Exception {
+    public void testAssembleRemoveFlows() {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleRemoveFlows(batchBag, 0, flowsToRemove);
 
         Assert.assertEquals(6, lastOrder);
@@ -167,7 +167,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testAssembleAddOrUpdateGroups() throws Exception {
+    public void testAssembleAddOrUpdateGroups() {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateGroups(
                 batchBag, 0, groupsToAddOrUpdate);
 
@@ -185,7 +185,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testAssembleRemoveGroups() throws Exception {
+    public void testAssembleRemoveGroups() {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleRemoveGroups(batchBag, 0, groupsToRemove);
 
         Assert.assertEquals(6, lastOrder);
@@ -199,7 +199,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testAssembleAddOrUpdateMeters() throws Exception {
+    public void testAssembleAddOrUpdateMeters() {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateMeters(
                 batchBag, 0, metersToAddOrUpdate);
 
@@ -214,7 +214,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testAssembleRemoveMeters() throws Exception {
+    public void testAssembleRemoveMeters() {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleRemoveMeters(batchBag, 0, metersToRemove);
 
         Assert.assertEquals(3, lastOrder);
@@ -225,7 +225,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testAssembleAddOrUpdateFlows() throws Exception {
+    public void testAssembleAddOrUpdateFlows() {
         final int lastOrder = SyncPlanPushStrategyFlatBatchImpl.assembleAddOrUpdateFlows(
                 batchBag, 0, flowsToAddOrUpdate);
 
@@ -243,7 +243,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testDecrementCounters() throws Exception {
+    public void testDecrementCounters() {
         final SyncCrudCounters counters = new SyncCrudCounters();
         counters.getFlowCrudCounts().setAdded(100);
         counters.getFlowCrudCounts().setUpdated(100);
@@ -283,7 +283,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     }
 
     @Test
-    public void testMapBatchesToRanges() throws Exception {
+    public void testMapBatchesToRanges() {
         final List<Batch> inputBatchBag = Lists.newArrayList(
                 new BatchBuilder().setBatchOrder(0).build(),
                 new BatchBuilder().setBatchOrder(5).build(),

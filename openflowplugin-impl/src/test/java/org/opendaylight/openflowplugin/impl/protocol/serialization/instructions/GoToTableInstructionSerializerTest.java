@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class GoToTableInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final short table = 2;
 
         final Instruction instruction = new GoToTableCaseBuilder()

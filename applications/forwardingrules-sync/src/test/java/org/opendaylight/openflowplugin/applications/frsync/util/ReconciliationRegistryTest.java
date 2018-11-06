@@ -26,7 +26,7 @@ public class ReconciliationRegistryTest {
     private ReconciliationRegistry reconciliationRegistry;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         reconciliationRegistry = new ReconciliationRegistry();
     }
 

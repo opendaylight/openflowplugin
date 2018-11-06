@@ -47,7 +47,7 @@ public class StatisticsPollingService extends AbstractScheduledService {
     }
 
     @Override
-    protected void startUp() throws Exception {
+    protected void startUp() {
         counter.markStart();
     }
 

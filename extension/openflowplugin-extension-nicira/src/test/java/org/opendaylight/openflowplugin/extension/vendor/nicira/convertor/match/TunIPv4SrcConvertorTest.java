@@ -50,7 +50,7 @@ public class TunIPv4SrcConvertorTest {
     private TunIPv4SrcConvertor tunIPv4DstConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmNxTunIpv4SrcBuilder nxmNxTunIpv4SrcBuilder = new NxmNxTunIpv4SrcBuilder()
                 .setIpv4Address(IPV4_ADDRESS);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
@@ -65,14 +65,14 @@ public class TunIPv4SrcConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = tunIPv4DstConvertor.convert(extension);
         Assert.assertEquals(IpConverter.ipv4AddressToLong(IPV4_ADDRESS),
                 ((TunIpv4SrcCaseValue) converted.getMatchEntryValue()).getTunIpv4SrcValues().getValue().longValue());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final TunIpv4SrcValuesBuilder tunIpv4SrcValuesBuilder = new TunIpv4SrcValuesBuilder()
                 .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
         final TunIpv4SrcCaseValueBuilder tunIpv4SrcCaseValueBuilder = new TunIpv4SrcCaseValueBuilder()

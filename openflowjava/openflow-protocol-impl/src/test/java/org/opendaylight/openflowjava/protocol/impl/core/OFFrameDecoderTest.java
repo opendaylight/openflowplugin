@@ -56,7 +56,7 @@ public class OFFrameDecoderTest {
      * {@link OFFrameDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)}.
      */
     @Test
-    public void testDecode8BMessage() throws Exception {
+    public void testDecode8BMessage() {
         decoder.decode(channelHandlerContext,
                     ByteBufUtils.hexStringToByteBuf("04 00 00 08 00 00 00 01"),
                     list);
@@ -68,7 +68,7 @@ public class OFFrameDecoderTest {
      * {@link OFFrameDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)}.
      */
     @Test
-    public void testDecode16BMessage() throws Exception {
+    public void testDecode16BMessage() {
         ByteBuf byteBuffer = ByteBufUtils
                 .hexStringToByteBuf("04 00 00 10 00 00 00 00 00 00 00 00 00 00 00 42");
 
@@ -83,7 +83,7 @@ public class OFFrameDecoderTest {
      * {@link OFFrameDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)}.
      */
     @Test
-    public void testDecode5BIncompleteMessage() throws Exception {
+    public void testDecode5BIncompleteMessage() {
         ByteBuf byteBuffer = ByteBufUtils.hexStringToByteBuf("04 00 00 08 00");
 
         decoder.decode(channelHandlerContext, byteBuffer, list);
@@ -97,7 +97,7 @@ public class OFFrameDecoderTest {
      * {@link OFFrameDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)}.
      */
     @Test
-    public void testDecode16BIncompleteMessage() throws Exception {
+    public void testDecode16BIncompleteMessage() {
         ByteBuf byteBuffer = ByteBufUtils
                 .hexStringToByteBuf("04 00 00 11 00 00 00 00 00 00 00 00 00 00 00 42");
 
@@ -112,7 +112,7 @@ public class OFFrameDecoderTest {
      * {@link OFFrameDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)}.
      */
     @Test
-    public void testDecodeCompleteAndPartialMessage() throws Exception {
+    public void testDecodeCompleteAndPartialMessage() {
         ByteBuf byteBuffer = ByteBufUtils
                 .hexStringToByteBuf("04 00 00 08 00 00 00 01 04 00 00 08 00");
 
@@ -125,7 +125,7 @@ public class OFFrameDecoderTest {
     }
 
     @Test
-    public void testExceptionCaught() throws Exception {
+    public void testExceptionCaught() {
         decoder.exceptionCaught(channelHandlerContext, new Throwable());
     }
 
@@ -134,7 +134,7 @@ public class OFFrameDecoderTest {
      * {@link OFFrameDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)}.
      */
     @Test
-    public void testDecode8BMessageWithTls() throws Exception {
+    public void testDecode8BMessageWithTls() {
         decoder = new OFFrameDecoder(connectionFacade, true);
 
         decoder.decode(channelHandlerContext,

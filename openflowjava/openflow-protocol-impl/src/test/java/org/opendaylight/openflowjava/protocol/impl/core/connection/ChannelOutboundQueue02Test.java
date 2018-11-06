@@ -123,7 +123,7 @@ public class ChannelOutboundQueue02Test {
     private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         @Override
         public void write(final ChannelHandlerContext ctx, final Object msg,
-                final ChannelPromise promise) throws Exception {
+                final ChannelPromise promise) {
             if (msg instanceof MessageListenerWrapper) {
                 counter++;
             }

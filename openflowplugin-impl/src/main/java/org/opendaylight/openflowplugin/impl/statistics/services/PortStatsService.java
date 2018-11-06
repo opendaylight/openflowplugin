@@ -14,7 +14,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.NodeConnectorStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -42,7 +41,7 @@ final class PortStatsService extends AbstractCompatibleStatService<GetNodeConnec
 
     @Override
     protected OfHeader buildRequest(final Xid xid,
-                                    final GetNodeConnectorStatisticsInput input) throws ServiceException {
+                                    final GetNodeConnectorStatisticsInput input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder =
                 new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder mprPortStatsBuilder =

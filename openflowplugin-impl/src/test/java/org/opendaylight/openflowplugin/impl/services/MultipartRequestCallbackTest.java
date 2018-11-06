@@ -52,7 +52,7 @@ public class MultipartRequestCallbackTest {
     private AbstractMultipartRequestCallback<MultipartReply> multipartRequestCallback;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.doNothing().when(requestContext).setResult(rpcResultCapt.capture());
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(spy);
 
@@ -69,7 +69,7 @@ public class MultipartRequestCallbackTest {
      * End collecting.
      */
     @Test
-    public void testOnSuccess1() throws Exception {
+    public void testOnSuccess1() {
         multipartRequestCallback.onSuccess(null);
         Mockito.verify(multiMsgCollector).endCollecting(ArgumentMatchers.any());
     }
@@ -78,7 +78,7 @@ public class MultipartRequestCallbackTest {
      * Fail adding to collection.
      */
     @Test
-    public void testOnSuccess2() throws Exception {
+    public void testOnSuccess2() {
         multipartRequestCallback.onSuccess(new EchoOutputBuilder().build());
         final RpcResult<List<MultipartReply>> rpcResult = rpcResultCapt.getValue();
         Assert.assertNotNull(rpcResult);
@@ -89,7 +89,7 @@ public class MultipartRequestCallbackTest {
      * Successfully added to collection.
      */
     @Test
-    public void testOnSuccess3() throws Exception {
+    public void testOnSuccess3() {
         final MultipartReplyMessage replyMessage = new MultipartReplyMessageBuilder().build();
         multipartRequestCallback.onSuccess(replyMessage);
         Mockito.verify(multiMsgCollector)

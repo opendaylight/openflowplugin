@@ -193,7 +193,7 @@ public class ConnectionAdapterImpl02Test {
     private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         @Override
         public void write(final ChannelHandlerContext ctx, final Object msg,
-                final ChannelPromise promise) throws Exception {
+                final ChannelPromise promise) {
             responseOfCall = null;
             if (msg instanceof MessageListenerWrapper) {
                 final MessageListenerWrapper listener = (MessageListenerWrapper) msg;

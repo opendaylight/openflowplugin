@@ -53,7 +53,7 @@ public class FlatBatchMeterAdaptersTest {
     private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Test
-    public void testAdaptFlatBatchAddMeter() throws Exception {
+    public void testAdaptFlatBatchAddMeter() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -93,7 +93,7 @@ public class FlatBatchMeterAdaptersTest {
     }
 
     @Test
-    public void testAdaptFlatBatchRemoveMeter() throws Exception {
+    public void testAdaptFlatBatchRemoveMeter() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -112,7 +112,7 @@ public class FlatBatchMeterAdaptersTest {
     }
 
     @Test
-    public void testAdaptFlatBatchUpdateMeter() throws Exception {
+    public void testAdaptFlatBatchUpdateMeter() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -131,7 +131,7 @@ public class FlatBatchMeterAdaptersTest {
     }
 
     @Test
-    public void testCreateBatchMeterChainingFunction_failures() throws Exception {
+    public void testCreateBatchMeterChainingFunction_failures() {
         final RpcResult<BatchMeterOutputListGrouping> input = RpcResultBuilder.<BatchMeterOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-meterError")
                 .withResult(new AddMetersBatchOutputBuilder()
@@ -155,7 +155,7 @@ public class FlatBatchMeterAdaptersTest {
     }
 
     @Test
-    public void testCreateBatchMeterChainingFunction_successes() throws Exception {
+    public void testCreateBatchMeterChainingFunction_successes() {
         final RpcResult<BatchMeterOutputListGrouping> input = RpcResultBuilder
                 .<BatchMeterOutputListGrouping>success(new AddMetersBatchOutputBuilder().build())
                 .build();

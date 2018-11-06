@@ -34,7 +34,7 @@ public abstract class AbstractDeserializerTest {
     private DeserializationFactory factory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         registry = new DeserializerRegistryImpl();
         registry.init();
         factory = new DeserializationFactory(registry);
@@ -45,7 +45,7 @@ public abstract class AbstractDeserializerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         DeserializerInjector.revertDeserializers(provider);
         MessageDeserializerInjector.revertLegacyDeserializers(provider);
     }

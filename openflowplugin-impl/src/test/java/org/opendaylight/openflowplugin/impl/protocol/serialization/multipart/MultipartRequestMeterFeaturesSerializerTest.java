@@ -32,7 +32,7 @@ public class MultipartRequestMeterFeaturesSerializerTest extends AbstractSeriali
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(BODY, out);
         assertEquals(out.readableBytes(), 0);

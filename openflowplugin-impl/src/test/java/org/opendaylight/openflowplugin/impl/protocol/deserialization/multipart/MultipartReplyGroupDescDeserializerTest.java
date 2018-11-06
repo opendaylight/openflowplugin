@@ -30,7 +30,7 @@ public class MultipartReplyGroupDescDeserializerTest extends AbstractMultipartDe
     private static final int WATCH_GROUP = 4;
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeShort(ITEM_LENGTH);
         buffer.writeByte(GROUP_TYPE);

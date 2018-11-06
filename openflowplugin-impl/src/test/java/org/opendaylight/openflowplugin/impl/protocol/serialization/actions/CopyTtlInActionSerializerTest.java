@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class CopyTtlInActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Action action = new CopyTtlInCaseBuilder()
                 .setCopyTtlIn(new CopyTtlInBuilder()
                         .build())

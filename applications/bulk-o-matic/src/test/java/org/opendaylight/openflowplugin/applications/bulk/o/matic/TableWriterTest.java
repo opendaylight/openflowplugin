@@ -43,7 +43,7 @@ public class TableWriterTest {
     private TableWriter tableWriter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         doReturn(writeTransaction).when(mockDataBroker).newWriteOnlyTransaction();
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
@@ -57,7 +57,7 @@ public class TableWriterTest {
     }
 
     @Test
-    public void testAddTables() throws Exception {
+    public void testAddTables() {
         tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
                 .put(ArgumentMatchers.any(),
@@ -66,7 +66,7 @@ public class TableWriterTest {
     }
 
     @Test
-    public void testDeleteTables() throws Exception {
+    public void testDeleteTables() {
         tableWriter.deleteTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
                 .delete(ArgumentMatchers.any(),

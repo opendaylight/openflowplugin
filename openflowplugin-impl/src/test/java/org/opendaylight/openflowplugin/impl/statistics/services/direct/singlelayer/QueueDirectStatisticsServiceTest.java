@@ -42,7 +42,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     private QueueDirectStatisticsService service;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         service = new QueueDirectStatisticsService(requestContextStack,
                                                    deviceContext,
                                                    convertorManager,
@@ -50,7 +50,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testBuildRequestBody() throws Exception {
+    public void testBuildRequestBody() {
         final GetQueueStatisticsInput input = mock(GetQueueStatisticsInput.class);
 
         lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
@@ -66,7 +66,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testBuildReply() throws Exception {
+    public void testBuildReply() {
         final QueueIdAndStatisticsMap queueStats = new QueueIdAndStatisticsMapBuilder()
                 .setQueueId(new QueueId(QUEUE_NO))
                 .setNodeConnectorId(new NodeConnectorId(PORT_NO.toString()))
@@ -91,7 +91,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Test
-    public void testStoreStatisticsBarePortNo() throws Exception {
+    public void testStoreStatisticsBarePortNo() {
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
         when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("1"));
@@ -105,7 +105,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testStoreStatistics() throws Exception {
+    public void testStoreStatistics() {
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
         when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("openflow:1:1"));

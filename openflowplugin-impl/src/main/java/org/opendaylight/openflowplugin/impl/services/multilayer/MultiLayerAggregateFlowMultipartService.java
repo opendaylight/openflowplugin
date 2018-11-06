@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.services.AbstractAggregateFlowMultipartService;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -62,8 +61,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
 
     @Override
     protected OfHeader buildRequest(final Xid xid,
-                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) throws
-            ServiceException {
+                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder
                 = new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();

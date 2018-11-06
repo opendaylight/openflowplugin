@@ -39,7 +39,7 @@ public class IdleHandler extends ReadTimeoutHandler {
     }
 
     @Override
-    protected void readTimedOut(final ChannelHandlerContext ctx) throws Exception {
+    protected void readTimedOut(final ChannelHandlerContext ctx) {
         if (first) {
             LOG.debug("Switch idle");
             SwitchIdleEventBuilder builder = new SwitchIdleEventBuilder();

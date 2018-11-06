@@ -22,7 +22,7 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatis
 public class ShowSessionStatsCommandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         final List<String> statistics = SessionStatistics.provideStatistics();
         final StringBuilder result = new StringBuilder();

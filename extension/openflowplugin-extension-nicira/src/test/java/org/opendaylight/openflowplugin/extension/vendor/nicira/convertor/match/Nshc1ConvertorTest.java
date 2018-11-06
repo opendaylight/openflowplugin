@@ -49,7 +49,7 @@ public class Nshc1ConvertorTest {
     private static final Long MASK_VALUE = 0xFFFFFFFFL;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNshc1 nxmNxNshc1 = new NxmNxNshc1Builder().setValue(NSHC1_VALUE).setMask(MASK_VALUE).build();
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNshc1(nxmNxNshc1)

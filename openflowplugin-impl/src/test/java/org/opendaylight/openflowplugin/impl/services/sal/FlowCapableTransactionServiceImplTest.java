@@ -36,7 +36,7 @@ public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         SendBarrierInput sendBarrierInput = buildSendBarrierInput();
 
         final OfHeader request = flowCapableTransactionService.buildRequest(new Xid(DUMMY_XID_VALUE), sendBarrierInput);
@@ -45,7 +45,7 @@ public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testSendBarrier() throws Exception {
+    public void testSendBarrier() {
         SendBarrierInput sendBarrierInput = buildSendBarrierInput();
         flowCapableTransactionService.sendBarrier(sendBarrierInput);
         verify(mockedRequestContextStack).createRequestContext();

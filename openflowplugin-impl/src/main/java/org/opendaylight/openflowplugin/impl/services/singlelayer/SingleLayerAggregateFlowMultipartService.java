@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractAggregateFlowMultipartService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder;
@@ -41,8 +40,7 @@ public class SingleLayerAggregateFlowMultipartService
 
     @Override
     protected OfHeader buildRequest(final Xid xid,
-                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input)
-                                    throws ServiceException {
+                                    final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return new MultipartRequestBuilder()
                 .setXid(xid.getValue())
                 .setVersion(getVersion())

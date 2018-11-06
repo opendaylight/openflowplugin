@@ -65,7 +65,7 @@ public class MdSalRegistrationUtilsTest {
     private ConvertorManager convertorManager;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
@@ -84,7 +84,7 @@ public class MdSalRegistrationUtilsTest {
     }
 
     @Test
-    public void registerStatCompatibilityServices() throws Exception {
+    public void registerStatCompatibilityServices() {
         final OpendaylightFlowStatisticsService flowStatService = OpendaylightFlowStatisticsServiceImpl
                 .createWithOook(mockedRpcContext, mockedDeviceContext, convertorManager);
 

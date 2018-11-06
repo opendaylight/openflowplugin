@@ -59,7 +59,7 @@ public class TransactionChainManagerTest {
     private NodeId nodeId;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final ReadTransaction readOnlyTx = Mockito.mock(ReadTransaction.class);
         Mockito.when(dataBroker.createTransactionChain(any(TransactionChainListener.class)))
                 .thenReturn(txChain);
@@ -74,12 +74,12 @@ public class TransactionChainManagerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(txChain, writeTx);
     }
 
     @Test
-    public void testWriteToTransaction() throws Exception {
+    public void testWriteToTransaction() {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
 
@@ -91,7 +91,7 @@ public class TransactionChainManagerTest {
      * Tests transaction submit {@link TransactionChainManager#submitTransaction()}.
      */
     @Test
-    public void testSubmitTransaction() throws Exception {
+    public void testSubmitTransaction() {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.initialSubmitWriteTransaction();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
@@ -106,7 +106,7 @@ public class TransactionChainManagerTest {
      * test of {@link TransactionChainManager#submitTransaction()}: no submit, never enabled.
      */
     @Test
-    public void testSubmitTransaction1() throws Exception {
+    public void testSubmitTransaction1() {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
         txChainManager.submitTransaction();
@@ -117,7 +117,7 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    public void testSubmitTransactionFailed() throws Exception {
+    public void testSubmitTransactionFailed() {
         Mockito.doReturn(FluentFutures.immediateFailedFluentFuture(new TransactionCommitFailedException("mock")))
             .when(writeTx).commit();
         final Node data = new NodeBuilder().setId(nodeId).build();
@@ -134,7 +134,7 @@ public class TransactionChainManagerTest {
      * Test of {@link TransactionChainManager#enableSubmit()}: no submit - counter is not active.
      */
     @Test
-    public void testEnableCounter1() throws Exception {
+    public void testEnableCounter1() {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
@@ -145,7 +145,7 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    public void testOnTransactionChainFailed() throws Exception {
+    public void testOnTransactionChainFailed() {
         txChainManager.onTransactionChainFailed(txChain, Mockito.mock(Transaction.class),
             Mockito.mock(Throwable.class));
         Mockito.verify(txChain).close();
@@ -153,14 +153,14 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    public void testOnTransactionChainSuccessful() throws Exception {
+    public void testOnTransactionChainSuccessful() {
         txChainManager.onTransactionChainSuccessful(transactionChain);
         // NOOP
         Mockito.verifyZeroInteractions(transactionChain);
     }
 
     @Test
-    public void testAddDeleteOperationTotTxChain() throws Exception {
+    public void testAddDeleteOperationTotTxChain() {
         txChainManager.addDeleteOperationToTxChain(LogicalDatastoreType.CONFIGURATION, path);
 
         Mockito.verify(txChain).newReadWriteTransaction();
@@ -168,14 +168,14 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    public void testDeactivateTransactionChainManager() throws Exception {
+    public void testDeactivateTransactionChainManager() {
         txChainManager.deactivateTransactionManager();
 
         Mockito.verify(txChain).close();
     }
 
     @Test
-    public void testDeactivateTransactionChainManagerFailed() throws Exception {
+    public void testDeactivateTransactionChainManagerFailed() {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
 
@@ -189,7 +189,7 @@ public class TransactionChainManagerTest {
     }
 
     @Test
-    public void testShuttingDown() throws Exception {
+    public void testShuttingDown() {
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.initialSubmitWriteTransaction();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);

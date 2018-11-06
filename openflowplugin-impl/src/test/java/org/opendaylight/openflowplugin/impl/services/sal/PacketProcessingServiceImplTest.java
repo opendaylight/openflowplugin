@@ -56,14 +56,14 @@ public class PacketProcessingServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testTransmitPacket() throws Exception {
+    public void testTransmitPacket() {
         TransmitPacketInput transmitPacketInput = buildTransmitPacketInput();
         packetProcessingService.transmitPacket(transmitPacketInput);
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         TransmitPacketInput transmitPacketInput = buildTransmitPacketInput();
 
         final OfHeader request = packetProcessingService.buildRequest(new Xid(DUMMY_XID_VALUE), transmitPacketInput);

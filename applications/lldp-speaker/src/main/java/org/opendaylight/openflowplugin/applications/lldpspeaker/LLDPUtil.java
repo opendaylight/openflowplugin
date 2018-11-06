@@ -11,7 +11,6 @@ import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.L
 
 import com.google.common.base.Strings;
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
@@ -39,7 +38,7 @@ public final class LLDPUtil {
     @Nonnull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
             final Long outPortNo, final MacAddress destinationAddress)
-                    throws NoSuchAlgorithmException, PacketException {
+                    throws PacketException {
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
 
@@ -104,7 +103,7 @@ public final class LLDPUtil {
 
     @Nonnull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
-            final MacAddress srcMacAddress, final Long outputPortNo) throws NoSuchAlgorithmException, PacketException {
+            final MacAddress srcMacAddress, final Long outputPortNo) throws PacketException {
         return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);
     }
 

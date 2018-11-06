@@ -31,14 +31,14 @@ public class EchoServiceTest extends ServiceMocking {
     }
 
     @Test
-    public void testSendEcho() throws Exception {
+    public void testSendEcho() {
         EchoInputBuilder sendEchoInput = new EchoInputBuilder();
         echoService.handleServiceCall(sendEchoInput);
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         EchoInputBuilder sendEchoInput = new EchoInputBuilder().setData(DUMMY_DATA);
         final OfHeader request = this.echoService.buildRequest(new Xid(DUMMY_XID_VALUE), sendEchoInput);
         assertEquals(DUMMY_XID_VALUE, request.getXid());

@@ -84,7 +84,7 @@ public class SystemNotificationsListenerImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(connectionContext);
     }
 
@@ -92,7 +92,7 @@ public class SystemNotificationsListenerImplTest {
      * Successful scenario - connection is on and closes without errors.
      */
     @Test
-    public void testOnDisconnectEvent1() throws Exception {
+    public void testOnDisconnectEvent1() {
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
@@ -107,7 +107,7 @@ public class SystemNotificationsListenerImplTest {
      * Broken scenario - connection is on but fails to close.
      */
     @Test
-    public void testOnDisconnectEvent2() throws Exception {
+    public void testOnDisconnectEvent2() {
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
         systemNotificationsListener.onDisconnectEvent(disconnectNotification);
@@ -122,7 +122,7 @@ public class SystemNotificationsListenerImplTest {
      * Successful scenario - connection is already down.
      */
     @Test
-    public void testOnDisconnectEvent3() throws Exception {
+    public void testOnDisconnectEvent3() {
         connectionContextGolem.changeStateToTimeouting();
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
@@ -138,7 +138,7 @@ public class SystemNotificationsListenerImplTest {
      * Broken scenario - connection is on but throws error on close.
      */
     @Test
-    public void testOnDisconnectEvent4() throws Exception {
+    public void testOnDisconnectEvent4() {
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();

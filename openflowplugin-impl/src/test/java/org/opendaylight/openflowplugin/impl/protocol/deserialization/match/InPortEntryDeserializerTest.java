@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
 public class InPortEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final int port = -6;
 

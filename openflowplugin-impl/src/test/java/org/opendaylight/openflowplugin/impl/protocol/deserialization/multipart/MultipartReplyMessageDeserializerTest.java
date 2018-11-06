@@ -64,7 +64,7 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
     }
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeByte(TYPE);
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);

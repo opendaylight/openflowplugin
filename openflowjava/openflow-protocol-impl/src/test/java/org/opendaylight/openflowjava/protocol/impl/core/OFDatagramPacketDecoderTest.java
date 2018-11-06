@@ -38,7 +38,7 @@ public class OFDatagramPacketDecoderTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         OFDatagramPacketDecoder decoder = new OFDatagramPacketDecoder();
         decoder.setDeserializationFactory(deserializationFactory);
         msgWrapper = new VersionMessageUdpWrapper(EncodeConstants.OF13_VERSION_ID, messageBufferMock,

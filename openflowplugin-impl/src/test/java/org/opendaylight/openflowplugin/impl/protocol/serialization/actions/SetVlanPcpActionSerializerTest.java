@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 public class SetVlanPcpActionSerializerTest extends AbstractSetFieldActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final short vlan = 1;
 
         final Action action = new SetVlanPcpActionCaseBuilder()

@@ -45,7 +45,7 @@ public class ShowStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // Pattern.DOTALL is set inline via "(?s)" at the beginning
         Mockito.verify(console).print(matches("(?s).+"));
         messageIntelligenceAgency.resetStatistics();

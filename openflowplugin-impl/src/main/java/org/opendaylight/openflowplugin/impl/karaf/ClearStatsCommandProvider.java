@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 public class ClearStatsCommandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         final MessageIntelligenceAgency messageIntelligenceAgency =
                 OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
         messageIntelligenceAgency.resetStatistics();

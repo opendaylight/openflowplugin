@@ -70,7 +70,7 @@ public class OFDecoderStatisticsTest {
      * Test decode success counter.
      */
     @Test
-    public void testDecodeSuccesfullCounter() throws Exception {
+    public void testDecodeSuccesfullCounter() {
         if (!statCounters.isCounterEnabled(CounterEventTypes.US_DECODE_SUCCESS)) {
             Assert.fail("Counter " + CounterEventTypes.US_DECODE_SUCCESS + " is not enable");
         }
@@ -103,7 +103,7 @@ public class OFDecoderStatisticsTest {
      * Test fail decode counter.
      */
     @Test
-    public void testDecodeFailCounter() throws Exception {
+    public void testDecodeFailCounter() {
         if (!statCounters.isCounterEnabled(CounterEventTypes.US_DECODE_SUCCESS)) {
             Assert.fail("Counter " + CounterEventTypes.US_DECODE_SUCCESS + " is not enable");
         }

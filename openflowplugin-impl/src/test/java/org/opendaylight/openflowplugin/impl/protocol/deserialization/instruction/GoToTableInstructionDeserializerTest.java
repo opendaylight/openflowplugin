@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class GoToTableInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final short tableId = 3;
         writeHeader(in);

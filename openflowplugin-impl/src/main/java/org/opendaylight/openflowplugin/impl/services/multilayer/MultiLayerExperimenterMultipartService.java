@@ -134,20 +134,12 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
                                         .withError(ErrorType.RPC, "Custom converter not found.").build());
                                 return;
                             }
-                            try {
-                                final ExperimenterMessageOfChoice messageOfChoice =
-                                        messageConverter.convert(vendorData, MessagePath.MPMESSAGE_RPC_OUTPUT);
-                                final ExperimenterCoreMessageItemBuilder expCoreMessageItemBuilder =
-                                        new ExperimenterCoreMessageItemBuilder();
-                                expCoreMessageItemBuilder.setExperimenterMessageOfChoice(messageOfChoice);
-                                expCoreMessageItem.add(expCoreMessageItemBuilder.build());
-                            } catch (final ConversionException e) {
-                                LOG.error("Conversion of experimenter message reply failed. Exception: {}", e);
-                                finalFuture.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed()
-                                        .withError(ErrorType.RPC,
-                                                   "Conversion of experimenter rpc output failed.").build());
-                                return;
-                            }
+                            final ExperimenterMessageOfChoice messageOfChoice =
+                                    messageConverter.convert(vendorData, MessagePath.MPMESSAGE_RPC_OUTPUT);
+                            final ExperimenterCoreMessageItemBuilder expCoreMessageItemBuilder =
+                                    new ExperimenterCoreMessageItemBuilder();
+                            expCoreMessageItemBuilder.setExperimenterMessageOfChoice(messageOfChoice);
+                            expCoreMessageItem.add(expCoreMessageItemBuilder.build());
                         }
                         sendExpMpReqOutputBuilder.setExperimenterCoreMessageItem(expCoreMessageItem);
                         finalFuture.set(RpcResultBuilder.success(sendExpMpReqOutputBuilder.build()).build());

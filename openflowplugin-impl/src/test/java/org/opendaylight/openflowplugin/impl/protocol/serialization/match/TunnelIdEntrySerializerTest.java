@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class TunnelIdEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final long tunnelId = 8;
         final byte[] tcpMask = new byte[] { 30, 30, 30, 30, 0, 0, 0, 0 };
 

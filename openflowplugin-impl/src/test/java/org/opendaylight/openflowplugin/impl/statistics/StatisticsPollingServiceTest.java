@@ -30,7 +30,7 @@ public class StatisticsPollingServiceTest {
     private StatisticsPollingService statisticsPollingService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(timeCounter.getAverageTimeBetweenMarks()).thenReturn(15000L);
         when(gatheringSupplier.get()).thenReturn(Futures.immediateFuture(true));
         statisticsPollingService = new StatisticsPollingService(
@@ -39,7 +39,7 @@ public class StatisticsPollingServiceTest {
     }
 
     @Test
-    public void startUp() throws Exception {
+    public void startUp() {
         statisticsPollingService.startUp();
         verify(timeCounter).markStart();
     }
@@ -52,7 +52,7 @@ public class StatisticsPollingServiceTest {
     }
 
     @Test
-    public void scheduler() throws Exception {
+    public void scheduler() {
         statisticsPollingService.scheduler();
         verify(timeCounter).getAverageTimeBetweenMarks();
     }

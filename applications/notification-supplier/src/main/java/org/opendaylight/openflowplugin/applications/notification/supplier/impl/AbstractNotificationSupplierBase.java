@@ -70,7 +70,7 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (listenerRegistration != null) {
             listenerRegistration.close();
             listenerRegistration = null;

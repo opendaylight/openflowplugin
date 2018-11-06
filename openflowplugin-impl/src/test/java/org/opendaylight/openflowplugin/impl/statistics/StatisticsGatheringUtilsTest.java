@@ -169,7 +169,7 @@ public class StatisticsGatheringUtilsTest {
     private MultipartWriterProvider provider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
         when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
@@ -190,7 +190,7 @@ public class StatisticsGatheringUtilsTest {
     }
 
     @Test
-    public void testWriteFlowStatistics() throws Exception {
+    public void testWriteFlowStatistics() {
         final ArgumentCaptor<LogicalDatastoreType> dataStoreType = ArgumentCaptor.forClass(LogicalDatastoreType.class);
         final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
@@ -530,7 +530,7 @@ public class StatisticsGatheringUtilsTest {
     }
 
     @Test
-    public void testDeleteAllKnownFlows() throws Exception {
+    public void testDeleteAllKnownFlows() {
         final short tableId = 0;
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);

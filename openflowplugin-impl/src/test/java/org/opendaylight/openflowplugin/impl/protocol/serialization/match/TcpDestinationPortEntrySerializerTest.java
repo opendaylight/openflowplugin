@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class TcpDestinationPortEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final int tcp = 10;
 
         final Match sctpMatch = new MatchBuilder()

@@ -56,7 +56,7 @@ public class IdleHandlerTest {
      * Test channel read timeout.
      */
     @Test
-    public void testReadTimedOut() throws Exception {
+    public void testReadTimedOut() {
         idleHandler.readTimedOut(mockChHndlrCtx);
 
         // Verify a read was fired for the next handler to process ...
@@ -67,7 +67,7 @@ public class IdleHandlerTest {
      * Test only one timeout notification.
      */
     @Test
-    public void testReadTimedOutNoOpNotFirst() throws Exception {
+    public void testReadTimedOutNoOpNotFirst() {
         idleHandler.readTimedOut(mockChHndlrCtx);
         idleHandler.readTimedOut(mockChHndlrCtx);
 

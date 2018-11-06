@@ -208,7 +208,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         // TODO Auto-generated method stub
     }
 

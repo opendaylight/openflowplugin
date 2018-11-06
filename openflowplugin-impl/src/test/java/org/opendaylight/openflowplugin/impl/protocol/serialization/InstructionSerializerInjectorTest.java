@@ -36,13 +36,13 @@ public class InstructionSerializerInjectorTest {
     private Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> injector;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         injector =
                 InstructionSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
     }
 
     @Test
-    public void injectSerializers() throws Exception {
+    public void injectSerializers() {
         injector.apply(ApplyActionsCase.class).accept(instructionSerializer);
         verify(switchConnectionProvider).registerSerializer(
                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, ApplyActionsCase.class),

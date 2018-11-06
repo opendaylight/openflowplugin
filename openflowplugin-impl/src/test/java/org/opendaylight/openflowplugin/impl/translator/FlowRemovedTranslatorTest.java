@@ -64,7 +64,7 @@ public class FlowRemovedTranslatorTest {
     private FlowWildcardsV10 flowWildcards;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final KeyedInstanceIdentifier<Node, NodeKey> nodeId = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
 
@@ -76,7 +76,7 @@ public class FlowRemovedTranslatorTest {
     }
 
     @Test
-    public void testTranslate() throws Exception {
+    public void testTranslate() {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage =
                 buildMessage(false);
         final FlowRemoved flowRemoved = translator.translate(flowRemovedMessage, deviceInfo, null);
@@ -87,7 +87,7 @@ public class FlowRemovedTranslatorTest {
     }
 
     @Test
-    public void testTranslateV10() throws Exception {
+    public void testTranslateV10() {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved flowRemovedMessage =
                 buildMessage(true);
         final FlowRemoved flowRemoved = translatorV10.translate(flowRemovedMessage, deviceInfo, null);

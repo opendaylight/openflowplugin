@@ -60,7 +60,7 @@ public class DefaultConfigPusherTest {
     private ArgumentCaptor<SetConfigInput> setConfigInputCaptor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(nodeConfigService).setConfig(any());
         defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class),
                 deviceOwnershipService);

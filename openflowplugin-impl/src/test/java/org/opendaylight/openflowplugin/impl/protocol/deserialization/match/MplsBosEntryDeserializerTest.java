@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class MplsBosEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final short mplsBos = 6;
 

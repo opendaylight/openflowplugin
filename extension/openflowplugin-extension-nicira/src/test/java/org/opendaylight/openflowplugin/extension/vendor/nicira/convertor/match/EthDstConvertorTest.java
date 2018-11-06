@@ -50,7 +50,7 @@ public class EthDstConvertorTest {
     private EthDstConvertor ethDstConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final NxmOfEthDstBuilder nxmOfEthDstBuilder = new NxmOfEthDstBuilder()
                 .setMacAddress(MAC_ADDRESS);
@@ -67,14 +67,14 @@ public class EthDstConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = ethDstConvertor.convert(extension);
         Assert.assertEquals(MAC_ADDRESS, ((EthDstCaseValue)converted.getMatchEntryValue())
                 .getEthDstValues().getMacAddress());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final EthDstValuesBuilder ethDstValuesBuilder = new EthDstValuesBuilder()
                 .setMacAddress(MAC_ADDRESS);
         final EthDstCaseValueBuilder ethDstCaseValueBuilder = new EthDstCaseValueBuilder()

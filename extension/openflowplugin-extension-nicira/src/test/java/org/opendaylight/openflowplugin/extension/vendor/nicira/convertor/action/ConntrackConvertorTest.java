@@ -43,12 +43,12 @@ public class ConntrackConvertorTest {
     private ConntrackConvertor conntrackConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         conntrackConvertor = new ConntrackConvertor();
     }
 
     @Test
-    public void testConvertToOfJava() throws Exception {
+    public void testConvertToOfJava() {
 
         final NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder()
                 .setFlags(1)
@@ -103,7 +103,7 @@ public class ConntrackConvertorTest {
     }
 
     @Test
-    public void testConvertFromOfJava() throws Exception {
+    public void testConvertFromOfJava() {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions
             .nx.action.nat._case.NxActionNatBuilder nxActionNatBuilder = new org.opendaylight.yang.gen.v1.urn

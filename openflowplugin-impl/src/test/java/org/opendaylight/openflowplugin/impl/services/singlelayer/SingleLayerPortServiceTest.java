@@ -24,13 +24,13 @@ public class SingleLayerPortServiceTest extends ServiceMocking {
     private SingleLayerPortService<UpdatePortOutput> service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerPortService<>(mockedRequestContextStack,
                 mockedDeviceContext, UpdatePortOutput.class);
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final Port input = new PortBuilder()
                 .setPortNumber(new PortNumberUni(PORT_ID))
                 .build();

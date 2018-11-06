@@ -79,7 +79,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
     }
 

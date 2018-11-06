@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatis
 public class ResetSessionStatsComandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         SessionStatistics.resetAllCounters();
         out.print("Session statistics counters reset.\n");

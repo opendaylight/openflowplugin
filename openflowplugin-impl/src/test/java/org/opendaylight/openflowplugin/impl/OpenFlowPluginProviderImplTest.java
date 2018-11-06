@@ -88,7 +88,7 @@ public class OpenFlowPluginProviderImplTest {
     private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
@@ -109,7 +109,7 @@ public class OpenFlowPluginProviderImplTest {
     }
 
     @Test
-    public void testInitializeAndClose() throws Exception {
+    public void testInitializeAndClose() {
         final OpenFlowPluginProviderImpl provider = new OpenFlowPluginProviderImpl(
                 configurationService,
                 new SwitchConnectionProviderList(Lists.newArrayList(switchConnectionProvider)),

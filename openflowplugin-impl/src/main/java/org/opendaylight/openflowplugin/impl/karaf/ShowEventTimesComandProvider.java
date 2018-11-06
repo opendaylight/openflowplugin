@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCou
 public class ShowEventTimesComandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         final List<String> statistics = EventsTimeCounter.provideTimes();
         final StringBuilder result = new StringBuilder();

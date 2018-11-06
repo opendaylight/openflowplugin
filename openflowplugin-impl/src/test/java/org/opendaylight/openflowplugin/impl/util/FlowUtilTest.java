@@ -43,7 +43,7 @@ public class FlowUtilTest {
     public static final Short DUMMY_TABLE_ID = 1;
 
     @Test
-    public void testBuildFlowPath() throws Exception {
+    public void testBuildFlowPath() {
         final InstanceIdentifier<Node> nodePath = InstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
@@ -56,7 +56,7 @@ public class FlowUtilTest {
     }
 
     @Test
-    public void testCreateCumulatingFunction() throws Exception {
+    public void testCreateCumulatingFunction() {
         final Function<List<RpcResult<String>>, RpcResult<List<BatchFailedFlowsOutput>>> function =
                 FlowUtil.createCumulatingFunction(Lists.newArrayList(createBatchFlowIdGrouping(DUMMY_FLOW_ID),
                         createBatchFlowIdGrouping(DUMMY_FLOW_ID_2)));
@@ -81,37 +81,37 @@ public class FlowUtilTest {
     }
 
     @Test
-    public void testFlowAddTransformFailure() throws Exception {
+    public void testFlowAddTransformFailure() {
         final RpcResult<List<BatchFailedFlowsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(FlowUtil.FLOW_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowAddTransformSuccess() throws Exception {
+    public void testFlowAddTransformSuccess() {
         final RpcResult<List<BatchFailedFlowsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(FlowUtil.FLOW_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowRemoveTransformFailure() throws Exception {
+    public void testFlowRemoveTransformFailure() {
         final RpcResult<List<BatchFailedFlowsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(FlowUtil.FLOW_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowRemoveTransformSuccess() throws Exception {
+    public void testFlowRemoveTransformSuccess() {
         final RpcResult<List<BatchFailedFlowsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(FlowUtil.FLOW_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowUpdateTransformFailure() throws Exception {
+    public void testFlowUpdateTransformFailure() {
         final RpcResult<List<BatchFailedFlowsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(FlowUtil.FLOW_UPDATE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowUpdateTransformSuccess() throws Exception {
+    public void testFlowUpdateTransformSuccess() {
         final RpcResult<List<BatchFailedFlowsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(FlowUtil.FLOW_UPDATE_TRANSFORM.apply(input));
     }
@@ -148,7 +148,7 @@ public class FlowUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_success_success() throws Exception {
+    public void testCreateComposingFunction_success_success() {
         final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
@@ -164,7 +164,7 @@ public class FlowUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_failure_success() throws Exception {
+    public void testCreateComposingFunction_failure_success() {
         final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
@@ -180,7 +180,7 @@ public class FlowUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_success_failure() throws Exception {
+    public void testCreateComposingFunction_success_failure() {
         final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 
@@ -196,7 +196,7 @@ public class FlowUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_failure_failure() throws Exception {
+    public void testCreateComposingFunction_failure_failure() {
         final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddFlowsBatchOutput>> compositeFunction = FlowUtil.createComposingFunction();
 

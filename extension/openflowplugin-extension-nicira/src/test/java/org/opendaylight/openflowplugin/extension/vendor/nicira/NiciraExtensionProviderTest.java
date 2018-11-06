@@ -36,17 +36,17 @@ public class NiciraExtensionProviderTest {
     private NiciraExtensionProvider niciraExtensionProvider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(openFlowPluginExtensionRegistratorProvider.getExtensionConverterRegistrator())
                 .thenReturn(extensionConverterRegistrator);
         niciraExtensionProvider = new NiciraExtensionProvider(openFlowPluginExtensionRegistratorProvider);
     }
 
     @Test
-    public void testRegisterConverters() throws Exception {
+    public void testRegisterConverters() {
         Mockito.verify(extensionConverterRegistrator, Mockito.atLeastOnce()).registerActionConvertor(
                 ArgumentMatchers.<TypeVersionKey<? extends Action>>any(),
                 ArgumentMatchers.<ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-                    .common.action.rev150203.actions.grouping.Action>>any());
+                                    .common.action.rev150203.actions.grouping.Action>>any());
     }
 }

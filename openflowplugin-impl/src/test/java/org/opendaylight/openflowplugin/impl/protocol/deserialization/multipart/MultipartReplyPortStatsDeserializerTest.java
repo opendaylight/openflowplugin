@@ -36,7 +36,7 @@ public class MultipartReplyPortStatsDeserializerTest extends AbstractMultipartDe
     private static final int NANOSECOND = 15;
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeInt(PORT);
         buffer.writeZero(PADDING_IN_PORT_STATS_HEADER);

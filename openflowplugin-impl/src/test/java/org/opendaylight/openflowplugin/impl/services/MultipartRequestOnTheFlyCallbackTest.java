@@ -189,7 +189,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
      * Not the last reply.
      */
     @Test
-    public void testOnSuccessWithValidMultipart1() throws Exception {
+    public void testOnSuccessWithValidMultipart1() {
         final MatchBuilder matchBuilder = new MatchBuilder()
                 .setMatchEntry(Collections.emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()

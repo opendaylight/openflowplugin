@@ -46,7 +46,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testAddGroup() throws Exception {
+    public void testAddGroup() {
         addGroup();
     }
 
@@ -62,12 +62,12 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testUpdateGroup() throws Exception {
+    public void testUpdateGroup() {
         updateGroup();
     }
 
     @Test
-    public void testUpdateGroupWithItemLifecycle() throws Exception {
+    public void testUpdateGroupWithItemLifecycle() {
         updateGroup();
     }
 
@@ -84,16 +84,16 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testRemoveGroup() throws Exception {
+    public void testRemoveGroup() {
         removeGroup();
     }
 
     @Test
-    public void testRemoveGroupWithItemLifecycle() throws Exception {
+    public void testRemoveGroupWithItemLifecycle() {
         removeGroup();
     }
 
-    private void removeGroup() throws Exception {
+    private void removeGroup() {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
         RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder().setGroupId(dummyGroupId).build();
         this.<RemoveGroupOutput>mockSuccessfulFuture();

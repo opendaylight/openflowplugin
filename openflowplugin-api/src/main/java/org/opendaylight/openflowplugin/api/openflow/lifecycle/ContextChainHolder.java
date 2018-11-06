@@ -59,6 +59,6 @@ public interface ContextChainHolder extends
     ContextChain getContextChain(DeviceInfo deviceInfo);
 
     @Override
-    void close() throws Exception;
+    void close();
 
 }

@@ -34,7 +34,7 @@ public class UdpSimpleClientInitializer extends ChannelInitializer<DatagramChann
     }
 
     @Override
-    public void initChannel(DatagramChannel ch) throws Exception {
+    public void initChannel(DatagramChannel ch) {
         ChannelPipeline pipeline = ch.pipeline();
         SimpleClientHandler simpleClientHandler = new SimpleClientHandler(isOnlineFuture, scenarioHandler);
         simpleClientHandler.setScenario(scenarioHandler);

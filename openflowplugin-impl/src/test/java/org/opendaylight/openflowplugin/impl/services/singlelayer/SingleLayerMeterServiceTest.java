@@ -25,13 +25,13 @@ public class SingleLayerMeterServiceTest extends ServiceMocking {
     private SingleLayerMeterService<AddMeterOutput> service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerMeterService<>(mockedRequestContextStack,
                 mockedDeviceContext, AddMeterOutput.class);
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final AddMeterInput input = new AddMeterInputBuilder()
                 .setMeterId(new MeterId(METER_ID))
                 .build();

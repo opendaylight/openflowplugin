@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class RequestInputUtilsTest {
     @Test
-    public void createMultipartHeader() throws Exception {
+    public void createMultipartHeader() {
         final Short version = OFConstants.OFP_VERSION_1_3;
         final Long xid = 42L;
         final MultipartType type = MultipartType.OFPMPDESC;

@@ -14,7 +14,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.GroupStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -59,7 +58,7 @@ final class AllGroupsStatsService extends
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllGroupStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetAllGroupStatisticsInput input) {
         // Create multipart request header
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPGROUP, xid.getValue(), getVersion());

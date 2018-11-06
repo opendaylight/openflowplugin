@@ -61,7 +61,7 @@ public class TableFeaturesMatchFieldDeserializerTest {
     private TableFeaturesMatchFieldDeserializer deserializer = new TableFeaturesMatchFieldDeserializer();
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
 
         addValues(buffer, OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_OP);

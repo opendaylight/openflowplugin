@@ -31,7 +31,7 @@ public class LLDPDiscoveryUtilsTest {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtilsTest.class);
 
     @Test
-    public void testLldpToNodeConnectorRefLLDP() throws Exception {
+    public void testLldpToNodeConnectorRefLLDP() {
         byte[] packetLLDP = {
             0x01, 0x23, 0x00, 0x00, 0x00, 0x01, (byte) 0x8a, (byte) 0x8e,
             (byte) 0xcc, (byte) 0x85, (byte) 0xeb, 0x27,
@@ -56,7 +56,7 @@ public class LLDPDiscoveryUtilsTest {
     }
 
     @Test
-    public void testLldpToNodeConnectorRefNotLLDP() throws Exception {
+    public void testLldpToNodeConnectorRefNotLLDP() {
         byte[] packetNotLLDP = {
             0x01, 0x23, 0x00, 0x00, 0x00, 0x01, (byte) 0x8a, (byte) 0x8e,
             (byte) 0xcc, (byte) 0x85, (byte) 0xeb, 0x27,

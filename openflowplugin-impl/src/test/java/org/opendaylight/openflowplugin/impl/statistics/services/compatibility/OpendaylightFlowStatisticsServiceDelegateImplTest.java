@@ -88,7 +88,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
     }
 
     @Test(expected = IllegalAccessError.class)
-    public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() throws Exception {
+    public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() {
         flowStatisticsServiceDelegate.getAggregateFlowStatisticsFromFlowTableForGivenMatch(null);
     }
 

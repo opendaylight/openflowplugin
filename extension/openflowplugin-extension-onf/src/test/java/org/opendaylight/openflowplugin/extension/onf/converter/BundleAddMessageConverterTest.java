@@ -72,7 +72,7 @@ public class BundleAddMessageConverterTest {
     private static final GroupId GROUP_ID = new GroupId(1L);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @Test
