@@ -151,7 +151,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation10() throws Exception {
+    public void testVersionNegotiation10() {
         LOG.debug("testVersionNegotiation10");
         Short version = OFConstants.OFP_VERSION_1_0;
 
@@ -170,7 +170,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation10SwitchStarts() throws Exception {
+    public void testVersionNegotiation10SwitchStarts() {
         LOG.debug("testVersionNegotiation10-ss");
         Short version = OFConstants.OFP_VERSION_1_0;
 
@@ -187,7 +187,7 @@ public class HandshakeManagerImplTest {
      * Switch delivers first helloMessage with version 0x00 = negotiation unsuccessful
      */
     @Test
-    public void testVersionNegotiation00() throws Exception {
+    public void testVersionNegotiation00() {
         LOG.debug("testVersionNegotiation00");
         expectedErrors = 1;
         Short version = (short) 0x00;
@@ -203,7 +203,7 @@ public class HandshakeManagerImplTest {
      * Switch delivers first helloMessage with version 0x00 = negotiation unsuccessful
      */
     @Test
-    public void testVersionNegotiation00SwitchStarts() throws Exception {
+    public void testVersionNegotiation00SwitchStarts() {
         LOG.debug("testVersionNegotiation00-ss");
         expectedErrors = 1;
         Short version = (short) 0x00;
@@ -221,7 +221,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation11() throws Exception {
+    public void testVersionNegotiation11() {
         LOG.debug("testVersionNegotiation11");
         Short version = (short) 0x02;
         Short expVersion = (short) 0x01;
@@ -240,7 +240,7 @@ public class HandshakeManagerImplTest {
      * Test of version negotiation Where 1.0 < switch version < 1.3.
      */
     @Test
-    public void testVersionNegotiation11SwitchStarts() throws Exception {
+    public void testVersionNegotiation11SwitchStarts() {
         LOG.debug("testVersionNegotiation11-ss");
         final Short version = (short) 0x02;
         final Short expVersion = (short) 0x01;
@@ -262,7 +262,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation13() throws Exception {
+    public void testVersionNegotiation13() {
         LOG.debug("testVersionNegotiation13");
         Short version = OFConstants.OFP_VERSION_1_3;
 
@@ -279,7 +279,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation13SwitchStarts() throws Exception {
+    public void testVersionNegotiation13SwitchStarts() {
         LOG.debug("testVersionNegotiation13-ss");
         Short version = OFConstants.OFP_VERSION_1_3;
 
@@ -298,7 +298,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation15() throws Exception {
+    public void testVersionNegotiation15() {
         LOG.debug("testVersionNegotiation15");
         Short version = (short) 0x06;
         Short expVersion = OFConstants.OFP_VERSION_1_3;
@@ -318,7 +318,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation15SwitchStart() throws Exception {
+    public void testVersionNegotiation15SwitchStart() {
         LOG.debug("testVersionNegotiation15-ss");
         Short version = (short) 0x06;
         Short expVersion = OFConstants.OFP_VERSION_1_3;
@@ -338,7 +338,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation15_MultipleCall() throws Exception {
+    public void testVersionNegotiation15_MultipleCall() {
         LOG.debug("testVersionNegotiation15_MultipleCall");
         Short version = (short) 0x06;
         expectedErrors = 1;
@@ -356,7 +356,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation15_MultipleCallSwitchStarts() throws Exception {
+    public void testVersionNegotiation15_MultipleCallSwitchStarts() {
         LOG.debug("testVersionNegotiation15_MultipleCall-ss");
         Short version = (short) 0x06;
         expectedErrors = 1;
@@ -376,7 +376,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation10InBitmap() throws Exception {
+    public void testVersionNegotiation10InBitmap() {
         LOG.debug("testVersionNegotiation10InBitmap");
         Short version = OFConstants.OFP_VERSION_1_0;
         handshakeManager.setUseVersionBitmap(true);
@@ -397,7 +397,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation10InBitmapSwitchStarts() throws Exception {
+    public void testVersionNegotiation10InBitmapSwitchStarts() {
         LOG.debug("testVersionNegotiation10InBitmap-ss");
         Short version = OFConstants.OFP_VERSION_1_0;
         handshakeManager.setUseVersionBitmap(true);
@@ -420,7 +420,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation13InBitmap() throws Exception {
+    public void testVersionNegotiation13InBitmap() {
         LOG.debug("testVersionNegotiation13InBitmap");
         Short version = OFConstants.OFP_VERSION_1_3;
         handshakeManager.setUseVersionBitmap(true);
@@ -441,7 +441,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiation13InBitmapSwitchFirst() throws Exception {
+    public void testVersionNegotiation13InBitmapSwitchFirst() {
         LOG.debug("testVersionNegotiation13InBitmap-ss");
         Short version = OFConstants.OFP_VERSION_1_3;
         handshakeManager.setUseVersionBitmap(true);
@@ -464,7 +464,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiationNoCommonVersionInBitmap() throws Exception {
+    public void testVersionNegotiationNoCommonVersionInBitmap() {
         LOG.debug("testVersionNegotiationNoCommonVersionInBitmap");
         Short version = (short) 0x05;
         expectedErrors = 1;
@@ -484,7 +484,7 @@ public class HandshakeManagerImplTest {
      *
      */
     @Test
-    public void testVersionNegotiationNoCommonVersionInBitmapSwitchStarts() throws Exception {
+    public void testVersionNegotiationNoCommonVersionInBitmapSwitchStarts() {
         LOG.debug("testVersionNegotiationNoCommonVersionInBitmap-ss");
         Short version = (short) 0x05;
         expectedErrors = 1;

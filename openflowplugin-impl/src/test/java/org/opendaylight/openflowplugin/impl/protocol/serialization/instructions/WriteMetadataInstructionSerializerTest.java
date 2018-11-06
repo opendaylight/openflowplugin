@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class WriteMetadataInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final long metadata = 10L;
         final long metadataMask = 10L;
 

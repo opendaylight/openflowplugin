@@ -101,7 +101,7 @@ public class IntegrationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         switchConnectionProvider.close();
         LOGGER.debug("\n ending test -------------------------------");
     }

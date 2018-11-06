@@ -55,12 +55,12 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void register() throws Exception {
+    public void register() {
         Assert.assertNotNull(registration);
     }
 
     @Test
-    public void registerTwice() throws Exception {
+    public void registerTwice() {
         MastershipChangeRegistration registration2;
         registration2 = manager.register(secondService);
         Assert.assertNotNull(registration);
@@ -79,7 +79,7 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void reconciliationFrameworkRegistration() throws Exception {
+    public void reconciliationFrameworkRegistration() {
         Assert.assertNotNull(registrationRF);
     }
 
@@ -97,7 +97,7 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void becomeMaster() throws Exception {
+    public void becomeMaster() {
         manager.becomeMaster(deviceInfo);
         Mockito.verify(service).onBecomeOwner(deviceInfo);
         manager.becomeSlaveOrDisconnect(deviceInfo);
@@ -105,7 +105,7 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void becomeMasterBeforeDS() throws Exception {
+    public void becomeMasterBeforeDS() {
         manager.becomeMasterBeforeSubmittedDS(deviceInfo);
         Mockito.verify(event).onDevicePrepared(deviceInfo);
     }
@@ -118,7 +118,7 @@ public class MastershipChangeServiceManagerImplTest {
     }
 
     @Test
-    public void evokeEventAfterRegistration() throws Exception {
+    public void evokeEventAfterRegistration() {
         List<DeviceInfo> deviceInfos = new ArrayList<>();
         deviceInfos.add(deviceInfo);
         manager.setMasterChecker(masterChecker);

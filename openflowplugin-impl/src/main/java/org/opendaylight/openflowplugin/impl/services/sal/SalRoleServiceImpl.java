@@ -20,7 +20,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.RoleService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -48,7 +47,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SetRoleInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final SetRoleInput input) {
         return null;
     }
 

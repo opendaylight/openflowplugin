@@ -224,7 +224,7 @@ public class StatisticsManagerImplTest {
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void testClose() {
         statisticsManager.close();
         verify(serviceControlRegistration).close();
     }

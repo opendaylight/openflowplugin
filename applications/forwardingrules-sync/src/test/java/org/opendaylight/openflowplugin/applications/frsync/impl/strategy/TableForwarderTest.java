@@ -76,7 +76,7 @@ public class TableForwarderTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         tableForwarder = new TableForwarder(salTableService);
         txId = new TransactionId(BigInteger.ONE);
     }

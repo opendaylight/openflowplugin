@@ -33,13 +33,13 @@ public class SwitchFeaturesUtilTest {
      * and {@link SwitchFeaturesUtil SwitchFeaturesUtil}.
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         featuresOutputBuilder = new GetFeaturesOutputBuilder();
         swUtil = SwitchFeaturesUtil.getInstance();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         featuresOutputBuilder = null;
         swUtil = null;
     }

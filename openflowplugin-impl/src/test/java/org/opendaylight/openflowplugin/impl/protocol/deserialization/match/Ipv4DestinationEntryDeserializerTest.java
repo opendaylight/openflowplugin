@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Ipv4DestinationEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final Ipv4Prefix address = new Ipv4Prefix("192.168.72.0/24");
         final Iterator<String> addressParts = IpConversionUtil.splitToParts(address);

@@ -65,7 +65,7 @@ public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDes
     private static final int MAXIMUM_SPEED = 10;
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeInt(PORT_NUMBER);
         buffer.writeZero(PADDING_IN_PORT_DESC_HEADER_01);

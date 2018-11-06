@@ -43,7 +43,7 @@ public class FinTimeoutConvertorTest {
     private FinTimeoutConvertor finTimeoutConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action
             .fin.timeout.grouping.NxActionFinTimeout nxFinTimeout =  Mockito.mock(org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping
@@ -63,7 +63,7 @@ public class FinTimeoutConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionFinTimeout actionFinTimeout =
                 (ActionFinTimeout) finTimeoutConvertor.convert(actionsCase).getActionChoice();
         Assert.assertEquals(1, actionFinTimeout.getNxActionFinTimeout().getFinIdleTimeout().intValue());
@@ -71,7 +71,7 @@ public class FinTimeoutConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult =
                 finTimeoutConvertor.convert(action,
                         ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);

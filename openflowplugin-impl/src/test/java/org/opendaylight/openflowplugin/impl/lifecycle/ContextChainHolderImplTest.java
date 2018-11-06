@@ -118,12 +118,12 @@ public class ContextChainHolderImplTest {
     }
 
     @Test
-    public void addManager() throws Exception {
+    public void addManager() {
         Assert.assertTrue(contextChainHolder.checkAllManagers());
     }
 
     @Test
-    public void createContextChain() throws Exception {
+    public void createContextChain() {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.verify(deviceManager).createContext(Mockito.any(ConnectionContext.class));
         Mockito.verify(rpcManager).createContext(Mockito.any(DeviceContext.class));
@@ -133,7 +133,7 @@ public class ContextChainHolderImplTest {
 
 
     @Test
-    public void reconciliationFrameworkFailure() throws Exception {
+    public void reconciliationFrameworkFailure() {
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
             .thenReturn(Futures.immediateFailedFuture(new Throwable("test")));
         contextChainHolder.createContextChain(connectionContext);
@@ -145,7 +145,7 @@ public class ContextChainHolderImplTest {
     }
 
     @Test
-    public void reconciliationFrameworkDisconnect() throws Exception {
+    public void reconciliationFrameworkDisconnect() {
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
             .thenReturn(Futures.immediateFuture(ResultState.DISCONNECT));
         contextChainHolder.createContextChain(connectionContext);
@@ -157,7 +157,7 @@ public class ContextChainHolderImplTest {
     }
 
     @Test
-    public void reconciliationFrameworkSuccess() throws Exception {
+    public void reconciliationFrameworkSuccess() {
         contextChainHolder.createContextChain(connectionContext);
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
             .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
@@ -170,7 +170,7 @@ public class ContextChainHolderImplTest {
     }
 
     @Test
-    public void reconciliationFrameworkSuccessButNotSubmit() throws Exception {
+    public void reconciliationFrameworkSuccessButNotSubmit() {
         contextChainHolder.createContextChain(connectionContext);
         // TODO when if (future != null) check in MastershipChangeServiceManagerImpl's becomeSlaveOrDisconnect() is rm
         // Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))

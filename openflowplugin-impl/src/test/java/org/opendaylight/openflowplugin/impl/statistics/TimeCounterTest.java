@@ -23,7 +23,7 @@ public class TimeCounterTest {
     private TimeCounter timeCounter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         timeCounter = new TimeCounter();
     }
 
@@ -41,7 +41,7 @@ public class TimeCounterTest {
      * @throws Exception if interrupted
      */
     @Test
-    public void testGetAverageTimeBetweenMarks() throws Exception {
+    public void testGetAverageTimeBetweenMarks() {
         Assert.assertEquals(0, timeCounter.getAverageTimeBetweenMarks());
         timeCounter.markStart();
         Assert.assertEquals(0, timeCounter.getAverageTimeBetweenMarks());

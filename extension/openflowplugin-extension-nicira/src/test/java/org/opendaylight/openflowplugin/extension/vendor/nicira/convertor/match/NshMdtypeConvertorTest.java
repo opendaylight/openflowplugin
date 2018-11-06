@@ -45,7 +45,7 @@ public class NshMdtypeConvertorTest {
     private static final Short MDTYPE_VALUE = (short) 0x7B;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNshMdtype nxmNxNshMdtype = new NxmNxNshMdtypeBuilder()
                 .setValue(MDTYPE_VALUE)
                 .build();

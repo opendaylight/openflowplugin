@@ -29,14 +29,14 @@ public class NodeConfigServiceImplTest extends ServiceMocking {
     NodeConfigServiceImpl nodeConfigService;
 
     @Test
-    public void testSetConfig() throws Exception {
+    public void testSetConfig() {
         nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
         nodeConfigService.setConfig(dummyConfigInput());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
         final OfHeader request = nodeConfigService.buildRequest(new Xid(DUMMY_XID_VALUE), dummyConfigInput());
 

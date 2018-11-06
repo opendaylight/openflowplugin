@@ -55,7 +55,7 @@ public class RegMoveConvertorTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final Src src = Mockito.mock(Src.class);
         final Dst dst = Mockito.mock(Dst.class);
 
@@ -85,7 +85,7 @@ public class RegMoveConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionRegMove actionRegMove = (ActionRegMove) regMoveConvertor.convert(actionsCase).getActionChoice();
         Assert.assertEquals(Integer.valueOf(3) ,actionRegMove.getNxActionRegMove().getDstOfs());
         Assert.assertEquals(Integer.valueOf(2) ,actionRegMove.getNxActionRegMove().getNBits());
@@ -93,7 +93,7 @@ public class RegMoveConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = regMoveConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1

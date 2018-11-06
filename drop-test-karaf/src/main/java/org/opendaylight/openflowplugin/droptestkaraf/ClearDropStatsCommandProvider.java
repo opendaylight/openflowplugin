@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
 public class ClearDropStatsCommandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         final DropTestRpcProvider rpcProvider = DropTestProviderImpl.getDropRpcProvider();
         final DropTestDsProvider provider = DropTestProviderImpl.getDropDsProvider();

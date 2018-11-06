@@ -47,7 +47,7 @@ public class CtStateConvertorTest {
     private CtStateConvertor ctStateConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final NxmNxCtStateBuilder nxmNxCtStateBuilder = new NxmNxCtStateBuilder()
                 .setCtState(1L)
@@ -64,7 +64,7 @@ public class CtStateConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = ctStateConvertor.convert(extension);
         Assert.assertEquals(1L,
                 ((CtStateCaseValue) converted.getMatchEntryValue()).getCtStateValues().getCtState().longValue());
@@ -73,7 +73,7 @@ public class CtStateConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
 
         final CtStateValuesBuilder ctStateValuesBuilder = new CtStateValuesBuilder()
                 .setCtState(3L)

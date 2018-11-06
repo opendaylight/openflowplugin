@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractTableMultipartService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
@@ -50,7 +49,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
 
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) {
         return new MultipartRequestBuilder()
                 .setXid(xid.getValue())
                 .setVersion(getVersion())

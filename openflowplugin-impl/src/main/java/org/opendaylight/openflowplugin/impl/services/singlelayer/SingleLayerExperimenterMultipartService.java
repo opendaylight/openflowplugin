@@ -21,7 +21,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractExperimenterMultipartService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutputBuilder;
@@ -46,7 +45,7 @@ public class SingleLayerExperimenterMultipartService extends AbstractExperimente
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SendExperimenterMpRequestInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final SendExperimenterMpRequestInput input) {
         return new MultipartRequestBuilder()
             .setXid(xid.getValue())
             .setVersion(getVersion())

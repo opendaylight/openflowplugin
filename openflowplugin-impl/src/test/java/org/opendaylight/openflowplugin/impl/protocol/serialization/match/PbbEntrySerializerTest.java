@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class PbbEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final long pbbId = 6789;
         final byte[] pbbIdMask = new byte[] { 0, 15, 10 };
 

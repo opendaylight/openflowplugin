@@ -97,7 +97,7 @@ public abstract class ServiceMocking {
 
     @Before
     @SuppressWarnings("unchecked")
-    public void initialization() throws Exception {
+    public void initialization() {
         lenient().when(mockedExtensionConverter.getExperimenterId())
                 .thenReturn(new ExperimenterId(DUMMY_EXPERIMENTER_ID));
         lenient().when(mockedExtensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
@@ -131,7 +131,7 @@ public abstract class ServiceMocking {
         setup();
     }
 
-    protected void setup() throws Exception {
+    protected void setup() {
         //NOOP - to be overloaded
     }
 

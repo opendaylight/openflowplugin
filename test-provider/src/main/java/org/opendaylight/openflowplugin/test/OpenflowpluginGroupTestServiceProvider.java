@@ -85,7 +85,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      * @see java.lang.AutoCloseable#close()
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         OpenflowpluginGroupTestServiceProvider.LOG
                 .info("SalGroupServiceProvide stopped.");
         groupRegistration.close();

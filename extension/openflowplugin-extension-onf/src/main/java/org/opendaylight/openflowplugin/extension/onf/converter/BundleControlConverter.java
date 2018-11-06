@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.extension.onf.converter;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
-import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.extension.onf.OnfConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -30,8 +29,7 @@ public class BundleControlConverter implements
         ConvertorMessageFromOFJava<BundleControlOnf, MessagePath> {
 
     @Override
-    public BundleControlOnf convert(final BundleControlSal experimenterMessageCase, final ExtensionConvertorData data)
-            throws ConversionException {
+    public BundleControlOnf convert(final BundleControlSal experimenterMessageCase, final ExtensionConvertorData data) {
         return new BundleControlOnfBuilder().setOnfControlGroupingData(
                 new OnfControlGroupingDataBuilder(experimenterMessageCase.getSalControlData()).build()).build();
     }

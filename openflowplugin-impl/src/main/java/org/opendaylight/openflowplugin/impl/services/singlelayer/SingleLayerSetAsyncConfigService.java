@@ -12,7 +12,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.AsyncConfigMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncOutput;
@@ -26,7 +25,7 @@ public class SingleLayerSetAsyncConfigService extends AbstractSimpleService<SetA
     }
 
     @Override
-    protected OfHeader buildRequest(Xid xid, SetAsyncInput input) throws ServiceException {
+    protected OfHeader buildRequest(Xid xid, SetAsyncInput input) {
         return new AsyncConfigMessageBuilder(input)
                 .setVersion(getVersion())
                 .setXid(xid.getValue())

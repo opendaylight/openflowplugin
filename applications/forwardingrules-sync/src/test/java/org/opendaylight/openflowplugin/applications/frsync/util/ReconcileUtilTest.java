@@ -96,7 +96,7 @@ public class ReconcileUtilTest {
      * add one missing group.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs1() throws Exception {
+    public void testResolveAndDivideGroupDiffs1() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -122,7 +122,7 @@ public class ReconcileUtilTest {
      * add 3 groups with dependencies - 3 steps involved.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs2() throws Exception {
+    public void testResolveAndDivideGroupDiffs2() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
 
@@ -156,7 +156,7 @@ public class ReconcileUtilTest {
      * no actions taken - installed and pending groups are the same.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs3() throws Exception {
+    public void testResolveAndDivideGroupDiffs3() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroupWithPreconditions(2L, 1L));
@@ -175,7 +175,7 @@ public class ReconcileUtilTest {
      * update 1 group.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs4() throws Exception {
+    public void testResolveAndDivideGroupDiffs4() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -200,7 +200,7 @@ public class ReconcileUtilTest {
      * no action taken - update 1 group will be ignored.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs5() throws Exception {
+    public void testResolveAndDivideGroupDiffs5() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -219,7 +219,7 @@ public class ReconcileUtilTest {
      * should add 1 group but preconditions are not met.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs_negative1() throws Exception {
+    public void testResolveAndDivideGroupDiffs_negative1() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -236,7 +236,7 @@ public class ReconcileUtilTest {
      * should update 1 group but preconditions are not met.
      */
     @Test
-    public void testResolveAndDivideGroupDiffs_negative2() throws Exception {
+    public void testResolveAndDivideGroupDiffs_negative2() {
         final Map<Long, Group> installedGroups = new HashMap<>();
         installedGroups.put(1L, createGroup(1L));
         installedGroups.put(2L, createGroup(2L));
@@ -250,7 +250,7 @@ public class ReconcileUtilTest {
     }
 
     @Test
-    public void testCheckGroupPrecondition() throws Exception {
+    public void testCheckGroupPrecondition() {
         final Set<Long> installedGroups = new HashSet<>(Arrays.asList(new Long[]{1L, 2L}));
 
         final Group pendingGroup1 = createGroupWithPreconditions(3L, 2L, 4L);
@@ -305,7 +305,7 @@ public class ReconcileUtilTest {
      * covers {@link ReconcileUtil#countTotalUpdated(Iterable)} too.
      */
     @Test
-    public void testCountTotalAdds() throws Exception {
+    public void testCountTotalAdds() {
         List<ItemSyncBox<String>> syncPlan = new ArrayList<>();
         ItemSyncBox<String> syncBox1 = createSyncBox("a,b", "x,y,z");
         syncPlan.add(syncBox1);

@@ -168,7 +168,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         }
     }
 
-    private void stepByStepVersionSubStep(Short remoteVersion) throws Exception {
+    private void stepByStepVersionSubStep(Short remoteVersion) {
         if (remoteVersion >= lastProposedVersion) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.trace("ret - OK - switch answered with lastProposedVersion");
@@ -191,7 +191,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param remoteVersion remote version
      * @throws Exception exception
      */
-    private void handleLowerVersionProposal(Short remoteVersion) throws Exception {
+    private void handleLowerVersionProposal(Short remoteVersion) {
         Short proposedVersion;
         // find the version from header version field
         proposedVersion = proposeNextVersion(remoteVersion);
@@ -212,7 +212,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param elements version elements
      * @throws Exception exception
      */
-    private void handleVersionBitmapNegotiation(List<Elements> elements) throws Exception {
+    private void handleVersionBitmapNegotiation(List<Elements> elements) {
         final Short proposedVersion = proposeCommonBitmapVersion(elements);
         if (lastProposedVersion == null) {
             // first hello has not been sent yet
@@ -320,7 +320,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param helloVersion initial hello version for openflow connection negotiation
      * @param helloXid     transaction id
      */
-    private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) throws Exception {
+    private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) {
 
 
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);

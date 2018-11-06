@@ -19,7 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 public class EthernetTypeEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final int ethType = 0x800;
 

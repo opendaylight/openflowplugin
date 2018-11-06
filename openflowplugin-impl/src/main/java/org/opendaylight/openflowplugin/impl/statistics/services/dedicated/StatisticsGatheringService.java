@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.StatisticsGatherer;
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -46,7 +45,7 @@ public class StatisticsGatheringService<T extends OfHeader>
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final MultipartType input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final MultipartType input) {
         return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(),
                                                                  getVersion(),
                                                                  input,

@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class VlanPcpEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final short vlan = (short) 1;
 
         final Match vlanMatch = new MatchBuilder()

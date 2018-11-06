@@ -53,7 +53,7 @@ public class OutboundQueueEntryTest {
     private final OfHeader flowRemoved = new FlowRemovedMessageBuilder().setVersion(VERSION).setXid(VALUE).build();
 
     @Test
-    public void commit() throws Exception {
+    public void commit() {
         outboundQueueEntry.commit(ofHeader, futureCallback);
         Assert.assertTrue(outboundQueueEntry.isCommitted());
         Assert.assertFalse(outboundQueueEntry.isCompleted());
@@ -61,7 +61,7 @@ public class OutboundQueueEntryTest {
     }
 
     @Test
-    public void reset() throws Exception {
+    public void reset() {
         outboundQueueEntry.commit(ofHeader, futureCallback);
         Assert.assertTrue(outboundQueueEntry.isCommitted());
 
@@ -70,33 +70,33 @@ public class OutboundQueueEntryTest {
     }
 
     @Test
-    public void isBarrier() throws Exception {
+    public void isBarrier() {
         outboundQueueEntry.commit(barrierInput, futureCallback);
         Assert.assertTrue(outboundQueueEntry.isBarrier());
     }
 
     @Test
-    public void takeMessage() throws Exception {
+    public void takeMessage() {
         outboundQueueEntry.commit(packetOutInput, futureCallback);
         outboundQueueEntry.takeMessage();
         Mockito.verify(futureCallback).onSuccess(Mockito.any());
     }
 
     @Test
-    public void complete() throws Exception {
+    public void complete() {
         final boolean result = outboundQueueEntry.complete(multipartReplyMessage);
         Assert.assertTrue(result);
         Assert.assertTrue(outboundQueueEntry.isCompleted());
     }
 
     @Test(expected = IllegalStateException.class)
-    public void completeTwice() throws Exception {
+    public void completeTwice() {
         outboundQueueEntry.complete(multipartReplyMessage);
         outboundQueueEntry.complete(multipartReplyMessage);
     }
 
     @Test
-    public void fail() throws Exception {
+    public void fail() {
         outboundQueueEntry.commit(ofHeader, futureCallback);
         outboundQueueEntry.fail(null);
         Mockito.verify(futureCallback).onFailure(Mockito.<OutboundQueueException>any());
@@ -107,7 +107,7 @@ public class OutboundQueueEntryTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
 
         final FutureCallback<OfHeader> result = new FutureCallback<OfHeader>() {
             @Override

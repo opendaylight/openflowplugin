@@ -39,7 +39,7 @@ public class SalAsyncConfigServiceImplTest extends ServiceMocking {
     private SalAsyncConfigServiceImpl salAsyncConfigService;
 
     @Override
-    public void setup() throws Exception {
+    public void setup() {
         salAsyncConfigService = new SalAsyncConfigServiceImpl(
                 mockedRequestContextStack, mockedDeviceContext);
     }

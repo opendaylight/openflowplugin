@@ -26,12 +26,12 @@ public class RequestContextUtilTest {
     private RequestContext<Void> requestContext;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(requestContext);
     }
 
     @Test
-    public void closeRequestContextWithRpcError() throws Exception {
+    public void closeRequestContextWithRpcError() {
         final String errorMessage = "Test error";
         RequestContextUtil.closeRequestContextWithRpcError(
                 requestContext,
@@ -43,7 +43,7 @@ public class RequestContextUtilTest {
     }
 
     @Test
-    public void closeRequestContext() throws Exception {
+    public void closeRequestContext() {
         doThrow(new IllegalStateException()).when(requestContext).close();
         RequestContextUtil.closeRequestContext(requestContext);
         verify(requestContext).close();

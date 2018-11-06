@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Ipv6NdSllEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final MacAddress ipv6NdSll = new MacAddress("00:01:02:03:04:05");
 
         final Match ipv6NdSllMatch = new MatchBuilder()

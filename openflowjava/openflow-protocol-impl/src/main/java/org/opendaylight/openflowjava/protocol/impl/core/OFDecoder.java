@@ -40,7 +40,7 @@ public class OFDecoder extends MessageToMessageDecoder<VersionMessageWrapper> {
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    protected void decode(ChannelHandlerContext ctx, VersionMessageWrapper msg, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, VersionMessageWrapper msg, List<Object> out) {
         statisticsCounter.incrementCounter(CounterEventTypes.US_RECEIVED_IN_OFJAVA);
         if (LOG.isDebugEnabled()) {
             LOG.debug("VersionMessageWrapper received: {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));

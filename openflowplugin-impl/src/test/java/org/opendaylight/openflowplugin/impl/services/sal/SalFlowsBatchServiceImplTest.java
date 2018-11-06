@@ -95,7 +95,7 @@ public class SalFlowsBatchServiceImplTest {
     public static final String FLOW_ID_VALUE_2 = "ut-dummy-flow2";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         salFlowsBatchService = new SalFlowsBatchServiceImpl(salFlowService, transactionService);
 
         Mockito.when(transactionService.sendBarrier(ArgumentMatchers.any()))
@@ -103,7 +103,7 @@ public class SalFlowsBatchServiceImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(salFlowService, transactionService);
     }
 

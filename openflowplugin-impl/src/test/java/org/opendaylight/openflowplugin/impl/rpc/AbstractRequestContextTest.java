@@ -31,7 +31,7 @@ public class AbstractRequestContextTest {
     }
 
     @Test
-    public void testCreateRequestFuture() throws Exception {
+    public void testCreateRequestFuture() {
         Future<?> future = requestContext.getFuture();
         assertNotNull(future);
     }

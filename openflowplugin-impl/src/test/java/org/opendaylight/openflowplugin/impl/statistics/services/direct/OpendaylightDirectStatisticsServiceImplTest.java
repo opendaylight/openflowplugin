@@ -60,7 +60,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     private OpendaylightDirectStatisticsService emptyService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final OpendaylightDirectStatisticsServiceProvider provider = new OpendaylightDirectStatisticsServiceProvider();
         provider.register(AbstractFlowDirectStatisticsService.class, flowDirectStatisticsService);
         provider.register(AbstractGroupDirectStatisticsService.class, groupDirectStatisticsService);
@@ -73,7 +73,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     }
 
     @Test
-    public void testGetGroupStatistics() throws Exception {
+    public void testGetGroupStatistics() {
         service.getGroupStatistics(getGroupStatisticsInput);
         verify(groupDirectStatisticsService).handleAndReply(getGroupStatisticsInput);
     }
@@ -94,7 +94,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     }
 
     @Test
-    public void testGetQueueStatistics() throws Exception {
+    public void testGetQueueStatistics() {
         service.getQueueStatistics(getQueueStatisticsInput);
         verify(queueDirectStatisticsService).handleAndReply(getQueueStatisticsInput);
     }
@@ -115,7 +115,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     }
 
     @Test
-    public void testGetFlowStatistics() throws Exception {
+    public void testGetFlowStatistics() {
         service.getFlowStatistics(getFlowStatisticsInput);
         verify(flowDirectStatisticsService).handleAndReply(getFlowStatisticsInput);
     }
@@ -136,7 +136,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     }
 
     @Test
-    public void testGetMeterStatistics() throws Exception {
+    public void testGetMeterStatistics() {
         service.getMeterStatistics(getMeterStatisticsInput);
         verify(meterDirectStatisticsService).handleAndReply(getMeterStatisticsInput);
     }
@@ -157,7 +157,7 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     }
 
     @Test
-    public void testGetNodeConnectorStatistics() throws Exception {
+    public void testGetNodeConnectorStatistics() {
         service.getNodeConnectorStatistics(getNodeConnectorStatisticsInput);
         verify(nodeConnectorDirectStatisticsService).handleAndReply(getNodeConnectorStatisticsInput);
     }

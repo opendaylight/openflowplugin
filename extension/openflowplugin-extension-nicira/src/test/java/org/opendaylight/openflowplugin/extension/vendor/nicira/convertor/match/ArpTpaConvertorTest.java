@@ -51,7 +51,7 @@ public class ArpTpaConvertorTest {
     private ArpTpaConvertor arpTpaConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final NxmOfArpTpaBuilder nxmOfArpTpaBuilder = new NxmOfArpTpaBuilder()
                 .setIpv4Address(IPV4_ADDRESS);
@@ -66,14 +66,14 @@ public class ArpTpaConvertorTest {
     }
 
     @Test
-    public void testConvertFromOFJava() throws Exception {
+    public void testConvertFromOFJava() {
         final MatchEntry converted = arpTpaConvertor.convert(extension);
         Assert.assertEquals(IpConverter.ipv4AddressToLong(IPV4_ADDRESS),
                 ((ArpTpaCaseValue)converted.getMatchEntryValue()).getArpTpaValues().getValue().longValue());
     }
 
     @Test
-    public void testConvertToOFJava() throws Exception {
+    public void testConvertToOFJava() {
         final ArpTpaValuesBuilder arpTpaValuesBuilder = new ArpTpaValuesBuilder()
                 .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
         final ArpTpaCaseValueBuilder arpTpaCaseValueBuilder = new ArpTpaCaseValueBuilder()

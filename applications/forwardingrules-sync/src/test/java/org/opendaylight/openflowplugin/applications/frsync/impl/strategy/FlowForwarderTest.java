@@ -96,7 +96,7 @@ public class FlowForwarderTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         flowForwarder = new FlowForwarder(salFlowService);
     }
 

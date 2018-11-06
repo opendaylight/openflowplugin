@@ -22,6 +22,6 @@ public interface DeviceConnectedHandler {
      * It propagates connected device's connection context.
      */
     ConnectionStatus deviceConnected(ConnectionContext connectionContext)
-            throws Exception;
+    ;
 
 }

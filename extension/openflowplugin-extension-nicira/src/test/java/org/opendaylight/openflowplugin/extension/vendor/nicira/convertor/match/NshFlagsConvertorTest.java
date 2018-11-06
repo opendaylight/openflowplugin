@@ -45,7 +45,7 @@ public class NshFlagsConvertorTest {
     private static final Short MASK_VALUE = (short) 0xFF;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNshFlags nxmNxNshFlags = new NxmNxNshFlagsBuilder()
                 .setNshFlags(FLAGS_VALUE)
                 .setMask(MASK_VALUE)

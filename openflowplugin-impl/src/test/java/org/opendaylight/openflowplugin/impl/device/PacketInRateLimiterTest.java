@@ -36,13 +36,13 @@ public class PacketInRateLimiterTest {
     private InOrder caOrdered;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         caOrdered = Mockito.inOrder(connectionAdapter);
         rateLimiter = new PacketInRateLimiter(connectionAdapter, 4, 10, messageSpy, 0.5f);
     }
 
     @Test
-    public void testDisableFlow() throws Exception {
+    public void testDisableFlow() {
         rateLimiter.disableFlow();
 
         Mockito.verify(messageSpy).spyMessage(DeviceContext.class, MessageSpy.StatisticsGroup.OFJ_BACKPRESSURE_ON);
@@ -50,7 +50,7 @@ public class PacketInRateLimiterTest {
     }
 
     @Test
-    public void testEnableFlow() throws Exception {
+    public void testEnableFlow() {
         rateLimiter.enableFlow();
 
         Mockito.verify(messageSpy).spyMessage(DeviceContext.class, MessageSpy.StatisticsGroup.OFJ_BACKPRESSURE_OFF);
@@ -58,7 +58,7 @@ public class PacketInRateLimiterTest {
     }
 
     @Test
-    public void testDrainLowWaterMark() throws Exception {
+    public void testDrainLowWaterMark() {
         // scenario:
         // occupy 4 permits
         // drain low water mark = lwm temporarily set to 50% (= 2) and get limited
@@ -111,7 +111,7 @@ public class PacketInRateLimiterTest {
     }
 
     @Test
-    public void testAcquirePermit() throws Exception {
+    public void testAcquirePermit() {
         Assert.assertEquals(0, rateLimiter.getOccupiedPermits());
         Assert.assertFalse(rateLimiter.isLimited());
 
@@ -141,7 +141,7 @@ public class PacketInRateLimiterTest {
     }
 
     @Test
-    public void testChangeWaterMarks1() throws Exception {
+    public void testChangeWaterMarks1() {
         rateLimiter.changeWaterMarks(2, 4);
         acquirePermits(4);
         Assert.assertEquals(4, rateLimiter.getOccupiedPermits());
@@ -168,7 +168,7 @@ public class PacketInRateLimiterTest {
     }
 
     @Test
-    public void testChangeWaterMarks2() throws Exception {
+    public void testChangeWaterMarks2() {
         // draining to lwm/occupied = 3/6
         acquirePermits(6);
         rateLimiter.drainLowWaterMark();

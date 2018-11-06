@@ -41,7 +41,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     private GroupDirectStatisticsService service;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         service = new GroupDirectStatisticsService(requestContextStack,
                                                    deviceContext,
                                                    convertorManager,
@@ -49,7 +49,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testBuildRequestBody() throws Exception {
+    public void testBuildRequestBody() {
         final GetGroupStatisticsInput input = mock(GetGroupStatisticsInput.class);
 
         lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
@@ -65,7 +65,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testBuildReply() throws Exception {
+    public void testBuildReply() {
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyGroupCase groupCase = mock(MultipartReplyGroupCase.class);
         final MultipartReplyGroup group = mock(MultipartReplyGroup.class);
@@ -97,7 +97,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testStoreStatistics() throws Exception {
+    public void testStoreStatistics() {
         final org.opendaylight.yang.gen.v1.urn
                 .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stat =
                 mock(org.opendaylight.yang.gen.v1.urn

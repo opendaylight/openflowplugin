@@ -24,7 +24,7 @@ public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {
     String targetStateArg;
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         final DropTestRpcProvider provider = DropTestProviderImpl.getDropRpcProvider();
 

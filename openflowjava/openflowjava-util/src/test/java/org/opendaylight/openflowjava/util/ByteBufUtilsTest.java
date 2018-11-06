@@ -11,7 +11,6 @@ package org.opendaylight.openflowjava.util;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -439,7 +438,7 @@ public class ByteBufUtilsTest {
     }
 
     @Test
-    public void testSerializeList() throws IOException {
+    public void testSerializeList() {
 
         List<Short> shorts = new ArrayList<>();
         shorts.add((short) 1);
@@ -451,7 +450,7 @@ public class ByteBufUtilsTest {
     }
 
     @Test
-    public void testUpdateHeader() throws IOException {
+    public void testUpdateHeader() {
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeInt(1);
         final int start = buffer.writerIndex();

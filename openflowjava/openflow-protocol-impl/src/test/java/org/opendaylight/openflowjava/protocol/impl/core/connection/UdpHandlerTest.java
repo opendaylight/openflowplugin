@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -115,7 +114,7 @@ public class UdpHandlerTest {
     }
 
     private Boolean startupServer(final boolean isEpollEnabled)
-            throws InterruptedException, IOException, ExecutionException {
+            throws InterruptedException, ExecutionException {
         ListenableFuture<Boolean> online = udpHandler.getIsOnlineFuture();
         /**
          * Test EPoll based native transport if isEpollEnabled is true.

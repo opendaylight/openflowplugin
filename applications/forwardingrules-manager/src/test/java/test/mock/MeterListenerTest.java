@@ -86,7 +86,7 @@ public class MeterListenerTest extends FRMTest {
     }
 
     @Test
-    public void addTwoMetersTest() throws Exception {
+    public void addTwoMetersTest() {
         addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
@@ -117,7 +117,7 @@ public class MeterListenerTest extends FRMTest {
     }
 
     @Test
-    public void updateMeterTest() throws Exception {
+    public void updateMeterTest() {
         addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
@@ -145,7 +145,7 @@ public class MeterListenerTest extends FRMTest {
     }
 
     @Test
-    public void removeMeterTest() throws Exception {
+    public void removeMeterTest() {
         addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
@@ -172,7 +172,7 @@ public class MeterListenerTest extends FRMTest {
     }
 
     @Test
-    public void staleMeterCreationTest() throws Exception {
+    public void staleMeterCreationTest() {
         addFlowCapableNode(NODE_KEY);
 
         StaleMeterKey meterKey = new StaleMeterKey(new MeterId((long) 2000));

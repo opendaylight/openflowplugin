@@ -18,7 +18,7 @@ import io.netty.channel.socket.DatagramChannel;
 public class UdpChannelInitializer extends ProtocolChannelInitializer<DatagramChannel> {
 
     @Override
-    protected void initChannel(DatagramChannel ch) throws Exception {
+    protected void initChannel(DatagramChannel ch) {
         ch.pipeline().addLast(PipelineHandlers.OF_DATAGRAMPACKET_HANDLER.name(),
                 new OFDatagramPacketHandler(getSwitchConnectionHandler(), getChannelOutboundQueueSize()));
         OFDatagramPacketDecoder ofDatagramPacketDecoder = new OFDatagramPacketDecoder();

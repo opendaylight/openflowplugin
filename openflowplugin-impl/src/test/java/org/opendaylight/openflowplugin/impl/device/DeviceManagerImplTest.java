@@ -103,7 +103,7 @@ public class DeviceManagerImplTest {
     private DeviceManagerImpl deviceManager;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
         when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
@@ -138,7 +138,7 @@ public class DeviceManagerImplTest {
     }
 
     @Test
-    public void createContext() throws Exception {
+    public void createContext() {
         final DeviceContext context = deviceManager.createContext(mockConnectionContext);
         assertEquals(deviceInfo, context.getDeviceInfo());
 
@@ -168,7 +168,7 @@ public class DeviceManagerImplTest {
     }
 
     @Test
-    public void sendNodeAddedNotification() throws Exception {
+    public void sendNodeAddedNotification() {
         deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
         deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
         verify(notificationPublishService).offerNotification(new NodeUpdatedBuilder()
@@ -178,7 +178,7 @@ public class DeviceManagerImplTest {
     }
 
     @Test
-    public void sendNodeRemovedNotification() throws Exception {
+    public void sendNodeRemovedNotification() {
         deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
         deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
         deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);

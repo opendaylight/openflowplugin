@@ -88,7 +88,7 @@ public class GroupListenerTest extends FRMTest {
     }
 
     @Test
-    public void addTwoGroupsTest() throws Exception {
+    public void addTwoGroupsTest() {
         addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
@@ -120,7 +120,7 @@ public class GroupListenerTest extends FRMTest {
     }
 
     @Test
-    public void updateGroupTest() throws Exception {
+    public void updateGroupTest() {
         addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
@@ -149,7 +149,7 @@ public class GroupListenerTest extends FRMTest {
     }
 
     @Test
-    public void removeGroupTest() throws Exception {
+    public void removeGroupTest() {
         addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId((long) 255));
@@ -177,7 +177,7 @@ public class GroupListenerTest extends FRMTest {
     }
 
     @Test
-    public void staleGroupCreationTest() throws Exception {
+    public void staleGroupCreationTest() {
         addFlowCapableNode(NODE_KEY);
 
         StaleGroupKey groupKey = new StaleGroupKey(new GroupId((long) 255));

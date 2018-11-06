@@ -15,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.FlowStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
@@ -60,7 +59,7 @@ public final class AllFlowsInAllTablesService extends
 
     @Override
     protected OfHeader buildRequest(final Xid xid,
-                                    final GetAllFlowsStatisticsFromAllFlowTablesInput input) throws ServiceException {
+                                    final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
         final MultipartRequestInputBuilder mprInput = RequestInputUtils
                 .createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(flowCase);

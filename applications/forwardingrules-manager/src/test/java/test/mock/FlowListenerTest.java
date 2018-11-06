@@ -92,7 +92,7 @@ public class FlowListenerTest extends FRMTest {
     }
 
     @Test
-    public void addTwoFlowsTest() throws Exception {
+    public void addTwoFlowsTest() {
         addFlowCapableNode(NODE_KEY);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -130,7 +130,7 @@ public class FlowListenerTest extends FRMTest {
     }
 
     @Test
-    public void updateFlowTest() throws Exception {
+    public void updateFlowTest() {
         addFlowCapableNode(NODE_KEY);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -170,7 +170,7 @@ public class FlowListenerTest extends FRMTest {
     }
 
     @Test
-    public void updateFlowScopeTest() throws Exception {
+    public void updateFlowScopeTest() {
         addFlowCapableNode(NODE_KEY);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -212,7 +212,7 @@ public class FlowListenerTest extends FRMTest {
     }
 
     @Test
-    public void deleteFlowTest() throws Exception {
+    public void deleteFlowTest() {
         addFlowCapableNode(NODE_KEY);
 
         FlowKey flowKey = new FlowKey(new FlowId("test_Flow"));
@@ -246,7 +246,7 @@ public class FlowListenerTest extends FRMTest {
     }
 
     @Test
-    public void staleMarkedFlowCreationTest() throws Exception {
+    public void staleMarkedFlowCreationTest() {
 
         addFlowCapableNode(NODE_KEY);
 

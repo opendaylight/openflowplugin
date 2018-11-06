@@ -51,7 +51,7 @@ public class FlatBatchFlowAdaptersTest {
     private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Test
-    public void testAdaptFlatBatchAddFlow() throws Exception {
+    public void testAdaptFlatBatchAddFlow() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -85,7 +85,7 @@ public class FlatBatchFlowAdaptersTest {
     }
 
     @Test
-    public void testAdaptFlatBatchRemoveFlow() throws Exception {
+    public void testAdaptFlatBatchRemoveFlow() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -102,7 +102,7 @@ public class FlatBatchFlowAdaptersTest {
     }
 
     @Test
-    public void testAdaptFlatBatchUpdateFlow() throws Exception {
+    public void testAdaptFlatBatchUpdateFlow() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -119,7 +119,7 @@ public class FlatBatchFlowAdaptersTest {
     }
 
     @Test
-    public void testCreateBatchFlowChainingFunction_failures() throws Exception {
+    public void testCreateBatchFlowChainingFunction_failures() {
         final RpcResult<BatchFlowOutputListGrouping> input = RpcResultBuilder.<BatchFlowOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowError")
                 .withResult(new AddFlowsBatchOutputBuilder()
@@ -144,7 +144,7 @@ public class FlatBatchFlowAdaptersTest {
     }
 
     @Test
-    public void testCreateBatchFlowChainingFunction_successes() throws Exception {
+    public void testCreateBatchFlowChainingFunction_successes() {
         final RpcResult<BatchFlowOutputListGrouping> input = RpcResultBuilder
                 .<BatchFlowOutputListGrouping>success(new AddFlowsBatchOutputBuilder().build())
                 .build();

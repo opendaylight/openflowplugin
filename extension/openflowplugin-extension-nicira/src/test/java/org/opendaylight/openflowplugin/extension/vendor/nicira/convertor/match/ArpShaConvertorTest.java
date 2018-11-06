@@ -54,7 +54,7 @@ public class ArpShaConvertorTest {
     private static final Logger LOG = LoggerFactory.getLogger(ArpShaConvertorTest.class);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmNxArpShaBuilder nxmNxArpShaBuilder = new NxmNxArpShaBuilder()
                 .setMacAddress(MAC_ADDRESS);
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder()
@@ -68,14 +68,14 @@ public class ArpShaConvertorTest {
     }
 
     @Test
-    public void testConvertToOFJava() throws Exception {
+    public void testConvertToOFJava() {
         final MatchEntry converted = arpShaConvertor.convert(extension);
         Assert.assertEquals(MAC_ADDRESS.getValue(),
                 ((ArpShaCaseValue) converted.getMatchEntryValue()).getArpShaValues().getMacAddress().getValue());
     }
 
     @Test
-    public void testConvertFromOFJava() throws Exception {
+    public void testConvertFromOFJava() {
         final ArpShaValuesBuilder arpShaValuesBuilder = new ArpShaValuesBuilder()
                 .setMacAddress(MAC_ADDRESS);
         final ArpShaCaseValueBuilder arpShaCaseValueBuilder = new ArpShaCaseValueBuilder()

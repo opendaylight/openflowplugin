@@ -52,12 +52,12 @@ public class ArpOpConvertorTest {
     private ArpOpConvertor arpOpConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         arpOpConvertor = new ArpOpConvertor();
     }
 
     @Test
-    public void testConvertToOFJava() throws Exception {
+    public void testConvertToOFJava() {
         final NxmOfArpOpBuilder nxmOfArpOpBuilder = new NxmOfArpOpBuilder()
                 .setValue(2);
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder();
@@ -73,7 +73,7 @@ public class ArpOpConvertorTest {
     }
 
     @Test
-    public void testConvertFromOFJava() throws Exception {
+    public void testConvertFromOFJava() {
         final ArpOpBuilder arpOpBuilder = new ArpOpBuilder()
                 .setOpCode(2);
         final ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder()

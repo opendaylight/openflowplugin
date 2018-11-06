@@ -55,7 +55,7 @@ public class DropTestProviderImpl implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         dropDsProvider.close();
         dropRpcProvider.close();
     }

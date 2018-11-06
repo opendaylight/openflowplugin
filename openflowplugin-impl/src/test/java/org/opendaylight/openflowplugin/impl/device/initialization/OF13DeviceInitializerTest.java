@@ -83,7 +83,7 @@ public class OF13DeviceInitializerTest {
     private AbstractDeviceInitializer deviceInitializer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = DeviceStateUtil
                 .createNodeInstanceIdentifier(new NodeId("openflow:1"));
 

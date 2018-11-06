@@ -25,7 +25,7 @@ public class OutboundQueueProviderImplTest extends TestCase {
             new OutboundQueueProviderImpl(OFConstants.OFP_VERSION_1_3);
 
     @Test
-    public void testReserveEntry() throws Exception {
+    public void testReserveEntry() {
 
         outboundQueueProvider.onConnectionQueueChanged(null);
         Long returnValue = outboundQueueProvider.reserveEntry();

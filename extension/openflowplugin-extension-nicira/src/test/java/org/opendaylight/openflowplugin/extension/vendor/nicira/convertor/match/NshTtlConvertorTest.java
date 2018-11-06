@@ -44,7 +44,7 @@ public class NshTtlConvertorTest {
     private static final Short TTL_VALUE = (short) 0x13;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNshTtl nxmNxNshTtl = new NxmNxNshTtlBuilder()
                 .setNshTtl(TTL_VALUE)
                 .build();

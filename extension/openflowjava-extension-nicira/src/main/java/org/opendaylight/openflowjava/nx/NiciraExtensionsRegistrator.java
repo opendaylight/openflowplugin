@@ -195,7 +195,7 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         registrator.unregisterActionDeserializer(RegLoadCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(RegLoadCodec.SERIALIZER_KEY);
         registrator.unregisterActionDeserializer(RegLoad2Codec.DESERIALIZER_KEY);

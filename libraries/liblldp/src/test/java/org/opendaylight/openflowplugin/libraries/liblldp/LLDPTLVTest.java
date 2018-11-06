@@ -58,7 +58,7 @@ public class LLDPTLVTest {
      * {@link org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV#getCustomString(byte[], int)}.
      */
     @Test
-    public void testGetCustomString() throws Exception {
+    public void testGetCustomString() {
         byte[] inputCustomTlv = Bytes.concat(new byte[] {
             // custom type (7b) + length (9b) = 16b = 2B  (skipped)
             // 0x7f, 24,

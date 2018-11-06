@@ -12,7 +12,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSilentErrorService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeter;
@@ -34,7 +33,7 @@ public final class SingleLayerMeterService<O extends DataObject> extends Abstrac
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final Meter input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final Meter input) {
         final MeterMessageBuilder meterMessageBuilder = new MeterMessageBuilder(input);
         final Class<? extends DataContainer> clazz = input.getImplementedInterface();
 

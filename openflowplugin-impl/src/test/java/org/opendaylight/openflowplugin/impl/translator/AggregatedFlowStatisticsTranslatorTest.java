@@ -32,12 +32,12 @@ public class AggregatedFlowStatisticsTranslatorTest {
     private DeviceInfo deviceInfo;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         translator = new AggregatedFlowStatisticsTranslator();
     }
 
     @Test
-    public void testTranslate() throws Exception {
+    public void testTranslate() {
         MultipartReplyAggregateBuilder aggregateStatsValueBld = new MultipartReplyAggregateBuilder()
                 .setByteCount(BigInteger.valueOf(1L))
                 .setFlowCount(2L)

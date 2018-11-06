@@ -81,7 +81,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
      * @see java.lang.AutoCloseable#close()
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         OpenflowpluginTableFeaturesTestServiceProvider.LOG
                 .info("SalTableServiceProvider stopped.");
         tableRegistration.close();

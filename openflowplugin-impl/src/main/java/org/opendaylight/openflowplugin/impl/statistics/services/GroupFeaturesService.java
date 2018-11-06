@@ -16,7 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.util.GroupUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -59,7 +58,7 @@ final class GroupFeaturesService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetGroupFeaturesInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetGroupFeaturesInput input) {
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPGROUPFEATURES, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(GROUP_FEAT_CASE);

@@ -40,7 +40,7 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
     private static final byte PREC_LEVEL = 3;
 
     @Test
-    public void deserializeDrop() throws Exception {
+    public void deserializeDrop() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         writeCommonAtributes(buffer);
         buffer.writeShort(OFPMBTDROP);
@@ -60,7 +60,7 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
     }
 
     @Test
-    public void deserializeDscp() throws Exception {
+    public void deserializeDscp() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         writeCommonAtributes(buffer);
         buffer.writeShort(OFPMBTDSCP);

@@ -28,7 +28,7 @@ public class DeviceMastershipTest {
     private RoutedRpcRegistration routedRpcRegistration;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceMastership = new DeviceMastership(NODE_ID, routedRpcRegistration);
     }
 

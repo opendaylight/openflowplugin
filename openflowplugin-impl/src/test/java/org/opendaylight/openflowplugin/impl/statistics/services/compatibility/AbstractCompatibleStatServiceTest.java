@@ -112,7 +112,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
     }
 
     @Test
-    public void testGetOfVersion() throws Exception {
+    public void testGetOfVersion() {
         Assert.assertEquals(OFConstants.OFP_VERSION_1_3, service.getOfVersion().getVersion());
     }
 

@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class ArpSourceHardwareAddressEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final MacAddress arpSourceHardwareAddress = new MacAddress("00:01:02:03:04:05");
         final MacAddress arpSourceHardwareAddressMask = new MacAddress("00:00:00:00:00:00");

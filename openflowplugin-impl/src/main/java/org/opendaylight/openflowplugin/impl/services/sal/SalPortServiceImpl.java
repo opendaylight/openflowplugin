@@ -14,7 +14,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerPortService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PortConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -50,7 +49,7 @@ public final class SalPortServiceImpl
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final UpdatePortInput input) {
         final Optional<PortModInput> ofPortModInput = convertorExecutor
             .convert(getPortFromInput(input), data);
 

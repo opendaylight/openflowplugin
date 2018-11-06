@@ -31,7 +31,7 @@ public class PortStatsServiceTest extends AbstractStatsServiceTest {
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         Xid xid = new Xid(42L);
         GetNodeConnectorStatisticsInputBuilder input = new GetNodeConnectorStatisticsInputBuilder()
                 .setNodeConnectorId(new NodeConnectorId("junitProto:11:12"))

@@ -34,7 +34,7 @@ public class DecNshTtlConvertorTest {
     private DecNshTtlConvertor decNshTtlConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxDecNshTtl nxDecNshTtl = Mockito.mock(NxDecNshTtl.class);
 
         NxActionDecNshTtl nxActionDecNshTtl = Mockito.mock(NxActionDecNshTtl.class);

@@ -82,7 +82,7 @@ public class GroupForwarderTest {
     private GroupForwarder groupForwarder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         groupForwarder = new GroupForwarder(salGroupService);
         txId = new TransactionId(BigInteger.ONE);
     }

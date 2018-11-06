@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.addr
 public class SetNwDstActionSerializerTest extends AbstractSetFieldActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Ipv4 address = new Ipv4Builder()
                 .setIpv4Address(new Ipv4Prefix("192.168.76.2/32"))
                 .build();

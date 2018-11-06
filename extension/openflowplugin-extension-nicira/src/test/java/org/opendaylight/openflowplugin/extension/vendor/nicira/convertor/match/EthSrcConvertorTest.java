@@ -50,7 +50,7 @@ public class EthSrcConvertorTest {
     private EthSrcConvertor ethSrcConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmOfEthSrcBuilder nxmOfEthSrcBuilder = new NxmOfEthSrcBuilder()
                 .setMacAddress(MAC_ADDRESS);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
@@ -65,14 +65,14 @@ public class EthSrcConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = ethSrcConvertor.convert(extension);
         Assert.assertEquals(MAC_ADDRESS, ((EthSrcCaseValue)converted.getMatchEntryValue())
                 .getEthSrcValues().getMacAddress());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final EthSrcValuesBuilder ethSrcValuesBuilder = new EthSrcValuesBuilder()
                 .setMacAddress(MAC_ADDRESS);
         final EthSrcCaseValueBuilder ethSrcCaseValueBuilder = new EthSrcCaseValueBuilder()

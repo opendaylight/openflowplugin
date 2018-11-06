@@ -24,7 +24,7 @@ public class DeviceMeterRegistryImplTest {
     private DeviceMeterRegistryImpl deviceMeterRegistry;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
         meterId = new MeterId(42L);
         meterId2 = new MeterId(84L);
@@ -34,27 +34,27 @@ public class DeviceMeterRegistryImplTest {
     }
 
     @Test
-    public void testStore() throws Exception {
+    public void testStore() {
         deviceMeterRegistry.store(meterId2);
         Assert.assertEquals(2, deviceMeterRegistry.getAllMeterIds().size());
     }
 
     @Test
-    public void testRemoveMarked() throws Exception {
+    public void testRemoveMarked() {
         deviceMeterRegistry.addMark(meterId);
         deviceMeterRegistry.processMarks();
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
     }
 
     @Test
-    public void testRemoveMarkedNegative() throws Exception {
+    public void testRemoveMarkedNegative() {
         deviceMeterRegistry.addMark(meterId2);
         deviceMeterRegistry.processMarks();
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void testClose() {
         deviceMeterRegistry.addMark(meterId);
         deviceMeterRegistry.close();
 
@@ -68,7 +68,7 @@ public class DeviceMeterRegistryImplTest {
     }
 
     @Test
-    public void testForEach() throws Exception {
+    public void testForEach() {
         final AtomicInteger counter = new AtomicInteger(0);
         deviceMeterRegistry.store(meterId2);
         deviceMeterRegistry.forEach(meter -> counter.incrementAndGet());

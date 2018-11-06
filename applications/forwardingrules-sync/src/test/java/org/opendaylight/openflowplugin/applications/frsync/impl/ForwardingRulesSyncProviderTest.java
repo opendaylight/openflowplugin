@@ -37,7 +37,7 @@ public class ForwardingRulesSyncProviderTest {
     private ClusterSingletonServiceProvider clusterSingletonService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(rpcRegistry.getRpcService(ArgumentMatchers.<Class<? extends RpcService>>any()))
                 .thenAnswer(invocation -> {
                     Class<? extends RpcService> serviceType =
@@ -51,7 +51,7 @@ public class ForwardingRulesSyncProviderTest {
     }
 
     @Test
-    public void testInit() throws Exception {
+    public void testInit() {
         provider.init();
 
         Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(

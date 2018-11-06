@@ -24,7 +24,7 @@ public class BulkOMaticUtilsTest {
     private static final String FLOW_ID = "1";
 
     @Test
-    public void testIpIntToStr() throws Exception {
+    public void testIpIntToStr() {
         Assert.assertEquals("255.255.255.255/32", BulkOMaticUtils.ipIntToStr(0xffffffff));
         Assert.assertEquals("255.255.255.255/32", BulkOMaticUtils.ipIntToStr(-1));
         Assert.assertEquals("0.0.0.0/32", BulkOMaticUtils.ipIntToStr(0));
@@ -32,13 +32,13 @@ public class BulkOMaticUtilsTest {
     }
 
     @Test
-    public void testGetMatch() throws Exception {
+    public void testGetMatch() {
         final Match match = BulkOMaticUtils.getMatch(0xffffffff);
         Assert.assertNotNull(match);
     }
 
     @Test
-    public void testBuildFlow() throws Exception {
+    public void testBuildFlow() {
         final Match match = BulkOMaticUtils.getMatch(0xffffffff);
         final Flow flow = BulkOMaticUtils.buildFlow((short)1, FLOW_ID, match);
         Assert.assertEquals(FLOW_ID,flow.getId().getValue());
@@ -46,22 +46,22 @@ public class BulkOMaticUtilsTest {
     }
 
     @Test
-    public void testGetFlowInstanceIdentifier() throws Exception {
+    public void testGetFlowInstanceIdentifier() {
         Assert.assertNotNull(BulkOMaticUtils.getFlowInstanceIdentifier((short)1, "1", "1"));
     }
 
     @Test
-    public void testGetFlowCapableNodeId() throws Exception {
+    public void testGetFlowCapableNodeId() {
         Assert.assertNotNull(BulkOMaticUtils.getFlowCapableNodeId("1"));
     }
 
     @Test
-    public void testGetTableId() throws Exception {
+    public void testGetTableId() {
         Assert.assertNotNull(BulkOMaticUtils.getTableId((short)1, "1"));
     }
 
     @Test
-    public void testGetFlowId() throws Exception {
+    public void testGetFlowId() {
         Assert.assertNotNull(BulkOMaticUtils.getFlowId(BulkOMaticUtils.getTableId((short)1, "1"), "1"));
     }
 

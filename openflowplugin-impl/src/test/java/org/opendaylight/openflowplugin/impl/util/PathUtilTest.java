@@ -29,12 +29,12 @@ public class PathUtilTest {
     private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Test
-    public void testExtractNodeId() throws Exception {
+    public void testExtractNodeId() {
         Assert.assertEquals(NODE_ID, PathUtil.extractNodeId(NODE_REF));
     }
 
     @Test
-    public void testExtractNodeId2() throws Exception {
+    public void testExtractNodeId2() {
         Assert.assertEquals(NODE_ID, PathUtil.extractNodeId(NODE_II));
     }
 }

@@ -50,7 +50,7 @@ public class ArpThaConvertorTest {
     private ArpThaConvertor arpThaConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final NxmNxArpThaBuilder nxArpThaBuilder = new NxmNxArpThaBuilder()
                 .setMacAddress(MAC_ADDRESS);
@@ -65,14 +65,14 @@ public class ArpThaConvertorTest {
     }
 
     @Test
-    public void testConvertToOFJava() throws Exception {
+    public void testConvertToOFJava() {
         final MatchEntry converted = arpThaConvertor.convert(extension);
         Assert.assertEquals(MAC_ADDRESS.getValue(),
                 ((ArpThaCaseValue) converted.getMatchEntryValue()).getArpThaValues().getMacAddress().getValue());
     }
 
     @Test
-    public void testConvertFromOFJava() throws Exception {
+    public void testConvertFromOFJava() {
         final ArpThaValuesBuilder arpThaValuesBuilder = new ArpThaValuesBuilder()
                 .setMacAddress(MAC_ADDRESS);
         final ArpThaCaseValueBuilder arpThaCaseValueBuilder = new ArpThaCaseValueBuilder()

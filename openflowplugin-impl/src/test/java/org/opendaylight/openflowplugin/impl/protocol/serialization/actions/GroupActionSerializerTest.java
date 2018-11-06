@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class GroupActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final long group = 10L;
 
         final Action action = new GroupActionCaseBuilder()

@@ -25,7 +25,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractTableMultipartService;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -63,7 +62,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final UpdateTableInput input) {
         final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
                 .request.multipart.request.body.multipart.request.table.features._case.multipart.request
                 .table.features.TableFeatures>> tableFeatures =

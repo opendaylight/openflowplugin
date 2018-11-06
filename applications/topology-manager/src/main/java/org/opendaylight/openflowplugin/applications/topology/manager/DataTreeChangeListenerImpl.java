@@ -53,7 +53,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         listenerRegistration.close();
     }
 

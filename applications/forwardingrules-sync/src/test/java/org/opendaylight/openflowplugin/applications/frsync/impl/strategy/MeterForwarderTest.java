@@ -80,7 +80,7 @@ public class MeterForwarderTest {
     private MeterForwarder meterForwarder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         meterForwarder = new MeterForwarder(salMeterService);
         txId = new TransactionId(BigInteger.ONE);
     }

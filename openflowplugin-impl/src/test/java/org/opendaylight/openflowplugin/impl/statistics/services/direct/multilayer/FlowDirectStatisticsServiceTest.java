@@ -46,7 +46,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     private FlowDirectStatisticsService service;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         service = new FlowDirectStatisticsService(requestContextStack,
                                                   deviceContext,
                                                   convertorManager,
@@ -57,7 +57,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     }
 
     @Override
-    public void testBuildRequestBody() throws Exception {
+    public void testBuildRequestBody() {
         final GetFlowStatisticsInput input = mock(GetFlowStatisticsInput.class);
 
         when(input.getTableId()).thenReturn(TABLE_NO);
@@ -72,7 +72,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     }
 
     @Override
-    public void testBuildReply() throws Exception {
+    public void testBuildReply() {
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyFlowCase flowCase = mock(MultipartReplyFlowCase.class);
         final MultipartReplyFlow flow = mock(MultipartReplyFlow.class);
@@ -105,7 +105,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     }
 
     @Override
-    public void testStoreStatistics() throws Exception {
+    public void testStoreStatistics() {
         final FlowAndStatisticsMapList stat = mock(FlowAndStatisticsMapList.class);
         when(stat.getTableId()).thenReturn(TABLE_NO);
         when(stat.getMatch()).thenReturn(new MatchBuilder().build());

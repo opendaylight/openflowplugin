@@ -44,7 +44,7 @@ public class GroupMessageDeserializerTest extends AbstractDeserializerTest {
     }
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         // Group header
         buffer.writeByte(TYPE);
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);

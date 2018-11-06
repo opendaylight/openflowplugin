@@ -49,7 +49,7 @@ public class DeviceMastershipManagerTest {
     private NodeId nodeId;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, reconciliationAgent, dataBroker,
                 mastershipChangeServiceManager);
         deviceMastershipManager.setRoutedRpcReg(routedRpcReg);
@@ -61,7 +61,7 @@ public class DeviceMastershipManagerTest {
     }
 
     @Test
-    public void testOnDeviceConnectedAndDisconnected() throws Exception {
+    public void testOnDeviceConnectedAndDisconnected() {
         // no context
         Assert.assertNull(deviceMastershipManager.getDeviceMasterships().get(deviceInfo.getNodeId()));
         deviceMastershipManager.onBecomeOwner(deviceInfo);

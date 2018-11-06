@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class ArpSourceTransportAddressEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Match arpSpaMatch = new MatchBuilder()
                 .setLayer3Match(new ArpMatchBuilder()
                         .setArpSourceTransportAddress(new Ipv4Prefix("10.0.2.0/24"))

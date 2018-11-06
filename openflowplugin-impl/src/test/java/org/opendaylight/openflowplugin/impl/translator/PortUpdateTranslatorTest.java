@@ -47,7 +47,7 @@ public class PortUpdateTranslatorTest {
     private PortStatusMessageBuilder portBld;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         portUpdateTranslator = new PortUpdateTranslator();
 
         portStateBld = new StateBuilder().setLive(true);
@@ -58,7 +58,7 @@ public class PortUpdateTranslatorTest {
     }
 
     @Test
-    public void testTranslate_13() throws Exception {
+    public void testTranslate_13() {
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
@@ -88,7 +88,7 @@ public class PortUpdateTranslatorTest {
     }
 
     @Test
-    public void testTranslate_10() throws Exception {
+    public void testTranslate_10() {
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(

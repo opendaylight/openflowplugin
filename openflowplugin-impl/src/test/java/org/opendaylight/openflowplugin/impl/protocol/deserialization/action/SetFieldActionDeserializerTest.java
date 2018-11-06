@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class SetFieldActionDeserializerTest extends AbstractActionDeserializerTest {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final int portNum = 0xfffffffa;
         writeHeader(in);

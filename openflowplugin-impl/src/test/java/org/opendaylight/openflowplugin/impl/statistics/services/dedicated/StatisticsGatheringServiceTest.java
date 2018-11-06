@@ -32,7 +32,7 @@ public class StatisticsGatheringServiceTest extends ServiceMocking {
     }
 
     @Test
-    public void testGetStatisticsOfType() throws Exception {
+    public void testGetStatisticsOfType() {
         final EventIdentifier eventIdentifier = new EventIdentifier("ut-event", "ut-device-id:1");
         for (MultipartType mpType : MultipartType.values()) {
             statisticsGatheringService.getStatisticsOfType(eventIdentifier, mpType);
@@ -42,7 +42,7 @@ public class StatisticsGatheringServiceTest extends ServiceMocking {
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         final long xidValue = 21L;
         Xid xid = new Xid(xidValue);
         for (MultipartType mpType : MultipartType.values()) {

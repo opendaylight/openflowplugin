@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class ClearActionsInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         writeHeader(in);
         in.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);

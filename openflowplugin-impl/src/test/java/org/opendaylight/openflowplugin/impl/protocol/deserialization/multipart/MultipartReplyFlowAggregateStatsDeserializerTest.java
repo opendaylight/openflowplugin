@@ -23,7 +23,7 @@ public class MultipartReplyFlowAggregateStatsDeserializerTest extends AbstractMu
     private static final byte PADDING_IN_MULTIPART_REPLY_HEADER = 4;
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeLong(PACKET_COUNT);
         buffer.writeLong(BYTE_COUNT);

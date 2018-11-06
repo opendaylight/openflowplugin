@@ -41,7 +41,7 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf bb = (ByteBuf) msg;
         if (LOG.isDebugEnabled()) {
             LOG.debug("Message {}", ByteBufUtils.byteBufToHexString(bb));
@@ -55,7 +55,7 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         LOG.debug("Client is active");
         if (isOnlineFuture != null) {
             isOnlineFuture.set(true);

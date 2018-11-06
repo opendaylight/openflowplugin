@@ -76,7 +76,7 @@ public class MultipartReplyTranslatorUtilTest {
     private TranslatorLibrarian translatorLibrarian;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         translatorLibrarian = new TranslatorLibrarian() {

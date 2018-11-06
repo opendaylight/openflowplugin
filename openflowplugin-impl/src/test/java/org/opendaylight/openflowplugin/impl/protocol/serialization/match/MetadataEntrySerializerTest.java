@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class MetadataEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final byte[] metadata = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         final byte[] metadataMask = new byte[] { 30, 30, 30, 30, 30, 0, 0, 0 };
 

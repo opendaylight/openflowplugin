@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Ipv6NdTargetEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Ipv6Address ipv6NdTarget = new Ipv6Address("2001:db8::");
 
         final Match ipv6NdTargetMatch = new MatchBuilder()

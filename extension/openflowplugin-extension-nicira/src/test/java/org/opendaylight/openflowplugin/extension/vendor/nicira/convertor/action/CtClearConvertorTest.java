@@ -41,7 +41,7 @@ public class CtClearConvertorTest {
     private CtClearConvertor ctClearConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxCtClear nxCtClear = Mockito.mock(NxCtClear.class);
 
         final ActionCtClear actionCtClear = Mockito.mock(ActionCtClear.class);
@@ -51,13 +51,13 @@ public class CtClearConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionCtClear actionCtClear = (ActionCtClear) ctClearConvertor.convert(actionsCase).getActionChoice();
         Assert.assertNotNull(actionCtClear);
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = ctClearConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         Assert.assertNotNull(actionResult);

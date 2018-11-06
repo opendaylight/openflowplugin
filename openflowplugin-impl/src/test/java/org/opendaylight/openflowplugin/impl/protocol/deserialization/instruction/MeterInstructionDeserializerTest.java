@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class MeterInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final int meterId = 3;
         writeHeader(in);

@@ -96,7 +96,7 @@ public class SalBulkFlowServiceImplTest {
     private SalBulkFlowServiceImpl salBulkFlowService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         Mockito.lenient().when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
@@ -106,7 +106,7 @@ public class SalBulkFlowServiceImplTest {
     }
 
     @Test
-    public void testAddRemoveFlowsDs() throws Exception {
+    public void testAddRemoveFlowsDs() {
         Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
 
         final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
@@ -146,7 +146,7 @@ public class SalBulkFlowServiceImplTest {
     }
 
     @Test
-    public void testAddRemoveFlowsRpc() throws Exception {
+    public void testAddRemoveFlowsRpc() {
         Mockito.when(mockSalFlowService.addFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 

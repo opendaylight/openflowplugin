@@ -62,7 +62,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
 
     @Override
     @PreDestroy
-    public void close() throws Exception {
+    public void close() {
         super.close();
     }
 

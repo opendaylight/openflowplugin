@@ -78,7 +78,7 @@ public class PacketReceivedTranslatorTest {
     static final Long PORT_NUM_VALUE = 11L;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final List<PhyPort> phyPorts = Collections.singletonList(phyPort);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
 
@@ -86,7 +86,7 @@ public class PacketReceivedTranslatorTest {
     }
 
     @Test
-    public void testTranslate() throws Exception {
+    public void testTranslate() {
         final KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
@@ -124,7 +124,7 @@ public class PacketReceivedTranslatorTest {
     }
 
     @Test
-    public void testGetPacketInMatch() throws Exception {
+    public void testGetPacketInMatch() {
         MatchEntryBuilder matchEntryBuilder = assembleMatchEntryBld(PORT_NUM_VALUE);
         MatchBuilder packetInMatchBld = new MatchBuilder()
                 .setMatchEntry(Lists.newArrayList(matchEntryBuilder.build()));

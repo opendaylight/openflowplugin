@@ -47,7 +47,7 @@ public class OpenFlowProviderConfigImplTest {
     private OpenflowProviderConfig openflowProviderConfig;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(configurationService.getProperty(eq(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString()), any()))
                 .thenReturn(IS_STATISTICS_POLLING_ON);
         when(configurationService.getProperty(eq(ConfigurationProperty.BARRIER_COUNT_LIMIT.toString()), any()))
@@ -91,88 +91,88 @@ public class OpenFlowProviderConfigImplTest {
     }
 
     @Test
-    public void getRpcRequestsQuota() throws Exception {
+    public void getRpcRequestsQuota() {
         assertEquals(RPC_REQUESTS_QUOTA, openflowProviderConfig.getRpcRequestsQuota().getValue());
     }
 
     @Test
-    public void isSwitchFeaturesMandatory() throws Exception {
+    public void isSwitchFeaturesMandatory() {
         assertEquals(SWITCH_FEATURES_MANDATORY, openflowProviderConfig.isSwitchFeaturesMandatory());
     }
 
     @Test
-    public void getGlobalNotificationQuota() throws Exception {
+    public void getGlobalNotificationQuota() {
         assertEquals(GLOBAL_NOTIFICATION_QUOTA, openflowProviderConfig.getGlobalNotificationQuota());
     }
 
     @Test
-    public void isIsStatisticsPollingOn() throws Exception {
+    public void isIsStatisticsPollingOn() {
         assertEquals(IS_STATISTICS_POLLING_ON, openflowProviderConfig.isIsStatisticsPollingOn());
     }
 
     @Test
-    public void isIsStatisticsRpcEnabled() throws Exception {
+    public void isIsStatisticsRpcEnabled() {
         assertEquals(IS_STATISTICS_RPC_ENABLED, openflowProviderConfig.isIsStatisticsRpcEnabled());
     }
 
     @Test
-    public void getBarrierIntervalTimeoutLimit() throws Exception {
+    public void getBarrierIntervalTimeoutLimit() {
         assertEquals(BARRIER_INTERVAL_TIMEOUT_LIMIT, openflowProviderConfig.getBarrierIntervalTimeoutLimit()
                 .getValue());
     }
 
     @Test
-    public void getBarrierCountLimit() throws Exception {
+    public void getBarrierCountLimit() {
         assertEquals(BARRIER_COUNT_LIMIT, openflowProviderConfig.getBarrierCountLimit().getValue());
     }
 
     @Test
-    public void getEchoReplyTimeout() throws Exception {
+    public void getEchoReplyTimeout() {
         assertEquals(ECHO_REPLY_TIMEOUT, openflowProviderConfig.getEchoReplyTimeout().getValue());
     }
 
     @Test
-    public void getThreadPoolMinThreads() throws Exception {
+    public void getThreadPoolMinThreads() {
         assertEquals(THREAD_POOL_MIN_THREADS, openflowProviderConfig.getThreadPoolMinThreads());
     }
 
     @Test
-    public void getThreadPoolMaxThreads() throws Exception {
+    public void getThreadPoolMaxThreads() {
         assertEquals(THREAD_POOL_MAX_THREADS, openflowProviderConfig.getThreadPoolMaxThreads().getValue());
     }
 
     @Test
-    public void getThreadPoolTimeout() throws Exception {
+    public void getThreadPoolTimeout() {
         assertEquals(THREAD_POOL_TIMEOUT, openflowProviderConfig.getThreadPoolTimeout());
     }
 
     @Test
-    public void isEnableFlowRemovedNotification() throws Exception {
+    public void isEnableFlowRemovedNotification() {
         assertEquals(ENABLE_FLOW_REMOVED_NOTIFICATION, openflowProviderConfig.isEnableFlowRemovedNotification());
     }
 
     @Test
-    public void isSkipTableFeatures() throws Exception {
+    public void isSkipTableFeatures() {
         assertEquals(SKIP_TABLE_FEATURES, openflowProviderConfig.isSkipTableFeatures());
     }
 
     @Test
-    public void getBasicTimerDelay() throws Exception {
+    public void getBasicTimerDelay() {
         assertEquals(BASIC_TIMER_DELAY, openflowProviderConfig.getBasicTimerDelay().getValue());
     }
 
     @Test
-    public void getMaximumTimerDelay() throws Exception {
+    public void getMaximumTimerDelay() {
         assertEquals(MAXIMUM_TIMER_DELAY, openflowProviderConfig.getMaximumTimerDelay().getValue());
     }
 
     @Test
-    public void isUseSingleLayerSerialization() throws Exception {
+    public void isUseSingleLayerSerialization() {
         assertEquals(USE_SINGLE_LAYER_SERIALIZATION, openflowProviderConfig.isUseSingleLayerSerialization());
     }
 
     @Test
-    public void getDeviceConnectionRateLimitPerMin() throws Exception {
+    public void getDeviceConnectionRateLimitPerMin() {
         assertEquals(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN, openflowProviderConfig.getDeviceConnectionRateLimitPerMin());
     }
 

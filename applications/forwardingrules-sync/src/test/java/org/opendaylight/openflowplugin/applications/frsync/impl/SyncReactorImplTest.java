@@ -78,7 +78,7 @@ public class SyncReactorImplTest {
     private ArgumentCaptor<SynchronizationDiffInput> syncDiffInputCaptor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         reactor = new SyncReactorImpl(syncPlanPushStrategy);
     }
 

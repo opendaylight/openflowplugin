@@ -17,7 +17,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
-import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
@@ -59,11 +58,7 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
                     .getExtensionConvertorProvider()
                     .getMessageConverter(key);
 
-            try {
-                builder.setExperimenterMessageOfChoice(convertor.convert(data, MessagePath.MPMESSAGE_RPC_OUTPUT));
-            } catch (ConversionException ce) {
-                LOG.debug("Failed to deserialize multipart reply experimenter for key: {}", key);
-            }
+            builder.setExperimenterMessageOfChoice(convertor.convert(data, MessagePath.MPMESSAGE_RPC_OUTPUT));
         }
 
         return builder.build();

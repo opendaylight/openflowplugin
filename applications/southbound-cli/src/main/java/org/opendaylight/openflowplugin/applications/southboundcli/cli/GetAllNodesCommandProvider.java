@@ -28,7 +28,7 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         List<OFNode> ofNodeList = ShellUtil.getAllNodes(dataBroker);
         if (ofNodeList.isEmpty()) {
             session.getConsole().println("No node is connected yet");

@@ -31,7 +31,7 @@ public class SemaphoreKeeperGuavaImplTest {
     private final String key = "11";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         semaphoreKeeper = new SemaphoreKeeperGuavaImpl<>(1, true);
     }
 

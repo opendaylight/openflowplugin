@@ -49,7 +49,7 @@ public class OFDatagramPacketHandlerTest {
      * Test {@link OFDatagramPacketHandler}.
      */
     @Test
-    public void test() throws Exception {
+    public void test() {
         OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler, CHANNEL_OUTBOUND_QUEUE_SIZE);
         byte version = EncodeConstants.OF13_VERSION_ID;
         ByteBuf messageBuffer = ByteBufUtils.hexStringToByteBuf("04 02 00 08 01 02 03 04");

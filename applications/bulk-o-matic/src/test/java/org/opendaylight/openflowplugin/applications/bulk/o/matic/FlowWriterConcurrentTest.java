@@ -48,7 +48,7 @@ public class FlowWriterConcurrentTest {
     private FlowWriterConcurrent flowWriterConcurrent;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         doReturn(writeTransaction).when(mockDataBroker).newWriteOnlyTransaction();
         Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
@@ -62,7 +62,7 @@ public class FlowWriterConcurrentTest {
     }
 
     @Test
-    public void testAddFlows() throws Exception {
+    public void testAddFlows() {
         flowWriterConcurrent.addFlows(1, FLOWS_PER_DPN, 10, 10, 10, (short) 0, (short) 1, true);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any(),
@@ -70,7 +70,7 @@ public class FlowWriterConcurrentTest {
     }
 
     @Test
-    public void testDeleteFlows() throws Exception {
+    public void testDeleteFlows() {
         flowWriterConcurrent.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN))
                 .delete(ArgumentMatchers.any(),

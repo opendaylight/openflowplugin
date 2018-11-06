@@ -116,14 +116,14 @@ public class SalFlatBatchServiceImplTest {
     private SalFlatBatchServiceImpl salFlatBatchService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         salFlatBatchService =
                 new SalFlatBatchServiceImpl(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
 
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
     }
 

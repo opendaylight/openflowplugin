@@ -70,7 +70,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
 
     @Override
     @PreDestroy
-    public void close() throws Exception {
+    public void close() {
         super.close();
     }
 

@@ -52,18 +52,18 @@ public class BarrierUtilTest {
     private ArgumentCaptor<Pair<RpcResult<String>, RpcResult<SendBarrierOutput>>> pairCpt;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(transactionService.sendBarrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(transactionService, compositeTransform);
     }
 
     @Test
-    public void testChainBarrier() throws Exception {
+    public void testChainBarrier() {
         final String data = "ut-data1";
         final ListenableFuture<RpcResult<String>> input = RpcResultBuilder.success(data).buildFuture();
         final ListenableFuture<RpcResult<String>> chainResult =
@@ -81,7 +81,7 @@ public class BarrierUtilTest {
     }
 
     @Test
-    public void testCreateSendBarrierInput() throws Exception {
+    public void testCreateSendBarrierInput() {
         final SendBarrierInput barrierInput = BarrierUtil.createSendBarrierInput(NODE_REF);
 
         Assert.assertEquals(NODE_REF, barrierInput.getNode());

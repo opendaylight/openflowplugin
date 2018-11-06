@@ -41,7 +41,7 @@ public class FlowReaderTest {
     private FlowReader flowReader;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.of(node)));
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
@@ -49,7 +49,7 @@ public class FlowReaderTest {
     }
 
     @Test
-    public void testRun() throws Exception {
+    public void testRun() {
         flowReader.run();
         Assert.assertEquals(10, flowReader.getFlowCount());
         Assert.assertEquals(FlowCounter.OperationStatus.SUCCESS.status(), flowReader.getReadOpStatus());
