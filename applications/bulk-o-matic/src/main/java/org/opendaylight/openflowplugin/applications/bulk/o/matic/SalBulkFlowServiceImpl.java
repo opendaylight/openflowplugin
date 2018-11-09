@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import javax.inject.Singleton;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
+
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -81,6 +84,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple implementation providing bulk flows operations.
  */
+@Singleton
 public class SalBulkFlowServiceImpl implements SalBulkFlowService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowServiceImpl.class);
@@ -90,7 +94,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     private final FlowCounter flowCounterBeanImpl = new FlowCounter();
     private final ExecutorService fjService = new ForkJoinPool();
 
-    public SalBulkFlowServiceImpl(SalFlowService flowService, DataBroker dataBroker) {
+    public SalBulkFlowServiceImpl(@Reference SalFlowService flowService, @Reference DataBroker dataBroker) {
         this.flowService = Preconditions.checkNotNull(flowService);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
 
