@@ -28,6 +28,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
+
 /**
  * Listens to packetIn notification.
  * <ul>

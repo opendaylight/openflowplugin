@@ -11,16 +11,21 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class SimpleDropFirewall {
 
     private final SalFlowService flowService;
 
-    public SimpleDropFirewall(SalFlowService flowService) {
+    public SimpleDropFirewall(@Reference SalFlowService flowService) {
         this.flowService = flowService;
     }
 

@@ -11,6 +11,8 @@ import com.google.common.base.MoreObjects;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -23,9 +25,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Threads;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Tls;
 
+import javax.inject.Singleton;
+
 /**
  * Implementation of the SwitchConnectionProviderFactory interface.
  */
+@Singleton
+@Service(classes = SwitchConnectionProviderFactory.class)
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
 
     @Override

@@ -25,6 +25,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
+
 public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>,
         AutoCloseable {
 
@@ -53,6 +55,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         listenerRegistration.close();
     }
