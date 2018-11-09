@@ -8,6 +8,10 @@
 
 package org.opendaylight.openflowplugin.test;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -15,6 +19,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class OpenflowpluginTestActivator implements AutoCloseable {
     private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginTestActivator.class);
@@ -48,8 +53,8 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
 
     public static final String NODE_ID = "foo:node:1";
 
-    public OpenflowpluginTestActivator(DataBroker dataBroker, NotificationProviderService notificationService,
-            BundleContext ctx) {
+    public OpenflowpluginTestActivator(@Reference DataBroker dataBroker,
+            @Reference NotificationProviderService notificationService, @Reference BundleContext ctx) {
         provider = new OpenflowpluginTestServiceProvider(dataBroker, notificationService);
         OpenflowpluginTestCommandProvider openflowpluginTestCommandProvider = new OpenflowpluginTestCommandProvider(
                 dataBroker, notificationService, ctx);
@@ -80,6 +85,7 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
         this.groupCmdProvider = openflowPluginBulkGroupTransactionProvider;
     }
 
+    @PostConstruct
     public void init() {
         provider.register(rpcRegistry);
 
@@ -99,6 +105,7 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
     }
 
     @Override
+    @PreDestroy
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         try {
