@@ -99,7 +99,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
-    public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
+    public ForwardingRulesManagerImpl(final DataBroker dataBroker,
+                                      final RpcProviderRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
                                       final MastershipChangeServiceManager mastershipChangeServiceManager,
                                       final ClusterSingletonServiceProvider clusterSingletonService,

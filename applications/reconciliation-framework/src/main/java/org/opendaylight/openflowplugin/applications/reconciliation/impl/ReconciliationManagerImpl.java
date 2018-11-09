@@ -21,6 +21,12 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -32,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
+@Service(classes = ReconciliationManager.class)
 public class ReconciliationManagerImpl implements ReconciliationManager, ReconciliationFrameworkEvent {
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationManagerImpl.class);
 
@@ -42,11 +50,13 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     private final Map<ResultState, Integer> resultStateMap = new ConcurrentHashMap<>();
     private final AtomicReference<ResultState> decidedResultState = new AtomicReference<>(ResultState.DONOTHING);
 
-    public ReconciliationManagerImpl(MastershipChangeServiceManager mastershipChangeServiceManager) {
+    @Inject
+    public ReconciliationManagerImpl(@Reference MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.mastershipChangeServiceManager = Preconditions
                 .checkNotNull(mastershipChangeServiceManager, "MastershipChangeServiceManager can not be null!");
     }
 
+    @PostConstruct
     public void start() throws MastershipChangeException {
         mastershipChangeServiceManager.reconciliationFrameworkRegistration(this);
         LOG.info("ReconciliationManager has started successfully.");
@@ -88,6 +98,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
     }
 

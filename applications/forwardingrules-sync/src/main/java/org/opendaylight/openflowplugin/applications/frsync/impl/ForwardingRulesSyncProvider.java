@@ -15,6 +15,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -44,6 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Top provider of forwarding rules synchronization functionality.
  */
+@Singleton
 public class ForwardingRulesSyncProvider implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
@@ -69,9 +74,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
 
     private final ListeningExecutorService syncThreadPool;
 
-    public ForwardingRulesSyncProvider(final DataBroker dataBroker,
-                                       final RpcConsumerRegistry rpcRegistry,
-                                       final ClusterSingletonServiceProvider clusterSingletonService) {
+    public ForwardingRulesSyncProvider(@Reference final DataBroker dataBroker,
+                                       @Reference final RpcConsumerRegistry rpcRegistry,
+                                       @Reference final ClusterSingletonServiceProvider clusterSingletonService) {
         Preconditions.checkNotNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
@@ -93,6 +98,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);
     }
 
+    @PostConstruct
     public void init() {
         final TableForwarder tableForwarder = new TableForwarder(salTableService);
 
@@ -132,6 +138,7 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     }
 
     @Override
+    @PreDestroy
     public void close() {
         if (Objects.nonNull(dataTreeConfigChangeListener)) {
             dataTreeConfigChangeListener.close();

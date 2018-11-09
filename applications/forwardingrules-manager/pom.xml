@@ -14,6 +14,7 @@
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
@@ -93,7 +94,29 @@
       <artifactId>arbitratorreconciliation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.aries.blueprint</groupId>
+      <artifactId>blueprint-maven-plugin-annotation</artifactId>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- TODO Remove this when we upgrade to odlparent with a fix for ODLPARENT-146 -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <failOnError>false</failOnError>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>blueprint-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>

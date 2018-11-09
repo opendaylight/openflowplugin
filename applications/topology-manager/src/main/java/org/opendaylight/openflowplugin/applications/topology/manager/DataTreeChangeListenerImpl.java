@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import javax.annotation.PreDestroy;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -53,6 +54,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         listenerRegistration.close();
     }

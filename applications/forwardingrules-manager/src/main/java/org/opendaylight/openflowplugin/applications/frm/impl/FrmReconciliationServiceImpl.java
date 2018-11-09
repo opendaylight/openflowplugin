@@ -12,6 +12,9 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -29,13 +32,15 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
+@Service(classes = FrmReconciliationService.class)
 public class FrmReconciliationServiceImpl implements FrmReconciliationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FrmReconciliationServiceImpl.class);
 
     private final ForwardingRulesManagerImpl forwardingRulesManagerImpl;
 
-    public FrmReconciliationServiceImpl(ForwardingRulesManagerImpl forwardingRulesManagerImpl) {
+    public FrmReconciliationServiceImpl(@Reference ForwardingRulesManagerImpl forwardingRulesManagerImpl) {
         this.forwardingRulesManagerImpl = forwardingRulesManagerImpl;
     }
 
