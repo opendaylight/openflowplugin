@@ -7,23 +7,6 @@
   <reference id="notificationService" interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
   <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
 
-  <bean id="operationProcessor" class="org.opendaylight.openflowplugin.applications.topology.manager.OperationProcessor"
-          init-method="start" destroy-method="close">
-    <argument ref="dataBroker"/>
-  </bean>
-
-  <bean id="termPointChangeListener" class="org.opendaylight.openflowplugin.applications.topology.manager.TerminationPointChangeListenerImpl"
-          destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="operationProcessor"/>
-  </bean>
-
-  <bean id="nodeChangeListener" class="org.opendaylight.openflowplugin.applications.topology.manager.NodeChangeListenerImpl"
-          destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="operationProcessor"/>
-  </bean>
-
   <bean id="topologyProvider" class="org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableTopologyProvider"
           init-method="start" destroy-method="close">
     <argument ref="dataBroker"/>
