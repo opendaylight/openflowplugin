@@ -25,6 +25,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -62,6 +64,10 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+
+@Singleton
 public class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
@@ -73,14 +79,16 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final int threadPoolSize = 10;
     private final ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
 
-    public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
-                                     final AlarmAgent alarmAgent) {
+    public ReconciliationServiceImpl(@Reference final DataBroker broker,
+                                     @Reference final FrmReconciliationService frmReconciliationService,
+                                     @Reference final AlarmAgent alarmAgent) {
         this.broker = broker;
         this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
     }
 
     @Override
+    @PreDestroy
     public void close() {
         if (executor != null) {
             executor.shutdownNow();
