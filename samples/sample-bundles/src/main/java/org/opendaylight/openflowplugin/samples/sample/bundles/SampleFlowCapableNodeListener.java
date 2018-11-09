@@ -17,6 +17,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -89,6 +94,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Sample DataTreeChangeListener.
  */
+@Singleton
 public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SampleFlowCapableNodeListener.class);
@@ -101,12 +107,13 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
     private final SalBundleService bundleService;
     private ListenerRegistration<?> listenerReg;
 
-    public SampleFlowCapableNodeListener(DataBroker dataBroker, SalBundleService bundleService) {
+    public SampleFlowCapableNodeListener(@Reference DataBroker dataBroker, @Reference SalBundleService bundleService) {
         this.dataBroker = dataBroker;
         this.bundleService = bundleService;
     }
 
     @Override
+    @PreDestroy
     public void close() {
         LOG.debug("close() passing");
         if (listenerReg != null) {
@@ -114,6 +121,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         }
     }
 
+    @PostConstruct
     public void init() {
         LOG.debug("inSessionInitialized() passing");
 

@@ -15,6 +15,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -58,6 +63,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
     private static final long STARTUP_LOOP_TICK = 500L;
@@ -70,8 +76,8 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     private final DeviceOwnershipService deviceOwnershipService;
     private ListenerRegistration<?> listenerRegistration;
 
-    public LLDPPacketPuntEnforcer(SalFlowService flowService, DataBroker dataBroker,
-            DeviceOwnershipService deviceOwnershipService) {
+    public LLDPPacketPuntEnforcer(@Reference SalFlowService flowService, @Reference DataBroker dataBroker,
+            @Reference DeviceOwnershipService deviceOwnershipService) {
         this.flowService = flowService;
         this.dataBroker = dataBroker;
         this.deviceOwnershipService = Preconditions.checkNotNull(deviceOwnershipService,
@@ -79,6 +85,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     }
 
     @SuppressWarnings("IllegalCatch")
+    @PostConstruct
     public void start() {
         final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class);
@@ -94,6 +101,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     }
 
     @Override
+    @PreDestroy
     public void close() {
         if (listenerRegistration != null) {
             listenerRegistration.close();

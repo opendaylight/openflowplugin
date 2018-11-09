@@ -5,8 +5,4 @@
 
   <odl:rpc-service id="salFlowService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
 
-  <bean id="simpleDropFirewall" class="org.opendaylight.openflowplugin.openflow.samples.consumer.SimpleDropFirewall">
-    <argument ref="salFlowService"/>
-  </bean>
-
 </blueprint>

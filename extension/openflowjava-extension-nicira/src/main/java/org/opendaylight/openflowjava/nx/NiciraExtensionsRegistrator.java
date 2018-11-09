@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.nx;
 
 import com.google.common.base.Preconditions;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
@@ -67,6 +68,9 @@ import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
+
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 
 public class NiciraExtensionsRegistrator implements AutoCloseable {
     private final NiciraExtensionCodecRegistrator registrator;
@@ -195,6 +199,7 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         registrator.unregisterActionDeserializer(RegLoadCodec.DESERIALIZER_KEY);
         registrator.unregisterActionSerializer(RegLoadCodec.SERIALIZER_KEY);

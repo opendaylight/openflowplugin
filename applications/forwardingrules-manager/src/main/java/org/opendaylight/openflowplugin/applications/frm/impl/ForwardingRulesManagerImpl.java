@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -99,7 +100,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
-    public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
+    public ForwardingRulesManagerImpl(final DataBroker dataBroker,
+                                      final RpcProviderRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
                                       final MastershipChangeServiceManager mastershipChangeServiceManager,
                                       final ClusterSingletonServiceProvider clusterSingletonService,
