@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "618bd6f1_1763c933",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-12T10:19:15Z",
+      "side": 1,
+      "message": "you are missing a @Service here (in addition to @Singleton), like this:\n\n   @Singleton\n   @Service(classes \u003d ReconciliationManager.class)\n   public class ReconciliationManagerImpl ...",
+      "revId": "e46ce02556fb17d2ead9fa75175f35eafbce79df",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
