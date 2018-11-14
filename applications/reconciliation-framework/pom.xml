@@ -70,24 +70,10 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <!-- TODO Remove this when we upgrade to odlparent with a fix for ODLPARENT-146 -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration>
-                    <failOnError>false</failOnError>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
         <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
         <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
         <tag>HEAD</tag>
     </scm>
-
 </project>

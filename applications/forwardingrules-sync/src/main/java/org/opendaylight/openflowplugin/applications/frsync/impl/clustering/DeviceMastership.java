@@ -67,7 +67,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
             try {
                 clusterSingletonServiceRegistration.close();
             } catch (Exception e) {
-                LOG.error("FRS cluster service close fail: {} {}", nodeId.getValue(), e);
+                LOG.error("FRS cluster service close fail: {}", nodeId.getValue(), e);
             }
         }
     }

@@ -491,9 +491,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                 @Override
                 public void onFailure(Throwable cause) {
-                    String msg = "add-group RPC failed: node=" + nodeIdentity.firstKeyOf(Node.class).getId().getValue()
-                            + ", id=" + groupId;
-                    LOG.debug(msg, cause);
+                    LOG.debug("add-group RPC failed: node={}, id={}",
+                            nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId, cause);
                 }
             }, MoreExecutors.directExecutor());
 

@@ -293,7 +293,7 @@ public class OpenFlowPluginProviderImpl implements
         try {
             shutdownSwitchConnections().get(10, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.warn("Failed to shut down switch connections in time {}s, error: {}", 10, e);
+            LOG.warn("Failed to shut down switch connections in time {}s", 10, e);
         }
 
         gracefulShutdown(contextChainHolder);

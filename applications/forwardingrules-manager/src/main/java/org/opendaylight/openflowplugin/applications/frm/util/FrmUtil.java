@@ -70,7 +70,7 @@ public final class FrmUtil {
                 List<Action> actions = Collections.emptyList();
                 if (instruction.getInstruction().getImplementedInterface()
                         .equals(ActionType.APPLY_ACTION.getActionType())) {
-                    actions = ((ApplyActionsCase) (instruction.getInstruction()))
+                    actions = ((ApplyActionsCase) instruction.getInstruction())
                             .getApplyActions().getAction();
                 }
                 for (Action action : actions) {
@@ -99,17 +99,16 @@ public final class FrmUtil {
         BigInteger dpId = getDpnIdFromNodeName(nodeIdent);
         final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class));
         GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder().setNodeId(dpId).setNode(nodeRef);
-        RpcResult<GetActiveBundleOutput> result = null;
         try {
-            result = provider.getArbitratorReconciliationManager()
+            RpcResult<GetActiveBundleOutput> result = provider.getArbitratorReconciliationManager()
                     .getActiveBundle(input.build()).get(RPC_RESULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            if (!result.isSuccessful()) {
+                LOG.trace("Error while retrieving active bundle present for node {}", dpId);
+            } else {
+                return result.getResult().getResult();
+            }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Error while retrieving active bundle present for node {}", dpId , e);
-        }
-        if (!result.isSuccessful()) {
-            LOG.trace("Error while retrieving active bundle present for node {}", dpId);
-        } else {
-            return result.getResult().getResult();
         }
         return null;
     }
