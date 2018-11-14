@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.impl;
 
 import java.util.List;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -28,6 +30,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Thomas Pantelis
  */
+@Singleton
+@Service(classes = OpenFlowPluginProviderFactory.class)
 public class OpenFlowPluginProviderFactoryImpl implements OpenFlowPluginProviderFactory {
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderFactoryImpl.class);
 

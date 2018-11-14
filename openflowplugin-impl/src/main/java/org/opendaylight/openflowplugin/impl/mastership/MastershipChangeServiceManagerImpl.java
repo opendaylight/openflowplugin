@@ -13,6 +13,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
@@ -23,6 +25,8 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFra
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
+@Singleton
+@Service(classes = MastershipChangeServiceManager.class)
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
     private final List<MastershipChangeService> serviceGroup = new CopyOnWriteArrayList<>();
