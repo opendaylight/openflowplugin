@@ -19,6 +19,58 @@
     },
     {
       "key": {
+        "uuid": "5de4604c_f34fa2bc",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 1,
+      "message": "Looks like the intention is to complete the flowFuture passed into the ctor....",
+      "parentUuid": "0463248f_8781d5cc",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "267b32ad_442e0587",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 1,
+      "message": "As in the \u0027add\u0027 method, I think can just return on line 205 - no need for line 206...",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6b49ba94_fa9b9b1b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 1,
+      "message": "...same here",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8a75462d_1ba9e579",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 5
@@ -36,6 +88,24 @@
     },
     {
       "key": {
+        "uuid": "6b204a0b_ad0a1c68",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 1,
+      "message": "It is wrong - as in the other class, AddFlowCallBack should complete the passed Future...",
+      "parentUuid": "8a75462d_1ba9e579",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72b75de4_babb3f51",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 5
@@ -47,6 +117,24 @@
       "writtenOn": "2018-11-14T17:52:28Z",
       "side": 1,
       "message": "TODO should be avoided ...",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a9abbc1_bd576250",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 1,
+      "message": "yeah - same as AddFlowCallback",
+      "parentUuid": "72b75de4_babb3f51",
       "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

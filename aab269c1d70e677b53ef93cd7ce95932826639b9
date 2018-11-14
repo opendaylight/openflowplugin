@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa9fdf5a_69b514c6",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 0,
+      "message": "... complete flowFuture here instead of re-assigning it...",
+      "revId": "aab269c1d70e677b53ef93cd7ce95932826639b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a892cf42_541b9bc5",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-14T20:09:56Z",
+      "side": 0,
+      "message": "...and here.",
+      "revId": "aab269c1d70e677b53ef93cd7ce95932826639b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
