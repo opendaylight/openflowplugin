@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0463248f_8781d5cc",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-14T17:52:28Z",
+      "side": 1,
+      "message": "I\u0027m not sure this is right, and we should try to avoid it, but the existing code as-is already makes no sense, to me.. do any of you reviewer understand what this was meant to do, and how to correctly fix?  Search for the caller of the constructor of this private class, and see what it does there, with the Future... makes no real sense, no?",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8a75462d_1ba9e579",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-14T17:52:28Z",
+      "side": 1,
+      "message": "Help, anyone gets what they wanted to do here, and how to fix this correctly?  This change of course does exactly what it used to do before - but it seems wrong...",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72b75de4_babb3f51",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-14T17:52:28Z",
+      "side": 1,
+      "message": "TODO should be avoided ...",
+      "revId": "6e2ba149cecef434f785d50ea60619a14dd38772",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
