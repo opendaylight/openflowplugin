@@ -12,8 +12,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
@@ -21,12 +25,15 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
+@Service(classes = ConfigurationServiceFactory.class)
 public class ConfigurationServiceFactoryOsgiImpl extends ConfigurationServiceFactoryImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationServiceFactoryOsgiImpl.class);
 
     private final BundleContext bundleContext;
 
+    @Inject
     public ConfigurationServiceFactoryOsgiImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
