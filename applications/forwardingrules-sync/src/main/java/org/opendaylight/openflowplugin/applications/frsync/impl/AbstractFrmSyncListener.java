@@ -48,7 +48,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
                     }
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                LOG.error("Error processing inventory node modification: {}, {}", nodeId.getValue(), e);
+                LOG.error("Error processing inventory node modification: {}", nodeId.getValue(), e);
             }
         }
     }

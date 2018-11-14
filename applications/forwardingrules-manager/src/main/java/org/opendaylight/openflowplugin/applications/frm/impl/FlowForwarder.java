@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -41,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
@@ -243,28 +243,27 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
                     builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
                     Long groupId = isFlowDependentOnGroup(addDataObj);
-                    ListenableFuture<RpcResult<AddFlowOutput>> future = SettableFuture.create();
                     if (groupId != null) {
                         LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
                                 getFlowId(new FlowRef(identifier)), groupId);
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
                                     getFlowId(new FlowRef(identifier)));
-                            future = provider.getSalFlowService().addFlow(builder.build());
+                            return provider.getSalFlowService().addFlow(builder.build());
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
                             ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
                                     groupId);
-                            Futures.addCallback(groupFuture, new AddFlowCallBack(builder.build(), nodeId, future,
-                                            groupId),
+                            Futures.addCallback(groupFuture, new AddFlowCallBack(builder.build(), nodeId, groupId),
                                     MoreExecutors.directExecutor());
+                            // TODO This makes new sense and seems just wrong...
+                            return SettableFuture.create();
                         }
                     } else {
                         LOG.trace("The flow {} is not dependent on any group. Adding the flow",
                                 getFlowId(new FlowRef(identifier)));
-                        future = provider.getSalFlowService().addFlow(builder.build());
+                        return provider.getSalFlowService().addFlow(builder.build());
                     }
-                    return future;
                 });
             }
         }
@@ -370,22 +369,21 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private final class AddFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final AddFlowInput addFlowInput;
         private final NodeId nodeId;
-        private ListenableFuture<RpcResult<AddFlowOutput>> future;
         private final Long groupId;
 
-        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId,
-                ListenableFuture<RpcResult<AddFlowOutput>> future, Long groupId) {
+        // TODO
+        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId, Long groupId) {
             this.addFlowInput = addFlowInput;
             this.nodeId = nodeId;
-            this.future = future;
             this.groupId = groupId;
         }
 
         @Override
+        @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
         public void onSuccess(RpcResult<AddGroupOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                future = provider.getSalFlowService().addFlow(addFlowInput);
+                provider.getSalFlowService().addFlow(addFlowInput);
                 LOG.debug("Flow add with id {} finished without error for node {}",
                         getFlowId(addFlowInput.getFlowRef()), nodeId);
             } else {
@@ -393,44 +391,41 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         && rpcResult.getErrors().iterator().next().getMessage()
                         .contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                     provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                    future = provider.getSalFlowService().addFlow(addFlowInput);
+                    provider.getSalFlowService().addFlow(addFlowInput);
                     LOG.debug("Group {} already programmed in the device. Adding the flow {}", groupId,
                             getFlowId(addFlowInput.getFlowRef()));
                 } else {
                     LOG.error("Flow add with id {} failed for node {} with error {}",
                             getFlowId(addFlowInput.getFlowRef()), nodeId, rpcResult.getErrors().toString());
-                    future = Futures.immediateFuture(null);
                 }
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for adding flow with id {} failed for node {} with error {}",
-                    getFlowId(addFlowInput.getFlowRef()), nodeId, throwable.getCause());
-            Futures.immediateFailedFuture(null);
+            LOG.error("Service call for adding flow with id {} failed for node {}",
+                    getFlowId(addFlowInput.getFlowRef()), nodeId, throwable);
         }
     }
 
     private final class UpdateFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final UpdateFlowInput updateFlowInput;
         private final NodeId nodeId;
-        private ListenableFuture<RpcResult<UpdateFlowOutput>> future;
         private final Long groupId;
 
         private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final NodeId nodeId,
                 ListenableFuture<RpcResult<UpdateFlowOutput>> future, Long groupId) {
             this.updateFlowInput = updateFlowInput;
             this.nodeId = nodeId;
-            this.future = future;
             this.groupId = groupId;
         }
 
         @Override
+        @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
         public void onSuccess(RpcResult<AddGroupOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                future = provider.getSalFlowService().updateFlow(updateFlowInput);
+                provider.getSalFlowService().updateFlow(updateFlowInput);
                 LOG.debug("Flow update with id {} finished without error for node {}",
                         getFlowId(updateFlowInput.getFlowRef()), nodeId);
             } else {
@@ -438,22 +433,20 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         && rpcResult.getErrors().iterator().next().getMessage()
                         .contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                     provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                    future = provider.getSalFlowService().updateFlow(updateFlowInput);
+                    provider.getSalFlowService().updateFlow(updateFlowInput);
                     LOG.debug("Group {} already programmed in the device. Updating the flow {}", groupId,
                             getFlowId(updateFlowInput.getFlowRef()));
                 } else {
                     LOG.error("Flow update with id {} failed for node {} with error {}",
                             getFlowId(updateFlowInput.getFlowRef()), nodeId, rpcResult.getErrors().toString());
-                    future = Futures.immediateFuture(null);
                 }
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for updating flow with id {} failed for node {} with error {}",
+            LOG.error("Service call for updating flow with id {} failed for node {}",
                     getFlowId(updateFlowInput.getFlowRef()), nodeId, throwable);
-            future = Futures.immediateFailedFuture(null);
         }
     }
 }

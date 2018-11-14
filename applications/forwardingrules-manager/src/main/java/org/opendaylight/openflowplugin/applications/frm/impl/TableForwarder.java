@@ -85,8 +85,8 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     @Override
     public void update(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures original,
             final TableFeatures update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd" + " " + identifier + " "
-                + nodeIdent + " " + original + " " + update);
+        LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd {} {} {} {}", identifier,
+                nodeIdent, original, update);
 
         final TableFeatures originalTableFeatures = original;
         TableFeatures updatedTableFeatures;
@@ -113,7 +113,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         LOG.debug("Invoking SalTableService ");
 
         if (this.provider.getSalTableService() != null) {
-            LOG.debug(" Handle to SalTableServices" + this.provider.getSalTableService());
+            LOG.debug(" Handle to SalTableServices {}", this.provider.getSalTableService());
         }
 
         final Future<RpcResult<UpdateTableOutput>> resultFuture =

@@ -190,7 +190,7 @@ public final class StatisticsGatheringUtils {
                     return null;
                 }, MoreExecutors.directExecutor()).get();
         } catch (InterruptedException | ExecutionException ex) {
-            LOG.debug("Failed to delete {} flows, exception: {}", deviceFlowRegistry.size(), ex);
+            LOG.debug("Failed to delete {} flows", deviceFlowRegistry.size(), ex);
         }
     }
 

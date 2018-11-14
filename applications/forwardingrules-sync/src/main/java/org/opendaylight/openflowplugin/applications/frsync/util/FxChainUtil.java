@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frsync.util;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
-import java.util.Arrays;
 import java.util.Collection;
 import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,11 +37,11 @@ public final class FxChainUtil {
             public void onSuccess(@Nullable final RpcResult<Void> result) {
                 if (result != null) {
                     if (result.isSuccessful()) {
-                        LOG.debug(prefix + " finished successfully: {}", nodeId.getValue());
+                        LOG.debug("{} finished successfully: {}", prefix, nodeId.getValue());
                     } else {
                         final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(),
                                 ImmutableList.<RpcError>of());
-                        LOG.debug(prefix + " failed: {} -> {}", nodeId.getValue(), Arrays.toString(errors.toArray()));
+                        LOG.debug("{} failed: {} -> {}", prefix, nodeId.getValue(), errors);
                     }
                 } else {
                     LOG.debug(prefix + " reconciliation failed: {} -> null result", nodeId.getValue());
@@ -51,7 +50,7 @@ public final class FxChainUtil {
 
             @Override
             public void onFailure(final Throwable failure) {
-                LOG.debug(prefix + " reconciliation failed seriously: {}", nodeId.getValue(), failure);
+                LOG.debug("{} reconciliation failed seriously: {}", prefix, nodeId.getValue(), failure);
             }
         };
     }

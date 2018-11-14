@@ -87,7 +87,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for adding group={} failed, reason: {}",
+                LOG.warn("Service call for adding group={} failed",
                           input.getGroupId().getValue(),
                           throwable);
             }
@@ -120,7 +120,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for updating group={} failed, reason: {}",
+                LOG.warn("Service call for updating group={} failed",
                         input.getOriginalGroup().getGroupId(), throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -150,7 +150,7 @@ public class SalGroupServiceImpl implements SalGroupService {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for removing group={} failed, reason: {}",
+                LOG.warn("Service call for removing group={} failed",
                         input.getGroupId().getValue(), throwable);
             }
         }, MoreExecutors.directExecutor());
