@@ -256,7 +256,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 LOG.debug("Group add with id {} finished without error for node {}", groupId, nodeId);
             } else {
                 LOG.debug("Group add with id {} failed for node {} with error {}", groupId, nodeId,
-                        result.getErrors().toString());
+                        result.getErrors());
             }
         }
 
@@ -275,6 +275,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             this.nodeId = nodeId;
         }
 
+        @Override
         public void onSuccess(RpcResult<UpdateGroupOutput> result) {
             if (result.isSuccessful()) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
@@ -287,7 +288,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for updating group {} failed for node {} with error {}", groupId, nodeId,
+            LOG.error("Service call for updating group {} failed for node {} with", groupId, nodeId,
                     throwable);
         }
     }

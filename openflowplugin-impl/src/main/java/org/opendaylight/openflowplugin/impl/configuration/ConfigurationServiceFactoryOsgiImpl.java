@@ -59,7 +59,7 @@ public class ConfigurationServiceFactoryOsgiImpl extends ConfigurationServiceFac
                     configurationService.update(mapProperties);
                 });
             } catch (IOException e) {
-                LOG.debug("Failed to load {} configuration file. Error {}", OFConstants.CONFIG_FILE_ID, e);
+                LOG.debug("Failed to load {} configuration file", OFConstants.CONFIG_FILE_ID);
             }
         });
     }

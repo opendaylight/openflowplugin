@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -201,7 +202,6 @@ public class BundleFlowForwarder {
         private final BundleId bundleId;
         private final Message message;
         private final NodeId nodeId;
-        private ListenableFuture<RpcResult<AddBundleMessagesOutput>> flowFuture;
 
         BundleFlowCallBack(InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId, Message message,
                 ListenableFuture<RpcResult<AddFlowOutput>> flowFuture) {
@@ -212,6 +212,7 @@ public class BundleFlowForwarder {
         }
 
         @Override
+        @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
         public void onSuccess(RpcResult<AddBundleMessagesOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 List<Message> messages = new ArrayList<>(1);
@@ -221,15 +222,12 @@ public class BundleFlowForwarder {
                         .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(messages).build()).build();
                 LOG.trace("Pushing flow add message {} to bundle {} for device {}", addBundleMessagesInput,
                         bundleId.getValue(), nodeId.getValue());
-                flowFuture = forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
-            } else {
-                flowFuture = Futures.immediateFuture(null);
+                forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            flowFuture = Futures.immediateFailedFuture(null);
             LOG.error("Error while pushing flow add bundle {} for device {}", message, nodeId);
         }
     }

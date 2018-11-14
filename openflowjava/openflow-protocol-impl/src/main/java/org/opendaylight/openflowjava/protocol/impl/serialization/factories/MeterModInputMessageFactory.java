@@ -96,9 +96,9 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
                                             EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType));
                             serializer.serialize(experimenterBandCase, outBuffer);
                         } catch (final IllegalStateException e) {
-                            LOG.warn("Serializer for key: {} wasn't found, exception {}",
+                            LOG.warn("Serializer for key: {} wasn't found",
                                     ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                                    EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType), e);
+                                    EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType));
                         }
                     }
                 }

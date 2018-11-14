@@ -32,8 +32,7 @@ public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<Version
     public void channelRead0(final ChannelHandlerContext ctx, final VersionMessageUdpWrapper msg)
             throws Exception {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("UdpVersionMessageWrapper received");
-            LOG.debug("<< {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
+            LOG.debug("UdpVersionMessageWrapper received: {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
         }
 
         try {
