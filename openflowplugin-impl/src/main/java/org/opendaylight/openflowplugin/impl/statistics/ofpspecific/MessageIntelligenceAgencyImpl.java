@@ -103,7 +103,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
         // log current counters and cleans it
         if (LOG.isDebugEnabled()) {
             for (String counterItem : provideIntelligence()) {
-                LOG.debug(counterItem);
+                LOG.debug("Counter: {}", counterItem);
             }
         }
     }
