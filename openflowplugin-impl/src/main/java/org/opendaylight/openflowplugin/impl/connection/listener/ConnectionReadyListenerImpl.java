@@ -22,8 +22,8 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionReadyListenerImpl.class);
 
-    private ConnectionContext connectionContext;
-    private HandshakeContext handshakeContext;
+    private final ConnectionContext connectionContext;
+    private final HandshakeContext handshakeContext;
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class ConnectionReadyListenerImpl implements ConnectionReadyListener {
                         // need to remain in sync lock until initial handshake step processed.
                         handshakeResult.get();
                     } catch (Exception e) {
-                        LOG.error("failed to process onConnectionReady event on device {}, reason {}",
+                        LOG.error("failed to process onConnectionReady event on device {}",
                                 connectionContext.getConnectionAdapter().getRemoteAddress(),
                                 e);
                         connectionContext.closeConnection(false);
