@@ -76,7 +76,7 @@
         <argument ref="systemReadyMonitor"/>
     </bean>
 
-    <service ref="openflowPluginProvider" odl:type="openflow-plugin-provider-impl">
+    <service ref="openflowPluginProvider">
         <interfaces>
             <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
             <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
