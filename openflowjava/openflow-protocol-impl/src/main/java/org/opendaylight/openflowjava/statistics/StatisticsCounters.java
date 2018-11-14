@@ -245,7 +245,7 @@ public final class StatisticsCounters implements StatisticsHandler {
         @Override
         public void run() {
             for (CounterEventTypes cet : sc.getEnabledCounters()) {
-                LOG.debug("{}: {}", cet.name(), sc.getCountersMap().get(cet).getStat());
+                LOG.debug("Event {}: {}", cet.name(), sc.getCountersMap().get(cet).getStat());
             }
         }
     }
