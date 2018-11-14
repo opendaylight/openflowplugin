@@ -89,7 +89,7 @@ public class SalMeterServiceImpl implements SalMeterService {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for adding meter={} failed, reason: {}", input.getMeterId(), throwable);
+                LOG.warn("Service call for adding meter={} failed", input.getMeterId(), throwable);
             }
         }, MoreExecutors.directExecutor());
         return resultFuture;
@@ -120,7 +120,7 @@ public class SalMeterServiceImpl implements SalMeterService {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for updating meter={} failed, reason: {}",
+                LOG.warn("Service call for updating meter={} failed",
                         input.getOriginalMeter().getMeterId(), throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -150,7 +150,7 @@ public class SalMeterServiceImpl implements SalMeterService {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.warn("Service call for removing meter={} failed, reason: {}", input.getMeterId(), throwable);
+                LOG.warn("Service call for removing meter={} failed", input.getMeterId(), throwable);
             }
         }, MoreExecutors.directExecutor());
         return resultFuture;

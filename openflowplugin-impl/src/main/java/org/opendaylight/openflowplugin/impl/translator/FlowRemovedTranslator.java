@@ -78,7 +78,7 @@ public class FlowRemovedTranslator implements MessageTranslator
     }
 
     private RemovedFlowReason translateReason(FlowRemoved removedFlow) {
-        LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason:{} " + removedFlow.getReason());
+        LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason: {}", removedFlow.getReason());
         switch (removedFlow.getReason()) {
             case OFPRRIDLETIMEOUT:
                 return RemovedFlowReason.OFPRRIDLETIMEOUT;

@@ -54,7 +54,7 @@ public class SimpleTaskRetryLooper {
             try {
                 Thread.sleep(tick);
             } catch (InterruptedException e) {
-                LOG.debug("interrupted: {}", e.getMessage(), e);
+                LOG.debug("interrupted", e);
                 Thread.currentThread().interrupt();
             }
         }

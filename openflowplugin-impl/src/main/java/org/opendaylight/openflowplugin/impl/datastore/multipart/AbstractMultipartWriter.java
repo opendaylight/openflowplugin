@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
-import org.opendaylight.openflowplugin.impl.services.AbstractMultipartService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMultipartWriter<T extends DataContainer> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartWriter.class);
 
     private final TxFacade txFacade;
     private final InstanceIdentifier<Node> instanceIdentifier;
