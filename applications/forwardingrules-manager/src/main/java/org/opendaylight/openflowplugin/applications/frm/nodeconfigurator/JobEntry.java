@@ -44,7 +44,7 @@ class JobEntry<T> {
         return resultFuture;
     }
 
-    public void setResultFuture(T result) {
+    public void setResultFuture(@Nullable T result) {
         this.resultFuture.set(result);
     }
 

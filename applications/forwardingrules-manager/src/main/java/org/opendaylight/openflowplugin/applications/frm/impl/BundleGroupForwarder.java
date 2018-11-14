@@ -170,6 +170,7 @@ public class BundleGroupForwarder {
             this.nodeId = nodeId;
         }
 
+        @Override
         public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
@@ -182,8 +183,7 @@ public class BundleGroupForwarder {
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for updating group {} failed for node {} with error {}", groupId, nodeId,
-                    throwable);
+            LOG.error("Service call for updating group {} failed for node {}", groupId, nodeId, throwable);
         }
     }
 

@@ -10,7 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
-
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.function.Function;
 
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueException;
@@ -24,17 +24,12 @@ import org.slf4j.LoggerFactory;
 
 final class OutboundQueueEntry {
     private static final Logger LOG = LoggerFactory.getLogger(OutboundQueueEntry.class);
-    public static final Function<OfHeader, Boolean> DEFAULT_IS_COMPLETE = new Function<OfHeader, Boolean>() {
-
-        @Override
-        public Boolean apply(final OfHeader message) {
-            if (message instanceof MultipartReplyMessage) {
-                return !((MultipartReplyMessage) message).getFlags().isOFPMPFREQMORE();
-            }
-
-            return true;
+    public static final Function<OfHeader, Boolean> DEFAULT_IS_COMPLETE = message -> {
+        if (message instanceof MultipartReplyMessage) {
+            return !((MultipartReplyMessage) message).getFlags().isOFPMPFREQMORE();
         }
 
+        return true;
     };
 
     private FutureCallback<OfHeader> callback;
@@ -98,7 +93,7 @@ final class OutboundQueueEntry {
     }
 
     private void checkCompletionNeed() {
-        if (callback == null || (message instanceof PacketOutInput)) {
+        if (callback == null || message instanceof PacketOutInput) {
             completed = true;
             if (callback != null) {
                 callback.onSuccess(null);
@@ -108,7 +103,7 @@ final class OutboundQueueEntry {
         }
     }
 
-    boolean complete(final OfHeader response) {
+    boolean complete(@Nullable final OfHeader response) {
         Preconditions.checkState(!completed, "Attempted to complete a completed message with response %s", response);
 
         // Multipart requests are special, we have to look at them to see
@@ -142,6 +137,6 @@ final class OutboundQueueEntry {
     @VisibleForTesting
     /** This method is only for testing to prove that after queue entry is completed there is not callback future */
     boolean hasCallback() {
-        return (callback != null);
+        return callback != null;
     }
 }
