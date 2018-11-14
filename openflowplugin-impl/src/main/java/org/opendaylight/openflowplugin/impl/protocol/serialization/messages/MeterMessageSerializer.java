@@ -95,7 +95,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                         final OFSerializer<Experimenter> serializer = registry.getSerializer(key);
                                         serializer.serialize(band, outBuffer);
                                     } catch (final IllegalStateException e) {
-                                        LOG.warn("Serializer for key: {} wasn't found, exception {}", key, e);
+                                        LOG.warn("Serializer for key: {} wasn't found", key, e);
                                     }
                                 }
                             })));

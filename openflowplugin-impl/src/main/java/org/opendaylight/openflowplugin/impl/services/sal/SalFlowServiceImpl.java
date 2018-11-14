@@ -227,7 +227,7 @@ public class SalFlowServiceImpl implements SalFlowService {
 
         @Override
         public void onFailure(final Throwable throwable) {
-            LOG.warn("Service call for adding flow={} failed, reason: {}", input, throwable);
+            LOG.warn("Service call for adding flow={} failed", input, throwable);
         }
     }
 
@@ -257,7 +257,7 @@ public class SalFlowServiceImpl implements SalFlowService {
 
         @Override
         public void onFailure(final Throwable throwable) {
-            LOG.warn("Service call for removing flow={} failed, reason: {}", input, throwable);
+            LOG.warn("Service call for removing flow={} failed", input, throwable);
         }
     }
 
@@ -304,7 +304,7 @@ public class SalFlowServiceImpl implements SalFlowService {
 
         @Override
         public void onFailure(final Throwable throwable) {
-            LOG.warn("Service call for updating flow={} failed, reason: {}", input, throwable);
+            LOG.warn("Service call for updating flow={} failed", input, throwable);
         }
     }
 }

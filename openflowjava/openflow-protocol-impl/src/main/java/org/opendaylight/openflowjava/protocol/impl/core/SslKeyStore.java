@@ -26,7 +26,6 @@ public final class SslKeyStore {
     private static final Logger LOG = LoggerFactory.getLogger(SslKeyStore.class);
 
     private SslKeyStore() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
 
     /**
@@ -48,8 +47,8 @@ public final class SslKeyStore {
                 }
                 break;
             case PATH:
-                LOG.debug("Current dir using System:"
-                        + System.getProperty("user.dir"));
+                LOG.debug("Current dir using System: {}",
+                        System.getProperty("user.dir"));
                 File keystorefile = new File(filename);
                 try {
                     in = new FileInputStream(keystorefile);
