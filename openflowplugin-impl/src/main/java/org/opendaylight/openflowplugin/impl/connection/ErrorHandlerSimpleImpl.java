@@ -24,9 +24,9 @@ public class ErrorHandlerSimpleImpl implements ErrorHandler {
     @Override
     public void handleException(Throwable throwable) {
         if (throwable instanceof ConnectionException) {
-            LOG.warn("exception -> {}", throwable.getMessage(), throwable);
+            LOG.warn("Exception", throwable);
         } else {
-            LOG.error("exception -> {}", throwable.getMessage(), throwable);
+            LOG.error("Exception", throwable);
         }
     }
 }

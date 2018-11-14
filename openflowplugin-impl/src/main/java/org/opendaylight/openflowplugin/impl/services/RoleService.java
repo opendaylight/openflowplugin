@@ -82,8 +82,8 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                     }
 
                 } else {
-                    LOG.error("getGenerationIdFromDevice RPC error "
-                            + roleRequestOutputRpcResult.getErrors().iterator().next().getInfo());
+                    LOG.error("getGenerationIdFromDevice RPC error {}",
+                            roleRequestOutputRpcResult.getErrors().iterator().next().getInfo());
                     finalFuture.setException(new RoleChangeException(ErrorUtil
                             .errorsToString(roleRequestOutputRpcResult.getErrors())));
                 }
