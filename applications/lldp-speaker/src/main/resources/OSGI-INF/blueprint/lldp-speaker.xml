@@ -21,9 +21,7 @@
   <bean id="lldpSpeaker" class="org.opendaylight.openflowplugin.applications.lldpspeaker.LLDPSpeaker"
           destroy-method="close">
     <argument ref="packetProcessingService"/>
-    <argument>
-      <bean factory-ref="lldpSpeakerConfig" factory-method="getAddressDestination"/>
-    </argument>
+    <argument ref="lldpSpeakerConfig"/>
     <argument ref="deviceOwnershipService"/>
   </bean>
 
