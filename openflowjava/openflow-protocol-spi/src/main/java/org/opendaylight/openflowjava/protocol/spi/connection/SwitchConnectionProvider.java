@@ -5,8 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.openflowjava.protocol.spi.connection;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,7 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExte
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider;
 
 /**
- * Provides handling for a swicth connection.
+ * Provides handling for a switch connection.
  *
  * @author mirehak
  * @author michal.polkorab
