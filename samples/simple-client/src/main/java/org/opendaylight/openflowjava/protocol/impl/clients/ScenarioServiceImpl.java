@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.util.SortedMap;
@@ -72,6 +73,7 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
+    @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE") // counter++ is correct; FindBugs flags a a false positive here
     public SortedMap<Integer, ClientEvent> getEventsFromScenario(Scenario scenario) throws IOException {
         Preconditions.checkNotNull(scenario, "Scenario name not found. Check XML file, scenario name or directories.");
         SortedMap<Integer, ClientEvent> events = new TreeMap<>();
