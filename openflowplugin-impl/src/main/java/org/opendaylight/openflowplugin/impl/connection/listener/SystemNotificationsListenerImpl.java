@@ -93,7 +93,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                 }
 
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("Exception while  waiting for echoReply from [{}] in TIMEOUTING state: {}",
+                    LOG.trace("Exception while  waiting for echoReply from [{}] in TIMEOUTING state",
                             remoteAddress, e);
                 }
 
@@ -119,9 +119,8 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             }
 
             if (LOG.isTraceEnabled()) {
-                LOG.trace("Received EchoReply from [{}] in TIMEOUTING state, Error:{}", remoteAddress, cause);
+                LOG.trace("Received EchoReply from [{}] in TIMEOUTING state", remoteAddress, cause);
             }
-
         }
     }
 }

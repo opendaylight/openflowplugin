@@ -48,7 +48,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
         try {
             guard.acquire();
         } catch (InterruptedException e) {
-            LOG.warn("Could not acquire guard for {}, {}", key, e);
+            LOG.warn("Could not acquire guard for {}", key, e);
             return null;
         }
         return guard;

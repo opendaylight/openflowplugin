@@ -755,8 +755,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);
                 }
             } else {
-                LOG.warn("Failed filling flow registry with flows for node: {} with exception: {}", deviceInfo,
-                         throwable);
+                LOG.warn("Failed filling flow registry with flows for node: {}", deviceInfo, throwable);
             }
             contextChainMastershipWatcher.onNotAbleToStartMastership(
                     deviceInfo,
