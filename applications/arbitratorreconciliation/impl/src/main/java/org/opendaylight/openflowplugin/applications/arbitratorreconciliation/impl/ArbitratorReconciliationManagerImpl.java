@@ -190,10 +190,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @Override
     public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
-        LOG.trace("Stopping arbitrator reconciliation for node {}", node.getDatapathId());
-        InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
-        bundleIdMap.remove(connectedNode);
+        BigInteger datapathId = node.getDatapathId();
+        LOG.trace("Stopping arbitrator reconciliation for node {}", datapathId);
+        bundleIdMap.remove(datapathId);
         deregisterRpc(node);
         return Futures.immediateFuture(true);
     }
