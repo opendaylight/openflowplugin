@@ -5,10 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -60,7 +59,7 @@ public class NshMdtypeConvertor implements ConvertorToOFJava<MatchEntry>, Conver
 
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxNshMdtypeGrouping> matchGrouping = MatchUtil.NSH_MDTYPE_RESOLVER.getExtension(extension);
+        Optional<NxmNxNshMdtypeGrouping> matchGrouping = MatchUtil.NSH_MDTYPE_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }

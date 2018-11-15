@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,12 +9,12 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.UnsignedBytes;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
+import org.opendaylight.openflowplugin.extension.api.AugmentationGroupingResolver;
+import org.opendaylight.openflowplugin.extension.api.AugmentationGroupingResolver.Factory;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
@@ -81,125 +81,93 @@ public final class MatchUtil {
     private static final Splitter SPLITTER = Splitter.on('.');
     private static final Joiner JOINER = Joiner.on('.');
 
-    private static final Set<Class<? extends Augmentation<Extension>>> AUGMENTATIONS_OF_EXTENSION = new HashSet<>();
-    public static final GroupingResolver<NxmNxRegGrouping, Extension> REG_RESOLVER = new GroupingResolver<>(
-            NxmNxRegGrouping.class);
-    public static final GroupingResolver<NxmNxTunIdGrouping, Extension> TUN_ID_RESOLVER = new GroupingResolver<>(
-            NxmNxTunIdGrouping.class);
-    public static final GroupingResolver<NxmNxArpShaGrouping, Extension> ARP_SHA_RESOLVER = new GroupingResolver<>(
-            NxmNxArpShaGrouping.class);
-    public static final GroupingResolver<NxmNxArpThaGrouping, Extension> ARP_THA_RESOLVER = new GroupingResolver<>(
-            NxmNxArpThaGrouping.class);
-    public static final GroupingResolver<NxmOfArpOpGrouping, Extension> ARP_OP_RESOLVER = new GroupingResolver<>(
-            NxmOfArpOpGrouping.class);
-    public static final GroupingResolver<NxmOfArpSpaGrouping, Extension> ARP_SPA_RESOLVER = new GroupingResolver<>(
-            NxmOfArpSpaGrouping.class);
-    public static final GroupingResolver<NxmOfArpTpaGrouping, Extension> ARP_TPA_RESOLVER = new GroupingResolver<>(
-            NxmOfArpTpaGrouping.class);
-    public static final GroupingResolver<NxmNxTunIpv4DstGrouping, Extension> TUN_IPV4_DST_RESOLVER =
-            new GroupingResolver<>(NxmNxTunIpv4DstGrouping.class);
-    public static final GroupingResolver<NxmNxTunIpv4SrcGrouping, Extension> TUN_IPV4_SRC_RESOLVER =
-            new GroupingResolver<>(NxmNxTunIpv4SrcGrouping.class);
-    public static final GroupingResolver<NxmOfEthDstGrouping, Extension> ETH_DST_RESOLVER = new GroupingResolver<>(
-            NxmOfEthDstGrouping.class);
-    public static final GroupingResolver<NxmOfEthSrcGrouping, Extension> ETH_SRC_RESOLVER = new GroupingResolver<>(
-            NxmOfEthSrcGrouping.class);
-    public static final GroupingResolver<NxmOfEthTypeGrouping, Extension> ETH_TYPE_RESOLVER = new GroupingResolver<>(
-            NxmOfEthTypeGrouping.class);
-    public static final GroupingResolver<NxmNxNsiGrouping, Extension> NSI_RESOLVER = new GroupingResolver<>(
-            NxmNxNsiGrouping.class);
-    public static final GroupingResolver<NxmNxNspGrouping, Extension> NSP_RESOLVER = new GroupingResolver<>(
-            NxmNxNspGrouping.class);
-    public static final GroupingResolver<NxmNxNshc1Grouping, Extension> NSC1_RESOLVER = new GroupingResolver<>(
-            NxmNxNshc1Grouping.class);
-    public static final GroupingResolver<NxmNxNshc2Grouping, Extension> NSC2_RESOLVER = new GroupingResolver<>(
-            NxmNxNshc2Grouping.class);
-    public static final GroupingResolver<NxmNxNshc3Grouping, Extension> NSC3_RESOLVER = new GroupingResolver<>(
-            NxmNxNshc3Grouping.class);
-    public static final GroupingResolver<NxmNxNshc4Grouping, Extension> NSC4_RESOLVER = new GroupingResolver<>(
-            NxmNxNshc4Grouping.class);
-    public static final GroupingResolver<NxmNxNshFlagsGrouping, Extension> NSH_FLAGS_RESOLVER =
-            new GroupingResolver<>(NxmNxNshFlagsGrouping.class);
-    public static final GroupingResolver<NxmNxNshMdtypeGrouping, Extension> NSH_MDTYPE_RESOLVER =
-            new GroupingResolver<>(NxmNxNshMdtypeGrouping.class);
-    public static final GroupingResolver<NxmNxNshNpGrouping, Extension> NSH_NP_RESOLVER = new GroupingResolver<>(
-            NxmNxNshNpGrouping.class);
-    public static final GroupingResolver<NxmNxNshTtlGrouping, Extension> NSH_TTL_RESOLVER =
-            new GroupingResolver<>(NxmNxNshTtlGrouping.class);
-    public static final GroupingResolver<NxmOfTcpSrcGrouping, Extension> TCP_SRC_RESOLVER = new GroupingResolver<>(
-            NxmOfTcpSrcGrouping.class);
-    public static final GroupingResolver<NxmOfTcpDstGrouping, Extension> TCP_DST_RESOLVER = new GroupingResolver<>(
-            NxmOfTcpDstGrouping.class);
-    public static final GroupingResolver<NxmOfUdpSrcGrouping, Extension> UDP_SRC_RESOLVER = new GroupingResolver<>(
-            NxmOfUdpSrcGrouping.class);
-    public static final GroupingResolver<NxmOfUdpDstGrouping, Extension> UDP_DST_RESOLVER = new GroupingResolver<>(
-            NxmOfUdpDstGrouping.class);
-    public static final GroupingResolver<NxmNxCtMarkGrouping, Extension> CT_MARK_RESOLVER = new GroupingResolver<>(
-            NxmNxCtMarkGrouping.class);
-    public static final GroupingResolver<NxmNxCtStateGrouping, Extension> CT_STATE_RESOLVER = new GroupingResolver<>(
-            NxmNxCtStateGrouping.class);
-    public static final GroupingResolver<NxmNxCtZoneGrouping, Extension> CT_ZONE_RESOLVER = new GroupingResolver<>(
-            NxmNxCtZoneGrouping.class);
-    public static final GroupingResolver<NxmNxCtTpSrcGrouping, Extension> CT_TP_SRC_RESOLVER = new GroupingResolver<>(
-            NxmNxCtTpSrcGrouping.class);
-    public static final GroupingResolver<NxmNxCtTpDstGrouping, Extension> CT_TP_DST_RESOLVER = new GroupingResolver<>(
-            NxmNxCtTpDstGrouping.class);
-    public static final GroupingResolver<NxmNxPktMarkGrouping, Extension> PKT_MARK_RESOLVER = new GroupingResolver<>(
-            NxmNxPktMarkGrouping.class);
-    public static final GroupingResolver<NxmOfInPortGrouping, Extension> NXM_OF_INPORT_RESOLVER =
-            new GroupingResolver<>(NxmOfInPortGrouping.class);
+    public static final AugmentationGroupingResolver<NxmNxRegGrouping, Extension> REG_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxTunIdGrouping, Extension> TUN_ID_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxArpShaGrouping, Extension> ARP_SHA_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxArpThaGrouping, Extension> ARP_THA_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfArpOpGrouping, Extension> ARP_OP_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfArpSpaGrouping, Extension> ARP_SPA_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfArpTpaGrouping, Extension> ARP_TPA_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxTunIpv4DstGrouping, Extension> TUN_IPV4_DST_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxTunIpv4SrcGrouping, Extension> TUN_IPV4_SRC_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfEthDstGrouping, Extension> ETH_DST_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfEthSrcGrouping, Extension> ETH_SRC_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfEthTypeGrouping, Extension> ETH_TYPE_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNsiGrouping, Extension> NSI_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNspGrouping, Extension> NSP_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshc1Grouping, Extension> NSC1_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshc2Grouping, Extension> NSC2_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshc3Grouping, Extension> NSC3_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshc4Grouping, Extension> NSC4_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshFlagsGrouping, Extension> NSH_FLAGS_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshMdtypeGrouping, Extension> NSH_MDTYPE_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshNpGrouping, Extension> NSH_NP_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxNshTtlGrouping, Extension> NSH_TTL_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfTcpSrcGrouping, Extension> TCP_SRC_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfTcpDstGrouping, Extension> TCP_DST_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfUdpSrcGrouping, Extension> UDP_SRC_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfUdpDstGrouping, Extension> UDP_DST_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxCtMarkGrouping, Extension> CT_MARK_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxCtStateGrouping, Extension> CT_STATE_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxCtZoneGrouping, Extension> CT_ZONE_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxCtTpSrcGrouping, Extension> CT_TP_SRC_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxCtTpDstGrouping, Extension> CT_TP_DST_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmNxPktMarkGrouping, Extension> PKT_MARK_RESOLVER;
+    public static final AugmentationGroupingResolver<NxmOfInPortGrouping, Extension> NXM_OF_INPORT_RESOLVER;
 
     static {
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchRpcAddFlow.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchRpcRemoveFlow.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchRpcUpdateFlowOriginal.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchRpcUpdateFlowUpdated.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchNodesNodeTableFlow.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchNotifSwitchFlowRemoved.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchNotifPacketIn.class);
-        //augmentationsOfExtension.add(NxAugMatchNotifUpdateFlowStats.class);
-        AUGMENTATIONS_OF_EXTENSION.add(NxAugMatchPacketInMessage.class);
-        REG_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        TUN_ID_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ARP_SHA_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ARP_THA_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ARP_OP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ARP_SPA_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ARP_TPA_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        TUN_IPV4_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        TUN_IPV4_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ETH_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ETH_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        ETH_TYPE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSI_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSC1_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSC2_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSC3_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSC4_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSH_FLAGS_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSH_MDTYPE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSH_NP_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NSH_TTL_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        TCP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        TCP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        UDP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        UDP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        CT_STATE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        CT_ZONE_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        NXM_OF_INPORT_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        CT_MARK_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        CT_TP_SRC_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        CT_TP_DST_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
-        PKT_MARK_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
+        final Factory<Extension> factory = AugmentationGroupingResolver.factory(Extension.class, ImmutableSet.of(
+            NxAugMatchRpcAddFlow.class,
+            NxAugMatchRpcRemoveFlow.class,
+            NxAugMatchRpcUpdateFlowOriginal.class,
+            NxAugMatchRpcUpdateFlowUpdated.class,
+            NxAugMatchNodesNodeTableFlow.class,
+            NxAugMatchNotifSwitchFlowRemoved.class,
+            NxAugMatchNotifPacketIn.class,
+            // NxAugMatchNotifUpdateFlowStats.class,
+            NxAugMatchPacketInMessage.class));
+
+        REG_RESOLVER = factory.createResolver(NxmNxRegGrouping.class);
+        TUN_ID_RESOLVER = factory.createResolver(NxmNxTunIdGrouping.class);
+        ARP_SHA_RESOLVER = factory.createResolver(NxmNxArpShaGrouping.class);
+        ARP_THA_RESOLVER = factory.createResolver(NxmNxArpThaGrouping.class);
+        ARP_OP_RESOLVER = factory.createResolver(NxmOfArpOpGrouping.class);
+        ARP_SPA_RESOLVER = factory.createResolver(NxmOfArpSpaGrouping.class);
+        ARP_TPA_RESOLVER = factory.createResolver(NxmOfArpTpaGrouping.class);
+        TUN_IPV4_DST_RESOLVER = factory.createResolver(NxmNxTunIpv4DstGrouping.class);
+        TUN_IPV4_SRC_RESOLVER = factory.createResolver(NxmNxTunIpv4SrcGrouping.class);
+        ETH_DST_RESOLVER = factory.createResolver(NxmOfEthDstGrouping.class);
+        ETH_SRC_RESOLVER = factory.createResolver(NxmOfEthSrcGrouping.class);
+        ETH_TYPE_RESOLVER = factory.createResolver(NxmOfEthTypeGrouping.class);
+        NSP_RESOLVER = factory.createResolver(NxmNxNspGrouping.class);
+        NSI_RESOLVER = factory.createResolver(NxmNxNsiGrouping.class);
+        NSC1_RESOLVER = factory.createResolver(NxmNxNshc1Grouping.class);
+        NSC2_RESOLVER = factory.createResolver(NxmNxNshc2Grouping.class);
+        NSC3_RESOLVER = factory.createResolver(NxmNxNshc3Grouping.class);
+        NSC4_RESOLVER = factory.createResolver(NxmNxNshc4Grouping.class);
+        NSH_FLAGS_RESOLVER = factory.createResolver(NxmNxNshFlagsGrouping.class);
+        NSH_MDTYPE_RESOLVER = factory.createResolver(NxmNxNshMdtypeGrouping.class);
+        NSH_NP_RESOLVER = factory.createResolver(NxmNxNshNpGrouping.class);
+        NSH_TTL_RESOLVER = factory.createResolver(NxmNxNshTtlGrouping.class);
+        TCP_SRC_RESOLVER = factory.createResolver(NxmOfTcpSrcGrouping.class);
+        TCP_DST_RESOLVER = factory.createResolver(NxmOfTcpDstGrouping.class);
+        UDP_SRC_RESOLVER = factory.createResolver(NxmOfUdpSrcGrouping.class);
+        UDP_DST_RESOLVER = factory.createResolver(NxmOfUdpDstGrouping.class);
+        CT_STATE_RESOLVER = factory.createResolver(NxmNxCtStateGrouping.class);
+        CT_ZONE_RESOLVER = factory.createResolver(NxmNxCtZoneGrouping.class);
+        NXM_OF_INPORT_RESOLVER = factory.createResolver(NxmOfInPortGrouping.class);
+        CT_MARK_RESOLVER = factory.createResolver(NxmNxCtMarkGrouping.class);
+        CT_TP_SRC_RESOLVER = factory.createResolver(NxmNxCtTpSrcGrouping.class);
+        CT_TP_DST_RESOLVER = factory.createResolver(NxmNxCtTpDstGrouping.class);
+        PKT_MARK_RESOLVER = factory.createResolver(NxmNxPktMarkGrouping.class);
     }
 
     private MatchUtil() {
     }
 
-    public static MatchEntryBuilder createDefaultMatchEntryBuilder(Class<? extends MatchField> matchField,
-                                                                   Class<? extends OxmClassBase> oxmClass,
-                                                                   MatchEntryValue matchEntryValue) {
+    public static MatchEntryBuilder createDefaultMatchEntryBuilder(final Class<? extends MatchField> matchField,
+                                                                   final Class<? extends OxmClassBase> oxmClass,
+                                                                   final MatchEntryValue matchEntryValue) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setHasMask(false);
         matchEntryBuilder.setOxmMatchField(matchField);
@@ -209,9 +177,9 @@ public final class MatchUtil {
     }
 
     public static <V extends Augmentation<ExperimenterIdCase>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
-            Class<? extends MatchField> matchField,
-            long experimenterId,
-            NxExpMatchEntryValue value) {
+            final Class<? extends MatchField> matchField,
+            final long experimenterId,
+            final NxExpMatchEntryValue value) {
         ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
         experimenterBuilder.setExperimenter(new ExperimenterId(experimenterId));
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
@@ -221,7 +189,7 @@ public final class MatchUtil {
         return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.class, expCaseBuilder.build());
     }
 
-    public static Long ipv4ToLong(Ipv4Address ipv4) {
+    public static Long ipv4ToLong(final Ipv4Address ipv4) {
         Iterator<String> iterator = SPLITTER.split(ipv4.getValue()).iterator();
         byte[] bytes = new byte[8];
         for (int i = 0; i < bytes.length; i++) {
@@ -235,7 +203,7 @@ public final class MatchUtil {
         return result;
     }
 
-    public static Ipv4Address longToIpv4Address(Long value) {
+    public static Ipv4Address longToIpv4Address(final Long value) {
         byte[] bytes = Longs.toByteArray(value);
         String[] strArray = new String[4];
         for (int i = 4; i < bytes.length; i++) {

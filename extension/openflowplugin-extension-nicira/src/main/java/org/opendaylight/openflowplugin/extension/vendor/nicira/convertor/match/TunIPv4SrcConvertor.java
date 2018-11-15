@@ -5,10 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -73,7 +72,7 @@ public class TunIPv4SrcConvertor implements ConvertorToOFJava<MatchEntry>, Conve
 
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxTunIpv4SrcGrouping> matchGrouping = MatchUtil.TUN_IPV4_SRC_RESOLVER.getExtension(extension);
+        Optional<NxmNxTunIpv4SrcGrouping> matchGrouping = MatchUtil.TUN_IPV4_SRC_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
