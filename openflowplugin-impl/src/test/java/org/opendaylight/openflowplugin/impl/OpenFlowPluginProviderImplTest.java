@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -30,7 +29,7 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistratio
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -40,7 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 public class OpenFlowPluginProviderImplTest {
 
     @Mock
-    DataBroker dataBroker;
+    PingPongDataBroker dataBroker;
 
     @Mock
     RpcProviderRegistry rpcProviderRegistry;
@@ -112,7 +111,7 @@ public class OpenFlowPluginProviderImplTest {
     public void testInitializeAndClose() throws Exception {
         final OpenFlowPluginProviderImpl provider = new OpenFlowPluginProviderImpl(
                 configurationService,
-                Lists.newArrayList(switchConnectionProvider),
+                new SwitchConnectionProviderList(Lists.newArrayList(switchConnectionProvider)),
                 dataBroker,
                 rpcProviderRegistry,
                 notificationPublishService,
