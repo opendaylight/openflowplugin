@@ -5,20 +5,27 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.api.diagstatus;
+package org.opendaylight.openflowplugin.impl;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.diagstatus.ServiceStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
+@Service(classes = ServiceStatusProvider.class)
 public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginDiagStatusProvider.class);
@@ -30,8 +37,9 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
     private InetAddress defaultInetAddres;
     private InetAddress legacyInetAddress;
 
-    public OpenflowPluginDiagStatusProvider(final DiagStatusService diagStatusService,
-                                            final List<SwitchConnectionProvider> switchConnectionProviders) {
+    @Inject
+    public OpenflowPluginDiagStatusProvider(final @Reference DiagStatusService diagStatusService,
+                                            final SwitchConnectionProviderList switchConnectionProviders) {
         this.diagStatusService = diagStatusService;
         setSwitchConnectionInetAddress(switchConnectionProviders);
         diagStatusService.register(OPENFLOW_SERVICE_NAME);
