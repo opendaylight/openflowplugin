@@ -15,8 +15,7 @@
                odl:type="openflow-switch-connection-provider-default-impl"/>
 
     <reference id="extensionRegistratorProvider"
-               interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"
-               odl:type="openflow-plugin-provider-impl"/>
+               interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider"/>
 
     <bean id="onfExtensionProvider"
           class="org.opendaylight.openflowplugin.extension.onf.OnfExtensionProvider"
