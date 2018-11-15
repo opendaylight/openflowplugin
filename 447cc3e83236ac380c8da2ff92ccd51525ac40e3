@@ -16,6 +16,24 @@
       "revId": "447cc3e83236ac380c8da2ff92ccd51525ac40e3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8f93864_8c0d531f",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2018-11-15T02:59:47Z",
+      "side": 1,
+      "message": "Looks correct, it was done by mistake. \nThanks for correcting it.",
+      "parentUuid": "b4f7ae8a_a05de337",
+      "revId": "447cc3e83236ac380c8da2ff92ccd51525ac40e3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
