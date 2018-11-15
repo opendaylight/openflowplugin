@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -53,7 +53,7 @@ public class ArpShaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
 
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxArpShaGrouping> matchGrouping = MatchUtil.ARP_SHA_RESOLVER.getExtension(extension);
+        Optional<NxmNxArpShaGrouping> matchGrouping = MatchUtil.ARP_SHA_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
