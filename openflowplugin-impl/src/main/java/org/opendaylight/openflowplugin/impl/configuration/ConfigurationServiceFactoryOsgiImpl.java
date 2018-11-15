@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import javax.inject.Inject;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
@@ -21,12 +22,14 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// NOT @Singleton @Service - we do not want this OSGi specific implementation to be auto-discovered in a standalone env
 public class ConfigurationServiceFactoryOsgiImpl extends ConfigurationServiceFactoryImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationServiceFactoryOsgiImpl.class);
 
     private final BundleContext bundleContext;
 
+    @Inject
     public ConfigurationServiceFactoryOsgiImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
