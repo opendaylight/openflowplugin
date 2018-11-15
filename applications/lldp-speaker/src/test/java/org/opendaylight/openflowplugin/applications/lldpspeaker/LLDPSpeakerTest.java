@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -76,8 +77,8 @@ public class LLDPSpeakerTest {
 
         when(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(),
                 any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
-        lldpSpeaker = new LLDPSpeaker(packetProcessingService,
-                scheduledExecutorService, null, deviceOwnershipService);
+        lldpSpeaker = new LLDPSpeaker(packetProcessingService, scheduledExecutorService,
+                new LldpSpeakerConfigBuilder().setAddressDestination(null).build(), deviceOwnershipService);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
 

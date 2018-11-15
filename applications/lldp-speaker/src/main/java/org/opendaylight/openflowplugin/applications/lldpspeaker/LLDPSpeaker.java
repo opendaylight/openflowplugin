@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -56,22 +57,22 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     private final DeviceOwnershipService deviceOwnershipService;
     private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
             new ConcurrentHashMap<>();
-    private final MacAddress addressDestionation;
+    private final MacAddress addressDestination;
     private long currentFloodPeriod = LLDP_FLOOD_PERIOD;
     private ScheduledFuture<?> scheduledSpeakerTask;
     private volatile OperStatus operationalStatus = OperStatus.RUN;
 
-    public LLDPSpeaker(final PacketProcessingService packetProcessingService, final MacAddress addressDestionation,
+    public LLDPSpeaker(final PacketProcessingService packetProcessingService, final LldpSpeakerConfig lldpSpeakerConfig,
                        final DeviceOwnershipService deviceOwnershipService) {
-        this(packetProcessingService, Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY), addressDestionation,
+        this(packetProcessingService, Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY), lldpSpeakerConfig,
                 deviceOwnershipService);
     }
 
     public LLDPSpeaker(final PacketProcessingService packetProcessingService,
                        final ScheduledExecutorService scheduledExecutorService,
-                       final MacAddress addressDestionation,
+                       final LldpSpeakerConfig lldpSpeakerConfig,
                        final DeviceOwnershipService deviceOwnershipStatusService) {
-        this.addressDestionation = addressDestionation;
+        this.addressDestination = lldpSpeakerConfig.getAddressDestination();
         this.scheduledExecutorService = scheduledExecutorService;
         this.deviceOwnershipService = deviceOwnershipStatusService;
         scheduledSpeakerTask = this.scheduledExecutorService
@@ -177,7 +178,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
             packet = new TransmitPacketInputBuilder()
                     .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
                     .setNode(new NodeRef(nodeInstanceId)).setPayload(LLDPUtil.buildLldpFrame(nodeId,
-                            nodeConnectorId, srcMacAddress, outputPortNo, addressDestionation)).build();
+                            nodeConnectorId, srcMacAddress, outputPortNo, addressDestination)).build();
         } catch (NoSuchAlgorithmException | PacketException e) {
             LOG.error("Error building LLDP frame", e);
             return;
