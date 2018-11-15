@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -26,6 +25,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -33,6 +36,8 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
+import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -42,7 +47,7 @@ import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.diagstatus.OpenflowPluginDiagStatusProvider;
+import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -79,6 +84,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
+@Service(classes = { OpenFlowPluginProvider.class, OpenFlowPluginExtensionRegistratorProvider.class })
 public class OpenFlowPluginProviderImpl implements
         OpenFlowPluginProvider,
         OpenFlowPluginExtensionRegistratorProvider,
@@ -122,18 +129,19 @@ public class OpenFlowPluginProviderImpl implements
         return MESSAGE_INTELLIGENCE_AGENCY;
     }
 
-    OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
-                               final List<SwitchConnectionProvider> switchConnectionProviders,
-                               final DataBroker dataBroker,
-                               final RpcProviderRegistry rpcProviderRegistry,
-                               final NotificationPublishService notificationPublishService,
-                               final ClusterSingletonServiceProvider singletonServiceProvider,
-                               final EntityOwnershipService entityOwnershipService,
-                               final MastershipChangeServiceManager mastershipChangeServiceManager,
+    @Inject
+    public OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
+                               final @Reference SwitchConnectionProviderList switchConnectionProviders,
+                               final PingPongDataBroker pingPongDataBroker,
+                               final @Reference RpcProviderRegistry rpcProviderRegistry,
+                               final @Reference NotificationPublishService notificationPublishService,
+                               final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
+                               final @Reference EntityOwnershipService entityOwnershipService,
+                               final @Reference MastershipChangeServiceManager mastershipChangeServiceManager,
                                final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
-                               final SystemReadyMonitor systemReadyMonitor) {
+                               final @Reference SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
-        this.dataBroker = dataBroker;
+        this.dataBroker = pingPongDataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.notificationPublishService = notificationPublishService;
         this.singletonServicesProvider = singletonServiceProvider;
@@ -211,6 +219,7 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     @Override
+    @PostConstruct
     public void initialize() {
         registerMXBean(MESSAGE_INTELLIGENCE_AGENCY, MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
 
@@ -279,6 +288,7 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     @Override
+    @PreDestroy
     public void close() {
         try {
             shutdownSwitchConnections().get(10, TimeUnit.SECONDS);
