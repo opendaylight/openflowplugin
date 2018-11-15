@@ -34,6 +34,24 @@
       "revId": "447cc3e83236ac380c8da2ff92ccd51525ac40e3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11a97a6d_ff7ca88a",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-11-15T06:12:01Z",
+      "side": 1,
+      "message": "Looks corret.Thanks for fixing this. Arun has already raised fix for this https://git.opendaylight.org/gerrit/#/c/77833/ and backported too.",
+      "parentUuid": "a8f93864_8c0d531f",
+      "revId": "447cc3e83236ac380c8da2ff92ccd51525ac40e3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
