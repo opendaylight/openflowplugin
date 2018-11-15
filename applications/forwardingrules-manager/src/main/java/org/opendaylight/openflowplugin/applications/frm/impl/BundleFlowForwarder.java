@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -34,7 +35,6 @@ import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
@@ -108,9 +108,10 @@ public class BundleFlowForwarder {
                     .setBundleInnerMessage(bundleInnerMessage).build();
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent,
                     updatedFlow, identifier, bundleId);
-            ListenableFuture<RpcResult<AddFlowOutput>> flowFuture = SettableFuture.create();
-            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, flowFuture));
-            return flowFuture;
+            SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = SettableFuture.create();
+            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, resultFuture),
+                    MoreExecutors.directExecutor());
+            return resultFuture;
         });
     }
 
@@ -124,10 +125,10 @@ public class BundleFlowForwarder {
                     .setBundleInnerMessage(bundleInnerMessage).build();
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent, flow,
                     identifier, bundleId);
-            ListenableFuture<RpcResult<AddFlowOutput>> flowFuture = SettableFuture.create();
-            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, flowFuture),
+            SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = SettableFuture.create();
+            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, resultFuture),
                     MoreExecutors.directExecutor());
-            return flowFuture;
+            return resultFuture;
         });
     }
 
@@ -202,12 +203,14 @@ public class BundleFlowForwarder {
         private final BundleId bundleId;
         private final Message message;
         private final NodeId nodeId;
+        private final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
 
         BundleFlowCallBack(InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId, Message message,
-                ListenableFuture<RpcResult<AddFlowOutput>> flowFuture) {
+                SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
             this.nodeIdent = nodeIdent;
             this.bundleId = bundleId;
             this.message = message;
+            this.resultFuture = resultFuture;
             nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         }
 
@@ -215,14 +218,29 @@ public class BundleFlowForwarder {
         @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
         public void onSuccess(RpcResult<AddBundleMessagesOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
-                List<Message> messages = new ArrayList<>(1);
-                messages.add(message);
                 AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                         .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class))).setBundleId(bundleId)
-                        .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(messages).build()).build();
+                        .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(
+                                Collections.singletonList(message)).build()).build();
+
                 LOG.trace("Pushing flow add message {} to bundle {} for device {}", addBundleMessagesInput,
                         bundleId.getValue(), nodeId.getValue());
-                forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
+
+                final ListenableFuture<RpcResult<AddBundleMessagesOutput>> addFuture =
+                        forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
+                Futures.addCallback(addFuture, new FutureCallback<RpcResult<AddBundleMessagesOutput>>() {
+                    @Override
+                    public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
+                        resultFuture.set(result);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable failure) {
+                        resultFuture.setException(failure);
+                    }
+                },  MoreExecutors.directExecutor());
+            } else {
+                resultFuture.set(rpcResult);
             }
         }
 
