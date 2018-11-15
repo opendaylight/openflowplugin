@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f676562d_827e83c7",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-15T15:56:14Z",
+      "side": 1,
+      "message": "See prior comments on this patch - the use of flowFuture is actually incorrect. I\u0027m spinning up a follow-up with the changes from PS #8 to fix this (take a look at PS 8 for a preview)....",
+      "parentUuid": "624e0fac_96883c75",
+      "range": {
+        "startLine": 215,
+        "startChar": 8,
+        "endLine": 215,
+        "endChar": 54
+      },
+      "revId": "68f1474984aaa03cccf1489d955e019bfc824cde",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "848e1c40_b423f300",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 10
@@ -36,6 +60,30 @@
       "writtenOn": "2018-11-15T15:48:18Z",
       "side": 1,
       "message": "TODO what?",
+      "range": {
+        "startLine": 374,
+        "startChar": 8,
+        "endLine": 374,
+        "endChar": 15
+      },
+      "revId": "68f1474984aaa03cccf1489d955e019bfc824cde",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b6db7821_653336f1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-15T15:56:14Z",
+      "side": 1,
+      "message": "... same here...",
+      "parentUuid": "848e1c40_b423f300",
       "range": {
         "startLine": 374,
         "startChar": 8,
