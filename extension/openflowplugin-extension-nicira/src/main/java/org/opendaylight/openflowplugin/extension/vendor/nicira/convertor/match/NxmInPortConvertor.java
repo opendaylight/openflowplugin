@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -50,8 +50,7 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
 
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmOfInPortGrouping> matchGrouping = MatchUtil.NXM_OF_INPORT_RESOLVER
-                .getExtension(extension);
+        Optional<NxmOfInPortGrouping> matchGrouping = MatchUtil.NXM_OF_INPORT_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
