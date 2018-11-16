@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "acf1b633_74810cac",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-16T13:57:17Z",
+      "side": 1,
+      "message": "I forgot to remove this",
+      "parentUuid": "75ef544a_f828953a",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ea98b25b_7eb32a3c",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
         "patchSetId": 1
@@ -54,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "037490cc_c70272fd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-16T13:57:17Z",
+      "side": 1,
+      "message": "yes - it should - I missed that - thanks",
+      "parentUuid": "ea98b25b_7eb32a3c",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fbdd9cb8_13ca881f",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 1
@@ -82,6 +118,24 @@
       "writtenOn": "2018-11-16T12:58:03Z",
       "side": 1,
       "message": "https://git.opendaylight.org/gerrit/#/c/77897/ ?",
+      "parentUuid": "fbdd9cb8_13ca881f",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ddf6175d_2e1ecb5e",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-16T13:57:17Z",
+      "side": 1,
+      "message": "This is similar to the \u0027add\u0027 method - there it just returns the Future and doesn\u0027t handle logging. I was being consistent here. So if we want to keep the logging here then we should do the same in the other places (also probably in BundleFlowForwarder).\n\nOn the flip side, since we\u0027re propagating the Future that typically means you let the caller handle logging it - which it does I believe so we\u0027d get duplicate logging.",
       "parentUuid": "fbdd9cb8_13ca881f",
       "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
@@ -141,6 +195,24 @@
     },
     {
       "key": {
+        "uuid": "0639cbc0_2a71ba4a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-16T13:57:17Z",
+      "side": 1,
+      "message": "B/c the RpcResult types are different - AddGroupOutput vs AddFlowOutput",
+      "parentUuid": "2b3992a6_3813c18a",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "56de8ce6_1b017c7f",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 1
@@ -176,6 +248,24 @@
     },
     {
       "key": {
+        "uuid": "ff3bf1ad_68daf123",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 412,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-16T13:57:17Z",
+      "side": 1,
+      "message": "yes",
+      "parentUuid": "91843429_1eff6455",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ac4fa2a_5a784586",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 1
@@ -187,6 +277,24 @@
       "writtenOn": "2018-11-16T11:15:28Z",
       "side": 1,
       "message": "as above",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "98573d97_0ff385d3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2018-11-16T13:57:17Z",
+      "side": 1,
+      "message": "ditto",
+      "parentUuid": "5ac4fa2a_5a784586",
       "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
