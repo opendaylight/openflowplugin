@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9bd234b_0f2a3c5d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryOsgiImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T14:01:21Z",
+      "side": 1,
+      "message": "https://git.opendaylight.org/gerrit/#/c/77900/",
+      "revId": "4f325df8788738bdf81f19c817b1324d73cf4d45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
