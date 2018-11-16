@@ -85,11 +85,10 @@ public class ContextChainHolderImplTest {
 
     private ContextChainHolderImpl contextChainHolder;
     private ReconciliationFrameworkRegistration registration;
-    private MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
+    private final MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
 
     @Before
     public void setUp() throws Exception {
-
         Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
         Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
@@ -173,6 +172,9 @@ public class ContextChainHolderImplTest {
     @Test
     public void reconciliationFrameworkSuccessButNotSubmit() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
+        // TODO when if (future != null) check in MastershipChangeServiceManagerImpl's becomeSlaveOrDisconnect() is rm
+        // Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
+        //    .thenReturn(Futures.immediateFuture(null));
         contextChainHolder.createContextChain(connectionContext);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
