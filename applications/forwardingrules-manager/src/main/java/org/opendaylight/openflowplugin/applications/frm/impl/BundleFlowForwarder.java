@@ -245,6 +245,7 @@ public class BundleFlowForwarder {
         @Override
         public void onFailure(Throwable throwable) {
             LOG.error("Error while pushing flow add bundle {} for device {}", message, nodeId);
+            resultFuture.setException(throwable);
         }
     }
 }

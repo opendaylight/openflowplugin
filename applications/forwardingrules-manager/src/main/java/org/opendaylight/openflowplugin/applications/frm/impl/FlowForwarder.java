@@ -410,6 +410,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         public void onFailure(Throwable throwable) {
             LOG.error("Service call for adding flow with id {} failed for node {}",
                     getFlowId(addFlowInput.getFlowRef()), nodeId, throwable);
+            resultFuture.setException(throwable);
         }
     }
 
@@ -459,6 +460,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         public void onFailure(Throwable throwable) {
             LOG.error("Service call for updating flow with id {} failed for node {}",
                     getFlowId(updateFlowInput.getFlowRef()), nodeId, throwable);
+            resultFuture.setException(throwable);
         }
     }
 }
