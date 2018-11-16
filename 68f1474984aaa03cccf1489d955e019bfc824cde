@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "55fa3ff8_0eaf7632",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T10:55:04Z",
+      "side": 1,
+      "message": "https://git.opendaylight.org/gerrit/#/c/77859/",
+      "parentUuid": "f676562d_827e83c7",
+      "range": {
+        "startLine": 215,
+        "startChar": 8,
+        "endLine": 215,
+        "endChar": 54
+      },
+      "revId": "68f1474984aaa03cccf1489d955e019bfc824cde",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "848e1c40_b423f300",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 10
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "... same here...",
       "parentUuid": "848e1c40_b423f300",
+      "range": {
+        "startLine": 374,
+        "startChar": 8,
+        "endLine": 374,
+        "endChar": 15
+      },
+      "revId": "68f1474984aaa03cccf1489d955e019bfc824cde",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "47fa8ca4_ab23bf42",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T10:55:04Z",
+      "side": 1,
+      "message": "https://git.opendaylight.org/gerrit/#/c/77859/",
+      "parentUuid": "b6db7821_653336f1",
       "range": {
         "startLine": 374,
         "startChar": 8,
