@@ -12,7 +12,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
@@ -29,7 +28,6 @@ public class ConfigurationServiceFactoryOsgiImpl extends ConfigurationServiceFac
 
     private final BundleContext bundleContext;
 
-    @Inject
     public ConfigurationServiceFactoryOsgiImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
