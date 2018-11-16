@@ -29,6 +29,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -201,7 +202,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
                                     getFlowId(new FlowRef(identifier)));
-                            return provider.getSalFlowService().updateFlow(builder.build());
+                            return LoggingFutures.addErrorLogging(
+                                    provider.getSalFlowService().updateFlow(builder.build()), LOG,
+                                    "updateFlow() dependent on group failed");
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
                             ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
@@ -216,7 +219,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
                     LOG.trace("The flow {} is not dependent on any group. Updating the flow",
                             getFlowId(new FlowRef(identifier)));
-                    return provider.getSalFlowService().updateFlow(builder.build());
+                    return LoggingFutures.addErrorLogging(
+                            provider.getSalFlowService().updateFlow(builder.build()), LOG,
+                            "updateFlow() not dependent on any group failed");
                 });
             }
         }
