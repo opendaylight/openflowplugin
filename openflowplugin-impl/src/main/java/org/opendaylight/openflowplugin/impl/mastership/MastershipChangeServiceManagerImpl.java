@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
+import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErrorLogging;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ListenableFuture;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
@@ -24,10 +25,14 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeS
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 @Service(classes = MastershipChangeServiceManager.class)
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);
 
     private final List<MastershipChangeService> serviceGroup = new CopyOnWriteArrayList<>();
     private ReconciliationFrameworkEvent rfService = null;
@@ -67,11 +72,9 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    // FB flags this for onDeviceDisconnected but unclear why - seems a false positive.
-    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
     public void becomeSlaveOrDisconnect(@Nonnull final DeviceInfo deviceInfo) {
         if (rfService != null) {
-            rfService.onDeviceDisconnected(deviceInfo);
+            addErrorLogging(rfService.onDeviceDisconnected(deviceInfo), LOG, "onDeviceDisconnected() failed");
         }
         serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onLoseOwnership(deviceInfo));
     }

@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
+import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -49,6 +50,9 @@ public class MastershipChangeServiceManagerImplTest {
     public void setUp() throws Exception {
         registration = manager.register(service);
         registrationRF = manager.reconciliationFrameworkRegistration(event);
+
+        Mockito.when(event.onDeviceDisconnected(Mockito.any())).thenReturn(Futures.immediateFuture(null));
+        Mockito.when(secondEvent.onDeviceDisconnected(Mockito.any())).thenReturn(Futures.immediateFuture(null));
     }
 
     @Test
