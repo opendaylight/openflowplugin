@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75ef544a_f828953a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "ditch this (I\u0027ll just directly do it in a follow-up)",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ea98b25b_7eb32a3c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "What do other reviewers thing about also doing this here:\n\n   resultFuture.setException(throwable);\n\nThat seem logical, no?",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fbdd9cb8_13ca881f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "strictly speaking we\u0027re loosing error logging here... IFF the caller handles failed Future returns, it shouldn\u0027t matter - but I don\u0027t trust such matters anymore.  How about therefore keeping that?  There is a JdkFutures.addErrorLogging() variant in infrautils which returns the future for nice chainging.",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "68d02554_736f00b3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "as above re error logging",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2b3992a6_3813c18a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "is this needed? I\u0027m probably missing why you wouldn\u0027t just do:\n\n    resultFuture.set(rpcResult);",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "56de8ce6_1b017c7f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 412,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "shouldn\u0027t we also do:\n\n    resultFuture.setException(throwable);",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ac4fa2a_5a784586",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "as above",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "90aeb4c1_8a32a354",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-16T11:15:28Z",
+      "side": 1,
+      "message": "and again here also resultFuture.setException(throwable);",
+      "revId": "ebe5a93bc805593b82c802c1843c663ecd0a45de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
