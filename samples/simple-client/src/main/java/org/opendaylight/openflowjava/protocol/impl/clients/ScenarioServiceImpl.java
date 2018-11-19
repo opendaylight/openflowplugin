@@ -10,8 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.clients;
 import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.IOException;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -72,22 +72,21 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
-    public SortedMap<Integer, ClientEvent> getEventsFromScenario(Scenario scenario) throws IOException {
+    public List<ClientEvent> getEventsFromScenario(Scenario scenario) throws IOException {
         Preconditions.checkNotNull(scenario, "Scenario name not found. Check XML file, scenario name or directories.");
-        SortedMap<Integer, ClientEvent> events = new TreeMap<>();
-        Integer counter = 0;
+        List<ClientEvent> events = new ArrayList<>();
         for (Step step : scenario.getStep()) {
             LOG.debug("Step {}: {}, type {}, bytes {}", step.getOrder(), step.getName(), step.getEvent().value(),
                     step.getBytes().toArray());
             switch (step.getEvent()) {
                 case SLEEP_EVENT:
-                    events.put(counter++, new SleepEvent(1000));
+                    events.add(new SleepEvent(1000));
                     break;
                 case SEND_EVENT:
-                    events.put(counter++, new SendEvent(ByteBufUtils.serializeList(step.getBytes())));
+                    events.add(new SendEvent(ByteBufUtils.serializeList(step.getBytes())));
                     break;
                 case WAIT_FOR_MESSAGE_EVENT:
-                    events.put(counter++, new WaitForMessageEvent(ByteBufUtils.serializeList(step.getBytes())));
+                    events.add(new WaitForMessageEvent(ByteBufUtils.serializeList(step.getBytes())));
                     break;
                 default:
                     break;
