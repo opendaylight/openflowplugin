@@ -48,7 +48,7 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
         EntityOwnershipState state = ownershipStateCache.get(nodeId);
         if (state == null) {
             LOG.debug("The ownership state for node {} is not cached. Retrieving from the EOS Datastore");
-            java.util.Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(nodeId);
+            Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(nodeId);
             if (status.isPresent()) {
                 state = status.get();
                 ownershipStateCache.put(nodeId, state);
@@ -78,14 +78,13 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
         }
     }
 
-    private java.util.Optional<EntityOwnershipState> getCurrentOwnershipStatus(final String nodeId) {
+    private Optional<EntityOwnershipState> getCurrentOwnershipStatus(final String nodeId) {
         org.opendaylight.mdsal.eos.binding.api.Entity entity = createNodeEntity(nodeId);
         Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
         if (ownershipStatus.isPresent()) {
             LOG.trace("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
-            return java.util.Optional.of(ownershipStatus.get());
         }
-        return java.util.Optional.empty();
+        return ownershipStatus;
     }
 
     private org.opendaylight.mdsal.eos.binding.api.Entity createNodeEntity(final String nodeId) {

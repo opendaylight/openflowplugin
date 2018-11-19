@@ -199,7 +199,7 @@ public final class LLDPDiscoveryUtils {
         Preconditions.checkNotNull(eos, "Entity ownership service must not be null");
 
         EntityOwnershipState state = null;
-        java.util.Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
+        Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
         if (status.isPresent()) {
             state = status.get();
         } else {
@@ -208,16 +208,15 @@ public final class LLDPDiscoveryUtils {
         return state != null && state.equals(EntityOwnershipState.IS_OWNER);
     }
 
-    private static java.util.Optional<EntityOwnershipState> getCurrentOwnershipStatus(final EntityOwnershipService eos,
+    private static Optional<EntityOwnershipState> getCurrentOwnershipStatus(final EntityOwnershipService eos,
             final String nodeId) {
         Entity entity = createNodeEntity(nodeId);
         Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
 
         if (ownershipStatus.isPresent()) {
             LOG.debug("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
-            return java.util.Optional.of(ownershipStatus.get());
         }
-        return java.util.Optional.empty();
+        return ownershipStatus;
     }
 
     private static Entity createNodeEntity(final String nodeId) {
