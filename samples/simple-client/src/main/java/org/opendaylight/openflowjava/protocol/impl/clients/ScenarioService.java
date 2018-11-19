@@ -8,7 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import java.io.IOException;
-import java.util.SortedMap;
+import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
 
@@ -32,6 +32,6 @@ interface ScenarioService {
      */
     Scenario unMarshallData(String scenarioName) throws SAXException, JAXBException;
 
-    SortedMap<Integer, ClientEvent> getEventsFromScenario(Scenario scenario) throws IOException;
+    List<ClientEvent> getEventsFromScenario(Scenario scenario) throws IOException;
 
 }

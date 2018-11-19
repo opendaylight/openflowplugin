@@ -11,7 +11,6 @@ package org.opendaylight.openflowjava.protocol.impl.clients;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Map;
 import javax.xml.bind.JAXBException;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.xml.sax.SAXException;
@@ -80,9 +79,9 @@ public final class ScenarioFactory {
             throws JAXBException, SAXException, IOException {
         ScenarioService scenarioService = new ScenarioServiceImpl(scenarioFile);
         Deque<ClientEvent> stack = new ArrayDeque<>();
-        for (Map.Entry<Integer, ClientEvent> clientEvent : scenarioService.getEventsFromScenario(
-                scenarioService.unMarshallData(scenarioName)).entrySet()) {
-            stack.addFirst(clientEvent.getValue());
+        for (ClientEvent clientEvent : scenarioService.getEventsFromScenario(
+                scenarioService.unMarshallData(scenarioName))) {
+            stack.addFirst(clientEvent);
         }
         return stack;
     }
