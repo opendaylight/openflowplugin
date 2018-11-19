@@ -16,6 +16,24 @@
       "revId": "ee101eb4d8f2b6b13cff7b0222f857c89ef0b6ca",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b600fe6_cda481c0",
+        "filename": "samples/simple-client/src/main/java/org/opendaylight/openflowjava/protocol/impl/clients/ScenarioServiceImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-19T10:22:24Z",
+      "side": 1,
+      "message": "OMG, yes!  I\u0027ll rebase and remove this once that is in.. (There are a few other issues anyway, so this isn\u0027t quite ready just yet.)",
+      "parentUuid": "253b81ac_f341f17f",
+      "revId": "ee101eb4d8f2b6b13cff7b0222f857c89ef0b6ca",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
