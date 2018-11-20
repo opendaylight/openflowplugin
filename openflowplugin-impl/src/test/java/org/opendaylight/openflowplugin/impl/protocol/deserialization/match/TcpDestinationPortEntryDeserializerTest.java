@@ -27,7 +27,7 @@ public class TcpDestinationPortEntryDeserializerTest extends AbstractMatchEntryD
         writeHeader(in, false);
         in.writeShort(port);
 
-        assertEquals(port, TcpMatch.class.cast(deserialize(in).getLayer4Match()).getTcpDestinationPort().getValue()
+        assertEquals(port, ((TcpMatch) deserialize(in).getLayer4Match()).getTcpDestinationPort().getValue()
                 .intValue());
         assertEquals(0, in.readableBytes());
     }

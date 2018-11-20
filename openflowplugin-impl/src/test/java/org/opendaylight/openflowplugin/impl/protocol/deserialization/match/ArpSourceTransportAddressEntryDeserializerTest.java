@@ -36,7 +36,7 @@ public class ArpSourceTransportAddressEntryDeserializerTest extends AbstractMatc
         in.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(new Ipv4Address(addressParts.next())));
 
         assertEquals(arpSourceTransportAddressNoMask.getValue(),
-                ArpMatch.class.cast(deserialize(in).getLayer3Match()).getArpSourceTransportAddress().getValue());
+                ((ArpMatch) deserialize(in).getLayer3Match()).getArpSourceTransportAddress().getValue());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
@@ -45,7 +45,7 @@ public class ArpSourceTransportAddressEntryDeserializerTest extends AbstractMatc
         in.writeBytes(MatchConvertorUtil.extractIpv4Mask(addressParts));
 
         final Ipv4Prefix desAddress =
-                ArpMatch.class.cast(deserialize(in).getLayer3Match()).getArpSourceTransportAddress();
+                ((ArpMatch) deserialize(in).getLayer3Match()).getArpSourceTransportAddress();
         assertEquals(arpSourceTransportAddress.getValue(), desAddress.getValue());
         assertEquals(0, in.readableBytes());
     }

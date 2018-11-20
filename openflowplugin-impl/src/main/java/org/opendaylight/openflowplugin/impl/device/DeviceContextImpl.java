@@ -499,8 +499,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (Objects.nonNull(implementedInterface) && org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
                 .rev130709.PacketInMessage.class.equals(implementedInterface)) {
             final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
-                    .PacketInMessage packetInMessage = org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
-                    .rev130709.PacketInMessage.class.cast(message);
+                    .PacketInMessage packetInMessage = (org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
+                .rev130709.PacketInMessage) message;
 
             handlePacketInMessage(packetInMessage, implementedInterface, packetInMessage.getMatch());
             return true;

@@ -87,8 +87,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
                                 .stream()
                                 .map(MultipartReply::getMultipartReplyBody)
                                 .filter(MultipartReplyTableFeatures.class::isInstance)
-                                .flatMap(multipartReplyBody -> MultipartReplyTableFeatures.class
-                                    .cast(multipartReplyBody)
+                                .flatMap(multipartReplyBody -> ((MultipartReplyTableFeatures) multipartReplyBody)
                                     .getTableFeatures()
                                     .stream())
                                 .collect(Collectors.toList()));

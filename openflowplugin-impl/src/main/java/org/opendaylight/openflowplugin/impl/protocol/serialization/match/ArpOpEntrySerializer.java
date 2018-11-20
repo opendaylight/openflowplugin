@@ -20,14 +20,14 @@ public class ArpOpEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeShort(ArpMatch.class.cast(match.getLayer3Match()).getArpOp());
+        outBuffer.writeShort(((ArpMatch) match.getLayer3Match()).getArpOp());
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer3Match())
-                && ArpMatch.class.isInstance(match.getLayer3Match())
-                && Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpOp());
+                && match.getLayer3Match() instanceof ArpMatch
+                && Objects.nonNull(((ArpMatch) match.getLayer3Match()).getArpOp());
     }
 
     @Override

@@ -34,9 +34,9 @@ public class OutputActionDeserializerTest extends AbstractActionDeserializerTest
         in.writeZero(ActionConstants.OUTPUT_PADDING);
 
         final Action action = deserializeAction(in);
-        assertTrue(OutputActionCase.class.isInstance(action));
+        assertTrue(action instanceof OutputActionCase);
 
-        final OutputAction outputAction = OutputActionCase.class.cast(action).getOutputAction();
+        final OutputAction outputAction = ((OutputActionCase) action).getOutputAction();
         assertEquals(portNum, InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13, outputAction.getOutputNodeConnector().getValue()).intValue());
         assertEquals(maxLength, outputAction.getMaxLength().shortValue());

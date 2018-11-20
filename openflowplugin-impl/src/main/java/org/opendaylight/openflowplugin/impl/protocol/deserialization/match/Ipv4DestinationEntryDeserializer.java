@@ -48,9 +48,9 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
             builder.setLayer3Match(new Ipv4MatchBuilder()
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
                     .build());
-        } else if (Ipv4Match.class.isInstance(builder.getLayer3Match())
-                && Objects.isNull(Ipv4Match.class.cast(builder.getLayer3Match()).getIpv4Destination())) {
-            builder.setLayer3Match(new Ipv4MatchBuilder(Ipv4Match.class.cast(builder.getLayer3Match()))
+        } else if (builder.getLayer3Match() instanceof Ipv4Match
+                && Objects.isNull(((Ipv4Match) builder.getLayer3Match()).getIpv4Destination())) {
+            builder.setLayer3Match(new Ipv4MatchBuilder((Ipv4Match) builder.getLayer3Match())
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
                     .build());
         } else {
@@ -65,11 +65,11 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
                     .setIpv4DestinationAddressNoMask(address)
                     .setIpv4DestinationArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
                     .build());
-        } else if (Ipv4MatchArbitraryBitMask.class.isInstance(builder.getLayer3Match())
-                && Objects.isNull(Ipv4MatchArbitraryBitMask.class.cast(builder.getLayer3Match())
+        } else if (builder.getLayer3Match() instanceof Ipv4MatchArbitraryBitMask
+                && Objects.isNull(((Ipv4MatchArbitraryBitMask) builder.getLayer3Match())
                 .getIpv4DestinationAddressNoMask())) {
-            builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder(Ipv4MatchArbitraryBitMask.class.cast(builder
-                    .getLayer3Match()))
+            builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder((Ipv4MatchArbitraryBitMask) builder
+                .getLayer3Match())
                     .setIpv4DestinationAddressNoMask(address)
                     .setIpv4DestinationArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
                     .build());

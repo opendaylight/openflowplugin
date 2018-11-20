@@ -29,8 +29,8 @@ public class SetMplsTtlActionDeserializerTest extends AbstractActionDeserializer
         in.writeZero(ActionConstants.SET_MPLS_TTL_PADDING);
 
         final Action action = deserializeAction(in);
-        assertTrue(SetMplsTtlActionCase.class.isInstance(action));
-        assertEquals(mplsTtl, SetMplsTtlActionCase.class.cast(action).getSetMplsTtlAction().getMplsTtl().shortValue());
+        assertTrue(action instanceof SetMplsTtlActionCase);
+        assertEquals(mplsTtl, ((SetMplsTtlActionCase) action).getSetMplsTtlAction().getMplsTtl().shortValue());
         assertEquals(0, in.readableBytes());
     }
 

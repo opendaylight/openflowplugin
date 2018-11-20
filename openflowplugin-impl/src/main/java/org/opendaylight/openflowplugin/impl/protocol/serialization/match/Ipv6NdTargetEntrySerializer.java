@@ -20,14 +20,14 @@ public class Ipv6NdTargetEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        writeIpv6Address(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6NdTarget(), outBuffer);
+        writeIpv6Address(((Ipv6Match) match.getLayer3Match()).getIpv6NdTarget(), outBuffer);
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer3Match())
-                && Ipv6Match.class.isInstance(match.getLayer3Match())
-                && Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6NdTarget());
+                && match.getLayer3Match() instanceof Ipv6Match
+                && Objects.nonNull(((Ipv6Match) match.getLayer3Match()).getIpv6NdTarget());
     }
 
     @Override

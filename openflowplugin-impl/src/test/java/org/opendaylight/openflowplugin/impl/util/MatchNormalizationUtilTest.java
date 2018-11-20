@@ -83,7 +83,7 @@ public class MatchNormalizationUtilTest {
                                 .build())
                         .build()));
 
-        assertEquals(arpOp, ArpMatch.class.cast(matchBuilder.getLayer3Match()).getArpOp().intValue());
+        assertEquals(arpOp, ((ArpMatch) matchBuilder.getLayer3Match()).getArpOp().intValue());
     }
 
     @Test
@@ -98,9 +98,9 @@ public class MatchNormalizationUtilTest {
                         .build()));
 
         assertEquals("192.168.1.0/24",
-                TunnelIpv4Match.class.cast(matchBuilder.getLayer3Match()).getTunnelIpv4Source().getValue());
+                ((TunnelIpv4Match) matchBuilder.getLayer3Match()).getTunnelIpv4Source().getValue());
         assertEquals("192.168.2.0/24",
-                TunnelIpv4Match.class.cast(matchBuilder.getLayer3Match()).getTunnelIpv4Destination().getValue());
+                ((TunnelIpv4Match) matchBuilder.getLayer3Match()).getTunnelIpv4Destination().getValue());
     }
 
     @Test
@@ -114,9 +114,9 @@ public class MatchNormalizationUtilTest {
                         .setIpv4Destination(new Ipv4Prefix(destination))
                         .build()));
 
-        assertEquals("192.168.1.0/24", Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Source().getValue());
+        assertEquals("192.168.1.0/24", ((Ipv4Match) matchBuilder.getLayer3Match()).getIpv4Source().getValue());
         assertEquals("192.168.2.0/24",
-                Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Destination().getValue());
+                ((Ipv4Match) matchBuilder.getLayer3Match()).getIpv4Destination().getValue());
     }
 
     @Test
@@ -133,8 +133,8 @@ public class MatchNormalizationUtilTest {
                         .setIpv4DestinationArbitraryBitmask(leftMask)
                         .build()));
 
-        assertEquals(right, Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Source());
-        assertEquals(right, Ipv4Match.class.cast(matchBuilder.getLayer3Match()).getIpv4Destination());
+        assertEquals(right, ((Ipv4Match) matchBuilder.getLayer3Match()).getIpv4Source());
+        assertEquals(right, ((Ipv4Match) matchBuilder.getLayer3Match()).getIpv4Destination());
     }
 
     @Test
@@ -155,11 +155,11 @@ public class MatchNormalizationUtilTest {
                         .setIpv6Destination(leftPrefix)
                         .build()));
 
-        assertEquals(rightMac, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6NdSll());
-        assertEquals(rightMac, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6NdTll());
-        assertEquals(rightPrefix, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6Source());
-        assertEquals(rightPrefix, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6Destination());
-        assertEquals(rightAddress, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6NdTarget());
+        assertEquals(rightMac, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6NdSll());
+        assertEquals(rightMac, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6NdTll());
+        assertEquals(rightPrefix, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6Source());
+        assertEquals(rightPrefix, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6Destination());
+        assertEquals(rightAddress, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6NdTarget());
     }
 
     @Test
@@ -176,8 +176,8 @@ public class MatchNormalizationUtilTest {
                         .setIpv6DestinationArbitraryBitmask(leftMask)
                         .build()));
 
-        assertEquals(right, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6Source());
-        assertEquals(right, Ipv6Match.class.cast(matchBuilder.getLayer3Match()).getIpv6Destination());
+        assertEquals(right, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6Source());
+        assertEquals(right, ((Ipv6Match) matchBuilder.getLayer3Match()).getIpv6Destination());
     }
 
     @Test

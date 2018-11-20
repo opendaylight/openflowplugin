@@ -33,12 +33,12 @@ public class SingleLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader>
     @Override
     protected boolean isMultipart(OfHeader result) {
         return result instanceof MultipartReply
-            && MultipartReply.class.cast(result).getMultipartReplyBody() instanceof MultipartReplyFlowStats;
+            && ((MultipartReply) result).getMultipartReplyBody() instanceof MultipartReplyFlowStats;
     }
 
     @Override
     protected boolean isReqMore(T result) {
-        return MultipartReply.class.cast(result).isRequestMore();
+        return ((MultipartReply) result).isRequestMore();
     }
 
     @Override

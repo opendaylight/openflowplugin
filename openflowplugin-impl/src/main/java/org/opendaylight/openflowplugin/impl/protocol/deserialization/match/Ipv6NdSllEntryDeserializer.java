@@ -27,9 +27,9 @@ public class Ipv6NdSllEntryDeserializer extends AbstractMatchEntryDeserializer {
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6NdSll(address)
                     .build());
-        } else if (Ipv6Match.class.isInstance(builder.getLayer3Match())
-            && Objects.isNull(Ipv6Match.class.cast(builder.getLayer3Match()).getIpv6NdSll())) {
-            final Ipv6Match match = Ipv6Match.class.cast(builder.getLayer3Match());
+        } else if (builder.getLayer3Match() instanceof Ipv6Match
+            && Objects.isNull(((Ipv6Match) builder.getLayer3Match()).getIpv6NdSll())) {
+            final Ipv6Match match = (Ipv6Match) builder.getLayer3Match();
             builder.setLayer3Match(new Ipv6MatchBuilder(match)
                     .setIpv6NdSll(address)
                     .build());

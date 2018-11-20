@@ -23,21 +23,21 @@ public class TunnelIpv4SourceEntrySerializer extends AbstractMatchEntrySerialize
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
         // TODO: Why is this serialization exactly same as in Ipv4SourceEntrySerializer?
-        writeIpv4Prefix(TunnelIpv4Match.class.cast(match.getLayer3Match()).getTunnelIpv4Source(), outBuffer);
+        writeIpv4Prefix(((TunnelIpv4Match) match.getLayer3Match()).getTunnelIpv4Source(), outBuffer);
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer3Match())
-                && TunnelIpv4Match.class.isInstance(match.getLayer3Match())
-                && Objects.nonNull(TunnelIpv4Match.class.cast(match.getLayer3Match()).getTunnelIpv4Source());
+                && match.getLayer3Match() instanceof TunnelIpv4Match
+                && Objects.nonNull(((TunnelIpv4Match) match.getLayer3Match()).getTunnelIpv4Source());
     }
 
     @Override
     protected boolean getHasMask(Match match) {
         // Split address to IP and mask
         final Iterator<String> addressParts = IpConversionUtil.splitToParts(
-                TunnelIpv4Match.class.cast(match.getLayer3Match()).getTunnelIpv4Source());
+                ((TunnelIpv4Match) match.getLayer3Match()).getTunnelIpv4Source());
         addressParts.next();
 
         // Check if we have mask

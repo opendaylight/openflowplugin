@@ -36,11 +36,11 @@ public class SetFieldActionDeserializerTest extends AbstractActionDeserializerTe
         in.writeZero(EncodeConstants.SIZE_OF_INT_IN_BYTES);
 
         final Action action = deserializeAction(in);
-        assertTrue(SetFieldCase.class.isInstance(action));
+        assertTrue(action instanceof SetFieldCase);
         assertEquals(
                 OpenflowPortsUtil
                         .getPortLogicalName(EncodeConstants.OF13_VERSION_ID, BinContent.intToUnsignedLong(portNum)),
-                SetFieldCase.class.cast(action).getSetField().getInPort().getValue());
+                ((SetFieldCase) action).getSetField().getInPort().getValue());
         assertEquals(0, in.readableBytes());
     }
 

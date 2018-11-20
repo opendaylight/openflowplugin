@@ -27,7 +27,7 @@ public class PopVlanActionDeserializerTest extends AbstractActionDeserializerTes
         in.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         final Action action = deserializeAction(in);
-        assertTrue(PopVlanActionCase.class.isInstance(action));
+        assertTrue(action instanceof PopVlanActionCase);
         assertEquals(0, in.readableBytes());
     }
 
