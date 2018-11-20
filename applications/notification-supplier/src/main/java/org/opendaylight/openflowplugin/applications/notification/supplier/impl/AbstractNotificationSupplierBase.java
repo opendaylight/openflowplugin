@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import com.google.common.base.Preconditions;
-import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
@@ -62,12 +61,8 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
         SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
             listenerRegistration = looper
-                    .loopUntilNoException(new Callable<ListenerRegistration<DataTreeChangeListener<O>>>() {
-                        @Override
-                        public ListenerRegistration<DataTreeChangeListener<O>> call() throws Exception {
-                            return db.registerDataTreeChangeListener(treeId, AbstractNotificationSupplierBase.this);
-                        }
-                    });
+                    .loopUntilNoException(
+                        () -> db.registerDataTreeChangeListener(treeId, AbstractNotificationSupplierBase.this));
         } catch (final Exception ex) {
             LOG.debug("AbstractNotificationSupplierBase DataTreeChange listener registration fail ..{}",
                       ex.getMessage());

@@ -42,24 +42,21 @@ public class DropTestCommiter extends AbstractDropTest {
 
     private static final AtomicLong ID_COUNTER = new AtomicLong();
 
-    private static final ThreadLocal<FlowBuilder> BUILDER = new ThreadLocal<FlowBuilder>() {
-        @Override
-        protected FlowBuilder initialValue() {
-            final FlowBuilder fb = new FlowBuilder();
+    private static final ThreadLocal<FlowBuilder> BUILDER = ThreadLocal.withInitial(() -> {
+        final FlowBuilder fb = new FlowBuilder();
 
-            fb.setPriority(PRIORITY);
-            fb.setBufferId(BUFFER_ID);
-            final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
-            fb.setCookie(cookie);
-            fb.setCookieMask(cookie);
+        fb.setPriority(PRIORITY);
+        fb.setBufferId(BUFFER_ID);
+        final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
+        fb.setCookie(cookie);
+        fb.setCookieMask(cookie);
 
-            fb.setTableId(TABLE_ID);
-            fb.setHardTimeout(HARD_TIMEOUT);
-            fb.setIdleTimeout(IDLE_TIMEOUT);
-            fb.setFlags(new FlowModFlags(false, false, false, false, false));
-            return fb;
-        }
-    };
+        fb.setTableId(TABLE_ID);
+        fb.setHardTimeout(HARD_TIMEOUT);
+        fb.setIdleTimeout(IDLE_TIMEOUT);
+        fb.setFlags(new FlowModFlags(false, false, false, false, false));
+        return fb;
+    });
 
     private NotificationService notificationService;
 

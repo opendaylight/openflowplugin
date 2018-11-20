@@ -79,7 +79,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     protected boolean shuttingDown;
 
     // Passed to executor to request triggering of flush
-    protected final Runnable flushRunnable = () -> flush();
+    protected final Runnable flushRunnable = this::flush;
 
     AbstractOutboundQueueManager(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler) {
         this.parent = Preconditions.checkNotNull(parent);

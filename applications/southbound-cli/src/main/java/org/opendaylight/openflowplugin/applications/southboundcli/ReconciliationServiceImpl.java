@@ -104,7 +104,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
         List<Long> nodeList = getAllNodes();
         List<Long> nodesToReconcile = reconcileAllNodes ? nodeList :
-                inputNodes.stream().distinct().map(node -> node.longValue()).collect(Collectors.toList());
+                inputNodes.stream().distinct().map(BigInteger::longValue).collect(Collectors.toList());
         if (nodesToReconcile.size() > 0) {
             List<Long> unresolvedNodes =
                     nodesToReconcile.stream().filter(node -> !nodeList.contains(node)).collect(Collectors.toList());
@@ -160,7 +160,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
     private List<Long> getAllNodes() {
         List<OFNode> nodeList = ShellUtil.getAllNodes(broker);
-        List<Long> nodes = nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
+        List<Long> nodes = nodeList.stream().distinct().map(OFNode::getNodeId).collect(Collectors.toList());
         return nodes;
     }
 
