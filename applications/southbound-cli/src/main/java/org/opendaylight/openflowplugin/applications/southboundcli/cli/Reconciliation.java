@@ -47,7 +47,7 @@ public class Reconciliation extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
         List<BigInteger> nodes = (nodeIds == null)
                 ? new ArrayList<>()
-                : nodeIds.stream().distinct().map(node -> BigInteger.valueOf(node)).collect(Collectors.toList());
+                : nodeIds.stream().distinct().map(BigInteger::valueOf).collect(Collectors.toList());
         LOG.debug("Triggering reconciliation for nodes {}", nodes);
         ReconcileInput rpcInput = new ReconcileInputBuilder().setNodes(nodes)
                 .setReconcileAllNodes(reconcileAllNodes).build();

@@ -29,12 +29,7 @@ final class OutboundQueueManager<T extends OutboundQueueHandler> extends
     private int nonBarrierMessages;
 
     // Passed to executor to request a periodic barrier check
-    private final Runnable barrierRunnable = new Runnable() {
-        @Override
-        public void run() {
-            barrier();
-        }
-    };
+    private final Runnable barrierRunnable = this::barrier;
 
     OutboundQueueManager(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler,
         final int maxNonBarrierMessages, final long maxBarrierNanos) {

@@ -121,7 +121,7 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
             HelloInput hi = hib.build();
             adapter.hello(hi);
             LOGGER.debug("hello msg sent");
-            new Thread(() -> getSwitchFeatures()).start();
+            new Thread(this::getSwitchFeatures).start();
         }).start();
 
     }

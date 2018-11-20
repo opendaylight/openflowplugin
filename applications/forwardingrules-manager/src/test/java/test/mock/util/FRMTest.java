@@ -100,10 +100,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
     }
 
     protected Callable<Integer> listSize(List<?> list) {
-        return new Callable<Integer>() {
-            public Integer call() throws Exception {
-                return list.size(); // The condition supplier part
-            }
-        };
+        // The condition supplier part
+        return list::size;
     }
 }

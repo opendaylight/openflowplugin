@@ -65,13 +65,10 @@ public final class TestUtils {
     }
 
     static void setReadFutureAsync(final Topology topology, final SettableFuture<Optional<Topology>> readFuture) {
-        new Thread() {
-            @Override
-            public void run() {
-                Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
-                readFuture.set(Optional.of(topology));
-            }
-        }.start();
+        new Thread(() -> {
+            Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+            readFuture.set(Optional.of(topology));
+        }).start();
     }
 
     static void waitForSubmit(CountDownLatch latch) {
