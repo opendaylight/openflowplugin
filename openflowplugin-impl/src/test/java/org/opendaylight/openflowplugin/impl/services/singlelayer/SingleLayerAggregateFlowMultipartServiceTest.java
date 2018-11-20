@@ -46,9 +46,9 @@ public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
         assertEquals(MultipartRequest.class, ofHeader.getImplementedInterface());
 
-        final MultipartRequestFlowAggregateStats result = MultipartRequestFlowAggregateStats.class.cast(
-                MultipartRequest.class.cast(ofHeader)
-                        .getMultipartRequestBody());
+        final MultipartRequestFlowAggregateStats result =
+            (MultipartRequestFlowAggregateStats) ((MultipartRequest) ofHeader)
+                .getMultipartRequestBody();
 
         assertEquals(TABLE_ID, result.getFlowAggregateStats().getTableId().shortValue());
     }

@@ -25,7 +25,7 @@ public class SetNwTosActionSerializer extends AbstractSetFieldActionSerializer {
                 .setSetField(new SetFieldBuilder()
                         .setIpMatch(new IpMatchBuilder()
                                 .setIpDscp(new Dscp(
-                                        ActionUtil.tosToDscp(SetNwTosActionCase.class.cast(input)
+                                        ActionUtil.tosToDscp(((SetNwTosActionCase) input)
                                                 .getSetNwTosAction().getTos().shortValue())))
                                 .build())
                         .build())

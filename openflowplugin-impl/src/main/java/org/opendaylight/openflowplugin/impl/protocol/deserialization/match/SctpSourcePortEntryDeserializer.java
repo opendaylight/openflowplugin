@@ -26,9 +26,9 @@ public class SctpSourcePortEntryDeserializer extends AbstractMatchEntryDeseriali
             builder.setLayer4Match(new SctpMatchBuilder()
                     .setSctpSourcePort(new PortNumber(port))
                     .build());
-        } else if (SctpMatch.class.isInstance(builder.getLayer4Match())
-            && Objects.isNull(SctpMatch.class.cast(builder.getLayer4Match()).getSctpSourcePort())) {
-            builder.setLayer4Match(new SctpMatchBuilder(SctpMatch.class.cast(builder.getLayer4Match()))
+        } else if (builder.getLayer4Match() instanceof SctpMatch
+            && Objects.isNull(((SctpMatch) builder.getLayer4Match()).getSctpSourcePort())) {
+            builder.setLayer4Match(new SctpMatchBuilder((SctpMatch) builder.getLayer4Match())
                     .setSctpSourcePort(new PortNumber(port))
                     .build());
         } else {

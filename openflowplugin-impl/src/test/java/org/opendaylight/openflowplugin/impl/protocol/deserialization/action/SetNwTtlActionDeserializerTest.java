@@ -29,8 +29,8 @@ public class SetNwTtlActionDeserializerTest extends AbstractActionDeserializerTe
         in.writeZero(ActionConstants.SET_NW_TTL_PADDING);
 
         final Action action = deserializeAction(in);
-        assertTrue(SetNwTtlActionCase.class.isInstance(action));
-        assertEquals(nwTtl, SetNwTtlActionCase.class.cast(action).getSetNwTtlAction().getNwTtl().shortValue());
+        assertTrue(action instanceof SetNwTtlActionCase);
+        assertEquals(nwTtl, ((SetNwTtlActionCase) action).getSetNwTtlAction().getNwTtl().shortValue());
         assertEquals(0, in.readableBytes());
     }
 

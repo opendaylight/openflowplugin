@@ -36,9 +36,9 @@ public class Ipv6FlabelEntryDeserializer extends AbstractMatchEntryDeserializer 
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6Label(ipv6labelBuilder.build())
                     .build());
-        } else if (Ipv6Match.class.isInstance(builder.getLayer3Match())
-            && Objects.isNull(Ipv6Match.class.cast(builder.getLayer3Match()).getIpv6Label())) {
-            final Ipv6Match match = Ipv6Match.class.cast(builder.getLayer3Match());
+        } else if (builder.getLayer3Match() instanceof Ipv6Match
+            && Objects.isNull(((Ipv6Match) builder.getLayer3Match()).getIpv6Label())) {
+            final Ipv6Match match = (Ipv6Match) builder.getLayer3Match();
             builder.setLayer3Match(new Ipv6MatchBuilder(match)
                     .setIpv6Label(ipv6labelBuilder.build())
                     .build());

@@ -40,8 +40,7 @@ public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsS
         return  new GetQueueStatisticsOutputBuilder()
             .setQueueIdAndStatisticsMap(input
                 .stream()
-                .flatMap(multipartReply -> MultipartReplyQueueStats.class
-                    .cast(multipartReply.getMultipartReplyBody())
+                .flatMap(multipartReply -> ((MultipartReplyQueueStats) multipartReply.getMultipartReplyBody())
                     .getQueueIdAndStatisticsMap()
                     .stream())
                 .collect(Collectors.toList()))

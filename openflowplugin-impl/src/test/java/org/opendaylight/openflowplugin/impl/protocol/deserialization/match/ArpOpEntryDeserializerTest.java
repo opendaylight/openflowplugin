@@ -27,7 +27,7 @@ public class ArpOpEntryDeserializerTest extends AbstractMatchEntryDeserializerTe
         writeHeader(in, false);
         in.writeShort(arpOp);
 
-        assertEquals(arpOp, ArpMatch.class.cast(deserialize(in).getLayer3Match()).getArpOp().intValue());
+        assertEquals(arpOp, ((ArpMatch) deserialize(in).getLayer3Match()).getArpOp().intValue());
         assertEquals(0, in.readableBytes());
     }
 

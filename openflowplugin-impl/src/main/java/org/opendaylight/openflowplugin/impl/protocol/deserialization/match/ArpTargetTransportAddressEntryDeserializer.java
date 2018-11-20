@@ -28,9 +28,9 @@ public class ArpTargetTransportAddressEntryDeserializer extends AbstractMatchEnt
             builder.setLayer3Match(new ArpMatchBuilder()
                     .setArpTargetTransportAddress(prefix)
                     .build());
-        } else if (ArpMatch.class.isInstance(layer3Match)
-            && Objects.isNull(ArpMatch.class.cast(layer3Match).getArpTargetTransportAddress())) {
-            builder.setLayer3Match(new ArpMatchBuilder(ArpMatch.class.cast(layer3Match))
+        } else if (layer3Match instanceof ArpMatch
+            && Objects.isNull(((ArpMatch) layer3Match).getArpTargetTransportAddress())) {
+            builder.setLayer3Match(new ArpMatchBuilder((ArpMatch) layer3Match)
                     .setArpTargetTransportAddress(prefix)
                     .build());
         } else {

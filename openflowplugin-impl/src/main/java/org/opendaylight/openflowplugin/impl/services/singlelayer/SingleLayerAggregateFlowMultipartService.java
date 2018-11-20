@@ -66,8 +66,7 @@ public class SingleLayerAggregateFlowMultipartService
                                         .filter(MultipartReplyFlowAggregateStats.class::isInstance)
                                         .map(multipartReplyBody ->
                                                 new AggregatedFlowStatisticsBuilder(
-                                                        MultipartReplyFlowAggregateStats.class
-                                                        .cast(multipartReplyBody))
+                                                    (MultipartReplyFlowAggregateStats) multipartReplyBody)
                                                         .build())
                                         .collect(Collectors.toList())))
                         .build();

@@ -93,7 +93,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(Drop.class, dropHeader.getBandType().getImplementedInterface());
         assertTrue(dropHeader.getMeterBandTypes().getFlags().isOfpmbtDrop());
 
-        final Drop drop = Drop.class.cast(dropHeader.getBandType());
+        final Drop drop = (Drop) dropHeader.getBandType();
         assertEquals(DROP_RATE, drop.getDropRate().intValue());
         assertEquals(DROP_BURST, drop.getDropBurstSize().intValue());
 
@@ -102,7 +102,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(DscpRemark.class, dscpHeader.getBandType().getImplementedInterface());
         assertTrue(dscpHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark());
 
-        final DscpRemark dscpRemark = DscpRemark.class.cast(dscpHeader.getBandType());
+        final DscpRemark dscpRemark = (DscpRemark) dscpHeader.getBandType();
         assertEquals(DSCP_RATE, dscpRemark.getDscpRemarkRate().intValue());
         assertEquals(DSCP_BURST, dscpRemark.getDscpRemarkBurstSize().intValue());
 

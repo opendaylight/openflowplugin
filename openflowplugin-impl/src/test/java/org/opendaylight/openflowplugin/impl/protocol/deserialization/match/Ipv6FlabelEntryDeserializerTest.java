@@ -28,7 +28,7 @@ public class Ipv6FlabelEntryDeserializerTest extends AbstractMatchEntryDeseriali
         writeHeader(in, false);
         in.writeInt(flowLabel);
 
-        Ipv6Match match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(flowLabel, match.getIpv6Label().getIpv6Flabel().getValue().intValue());
         assertEquals(0, in.readableBytes());
 
@@ -36,7 +36,7 @@ public class Ipv6FlabelEntryDeserializerTest extends AbstractMatchEntryDeseriali
         in.writeInt(flowLabel);
         in.writeInt(flowLabelMask);
 
-        match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(flowLabel, match.getIpv6Label().getIpv6Flabel().getValue().intValue());
         assertEquals(flowLabelMask, match.getIpv6Label().getFlabelMask().getValue().intValue());
         assertEquals(0, in.readableBytes());
