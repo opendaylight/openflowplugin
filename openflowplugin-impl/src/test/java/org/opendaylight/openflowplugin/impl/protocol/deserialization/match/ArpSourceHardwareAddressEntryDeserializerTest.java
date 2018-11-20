@@ -32,7 +32,7 @@ public class ArpSourceHardwareAddressEntryDeserializerTest extends AbstractMatch
         in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(arpSourceHardwareAddress));
 
         assertEquals(arpSourceHardwareAddress.getValue(),
-                ArpMatch.class.cast(deserialize(in).getLayer3Match()).getArpSourceHardwareAddress().getAddress()
+                ((ArpMatch) deserialize(in).getLayer3Match()).getArpSourceHardwareAddress().getAddress()
                         .getValue());
         assertEquals(0, in.readableBytes());
 
@@ -41,7 +41,7 @@ public class ArpSourceHardwareAddressEntryDeserializerTest extends AbstractMatch
         in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(arpSourceHardwareAddressMask));
 
         final ArpSourceHardwareAddress desAddress =
-                ArpMatch.class.cast(deserialize(in).getLayer3Match()).getArpSourceHardwareAddress();
+                ((ArpMatch) deserialize(in).getLayer3Match()).getArpSourceHardwareAddress();
         assertEquals(arpSourceHardwareAddress.getValue(), desAddress.getAddress().getValue());
         assertEquals(arpSourceHardwareAddressMask.getValue(), desAddress.getMask().getValue());
         assertEquals(0, in.readableBytes());

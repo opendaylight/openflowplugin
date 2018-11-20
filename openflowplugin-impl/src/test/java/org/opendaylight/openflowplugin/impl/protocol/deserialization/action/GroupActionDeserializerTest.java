@@ -28,8 +28,8 @@ public class GroupActionDeserializerTest extends AbstractActionDeserializerTest 
         in.writeInt(groupId);
 
         final Action action = deserializeAction(in);
-        assertTrue(GroupActionCase.class.isInstance(action));
-        assertEquals(groupId, GroupActionCase.class.cast(action).getGroupAction().getGroupId().intValue());
+        assertTrue(action instanceof GroupActionCase);
+        assertEquals(groupId, ((GroupActionCase) action).getGroupAction().getGroupId().intValue());
         assertEquals(0, in.readableBytes());
     }
 

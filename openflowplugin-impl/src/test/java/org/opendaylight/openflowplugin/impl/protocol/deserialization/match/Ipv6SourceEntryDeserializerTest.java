@@ -31,7 +31,7 @@ public class Ipv6SourceEntryDeserializerTest extends AbstractMatchEntryDeseriali
         in.writeBytes(IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(address)));
         in.writeBytes(IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(address)));
 
-        final Ipv6Match match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        final Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
 
         assertEquals(address.getValue(), match.getIpv6Source().getValue());
         assertEquals(0, in.readableBytes());

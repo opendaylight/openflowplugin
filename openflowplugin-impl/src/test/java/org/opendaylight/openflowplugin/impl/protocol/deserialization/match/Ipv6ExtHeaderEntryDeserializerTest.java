@@ -28,7 +28,7 @@ public class Ipv6ExtHeaderEntryDeserializerTest extends AbstractMatchEntryDeseri
         writeHeader(in, false);
         in.writeShort(extHeader);
 
-        Ipv6Match match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(extHeader, match.getIpv6ExtHeader().getIpv6Exthdr().intValue());
         assertEquals(0, in.readableBytes());
 
@@ -36,7 +36,7 @@ public class Ipv6ExtHeaderEntryDeserializerTest extends AbstractMatchEntryDeseri
         in.writeShort(extHeader);
         in.writeShort(extHeaderMask);
 
-        match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(extHeader, match.getIpv6ExtHeader().getIpv6Exthdr().intValue());
         assertEquals(extHeaderMask, match.getIpv6ExtHeader().getIpv6ExthdrMask().intValue());
         assertEquals(0, in.readableBytes());

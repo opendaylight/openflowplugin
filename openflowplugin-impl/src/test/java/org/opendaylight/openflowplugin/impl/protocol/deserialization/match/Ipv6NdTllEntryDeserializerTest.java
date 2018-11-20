@@ -29,7 +29,7 @@ public class Ipv6NdTllEntryDeserializerTest extends AbstractMatchEntryDeserializ
         writeHeader(in, false);
         in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(address));
 
-        Ipv6Match match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(address.getValue(), match.getIpv6NdTll().getValue());
         assertEquals(0, in.readableBytes());
     }

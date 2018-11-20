@@ -29,7 +29,7 @@ public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
 
     @Override
     protected SetFieldCase buildAction(Action input) {
-        final SetTpDstAction setTpDstAction = SetTpDstActionCase.class.cast(input).getSetTpDstAction();
+        final SetTpDstAction setTpDstAction = ((SetTpDstActionCase) input).getSetTpDstAction();
         final PortNumber port = setTpDstAction.getPort();
         final SetFieldBuilder builder = new SetFieldBuilder();
 

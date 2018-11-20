@@ -27,7 +27,7 @@ public class PopPbbActionDeserializerTest extends AbstractActionDeserializerTest
         in.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         final Action action = deserializeAction(in);
-        assertTrue(PopPbbActionCase.class.isInstance(action));
+        assertTrue(action instanceof PopPbbActionCase);
         assertEquals(0, in.readableBytes());
     }
 

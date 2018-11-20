@@ -27,7 +27,7 @@ public class DecMplsTtlActionDeserializerTest extends AbstractActionDeserializer
         in.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         final Action action = deserializeAction(in);
-        assertTrue(DecMplsTtlCase.class.isInstance(action));
+        assertTrue(action instanceof DecMplsTtlCase);
         assertEquals(0, in.readableBytes());
     }
 

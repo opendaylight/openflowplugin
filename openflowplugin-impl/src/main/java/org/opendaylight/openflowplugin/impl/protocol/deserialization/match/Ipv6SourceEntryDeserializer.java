@@ -47,9 +47,9 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
                     .build());
-        } else if (Ipv6Match.class.isInstance(builder.getLayer3Match())
-                && Objects.isNull(Ipv6Match.class.cast(builder.getLayer3Match()).getIpv6Source())) {
-            builder.setLayer3Match(new Ipv6MatchBuilder(Ipv6Match.class.cast(builder.getLayer3Match()))
+        } else if (builder.getLayer3Match() instanceof Ipv6Match
+                && Objects.isNull(((Ipv6Match) builder.getLayer3Match()).getIpv6Source())) {
+            builder.setLayer3Match(new Ipv6MatchBuilder((Ipv6Match) builder.getLayer3Match())
                     .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
                     .build());
         } else {
@@ -64,10 +64,10 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
                     .setIpv6SourceAddressNoMask(address)
                     .setIpv6SourceArbitraryBitmask(IpConversionUtil.createIpv6ArbitraryBitMask(mask))
                     .build());
-        } else if (Ipv6MatchArbitraryBitMask.class.isInstance(builder.getLayer3Match())
-                && Objects.isNull(Ipv6MatchArbitraryBitMask.class.cast(builder.getLayer3Match())
+        } else if (builder.getLayer3Match() instanceof Ipv6MatchArbitraryBitMask
+                && Objects.isNull(((Ipv6MatchArbitraryBitMask) builder.getLayer3Match())
                 .getIpv6SourceAddressNoMask())) {
-            final Ipv6MatchArbitraryBitMask match = Ipv6MatchArbitraryBitMask.class.cast(builder.getLayer3Match());
+            final Ipv6MatchArbitraryBitMask match = (Ipv6MatchArbitraryBitMask) builder.getLayer3Match();
             builder.setLayer3Match(new Ipv6MatchArbitraryBitMaskBuilder(match)
                     .setIpv6SourceAddressNoMask(address)
                     .setIpv6SourceArbitraryBitmask(IpConversionUtil.createIpv6ArbitraryBitMask(mask))

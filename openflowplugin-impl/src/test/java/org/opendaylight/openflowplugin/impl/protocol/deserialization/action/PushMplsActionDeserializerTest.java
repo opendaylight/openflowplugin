@@ -29,8 +29,8 @@ public class PushMplsActionDeserializerTest extends AbstractActionDeserializerTe
         in.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
 
         final Action action = deserializeAction(in);
-        assertTrue(PushMplsActionCase.class.isInstance(action));
-        assertEquals(ethType, PushMplsActionCase.class.cast(action).getPushMplsAction().getEthernetType().shortValue());
+        assertTrue(action instanceof PushMplsActionCase);
+        assertEquals(ethType, ((PushMplsActionCase) action).getPushMplsAction().getEthernetType().shortValue());
         assertEquals(0, in.readableBytes());
     }
 

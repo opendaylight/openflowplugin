@@ -72,8 +72,7 @@ public class SingleLayerExperimenterMultipartService extends AbstractExperimente
                                 .map(MultipartReply::getMultipartReplyBody)
                                 .filter(MultipartReplyExperimenter.class::isInstance)
                                 .map(experimenter -> new ExperimenterCoreMessageItemBuilder()
-                                    .setExperimenterMessageOfChoice(MultipartReplyExperimenter.class
-                                        .cast(experimenter)
+                                    .setExperimenterMessageOfChoice(((MultipartReplyExperimenter) experimenter)
                                         .getExperimenterMessageOfChoice())
                                     .build())
                                 .collect(Collectors.toList()))

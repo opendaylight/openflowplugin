@@ -22,21 +22,21 @@ public class ArpTargetTransportAddressEntrySerializer extends AbstractMatchEntry
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        writeIpv4Prefix(ArpMatch.class.cast(match.getLayer3Match()).getArpTargetTransportAddress(), outBuffer);
+        writeIpv4Prefix(((ArpMatch) match.getLayer3Match()).getArpTargetTransportAddress(), outBuffer);
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer3Match())
-                && ArpMatch.class.isInstance(match.getLayer3Match())
-                && Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpTargetTransportAddress());
+                && match.getLayer3Match() instanceof ArpMatch
+                && Objects.nonNull(((ArpMatch) match.getLayer3Match()).getArpTargetTransportAddress());
     }
 
     @Override
     protected boolean getHasMask(Match match) {
         // Split address to IP and mask
         final Iterator<String> addressParts = IpConversionUtil.splitToParts(
-                ArpMatch.class.cast(match.getLayer3Match()).getArpTargetTransportAddress());
+                ((ArpMatch) match.getLayer3Match()).getArpTargetTransportAddress());
         addressParts.next();
 
         // Check if we have mask

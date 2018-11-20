@@ -207,9 +207,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return updated instruction or empty
      */
     private static Optional<Instruction> updateInstruction(final Instruction instruction, final Short protocol) {
-        if (ApplyActionsCase.class.isInstance(instruction)) {
+        if (instruction instanceof ApplyActionsCase) {
             return Optional
-                    .ofNullable(ApplyActionsCase.class.cast(instruction).getApplyActions())
+                    .ofNullable(((ApplyActionsCase) instruction).getApplyActions())
                     .flatMap(aa -> Optional.ofNullable(aa.getAction()))
                     .map(as -> new ApplyActionsCaseBuilder()
                             .setApplyActions(new ApplyActionsBuilder()
@@ -233,8 +233,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return updated OpenFlow action
      */
     private static Action updateSetTpActions(Action action, Short protocol) {
-        if (SetTpSrcActionCase.class.isInstance(action.getAction())) {
-            final SetTpSrcActionCase actionCase = SetTpSrcActionCase.class.cast(action.getAction());
+        if (action.getAction() instanceof SetTpSrcActionCase) {
+            final SetTpSrcActionCase actionCase = (SetTpSrcActionCase) action.getAction();
 
             return new ActionBuilder(action)
                     .setAction(new SetTpSrcActionCaseBuilder(actionCase)
@@ -244,8 +244,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                                     .build())
                             .build())
                     .build();
-        } else if (SetTpDstActionCase.class.isInstance(action.getAction())) {
-            final SetTpDstActionCase actionCase = SetTpDstActionCase.class.cast(action.getAction());
+        } else if (action.getAction() instanceof SetTpDstActionCase) {
+            final SetTpDstActionCase actionCase = (SetTpDstActionCase) action.getAction();
 
             return new ActionBuilder(action)
                     .setAction(new SetTpDstActionCaseBuilder(actionCase)
@@ -277,9 +277,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                 .map(i -> {
                     final int[] offset = {0};
 
-                    return ApplyActionsCase.class.isInstance(i.getInstruction())
+                    return i.getInstruction() instanceof ApplyActionsCase
                             ? Optional
-                            .ofNullable(ApplyActionsCase.class.cast(i.getInstruction()).getApplyActions())
+                            .ofNullable(((ApplyActionsCase) i.getInstruction()).getApplyActions())
                             .flatMap(as -> Optional.ofNullable(as.getAction()))
                             .map(a -> a.stream()
                                     .sorted(OrderComparator.build())
@@ -289,13 +289,13 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
 
                                         // If current action is SetVlanId, insert PushVlan action before it and
                                         // update order
-                                        if (SetVlanIdActionCase.class.isInstance(action.getAction())) {
+                                        if (action.getAction() instanceof SetVlanIdActionCase) {
                                             actions.add(new ActionBuilder()
                                                     .setAction(new PushVlanActionCaseBuilder()
                                                             .setPushVlanAction(new PushVlanActionBuilder()
                                                                     .setCfi(new VlanCfi(1))
-                                                                    .setVlanId(SetVlanIdActionCase.class.cast(action
-                                                                            .getAction()).getSetVlanIdAction()
+                                                                    .setVlanId(((SetVlanIdActionCase) action
+                                                                        .getAction()).getSetVlanIdAction()
                                                                             .getVlanId())
                                                                     .setEthernetType(PUSH_VLAN)
                                                                     .setTag(PUSH_VLAN)
@@ -376,7 +376,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
                                 .rev131026.Instruction::getInstruction)
                         .filter(ApplyActionsCase.class::isInstance)
-                        .map(i -> ApplyActionsCase.class.cast(i).getApplyActions())
+                        .map(i -> ((ApplyActionsCase) i).getApplyActions())
                         .filter(Objects::nonNull)
                         .map(ActionList::getAction)
                         .filter(Objects::nonNull)

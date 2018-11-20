@@ -148,7 +148,7 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
                 flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.getImplementedInterface());
 
-        final ApplyActionsCase applyActions = ApplyActionsCase.class.cast(instruction);
+        final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().getAction().size());
         assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
                 .getAction().getImplementedInterface());
@@ -157,7 +157,7 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
                 flowAndStatisticsMapList.getInstructions().getInstruction().get(1).getInstruction();
         assertEquals(WriteActionsCase.class, instruction1.getImplementedInterface());
 
-        final WriteActionsCase writeActions = WriteActionsCase.class.cast(instruction1);
+        final WriteActionsCase writeActions = (WriteActionsCase) instruction1;
         assertEquals(1, writeActions.getWriteActions().getAction().size());
         assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().getAction().get(0)
                 .getAction().getImplementedInterface());

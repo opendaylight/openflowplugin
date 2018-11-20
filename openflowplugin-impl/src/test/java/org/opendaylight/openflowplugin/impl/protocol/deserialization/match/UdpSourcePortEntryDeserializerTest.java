@@ -27,7 +27,7 @@ public class UdpSourcePortEntryDeserializerTest extends AbstractMatchEntryDeseri
         writeHeader(in, false);
         in.writeShort(port);
 
-        assertEquals(port, UdpMatch.class.cast(deserialize(in).getLayer4Match()).getUdpSourcePort().getValue()
+        assertEquals(port, ((UdpMatch) deserialize(in).getLayer4Match()).getUdpSourcePort().getValue()
                 .intValue());
         assertEquals(0, in.readableBytes());
     }

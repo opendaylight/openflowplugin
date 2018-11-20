@@ -20,14 +20,14 @@ public class TcpDestinationPortEntrySerializer extends AbstractMatchEntrySeriali
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeShort(TcpMatch.class.cast(match.getLayer4Match()).getTcpDestinationPort().getValue());
+        outBuffer.writeShort(((TcpMatch) match.getLayer4Match()).getTcpDestinationPort().getValue());
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer4Match())
-                && TcpMatch.class.isInstance(match.getLayer4Match())
-                && Objects.nonNull(TcpMatch.class.cast(match.getLayer4Match()).getTcpDestinationPort());
+                && match.getLayer4Match() instanceof TcpMatch
+                && Objects.nonNull(((TcpMatch) match.getLayer4Match()).getTcpDestinationPort());
     }
 
     @Override

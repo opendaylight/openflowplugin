@@ -56,7 +56,7 @@ public class ApplyActionsInstructionDeserializerTest extends AbstractInstruction
 
         final Instruction instruction = deserializer.deserialize(in);
         assertEquals(ApplyActionsCase.class, instruction.getImplementedInterface());
-        final ApplyActionsCase actionCase = ApplyActionsCase.class.cast(instruction);
+        final ApplyActionsCase actionCase = (ApplyActionsCase) instruction;
         assertEquals(1, actionCase.getApplyActions().getAction().size());
         assertEquals(PopPbbActionCase.class, actionCase.getApplyActions().getAction().get(0)
                 .getAction().getImplementedInterface());

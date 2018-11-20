@@ -27,7 +27,7 @@ public class SctpDestinationPortEntryDeserializerTest extends AbstractMatchEntry
         writeHeader(in, false);
         in.writeShort(port);
 
-        assertEquals(port, SctpMatch.class.cast(deserialize(in).getLayer4Match()).getSctpDestinationPort().getValue()
+        assertEquals(port, ((SctpMatch) deserialize(in).getLayer4Match()).getSctpDestinationPort().getValue()
                 .intValue());
         assertEquals(0, in.readableBytes());
     }

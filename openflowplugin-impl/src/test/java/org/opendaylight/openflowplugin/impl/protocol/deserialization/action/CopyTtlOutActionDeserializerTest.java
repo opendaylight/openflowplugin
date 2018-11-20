@@ -27,7 +27,7 @@ public class CopyTtlOutActionDeserializerTest extends AbstractActionDeserializer
         in.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         final Action action = deserializeAction(in);
-        assertTrue(CopyTtlOutCase.class.isInstance(action));
+        assertTrue(action instanceof CopyTtlOutCase);
         assertEquals(0, in.readableBytes());
     }
 

@@ -28,8 +28,8 @@ public class SetQueueActionDeserializerTest extends AbstractActionDeserializerTe
         in.writeInt(queueId);
 
         final Action action = deserializeAction(in);
-        assertTrue(SetQueueActionCase.class.isInstance(action));
-        assertEquals(queueId, SetQueueActionCase.class.cast(action).getSetQueueAction().getQueueId().intValue());
+        assertTrue(action instanceof SetQueueActionCase);
+        assertEquals(queueId, ((SetQueueActionCase) action).getSetQueueAction().getQueueId().intValue());
         assertEquals(0, in.readableBytes());
     }
 

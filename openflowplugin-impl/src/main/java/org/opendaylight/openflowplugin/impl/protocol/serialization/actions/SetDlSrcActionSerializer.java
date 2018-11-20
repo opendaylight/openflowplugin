@@ -24,7 +24,7 @@ public class SetDlSrcActionSerializer extends AbstractSetFieldActionSerializer {
                 .setSetField(new SetFieldBuilder()
                         .setEthernetMatch(new EthernetMatchBuilder()
                                 .setEthernetSource(new EthernetSourceBuilder()
-                                        .setAddress(SetDlSrcActionCase.class.cast(input).getSetDlSrcAction()
+                                        .setAddress(((SetDlSrcActionCase) input).getSetDlSrcAction()
                                                 .getAddress())
                                         .build())
                                 .build())
