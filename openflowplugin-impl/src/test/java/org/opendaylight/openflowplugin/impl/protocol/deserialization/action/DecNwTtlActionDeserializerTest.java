@@ -27,7 +27,7 @@ public class DecNwTtlActionDeserializerTest extends AbstractActionDeserializerTe
         in.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         final Action action = deserializeAction(in);
-        assertTrue(DecNwTtlCase.class.isInstance(action));
+        assertTrue(action instanceof DecNwTtlCase);
         assertEquals(0, in.readableBytes());
     }
 

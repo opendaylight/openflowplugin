@@ -25,9 +25,9 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
         super.serialize(match, outBuffer);
 
         if (isPrefix(match)) {
-            writeIpv4Prefix(Ipv4Match.class.cast(match.getLayer3Match()).getIpv4Source(), outBuffer);
+            writeIpv4Prefix(((Ipv4Match) match.getLayer3Match()).getIpv4Source(), outBuffer);
         } else if (isArbitrary(match)) {
-            final Ipv4MatchArbitraryBitMask ipv4 = Ipv4MatchArbitraryBitMask.class.cast(match.getLayer3Match());
+            final Ipv4MatchArbitraryBitMask ipv4 = (Ipv4MatchArbitraryBitMask) match.getLayer3Match();
             writeIpv4Address(ipv4.getIpv4SourceAddressNoMask(), outBuffer);
 
             if (getHasMask(match)) {
@@ -42,10 +42,10 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
     public boolean matchTypeCheck(Match match) {
         if (isPrefix(match)) {
             return Objects.nonNull(match.getLayer3Match())
-                    && Objects.nonNull(Ipv4Match.class.cast(match.getLayer3Match()).getIpv4Source());
+                    && Objects.nonNull(((Ipv4Match) match.getLayer3Match()).getIpv4Source());
         } else if (isArbitrary(match)) {
             return Objects.nonNull(match.getLayer3Match())
-                    && Objects.nonNull(Ipv4MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+                    && Objects.nonNull(((Ipv4MatchArbitraryBitMask) match.getLayer3Match())
                     .getIpv4SourceAddressNoMask());
         }
 
@@ -57,13 +57,13 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
         if (isPrefix(match)) {
             // Split address to IP and mask
             final Iterator<String> addressParts = IpConversionUtil.splitToParts(
-                    Ipv4Match.class.cast(match.getLayer3Match()).getIpv4Source());
+                    ((Ipv4Match) match.getLayer3Match()).getIpv4Source());
             addressParts.next();
 
             // Check if we have mask
             return addressParts.hasNext() && Integer.parseInt(addressParts.next()) < 32;
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(Ipv4MatchArbitraryBitMask.class.cast(match.getLayer3Match())
+            return Objects.nonNull(((Ipv4MatchArbitraryBitMask) match.getLayer3Match())
                     .getIpv4SourceArbitraryBitmask());
         }
 
@@ -71,11 +71,11 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
     }
 
     private static boolean isPrefix(Match match) {
-        return Ipv4Match.class.isInstance(match.getLayer3Match());
+        return match.getLayer3Match() instanceof Ipv4Match;
     }
 
     private static boolean isArbitrary(Match match) {
-        return Ipv4MatchArbitraryBitMask.class.isInstance(match.getLayer3Match());
+        return match.getLayer3Match() instanceof Ipv4MatchArbitraryBitMask;
     }
 
     @Override

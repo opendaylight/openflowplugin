@@ -23,7 +23,7 @@ public class ArpTargetHardwareAddressEntrySerializer extends AbstractMatchEntryS
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
         final ArpTargetHardwareAddress arpTargetHardwareAddress =
-                ArpMatch.class.cast(match.getLayer3Match()).getArpTargetHardwareAddress();
+                ((ArpMatch) match.getLayer3Match()).getArpTargetHardwareAddress();
         writeMacAddress(arpTargetHardwareAddress.getAddress(), outBuffer);
 
         if (getHasMask(match)) {
@@ -37,13 +37,13 @@ public class ArpTargetHardwareAddressEntrySerializer extends AbstractMatchEntryS
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer3Match())
-                && ArpMatch.class.isInstance(match.getLayer3Match())
-                && Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpTargetHardwareAddress());
+                && match.getLayer3Match() instanceof ArpMatch
+                && Objects.nonNull(((ArpMatch) match.getLayer3Match()).getArpTargetHardwareAddress());
     }
 
     @Override
     protected boolean getHasMask(Match match) {
-        return Objects.nonNull(ArpMatch.class.cast(match.getLayer3Match()).getArpTargetHardwareAddress().getMask());
+        return Objects.nonNull(((ArpMatch) match.getLayer3Match()).getArpTargetHardwareAddress().getMask());
     }
 
     @Override

@@ -39,7 +39,7 @@ public class SingleLayerMeterServiceTest extends ServiceMocking {
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
         assertEquals(MeterMessage.class, ofHeader.getImplementedInterface());
 
-        final MeterMessage result = MeterMessage.class.cast(ofHeader);
+        final MeterMessage result = (MeterMessage) ofHeader;
 
         assertEquals(MeterModCommand.OFPMCADD, result.getCommand());
         assertEquals(METER_ID, result.getMeterId().getValue().longValue());

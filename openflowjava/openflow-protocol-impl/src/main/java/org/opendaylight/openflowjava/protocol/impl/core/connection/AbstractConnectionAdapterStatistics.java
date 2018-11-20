@@ -58,11 +58,11 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
 
     @Override
     public void consume(final DataObject message) {
-        if (Notification.class.isInstance(message)) {
-            if (!(DisconnectEvent.class.isInstance(message) || SwitchIdleEvent.class.isInstance(message))) {
+        if (message instanceof Notification) {
+            if (!(message instanceof DisconnectEvent || message instanceof SwitchIdleEvent)) {
                 statisticsCounters.incrementCounter(CounterEventTypes.US_MESSAGE_PASS);
             }
-        } else if (OfHeader.class.isInstance(message)) {
+        } else if (message instanceof OfHeader) {
             statisticsCounters.incrementCounter(CounterEventTypes.US_MESSAGE_PASS);
         }
         consumeDeviceMessage(message);

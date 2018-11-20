@@ -30,7 +30,7 @@ public class Ipv6NdTargetEntryDeserializerTest extends AbstractMatchEntryDeseria
         writeHeader(in, false);
         in.writeBytes(IetfInetUtil.INSTANCE.ipv6AddressBytes(address));
 
-        Ipv6Match match = Ipv6Match.class.cast(deserialize(in).getLayer3Match());
+        Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertArrayEquals(
                 IetfInetUtil.INSTANCE.ipv6AddressBytes(address),
                 IetfInetUtil.INSTANCE.ipv6AddressBytes(match.getIpv6NdTarget()));

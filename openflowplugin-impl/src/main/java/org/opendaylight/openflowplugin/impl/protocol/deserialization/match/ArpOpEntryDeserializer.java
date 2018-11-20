@@ -27,9 +27,9 @@ public class ArpOpEntryDeserializer extends AbstractMatchEntryDeserializer {
             builder.setLayer3Match(new ArpMatchBuilder()
                 .setArpOp(arpOp)
                 .build());
-        } else if (ArpMatch.class.isInstance(layer3Match)
-            && Objects.isNull(ArpMatch.class.cast(layer3Match).getArpOp())) {
-            builder.setLayer3Match(new ArpMatchBuilder(ArpMatch.class.cast(layer3Match))
+        } else if (layer3Match instanceof ArpMatch
+            && Objects.isNull(((ArpMatch) layer3Match).getArpOp())) {
+            builder.setLayer3Match(new ArpMatchBuilder((ArpMatch) layer3Match)
                 .setArpOp(arpOp)
                 .build());
         } else {

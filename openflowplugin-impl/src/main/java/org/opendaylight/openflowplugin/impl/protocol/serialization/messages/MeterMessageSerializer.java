@@ -65,7 +65,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                             .flatMap(m -> Optional.ofNullable(m.getFlags()))
                             .ifPresent(flags -> Optional.ofNullable(meterBandHeader.getBandType()).ifPresent(type -> {
                                 if (flags.isOfpmbtDrop()) {
-                                    final Drop band = Drop.class.cast(type);
+                                    final Drop band = (Drop) type;
                                     outBuffer.writeShort(MeterBandType.OFPMBTDROP.getIntValue());
 
                                     outBuffer.writeShort(LENGTH_OF_METER_BANDS);
@@ -73,7 +73,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                     outBuffer.writeInt(band.getDropBurstSize().intValue());
                                     outBuffer.writeZero(PADDING_IN_METER_BAND_DROP);
                                 } else if (flags.isOfpmbtDscpRemark()) {
-                                    final DscpRemark band = DscpRemark.class.cast(type);
+                                    final DscpRemark band = (DscpRemark) type;
                                     outBuffer.writeShort(MeterBandType.OFPMBTDSCPREMARK.getIntValue());
 
                                     outBuffer.writeShort(LENGTH_OF_METER_BANDS);
@@ -82,7 +82,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                     outBuffer.writeByte(band.getPrecLevel());
                                     outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
                                 } else if (flags.isOfpmbtExperimenter()) {
-                                    final Experimenter band = Experimenter.class.cast(type);
+                                    final Experimenter band = (Experimenter) type;
 
                                     // TODO: finish experimenter serialization
                                     final ExperimenterIdSerializerKey<Experimenter> key =

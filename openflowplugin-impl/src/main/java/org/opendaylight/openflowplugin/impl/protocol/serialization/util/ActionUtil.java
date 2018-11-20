@@ -50,7 +50,7 @@ public final class ActionUtil {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
-                            (GeneralExtensionGrouping.class.isInstance(action)
+                            (action instanceof GeneralExtensionGrouping
                                     ? convertExtensionGrouping(provider, (GeneralExtensionGrouping)action, version)
                                     : convertGenericAction(provider, action, version))
                                     .map(ofjAction -> {
@@ -89,7 +89,7 @@ public final class ActionUtil {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
-                            (GeneralExtensionGrouping.class.isInstance(action)
+                            (action instanceof GeneralExtensionGrouping
                                     ? convertExtensionGrouping(provider, (GeneralExtensionGrouping)action, version)
                                     : convertGenericAction(provider, action, version))
                                     .map(ofjAction -> {

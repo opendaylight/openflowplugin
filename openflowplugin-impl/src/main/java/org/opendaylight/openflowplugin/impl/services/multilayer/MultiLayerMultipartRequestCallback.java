@@ -33,7 +33,7 @@ public class MultiLayerMultipartRequestCallback<T extends OfHeader> extends Abst
 
     @Override
     protected boolean isReqMore(T result) {
-        final MultipartRequestFlags flags = MultipartReply.class.cast(result).getFlags();
+        final MultipartRequestFlags flags = ((MultipartReply) result).getFlags();
         return Objects.nonNull(flags) && flags.isOFPMPFREQMORE();
     }
 }

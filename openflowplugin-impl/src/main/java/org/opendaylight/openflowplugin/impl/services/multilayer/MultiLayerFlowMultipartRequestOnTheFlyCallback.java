@@ -34,12 +34,12 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader>
     @Override
     protected boolean isMultipart(OfHeader result) {
         return result instanceof MultipartReply
-            && MultipartReply.class.cast(result).getType().equals(getMultipartType());
+            && ((MultipartReply) result).getType().equals(getMultipartType());
     }
 
     @Override
     protected boolean isReqMore(T result) {
-        return MultipartReply.class.cast(result).getFlags().isOFPMPFREQMORE();
+        return ((MultipartReply) result).getFlags().isOFPMPFREQMORE();
     }
 
     @Override

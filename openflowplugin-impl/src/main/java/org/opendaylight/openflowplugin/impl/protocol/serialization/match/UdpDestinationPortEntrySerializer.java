@@ -20,14 +20,14 @@ public class UdpDestinationPortEntrySerializer extends AbstractMatchEntrySeriali
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeShort(UdpMatch.class.cast(match.getLayer4Match()).getUdpDestinationPort().getValue());
+        outBuffer.writeShort(((UdpMatch) match.getLayer4Match()).getUdpDestinationPort().getValue());
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer4Match())
-                && UdpMatch.class.isInstance(match.getLayer4Match())
-                && Objects.nonNull(UdpMatch.class.cast(match.getLayer4Match()).getUdpDestinationPort());
+                && match.getLayer4Match() instanceof UdpMatch
+                && Objects.nonNull(((UdpMatch) match.getLayer4Match()).getUdpDestinationPort());
     }
 
     @Override

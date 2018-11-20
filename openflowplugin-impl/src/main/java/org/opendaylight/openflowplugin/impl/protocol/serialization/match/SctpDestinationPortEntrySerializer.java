@@ -20,14 +20,14 @@ public class SctpDestinationPortEntrySerializer extends AbstractMatchEntrySerial
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeShort(SctpMatch.class.cast(match.getLayer4Match()).getSctpDestinationPort().getValue());
+        outBuffer.writeShort(((SctpMatch) match.getLayer4Match()).getSctpDestinationPort().getValue());
     }
 
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer4Match())
-                && SctpMatch.class.isInstance(match.getLayer4Match())
-                && Objects.nonNull(SctpMatch.class.cast(match.getLayer4Match()).getSctpDestinationPort());
+                && match.getLayer4Match() instanceof SctpMatch
+                && Objects.nonNull(((SctpMatch) match.getLayer4Match()).getSctpDestinationPort());
     }
 
     @Override
