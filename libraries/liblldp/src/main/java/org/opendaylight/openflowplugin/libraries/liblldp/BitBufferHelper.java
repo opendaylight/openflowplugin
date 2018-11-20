@@ -328,12 +328,11 @@ public abstract class BitBufferHelper {
         long ret = 0;
         int value;
 
-        value = array[startOffset - 1] & getLSBMask(bitsRest);
-        value = array[startOffset - 1] < 0 ? array[startOffset - 1] + 256 : array[startOffset - 1];
-        ret = ret | value << (array.length - startOffset) * NetUtils.NUM_BITS_IN_A_BYTE;
-
-        for (int i = startOffset; i < array.length; i++) {
+        for (int i = Math.max(0, startOffset - 1); i < array.length; i++) {
             value = array[i];
+            if (i == startOffset - 1) {
+                value &= getLSBMask(bitsRest);
+            }
             if (value < 0) {
                 value += 256;
             }
