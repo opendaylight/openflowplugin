@@ -175,10 +175,8 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
                                 makeCompletableFuture(bundleService.controlBundle(commitBundleInput));
 
                         return controlCommitFuture;
-                    }).thenAccept(voidRpcResult -> {
-                        LOG.debug("Commit successful: {}, msg: {}", voidRpcResult.isSuccessful(),
-                                voidRpcResult.getErrors());
-                    });
+                    }).thenAccept(voidRpcResult -> LOG.debug("Commit successful: {}, msg: {}",
+                        voidRpcResult.isSuccessful(), voidRpcResult.getErrors()));
             }
         }
     }

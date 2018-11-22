@@ -174,16 +174,15 @@ public final class StatisticsGatheringUtils {
         }
 
         try {
-            Futures.transform(Futures.catchingAsync(future, Throwable.class, throwable -> {
-                return Futures.immediateFailedFuture(throwable);
-            }, MoreExecutors.directExecutor()), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
+            Futures.transform(Futures.catchingAsync(future, Throwable.class, Futures::immediateFailedFuture,
+                MoreExecutors.directExecutor()), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
                         for (final Table tableData : flowCapNodeOpt.get().getTable()) {
                             final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
-                                    .child(Table.class, tableData.key());
+                                .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
                         }
                     }

@@ -76,7 +76,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(ChannelOutboundQueue.class);
 
     // Passed to executor to request triggering of flush
-    private final Runnable flushRunnable = () -> ChannelOutboundQueue.this.flush();
+    private final Runnable flushRunnable = ChannelOutboundQueue.this::flush;
 
     /*
      * Instead of using an AtomicBoolean object, we use these two. It saves us

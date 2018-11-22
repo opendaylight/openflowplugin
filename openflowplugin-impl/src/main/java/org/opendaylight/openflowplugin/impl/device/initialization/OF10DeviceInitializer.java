@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,14 +157,14 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                     new SingleLayerMultipartCollectorService(deviceContext, deviceContext);
 
             return Futures.transform(service.handleServiceCall(multipartType),
-                input -> input.isSuccessful(), MoreExecutors.directExecutor());
+                RpcResult::isSuccessful, MoreExecutors.directExecutor());
         }
 
         final MultiLayerMultipartCollectorService service =
                 new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
         return Futures.transform(service.handleServiceCall(multipartType),
-            input -> input.isSuccessful(), MoreExecutors.directExecutor());
+            RpcResult::isSuccessful, MoreExecutors.directExecutor());
     }
 
 }

@@ -44,25 +44,22 @@ public class DropTestRpcSender extends AbstractDropTest {
         this.flowService = flowService;
     }
 
-    private static final ThreadLocal<AddFlowInputBuilder> BUILDER = new ThreadLocal<AddFlowInputBuilder>() {
-        @Override
-        protected AddFlowInputBuilder initialValue() {
-            final AddFlowInputBuilder fb = new AddFlowInputBuilder();
+    private static final ThreadLocal<AddFlowInputBuilder> BUILDER = ThreadLocal.withInitial(() -> {
+        final AddFlowInputBuilder fb = new AddFlowInputBuilder();
 
-            fb.setPriority(PRIORITY);
-            fb.setBufferId(BUFFER_ID);
+        fb.setPriority(PRIORITY);
+        fb.setBufferId(BUFFER_ID);
 
-            final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
-            fb.setCookie(cookie);
-            fb.setCookieMask(cookie);
-            fb.setTableId(TABLE_ID);
-            fb.setHardTimeout(HARD_TIMEOUT);
-            fb.setIdleTimeout(IDLE_TIMEOUT);
-            fb.setFlags(new FlowModFlags(false, false, false, false, false));
+        final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
+        fb.setCookie(cookie);
+        fb.setCookieMask(cookie);
+        fb.setTableId(TABLE_ID);
+        fb.setHardTimeout(HARD_TIMEOUT);
+        fb.setIdleTimeout(IDLE_TIMEOUT);
+        fb.setFlags(new FlowModFlags(false, false, false, false, false));
 
-            return fb;
-        }
-    };
+        return fb;
+    });
 
     private NotificationService notificationService;
 
