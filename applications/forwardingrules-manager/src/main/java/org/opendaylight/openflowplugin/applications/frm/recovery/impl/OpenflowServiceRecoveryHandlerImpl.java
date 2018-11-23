@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm.recovery.impl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryInterface;
@@ -26,7 +27,7 @@ public class OpenflowServiceRecoveryHandlerImpl implements ServiceRecoveryInterf
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
     @Inject
-    public OpenflowServiceRecoveryHandlerImpl(final ServiceRecoveryRegistry serviceRecoveryRegistry) {
+    public OpenflowServiceRecoveryHandlerImpl(@Reference final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         LOG.info("Registering openflowplugin service recovery handlers");
         this.serviceRecoveryRegistry = serviceRecoveryRegistry;
         serviceRecoveryRegistry.registerServiceRecoveryRegistry(buildServiceRegistryKey(), this);

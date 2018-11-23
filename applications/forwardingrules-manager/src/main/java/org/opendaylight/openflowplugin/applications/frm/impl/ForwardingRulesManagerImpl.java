@@ -16,6 +16,11 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -61,6 +66,7 @@ import org.slf4j.LoggerFactory;
  * provide all RPC services.
  *
  */
+@Singleton
 public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
 
@@ -99,14 +105,15 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
-    public ForwardingRulesManagerImpl(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
+    @Inject
+    public ForwardingRulesManagerImpl(@Reference final DataBroker dataBroker, @Reference final RpcProviderRegistry rpcRegistry,
                                       final ForwardingRulesManagerConfig config,
-                                      final MastershipChangeServiceManager mastershipChangeServiceManager,
-                                      final ClusterSingletonServiceProvider clusterSingletonService,
-                                      final ConfigurationService configurationService,
-                                      final ReconciliationManager reconciliationManager,
+                                      @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
+                                      @Reference final ClusterSingletonServiceProvider clusterSingletonService,
+                                      @Reference final ConfigurationService configurationService,
+                                      @Reference final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
-                                      final ServiceRecoveryRegistry serviceRecoveryRegistry) {
+                                      @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -141,6 +148,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    @PostConstruct
     public void start() {
         nodeConfigurator = new NodeConfiguratorImpl();
         this.devicesGroupRegistry = new DevicesGroupRegistry();
@@ -167,6 +175,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         configurationServiceRegistration.close();
 
