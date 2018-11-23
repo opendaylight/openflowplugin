@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2f81bc2d_6f38c423",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestActivator.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-23T10:18:43Z",
+      "side": 1,
+      "message": "BundleContext is not a @Reference, it\u0027s a kind of special thing which the Blueprint system makes available without a \u003creference\u003e or \u003cbean\u003e in XM .. I\u0027m surprised this works and did not fail in SFT!  (Is test-provider still used and part of any feature?)  Just remove @Reference for BundleContext (but keep it, obviously, for DataBroker and NotificationProviderService.",
+      "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
