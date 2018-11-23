@@ -183,7 +183,7 @@ public abstract class Packet {
             // Let's skip optional fields when not set
             if (fieldBytes != null) {
                 try {
-                    BitBufferHelper.setBytes(packetBytes, fieldBytes,
+                    BitBufferHelper.copyBitsFromLsb(packetBytes, fieldBytes,
                             getfieldOffset(field), getfieldnumBits(field));
                 } catch (final BufferException e) {
                     throw new PacketException("setBytes failed", e);

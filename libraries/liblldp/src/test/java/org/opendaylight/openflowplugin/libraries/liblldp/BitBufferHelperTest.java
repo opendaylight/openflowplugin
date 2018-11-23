@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class BitBufferHelperTest {
@@ -332,29 +331,29 @@ public class BitBufferHelperTest {
         byte[] data = new byte[20];
 
         input = 125;
-        BitBufferHelper.setByte(data, input, 0, Byte.SIZE);
+        BitBufferHelper.setByte(data, input, 0);
         Assert.assertEquals(125, data[0]);
 
         input = 109;
-        BitBufferHelper.setByte(data, input, 152, Byte.SIZE);
+        BitBufferHelper.setByte(data, input, 152);
         Assert.assertEquals(109, data[19]);
     }
 
     @Test
-    public void testSetBytes() throws Exception {
-        byte[] input = { 0, 1 };
-        byte[] data = { 6, 0 };
+    public void testCopyBitsFromLsb() throws Exception {
+        byte[] input = { 0, 1 }; // 00000000 00000001
+        byte[] data = { 6, 0 };  // 00000110 00000000
 
-        BitBufferHelper.setBytes(data, input, 7, 9);
+        BitBufferHelper.copyBitsFromLsb(data, input, 7, 9);
+        // Expecting 00000110 000000001
         Assert.assertEquals(6, data[0]);
         Assert.assertEquals(1, data[1]);
     }
 
     @Test
-    @Ignore("Currently broken")
     //INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
     // [01001011] [01101110] [01101011] [10100000] [00001010] [00001100] [00100011] [01100100] [11111101] [01000001]*/
-    public void testInsertBits() {
+    public void testCopyBitsFromMsb() throws BufferException {
         //CASE 1: startOffset%8 == 0 && numBits%8 == 0
         byte[] inputdata = { 75, 110, 107, 80, 10, 12, 35, 100, 125, 65 };
         int startOffset;
@@ -363,14 +362,14 @@ public class BitBufferHelperTest {
         byte[] data1 = new byte[2];
         startOffset = 0;
         numBits = 16;
-        BitBufferHelper.insertBits(data1, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data1, inputdata, startOffset, numBits);
         Assert.assertEquals(75, data1[0]);
         Assert.assertEquals(110, data1[1]);
 
         byte[] data2 = new byte[4];
         startOffset = 0;
         numBits = 32;
-        BitBufferHelper.insertBits(data2, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data2, inputdata, startOffset, numBits);
         Assert.assertEquals(75, data2[0]);
         Assert.assertEquals(110, data2[1]);
         Assert.assertEquals(107, data2[2]);
@@ -382,7 +381,7 @@ public class BitBufferHelperTest {
         byte[] data10 = new byte[2];
         startOffset = 0;
         numBits = 13;
-        BitBufferHelper.insertBits(data10, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data10, inputdata, startOffset, numBits);
         Assert.assertEquals(75, data10[0]);
         Assert.assertEquals(104, data10[1]);
 
@@ -392,7 +391,7 @@ public class BitBufferHelperTest {
         byte[] data11 = new byte[4];
         startOffset = 8;
         numBits = 6;
-        BitBufferHelper.insertBits(data11, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data11, inputdata, startOffset, numBits);
         Assert.assertEquals(72, data11[1]);
 
         // INPUT: {75, 110, 107, 80, 10, 12, 35, 100, 125, 65} =
@@ -401,7 +400,7 @@ public class BitBufferHelperTest {
         byte[] data12 = new byte[4];
         startOffset = 0;
         numBits = 23;
-        BitBufferHelper.insertBits(data12, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data12, inputdata, startOffset, numBits);
         Assert.assertEquals(75, data12[0]);
         Assert.assertEquals(110, data12[1]);
         Assert.assertEquals(106, data12[2]);
@@ -412,7 +411,7 @@ public class BitBufferHelperTest {
         byte[] data13 = new byte[4];
         startOffset = 8;
         numBits = 20;
-        BitBufferHelper.insertBits(data13, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data13, inputdata, startOffset, numBits);
         Assert.assertEquals(75, data13[1]);
         Assert.assertEquals(110, data13[2]);
         Assert.assertEquals(96, data13[3]);
@@ -423,7 +422,7 @@ public class BitBufferHelperTest {
         byte[] data14 = new byte[4];
         startOffset = 0;
         numBits = 30;
-        BitBufferHelper.insertBits(data14, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data14, inputdata, startOffset, numBits);
         Assert.assertEquals(75, data14[0]);
         Assert.assertEquals(110, data14[1]);
         Assert.assertEquals(107, data14[2]);
@@ -436,7 +435,7 @@ public class BitBufferHelperTest {
         byte[] data16 = new byte[5];
         startOffset = 3;
         numBits = 8;
-        BitBufferHelper.insertBits(data16, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data16, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data16[0]);
         Assert.assertEquals(96, data16[1]);
         Assert.assertEquals(0, data16[2]);
@@ -449,7 +448,7 @@ public class BitBufferHelperTest {
         startOffset = 3;
         numBits = 16;
         byte[] data17 = new byte[5];
-        BitBufferHelper.insertBits(data17, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data17, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data17[0]);
         Assert.assertEquals(109, data17[1]);
         Assert.assertEquals(data17[2], -64);
@@ -462,7 +461,7 @@ public class BitBufferHelperTest {
         byte[] inputdata3 = { 79, 110, 111 };
         startOffset = 3;
         numBits = 16;
-        BitBufferHelper.insertBits(data18, inputdata3, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data18, inputdata3, startOffset, numBits);
         Assert.assertEquals(9, data18[0]);
         Assert.assertEquals(data18[1], -19);
         Assert.assertEquals(data18[2], -64);
@@ -475,7 +474,7 @@ public class BitBufferHelperTest {
         startOffset = 3;
         numBits = 32;
         byte[] data19 = new byte[5];
-        BitBufferHelper.insertBits(data19, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data19, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data19[0]);
         Assert.assertEquals(109, data19[1]);
         Assert.assertEquals(data19[2], -51);
@@ -489,7 +488,7 @@ public class BitBufferHelperTest {
         startOffset = 33;
         numBits = 16;
         byte[] data20 = new byte[7];
-        BitBufferHelper.insertBits(data20, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data20, inputdata, startOffset, numBits);
         Assert.assertEquals(37, data20[4]);
         Assert.assertEquals(data20[5], -73);
         Assert.assertEquals(0, data20[6]);
@@ -502,7 +501,7 @@ public class BitBufferHelperTest {
         startOffset = 3;
         numBits = 7;
         byte[] data21 = new byte[7];
-        BitBufferHelper.insertBits(data21, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data21, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data21[0]);
         Assert.assertEquals(64, data21[1]);
         Assert.assertEquals(0, data21[2]);
@@ -514,7 +513,7 @@ public class BitBufferHelperTest {
         startOffset = 5;
         numBits = 17;
         byte[] data22 = new byte[7];
-        BitBufferHelper.insertBits(data22, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data22, inputdata, startOffset, numBits);
         Assert.assertEquals(2, data22[0]);
         Assert.assertEquals(91, data22[1]);
         Assert.assertEquals(112, data22[2]);
@@ -526,7 +525,7 @@ public class BitBufferHelperTest {
         startOffset = 3;
         numBits = 23;
         byte[] data23 = new byte[7];
-        BitBufferHelper.insertBits(data23, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data23, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data23[0]);
         Assert.assertEquals(109, data23[1]);
         Assert.assertEquals(data23[2], -51);
@@ -539,7 +538,7 @@ public class BitBufferHelperTest {
         startOffset = 3;
         numBits = 13;
         byte[] data24 = new byte[7];
-        BitBufferHelper.insertBits(data24, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data24, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data24[0]);
         Assert.assertEquals(109, data24[1]);
         Assert.assertEquals(0, data24[2]);
@@ -551,7 +550,7 @@ public class BitBufferHelperTest {
         startOffset = 4;
         numBits = 20;
         byte[] data25 = new byte[7];
-        BitBufferHelper.insertBits(data25, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data25, inputdata, startOffset, numBits);
         Assert.assertEquals(4, data25[0]);
         Assert.assertEquals(data25[1], -74);
         Assert.assertEquals(data25[2], -26);
@@ -564,7 +563,7 @@ public class BitBufferHelperTest {
         startOffset = 13;
         numBits = 11;
         byte[] data26 = new byte[7];
-        BitBufferHelper.insertBits(data26, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data26, inputdata, startOffset, numBits);
         Assert.assertEquals(0, data26[0]);
         Assert.assertEquals(2, data26[1]);
         Assert.assertEquals(91, data26[2]);
@@ -577,7 +576,7 @@ public class BitBufferHelperTest {
         startOffset = 3;
         numBits = 17;
         byte[] data27 = new byte[7];
-        BitBufferHelper.insertBits(data27, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data27, inputdata, startOffset, numBits);
         Assert.assertEquals(9, data27[0]);
         Assert.assertEquals(109, data27[1]);
         Assert.assertEquals(data27[2], -64);
@@ -591,7 +590,7 @@ public class BitBufferHelperTest {
         startOffset = 18;
         numBits = 34;
         byte[] data28 = new byte[7];
-        BitBufferHelper.insertBits(data28, inputdata, startOffset, numBits);
+        BitBufferHelper.copyBitsFromMsb(data28, inputdata, startOffset, numBits);
         Assert.assertEquals(0, data28[0]);
         Assert.assertEquals(0, data28[1]);
         Assert.assertEquals(18, data28[2]);
@@ -599,7 +598,6 @@ public class BitBufferHelperTest {
         Assert.assertEquals(data28[4], -102);
         Assert.assertEquals(data28[5], -44);
         Assert.assertEquals(0, data28[6]);
-
     }
 
     @Test
