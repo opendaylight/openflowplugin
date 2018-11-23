@@ -16,6 +16,24 @@
       "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1e7fd6f0_53589ae8",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestActivator.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-23T11:42:26Z",
+      "side": 1,
+      "message": "it\u0027s still there in Patch Set 13",
+      "parentUuid": "2f81bc2d_6f38c423",
+      "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
