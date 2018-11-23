@@ -234,7 +234,7 @@ public class LLDP extends Packet {
         for (LLDPTLV tlv : allTlvs) {
             int numBits = tlv.getTLVSize();
             try {
-                BitBufferHelper.setBytes(serializedBytes, tlv.serialize(), startOffset, numBits);
+                BitBufferHelper.copyBitsFromLsb(serializedBytes, tlv.serialize(), startOffset, numBits);
             } catch (final BufferException e) {
                 throw new PacketException("Error from setBytes", e);
             }
@@ -242,7 +242,7 @@ public class LLDP extends Packet {
         }
         // Now add the empty LLDPTLV at the end
         try {
-            BitBufferHelper.setBytes(serializedBytes, LLDP.EMPTY_TLV.serialize(), startOffset,
+            BitBufferHelper.copyBitsFromLsb(serializedBytes, LLDP.EMPTY_TLV.serialize(), startOffset,
                     LLDP.EMPTY_TLV.getTLVSize());
         } catch (final BufferException e) {
             throw new PacketException("Error from setBytes", e);
