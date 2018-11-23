@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad92385b_6b943bdc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 13
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-23T11:42:26Z",
+      "side": 1,
+      "message": "huh?  This commit is an earlier version of this same change.. not sure what you mean by this - remove?",
+      "revId": "2e29375dd34ccddbd80299ba93e6fe29978907b4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
