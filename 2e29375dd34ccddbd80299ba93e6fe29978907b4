@@ -16,6 +16,24 @@
       "revId": "2e29375dd34ccddbd80299ba93e6fe29978907b4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c017a419_7d36defe",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 13
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-11-26T08:53:12Z",
+      "side": 1,
+      "message": "I think this got updated wrongly when I had raised the other patch (as dependent). Fixed it now",
+      "parentUuid": "ad92385b_6b943bdc",
+      "revId": "2e29375dd34ccddbd80299ba93e6fe29978907b4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
