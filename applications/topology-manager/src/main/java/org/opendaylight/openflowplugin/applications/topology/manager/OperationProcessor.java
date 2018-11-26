@@ -9,11 +9,17 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public final class OperationProcessor implements AutoCloseable, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(OperationProcessor.class);
     private static final int MAX_TRANSACTION_OPERATIONS = 100;
@@ -25,7 +31,8 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
     private TransactionChainManager transactionChainManager;
     private volatile boolean finishing = false;
 
-    public OperationProcessor(final DataBroker dataBroker) {
+    @Inject
+    public OperationProcessor(@Reference final DataBroker dataBroker) {
         transactionChainManager = new TransactionChainManager(dataBroker, TOPOLOGY_MANAGER);
         transactionChainManager.activateTransactionManager();
         transactionChainManager.initialSubmitWriteTransaction();
@@ -43,6 +50,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
         }
     }
 
+    @PostConstruct
     public void start() {
         thread.start();
     }
@@ -90,6 +98,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
     }
 
     @Override
+    @PreDestroy
     public void close() {
         thread.interrupt();
         try {

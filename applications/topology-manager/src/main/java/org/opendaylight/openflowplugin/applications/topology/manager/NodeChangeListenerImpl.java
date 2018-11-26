@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.Collection;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -24,10 +27,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
-    public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
+    @Inject
+    public NodeChangeListenerImpl(@Reference final DataBroker dataBroker, final OperationProcessor operationProcessor) {
         // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
         // listener)
         super(operationProcessor, dataBroker,
