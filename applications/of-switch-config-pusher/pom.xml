@@ -54,5 +54,29 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-maven-plugin-annotation</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>blueprint-maven-plugin</artifactId>
+                <configuration>
+                    <scanPaths>
+                        <scanPath>org.opendaylight.openflowplugin.openflow.ofswitch.config</scanPath>
+                    </scanPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
