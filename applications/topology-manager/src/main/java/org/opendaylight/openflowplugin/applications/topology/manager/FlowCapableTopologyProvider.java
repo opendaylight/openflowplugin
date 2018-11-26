@@ -12,6 +12,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -31,6 +36,7 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class FlowCapableTopologyProvider implements ClusterSingletonService, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
     private static final String TOPOLOGY_PROVIDER = "ofp-topology-manager";
@@ -45,10 +51,12 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     private ListenerRegistration<NotificationListener> listenerRegistration;
     private ClusterSingletonServiceRegistration singletonServiceRegistration;
 
-    public FlowCapableTopologyProvider(final DataBroker dataBroker,
-                                       final NotificationProviderService notificationService,
+    @Inject
+    public FlowCapableTopologyProvider(@Reference final DataBroker dataBroker,
+                                       @Reference final NotificationProviderService notificationService,
                                        final OperationProcessor processor,
-                                       final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
+                                       @Reference final ClusterSingletonServiceProvider
+                                               clusterSingletonServiceProvider) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.processor = processor;
@@ -58,6 +66,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     /**
      * Gets called on start of a bundle.
      */
+    @PostConstruct
     public void start() {
         final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
         this.topologyPathIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
@@ -72,6 +81,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     }
 
     @Override
+    @PreDestroy
     public void close() {
         this.transactionChainManager.close();
         if (this.listenerRegistration != null) {
