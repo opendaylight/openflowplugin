@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c9a104de_e9a5b737",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-11-26T09:35:59Z",
+      "side": 1,
+      "message": "This got updated wrongly when I was trying to raise this as dependent patch. Fixed now.",
+      "parentUuid": "ea9a9535_36503a48",
+      "revId": "d3b8f0b6107afe0e9473cef9843f4717e83dd1dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9f576d8_82438afd",
         "filename": "/COMMIT_MSG",
         "patchSetId": 2
@@ -47,6 +65,24 @@
       "writtenOn": "2018-11-23T11:53:22Z",
       "side": 1,
       "message": "missing @Service(classes \u003d ServiceRecoveryInterface.class) to stay 100% identical to the BP XML which had \u003cservice ref\u003d\"openflowServiceRecoveryHandler\" interface\u003d\"org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler\"/\u003e ... unless this does not actually need to be exposed as on OSGi service to anything outside of this bundle?  If so, perhaps better to make that change separately, and keep these BP XML to Annotation migrations patches 100% \"mechanical\" and not change what they register, and then separately simplify things?",
+      "revId": "d3b8f0b6107afe0e9473cef9843f4717e83dd1dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7b816368_19564f86",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-11-26T09:35:59Z",
+      "side": 1,
+      "message": "My bad. Had missed it and have fixed this now.",
+      "parentUuid": "a7044df1_8dbe5ac2",
       "revId": "d3b8f0b6107afe0e9473cef9843f4717e83dd1dd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
