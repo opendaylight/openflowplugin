@@ -86,6 +86,24 @@
       "revId": "d3b8f0b6107afe0e9473cef9843f4717e83dd1dd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c4209518_0a5124f0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/recovery/impl/OpenflowServiceRecoveryHandlerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-26T11:20:24Z",
+      "side": 1,
+      "message": "and you fixed it correctly using OpenflowServiceRecoveryHandler and not ServiceRecoveryInterface as I had suggested, because that is what the BP XML actually does... thanks for noticing and not just copy/pasting my mistake! ;-)",
+      "parentUuid": "7b816368_19564f86",
+      "revId": "d3b8f0b6107afe0e9473cef9843f4717e83dd1dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
