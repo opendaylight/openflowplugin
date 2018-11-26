@@ -52,6 +52,24 @@
       "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d2526d1b_e2e076c1",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestActivator.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-11-26T08:54:30Z",
+      "side": 1,
+      "message": "Error message :\norg.apache.karaf.features.internal.util.MultiException:\nError restarting bundles:\n        Could not resolve module: org.eclipse.osgi [171]\n  Another singleton bundle selected: osgi.identity; osgi.identity\u003d\"org.eclipse.osgi\"; type\u003d\"osgi.bundle\"; version:Version\u003d\"3.12.100.v20180210-1608\"; singleton:\u003d\"true\"\n\n        at org.apache.karaf.features.internal.service.Deployer.deploy(Deployer.java:1005)\n        at org.apache.karaf.features.internal.service.FeaturesServiceImpl.doProvision(FeaturesServiceImpl.java:1025)\n        at org.apache.karaf.features.internal.service.FeaturesServiceImpl.lambda$doProvisionInThread$13(FeaturesServiceImpl.java:964)\n        at java.util.concurrent.FutureTask.run(FutureTask.java:266)\n        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)\n        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)\n        at java.lang.Thread.run(Thread.java:748)\n        Suppressed: org.osgi.framework.BundleException: Could not resolve module: org.eclipse.osgi [171]\n  Another singleton bundle selected: osgi.identity; osgi.identity\u003d\"org.eclipse.osgi\"; type\u003d\"osgi.bundle\"; version:Version\u003d\"3.12.100.v20180210-1608\"; singleton:\u003d\"true\"",
+      "parentUuid": "dba45c57_4cf422b1",
+      "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
