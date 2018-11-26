@@ -34,6 +34,24 @@
       "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dba45c57_4cf422b1",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginTestActivator.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-11-26T08:53:12Z",
+      "side": 1,
+      "message": "Removed the \"reference\" for BundleContext now. The SFT didnt fail as there was no feature.xml for this module(no feature module either). I tried to create a feature module to test this but it seems it doesnt work even without annotation changes(keeping BP intact).\n\nI guess the dependency \n \u003cdependency\u003e\n            \u003cgroupId\u003eorg.eclipse.tycho\u003c/groupId\u003e\n            \u003cartifactId\u003eorg.eclipse.osgi\u003c/artifactId\u003e\n            \u003cversion\u003e3.10.101.v20150820-1432\u003c/version\u003e\n\u003c/dependency\u003e\n\nin the module is causing the issue. Guess this has to e fixed separately and not part of this.",
+      "parentUuid": "1e7fd6f0_53589ae8",
+      "revId": "079ba725d78f085e9dc4214ae402b03af29bda81",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
