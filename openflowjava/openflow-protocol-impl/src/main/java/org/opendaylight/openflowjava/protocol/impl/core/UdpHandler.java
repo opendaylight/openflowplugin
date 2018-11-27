@@ -78,6 +78,10 @@ public final class UdpHandler implements ServerFacade {
         } catch (InterruptedException e) {
             LOG.error("Interrupted while binding port {}", port, e);
             return;
+        } catch (Exception e) {
+            // sync() re-throws exceptions declared as Throwable, so the compiler doesn't see them
+            LOG.error("Error while binding address {} and port {}", startupAddress, port, e);
+            return;
         }
 
         try {
