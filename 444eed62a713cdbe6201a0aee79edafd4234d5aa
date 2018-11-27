@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa848707_4c3a3684",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/DataTreeChangeListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-27T11:25:55Z",
+      "side": 1,
+      "message": "FYI I\u0027m not 100% sure that this actually works... inheritance of annotations is a bit of a mess, AFAIK.  From what I remember, it\u0027s best to not annotate an abstract class at all, and put all annotations, incl. this @PreDestroy, only on (all of) the subclasses.",
+      "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "031b8881_145882a4",
+        "filename": "applications/topology-manager/src/main/resources/OSGI-INF/blueprint/topology-manager.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-27T11:25:55Z",
+      "side": 1,
+      "message": "just for future clarity and to avoid confusion, would you terribly mind just completely removing this, instead of leaving it in commented out form?  If anyone needs to understand the history, there is always git to the rescue! ;) As far as I can tell, there is actually nothing left in this file now, so could you just completely delete this entire BP XML file as part of this change, instead of leaving it in but empty?  Like you have done elsewhere.",
+      "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
