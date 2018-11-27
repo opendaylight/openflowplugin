@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
@@ -20,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class LLDPDiscoveryListener implements PacketProcessingListener {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
 
@@ -27,9 +31,9 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
     private final NotificationProviderService notificationService;
     private final EntityOwnershipService eos;
 
-
-    public LLDPDiscoveryListener(final NotificationProviderService notificationService, final LLDPLinkAger lldpLinkAger,
-            final EntityOwnershipService entityOwnershipService) {
+    @Inject
+    public LLDPDiscoveryListener(@Reference final NotificationProviderService notificationService,
+            final LLDPLinkAger lldpLinkAger, @Reference final EntityOwnershipService entityOwnershipService) {
         this.notificationService = notificationService;
         this.lldpLinkAger = lldpLinkAger;
         this.eos = entityOwnershipService;
