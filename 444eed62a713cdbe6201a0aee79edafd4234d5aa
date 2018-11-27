@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fde022e2_b3b9c556",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/DataTreeChangeListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-27T11:27:57Z",
+      "side": 1,
+      "message": "Actually, after a closer 2nd look, please ignore thie review feedback.. in this case, the subclasses do not @Override close() so you can\u0027t annotate.  This probably works.  What I remembered is the case if a subclass overrides the close and does not repeat the annotation, then it\u0027s not crystal clear what it should mean.  I guess the safest thing therefore would be to make this close() method here final - do you want to do that?",
+      "parentUuid": "fa848707_4c3a3684",
+      "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "031b8881_145882a4",
         "filename": "applications/topology-manager/src/main/resources/OSGI-INF/blueprint/topology-manager.xml",
         "patchSetId": 2
