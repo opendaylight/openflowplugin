@@ -63,6 +63,7 @@ public final class UdpHandler implements ServerFacade {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void run() {
         final ChannelFuture f;
         try {
@@ -78,6 +79,10 @@ public final class UdpHandler implements ServerFacade {
         } catch (InterruptedException e) {
             LOG.error("Interrupted while binding port {}", port, e);
             return;
+        } catch (Throwable throwable) {
+            // sync() re-throws exceptions declared as Throwable, so the compiler doesn't see them
+            LOG.error("Error while binding address {} and port {}", startupAddress, port, throwable);
+            throw throwable;
         }
 
         try {
