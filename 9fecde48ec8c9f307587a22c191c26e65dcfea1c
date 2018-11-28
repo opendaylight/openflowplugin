@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "896a3093_39a2020e",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-28T22:00:30Z",
+      "side": 0,
+      "message": "someone put it here one day.. If there could be ANY value, how about just reducing it to debug instead of info?  That (if written correctly with {} instead of String concatenation, as this is) does not really cost any overhead.",
+      "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
