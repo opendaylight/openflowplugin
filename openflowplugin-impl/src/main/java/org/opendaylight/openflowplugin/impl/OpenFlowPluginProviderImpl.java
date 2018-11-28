@@ -192,6 +192,7 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
+        openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, "shutting down switch connections");
         final ListenableFuture<List<Boolean>> listListenableFuture =
                 Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
                     // Revert deserializers to their original state
