@@ -7,12 +7,14 @@
  */
 
 package org.opendaylight.openflowplugin.extension.onf.converter;
-
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -68,7 +70,10 @@ public class BundleControlConverterTest {
 
     private void testConvertDown(final boolean withProperty) {
         final BundleControlSal original = createOFPMessage(withProperty);
-        final BundleControlOnf converted = converter.convert(original, null);
+        final ExtensionConvertorData data = new ExtensionConvertorData((short)1);
+        data.setXid(Uint64.valueOf(0));
+        data.setDatapathId(Uint64.valueOf(1));
+        final BundleControlOnf converted = converter.convert(original, data);
         testConvert(original, converted, withProperty);
     }
 

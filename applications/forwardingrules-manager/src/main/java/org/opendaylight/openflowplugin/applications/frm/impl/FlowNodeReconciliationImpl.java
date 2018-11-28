@@ -211,11 +211,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         = salBundleService.controlBundle(closeBundleInput);
 
                 /* Open a new bundle on the switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
-                        Futures.transformAsync(closeBundle,
-                            rpcResult -> salBundleService.controlBundle(openBundleInput),
-                            MoreExecutors.directExecutor());
-
+                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle = Futures
+                        .transformAsync(JdkFutureAdapters.listenInPoolThread(closeBundle), rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
+                            }
+                            return JdkFutureAdapters
+                                    .listenInPoolThread(salBundleService.controlBundle(openBundleInput));
+                        },
+                                MoreExecutors.directExecutor());
                 /* Push groups and flows via bundle add messages */
                 ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
                         = Futures.transformAsync(openBundle, rpcResult -> {
@@ -224,6 +228,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
+
 
                 /* Push flows and groups via bundle add messages */
                 Optional<FlowCapableNode> finalFlowNode = flowNode;
@@ -237,11 +242,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
 
-                /* Commit the bundle on the openflow switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
-                        addbundlesFuture, rpcResult -> {
-                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
-                        return salBundleService.controlBundle(commitBundleInput);
+                 /* Commit the bundle on the openflow switch */
+                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(addbundlesFuture,
+                    rpcResult -> {
+                        if (rpcResult.isSuccessful()) {
+                            LOG.debug("Commit bundle is successful for device {}", dpnId);
+                            return JdkFutureAdapters
+                                    .listenInPoolThread(salBundleService.controlBundle(commitBundleInput));
+                        }
+                        return Futures.immediateFuture(null);
                     }, MoreExecutors.directExecutor());
 
                 /* Bundles not supported for meters */
@@ -752,9 +761,33 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return groupBuilder.build();
     }
 
+    private Long flowDependentGroup(Flow flow) {
+        if (flow.getInstructions() != null) {
+            List<Instruction> instructions = flow.getInstructions().getInstruction();
+            if (instructions != null) {
+                for (Instruction instruct : instructions) {
+                    List<Action> actions = Collections.EMPTY_LIST;
+                    if (instruct.getInstruction().getImplementedInterface()
+                            .equals(ActionType.APPLY_ACTION.getActionType())) {
+                        actions = ((ApplyActionsCase) (instruct.getInstruction())).getApplyActions().getAction();
+                    }
+                    if (actions != null) {
+                        for (Action action : actions) {
+                            if (action.getAction().getImplementedInterface()
+                                    .equals(ActionType.GROUP_ACTION.getActionType())) {
+                                return ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private Messages createMessages(final NodeRef nodeRef) {
+    private Messages createMessages(final NodeRef nodeRef, final Optional<FlowCapableNode> flowNode) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder().setNode(nodeRef)
                 .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
