@@ -34,6 +34,24 @@
       "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f13bc4ca_2e26e3c9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-11-28T23:07:28Z",
+      "side": 0,
+      "message": "right, it says so: \"If bindAddr is null, it will default accepting connections on any/all local addresses.\"  But technically that is not the same as \u0027localhost\u0027.  And looking more closely at this class and seeing how getApplicationNetworkState() gets called in getServiceDescriptor for both defaultInetAddres and legacyInetAddress, one of which seems to always be null, this strictly speaking doesn\u0027t do the same as before. Perhaps it doesn\u0027t matter if to check if the socket can be opened it\u0027s listening just on localhost or on any/all local addresses?  Or perhaps still better to play it safe and keep \u0027localhost\u0027 as before?",
+      "parentUuid": "e10c5532_2a4804eb",
+      "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
