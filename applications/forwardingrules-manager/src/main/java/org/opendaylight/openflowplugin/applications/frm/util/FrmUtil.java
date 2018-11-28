@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frm.util;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -87,22 +87,20 @@ public final class FrmUtil {
         LOG.debug("Check if flow {} is dependent on group", flow);
         if (flow.getInstructions() != null) {
             List<Instruction> instructions = flow.getInstructions().getInstruction();
-            for (Instruction instruction : instructions) {
-                List<Action> actions = Collections.emptyList();
-                if (instruction.getInstruction().implementedInterface()
-                        .equals(ActionType.APPLY_ACTION.getActionType())) {
-                    actions = ((ApplyActionsCase) instruction.getInstruction())
-                            .getApplyActions().getAction();
-                } else if (instruction.getInstruction().implementedInterface()
-                        .equals(ActionType.WRITE_ACTION.getActionType())) {
-                    actions = ((WriteActionsCase)instruction.getInstruction())
-                            .getWriteActions().getAction();
-                }
-                for (Action action : actions) {
-                    if (action.getAction().implementedInterface()
-                            .equals(ActionType.GROUP_ACTION.getActionType())) {
-                        return ((GroupActionCase) action.getAction()).getGroupAction()
-                                .getGroupId();
+            if (Objects.nonNull(instructions)) {
+                for (Instruction instruction : instructions) {
+                    List<Action> actions = Collections.emptyList();
+                    if (instruction.getInstruction().implementedInterface()
+                            .equals(ActionType.APPLY_ACTION.getActionType())) {
+                        actions = ((ApplyActionsCase) instruction.getInstruction()).getApplyActions().getAction();
+                    }
+                    if (Objects.nonNull(actions)) {
+                        for (Action action : actions) {
+                            if (action.getAction().implementedInterface()
+                                    .equals(ActionType.GROUP_ACTION.getActionType())) {
+                                return ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                            }
+                        }
                     }
                 }
             }
