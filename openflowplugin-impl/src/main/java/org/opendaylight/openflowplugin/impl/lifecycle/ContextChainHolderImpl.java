@@ -380,7 +380,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             public void onFailure(final Throwable throwable) {
                 OF_EVENT_LOG.debug("Reconciliation framework failure for device {} with error {}", deviceInfo,
                         throwable.getMessage());
-                LOG.warn("Reconciliation framework failure.");
+                LOG.warn("Reconciliation framework onFailure for device {}", deviceInfo, throwable);
                 destroyContextChain(deviceInfo);
             }
         };
