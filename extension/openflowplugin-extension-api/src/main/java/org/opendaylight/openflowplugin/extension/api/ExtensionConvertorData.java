@@ -9,7 +9,8 @@
 package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.yangtools.yang.common.Uint32;
-import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.
+        Uint64;
 
 public class ExtensionConvertorData extends ConvertorData {
     private Uint32 xid;

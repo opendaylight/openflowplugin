@@ -31,6 +31,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
@@ -57,6 +58,17 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-common</artifactId>
+            <version>4.0.3-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

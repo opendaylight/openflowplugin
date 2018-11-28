@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frm.util;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -74,18 +75,20 @@ public final class FrmUtil {
         LOG.debug("Check if flow {} is dependent on group", flow);
         if (flow.getInstructions() != null) {
             List<Instruction> instructions = flow.getInstructions().getInstruction();
-            for (Instruction instruction : instructions) {
-                List<Action> actions = Collections.emptyList();
-                if (instruction.getInstruction().implementedInterface()
-                        .equals(ActionType.APPLY_ACTION.getActionType())) {
-                    actions = ((ApplyActionsCase) instruction.getInstruction())
-                            .getApplyActions().getAction();
-                }
-                for (Action action : actions) {
-                    if (action.getAction().implementedInterface()
-                            .equals(ActionType.GROUP_ACTION.getActionType())) {
-                        return ((GroupActionCase) action.getAction()).getGroupAction()
-                                .getGroupId();
+            if(Objects.nonNull(instructions)) {
+                for (Instruction instruction : instructions) {
+                    List<Action> actions = Collections.emptyList();
+                    if (instruction.getInstruction().implementedInterface()
+                            .equals(ActionType.APPLY_ACTION.getActionType())) {
+                        actions = ((ApplyActionsCase) instruction.getInstruction()).getApplyActions().getAction();
+                    }
+                    if (Objects.nonNull(actions)) {
+                        for (Action action : actions) {
+                            if (action.getAction().implementedInterface()
+                                    .equals(ActionType.GROUP_ACTION.getActionType())) {
+                                return ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                            }
+                        }
                     }
                 }
             }
