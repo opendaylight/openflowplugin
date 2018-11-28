@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
+import java.net.ServerSocket;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -83,25 +83,21 @@ public class OpenflowPluginDiagStatusProvider implements ServiceStatusProvider {
     }
 
     private boolean getApplicationNetworkState(int port, InetAddress inetAddress) {
-        Socket socket = null;
+        ServerSocket socket = null;
         try {
-            if (inetAddress == null) {
-                socket = new Socket("localhost", port);
-            } else {
-                socket = new Socket(inetAddress, port);
-            }
-            LOG.debug("Socket connection established");
-            return true;
+            socket = new ServerSocket(port, 1, inetAddress);
         } catch (IOException e) {
-            return false;
+            LOG.debug("Diagstatus check: port {} is taken", port);
+            return true;
         } finally {
-            try {
-                if (socket != null) {
+            if (socket != null) {
+                try {
                     socket.close();
+                } catch (IOException e) {
+                    LOG.warn("Unable to close socket on port: {} during diagstatus check", port);
                 }
-            } catch (IOException ex) {
-                LOG.error("Failed to close socket : {}", socket, ex);
             }
         }
+        return false;
     }
 }
