@@ -16,6 +16,24 @@
       "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e10c5532_2a4804eb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-11-28T22:15:44Z",
+      "side": 0,
+      "message": "should be OK I think, the ServerSocket constructor allows for null InetAddress",
+      "parentUuid": "41cc0bc8_d23d74e2",
+      "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
