@@ -106,7 +106,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
 
         responseCache = CacheBuilder.newBuilder().concurrencyLevel(1)
                 .expireAfterWrite(RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
-        LOG.info("The channel outbound queue size:{}", channelOutboundQueueSize);
+        LOG.debug("The channel outbound queue size:{}", channelOutboundQueueSize);
         this.output = new ChannelOutboundQueue(channel, channelOutboundQueueSize, address);
         channel.pipeline().addLast(output);
     }
