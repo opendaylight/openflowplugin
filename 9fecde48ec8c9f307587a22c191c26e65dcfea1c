@@ -52,6 +52,24 @@
       "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f2ebdc8_b4ffed58",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenflowPluginDiagStatusProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-11-29T21:15:20Z",
+      "side": 0,
+      "message": "No this behavior is correct. Remember, the previous behavior was a client side socket being opened to connect to localhost. This change is trying to bind a Server side socket. OFP 6633 and 6653 will bind to 0.0.0.0 if an IP address is not provided in the config xml. Therefore this check of trying to bind to 0.0.0.0 is correct.",
+      "parentUuid": "f13bc4ca_2e26e3c9",
+      "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
