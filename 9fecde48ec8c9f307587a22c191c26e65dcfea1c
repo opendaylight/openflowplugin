@@ -16,6 +16,24 @@
       "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2119f925_62c99709",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractConnectionAdapter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-11-29T20:39:34Z",
+      "side": 0,
+      "message": "Will change to debug",
+      "parentUuid": "896a3093_39a2020e",
+      "revId": "9fecde48ec8c9f307587a22c191c26e65dcfea1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
