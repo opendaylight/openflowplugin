@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa6c45b2_5600c8fb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-11-29T21:41:21Z",
+      "side": 1,
+      "message": "I only see this called in the close() method further down the file, which also does:\nopenflowPluginStatusMonitor.reportStatus(ServiceState.UNREGISTERED);\n\nDoesn\u0027t that mean the service will not be registered anymore and negate any service state you are putting in with this change?\n\nAlso are you sure that this would be fired off in the case where the TCP Channel was closed due to an error and not a requested shutdown? I see in SwitchConnectionProvider-\u003eshutdown docs:\n* @return future, triggered to true, when all listening channels are down\n\nSo I\u0027m guessing it does, but want to make sure.",
+      "range": {
+        "startLine": 194,
+        "startChar": 44,
+        "endLine": 194,
+        "endChar": 71
+      },
+      "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
