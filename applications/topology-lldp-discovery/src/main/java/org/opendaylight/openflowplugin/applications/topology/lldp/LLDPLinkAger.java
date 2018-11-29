@@ -16,6 +16,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
@@ -29,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
     private final long linkExpirationTime;
@@ -41,9 +46,11 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     /**
      * default ctor - start timer.
      */
+    @Inject
     public LLDPLinkAger(final TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig,
-            final NotificationProviderService notificationService,
-            final ConfigurationService configurationService, final EntityOwnershipService entityOwnershipService) {
+            @Reference final NotificationProviderService notificationService,
+            @Reference final ConfigurationService configurationService,
+            @Reference final EntityOwnershipService entityOwnershipService) {
         this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
         this.notificationService = notificationService;
         this.configurationServiceRegistration = configurationService.registerListener(this);
@@ -60,6 +67,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         timer.cancel();
         linkToDate.clear();
