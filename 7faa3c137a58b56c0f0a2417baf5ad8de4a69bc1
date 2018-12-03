@@ -70,6 +70,30 @@
       "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1ca36711_16ee9edf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-03T18:56:22Z",
+      "side": 1,
+      "message": "Yes, you are totally right about \"report ERROR, then the calling method reports UNREGISTERED\", so let me remove this.  The REALLY correct thing to do, in theory, would be to set the status based on this returned future, if we were particularly concerned to distinuish a error from an unregistered diag state during shutdown, but I don\u0027t think we are; forget that.\n\nThe big real question is if there are any scenarios where the diag status should be error during run-time (not shutodwn), because the TCP Channel got closed, and where in the code that could happen; input on that would be very welcome.",
+      "parentUuid": "01c4962d_39c61788",
+      "range": {
+        "startLine": 194,
+        "startChar": 44,
+        "endLine": 194,
+        "endChar": 71
+      },
+      "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
