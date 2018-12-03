@@ -22,6 +22,30 @@
       "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a33b1115_1357b4b0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-03T11:27:05Z",
+      "side": 1,
+      "message": "\u003e I only see this called in the close() method further down the file, which also does: openflowPluginStatusMonitor.reportStatus(ServiceState.UNREGISTERED); Doesn\u0027t that mean the service will not be registered anymore and negate any service state you are putting in with this change?\n\nYou had me doubt myself for a second there, but it\u0027s not how diagstatus works: reportStatus(ServiceState.UNREGISTERED) sets the status of a known registered service to be UNREGISTERED (shut down) - which is what we want.  Actually unregistering a service competely so that it does not report anymore would be via unregister() on the ServiceRegistration which the register() returned, but in OpenflowPluginDiagStatusProvider that never happens (which is OK; unless we wanted to support dynamic bundle unregistration, but forget about that).  -- BTW: And I do agree that the ... wording of ServiceState.UNREGISTERED is unfortunate.  Faseela, do you have any motivation to still change this?\n\n\u003e Also are you sure that this would be fired off in the case where the TCP Channel was closed due to an error and not a requested shutdown? I see in SwitchConnectionProvider-shutdown docs: @return future, triggered to true, when all listening channels are down So I\u0027m guessing it does, but want to make sure.\n\nNot 100% sure about this; it\u0027s a bit nebulous to me under what exact circumstances the TCP Channel could possibly get closed due to an error and not a requested shutdown.. perhaps one of the OFP committers could shine some more light on this?  If there are additional scenarios where whatever is started to listen on those ports (TcpHandler ?) closes, or dies, then those places should simply also use report ERROR via openflowPluginStatusMonitor.",
+      "parentUuid": "aa6c45b2_5600c8fb",
+      "range": {
+        "startLine": 194,
+        "startChar": 44,
+        "endLine": 194,
+        "endChar": 71
+      },
+      "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
