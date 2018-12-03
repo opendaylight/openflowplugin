@@ -46,6 +46,30 @@
       "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "01c4962d_39c61788",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-12-03T14:36:09Z",
+      "side": 1,
+      "message": "OK I think I understand, but even if that is the case and UNREGISTERED really means shutdown, isn\u0027t this change still not doing anything because you report ERROR, then the calling method reports UNREGISTERED?",
+      "parentUuid": "a33b1115_1357b4b0",
+      "range": {
+        "startLine": 194,
+        "startChar": 44,
+        "endLine": 194,
+        "endChar": 71
+      },
+      "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
