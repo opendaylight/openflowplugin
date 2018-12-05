@@ -78,28 +78,28 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         //resultVehicle = updateTableFeatures(nodeIdent, configTree);
 
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            if (!input.isSuccessful()) {
+            // if (!input.isSuccessful()) {
                 //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
                 //final ListenableFuture<RpcResult<Void>> singleVoidUpdateResult = Futures.transform(
                 //        Futures.asList Arrays.asList(input, output),
                 //        ReconcileUtil.<UpdateFlowOutput>createRpcResultCondenser("TODO"));
-            }
+            // }
             return addMissingGroups(nodeId, nodeIdent, diffInput.getGroupsToAddOrUpdate(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingGroups"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            if (!input.isSuccessful()) {
+            // if (!input.isSuccessful()) {
                 //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-            }
+            // }
             return addMissingMeters(nodeId, nodeIdent, diffInput.getMetersToAddOrUpdate(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingMeters"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            if (!input.isSuccessful()) {
+            // if (!input.isSuccessful()) {
                 //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-            }
+            // }
             return addMissingFlows(nodeId, nodeIdent, diffInput.getFlowsToAddOrUpdate(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "addMissingFlows"),
@@ -107,25 +107,25 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
 
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            if (!input.isSuccessful()) {
+            // if (!input.isSuccessful()) {
                 //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-            }
+            // }
             return removeRedundantFlows(nodeId, nodeIdent, diffInput.getFlowsToRemove(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantFlows"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            if (!input.isSuccessful()) {
+            // if (!input.isSuccessful()) {
                 //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-            }
+            // }
             return removeRedundantMeters(nodeId, nodeIdent, diffInput.getMetersToRemove(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantMeters"),
                 MoreExecutors.directExecutor());
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            if (!input.isSuccessful()) {
+            // if (!input.isSuccessful()) {
                 //TODO chain errors but not skip processing on first error return Futures.immediateFuture(input);
-            }
+            // }
             return removeRedundantGroups(nodeId, nodeIdent, diffInput.getGroupsToRemove(), counters);
         }, MoreExecutors.directExecutor());
         Futures.addCallback(resultVehicle, FxChainUtil.logResultCallback(nodeId, "removeRedundantGroups"),

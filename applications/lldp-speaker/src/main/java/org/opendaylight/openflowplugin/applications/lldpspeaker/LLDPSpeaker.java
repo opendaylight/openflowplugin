@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
+import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErrorLogging;
+
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.security.NoSuchAlgorithmException;
@@ -133,7 +135,8 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
                 if (deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
                     LOG.debug("Node is owned by this controller, sending LLDP packet through port {}",
                             nodeConnectorId.getValue());
-                    packetProcessingService.transmitPacket(nodeConnectorMap.get(ncIID));
+                    addErrorLogging(packetProcessingService.transmitPacket(nodeConnectorMap.get(ncIID)), LOG,
+                            "transmitPacket() failed");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
                             nodeId.getValue(), nodeConnectorId.getValue());

@@ -113,11 +113,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         Optional.ofNullable(TopologyLLDPDiscoveryProperty.forValue(propertyName)).ifPresent(lldpDiscoveryProperty -> {
             switch (lldpDiscoveryProperty) {
                 case LLDP_SECURE_KEY:
-                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
-                    break;
                 case TOPOLOGY_LLDP_INTERVAL:
-                    LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
-                    break;
                 case TOPOLOGY_LLDP_EXPIRATION_INTERVAL:
                     LOG.warn("Runtime update not supported for property {}", lldpDiscoveryProperty);
                     break;
