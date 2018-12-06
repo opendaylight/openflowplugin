@@ -94,6 +94,30 @@
       "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ab322a4_ac1b3edc",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-12-06T19:12:09Z",
+      "side": 1,
+      "message": "Looks like the TcpHandler class is using io.netty.channel in the backend of the facade. I wonder if you could locally test this scenario by causing a ChannelException to be thrown after some time, and see if the diagstatus changes correctly.\n\nAlternatively, you could also modify the code and add a channelFuture to listen for when the channel is closed and then update diagstatus, maybe by updating the serverFacade.getIsOnlineFuture\n\nhttps://netty.io/4.0/api/io/netty/channel/Channel.html#closeFuture--",
+      "parentUuid": "1ca36711_16ee9edf",
+      "range": {
+        "startLine": 194,
+        "startChar": 44,
+        "endLine": 194,
+        "endChar": 71
+      },
+      "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
