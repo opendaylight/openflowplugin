@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -85,24 +84,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
-    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
-    }
+    private final BundleFlowForwarder bundleFlowForwarder;
 
-    @Override
-    @SuppressWarnings("IllegalCatch")
-    public void registerListener() {
-        final DataTreeIdentifier<Flow> treeId = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
-                getWildCardPath());
-        try {
-            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, FlowForwarder.this);
-        } catch (final Exception e) {
-            LOG.warn("FRM Flow DataTreeChange listener registration fail!");
-            LOG.debug("FRM Flow DataTreeChange listener registration fail ..", e);
-            throw new IllegalStateException("FlowForwarder startup fail! System needs restart.", e);
-        }
+    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                         final ListenerRegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
+        bundleFlowForwarder = new BundleFlowForwarder(manager);
     }
-
 
     @Override
     public  void deregisterListener() {
