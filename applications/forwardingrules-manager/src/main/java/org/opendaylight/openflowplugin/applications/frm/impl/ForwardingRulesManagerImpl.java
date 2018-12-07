@@ -107,6 +107,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
     private final FlowGroupCacheManager flowGroupCacheManager;
+    private final ListenerRegistrationHelper registrationHelper;
 
     @Inject
     public ForwardingRulesManagerImpl(@Reference final DataBroker dataBroker,
@@ -119,12 +120,14 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       @Reference final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
                                       @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry,
-                                      @Reference final FlowGroupCacheManager flowGroupCacheManager) {
+                                      @Reference final FlowGroupCacheManager flowGroupCacheManager,
+                                      final ListenerRegistrationHelper registrationHelper) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
         isBundleBasedReconciliationEnabled = config.isBundleBasedReconciliationEnabled();
         this.configurationServiceRegistration = configurationService.registerListener(this);
+        this.registrationHelper = Preconditions.checkNotNull(registrationHelper, "RegistrationHelper cannot be null");
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
@@ -174,10 +177,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
         this.bundleFlowListener = new BundleFlowForwarder(this);
         this.bundleGroupListener = new BundleGroupForwarder(this);
-        this.flowListener = new FlowForwarder(this, dataService);
-        this.groupListener = new GroupForwarder(this, dataService);
-        this.meterListener = new MeterForwarder(this, dataService);
-        this.tableListener = new TableForwarder(this, dataService);
+        this.flowListener = new FlowForwarder(this, dataService, registrationHelper);
+        this.groupListener = new GroupForwarder(this, dataService, registrationHelper);
+        this.meterListener = new MeterForwarder(this, dataService, registrationHelper);
+        this.tableListener = new TableForwarder(this, dataService, registrationHelper);
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 

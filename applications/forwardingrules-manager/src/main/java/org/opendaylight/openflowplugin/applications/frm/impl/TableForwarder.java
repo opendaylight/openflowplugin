@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -25,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -34,25 +31,10 @@ import org.slf4j.LoggerFactory;
 public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
-    private ListenerRegistration<TableForwarder> listenerRegistration;
 
-    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
-    }
-
-    @SuppressWarnings("IllegalCatch")
-    @Override
-    public void registerListener() {
-        final DataTreeIdentifier<TableFeatures> treeId = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
-                getWildCardPath());
-
-        try {
-            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, TableForwarder.this);
-        } catch (final Exception e) {
-            LOG.warn("FRM Table DataTreeChangeListener registration fail!");
-            LOG.debug("FRM Table DataTreeChangeListener registration fail ..", e);
-            throw new IllegalStateException("TableForwarder startup fail! System needs restart.", e);
-        }
+    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final ListenerRegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
     }
 
     @Override

@@ -18,7 +18,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -64,23 +63,12 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
     private ListenerRegistration<GroupForwarder> listenerRegistration;
 
-    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
-    }
+    private final BundleGroupForwarder bundleGroupForwarder;
 
-    @SuppressWarnings("IllegalCatch")
-    @Override
-    public void registerListener() {
-        final DataTreeIdentifier<Group> treeId = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
-                getWildCardPath());
-
-        try {
-            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, GroupForwarder.this);
-        } catch (final Exception e) {
-            LOG.warn("FRM Group DataTreeChange listener registration fail!");
-            LOG.debug("FRM Group DataTreeChange listener registration fail ..", e);
-            throw new IllegalStateException("GroupForwarder startup fail! System needs restart.", e);
-        }
+    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final ListenerRegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
+        this.bundleGroupForwarder = new BundleGroupForwarder(manager);
     }
 
     @Override
