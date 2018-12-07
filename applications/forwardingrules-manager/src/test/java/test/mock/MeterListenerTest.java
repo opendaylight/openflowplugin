@@ -7,6 +7,8 @@
  */
 package test.mock;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
@@ -77,7 +79,9 @@ public class MeterListenerTest extends FRMTest {
                 getConfigurationService(),
                 reconciliationManager,
                 openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry);
+                serviceRecoveryRegistry,
+                getRegistrationHelper()
+                );
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
@@ -98,6 +102,7 @@ public class MeterListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
         SalMeterServiceMock salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
+        await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 1);
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
@@ -109,7 +114,7 @@ public class MeterListenerTest extends FRMTest {
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
-        salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
+        await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 2);
         addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(2, addMeterCalls.size());
         assertEquals("DOM-1", addMeterCalls.get(1).getTransactionUri().getValue());
@@ -129,6 +134,7 @@ public class MeterListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
         SalMeterServiceMock salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
+        await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 1);
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
@@ -137,7 +143,7 @@ public class MeterListenerTest extends FRMTest {
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
-        salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
+        await().atMost(10, SECONDS).until(() -> salMeterService.getUpdateMeterCalls().size() == 1);
         List<UpdateMeterInput> updateMeterCalls = salMeterService.getUpdateMeterCalls();
         assertEquals(1, updateMeterCalls.size());
         assertEquals("DOM-1", updateMeterCalls.get(0).getTransactionUri().getValue());
@@ -157,6 +163,7 @@ public class MeterListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
         SalMeterServiceMock salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
+        await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 1);
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
@@ -164,7 +171,7 @@ public class MeterListenerTest extends FRMTest {
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION, meterII);
         assertCommit(writeTx.commit());
-        salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
+        await().atMost(10, SECONDS).until(() -> salMeterService.getRemoveMeterCalls().size() == 1);
         List<RemoveMeterInput> removeMeterCalls = salMeterService.getRemoveMeterCalls();
         assertEquals(1, removeMeterCalls.size());
         assertEquals("DOM-1", removeMeterCalls.get(0).getTransactionUri().getValue());

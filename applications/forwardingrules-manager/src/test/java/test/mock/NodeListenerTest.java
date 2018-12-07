@@ -59,8 +59,9 @@ public class NodeListenerTest extends FRMTest {
                 getConfigurationService(),
                 reconciliationManager,
                 openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry);
-
+                serviceRecoveryRegistry,
+                getRegistrationHelper()
+             );
 
         forwardingRulesManager.start();
     }
