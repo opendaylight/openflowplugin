@@ -64,7 +64,9 @@ public class NodeListenerTest extends FRMTest {
                 reconciliationManager,
                 openflowServiceRecoveryHandler,
                 serviceRecoveryRegistry,
-                flowGroupCacheManager);
+                flowGroupCacheManager,
+                getRegistrationHelper());
+
         forwardingRulesManager.start();
     }
 
