@@ -21,6 +21,10 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -62,10 +66,15 @@ import org.slf4j.LoggerFactory;
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
+
     private ListenerRegistration<GroupForwarder> listenerRegistration;
 
-    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
+    private final BundleGroupForwarder bundleGroupForwarder;
+
+    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final RegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
+        this.bundleGroupForwarder = new BundleGroupForwarder(manager);
     }
 
     @SuppressWarnings("IllegalCatch")
