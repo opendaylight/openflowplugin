@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "e3a7f869_639380bc",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/DataTreeChangeListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-12-07T06:58:40Z",
+      "side": 1,
+      "message": "Instead I ve overridden the close in the sub classes and used annotations.That should be fine right?",
+      "parentUuid": "fde022e2_b3b9c556",
+      "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "031b8881_145882a4",
         "filename": "applications/topology-manager/src/main/resources/OSGI-INF/blueprint/topology-manager.xml",
         "patchSetId": 2
@@ -48,6 +66,24 @@
       "writtenOn": "2018-11-27T11:25:55Z",
       "side": 1,
       "message": "just for future clarity and to avoid confusion, would you terribly mind just completely removing this, instead of leaving it in commented out form?  If anyone needs to understand the history, there is always git to the rescue! ;) As far as I can tell, there is actually nothing left in this file now, so could you just completely delete this entire BP XML file as part of this change, instead of leaving it in but empty?  Like you have done elsewhere.",
+      "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b141746a_9a279247",
+        "filename": "applications/topology-manager/src/main/resources/OSGI-INF/blueprint/topology-manager.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-12-07T06:58:40Z",
+      "side": 1,
+      "message": "Removed this file.",
+      "parentUuid": "031b8881_145882a4",
       "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
