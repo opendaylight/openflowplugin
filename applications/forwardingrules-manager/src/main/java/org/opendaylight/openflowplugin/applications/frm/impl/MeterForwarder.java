@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -49,13 +48,14 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
  *
  */
+
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
-    private ListenerRegistration<MeterForwarder> listenerRegistration;
 
-    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
+    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final RegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -74,7 +74,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    public  void deregisterListener() {
+    public void deregisterListener() {
         close();
     }
 
