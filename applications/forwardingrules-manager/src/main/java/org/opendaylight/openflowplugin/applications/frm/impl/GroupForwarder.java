@@ -62,10 +62,15 @@ import org.slf4j.LoggerFactory;
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
+
     private ListenerRegistration<GroupForwarder> listenerRegistration;
 
-    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
+    private final BundleGroupForwarder bundleGroupForwarder;
+
+    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final RegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
+        this.bundleGroupForwarder = new BundleGroupForwarder(manager);
     }
 
     @SuppressWarnings("IllegalCatch")

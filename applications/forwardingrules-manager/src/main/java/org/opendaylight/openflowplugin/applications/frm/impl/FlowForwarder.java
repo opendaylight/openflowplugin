@@ -85,8 +85,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
-    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
+
+    private final BundleFlowForwarder bundleFlowForwarder;
+
+    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                         final RegistrationHelper registrationHelper) {
+        super(manager, db, registrationHelper);
+        bundleFlowForwarder = new BundleFlowForwarder(manager);
     }
 
     @Override
