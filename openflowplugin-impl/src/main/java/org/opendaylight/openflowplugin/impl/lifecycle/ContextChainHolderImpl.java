@@ -135,7 +135,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
         contextChain.addContext(roleContext);
-        contextChainMap.put(deviceInfo, contextChain);
+        ContextChain prevContextChain = contextChainMap.put(deviceInfo, contextChain);
+        //closing previous context chain if present in contextChainMap
+        if (prevContextChain != null) {
+            prevContextChain.close();
+        }
         connectingDevices.remove(deviceInfo);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
