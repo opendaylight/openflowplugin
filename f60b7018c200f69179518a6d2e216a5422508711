@@ -46,6 +46,30 @@
       "revId": "f60b7018c200f69179518a6d2e216a5422508711",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a547b2e5_edeb3ca1",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-12T15:52:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "66a16862_c48bb8d4",
+      "range": {
+        "startLine": 89,
+        "startChar": 8,
+        "endLine": 89,
+        "endChar": 63
+      },
+      "revId": "f60b7018c200f69179518a6d2e216a5422508711",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
