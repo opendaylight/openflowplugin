@@ -90,6 +90,7 @@ public final class UdpHandler implements ServerFacade {
             LOG.debug("Address from udpHandler: {}", address);
             isOnlineFuture.set(true);
             LOG.info("Switch listener started and ready to accept incoming udp connections on port: {}", port);
+            // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOG.error("Interrupted while waiting for port {} shutdown", port, e);

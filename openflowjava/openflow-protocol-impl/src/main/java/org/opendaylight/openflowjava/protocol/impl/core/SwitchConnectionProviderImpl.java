@@ -9,11 +9,18 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
+import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
@@ -63,6 +70,8 @@ import org.slf4j.LoggerFactory;
 public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderImpl.class);
+    private static final String THREAD_NAME = "OFP-SwitchConnectionProvider-Udp/TcpHandler";
+    private static final String OPENFLOW_JAVA_SERVICE_NAME = "OPENFLOWJAVA";
 
     private SwitchConnectionHandler switchConnectionHandler;
     private ServerFacade serverFacade;
@@ -72,11 +81,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
     private final ListeningExecutorService listeningExecutorService;
+    private final DiagStatusService diagStatusService;
     private TcpConnectionInitializer connectionInitializer;
 
-    public SwitchConnectionProviderImpl(ConnectionConfiguration connConfig) {
-        this.listeningExecutorService = Executors
-                .newListeningSingleThreadExecutor("OFP-SwitchConnectionProvider-Udp/TcpHandler", LOG);
+    public SwitchConnectionProviderImpl(ConnectionConfiguration connConfig, DiagStatusService diagStatusService) {
+        this.diagStatusService = diagStatusService;
+        diagStatusService.register(OPENFLOW_JAVA_SERVICE_NAME);
+        this.listeningExecutorService = Executors.newListeningSingleThreadExecutor(THREAD_NAME, LOG);
         this.connConfig = connConfig;
         serializerRegistry = new SerializerRegistryImpl();
         if (connConfig != null) {
@@ -117,7 +128,19 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             if (switchConnectionHandler == null) {
                 throw new IllegalStateException("SwitchConnectionHandler is not set");
             }
-            listeningExecutorService.submit(serverFacade);
+            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    diagStatusService.report(new ServiceDescriptor(OPENFLOW_JAVA_SERVICE_NAME, throwable));
+                }
+
+                @Override
+                public void onSuccess(@Nullable Object nullResult) {
+                    diagStatusService.report(new ServiceDescriptor(
+                            OPENFLOW_JAVA_SERVICE_NAME, ServiceState.ERROR, THREAD_NAME + " terminated"));
+                }
+            } , MoreExecutors.directExecutor());
             result = serverFacade.getIsOnlineFuture();
         } catch (RuntimeException e) {
             final SettableFuture<Boolean> exResult = SettableFuture.create();
