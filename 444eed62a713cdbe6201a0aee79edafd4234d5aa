@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "b563e43f_35a9a65f",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/DataTreeChangeListenerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-12T12:50:53Z",
+      "side": 1,
+      "message": "Yup, that\u0027s great and should work safely in all DI frameworks AFAIK; thanks!",
+      "parentUuid": "e3a7f869_639380bc",
+      "revId": "444eed62a713cdbe6201a0aee79edafd4234d5aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "031b8881_145882a4",
         "filename": "applications/topology-manager/src/main/resources/OSGI-INF/blueprint/topology-manager.xml",
         "patchSetId": 2
