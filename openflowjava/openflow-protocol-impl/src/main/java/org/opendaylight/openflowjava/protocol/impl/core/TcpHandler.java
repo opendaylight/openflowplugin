@@ -51,6 +51,7 @@ public class TcpHandler implements ServerFacade {
     private int port;
     private String address;
     private final InetAddress startupAddress;
+    private final Runnable readyRunnable;
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
     private final SettableFuture<Boolean> isOnlineFuture;
@@ -65,8 +66,8 @@ public class TcpHandler implements ServerFacade {
      *
      * @param port listening port of TCPHandler server
      */
-    public TcpHandler(final int port) {
-        this(null, port);
+    public TcpHandler(final int port, Runnable readyRunnable) {
+        this(null, port, readyRunnable);
     }
 
     /**
@@ -74,10 +75,11 @@ public class TcpHandler implements ServerFacade {
      * @param address listening address of TCPHandler server
      * @param port listening port of TCPHandler server
      */
-    public TcpHandler(final InetAddress address, final int port) {
+    public TcpHandler(final InetAddress address, final int port, Runnable readyRunnable) {
         this.port = port;
         this.startupAddress = address;
         isOnlineFuture = SettableFuture.create();
+        this.readyRunnable = readyRunnable;
     }
 
     /**
@@ -131,6 +133,10 @@ public class TcpHandler implements ServerFacade {
             LOG.debug("address from tcphandler: {}", address);
             isOnlineFuture.set(true);
             LOG.info("Switch listener started and ready to accept incoming tcp/tls connections on port: {}", port);
+
+            readyRunnable.run();
+
+            // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOG.error("Interrupted while waiting for port {} shutdown", port, e);

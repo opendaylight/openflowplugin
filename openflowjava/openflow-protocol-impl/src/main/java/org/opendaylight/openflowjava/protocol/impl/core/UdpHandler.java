@@ -32,11 +32,12 @@ import org.slf4j.LoggerFactory;
  */
 public final class UdpHandler implements ServerFacade {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(UdpHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UdpHandler.class);
+
     private int port;
     private EventLoopGroup group;
     private final InetAddress startupAddress;
+    private final Runnable readyRunnable;
     private final SettableFuture<Boolean> isOnlineFuture;
     private UdpChannelInitializer channelInitializer;
     private ThreadConfiguration threadConfig;
@@ -47,8 +48,8 @@ public final class UdpHandler implements ServerFacade {
      *
      * @param port listening port of UdpHandler server
      */
-    public UdpHandler(final int port) {
-        this(null, port);
+    public UdpHandler(final int port, Runnable readyRunnable) {
+        this(null, port, readyRunnable);
     }
 
     /**
@@ -56,10 +57,11 @@ public final class UdpHandler implements ServerFacade {
      * @param address listening address of UdpHandler server
      * @param port listening port of UdpHandler server
      */
-    public UdpHandler(final InetAddress address, final int port) {
+    public UdpHandler(final InetAddress address, final int port, Runnable readyRunnable) {
         this.port = port;
         this.startupAddress = address;
         isOnlineFuture = SettableFuture.create();
+        this.readyRunnable = readyRunnable;
     }
 
     @Override
@@ -90,6 +92,8 @@ public final class UdpHandler implements ServerFacade {
             LOG.debug("Address from udpHandler: {}", address);
             isOnlineFuture.set(true);
             LOG.info("Switch listener started and ready to accept incoming udp connections on port: {}", port);
+            readyRunnable.run();
+            // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOG.error("Interrupted while waiting for port {} shutdown", port, e);
