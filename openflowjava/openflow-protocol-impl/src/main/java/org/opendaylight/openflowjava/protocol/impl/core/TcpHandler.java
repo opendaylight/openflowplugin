@@ -131,6 +131,8 @@ public class TcpHandler implements ServerFacade {
             LOG.debug("address from tcphandler: {}", address);
             isOnlineFuture.set(true);
             LOG.info("Switch listener started and ready to accept incoming tcp/tls connections on port: {}", port);
+
+            // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOG.error("Interrupted while waiting for port {} shutdown", port, e);
