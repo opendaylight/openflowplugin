@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
@@ -86,7 +88,7 @@ public class IntegrationTest {
         connConfig.setTransferProtocol(protocol);
         mockPlugin = new MockPlugin();
 
-        switchConnectionProvider = new SwitchConnectionProviderImpl(connConfig);
+        switchConnectionProvider = new SwitchConnectionProviderImpl(connConfig, Mockito.mock(DiagStatusService.class));
         switchConnectionProvider.setSwitchConnectionHandler(mockPlugin);
         switchConnectionProvider.startup().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         if (protocol.equals(TransportProtocol.TCP) || protocol.equals(TransportProtocol.TLS)) {
