@@ -118,6 +118,30 @@
       "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e936ad07_039a273a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-12T11:47:45Z",
+      "side": 1,
+      "message": "Given that this looks good to Arun as is and he\u0027s only had another minor feedback and seems to willing to merge this, I\u0027ve opted to address this in separate changes, let\u0027s take this forward in https://git.opendaylight.org/gerrit/#/c/78677/ (which requires trivial https://git.opendaylight.org/gerrit/#/c/78675/)",
+      "parentUuid": "4ab322a4_ac1b3edc",
+      "range": {
+        "startLine": 194,
+        "startChar": 44,
+        "endLine": 194,
+        "endChar": 71
+      },
+      "revId": "7faa3c137a58b56c0f0a2417baf5ad8de4a69bc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
