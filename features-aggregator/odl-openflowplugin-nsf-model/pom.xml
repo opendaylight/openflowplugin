@@ -11,13 +11,13 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-nsf-model</artifactId>
     <packaging>feature</packaging>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.5-SNAPSHOT</version>
 
     <name>OpenDaylight :: OpenflowPlugin :: NSF :: Model</name>
 
     <properties>
-        <mdsal.version>1.7.4-SNAPSHOT</mdsal.version>
-        <mdsal.model.version>0.12.4-SNAPSHOT</mdsal.model.version>
+        <mdsal.version>1.7.5-SNAPSHOT</mdsal.version>
+        <mdsal.model.version>0.12.5-SNAPSHOT</mdsal.model.version>
     </properties>
 
     <dependencyManagement>

@@ -11,7 +11,7 @@
 
     <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
     <artifactId>odl-openflowjava-protocol</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.5-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <!-- <name> formatting is used by autorelease to parse and notify projects on
@@ -19,8 +19,8 @@
     <name>ODL :: openflowjava :: ${project.artifactId}</name>
 
     <properties>
-        <mdsal.version>2.4.4-SNAPSHOT</mdsal.version>
-        <mdsal.model.version>0.12.4-SNAPSHOT</mdsal.model.version>
+        <mdsal.version>2.4.5-SNAPSHOT</mdsal.version>
+        <mdsal.model.version>0.12.5-SNAPSHOT</mdsal.model.version>
     </properties>
 
 
