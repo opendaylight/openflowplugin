@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class SwitchConnectionProviderImplTest {
 
     @Mock SwitchConnectionHandler handler;
+    @Mock DiagStatusService diagStatusService;
 
     private static final int SWITCH_IDLE_TIMEOUT = 2000;
     private static final int WAIT_TIMEOUT = 2000;
@@ -55,7 +57,7 @@ public class SwitchConnectionProviderImplTest {
         if (protocol != null) {
             createConfig(protocol);
         }
-        provider = new SwitchConnectionProviderImpl(config);
+        provider = new SwitchConnectionProviderImpl(config, diagStatusService);
     }
 
     private void createConfig(final TransportProtocol protocol) throws UnknownHostException {
@@ -78,7 +80,7 @@ public class SwitchConnectionProviderImplTest {
      */
     @Test
     public void testStartup1() {
-        provider = new SwitchConnectionProviderImpl(config);
+        provider = new SwitchConnectionProviderImpl(config, diagStatusService);
         final ListenableFuture<Boolean> future = provider.startup();
         try {
             future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
