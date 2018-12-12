@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -58,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public class SwitchConnectionProviderImpl02Test {
+    @Mock DiagStatusService diagStatusService;
     @Mock SwitchConnectionHandler handler;
     @Mock OFGeneralSerializer serializer;
     @Mock OFGeneralDeserializer deserializer;
@@ -86,7 +88,7 @@ public class SwitchConnectionProviderImpl02Test {
         if (protocol != null) {
             createConfig(protocol);
         }
-        provider = new SwitchConnectionProviderImpl(config);
+        provider = new SwitchConnectionProviderImpl(config, diagStatusService);
     }
 
     private void createConfig(final TransportProtocol protocol) throws UnknownHostException {
