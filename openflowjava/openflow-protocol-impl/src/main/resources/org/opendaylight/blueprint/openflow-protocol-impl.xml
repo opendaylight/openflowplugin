@@ -2,7 +2,11 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
 
-  <bean id="switchConnFactory" class="org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderFactoryImpl"/>
+  <reference id="diagStatusService" interface="org.opendaylight.infrautils.diagstatus.DiagStatusService"/>
+
+  <bean id="switchConnFactory" class="org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderFactoryImpl">
+    <argument ref="diagStatusService"/>
+  </bean>
 
   <service ref="switchConnFactory" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"
           odl:type="default"/>
