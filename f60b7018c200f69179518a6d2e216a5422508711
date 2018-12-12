@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "24952b6a_41cfa010",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-12-12T15:17:53Z",
+      "side": 1,
+      "message": "so now we will have 2 OFP services listed in diagstatus? \"OPENFLOWJAVA\" from this service and \"OPENFLOW\" from OFP diagstatus? I think this class will be instantiated multiple times for each connection (6653, 6633). So it would be better to track those separately (make their names dynamic based on port number, like \"OPENFLOW_SERVER_6653\" or something?)",
+      "range": {
+        "startLine": 89,
+        "startChar": 8,
+        "endLine": 89,
+        "endChar": 63
+      },
+      "revId": "f60b7018c200f69179518a6d2e216a5422508711",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
