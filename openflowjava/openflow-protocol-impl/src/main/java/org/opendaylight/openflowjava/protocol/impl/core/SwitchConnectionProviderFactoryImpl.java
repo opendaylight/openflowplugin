@@ -11,6 +11,7 @@ import com.google.common.base.MoreObjects;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -28,9 +29,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  */
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
 
+    private final DiagStatusService diagStatusService;
+
+    public SwitchConnectionProviderFactoryImpl(DiagStatusService diagStatusService) {
+        this.diagStatusService = diagStatusService;
+    }
+
     @Override
     public SwitchConnectionProvider newInstance(SwitchConnectionConfig config) {
-        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config));
+        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config), diagStatusService);
     }
 
     private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
