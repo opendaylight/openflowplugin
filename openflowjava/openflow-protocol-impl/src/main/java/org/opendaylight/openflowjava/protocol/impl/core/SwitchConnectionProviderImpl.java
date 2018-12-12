@@ -10,9 +10,11 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
+import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -60,8 +62,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SwitchConnectionProviderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderImpl.class);
+
     private SwitchConnectionHandler switchConnectionHandler;
     private ServerFacade serverFacade;
     private final ConnectionConfiguration connConfig;
@@ -69,9 +71,12 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final SerializerRegistry serializerRegistry;
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
+    private final ListeningExecutorService listeningExecutorService;
     private TcpConnectionInitializer connectionInitializer;
 
     public SwitchConnectionProviderImpl(ConnectionConfiguration connConfig) {
+        this.listeningExecutorService = Executors
+                .newListeningSingleThreadExecutor("OFP-SwitchConnectionProvider-Udp/TcpHandler", LOG);
         this.connConfig = connConfig;
         serializerRegistry = new SerializerRegistryImpl();
         if (connConfig != null) {
@@ -97,7 +102,9 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             LOG.warn("Can not shutdown - not configured or started");
             throw new IllegalStateException("SwitchConnectionProvider is not started or not configured.");
         }
-        return serverFacade.shutdown();
+        ListenableFuture<Boolean> serverFacadeShutdownFuture = serverFacade.shutdown();
+        Executors.shutdownAndAwaitTermination(listeningExecutorService);
+        return serverFacadeShutdownFuture;
     }
 
     @Override
@@ -110,7 +117,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             if (switchConnectionHandler == null) {
                 throw new IllegalStateException("SwitchConnectionHandler is not set");
             }
-            new Thread(serverFacade).start();
+            listeningExecutorService.submit(serverFacade);
             result = serverFacade.getIsOnlineFuture();
         } catch (RuntimeException e) {
             final SettableFuture<Boolean> exResult = SettableFuture.create();
