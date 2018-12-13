@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -111,8 +112,13 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // skip the flow/group/meter operational. This requires an addition check, where it reads
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
-        return provider.isNodeOwner(nodeIdent)
-                && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+        boolean isNodeOwner = provider.isNodeOwner(nodeIdent);
+        boolean isNodeActive = provider.isNodeActive(nodeIdent);
+        boolean nodeInOperationalDS = provider.checkNodeInOperationalDataStore(nodeIdent);
+        String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
+        LOG.error("PreConfiguration check for node : {}, isNodeOwner:{}, isNodeActive:{}, nodeInOperationalDS:{}",
+                node, isNodeOwner, isNodeActive, nodeInOperationalDS);
+        return isNodeOwner && (isNodeActive || nodeInOperationalDS);
     }
 }
 

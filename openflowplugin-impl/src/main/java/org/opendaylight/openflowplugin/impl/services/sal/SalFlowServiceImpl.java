@@ -82,12 +82,19 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     @Override
     public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
+        AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder(input);
+        LOG.info("SalFlowServiceImpl trying to add flow to the switch={} with tableID={}, flowName={}, priority={}",
+                deviceContext.getDeviceInfo().getDatapathId(), addFlowInputBuilder.getTableId(),
+                addFlowInputBuilder.getFlowName(), addFlowInputBuilder.getPriority());
         final FlowRegistryKey flowRegistryKey =
                 FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future;
 
         if (flowAddMessage.canUseSingleLayerSerialization()) {
             future = flowAddMessage.handleServiceCall(input);
+            LOG.info("Added flow and adding callback to the switch={} with tableID={}, flowName={}, priority={}",
+                    deviceContext.getDeviceInfo().getDatapathId(), addFlowInputBuilder.getTableId(),
+                    addFlowInputBuilder.getFlowName(), addFlowInputBuilder.getPriority());
             Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey), MoreExecutors.directExecutor());
         } else {
             future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));

@@ -29,6 +29,8 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -107,6 +109,12 @@ public abstract class AbstractService<I, O> {
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
     public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {
+        if (input instanceof AddFlowInput) {
+            AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder((AddFlowInput)input);
+            LOG.info("Handling general service call for add flow to switch={} with tableID={} and flowID={}",
+                    deviceContext.getDeviceInfo().getDatapathId(), addFlowInputBuilder.getTableId(),
+                    addFlowInputBuilder.getFlowName());
+        }
         return handleServiceCall(input, null);
     }
 
@@ -119,6 +127,12 @@ public abstract class AbstractService<I, O> {
             : input.getClass();
 
         getMessageSpy().spyMessage(requestType, MessageSpy.StatisticsGroup.TO_SWITCH_ENTERED);
+        if (input instanceof AddFlowInput) {
+            AddFlowInputBuilder addFlowInputBuilder = new AddFlowInputBuilder((AddFlowInput)input);
+            LOG.info("Handling general service call2 for add flow to switch={} with tableID={} and flowID={}",
+                    deviceContext.getDeviceInfo().getDatapathId(), addFlowInputBuilder.getTableId(),
+                    addFlowInputBuilder.getFlowName());
+        }
 
         LOG.trace("Handling general service call");
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
