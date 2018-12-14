@@ -12,6 +12,11 @@ import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -36,6 +41,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultConfigPusher.class);
     private static final long STARTUP_LOOP_TICK = 500L;
@@ -45,8 +51,9 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
     private final DeviceOwnershipService deviceOwnershipService;
     private ListenerRegistration<?> listenerRegistration;
 
-    public DefaultConfigPusher(NodeConfigService nodeConfigService, DataBroker dataBroker,
-            DeviceOwnershipService deviceOwnershipService) {
+    @Inject
+    public DefaultConfigPusher(NodeConfigService nodeConfigService, @Reference DataBroker dataBroker,
+            @Reference DeviceOwnershipService deviceOwnershipService) {
         this.nodeConfigService = nodeConfigService;
         this.dataBroker = dataBroker;
         this.deviceOwnershipService = Preconditions.checkNotNull(deviceOwnershipService,
@@ -54,6 +61,7 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
+    @PostConstruct
     public void start() {
         try {
             final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
@@ -71,6 +79,7 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
     }
 
     @Override
+    @PreDestroy
     public void close() {
         if (listenerRegistration != null) {
             listenerRegistration.close();
