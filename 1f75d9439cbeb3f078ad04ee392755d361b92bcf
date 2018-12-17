@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "13fd0720_74ad943b",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2018-12-17T09:42:23Z",
+      "side": 1,
+      "message": "I didnt quite get this part. When do we report the \"openflow_server\" as \"OPERATIONAL?",
+      "range": {
+        "startLine": 154,
+        "startChar": 38,
+        "endLine": 154,
+        "endChar": 44
+      },
+      "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
