@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dacc023c_a88a47f1",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-12-18T15:27:40Z",
+      "side": 1,
+      "message": "nit: i think this should be an underscore. Otherwise the diagstatus looks like:\nOPENFLOW_SERVER:6633: STARTING\n\nNot great for readability or if we ever want a tool to parse diagstatus.",
+      "range": {
+        "startLine": 115,
+        "startChar": 59,
+        "endLine": 115,
+        "endChar": 60
+      },
+      "revId": "6b64baea3eca4eaface61529a9a2b0fde893b33e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
