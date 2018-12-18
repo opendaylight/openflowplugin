@@ -118,6 +118,30 @@
       "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72be01cf_9715a475",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-18T16:48:20Z",
+      "side": 1,
+      "message": "If others agree this could perhaps later be removed, but I\u0027m hoping that is not a reason to -1 for this - there is no harm in and better one diagstatus service too many than one too little?  (There are already services like IFM and ITM which are meaningless anyway, if you are motivated to propose clean up by removing those...)",
+      "parentUuid": "a7c8d1aa_c6364513",
+      "range": {
+        "startLine": 154,
+        "startChar": 38,
+        "endLine": 154,
+        "endChar": 44
+      },
+      "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
