@@ -70,6 +70,30 @@
       "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "366cde02_4c91cfeb",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-18T12:20:57Z",
+      "side": 1,
+      "message": "\u003e Done\n\nand now I\u0027ve actually locally tested it (just start-up), and it\u0027s fine:\n\nopendaylight-user@root\u003efeature:install odl-netvirt-openstack\nopendaylight-user@root\u003ediagstatus:showSvcStatus\nTimestamp: Tue Dec 18 13:19:01 CET 2018\nNode IP Address: /127.0.0.1\nSystem is operational: false\nSystem ready state: BOOTING\n  OPENFLOW            : STARTING      (INITIALIZING)\n  IFM                 : OPERATIONAL  \n  ITM                 : OPERATIONAL  \n  ELAN                : OPERATIONAL   (Service started)\n  OPENFLOW_SERVER:6633: STARTING      (INITIALIZING)\n  OPENFLOW_SERVER:6653: STARTING      (INITIALIZING)\n  OVSDB               : OPERATIONAL   (OVSDB initialization complete)\n  DATASTORE           : OPERATIONAL  \n\nopendaylight-user@root\u003ediag\nopendaylight-user@root\u003ediagstatus:showSvcStatus                                                                                                   \nTimestamp: Tue Dec 18 13:19:10 CET 2018\nNode IP Address: /127.0.0.1\nSystem is operational: true\nSystem ready state: ACTIVE\n  OPENFLOW            : OPERATIONAL  \n  IFM                 : OPERATIONAL  \n  ITM                 : OPERATIONAL  \n  ELAN                : OPERATIONAL   (Service started)\n  OPENFLOW_SERVER:6633: OPERATIONAL  \n  OPENFLOW_SERVER:6653: OPERATIONAL  \n  OVSDB               : OPERATIONAL   (OVSDB initialization complete)\n  DATASTORE           : OPERATIONAL",
+      "parentUuid": "0839f385_59d5dae5",
+      "range": {
+        "startLine": 154,
+        "startChar": 38,
+        "endLine": 154,
+        "endChar": 44
+      },
+      "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
