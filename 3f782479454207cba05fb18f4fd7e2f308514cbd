@@ -16,6 +16,24 @@
       "revId": "3f782479454207cba05fb18f4fd7e2f308514cbd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bba665de_e70b66b4",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-12-18T11:04:04Z",
+      "side": 1,
+      "message": "ServerFacade runs until shut down (it\u0027s a TcpHandler / UdpHandler), NOT short-lived startup task so we\u0027re good here.  In fact, the whole point of this change, and the follow-up in https://git.opendaylight.org/gerrit/#/c/78677/, is to better monitor this than we are today, that\u0027s what this is all about.",
+      "parentUuid": "b7b34710_2c05046a",
+      "revId": "3f782479454207cba05fb18f4fd7e2f308514cbd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
