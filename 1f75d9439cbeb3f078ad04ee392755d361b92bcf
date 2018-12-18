@@ -94,6 +94,30 @@
       "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a7c8d1aa_c6364513",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/SwitchConnectionProviderImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 5089
+      },
+      "writtenOn": "2018-12-18T15:22:01Z",
+      "side": 1,
+      "message": "I think that Openflow service is state is still set by the reportStatus method in OFP diagstatus after bring up in OFP impl:\nhttps://github.com/opendaylight/openflowplugin/blob/master/openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java#L183\n\nI\u0027m not sure there is a reason to still have it now that we have a diagstatus for each server.",
+      "parentUuid": "366cde02_4c91cfeb",
+      "range": {
+        "startLine": 154,
+        "startChar": 38,
+        "endLine": 154,
+        "endChar": 44
+      },
+      "revId": "1f75d9439cbeb3f078ad04ee392755d361b92bcf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
