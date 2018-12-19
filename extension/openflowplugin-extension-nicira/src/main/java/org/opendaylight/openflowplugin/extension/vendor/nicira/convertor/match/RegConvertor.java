@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Optional;
 import java.util.Objects;
+import java.util.Optional;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -83,7 +83,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
 
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxRegGrouping> matchGrouping = MatchUtil.REG_RESOLVER.getExtension(extension);
+        Optional<NxmNxRegGrouping> matchGrouping = MatchUtil.REG_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }

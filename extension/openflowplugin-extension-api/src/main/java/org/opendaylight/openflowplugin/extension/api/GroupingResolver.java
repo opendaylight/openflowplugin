@@ -24,13 +24,15 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
  *
  * @param <G> grouping
  * @param <T> Augmentable
+ * @deprecated Use {@link AugmentationGroupingResolver} instead.
  */
+@Deprecated
 public class GroupingResolver<G, T extends Augmentable<T>> {
 
     Class<G> commonInterface;
     Set<Class<? extends Augmentation<T>>> classes;
 
-    public GroupingResolver(Class<G> commonInterface) {
+    public GroupingResolver(final Class<G> commonInterface) {
         this.commonInterface = commonInterface;
         classes = new HashSet<>();
     }
@@ -41,7 +43,7 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      * @param cls equivalent augmentation class
      * @return this for chaining
      */
-    public <X extends Augmentation<T>> GroupingResolver<G, T> add(Class<X> cls) {
+    public <X extends Augmentation<T>> GroupingResolver<G, T> add(final Class<X> cls) {
         Preconditions.checkArgument(commonInterface.isAssignableFrom(cls));
         classes.add(cls);
         return this;
@@ -52,7 +54,7 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      *
      * @param clses set of equivalent augmentation classes
      */
-    public void setAugmentations(Set<Class<? extends Augmentation<T>>> clses) {
+    public void setAugmentations(final Set<Class<? extends Augmentation<T>>> clses) {
         for (Class<? extends Augmentation<T>> cls : clses) {
             Preconditions.checkArgument(commonInterface.isAssignableFrom(cls));
         }
@@ -66,7 +68,7 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      * @return shared grouping
      */
     @SuppressWarnings("unchecked")
-    public Optional<G> getExtension(T data) {
+    public Optional<G> getExtension(final T data) {
         for (Class<? extends Augmentation<T>> cls : classes) {
             Augmentation<T> potential = data.augmentation(cls);
             if (potential != null) {

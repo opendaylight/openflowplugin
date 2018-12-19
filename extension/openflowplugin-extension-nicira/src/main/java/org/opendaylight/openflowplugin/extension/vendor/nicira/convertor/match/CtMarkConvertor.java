@@ -5,10 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -50,7 +49,7 @@ public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
      */
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
-        CtMarkCaseValue ctMarkCaseValue = ((CtMarkCaseValue) input.getMatchEntryValue());
+        CtMarkCaseValue ctMarkCaseValue = (CtMarkCaseValue) input.getMatchEntryValue();
         NxmNxCtMarkBuilder ctMarkBuilder = new NxmNxCtMarkBuilder();
         ctMarkBuilder.setCtMark(ctMarkCaseValue.getCtMarkValues().getCtMark());
         ctMarkBuilder.setMask(ctMarkCaseValue.getCtMarkValues().getMask());
@@ -69,7 +68,7 @@ public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
      */
     @Override
     public MatchEntry convert(Extension extension) {
-        Optional<NxmNxCtMarkGrouping> matchGrouping = MatchUtil.CT_MARK_RESOLVER.getExtension(extension);
+        Optional<NxmNxCtMarkGrouping> matchGrouping = MatchUtil.CT_MARK_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
