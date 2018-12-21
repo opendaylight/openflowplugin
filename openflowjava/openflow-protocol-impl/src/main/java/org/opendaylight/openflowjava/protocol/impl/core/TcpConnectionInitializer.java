@@ -24,17 +24,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author martin.uhlir
  */
-public class TcpConnectionInitializer implements ServerFacade,
-        ConnectionInitializer {
+public class TcpConnectionInitializer implements ServerFacade, ConnectionInitializer {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(TcpConnectionInitializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TcpConnectionInitializer.class);
+
     private final EventLoopGroup workerGroup;
-    private ThreadConfiguration threadConfig;
+    private final boolean isEpollEnabled;
+    private final SettableFuture<Boolean> hasRun = SettableFuture.create();
 
     private TcpChannelInitializer channelInitializer;
     private Bootstrap bootstrap;
-    private final boolean isEpollEnabled;
 
     /**
      * Constructor.
@@ -51,12 +50,11 @@ public class TcpConnectionInitializer implements ServerFacade,
     public void run() {
         bootstrap = new Bootstrap();
         if (isEpollEnabled) {
-            bootstrap.group(workerGroup).channel(EpollSocketChannel.class)
-                    .handler(channelInitializer);
+            bootstrap.group(workerGroup).channel(EpollSocketChannel.class).handler(channelInitializer);
         } else {
-            bootstrap.group(workerGroup).channel(NioSocketChannel.class)
-                    .handler(channelInitializer);
+            bootstrap.group(workerGroup).channel(NioSocketChannel.class).handler(channelInitializer);
         }
+        hasRun.set(true);
     }
 
     @Override
@@ -68,12 +66,12 @@ public class TcpConnectionInitializer implements ServerFacade,
 
     @Override
     public ListenableFuture<Boolean> getIsOnlineFuture() {
-        return null;
+        return hasRun;
     }
 
     @Override
     public void setThreadConfig(ThreadConfiguration threadConfig) {
-        this.threadConfig = threadConfig;
+        // IGNORE
     }
 
     @Override
