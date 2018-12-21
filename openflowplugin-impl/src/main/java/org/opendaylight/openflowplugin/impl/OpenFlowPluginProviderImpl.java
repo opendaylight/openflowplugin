@@ -7,11 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -124,6 +127,7 @@ public class OpenFlowPluginProviderImpl implements
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private final SettableFuture<Void> fullyStarted = SettableFuture.create();
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -153,16 +157,12 @@ public class OpenFlowPluginProviderImpl implements
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         this.openflowPluginStatusMonitor = openflowPluginStatusMonitor;
         systemReadyMonitor.registerListener(this);
-        LOG.debug("registered onSystemBootReady() listener for deferred startSwitchConnections()");
+        LOG.info("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
 
     @Override
     public void onSystemBootReady() {
-        LOG.debug("onSystemBootReady() received, starting the switch connections");
-        startSwitchConnections();
-    }
-
-    private void startSwitchConnections() {
+        LOG.info("onSystemBootReady() received, starting the switch connections");
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenFlowPlugin custom serializers and deserializers into OpenFlowJava
             if (config.isUseSingleLayerSerialization()) {
@@ -181,14 +181,21 @@ public class OpenFlowPluginProviderImpl implements
             public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
                 openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL);
+                fullyStarted.set(null);
             }
 
             @Override
             public void onFailure(@Nonnull final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to start.", throwable);
                 openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, throwable);
+                fullyStarted.setException(throwable);
             }
         }, MoreExecutors.directExecutor());
+    }
+
+    @VisibleForTesting
+    public Future<Void> getFullyStarted() {
+        return fullyStarted;
     }
 
     private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
