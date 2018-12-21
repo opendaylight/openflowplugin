@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -142,7 +141,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     @SuppressWarnings("checkstyle:IllegalCatch")
     public ListenableFuture<Boolean> startup() {
         LOG.debug("Startup summoned");
-        ListenableFuture<Boolean> result = null;
         try {
             serverFacade = createAndConfigureServer();
             if (switchConnectionHandler == null) {
@@ -161,13 +159,10 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
                             diagStatusIdentifier, ServiceState.ERROR, threadName + " terminated"));
                 }
             } , MoreExecutors.directExecutor());
-            result = serverFacade.getIsOnlineFuture();
+            return serverFacade.getIsOnlineFuture();
         } catch (RuntimeException e) {
-            final SettableFuture<Boolean> exResult = SettableFuture.create();
-            exResult.setException(e);
-            result = exResult;
+            return Futures.immediateFailedFuture(e);
         }
-        return result;
     }
 
     private ServerFacade createAndConfigureServer() {
