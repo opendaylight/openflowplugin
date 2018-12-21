@@ -38,7 +38,7 @@ public final class UdpHandler implements ServerFacade {
     private EventLoopGroup group;
     private final InetAddress startupAddress;
     private final Runnable readyRunnable;
-    private final SettableFuture<Boolean> isOnlineFuture;
+    private final SettableFuture<Boolean> isOnlineFuture = SettableFuture.create();
     private UdpChannelInitializer channelInitializer;
     private ThreadConfiguration threadConfig;
     private Class<? extends DatagramChannel> datagramChannelClass;
@@ -60,7 +60,6 @@ public final class UdpHandler implements ServerFacade {
     public UdpHandler(final InetAddress address, final int port, Runnable readyRunnable) {
         this.port = port;
         this.startupAddress = address;
-        isOnlineFuture = SettableFuture.create();
         this.readyRunnable = readyRunnable;
     }
 
@@ -90,9 +89,10 @@ public final class UdpHandler implements ServerFacade {
             this.port = isa.getPort();
 
             LOG.debug("Address from udpHandler: {}", address);
-            isOnlineFuture.set(true);
             LOG.info("Switch listener started and ready to accept incoming udp connections on port: {}", port);
             readyRunnable.run();
+            isOnlineFuture.set(true);
+
             // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
@@ -138,7 +138,6 @@ public final class UdpHandler implements ServerFacade {
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
     public void initiateEventLoopGroups(ThreadConfiguration threadConfiguration, boolean isEpollEnabled) {
-
         if (isEpollEnabled) {
             initiateEpollEventLoopGroups(threadConfiguration);
         } else {
