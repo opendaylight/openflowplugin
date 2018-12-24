@@ -133,6 +133,11 @@
             <plugin>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint-maven-plugin</artifactId>
+                <configuration>
+                    <scanPaths>
+                        <scanPath>org.opendaylight.openflowplugin.impl</scanPath>
+                    </scanPaths>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
