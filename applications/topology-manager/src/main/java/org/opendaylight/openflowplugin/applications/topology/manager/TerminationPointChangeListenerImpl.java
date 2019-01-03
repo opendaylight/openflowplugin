@@ -18,6 +18,7 @@ import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -38,14 +39,17 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNodeConnector> {
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
+    private final NotificationProviderService notificationProviderService;
 
     @Inject
     public TerminationPointChangeListenerImpl(@Reference final DataBroker dataBroker,
-                                              final OperationProcessor operationProcessor) {
+                                              final OperationProcessor operationProcessor,
+                                              final NotificationProviderService notificationProviderService) {
         super(operationProcessor, dataBroker,
               InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
                       .augmentation(FlowCapableNodeConnector.class).build());
         this.operationProcessor = operationProcessor;
+        this.notificationProviderService = notificationProviderService;
     }
 
     @Override
@@ -98,7 +102,8 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                     LOG.debug("Error occurred when trying to read NodeConnector.. ", e);
                 }
                 if (nodeOptional.isPresent()) {
-                    TopologyManagerUtil.removeAffectedLinks(terminationPointId, manager, II_TO_TOPOLOGY);
+                    TopologyManagerUtil.removeAffectedLinks(terminationPointId, manager, II_TO_TOPOLOGY,
+                            notificationProviderService);
                     manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL,
                                                          iiToTopologyTerminationPoint);
                 }
@@ -133,7 +138,8 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
             if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()) || (
                     flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration()
                             .isPORTDOWN())) {
-                TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager, II_TO_TOPOLOGY);
+                TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager,
+                        II_TO_TOPOLOGY, notificationProviderService);
             }
         });
     }

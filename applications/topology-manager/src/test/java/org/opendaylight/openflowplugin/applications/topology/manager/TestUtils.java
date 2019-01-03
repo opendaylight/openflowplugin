@@ -72,11 +72,11 @@ public final class TestUtils {
     }
 
     static void waitForSubmit(CountDownLatch latch) {
-        assertEquals("Transaction submitted", true, Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS));
+        assertEquals("Transaction submitted", true, Uninterruptibles.awaitUninterruptibly(latch, 45, TimeUnit.SECONDS));
     }
 
     static void waitForDeletes(int expDeleteCalls, final CountDownLatch latch) {
-        boolean done = Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS);
+        boolean done = Uninterruptibles.awaitUninterruptibly(latch, 35, TimeUnit.SECONDS);
         if (!done) {
             fail("Expected " + expDeleteCalls + " delete calls. Actual: " + (expDeleteCalls - latch.getCount()));
         }

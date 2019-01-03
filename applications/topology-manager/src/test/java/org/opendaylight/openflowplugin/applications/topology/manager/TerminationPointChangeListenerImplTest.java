@@ -64,7 +64,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
     public void testOnNodeConnectorRemoved() {
 
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
-        TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("tp1"));
+        TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("openflow:tp1"));
 
         final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
         Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
@@ -78,16 +78,16 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(
-                newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
-                newLink("link2", newSourceTp("source"), newDestTp("tp1")),
-                newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
+                newLink("link1", newSourceTp("openflow:tp1"), newDestTp("openflow:dest")),
+                newLink("link2", newSourceTp("openflow:source"), newDestTp("openflow:tp1")),
+                newLink("link3", newSourceTp("openflow:source2"), newDestTp("openflow:dest2")));
         final Topology topology = new TopologyBuilder().setLink(linkList).build();
 
         final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Link.class, linkList.get(0).key()),
                 topologyIID.child(Link.class, linkList.get(1).key()),
                 topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
-                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
+                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("openflow:tp1")))
             };
 
         final SettableFuture<Optional<Topology>> readFuture = SettableFuture.create();
