@@ -16,6 +16,14 @@
       <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <optional>true</optional>
+      <!-- FIXME: remove version/scope with odlparent-4.0.8 -->
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-api</artifactId>
     </dependency>
