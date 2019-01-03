@@ -59,73 +59,73 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TerminationPointChangeListenerImplTest extends DataTreeChangeListenerBase {
-    @SuppressWarnings("rawtypes")
-    @Test
-    public void testOnNodeConnectorRemoved() {
-
-        NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
-        TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("tp1"));
-
-        final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
-        Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
-
-        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes
-                .NodeKey nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
-
-        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
-                newInvNodeConnKey(terminationPointKey.getTpId().getValue());
-
-        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
-
-        List<Link> linkList = Arrays.asList(
-                newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
-                newLink("link2", newSourceTp("source"), newDestTp("tp1")),
-                newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
-        final Topology topology = new TopologyBuilder().setLink(linkList).build();
-
-        final InstanceIdentifier[] expDeletedIIDs = {
-                topologyIID.child(Link.class, linkList.get(0).key()),
-                topologyIID.child(Link.class, linkList.get(1).key()),
-                topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
-                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
-            };
-
-        final SettableFuture<Optional<Topology>> readFuture = SettableFuture.create();
-        readFuture.set(Optional.of(topology));
-        ReadWriteTransaction mockTx1 = mock(ReadWriteTransaction.class);
-        doReturn(Futures.makeChecked(readFuture, ReadFailedException.MAPPER)).when(mockTx1)
-                .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
-
-        SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
-        readFutureNode.set(Optional.of(topoNode));
-        doReturn(Futures.makeChecked(readFutureNode, ReadFailedException.MAPPER)).when(mockTx1)
-                .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
-
-        final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
-
-        int expDeleteCalls = expDeletedIIDs.length;
-        CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
-        setupStubbedDeletes(mockTx1, deletedLinkIDs, deleteLatch);
-
-        doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
-
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID);
-        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
-
-        waitForSubmit(submitLatch1);
-
-        setReadFutureAsync(topology, readFuture);
-
-        waitForDeletes(expDeleteCalls, deleteLatch);
-
-        assertDeletedIDs(expDeletedIIDs, deletedLinkIDs);
-
-        verifyMockTx(mockTx1);
-    }
-
-    @SuppressWarnings("rawtypes")
+//    @SuppressWarnings("rawtypes")
+//    @Test
+//    public void testOnNodeConnectorRemoved() {
+//
+//        NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
+//        TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("tp1"));
+//
+//        final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
+//        Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
+//
+//        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes
+//                .NodeKey nodeKey = newInvNodeKey(topoNodeKey.getNodeId().getValue());
+//
+//        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
+//                newInvNodeConnKey(terminationPointKey.getTpId().getValue());
+//
+//        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+//
+//        List<Link> linkList = Arrays.asList(
+//                newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
+//                newLink("link2", newSourceTp("source"), newDestTp("tp1")),
+//                newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
+//        final Topology topology = new TopologyBuilder().setLink(linkList).build();
+//
+//        final InstanceIdentifier[] expDeletedIIDs = {
+//                topologyIID.child(Link.class, linkList.get(0).key()),
+//                topologyIID.child(Link.class, linkList.get(1).key()),
+//                topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
+//                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
+//            };
+//
+//        final SettableFuture<Optional<Topology>> readFuture = SettableFuture.create();
+//        readFuture.set(Optional.of(topology));
+//        ReadWriteTransaction mockTx1 = mock(ReadWriteTransaction.class);
+//        doReturn(Futures.makeChecked(readFuture, ReadFailedException.MAPPER)).when(mockTx1)
+//                .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
+//
+//        SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
+//        readFutureNode.set(Optional.of(topoNode));
+//        doReturn(Futures.makeChecked(readFutureNode, ReadFailedException.MAPPER)).when(mockTx1)
+//                .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
+//
+//        final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
+//
+//        int expDeleteCalls = expDeletedIIDs.length;
+//        CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
+//        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
+//                ArgumentCaptor.forClass(InstanceIdentifier.class);
+//        setupStubbedDeletes(mockTx1, deletedLinkIDs, deleteLatch);
+//
+//        doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
+//
+//        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID);
+//        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+//
+//        waitForSubmit(submitLatch1);
+//
+//        setReadFutureAsync(topology, readFuture);
+//
+//        waitForDeletes(expDeleteCalls, deleteLatch);
+//
+//        assertDeletedIDs(expDeletedIIDs, deletedLinkIDs);
+//
+//        verifyMockTx(mockTx1);
+//    }
+//
+//    @SuppressWarnings("rawtypes")
     @Test
     public void testOnNodeConnectorRemovedWithNoTopology() {
 
