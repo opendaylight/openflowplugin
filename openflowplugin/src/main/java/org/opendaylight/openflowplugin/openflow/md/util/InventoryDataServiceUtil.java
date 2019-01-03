@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -8,11 +8,11 @@
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -157,7 +157,7 @@ public abstract class InventoryDataServiceUtil {
      * @return string of size 16, padded with '0'
      */
     public static String bigIntegerToPaddedHex(final BigInteger dataPathId) {
-        return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
+        return Strings.padStart(dataPathId.toString(16), 16, '0');
     }
 
     public static BigInteger extractDatapathId(final NodeRef ref) {
