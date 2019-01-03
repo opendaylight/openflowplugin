@@ -85,7 +85,6 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                 if (now.after(expires)) {
                     if (notificationService != null) {
                         LinkRemovedBuilder lrb = new LinkRemovedBuilder(link);
-
                         NodeKey nodeKey = link.getDestination().getValue().firstKeyOf(Node.class);
                         LOG.info("No update received for link {} from last {} milliseconds. Removing link from cache.",
                                 link, linkExpirationTime);
@@ -104,6 +103,8 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     }
 
     public boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
+        LOG.info("isLinkPresent {} link {} linkset {}", linkToDate.containsKey(linkDiscovered),
+                linkDiscovered, linkToDate.keySet().toString());
         return linkToDate.containsKey(linkDiscovered);
     }
 
