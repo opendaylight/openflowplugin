@@ -51,7 +51,8 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
             @Reference final NotificationProviderService notificationService,
             @Reference final ConfigurationService configurationService,
             @Reference final EntityOwnershipService entityOwnershipService) {
-        this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
+        //this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
+        this.linkExpirationTime = 20000;
         this.notificationService = notificationService;
         this.configurationServiceRegistration = configurationService.registerListener(this);
         this.eos = entityOwnershipService;
@@ -90,6 +91,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                         LOG.info("No update received for link {} from last {} milliseconds. Removing link from cache.",
                                 link, linkExpirationTime);
                         linkToDate.remove(link);
+                        LOG.info("The link {} removed from linkToDate {}", link, linkToDate.keySet().toString());
                         if (nodeKey != null && LLDPDiscoveryUtils.isEntityOwned(eos, nodeKey.getId().getValue())) {
                             LOG.info("Publish Link Remove event for the link {}", link);
                             notificationService.publish(lrb.build());
@@ -104,6 +106,8 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     }
 
     public boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
+        LOG.info("isLinkPresent {} link {} linkset {}", linkToDate.containsKey(linkDiscovered),
+                linkDiscovered, linkToDate.keySet().toString());
         return linkToDate.containsKey(linkDiscovered);
     }
 
