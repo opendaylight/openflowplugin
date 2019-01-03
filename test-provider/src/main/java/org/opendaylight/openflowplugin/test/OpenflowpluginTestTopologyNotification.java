@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.test;
 
 import org.opendaylight.controller.sal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDeleted;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkOverutilized;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
@@ -52,6 +53,10 @@ public class OpenflowpluginTestTopologyNotification {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkRemoved notification   ........");
             LOG.debug("-------------------------------------------");
+        }
+
+        @Override public void onLinkDeleted(LinkDeleted notification) {
+
         }
 
         @Override

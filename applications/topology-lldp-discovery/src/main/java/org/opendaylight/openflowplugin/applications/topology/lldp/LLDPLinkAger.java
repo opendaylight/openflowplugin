@@ -25,8 +25,14 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDeleted;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkOverutilized;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkUtilizationNormal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
@@ -34,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
+public class LLDPLinkAger implements ConfigurationListener, AutoCloseable, FlowTopologyDiscoveryListener {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
     private final long linkExpirationTime;
     private final Map<LinkDiscovered, Date> linkToDate;
@@ -58,6 +64,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         linkToDate = new ConcurrentHashMap<>();
         timer = new Timer();
         timer.schedule(new LLDPAgingTask(), 0, topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue());
+        notificationService.registerNotificationListener(this);
     }
 
     public void put(LinkDiscovered link) {
@@ -74,6 +81,31 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
         configurationServiceRegistration.close();
     }
 
+    @Override public void onLinkDiscovered(LinkDiscovered notification) {
+
+    }
+
+    @Override public void onLinkOverutilized(LinkOverutilized notification) {
+
+    }
+
+    @Override public void onLinkRemoved(LinkRemoved notification) {
+
+    }
+
+    @Override
+    public void onLinkDeleted(LinkDeleted notification) {
+        LOG.info("Link deleted received for link {}", notification);
+        LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
+        ldb.setSource(notification.getSource());
+        ldb.setDestination(notification.getDestination());
+        linkToDate.remove(ldb.build());
+    }
+
+    @Override public void onLinkUtilizationNormal(LinkUtilizationNormal notification) {
+
+    }
+
     private class LLDPAgingTask extends TimerTask {
 
         @Override
@@ -85,7 +117,6 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                 if (now.after(expires)) {
                     if (notificationService != null) {
                         LinkRemovedBuilder lrb = new LinkRemovedBuilder(link);
-
                         NodeKey nodeKey = link.getDestination().getValue().firstKeyOf(Node.class);
                         LOG.info("No update received for link {} from last {} milliseconds. Removing link from cache.",
                                 link, linkExpirationTime);
@@ -104,6 +135,8 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     }
 
     public boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
+        LOG.info("isLinkPresent {} link {} linkset {}", linkToDate.containsKey(linkDiscovered),
+                linkDiscovered, linkToDate.keySet().toString());
         return linkToDate.containsKey(linkDiscovered);
     }
 
