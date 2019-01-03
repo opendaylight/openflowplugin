@@ -44,7 +44,7 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
         if (src != null) {
             final NodeKey nodeKey = lldp.getIngress().getValue().firstKeyOf(Node.class);
-            LOG.debug("LLDP packet received for destination node {}", nodeKey);
+            LOG.error("LLDP packet received for destination node {}", nodeKey);
             if (nodeKey != null) {
                 final LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
                 ldb.setDestination(lldp.getIngress());
@@ -54,17 +54,17 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
                 lldpLinkAger.put(ld);
                 if (LLDPDiscoveryUtils.isEntityOwned(eos, nodeKey.getId().getValue())) {
                     if (linkWasPresent) {
-                        LOG.trace("Skipping link already present: {}", ld);
+                        LOG.error("Skipping link already present: {}", ld);
                     } else {
-                        LOG.debug("Publish add event for link {}", ld);
+                        LOG.error("Publish add event for link {}", ld);
                         notificationService.publish(ld);
                     }
                 } else {
-                    LOG.trace("Skip publishing the add event for link because controller is non-owner of the "
+                    LOG.error("Skip publishing the add event for link because controller is non-owner of the "
                             + "node {}. Link : {}", nodeKey.getId().getValue(), ld);
                 }
             } else {
-                LOG.debug("LLDP packet ignored. Unable to extract node-key from packet-in ingress.");
+                LOG.error("LLDP packet ignored. Unable to extract node-key from packet-in ingress.");
             }
         }
     }
