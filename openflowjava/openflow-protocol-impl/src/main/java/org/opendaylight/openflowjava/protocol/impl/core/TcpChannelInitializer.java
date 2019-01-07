@@ -76,8 +76,6 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             LOG.debug("Calling OF plugin: {}", getSwitchConnectionHandler());
             getSwitchConnectionHandler().onSwitchConnected(connectionFacade);
             connectionFacade.checkListeners();
-            ch.pipeline().addLast(PipelineHandlers.IDLE_HANDLER.name(),
-                    new IdleHandler(getSwitchIdleTimeout(), TimeUnit.MILLISECONDS));
             boolean tlsPresent = false;
 
             // If this channel is configured to support SSL it will only support SSL
@@ -112,6 +110,8 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             ch.pipeline().addLast(PipelineHandlers.OF_ENCODER.name(), ofEncoder);
             ch.pipeline().addLast(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name(),
                     new DelegatingInboundHandler(connectionFacade));
+            ch.pipeline().addLast(PipelineHandlers.IDLE_HANDLER.name(),
+                    new IdleHandler(getSwitchIdleTimeout(), TimeUnit.MILLISECONDS));
             if (!tlsPresent) {
                 connectionFacade.fireConnectionReadyNotification();
             }
