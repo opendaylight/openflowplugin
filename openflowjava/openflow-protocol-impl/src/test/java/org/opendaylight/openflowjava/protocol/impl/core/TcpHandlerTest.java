@@ -55,8 +55,7 @@ public class TcpHandlerTest {
      */
     @Test
     public void testRunWithNullAddress() throws IOException, InterruptedException, ExecutionException  {
-
-        tcpHandler = new TcpHandler(null, 0);
+        tcpHandler = new TcpHandler(null, 0, () -> { });
         tcpHandler.setChannelInitializer(mockChannelInitializer);
 
         assertEquals("failed to start server", true, startupServer(false)) ;
@@ -69,8 +68,7 @@ public class TcpHandlerTest {
      */
     @Test
     public void testRunWithNullAddressOnEpoll() throws IOException, InterruptedException, ExecutionException  {
-
-        tcpHandler = new TcpHandler(null, 0);
+        tcpHandler = new TcpHandler(null, 0, () -> { });
         tcpHandler.setChannelInitializer(mockChannelInitializer);
 
         //Use Epoll native transport
@@ -84,8 +82,7 @@ public class TcpHandlerTest {
      */
     @Test
     public void testRunWithAddress() throws IOException, InterruptedException, ExecutionException  {
-
-        tcpHandler = new TcpHandler(serverAddress, 0);
+        tcpHandler = new TcpHandler(serverAddress, 0, () -> { });
         tcpHandler.setChannelInitializer(mockChannelInitializer);
 
         assertEquals("failed to start server", true, startupServer(false)) ;
@@ -98,8 +95,7 @@ public class TcpHandlerTest {
      */
     @Test
     public void testRunWithAddressOnEpoll() throws IOException, InterruptedException, ExecutionException  {
-
-        tcpHandler = new TcpHandler(serverAddress, 0);
+        tcpHandler = new TcpHandler(serverAddress, 0, () -> { });
         tcpHandler.setChannelInitializer(mockChannelInitializer);
 
         //Use Epoll native transport
@@ -114,7 +110,7 @@ public class TcpHandlerTest {
     @Test
     public void testRunWithEncryption() throws InterruptedException, IOException, ExecutionException {
         int serverPort = 28001;
-        tcpHandler = new TcpHandler(serverAddress, serverPort);
+        tcpHandler = new TcpHandler(serverAddress, serverPort, () -> { });
         tcpHandler.setChannelInitializer(mockChannelInitializer);
 
         assertEquals("failed to start server", true, startupServer(false));
@@ -133,7 +129,7 @@ public class TcpHandlerTest {
     @Test
     public void testRunWithEncryptionOnEpoll() throws InterruptedException, IOException, ExecutionException {
         int serverPort = 28001;
-        tcpHandler = new TcpHandler(serverAddress, serverPort);
+        tcpHandler = new TcpHandler(serverAddress, serverPort, () -> { });
         tcpHandler.setChannelInitializer(mockChannelInitializer);
 
         //Use Epoll native transport
@@ -157,7 +153,7 @@ public class TcpHandlerTest {
 
         try {
             firstBinder.bind(new InetSocketAddress(serverAddress, serverPort));
-            tcpHandler = new TcpHandler(serverAddress, serverPort);
+            tcpHandler = new TcpHandler(serverAddress, serverPort, () -> { });
             tcpHandler.setChannelInitializer(mockChannelInitializer);
             tcpHandler.initiateEventLoopGroups(null, false);
             tcpHandler.run();
@@ -177,7 +173,7 @@ public class TcpHandlerTest {
         try {
             firstBinder.bind(new InetSocketAddress(serverAddress, serverPort));
 
-            tcpHandler = new TcpHandler(serverAddress, serverPort);
+            tcpHandler = new TcpHandler(serverAddress, serverPort, () -> { });
             tcpHandler.setChannelInitializer(mockChannelInitializer);
             //Use Epoll native transport
             tcpHandler.initiateEventLoopGroups(null, true);

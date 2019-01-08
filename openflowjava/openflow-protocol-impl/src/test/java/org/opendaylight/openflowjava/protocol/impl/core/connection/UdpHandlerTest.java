@@ -49,7 +49,7 @@ public class UdpHandlerTest {
      */
     @Test
     public void testWithEmptyAddress() throws Exception {
-        udpHandler = new UdpHandler(null, 0);
+        udpHandler = new UdpHandler(null, 0, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
         Assert.assertTrue("Wrong - start server", startupServer(false));
         try {
@@ -66,7 +66,7 @@ public class UdpHandlerTest {
      */
     @Test
     public void testWithEmptyAddressOnEpoll() throws Exception {
-        udpHandler = new UdpHandler(null, 0);
+        udpHandler = new UdpHandler(null, 0, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
         Assert.assertTrue("Wrong - start server", startupServer(true));
         try {
@@ -84,7 +84,7 @@ public class UdpHandlerTest {
     @Test
     public void testWithAddressAndPort() throws Exception {
         int port = 9874;
-        udpHandler = new UdpHandler(InetAddress.getLocalHost(), port);
+        udpHandler = new UdpHandler(InetAddress.getLocalHost(), port, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
         Assert.assertTrue("Wrong - start server", startupServer(false));
         try {
@@ -102,7 +102,7 @@ public class UdpHandlerTest {
     @Test
     public void testWithAddressAndPortOnEpoll() throws Exception {
         int port = 9874;
-        udpHandler = new UdpHandler(InetAddress.getLocalHost(), port);
+        udpHandler = new UdpHandler(InetAddress.getLocalHost(), port, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
         Assert.assertTrue("Wrong - start server", startupServer(true));
         try {
