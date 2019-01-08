@@ -50,7 +50,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onDisconnectEvent(final DisconnectEvent notification) {
-        LOG.debug("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
+        LOG.info("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getSafeNodeIdForLOG());
         connectionContext.onConnectionClosed();
     }
