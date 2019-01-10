@@ -86,6 +86,7 @@ public class TcpHandler implements ServerFacade {
      * Starts server on selected port.
      */
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void run() {
         /*
          * We generally do not perform IO-unrelated tasks, so we want to have
@@ -121,6 +122,10 @@ public class TcpHandler implements ServerFacade {
         } catch (InterruptedException e) {
             LOG.error("Interrupted while binding port {}", port, e);
             return;
+        } catch (Throwable throwable) {
+            // sync() re-throws exceptions declared as Throwable, so the compiler doesn't see them
+            LOG.error("Error while binding address {} and port {}", startupAddress, port, throwable);
+            throw throwable;
         }
 
         try {
