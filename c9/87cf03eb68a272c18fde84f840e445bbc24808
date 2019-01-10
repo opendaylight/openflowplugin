@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Arunprakash D <d.arunprakash@ericsson.com>
+Code-Review-1: Jamo Luhrsen <jluhrsen@redhat.com>
+Submitted-by: Arunprakash D <d.arunprakash@ericsson.com>
+Submitted-at: Thu, 10 Jan 2019 06:58:56 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/78626
+Project: openflowplugin
+Branch: refs/heads/stable/oxygen
