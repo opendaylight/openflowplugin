@@ -5,15 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils.getValueForLLDPPacketIntegrityEnsuring;
 
+import com.google.common.base.Strings;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import javax.annotation.Nonnull;
-import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
 import org.opendaylight.openflowplugin.libraries.liblldp.HexEncode;
@@ -119,6 +118,6 @@ public final class LLDPUtil {
     }
 
     private static String bigIntegerToPaddedHex(final BigInteger dataPathId) {
-        return StringUtils.leftPad(dataPathId.toString(16), 16, "0");
+        return Strings.padStart(dataPathId.toString(16), 16, '0');
     }
 }
