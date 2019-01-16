@@ -26,7 +26,10 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 import java.math.BigInteger;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
@@ -145,6 +148,8 @@ public class DeviceContextImplTest {
     @Mock
     private HashedWheelTimer timer;
     @Mock
+    private Timeout timeout;
+    @Mock
     private OutboundQueueProvider outboundQueueProvider;
     @Mock
     private ConnectionAdapter connectionAdapter;
@@ -241,6 +246,8 @@ public class DeviceContextImplTest {
 
         Mockito.when(abstractDeviceInitializer.initialize(any(), anyBoolean(), anyBoolean(), any(), any()))
                 .thenReturn(Futures.immediateFuture(null));
+        Mockito.when(timer.newTimeout(any(), eq(20000L), eq(TimeUnit.MILLISECONDS))).thenReturn(timeout);
+        Mockito.when(contextChain.isMastershipAcquired()).thenReturn(true);
 
         final java.util.Optional<AbstractDeviceInitializer> deviceInitializer = java.util.Optional
                 .of(this.abstractDeviceInitializer);
@@ -248,6 +255,7 @@ public class DeviceContextImplTest {
         Mockito.lenient().when(deviceInitializerProvider.lookup(OFConstants.OFP_VERSION_1_3))
                 .thenReturn(deviceInitializer);
         Mockito.lenient().when(salRoleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
+
 
         deviceContext = new DeviceContextImpl(
                 connectionContext,
