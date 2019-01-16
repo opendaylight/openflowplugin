@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -122,6 +123,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     // Timeout in milliseconds after what we will give up on closing transaction chain
     private static final int TX_CHAIN_CLOSE_TIMEOUT = 10000;
+
+    // Timeout after what we will give up on waiting for master role
+    private static final long CHECK_ROLE_MASTER_TIMEOUT = 20000;
+
+    private static final int TICKS_PER_WHEEL = 500; // 0.5 sec.
+    private static final long TICK_DURATION = 10;
 
     private static final int LOW_WATERMARK = 1000;
     private static final int HIGH_WATERMARK = 2000;
@@ -643,6 +650,22 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 .lookup(deviceInfo.getVersion());
 
         if (initializer.isPresent()) {
+            ContextChain contextChain = contextChainHolder.getContextChain(deviceInfo);
+            //waiting till mastership role is acquired by RoleContext service
+            Timeout timeout = hashedWheelTimer.newTimeout((timerTask) ->
+                LOG.debug("Mastership is not acquired within {} second for device {}",
+                        CHECK_ROLE_MASTER_TIMEOUT / 1000, deviceInfo.toString()),
+                    CHECK_ROLE_MASTER_TIMEOUT, TimeUnit.MILLISECONDS);
+            while (!contextChain.isMastershipAcquired() && !timeout.isExpired()) {
+                // Do nothing
+            }
+            if (!timeout.isExpired()) {
+                // cancelling the timer upon master role acquisition
+                timeout.cancel();
+                LOG.debug("Mastership is acquired and continuing with node initialization for device {}",
+                        deviceInfo.toString());
+            }
+
             final Future<Void> initialize = initializer
                     .get()
                     .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
