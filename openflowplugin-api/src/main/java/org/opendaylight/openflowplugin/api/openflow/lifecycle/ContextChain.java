@@ -78,4 +78,10 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
+
+    /**
+     * This method is invoked to check whether masterhip is acquired.
+     * @return true if mastership is set by RoleContext
+     */
+    boolean isMastershipAcquired();
 }
