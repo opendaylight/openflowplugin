@@ -27,6 +27,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import io.netty.util.Timeout;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -643,6 +645,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 .lookup(deviceInfo.getVersion());
 
         if (initializer.isPresent()) {
+            ContextChain contextChain = contextChainHolder.getContextChain(deviceInfo);
+            //waiting till mastership role is acquired by RoleContext service
+            while(!contextChain.isMastershipAcquired(deviceInfo)){
+                // Do nothing
+            }
             final Future<Void> initialize = initializer
                     .get()
                     .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);

@@ -254,4 +254,8 @@ public class ContextChainImpl implements ContextChain {
         masterStateOnDevice.set(false);
         rpcRegistration.set(false);
     }
+
+    public boolean isMastershipAcquired(@Nonnull DeviceInfo deviceInfo) {
+        return masterStateOnDevice.get();
+    }
 }

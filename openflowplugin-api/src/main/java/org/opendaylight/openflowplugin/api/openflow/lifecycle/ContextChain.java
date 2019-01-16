@@ -12,6 +12,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
 /**
@@ -78,4 +79,11 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
+
+    /**
+     * This method is invoked to check whether master role is set by RoleContext.
+     * @param deviceInfo device identification info
+     * @return true if mastership is set by RoleContext
+     */
+    boolean isMastershipAcquired(@Nonnull DeviceInfo deviceInfo);
 }
