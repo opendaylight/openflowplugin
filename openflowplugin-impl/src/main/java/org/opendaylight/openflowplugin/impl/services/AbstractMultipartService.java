@@ -9,9 +9,6 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.List;
-import java.util.function.Function;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -20,11 +17,18 @@ import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMult
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.function.Function;
 
 public abstract class AbstractMultipartService<I, T extends OfHeader> extends AbstractService<I, List<T>> {
 
     private static final Function<OfHeader, Boolean> ALTERNATE_IS_COMPLETE = message ->
         !(message instanceof MultipartReply) || !((MultipartReply) message).isRequestMore();
+    private static final Logger LOG = LoggerFactory.getLogger("AbstractMultipartService");
 
     protected AbstractMultipartService(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext) {
@@ -40,6 +44,9 @@ public abstract class AbstractMultipartService<I, T extends OfHeader> extends Ab
 
     @Override
     public final ListenableFuture<RpcResult<List<T>>> handleServiceCall(@Nonnull final I input) {
+        if (input.getClass().getSimpleName().equals("MultipartType")) {
+            LOG.error("###############AbstractMultipartService - handleServiceCall#############");
+        }
         return canUseSingleLayerSerialization()
             ? super.handleServiceCall(input, ALTERNATE_IS_COMPLETE)
             : super.handleServiceCall(input);

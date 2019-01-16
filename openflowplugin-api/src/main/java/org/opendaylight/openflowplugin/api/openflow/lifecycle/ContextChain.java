@@ -14,6 +14,8 @@ import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 
+import java.util.List;
+
 /**
  * Chain of contexts, hold references to the contexts.
  * @since 0.4.0 Carbon
@@ -78,4 +80,16 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
+
+    /**
+     * This method is invoked to check whether masterhip is acquired.
+     * @return true if mastership is set by RoleContext
+     */
+    boolean isMastershipAcquired();
+
+    /**
+     * This method is invoked to get all the contexts.
+     * @return List containing all the contexts
+     */
+    List<GuardedContext> getContexts();
 }

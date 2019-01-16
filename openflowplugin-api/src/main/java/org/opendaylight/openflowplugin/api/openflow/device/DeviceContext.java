@@ -105,5 +105,10 @@ public interface DeviceContext extends
      * Method for initial submit transaction after successful initial gathering.
      */
     boolean initialSubmitTransaction();
+
+    /**
+     * Method for intializing the device after master role acquisition.
+     */
+    void initializeDevice();
 }
 

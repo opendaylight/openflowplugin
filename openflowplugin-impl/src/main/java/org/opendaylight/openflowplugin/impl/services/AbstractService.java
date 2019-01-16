@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -154,6 +155,11 @@ public abstract class AbstractService<I, O> {
             RequestContextUtil.closeRequestContextWithRpcError(requestContext,
                                                                "failed to build request input: " + ex.getMessage());
         } finally {
+            if (input instanceof MultipartType) {
+                if (((MultipartType) input).getName().equals("OFPMP_DESC")) {
+                    LOG.error("###############AbstractService - handleServiceCall#############");
+                }
+            }
             final OutboundQueue outboundQueue =
                     getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 

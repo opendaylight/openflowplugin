@@ -35,11 +35,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.*;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -131,10 +127,10 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         contextChain.registerDeviceRemovedHandler(statisticsManager);
         contextChain.registerDeviceRemovedHandler(roleManager);
         contextChain.registerDeviceRemovedHandler(this);
-        contextChain.addContext(deviceContext);
         contextChain.addContext(rpcContext);
         contextChain.addContext(statisticsContext);
         contextChain.addContext(roleContext);
+        contextChain.addContext(deviceContext);
         contextChainMap.put(deviceInfo, contextChain);
         connectingDevices.remove(deviceInfo);
         LOG.debug("Context chain" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
@@ -339,6 +335,17 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contextChainMap.remove(deviceInfo);
         LOG.debug("Context chain removed for node {}", deviceInfo);
+    }
+
+    @Override
+    public void initializeDevice(DeviceInfo deviceInfo) {
+        ContextChain contextChain = contextChainMap.get(deviceInfo);
+        List<GuardedContext> contexts = contextChain.getContexts();
+        contexts.forEach(context -> {
+            if (context.map(DeviceContext.class::isInstance)) {
+                context.map(DeviceContext.class::cast).initializeDevice();
+            }
+        });
     }
 
     private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull DeviceInfo deviceInfo,

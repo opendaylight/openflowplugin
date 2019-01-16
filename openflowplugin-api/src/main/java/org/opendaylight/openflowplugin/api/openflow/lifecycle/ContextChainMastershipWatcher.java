@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
+
+import javax.annotation.Nonnull;
 
 /**
  * Watcher if able to start mastership for device.
@@ -54,4 +55,10 @@ public interface ContextChainMastershipWatcher {
      * @param reason reason
      */
     void onSlaveRoleNotAcquired(DeviceInfo deviceInfo, String reason);
+
+    /**
+     * Intialize the device after master role acquisition.
+     * @param deviceInfo connected switch identification
+     */
+    void initializeDevice(DeviceInfo deviceInfo);
 }

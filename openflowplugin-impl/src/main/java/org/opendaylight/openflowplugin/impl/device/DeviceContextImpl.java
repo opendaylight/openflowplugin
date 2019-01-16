@@ -638,7 +638,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             throw new RuntimeException(String.format("Error processing port status messages from device %s: %s",
                     deviceInfo.toString(), ex.toString()), ex);
         }
+    }
 
+    @Override
+    public void initializeDevice() {
         final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
                 .lookup(deviceInfo.getVersion());
 

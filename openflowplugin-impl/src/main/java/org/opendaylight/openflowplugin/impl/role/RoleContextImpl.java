@@ -183,6 +183,7 @@ public class RoleContextImpl implements RoleContext {
     private final class MasterRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            contextChainMastershipWatcher.initializeDevice(deviceInfo);
             contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE);
