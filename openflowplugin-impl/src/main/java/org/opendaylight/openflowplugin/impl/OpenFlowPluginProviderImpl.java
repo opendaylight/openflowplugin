@@ -124,6 +124,9 @@ public class OpenFlowPluginProviderImpl implements
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
+    private static final String OPENFLOW_SERVICE_6633 = "OPENFLOW6633";
+    private static final String OPENFLOW_SERVICE_66 = "OPENFLOW66";
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -172,15 +175,24 @@ public class OpenFlowPluginProviderImpl implements
             } else {
                 DeserializerInjector.revertDeserializers(switchConnectionProvider);
             }
-
             // Set handler of incoming connections and start switch connection provider
+            LOG.info("startSwitchConnections");
             switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
             return switchConnectionProvider.startup();
         }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
             @Override
             public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
-                openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL);
+                String str = openflowPluginStatusMonitor.registration.operational(result);
+                if (str.equals(OPENFLOW_SERVICE_NAME)) {
+                    openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL);
+                }
+                else if ((str.equals(OPENFLOW_SERVICE_66)) || (str.equals(OPENFLOW_SERVICE_6633))) {
+                    openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, "{} service is not up " + str);
+                }
+                else {
+                    openflowPluginStatusMonitor.reportStatus(ServiceState.ERROR, str);
+                }
             }
 
             @Override
