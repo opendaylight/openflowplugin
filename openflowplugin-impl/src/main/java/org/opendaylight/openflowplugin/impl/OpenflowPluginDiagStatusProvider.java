@@ -13,6 +13,7 @@ import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
+import org.opendaylight.openflowjava.protocol.impl.util.RegstrationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +24,13 @@ public class OpenflowPluginDiagStatusProvider {
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
     private final DiagStatusService diagStatusService;
+    public RegstrationUtils registration;
 
     @Inject
     public OpenflowPluginDiagStatusProvider(final @Reference DiagStatusService diagStatusService) {
         this.diagStatusService = diagStatusService;
         diagStatusService.register(OPENFLOW_SERVICE_NAME);
+        registration = new RegstrationUtils(diagStatusService);
     }
 
     public void reportStatus(ServiceState serviceState) {
