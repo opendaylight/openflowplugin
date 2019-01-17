@@ -81,7 +81,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
     private final ListeningExecutorService listeningExecutorService;
-    private final DiagStatusService diagStatusService;
+    private DiagStatusService diagStatusService;
     private final String diagStatusIdentifier;
     private final String threadName;
     private TcpConnectionInitializer connectionInitializer;
@@ -93,7 +93,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
         this.diagStatusService = diagStatusService;
         this.diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
-        diagStatusService.register(diagStatusIdentifier);
+        //diagStatusService.register(diagStatusIdentifier);
 
         this.threadName = THREAD_NAME_PREFIX + connectionSuffix;
         this.listeningExecutorService = Executors.newListeningSingleThreadExecutor(threadName, LOG);
@@ -152,11 +152,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
                 @Override
                 public void onFailure(Throwable throwable) {
+                    LOG.info("Inside openflow failure");
                     diagStatusService.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
                 }
 
                 @Override
                 public void onSuccess(@Nullable Object nullResult) {
+                    LOG.info("Inside openflow success");
                     diagStatusService.report(new ServiceDescriptor(
                             diagStatusIdentifier, ServiceState.ERROR, threadName + " terminated"));
                 }
@@ -188,8 +190,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         boolean isEpollEnabled = Epoll.isAvailable();
 
         if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
-            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(), () -> diagStatusService
-                            .report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),() -> { });
+            LOG.info("Inside TP");
             final TcpChannelInitializer channelInitializer = factory.createPublishingChannelInitializer();
             ((TcpHandler) server).setChannelInitializer(channelInitializer);
             ((TcpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
@@ -199,8 +201,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             connectionInitializer.setChannelInitializer(channelInitializer);
             connectionInitializer.run();
         } else if (TransportProtocol.UDP.equals(transportProtocol)) {
-            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(), () -> diagStatusService
-                    .report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(),() -> { });
+            LOG.info("Inside TP2");
             ((UdpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
             ((UdpHandler) server).setChannelInitializer(factory.createUdpChannelInitializer());
         } else {
