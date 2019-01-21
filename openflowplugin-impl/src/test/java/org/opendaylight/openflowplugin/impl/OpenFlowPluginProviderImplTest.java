@@ -28,6 +28,7 @@ import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
@@ -49,7 +50,7 @@ public class OpenFlowPluginProviderImplTest {
     NotificationPublishService notificationPublishService;
 
     @Mock
-    OpenflowPluginDiagStatusProvider ofPluginDiagstatusProvider;
+    OpenflowDiagStatusProvider ofPluginDiagstatusProvider;
 
     @Mock
     SystemReadyMonitor systemReadyMonitor;
