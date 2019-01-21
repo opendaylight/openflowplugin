@@ -46,6 +46,7 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
     @Override
     public <T> ListenableFuture<T> enqueueJob(final String key, final Callable<ListenableFuture<T>> mainWorker) {
         final JobEntry<T> jobEntry = new JobEntry<>(key, mainWorker);
+        LOG.trace("Enqueueing job {} with key: {}", jobEntry, key);
         manager.submitNotification(key, jobEntry);
         return jobEntry.getResultFuture();
     }
