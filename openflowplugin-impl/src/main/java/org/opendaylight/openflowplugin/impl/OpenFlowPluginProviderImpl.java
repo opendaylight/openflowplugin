@@ -46,6 +46,7 @@ import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowjava.protocol.api.connection.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -96,6 +97,7 @@ public class OpenFlowPluginProviderImpl implements
     private static final int TICKS_PER_WHEEL = 500; // 0.5 sec.
     private static final long TICK_DURATION = 10;
     private static final String POOL_NAME = "ofppool";
+    List<Boolean> results = null;
 
     private static final MessageIntelligenceAgency MESSAGE_INTELLIGENCE_AGENCY = new MessageIntelligenceAgencyImpl();
     private static final String MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME = String
@@ -123,7 +125,8 @@ public class OpenFlowPluginProviderImpl implements
     private ConnectionManager connectionManager;
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
-    private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    public final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -138,7 +141,7 @@ public class OpenFlowPluginProviderImpl implements
                                final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
                                final @Reference EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
+                               final @Reference OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
                                final @Reference SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
@@ -163,7 +166,8 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     private void startSwitchConnections() {
-        Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
+        ListenableFuture<List<Boolean>> futures = Futures.allAsList(
+                switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenFlowPlugin custom serializers and deserializers into OpenFlowJava
             if (config.isUseSingleLayerSerialization()) {
                 SerializerInjector.injectSerializers(switchConnectionProvider,
@@ -176,11 +180,18 @@ public class OpenFlowPluginProviderImpl implements
             // Set handler of incoming connections and start switch connection provider
             switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
             return switchConnectionProvider.startup();
-        }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
+        }).collect(Collectors.toSet()));
+        /*try {
+            results = futures.get();
+            LOG.info("the result is {}", results);
+        } catch (Exception e) {
+            LOG.info("the exception is {}", e);
+        }*/
+        Futures.addCallback(futures, new FutureCallback<List<Boolean>>() {
             @Override
             public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
-                openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL);
+                openflowPluginStatusMonitor.reportStatus(OPENFLOW_SERVICE_NAME, ServiceState.OPERATIONAL);
             }
 
             @Override

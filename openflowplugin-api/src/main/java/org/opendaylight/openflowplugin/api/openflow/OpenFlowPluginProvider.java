@@ -13,7 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.BindingService;
 /**
  * Plugin services provider.
  */
-public interface OpenFlowPluginProvider extends AutoCloseable, BindingService {
+public interface OpenFlowPluginProvider extends AutoCloseable, BindingService  {
 
     /**
      * Method initializes all DeviceManager, RpcManager and related contexts.
