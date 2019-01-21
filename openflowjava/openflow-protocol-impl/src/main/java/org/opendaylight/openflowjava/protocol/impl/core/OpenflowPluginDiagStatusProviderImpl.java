@@ -5,27 +5,30 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.impl;
+package org.opendaylight.openflowjava.protocol.impl.core;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
+import org.opendaylight.openflowjava.protocol.spi.connection.OpenflowPluginDiagStatusProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Singleton
-public class OpenflowPluginDiagStatusProvider {
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginDiagStatusProvider.class);
+@Singleton
+@Service(classes = OpenflowPluginDiagStatusProvider.class)
+public class OpenflowPluginDiagStatusProviderImpl implements OpenflowPluginDiagStatusProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginDiagStatusProviderImpl.class);
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
     private final DiagStatusService diagStatusService;
 
     @Inject
-    public OpenflowPluginDiagStatusProvider(final @Reference DiagStatusService diagStatusService) {
+    public OpenflowPluginDiagStatusProviderImpl(final @Reference DiagStatusService diagStatusService) {
         this.diagStatusService = diagStatusService;
         diagStatusService.register(OPENFLOW_SERVICE_NAME);
     }

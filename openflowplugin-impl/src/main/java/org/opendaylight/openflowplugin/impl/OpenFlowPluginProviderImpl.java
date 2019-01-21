@@ -46,6 +46,8 @@ import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowjava.protocol.impl.core.OpenflowPluginDiagStatusProviderImpl;
+import org.opendaylight.openflowjava.protocol.spi.connection.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -123,7 +125,7 @@ public class OpenFlowPluginProviderImpl implements
     private ConnectionManager connectionManager;
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
-    private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
+    private final OpenflowPluginDiagStatusProviderImpl openflowPluginStatusMonitor;
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -138,7 +140,7 @@ public class OpenFlowPluginProviderImpl implements
                                final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
                                final @Reference EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
+                               final OpenflowPluginDiagStatusProviderImpl openflowPluginStatusMonitor,
                                final @Reference SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
