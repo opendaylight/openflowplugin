@@ -30,5 +30,7 @@
 
   <reference id="switchConnectionProviderList" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList" ext:proxy-method="classes"/>
 
+  <reference id="openflowPluginDiagStatusProviderImpl" interface="org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider" ext:proxy-method="classes"/>
+
   <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
 </blueprint>
