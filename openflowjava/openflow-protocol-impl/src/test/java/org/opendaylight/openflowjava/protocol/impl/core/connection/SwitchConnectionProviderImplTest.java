@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.openflowjava.protocol.api.connection.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -46,18 +47,19 @@ public class SwitchConnectionProviderImplTest {
     private TlsConfiguration tlsConfiguration;
     private SwitchConnectionProviderImpl provider;
     private ConnectionConfigurationImpl config;
-
+    private OpenflowPluginDiagStatusProvider openflowPluginDiagStatusProvider;
     /**
      * Creates new {@link SwitchConnectionProvider} instance for each test.
      * @param protocol communication protocol
      */
+
     public void startUp(final TransportProtocol protocol) throws UnknownHostException {
         MockitoAnnotations.initMocks(this);
         config = null;
         if (protocol != null) {
             createConfig(protocol);
         }
-        provider = new SwitchConnectionProviderImpl(config, diagStatusService);
+        provider = new SwitchConnectionProviderImpl(config, diagStatusService,openflowPluginDiagStatusProvider);
     }
 
     private void createConfig(final TransportProtocol protocol) throws UnknownHostException {

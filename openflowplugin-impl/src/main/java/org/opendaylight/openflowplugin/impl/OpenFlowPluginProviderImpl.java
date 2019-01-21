@@ -49,6 +49,7 @@ import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowjava.protocol.api.connection.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
@@ -128,6 +129,7 @@ public class OpenFlowPluginProviderImpl implements
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
+    private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
     public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
         return MESSAGE_INTELLIGENCE_AGENCY;
@@ -142,7 +144,7 @@ public class OpenFlowPluginProviderImpl implements
                                final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
                                final @Reference EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
+                               final @Reference OpenflowPluginDiagStatusProvider openflowPluginStatusMonitor,
                                final @Reference SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
@@ -180,7 +182,7 @@ public class OpenFlowPluginProviderImpl implements
             @Override
             public void onSuccess(@Nonnull final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
-                openflowPluginStatusMonitor.reportStatus(ServiceState.OPERATIONAL);
+                openflowPluginStatusMonitor.reportStatus(OPENFLOW_SERVICE_NAME, ServiceState.OPERATIONAL);
                 fullyStarted.set(null);
             }
 
