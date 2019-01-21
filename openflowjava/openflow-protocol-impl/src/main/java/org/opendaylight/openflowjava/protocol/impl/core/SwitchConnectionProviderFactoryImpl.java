@@ -17,6 +17,7 @@ import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
+import org.opendaylight.openflowjava.protocol.api.connection.OpenflowPluginDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -43,8 +44,10 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
     }
 
     @Override
-    public SwitchConnectionProvider newInstance(SwitchConnectionConfig config) {
-        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config), diagStatusService);
+    public SwitchConnectionProvider newInstance(SwitchConnectionConfig config,
+                                                OpenflowPluginDiagStatusProvider openflowPluginDiagStatusProvider) {
+        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config), diagStatusService,
+                openflowPluginDiagStatusProvider);
     }
 
     private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
