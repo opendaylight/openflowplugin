@@ -17,11 +17,10 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.opendaylight.infrautils.diagstatus.DiagStatusService;
-import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
+import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -80,23 +79,19 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
     private final ListeningExecutorService listeningExecutorService;
-    private final DiagStatusService diagStatusService;
     private final String diagStatusIdentifier;
     private final String threadName;
     private TcpConnectionInitializer connectionInitializer;
+    private OpenflowDiagStatusProvider openflowDiagStatusProvider;
 
     public SwitchConnectionProviderImpl(
-            @Nullable ConnectionConfiguration connConfig, DiagStatusService diagStatusService) {
+            @Nullable ConnectionConfiguration connConfig, OpenflowDiagStatusProvider openflowDiagStatusProvider) {
         this.connConfig = connConfig;
         String connectionSuffix = createConnectionSuffix(connConfig);
-
-        this.diagStatusService = diagStatusService;
         this.diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
-        diagStatusService.register(diagStatusIdentifier);
-
+        this.openflowDiagStatusProvider = openflowDiagStatusProvider;
         this.threadName = THREAD_NAME_PREFIX + connectionSuffix;
         this.listeningExecutorService = Executors.newListeningSingleThreadExecutor(threadName, LOG);
-
         serializerRegistry = new SerializerRegistryImpl();
         if (connConfig != null) {
             serializerRegistry.setGroupAddModConfig(connConfig.isGroupAddModEnabled());
@@ -139,7 +134,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public ListenableFuture<Boolean> startup() {
+    public  ListenableFuture<Boolean> startup() {
         LOG.debug("Startup summoned");
         try {
             serverFacade = createAndConfigureServer();
@@ -150,13 +145,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    diagStatusService.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
+                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, throwable);
                 }
 
                 @Override
                 public void onSuccess(@Nullable Object nullResult) {
-                    diagStatusService.report(new ServiceDescriptor(
-                            diagStatusIdentifier, ServiceState.ERROR, threadName + " terminated"));
+                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.ERROR,
+                            threadName + " terminated");
                 }
             } , MoreExecutors.directExecutor());
             return serverFacade.getIsOnlineFuture();
@@ -177,25 +172,23 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         factory.setUseBarrier(connConfig.useBarrier());
         factory.setChannelOutboundQueueSize(connConfig.getChannelOutboundQueueSize());
         final TransportProtocol transportProtocol = (TransportProtocol) connConfig.getTransferProtocol();
-
         // Check if Epoll native transport is available.
         // TODO : Add option to disable Epoll.
         boolean isEpollEnabled = Epoll.isAvailable();
 
         if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
-            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(), () -> diagStatusService
-                            .report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(), () ->
+                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.OPERATIONAL));
             final TcpChannelInitializer channelInitializer = factory.createPublishingChannelInitializer();
             ((TcpHandler) server).setChannelInitializer(channelInitializer);
             ((TcpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
-
             final EventLoopGroup workerGroupFromTcpHandler = ((TcpHandler) server).getWorkerGroup();
             connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, isEpollEnabled);
             connectionInitializer.setChannelInitializer(channelInitializer);
             connectionInitializer.run();
         } else if (TransportProtocol.UDP.equals(transportProtocol)) {
-            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(), () -> diagStatusService
-                    .report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(), () ->
+                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.OPERATIONAL));
             ((UdpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
             ((UdpHandler) server).setChannelInitializer(factory.createUdpChannelInitializer());
         } else {
