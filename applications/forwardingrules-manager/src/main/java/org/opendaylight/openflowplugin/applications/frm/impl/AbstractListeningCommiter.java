@@ -22,6 +22,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * AbstractChangeListner implemented basic {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}
  * processing for flow node subDataObject (flows, groups and meters).
@@ -47,7 +48,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
-        LOG.trace("Received data changes :{}", changes);
+        LOG.debug("Received data changes :{}", changes);
 
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
