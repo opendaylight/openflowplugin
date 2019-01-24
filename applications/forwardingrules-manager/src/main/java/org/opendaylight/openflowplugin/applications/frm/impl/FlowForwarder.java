@@ -181,7 +181,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 bundleFlowForwarder.update(identifier, original, update, nodeIdent, bundleId);
             } else {
                 final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                nodeConfigurator.enqueueJob(nodeId.getValue(), getFlowId(new FlowRef(identifier)), () -> {
                     final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
                     builder.setFlowRef(new FlowRef(identifier));
@@ -233,7 +233,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 return bundleFlowForwarder.add(identifier, addDataObj, nodeIdent, bundleId);
             } else {
                 final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                nodeConfigurator.enqueueJob(nodeId.getValue(), getFlowId(new FlowRef(identifier)), () -> {
                     final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
