@@ -23,4 +23,16 @@ public interface NodeConfigurator extends AutoCloseable {
      * @return the result of the enqueued job.
      */
     <T> ListenableFuture<T> enqueueJob(String key, Callable<ListenableFuture<T>> mainWorker);
+
+    /**
+     * Enqueues a job in nodeconfigurator.
+     *
+     * @param key        The job's key. Jobs with the same key are run sequentially.
+     *                   Jobs with different keys are run in parallel.
+     * @param flowId     The job's flowId.
+     * @param mainWorker The task that runs for the job.
+     *
+     * @return the result of the enqueued job.
+     */
+    <T> ListenableFuture<T> enqueueJob(String key, String flowId, Callable<ListenableFuture<T>> mainWorker);
 }

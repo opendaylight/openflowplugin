@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.nodeconfigurator;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -46,6 +46,16 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
     @Override
     public <T> ListenableFuture<T> enqueueJob(final String key, final Callable<ListenableFuture<T>> mainWorker) {
         final JobEntry<T> jobEntry = new JobEntry<>(key, mainWorker);
+        LOG.debug("Enqueueing job {} with key: {}", jobEntry, key);
+        manager.submitNotification(key, jobEntry);
+        return jobEntry.getResultFuture();
+    }
+
+    @Override
+    public <T> ListenableFuture<T> enqueueJob(final String key, final String flowId,
+                                              final Callable<ListenableFuture<T>> mainWorker) {
+        final JobEntry<T> jobEntry = new JobEntry<>(key, mainWorker);
+        LOG.debug("Enqueueing job {} with key: {} and flow id: {}", jobEntry, key, flowId);
         manager.submitNotification(key, jobEntry);
         return jobEntry.getResultFuture();
     }
@@ -69,7 +79,7 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
         @SuppressWarnings("checkstyle:illegalcatch")
         public void runWithUncheckedExceptionLogging() {
             @Var ListenableFuture<T> future = null;
-            LOG.trace("Running job with key: {}", jobEntry.getKey());
+            LOG.debug("Running job {} with key: {}",jobEntry, jobEntry.getKey());
 
             try {
                 Callable<ListenableFuture<T>> mainWorker = jobEntry.getMainWorker();
@@ -90,13 +100,13 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
             Futures.addCallback(future, new FutureCallback<T>() {
                 @Override
                 public void onSuccess(final T result) {
-                    LOG.trace("Job completed successfully: {}", jobEntry.getKey());
+                    LOG.debug("Job {} completed successfully: {}", jobEntry, jobEntry.getKey());
                     jobEntry.setResultFuture(result);
                 }
 
                 @Override
                 public void onFailure(final Throwable cause) {
-                    LOG.error("Job {} failed", jobEntry.getKey(), cause);
+                    LOG.error("Job {} with key: {} failed", jobEntry, jobEntry.getKey(), cause);
                 }
             }, MoreExecutors.directExecutor());
         }
