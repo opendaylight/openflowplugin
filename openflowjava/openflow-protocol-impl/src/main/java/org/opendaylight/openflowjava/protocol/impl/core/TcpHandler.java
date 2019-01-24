@@ -54,7 +54,7 @@ public class TcpHandler implements ServerFacade {
     private final Runnable readyRunnable;
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
-    private final SettableFuture<Boolean> isOnlineFuture;
+    private final SettableFuture<Boolean> isOnlineFuture = SettableFuture.create();
     private ThreadConfiguration threadConfig;
 
     private TcpChannelInitializer channelInitializer;
@@ -78,7 +78,6 @@ public class TcpHandler implements ServerFacade {
     public TcpHandler(final InetAddress address, final int port, Runnable readyRunnable) {
         this.port = port;
         this.startupAddress = address;
-        isOnlineFuture = SettableFuture.create();
         this.readyRunnable = readyRunnable;
     }
 
@@ -136,10 +135,9 @@ public class TcpHandler implements ServerFacade {
             this.port = isa.getPort();
 
             LOG.debug("address from tcphandler: {}", address);
-            isOnlineFuture.set(true);
             LOG.info("Switch listener started and ready to accept incoming tcp/tls connections on port: {}", port);
-
             readyRunnable.run();
+            isOnlineFuture.set(true);
 
             // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
@@ -204,7 +202,6 @@ public class TcpHandler implements ServerFacade {
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
     public void initiateEventLoopGroups(ThreadConfiguration threadConfiguration, boolean isEpollEnabled) {
-
         if (isEpollEnabled) {
             initiateEpollEventLoopGroups(threadConfiguration);
         } else {
