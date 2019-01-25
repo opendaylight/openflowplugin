@@ -225,14 +225,8 @@ public abstract class BitBufferHelper {
         return shiftBitsToLSB(bytes, numBits);
     }
 
-    // Setters
-    // data: array where data will be stored
-    // input: the data that need to be stored in the data array
-    // startOffset: bit from where to start writing
-    // numBits: number of bits to read
-
     /**
-     * Bits are expected to be stored in the input byte array from LSB.
+     * Store a byte in {@code data}, starting at {@code startOffset} (in bits from MSB).
      *
      * @param data
      *            to set the input byte
@@ -240,18 +234,13 @@ public abstract class BitBufferHelper {
      *            byte to be inserted
      * @param startOffset
      *            offset of data[] to start inserting byte from
-     * @param numBits
-     *            number of bits of input to be inserted into data[]
-     *
      * @throws BufferException
      *             when the input, startOffset and numBits are not congruent
      *             with the data buffer size
      */
-    public static void setByte(final byte[] data, final byte input, final int startOffset, final int numBits)
+    static void setByte(final byte[] data, final byte input, final int startOffset)
             throws BufferException {
-        byte[] inputByteArray = new byte[1];
-        Arrays.fill(inputByteArray, 0, 1, input);
-        setBytes(data, inputByteArray, startOffset, numBits);
+        copyBitsFromLsb(data, new byte[] { input }, startOffset, Byte.SIZE);
     }
 
     /**
@@ -268,11 +257,120 @@ public abstract class BitBufferHelper {
      * @throws BufferException
      *             when the startOffset and numBits parameters are not congruent
      *             with data and input buffers' size
+     * @deprecated Use {@link #copyBitsFromLsb(byte[], byte[], int, int)} instead.
      */
+    @Deprecated
     public static void setBytes(final byte[] data, final byte[] input, final int startOffset, final int numBits)
             throws BufferException {
-        checkExceptions(data, startOffset, numBits);
-        insertBits(data, input, startOffset, numBits);
+        copyBitsFromLsb(data, input, startOffset, numBits);
+    }
+
+    /**
+     * Copy {@code count} bits from {@code src} to {@code dest}, starting at {@code startOffset} in {@code dest}.
+     * Bits are copied from the low end of the source.
+     *
+     * @param dest The destination byte array.
+     * @param src The source byte array.
+     * @param startOffset The source offset (in bits, counted from the MSB) in the destination byte array.
+     * @param count The number of bits to copy.
+     *
+     * @throws BufferException if the destination byte array can't fit the requested number of bits at the requested
+     *     position.
+     */
+    static void copyBitsFromLsb(final byte[] dest, final byte[] src, final int startOffset, final int count)
+            throws BufferException {
+        checkExceptions(dest, startOffset, count);
+        copyBits(src, dest, count, src.length * Byte.SIZE - count, startOffset);
+    }
+
+    /**
+     * Copy {@code count} bits from {@code src} to {@code dest}, starting at {@code startOffset} in {@code dest}.
+     * Bits are copied from the low end of the source.
+     *
+     * @param dest The destination byte array.
+     * @param src The source byte array.
+     * @param startOffset The source offset (in bits, counted from the MSB) in the destination byte array.
+     * @param count The number of bits to copy.
+     *
+     * @throws BufferException if the destination byte array can't fit the requested number of bits at the requested
+     *     position.
+     */
+    static void copyBitsFromMsb(final byte[] dest, final byte[] src, final int startOffset, final int count)
+            throws BufferException {
+        checkExceptions(dest, startOffset, count);
+        copyBits(src, dest, count, 0, startOffset);
+    }
+
+    private static void copyBits(byte[] src, byte[] dest, int count, int srcBitIndex, int destBitIndex) {
+        int bitsRemaining = count;
+        while (bitsRemaining > 0) {
+            // How many bits can we, and do we need to, write, this time round?
+            int bitsToCopy = bitsRemaining % Byte.SIZE;
+            if (bitsToCopy == 0) {
+                bitsToCopy = Byte.SIZE;
+            }
+            int targetByteIndex = destBitIndex / Byte.SIZE;
+            int targetBitIndexInByte = destBitIndex % Byte.SIZE;
+            if (targetBitIndexInByte > 0 && (Byte.SIZE - targetBitIndexInByte) < bitsToCopy) {
+                // We can't write that many bits
+                bitsToCopy = Byte.SIZE - targetBitIndexInByte;
+            }
+            int sourceByteIndex = srcBitIndex / Byte.SIZE;
+            int sourceBitIndexInByte = srcBitIndex % Byte.SIZE;
+            if (sourceBitIndexInByte > 0 && (Byte.SIZE - sourceBitIndexInByte) < bitsToCopy) {
+                // We can't read that many bits
+                bitsToCopy = Byte.SIZE - sourceBitIndexInByte;
+            }
+
+            // Check the indexes
+            if (sourceByteIndex >= src.length || targetByteIndex >= dest.length) {
+                break;
+            }
+
+            if (bitsToCopy == Byte.SIZE) {
+                // Fast path
+                dest[targetByteIndex] = src[sourceByteIndex];
+            } else {
+                // We need to mask and shift
+                // Read the target *byte* and keep the bits we're not going to touch
+                byte targetMask = 0;
+                int sourceShift = 0;
+                if (targetBitIndexInByte > 0) {
+                    targetMask |= getMSBMask(targetBitIndexInByte);
+                }
+                if (targetBitIndexInByte + bitsToCopy < Byte.SIZE) {
+                    targetMask |= getLSBMask(Byte.SIZE - (targetBitIndexInByte + bitsToCopy));
+                    // We'll need to shift left
+                    sourceShift = Byte.SIZE - (targetBitIndexInByte + bitsToCopy);
+                }
+                final byte target = (byte) (dest[targetByteIndex] & targetMask);
+
+                // Read the source *byte* and keep the bits we need
+                byte sourceMask = -1;
+                if (sourceBitIndexInByte > 0) {
+                    sourceMask &= ~getMSBMask(sourceBitIndexInByte);
+                }
+                if (sourceBitIndexInByte + bitsToCopy < Byte.SIZE) {
+                    sourceMask &= ~getLSBMask(Byte.SIZE - (sourceBitIndexInByte + bitsToCopy));
+                    // We'll need to shift right
+                    sourceShift -= Byte.SIZE - (sourceBitIndexInByte + bitsToCopy);
+                }
+                byte source = (byte) (src[sourceByteIndex] & sourceMask);
+                if (sourceShift < 0) {
+                    source = (byte) ((source & 0xFF) >>> -sourceShift);
+                } else if (sourceShift > 0) {
+                    source <<= sourceShift;
+                }
+
+                // All good, copy
+                dest[targetByteIndex] = (byte) (target | source);
+            }
+
+            // All done, update indexes
+            bitsRemaining -= bitsToCopy;
+            srcBitIndex += bitsToCopy;
+            destBitIndex += bitsToCopy;
+        }
     }
 
     /**
@@ -532,90 +630,6 @@ public abstract class BitBufferHelper {
         inputMsb = inputMsb < 0 ? inputMsb + 256 : inputMsb;
         shiftedBytes[0] = (byte) (inputMsb >> NetUtils.NUM_BITS_IN_A_BYTE - numBitstoShift);
         return shiftedBytes;
-    }
-
-    /**
-     * Insert in the data buffer at position dictated by the offset the number
-     * of bits specified from the input data byte array. The input byte array
-     * has the bits stored starting from the LSB
-     */
-    public static void insertBits(final byte[] data, final byte[] inputdataLSB, final int startOffset,
-            final int numBits) {
-        byte[] inputdata = shiftBitsToMSB(inputdataLSB, numBits); // Align to
-                                                                    // MSB the
-                                                                    // passed
-                                                                    // byte
-                                                                    // array
-        int numBytes = numBits / NetUtils.NUM_BITS_IN_A_BYTE;
-        int startByteOffset = startOffset / NetUtils.NUM_BITS_IN_A_BYTE;
-        int extraOffsetBits = startOffset % NetUtils.NUM_BITS_IN_A_BYTE;
-        int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
-        int restBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
-        int inputMSBbits;
-        int inputLSBbits = 0;
-
-        if (numBits == 0) {
-            return;
-        }
-
-        if (extraOffsetBits == 0) {
-            if (extranumBits == 0) {
-                numBytes = numBits / NetUtils.NUM_BITS_IN_A_BYTE;
-                System.arraycopy(inputdata, 0, data, startByteOffset, numBytes);
-            } else {
-                System.arraycopy(inputdata, 0, data, startByteOffset, numBytes);
-                data[startByteOffset + numBytes] = (byte) (data[startByteOffset + numBytes]
-                        | inputdata[numBytes] & getMSBMask(extranumBits));
-            }
-        } else {
-            int index;
-            for (index = 0; index < numBytes; index++) {
-                if (index != 0) {
-                    inputLSBbits = inputdata[index - 1] & getLSBMask(extraOffsetBits);
-                }
-                inputMSBbits = (byte) (inputdata[index] & getMSBMask(NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits));
-                inputMSBbits = inputMSBbits >= 0 ? inputMSBbits : inputMSBbits + 256;
-                data[startByteOffset + index] = (byte) (data[startByteOffset + index]
-                        | inputLSBbits << NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits
-                        | inputMSBbits >> extraOffsetBits);
-                inputMSBbits = inputLSBbits = 0;
-            }
-            if (restBits < NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits) {
-                if (numBytes != 0) {
-                    inputLSBbits = inputdata[index - 1] & getLSBMask(extraOffsetBits);
-                }
-                inputMSBbits = (byte) (inputdata[index] & getMSBMask(restBits));
-                inputMSBbits = inputMSBbits >= 0 ? inputMSBbits : inputMSBbits + 256;
-                data[startByteOffset + index] = (byte) (data[startByteOffset + index]
-                        | inputLSBbits << NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits
-                        | inputMSBbits >> extraOffsetBits);
-            } else if (restBits == NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits) {
-                if (numBytes != 0) {
-                    inputLSBbits = inputdata[index - 1] & getLSBMask(extraOffsetBits);
-                }
-                inputMSBbits = (byte) (inputdata[index] & getMSBMask(NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits));
-                inputMSBbits = inputMSBbits >= 0 ? inputMSBbits : inputMSBbits + 256;
-                data[startByteOffset + index] = (byte) (data[startByteOffset + index]
-                        | inputLSBbits << NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits
-                        | inputMSBbits >> extraOffsetBits);
-            } else {
-                if (numBytes != 0) {
-                    inputLSBbits = inputdata[index - 1] & getLSBMask(extraOffsetBits);
-                }
-                inputMSBbits = (byte) (inputdata[index] & getMSBMask(NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits));
-                inputMSBbits = inputMSBbits >= 0 ? inputMSBbits : inputMSBbits + 256;
-                data[startByteOffset + index] = (byte) (data[startByteOffset + index]
-                        | inputLSBbits << NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits
-                        | inputMSBbits >> extraOffsetBits);
-
-                inputLSBbits = inputdata[index]
-                        & getLSBMask(restBits - (NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits))
-                        << NetUtils.NUM_BITS_IN_A_BYTE
-                                - restBits;
-                data[startByteOffset + index + 1] = (byte) (data[startByteOffset + index + 1]
-                        | inputLSBbits << NetUtils.NUM_BITS_IN_A_BYTE - extraOffsetBits);
-            }
-        }
     }
 
     /**
