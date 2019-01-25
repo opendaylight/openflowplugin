@@ -32,6 +32,6 @@ public class SingleLayerMultipartRequestCallback<T extends OfHeader> extends Abs
 
     @Override
     protected boolean isReqMore(T result) {
-        return MultipartReply.class.cast(result).isRequestMore();
+        return ((MultipartReply) result).isRequestMore();
     }
 }

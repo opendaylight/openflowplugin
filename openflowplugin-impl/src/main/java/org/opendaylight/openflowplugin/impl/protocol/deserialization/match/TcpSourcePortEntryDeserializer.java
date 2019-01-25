@@ -26,9 +26,9 @@ public class TcpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializ
             builder.setLayer4Match(new TcpMatchBuilder()
                     .setTcpSourcePort(new PortNumber(port))
                     .build());
-        } else if (TcpMatch.class.isInstance(builder.getLayer4Match())
-            && Objects.isNull(TcpMatch.class.cast(builder.getLayer4Match()).getTcpSourcePort())) {
-            builder.setLayer4Match(new TcpMatchBuilder(TcpMatch.class.cast(builder.getLayer4Match()))
+        } else if (builder.getLayer4Match() instanceof TcpMatch
+            && Objects.isNull(((TcpMatch) builder.getLayer4Match()).getTcpSourcePort())) {
+            builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
                     .setTcpSourcePort(new PortNumber(port))
                     .build());
         } else {

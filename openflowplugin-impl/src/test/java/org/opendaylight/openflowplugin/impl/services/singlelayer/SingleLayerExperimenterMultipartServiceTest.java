@@ -43,9 +43,8 @@ public class SingleLayerExperimenterMultipartServiceTest extends ServiceMocking 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
         assertEquals(MultipartRequest.class, ofHeader.getImplementedInterface());
 
-        final MultipartRequestExperimenter result = MultipartRequestExperimenter.class.cast(
-                MultipartRequest.class.cast(ofHeader)
-                        .getMultipartRequestBody());
+        final MultipartRequestExperimenter result = (MultipartRequestExperimenter) ((MultipartRequest) ofHeader)
+            .getMultipartRequestBody();
 
         assertEquals(DummyExperimenter.class, result.getExperimenterMessageOfChoice().getImplementedInterface());
     }

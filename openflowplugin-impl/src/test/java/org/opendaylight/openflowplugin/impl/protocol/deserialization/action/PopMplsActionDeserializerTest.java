@@ -30,9 +30,9 @@ public class PopMplsActionDeserializerTest extends AbstractActionDeserializerTes
         in.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
 
         final Action action = deserializeAction(in);
-        assertTrue(PopMplsActionCase.class.isInstance(action));
+        assertTrue(action instanceof PopMplsActionCase);
 
-        final PopMplsAction popAction = PopMplsActionCase.class.cast(action).getPopMplsAction();
+        final PopMplsAction popAction = ((PopMplsActionCase) action).getPopMplsAction();
         assertEquals(ethType, popAction.getEthernetType().shortValue());
         assertEquals(0, in.readableBytes());
     }

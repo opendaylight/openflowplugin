@@ -22,7 +22,7 @@ public class Ipv6LabelEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public void serialize(Match match, ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        final Ipv6Label ipv6Label = Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Label();
+        final Ipv6Label ipv6Label = ((Ipv6Match) match.getLayer3Match()).getIpv6Label();
         outBuffer.writeInt(ipv6Label.getIpv6Flabel().getValue().intValue());
 
         if (getHasMask(match)) {
@@ -36,13 +36,13 @@ public class Ipv6LabelEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public boolean matchTypeCheck(Match match) {
         return Objects.nonNull(match.getLayer3Match())
-                && Ipv6Match.class.isInstance(match.getLayer3Match())
-                && Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Label());
+                && match.getLayer3Match() instanceof Ipv6Match
+                && Objects.nonNull(((Ipv6Match) match.getLayer3Match()).getIpv6Label());
     }
 
     @Override
     protected boolean getHasMask(Match match) {
-        return Objects.nonNull(Ipv6Match.class.cast(match.getLayer3Match()).getIpv6Label().getFlabelMask());
+        return Objects.nonNull(((Ipv6Match) match.getLayer3Match()).getIpv6Label().getFlabelMask());
     }
 
     @Override

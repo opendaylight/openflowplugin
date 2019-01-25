@@ -26,9 +26,9 @@ public class UdpDestinationPortEntryDeserializer extends AbstractMatchEntryDeser
             builder.setLayer4Match(new UdpMatchBuilder()
                     .setUdpDestinationPort(new PortNumber(port))
                     .build());
-        } else if (UdpMatch.class.isInstance(builder.getLayer4Match())
-            && Objects.isNull(UdpMatch.class.cast(builder.getLayer4Match()).getUdpDestinationPort())) {
-            builder.setLayer4Match(new UdpMatchBuilder(UdpMatch.class.cast(builder.getLayer4Match()))
+        } else if (builder.getLayer4Match() instanceof UdpMatch
+            && Objects.isNull(((UdpMatch) builder.getLayer4Match()).getUdpDestinationPort())) {
+            builder.setLayer4Match(new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
                     .setUdpDestinationPort(new PortNumber(port))
                     .build());
         } else {

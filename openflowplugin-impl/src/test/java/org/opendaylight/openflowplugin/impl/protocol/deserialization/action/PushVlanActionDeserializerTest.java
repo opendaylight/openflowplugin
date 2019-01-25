@@ -29,8 +29,8 @@ public class PushVlanActionDeserializerTest extends AbstractActionDeserializerTe
         in.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
 
         final Action action = deserializeAction(in);
-        assertTrue(PushVlanActionCase.class.isInstance(action));
-        assertEquals(ethType, PushVlanActionCase.class.cast(action).getPushVlanAction().getEthernetType().shortValue());
+        assertTrue(action instanceof PushVlanActionCase);
+        assertEquals(ethType, ((PushVlanActionCase) action).getPushVlanAction().getEthernetType().shortValue());
         assertEquals(0, in.readableBytes());
     }
 

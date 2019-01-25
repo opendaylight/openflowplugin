@@ -23,16 +23,16 @@ public class SetNwDstActionSerializer extends AbstractSetFieldActionSerializer {
 
     @Override
     protected SetFieldCase buildAction(Action input) {
-        final Address address = SetNwDstActionCase.class.cast(input).getSetNwDstAction().getAddress();
+        final Address address = ((SetNwDstActionCase) input).getSetNwDstAction().getAddress();
         final SetFieldBuilder builder = new SetFieldBuilder();
 
-        if (Ipv4.class.isInstance(address)) {
+        if (address instanceof Ipv4) {
             builder.setLayer3Match(new Ipv4MatchBuilder()
-                    .setIpv4Destination(Ipv4.class.cast(address).getIpv4Address())
+                    .setIpv4Destination(((Ipv4) address).getIpv4Address())
                     .build());
-        } else if (Ipv6.class.isInstance(address)) {
+        } else if (address instanceof Ipv6) {
             builder.setLayer3Match(new Ipv6MatchBuilder()
-                    .setIpv6Destination(Ipv6.class.cast(address).getIpv6Address())
+                    .setIpv6Destination(((Ipv6) address).getIpv6Address())
                     .build());
         }
 

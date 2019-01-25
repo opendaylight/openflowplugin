@@ -34,9 +34,9 @@ public class ArpSourceHardwareAddressEntryDeserializer extends AbstractMatchEntr
             builder.setLayer3Match(new ArpMatchBuilder()
                 .setArpSourceHardwareAddress(arpBuilder.build())
                 .build());
-        } else if (ArpMatch.class.isInstance(layer3Match)
-            && Objects.isNull(ArpMatch.class.cast(layer3Match).getArpSourceHardwareAddress())) {
-            builder.setLayer3Match(new ArpMatchBuilder(ArpMatch.class.cast(layer3Match))
+        } else if (layer3Match instanceof ArpMatch
+            && Objects.isNull(((ArpMatch) layer3Match).getArpSourceHardwareAddress())) {
+            builder.setLayer3Match(new ArpMatchBuilder((ArpMatch) layer3Match)
                 .setArpSourceHardwareAddress(arpBuilder.build())
                 .build());
         } else {

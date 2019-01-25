@@ -25,7 +25,7 @@ public class SetVlanIdActionSerializer extends AbstractSetFieldActionSerializer 
                         .setVlanMatch(new VlanMatchBuilder()
                                 .setVlanId(new VlanIdBuilder()
                                         .setVlanIdPresent(true)
-                                        .setVlanId(SetVlanIdActionCase.class.cast(input).getSetVlanIdAction()
+                                        .setVlanId(((SetVlanIdActionCase) input).getSetVlanIdAction()
                                                 .getVlanId())
                                         .build())
                                 .build())

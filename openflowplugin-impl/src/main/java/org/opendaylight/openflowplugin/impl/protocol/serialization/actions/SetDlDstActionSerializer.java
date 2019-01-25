@@ -24,7 +24,7 @@ public class SetDlDstActionSerializer extends AbstractSetFieldActionSerializer {
                 .setSetField(new SetFieldBuilder()
                         .setEthernetMatch(new EthernetMatchBuilder()
                                 .setEthernetDestination(new EthernetDestinationBuilder()
-                                        .setAddress(SetDlDstActionCase.class.cast(input).getSetDlDstAction()
+                                        .setAddress(((SetDlDstActionCase) input).getSetDlDstAction()
                                                 .getAddress())
                                         .build())
                                 .build())

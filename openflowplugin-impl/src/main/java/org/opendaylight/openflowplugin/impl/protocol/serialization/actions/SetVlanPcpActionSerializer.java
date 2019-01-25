@@ -22,7 +22,7 @@ public class SetVlanPcpActionSerializer extends AbstractSetFieldActionSerializer
         return new SetFieldCaseBuilder()
                 .setSetField(new SetFieldBuilder()
                         .setVlanMatch(new VlanMatchBuilder()
-                                .setVlanPcp((SetVlanPcpActionCase.class.cast(input).getSetVlanPcpAction().getVlanPcp()))
+                                .setVlanPcp((((SetVlanPcpActionCase) input).getSetVlanPcpAction().getVlanPcp()))
                                 .build())
                         .build())
                 .build();
