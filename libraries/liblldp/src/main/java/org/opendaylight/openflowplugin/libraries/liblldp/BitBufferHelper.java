@@ -304,14 +304,12 @@ public abstract class BitBufferHelper {
      */
     public static long toNumber(final byte[] array) {
         long ret = 0;
-        long length = array.length;
-        int value;
-        for (int i = 0; i < length; i++) {
-            value = array[i];
+        for (byte anArray : array) {
+            int value = anArray;
             if (value < 0) {
                 value += 256;
             }
-            ret = ret | (long) value << (length - i - 1) * NetUtils.NUM_BITS_IN_A_BYTE;
+            ret = ret << Byte.SIZE | value;
         }
         return ret;
     }
@@ -322,22 +320,20 @@ public abstract class BitBufferHelper {
      * @return long - numerical value of byte array passed
      */
     public static long toNumber(final byte[] array, final int numBits) {
-        int length = numBits / NetUtils.NUM_BITS_IN_A_BYTE;
-        int bitsRest = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
+        int length = numBits / Byte.SIZE;
+        int bitsRest = numBits % Byte.SIZE;
         int startOffset = array.length - length;
         long ret = 0;
-        int value;
 
-        value = array[startOffset - 1] & getLSBMask(bitsRest);
-        value = array[startOffset - 1] < 0 ? array[startOffset - 1] + 256 : array[startOffset - 1];
-        ret = ret | value << (array.length - startOffset) * NetUtils.NUM_BITS_IN_A_BYTE;
-
-        for (int i = startOffset; i < array.length; i++) {
-            value = array[i];
+        for (int i = Math.max(0, startOffset - 1); i < array.length; i++) {
+            int value = array[i];
+            if (i == startOffset - 1) {
+                value &= getLSBMask(bitsRest);
+            }
             if (value < 0) {
                 value += 256;
             }
-            ret = ret | (long) value << (array.length - i - 1) * NetUtils.NUM_BITS_IN_A_BYTE;
+            ret = ret << Byte.SIZE | value;
         }
 
         return ret;
