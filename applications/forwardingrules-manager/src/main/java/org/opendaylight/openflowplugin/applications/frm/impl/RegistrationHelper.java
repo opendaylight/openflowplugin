@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class RegistrationHelper {
     private static final Logger LOG = LoggerFactory.getLogger(RegistrationHelper.class);
     private final String executorPrefix = "FRMListener-";
-    private final long inventoryCheckTimer = Long.getLong("openflow.inventorycheck.timer", 1);
+    private static final long INVENTORY_CHECK_TIMER = 1;
 
     private volatile ExecutorService service = null;
     private final DataBroker dataBroker;
@@ -48,7 +48,7 @@ public class RegistrationHelper {
             while (! getInventoryConfigDataStoreStatus().equals("OPERATIONAL")) {
                 try {
                     LOG.debug("Retrying for datastore to become operational for listener {}", listener);
-                    Thread.sleep(inventoryCheckTimer * 1000);
+                    Thread.sleep(INVENTORY_CHECK_TIMER * 1000);
                 } catch (InterruptedException e) {
                     LOG.info("registerDataTreeChangeListener thread is interrupted");
                     Thread.currentThread().interrupt();
