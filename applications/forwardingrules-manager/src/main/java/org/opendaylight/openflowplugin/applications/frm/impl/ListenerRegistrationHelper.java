@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ListenerRegistrationHelper {
     private static final Logger LOG = LoggerFactory.getLogger(ListenerRegistrationHelper.class);
-    private final long inventoryCheckTimer = 1;
+    private static final long INVENTORY_CHECK_TIMER = 1;
     private final String operational = "OPERATIONAL";
     private final ListeningExecutorService listeningExecutorService;
     private final DataBroker dataBroker;
@@ -55,7 +55,7 @@ public class ListenerRegistrationHelper {
             while (! getInventoryConfigDataStoreStatus().equals(operational)) {
                 try {
                     LOG.debug("Retrying for datastore to become operational for listener {}", listener);
-                    Thread.sleep(inventoryCheckTimer * 1000);
+                    Thread.sleep(INVENTORY_CHECK_TIMER * 1000);
                 } catch (InterruptedException e) {
                     LOG.info("registerDataTreeChangeListener thread is interrupted");
                     Thread.currentThread().interrupt();
