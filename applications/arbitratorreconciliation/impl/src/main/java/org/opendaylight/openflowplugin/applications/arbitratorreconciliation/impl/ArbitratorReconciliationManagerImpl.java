@@ -301,7 +301,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 if (addBundleMessagesFuture.get().isSuccessful()) {
                     bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue,
                             Futures.immediateFuture(null)));
-                    LOG.debug("Arbitrator reconciliation initial task has been completed for node {} and open up"
+                    LOG.error("Arbitrator reconciliation initial task has been completed for node {} and open up"
                             + " for application programming.", nodeId);
                     return true;
                 } else {
