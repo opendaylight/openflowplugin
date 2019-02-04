@@ -12,14 +12,14 @@
     <parent>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>binding-parent</artifactId>
-        <version>0.13.2-SNAPSHOT</version>
+        <version>0.13.2</version>
         <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.2</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -32,8 +32,8 @@
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
-        <infrautils.version>1.4.2-SNAPSHOT</infrautils.version>
-        <serviceutils.version>0.2.2-SNAPSHOT</serviceutils.version>
+        <infrautils.version>1.4.2</infrautils.version>
+        <serviceutils.version>0.2.2</serviceutils.version>
     </properties>
 
     <dependencyManagement>
@@ -48,7 +48,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>1.8.2-SNAPSHOT</version>
+                <version>1.8.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

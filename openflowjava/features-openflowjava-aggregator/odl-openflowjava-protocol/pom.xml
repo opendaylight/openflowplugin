@@ -11,7 +11,7 @@
 
     <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
     <artifactId>odl-openflowjava-protocol</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.2</version>
     <packaging>feature</packaging>
 
     <!-- <name> formatting is used by autorelease to parse and notify projects on
@@ -42,7 +42,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal.model</groupId>
                 <artifactId>mdsal-model-artifacts</artifactId>
-                <version>0.13.2-SNAPSHOT</version>
+                <version>0.13.2</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>org.opendaylight.infrautils</groupId>
             <artifactId>odl-infrautils-diagstatus</artifactId>
-            <version>1.4.2-SNAPSHOT</version>
+            <version>1.4.2</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
