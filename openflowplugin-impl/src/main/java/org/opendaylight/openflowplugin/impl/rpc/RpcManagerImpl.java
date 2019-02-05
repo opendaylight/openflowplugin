@@ -13,8 +13,8 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -29,14 +29,14 @@ public class RpcManagerImpl implements RpcManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcManagerImpl.class);
     private final OpenflowProviderConfig config;
-    private final RpcProviderRegistry rpcProviderRegistry;
+    private final RpcProviderService rpcProviderRegistry;
     private final ConcurrentMap<DeviceInfo, RpcContext> contexts = new ConcurrentHashMap<>();
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
 
     public RpcManagerImpl(final OpenflowProviderConfig config,
-                          final RpcProviderRegistry rpcProviderRegistry,
+                          final RpcProviderService rpcProviderRegistry,
                           final ExtensionConverterProvider extensionConverterProvider,
                           final ConvertorExecutor convertorExecutor,
                           final NotificationPublishService notificationPublishService) {

@@ -9,10 +9,10 @@ package org.opendaylight.openflowplugin.testcommon;
 
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -110,7 +110,7 @@ public class DropTestCommiter extends AbstractDropTest {
             LOG.debug("onPacketReceived - About to write flow {}", flow);
         }
         transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow, true);
-        transaction.submit();
+        transaction.commit();
         LOG.debug("onPacketReceived - About to write flow commited");
     }
 

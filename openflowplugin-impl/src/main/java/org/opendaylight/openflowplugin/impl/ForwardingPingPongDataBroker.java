@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ForwardingDataBroker;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.spi.ForwardingDataBroker;
 
 /**
  * Delegating {@link PingPongDataBroker} implementation.
