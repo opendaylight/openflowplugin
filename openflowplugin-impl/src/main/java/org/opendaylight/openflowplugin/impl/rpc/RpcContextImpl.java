@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -20,9 +21,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -34,9 +34,9 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
@@ -44,13 +44,14 @@ import org.slf4j.LoggerFactory;
 
 class RpcContextImpl implements RpcContext {
     private static final Logger LOG = LoggerFactory.getLogger(RpcContextImpl.class);
-    private final RpcProviderRegistry rpcProviderRegistry;
+    private final RpcProviderService rpcProviderRegistry;
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
-    private boolean isStatisticsRpcEnabled;
+    private final boolean isStatisticsRpcEnabled;
 
     // TODO: add private Sal salBroker
-    private final ConcurrentMap<Class<?>, RoutedRpcRegistration<?>> rpcRegistrations = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class<?>, ObjectRegistration<? extends RpcService>> rpcRegistrations =
+            new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
@@ -59,7 +60,7 @@ class RpcContextImpl implements RpcContext {
     private final NotificationPublishService notificationPublishService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    RpcContextImpl(@Nonnull final RpcProviderRegistry rpcProviderRegistry,
+    RpcContextImpl(@Nonnull final RpcProviderService rpcProviderRegistry,
                    final int maxRequests,
                    @Nonnull final DeviceContext deviceContext,
                    @Nonnull final ExtensionConverterProvider extensionConverterProvider,
@@ -82,9 +83,8 @@ class RpcContextImpl implements RpcContext {
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
                                                                         final S serviceInstance) {
         if (!rpcRegistrations.containsKey(serviceClass)) {
-            final RoutedRpcRegistration<S> routedRpcReg =
-                    rpcProviderRegistry.addRoutedRpcImplementation(serviceClass, serviceInstance);
-            routedRpcReg.registerPath(NodeContext.class, nodeInstanceIdentifier);
+            final ObjectRegistration<S> routedRpcReg = rpcProviderRegistry.registerRpcImplementation(serviceClass,
+                serviceInstance, ImmutableSet.of(nodeInstanceIdentifier));
             rpcRegistrations.put(serviceClass, routedRpcReg);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Registration of service {} for device {}.",
@@ -96,7 +96,7 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
-        RoutedRpcRegistration<?> registration = rpcRegistrations.get(serviceClass);
+        ObjectRegistration<? extends RpcService> registration = rpcRegistrations.get(serviceClass);
         final RpcService rpcService = registration.getInstance();
         return serviceClass.cast(rpcService);
     }
@@ -107,15 +107,14 @@ class RpcContextImpl implements RpcContext {
     }
 
     private void unregisterRPCs() {
-        for (final Iterator<Entry<Class<?>, RoutedRpcRegistration<?>>> iterator = Iterators
+        for (final Iterator<Entry<Class<?>, ObjectRegistration<? extends RpcService>>> iterator = Iterators
                 .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
-            final RoutedRpcRegistration<?> rpcRegistration = iterator.next().getValue();
-            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
+            final ObjectRegistration<? extends RpcService> rpcRegistration = iterator.next().getValue();
             rpcRegistration.close();
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Closing RPC Registration of service {} for device {}.",
-                        rpcRegistration.getServiceType().getSimpleName(),
+                        rpcRegistration.getInstance().getClass().getSimpleName(),
                         nodeInstanceIdentifier.getKey().getId().getValue());
             }
         }
@@ -154,9 +153,8 @@ class RpcContextImpl implements RpcContext {
     public <S extends RpcService> void unregisterRpcServiceImplementation(final Class<S> serviceClass) {
         LOG.trace("Try to unregister serviceClass {} for Node {}",
                 serviceClass, nodeInstanceIdentifier.getKey().getId());
-        final RoutedRpcRegistration<?> rpcRegistration = rpcRegistrations.remove(serviceClass);
+        final ObjectRegistration<? extends RpcService> rpcRegistration = rpcRegistrations.remove(serviceClass);
         if (rpcRegistration != null) {
-            rpcRegistration.unregisterPath(NodeContext.class, nodeInstanceIdentifier);
             rpcRegistration.close();
             LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(),
                     nodeInstanceIdentifier.getKey().getId().getValue());

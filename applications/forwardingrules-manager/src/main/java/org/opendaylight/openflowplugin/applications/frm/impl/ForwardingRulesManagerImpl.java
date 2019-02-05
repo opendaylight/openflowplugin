@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -21,10 +20,11 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -50,7 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Sal
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -85,7 +84,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
     private final MastershipChangeServiceManager mastershipChangeServiceManager;
-    private final RpcProviderRegistry rpcRegistry;
+    private final RpcProviderService rpcProviderService;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
@@ -97,7 +96,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ReconciliationManager reconciliationManager;
     private DevicesGroupRegistry devicesGroupRegistry;
     private NodeConfigurator nodeConfigurator;
-    private ArbitratorReconcileService arbitratorReconciliationManager;
+    private final ArbitratorReconcileService arbitratorReconciliationManager;
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
@@ -107,7 +106,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Inject
     public ForwardingRulesManagerImpl(@Reference final DataBroker dataBroker,
-                                      @Reference final RpcProviderRegistry rpcRegistry,
+                                      @Reference final RpcConsumerRegistry rpcRegistry,
+                                      @Reference final RpcProviderService rpcProviderService,
                                       final ForwardingRulesManagerConfig config,
                                       @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
                                       @Reference final ClusterSingletonServiceProvider clusterSingletonService,
@@ -124,7 +124,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
         this.reconciliationManager = reconciliationManager;
-        this.rpcRegistry = rpcRegistry;
+        this.rpcProviderService = rpcProviderService;
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
@@ -163,9 +163,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
             LOG.debug("Reconciliation is enabled by user and successfully registered to the reconciliation framework");
         }
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, this.nodeListener,
-                dataService, mastershipChangeServiceManager);
-        this.deviceMastershipManager.setRoutedRpcReg(rpcRegistry.addRoutedRpcImplementation(
-                FrmReconciliationService.class, new FrmReconciliationServiceImpl(this)));
+                dataService, mastershipChangeServiceManager, rpcProviderService,
+                new FrmReconciliationServiceImpl(this));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         this.flowListener = new FlowForwarder(this, dataService);
@@ -210,7 +209,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public ReadOnlyTransaction getReadTransaction() {
+    public ReadTransaction getReadTransaction() {
         return dataService.newReadOnlyTransaction();
     }
 
@@ -220,18 +219,18 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident) {
+    public boolean isNodeActive(final InstanceIdentifier<FlowCapableNode> ident) {
         return deviceMastershipManager.isNodeActive(ident.firstKeyOf(Node.class).getId());
     }
 
     @Override
-    public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident) {
+    public boolean checkNodeInOperationalDataStore(final InstanceIdentifier<FlowCapableNode> ident) {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
-        try (ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction()) {
-            ListenableFuture<com.google.common.base.Optional<Node>> future = transaction
+        try (ReadTransaction transaction = dataService.newReadOnlyTransaction()) {
+            ListenableFuture<Optional<Node>> future = transaction
                 .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
-            com.google.common.base.Optional<Node> optionalDataObject = future.get();
+            Optional<Node> optionalDataObject = future.get();
             if (optionalDataObject.isPresent()) {
                 result = true;
             } else {
@@ -315,7 +314,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public void addRecoverableListener(RecoverableListener recoverableListener) {
+    public void addRecoverableListener(final RecoverableListener recoverableListener) {
         serviceRecoveryRegistry.addRecoverableListener(openflowServiceRecoveryHandler.buildServiceRegistryKey(),
                 recoverableListener);
     }
@@ -340,7 +339,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident) {
+    public boolean isNodeOwner(final InstanceIdentifier<FlowCapableNode> ident) {
         return Objects.nonNull(ident) && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
     }
 

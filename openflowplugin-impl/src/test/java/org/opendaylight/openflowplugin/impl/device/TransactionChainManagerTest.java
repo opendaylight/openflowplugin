@@ -5,31 +5,26 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.ArgumentMatchers.any;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.binding.api.Transaction;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.api.TransactionChainListener;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
@@ -38,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -47,11 +43,11 @@ public class TransactionChainManagerTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private BindingTransactionChain txChain;
+    private TransactionChain txChain;
     @Mock
     private ReadWriteTransaction writeTx;
     @Mock
-    private TransactionChain<?, ?> transactionChain;
+    private TransactionChain transactionChain;
     @Mock
     DeviceInfo deviceInfo;
 
@@ -64,9 +60,7 @@ public class TransactionChainManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        final ReadOnlyTransaction readOnlyTx = Mockito.mock(ReadOnlyTransaction.class);
-        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture = Futures
-                .immediateCheckedFuture(Optional.<Node>absent());
+        final ReadTransaction readOnlyTx = Mockito.mock(ReadTransaction.class);
         Mockito.when(dataBroker.createTransactionChain(any(TransactionChainListener.class)))
                 .thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
@@ -75,8 +69,7 @@ public class TransactionChainManagerTest {
         Mockito.when(txChain.newReadWriteTransaction()).thenReturn(writeTx);
 
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-        Mockito.when(writeTx.submit())
-                .thenReturn(Futures.<Void, TransactionCommitFailedException>immediateCheckedFuture(null));
+        Mockito.doReturn(CommitInfo.emptyFluentFuture()).when(writeTx).commit();
         txChainManager.activateTransactionManager();
     }
 
@@ -106,7 +99,7 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx).submit();
+        Mockito.verify(writeTx).commit();
     }
 
     /**
@@ -120,14 +113,13 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx, Mockito.never()).submit();
+        Mockito.verify(writeTx, Mockito.never()).commit();
     }
 
     @Test
     public void testSubmitTransactionFailed() throws Exception {
-        Mockito.when(writeTx.submit()).thenReturn(
-                Futures.<Void, TransactionCommitFailedException>immediateFailedCheckedFuture(
-                        new TransactionCommitFailedException("mock")));
+        Mockito.doReturn(FluentFutures.immediateFailedFluentFuture(new TransactionCommitFailedException("mock")))
+            .when(writeTx).commit();
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.initialSubmitWriteTransaction();
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
@@ -135,7 +127,7 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx).submit();
+        Mockito.verify(writeTx).commit();
     }
 
     /**
@@ -149,13 +141,13 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx, Mockito.times(2)).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx, Mockito.never()).submit();
+        Mockito.verify(writeTx, Mockito.never()).commit();
     }
 
     @Test
     public void testOnTransactionChainFailed() throws Exception {
-        txChainManager
-                .onTransactionChainFailed(txChain, Mockito.mock(AsyncTransaction.class), Mockito.mock(Throwable.class));
+        txChainManager.onTransactionChainFailed(txChain, Mockito.mock(Transaction.class),
+            Mockito.mock(Throwable.class));
         Mockito.verify(txChain).close();
         Mockito.verify(dataBroker, Mockito.times(2)).createTransactionChain(txChainManager);
     }
@@ -191,7 +183,7 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx, Mockito.never()).submit();
+        Mockito.verify(writeTx, Mockito.never()).commit();
         Mockito.verify(writeTx).cancel();
         Mockito.verify(txChain).close();
     }
@@ -205,7 +197,7 @@ public class TransactionChainManagerTest {
 
         Mockito.verify(txChain).newReadWriteTransaction();
         Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
-        Mockito.verify(writeTx).submit();
+        Mockito.verify(writeTx).commit();
     }
 
     @Test

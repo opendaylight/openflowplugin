@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -13,17 +13,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
@@ -64,7 +62,7 @@ public class FlowListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    RpcProviderRegistryMock rpcProviderRegistryMock = new RpcProviderRegistryMock();
     TableKey tableKey = new TableKey((short) 2);
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
@@ -81,9 +79,10 @@ public class FlowListenerTest extends FRMTest {
 
     @Before
     public void setUp() {
-        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
-                mastershipChangeServiceManager, clusterSingletonService, getConfigurationService(),
-                reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry);
+        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
+                rpcProviderRegistryMock, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
+                getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
+                serviceRecoveryRegistry);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
@@ -106,7 +105,7 @@ public class FlowListenerTest extends FRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getAddFlowCalls()), equalTo(1));
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
@@ -119,7 +118,7 @@ public class FlowListenerTest extends FRMTest {
         flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getAddFlowCalls()), equalTo(2));
         addFlowCalls = salFlowService.getAddFlowCalls();
@@ -144,7 +143,7 @@ public class FlowListenerTest extends FRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getAddFlowCalls()), equalTo(1));
 
@@ -158,7 +157,7 @@ public class FlowListenerTest extends FRMTest {
         flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).setOutGroup((long) 5).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getUpdateFlowCalls()), equalTo(1));
         List<UpdateFlowInput> updateFlowCalls = salFlowService.getUpdateFlowCalls();
@@ -186,7 +185,7 @@ public class FlowListenerTest extends FRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getAddFlowCalls()), equalTo(1));
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
@@ -201,7 +200,7 @@ public class FlowListenerTest extends FRMTest {
         flow = new FlowBuilder().setMatch(match).withKey(flowKey).setTableId((short) 2).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getUpdateFlowCalls()), equalTo(1));
         List<UpdateFlowInput> updateFlowCalls = salFlowService.getUpdateFlowCalls();
@@ -226,7 +225,7 @@ public class FlowListenerTest extends FRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getAddFlowCalls()), equalTo(1));
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
@@ -235,7 +234,7 @@ public class FlowListenerTest extends FRMTest {
 
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION, flowII);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
         await().until(listSize(salFlowService.getRemoveFlowCalls()), equalTo(1));
         List<RemoveFlowInput> removeFlowCalls = salFlowService.getRemoveFlowCalls();
@@ -261,7 +260,7 @@ public class FlowListenerTest extends FRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
     }
 
     @After

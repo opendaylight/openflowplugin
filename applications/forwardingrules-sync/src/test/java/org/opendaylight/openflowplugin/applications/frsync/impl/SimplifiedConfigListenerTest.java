@@ -1,16 +1,15 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +17,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
@@ -36,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -53,7 +53,7 @@ public class SimplifiedConfigListenerTest {
     @Mock
     private SyncReactor reactor;
     @Mock
-    private ReadOnlyTransaction roTx;
+    private ReadTransaction roTx;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
@@ -76,7 +76,7 @@ public class SimplifiedConfigListenerTest {
                 .augmentation(FlowCapableNode.class);
 
         final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
-                new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, fcNodePath);
+                DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, fcNodePath);
 
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
@@ -130,8 +130,8 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSkip() {
-        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(roTx)
+            .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -142,8 +142,8 @@ public class SimplifiedConfigListenerTest {
     private SyncupEntry loadOperationalDSAndPrepareSyncupEntry(final FlowCapableNode after,
             final LogicalDatastoreType dsTypeAfter, final FlowCapableNode before,
             final LogicalDatastoreType dsTypeBefore) {
-        Mockito.when(roTx.read(LogicalDatastoreType.OPERATIONAL, fcNodePath))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataBefore)));
+        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(dataBefore))).when(roTx)
+            .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);
         Mockito.when(reactor.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(),
                 Mockito.eq(syncupEntry))).thenReturn(Futures.immediateFuture(Boolean.TRUE));

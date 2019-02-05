@@ -7,13 +7,13 @@
  */
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -79,13 +79,12 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
                 String flowId = "Flow-" + dpId + "." + tableId + "." + sourceIp;
                 InstanceIdentifier<Flow> flowIid = getFlowInstanceIdentifier(dpId, tableId, flowId);
 
-                try (ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
+                try (ReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
                     Optional<Flow> flowOptional;
                     if (isConfigDs) {
-                        flowOptional = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, flowIid)
-                                .checkedGet();
+                        flowOptional = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, flowIid).get();
                     } else {
-                        flowOptional = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, flowIid).checkedGet();
+                        flowOptional = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, flowIid).get();
                     }
 
                     if (flowOptional.isPresent()) {
@@ -98,7 +97,7 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
                             LOG.info("Flow: {} not found", flowIid);
                         }
                     }
-                } catch (ReadFailedException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     readOpStatus.set(FlowCounter.OperationStatus.FAILURE.status());
                     LOG.error("Error {}", e);
                 }

@@ -8,15 +8,13 @@
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -133,7 +131,7 @@ public class FlowWriterConcurrent implements FlowCounterMBean {
                         calculatedTableId = (short) ((calculatedTableId + numberA) % numberB + startTableId);
                     }
                 }
-                Futures.addCallback(writeTransaction.submit(),
+                writeTransaction.commit().addCallback(
                         new DsCallBack(dpId, tableId, calculatedTableId, sourceIp), MoreExecutors.directExecutor());
                 // Wrap around
                 tableId = (short) ((calculatedTableId + 1) % (short) (endTableId - startTableId + 1) + startTableId);
@@ -159,7 +157,7 @@ public class FlowWriterConcurrent implements FlowCounterMBean {
             }
         }
 
-        private class DsCallBack implements FutureCallback {
+        private class DsCallBack implements FutureCallback<Object> {
             private final String dpId;
             private final int sourceIp;
             private final short endTableId;

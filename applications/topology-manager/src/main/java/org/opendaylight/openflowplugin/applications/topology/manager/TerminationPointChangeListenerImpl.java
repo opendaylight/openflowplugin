@@ -15,9 +15,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -91,8 +91,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                         .topology.topology.Node>
                         nodeOptional = Optional.empty();
                 try {
-                    nodeOptional = Optional.ofNullable(
-                            manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, node).get().orNull());
+                    nodeOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, node).get();
                 } catch (InterruptedException | ExecutionException e) {
                     LOG.warn("Error occurred when trying to read NodeConnector: {}", e.getMessage());
                     LOG.debug("Error occurred when trying to read NodeConnector.. ", e);
@@ -130,9 +129,9 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
 
     private void removeLinks(final FlowCapableNodeConnector flowCapNodeConnector, final TerminationPoint point) {
         operationProcessor.enqueueOperation(manager -> {
-            if ((flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()) || (
-                    flowCapNodeConnector.getConfiguration() != null && flowCapNodeConnector.getConfiguration()
-                            .isPORTDOWN())) {
+            if (flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()
+                    || flowCapNodeConnector.getConfiguration() != null
+                        && flowCapNodeConnector.getConfiguration().isPORTDOWN()) {
                 TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager, II_TO_TOPOLOGY);
             }
         });

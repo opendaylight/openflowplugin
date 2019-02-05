@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import com.google.common.base.Preconditions;
 import java.util.Collections;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
@@ -38,10 +37,10 @@ public class FlowTableStatNotificationSupplierImpl extends
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
-     * @param notifProviderService - {@link NotificationProviderService}
+     * @param notifProviderService - {@link NotificationPublishService}
      * @param db                   - {@link DataBroker}
      */
-    public FlowTableStatNotificationSupplierImpl(final NotificationProviderService notifProviderService,
+    public FlowTableStatNotificationSupplierImpl(final NotificationPublishService notifProviderService,
                                                  final DataBroker db) {
         super(notifProviderService, db, FlowTableStatistics.class);
     }

@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
@@ -19,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -27,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,23 +34,22 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
 
     private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginGroupTestServiceProvider.class);
-    private RoutedRpcRegistration<SalGroupService> groupRegistration;
-    private NotificationProviderService notificationService;
+    private ObjectRegistration<SalGroupService> groupRegistration;
+    private NotificationPublishService notificationService;
 
     /**
      * Get group registration.
      *
      * @return {@link #groupRegistration}
      */
-    public RoutedRpcRegistration<SalGroupService> getGroupRegistration() {
+    public ObjectRegistration<SalGroupService> getGroupRegistration() {
         return groupRegistration;
     }
 
     /**
      * Set {@link #groupRegistration}.
      */
-    public void setGroupRegistration(
-            final RoutedRpcRegistration<SalGroupService> groupRegistration) {
+    public void setGroupRegistration(final ObjectRegistration<SalGroupService> groupRegistration) {
         this.groupRegistration = groupRegistration;
     }
 
@@ -62,15 +58,14 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
      *
      * @return {@link #notificationService}
      */
-    public NotificationProviderService getNotificationService() {
+    public NotificationPublishService getNotificationService() {
         return notificationService;
     }
 
     /**
      * Set {@link #notificationService}.
      */
-    public void setNotificationService(
-            final NotificationProviderService notificationService) {
+    public void setNotificationService(final NotificationPublishService notificationService) {
         this.notificationService = notificationService;
     }
 
@@ -138,28 +133,15 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(
-            final RpcProviderRegistry rpcRegistry) {
-        RoutedRpcRegistration<SalGroupService> addRoutedRpcImplementation = rpcRegistry.addRoutedRpcImplementation(
-                        SalGroupService.class, this);
-        setGroupRegistration(addRoutedRpcImplementation);
+    public ObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(final RpcProviderService rpcRegistry) {
+        setGroupRegistration(rpcRegistry.registerRpcImplementation(SalGroupService.class, this, ImmutableSet.of(
+            InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
-        InstanceIdentifierBuilder<Nodes> builder1 = InstanceIdentifier
-                .<Nodes>builder(Nodes.class);
-
-        NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
-        NodeKey nodeKey = new NodeKey(nodeId);
-
-        InstanceIdentifierBuilder<Node> nodeIndentifier = builder1
-                .<Node, NodeKey>child(Node.class, nodeKey);
-        InstanceIdentifier<Node> instance = nodeIndentifier.build();
-        groupRegistration.registerPath(NodeContext.class, instance);
-        RoutedRpcRegistration<SalGroupService> groupRegistration1 = this
-                .getGroupRegistration();
         return new AbstractObjectRegistration<OpenflowpluginGroupTestServiceProvider>(this) {
             @Override
             protected void removeRegistration() {
-                groupRegistration1.close();
+                groupRegistration.close();
             }
         };
     }

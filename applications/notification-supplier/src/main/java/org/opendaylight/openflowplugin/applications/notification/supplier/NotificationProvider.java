@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -13,8 +12,8 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.NodeConnectorNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.NodeNotificationSupplierImpl;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.FlowNotificationSupplierImpl;
@@ -65,7 +64,7 @@ public class NotificationProvider implements AutoCloseable {
 
     private final DataBroker db;
     private final NotificationProviderConfig config;
-    private final NotificationProviderService nps;
+    private final NotificationPublishService nps;
 
     /* Supplier List property help for easy close method implementation and testing */
     private List<NotificationSupplierDefinition<?>> supplierList;
@@ -99,7 +98,7 @@ public class NotificationProvider implements AutoCloseable {
      * @param groupStatSupp     - Group Stat Support Flag
      * @param queueStatSupp     - Queue Stat Support Flag
      */
-    public NotificationProvider(final NotificationProviderService nps, final DataBroker db, boolean flowSupp,
+    public NotificationProvider(final NotificationPublishService nps, final DataBroker db, boolean flowSupp,
                                 boolean meterSupp, boolean groupSupp, boolean connectorStatSupp, boolean flowStatSupp,
                                 boolean flowTableStatSupp, boolean meterStatSupp, boolean groupStatSupp,
                                 boolean queueStatSupp) {

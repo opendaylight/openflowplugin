@@ -1,21 +1,20 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -43,15 +42,15 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
 
     @Override
     public Optional<FlowCapableNode> loadByNodeId(@Nonnull NodeId nodeId) {
-        try (ReadOnlyTransaction roTx = dataBroker.newReadOnlyTransaction()) {
+        try (ReadTransaction roTx = dataBroker.newReadOnlyTransaction()) {
             final InstanceIdentifier<FlowCapableNode> path =
                     NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
-            return roTx.read(logicalDatastoreType, path).checkedGet(5000, TimeUnit.MILLISECONDS);
-        } catch (ReadFailedException | TimeoutException e) {
+            return roTx.read(logicalDatastoreType, path).get(5000, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
             LOG.error("error reading {}", nodeId.getValue(), e);
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 
 }

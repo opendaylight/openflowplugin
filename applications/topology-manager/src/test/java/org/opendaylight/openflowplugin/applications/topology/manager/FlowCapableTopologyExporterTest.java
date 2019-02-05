@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,8 +23,7 @@ import static org.opendaylight.openflowplugin.applications.topology.manager.Test
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.setupStubbedSubmit;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForSubmit;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,11 +33,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.api.TransactionChainListener;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -50,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowCapableTopologyExporterTest {
@@ -61,7 +60,7 @@ public class FlowCapableTopologyExporterTest {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private BindingTransactionChain mockTxChain;
+    private TransactionChain mockTxChain;
 
     @Before
     public void setUp() {
@@ -144,7 +143,7 @@ public class FlowCapableTopologyExporterTest {
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
-        doReturn(Futures.immediateCheckedFuture(Optional.of(link))).when(mockTx)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(link))).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL,
                       topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
 
@@ -176,7 +175,7 @@ public class FlowCapableTopologyExporterTest {
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
-        doReturn(Futures.immediateCheckedFuture(Optional.<Link>absent())).when(mockTx)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL,
                       topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
 

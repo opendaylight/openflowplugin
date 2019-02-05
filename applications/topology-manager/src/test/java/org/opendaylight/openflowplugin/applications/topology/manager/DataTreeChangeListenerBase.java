@@ -18,14 +18,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.api.TransactionChainListener;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
@@ -47,7 +47,7 @@ public abstract class DataTreeChangeListenerBase {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    protected BindingTransactionChain mockTxChain;
+    protected TransactionChain mockTxChain;
 
     @Before
     public void setUp() {
@@ -78,10 +78,10 @@ public abstract class DataTreeChangeListenerBase {
         return builder.build();
     }
 
-    protected <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
+    protected <T extends DataObject> DataTreeModification<T> setupDataTreeChange(final ModificationType type,
                                                                               final InstanceIdentifier<T> ii) {
         final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
-        final DataTreeIdentifier identifier = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, ii);
+        final DataTreeIdentifier<T> identifier = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
         when(dataTreeModification.getRootNode().getModificationType()).thenReturn(type);
         when(dataTreeModification.getRootPath()).thenReturn(identifier);

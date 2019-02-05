@@ -14,20 +14,20 @@ import static org.mockito.Mockito.mock;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.tools.NotificationProviderConfig;
 import org.opendaylight.openflowplugin.applications.notification.supplier.tools.NotificationProviderConfig.NotificationProviderConfigBuilder;
 
 public class NotificationProviderTest {
 
-    private NotificationProviderService notificationProviderService;
+    private NotificationPublishService notificationProviderService;
     private DataBroker dataBroker;
 
     @Before
     public void initialization() {
         dataBroker = mock(DataBroker.class);
-        notificationProviderService = mock(NotificationProviderService.class);
+        notificationProviderService = mock(NotificationPublishService.class);
     }
 
     @Test

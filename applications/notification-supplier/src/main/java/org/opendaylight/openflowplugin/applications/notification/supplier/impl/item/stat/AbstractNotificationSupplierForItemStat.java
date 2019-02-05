@@ -5,15 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierForItemStat;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.AbstractNotificationSupplierBase;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -30,7 +29,7 @@ import org.opendaylight.yangtools.yang.binding.Notification;
 public abstract class AbstractNotificationSupplierForItemStat<O extends DataObject, N extends Notification> extends
         AbstractNotificationSupplierBase<O> implements NotificationSupplierForItemStat<O, N> {
 
-    private final NotificationProviderService notifProviderService;
+    private final NotificationPublishService notifProviderService;
 
     /**
      * Default constructor for all Statistic Notification Supplier implementation.
@@ -39,7 +38,7 @@ public abstract class AbstractNotificationSupplierForItemStat<O extends DataObje
      * @param db                   - DataBroker for DataTreeChangeListener registration
      * @param clazz                - Statistics Notification Class
      */
-    public AbstractNotificationSupplierForItemStat(final NotificationProviderService notifProviderService,
+    public AbstractNotificationSupplierForItemStat(final NotificationPublishService notifProviderService,
                                                    final DataBroker db, final Class<O> clazz) {
         super(db, clazz);
         this.notifProviderService = Preconditions.checkNotNull(notifProviderService);
@@ -77,7 +76,11 @@ public abstract class AbstractNotificationSupplierForItemStat<O extends DataObje
     public void add(InstanceIdentifier<O> identifier, O add) {
         final N notif = createNotification(add, identifier);
         if (notif != null) {
-            notifProviderService.publish(notif);
+            try {
+                notifProviderService.putNotification(notif);
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("Interrupted while publishing " + notif, e);
+            }
         }
     }
 

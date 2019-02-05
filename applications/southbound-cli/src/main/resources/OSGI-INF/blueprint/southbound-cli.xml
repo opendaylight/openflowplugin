@@ -5,7 +5,7 @@
            odl:use-default-for-reference-types="true">
 
     <reference id="dataBroker"
-               interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"/>
+               interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
     <odl:rpc-service id="frmReconciliationService"
              interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
