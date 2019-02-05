@@ -1,16 +1,15 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.common.txchain;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
@@ -21,16 +20,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.binding.api.Transaction;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
+import org.opendaylight.mdsal.binding.api.TransactionChainListener;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * package protected class for controlling {@link WriteTransaction} life cycle. It is
  * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
- * and submitTransaction method (wrapped {@link WriteTransaction#submit()}).
+ * and submitTransaction method (wrapped {@link WriteTransaction#commit()}).
  */
 public class TransactionChainManager implements TransactionChainListener, AutoCloseable {
 
@@ -55,11 +54,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     @GuardedBy("txLock")
     private ReadWriteTransaction writeTx;
     @GuardedBy("txLock")
-    private BindingTransactionChain transactionChain;
+    private TransactionChain transactionChain;
     @GuardedBy("txLock")
     private boolean submitIsEnabled;
     @GuardedBy("txLock")
-    private ListenableFuture<Void> lastSubmittedFuture;
+    private FluentFuture<? extends CommitInfo> lastSubmittedFuture;
 
     private volatile boolean initCommit;
 
@@ -70,12 +69,12 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                                    @Nonnull final String deviceIdentifier) {
         this.dataBroker = dataBroker;
         this.nodeId = deviceIdentifier;
-        this.lastSubmittedFuture = Futures.immediateFuture(null);
+        this.lastSubmittedFuture = CommitInfo.emptyFluentFuture();
     }
 
     @GuardedBy("txLock")
     private void createTxChain() {
-        BindingTransactionChain txChainFactoryTemp = transactionChain;
+        TransactionChain txChainFactoryTemp = transactionChain;
         transactionChain = dataBroker.createTransactionChain(TransactionChainManager.this);
         Optional.ofNullable(txChainFactoryTemp).ifPresent(TransactionChain::close);
     }
@@ -115,20 +114,20 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
      * Call this method for SLAVE only.
      * @return Future
      */
-    public ListenableFuture<Void> deactivateTransactionManager() {
+    public FluentFuture<?> deactivateTransactionManager() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("deactivateTransactionManager for node {}", this.nodeId);
         }
-        final ListenableFuture<Void> future;
+        final FluentFuture<? extends CommitInfo> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
                 future = txChainShuttingDown();
                 Preconditions.checkState(writeTx == null,
                         "We have some unexpected WriteTransaction.");
-                Futures.addCallback(future, new FutureCallback<Void>() {
+                future.addCallback(new FutureCallback<CommitInfo>() {
                     @Override
-                    public void onSuccess(final Void result) {
+                    public void onSuccess(final CommitInfo result) {
                         closeTransactionChain();
                     }
 
@@ -139,7 +138,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 }, MoreExecutors.directExecutor());
             } else {
                 // ignoring redundant deactivate invocation
-                future = Futures.immediateFuture(null);
+                future = CommitInfo.emptyFluentFuture();
             }
         }
         return future;
@@ -177,7 +176,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
                     this.nodeId);
-            final ListenableFuture<Void> submitFuture = writeTx.submit();
+            final FluentFuture<? extends CommitInfo> submitFuture = writeTx.commit();
             lastSubmittedFuture = submitFuture;
             writeTx = null;
 
@@ -193,9 +192,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 return true;
             }
 
-            Futures.addCallback(submitFuture, new FutureCallback<Void>() {
+            submitFuture.addCallback(new FutureCallback<CommitInfo>() {
                 @Override
-                public void onSuccess(final Void result) {
+                public void onSuccess(final CommitInfo result) {
                     //NOOP
                 }
 
@@ -260,7 +259,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
-    public <T extends DataObject> ListenableFuture<com.google.common.base.Optional<T>>
+    public <T extends DataObject> ListenableFuture<Optional<T>>
         readFromTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
@@ -274,8 +273,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     @Override
-    public void onTransactionChainFailed(final TransactionChain<?, ?> chain,
-                                         final AsyncTransaction<?, ?> transaction, final Throwable cause) {
+    public void onTransactionChainFailed(final TransactionChain chain,
+                                         final Transaction transaction, final Throwable cause) {
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
                     && chain.equals(this.transactionChain)) {
@@ -288,7 +287,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     @Override
-    public void onTransactionChainSuccessful(final TransactionChain<?, ?> chain) {
+    public void onTransactionChainSuccessful(final TransactionChain chain) {
         // NOOP
     }
 
@@ -307,7 +306,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
-    public ListenableFuture<Void> shuttingDown() {
+    public ListenableFuture<?> shuttingDown() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("TxManager is going SHUTTING_DOWN for node {}", this.nodeId);
         }
@@ -318,14 +317,14 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     @GuardedBy("txLock")
-    private ListenableFuture<Void> txChainShuttingDown() {
+    private FluentFuture<? extends CommitInfo> txChainShuttingDown() {
         boolean wasSubmitEnabled = submitIsEnabled;
         submitIsEnabled = false;
-        ListenableFuture<Void> future;
+        FluentFuture<? extends CommitInfo> future;
 
         if (!wasSubmitEnabled || transactionChain == null) {
             // stay with actual thread
-            future = Futures.immediateFuture(null);
+            future = CommitInfo.emptyFluentFuture();
 
             if (writeTx != null) {
                 writeTx.cancel();
@@ -339,7 +338,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 LOG.debug("Submitting all transactions for Node {}", this.nodeId);
             }
             // hijack md-sal thread
-            future = writeTx.submit();
+            future = writeTx.commit();
             writeTx = null;
         }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,16 +10,17 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
 
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -71,7 +72,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     @SuppressWarnings("IllegalCatch")
     @Override
     public void registerListener() {
-        final DataTreeIdentifier<Group> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+        final DataTreeIdentifier<Group> treeId = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
         try {
@@ -215,14 +216,14 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleGroupInstanceIdentifier(staleGroup, nodeIdent),
                 staleGroup, false);
 
-        ListenableFuture<Void> submitFuture = writeTransaction.submit();
+        FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleGroupResultFuture(submitFuture);
     }
 
-    private void handleStaleGroupResultFuture(ListenableFuture<Void> submitFuture) {
-        Futures.addCallback(submitFuture, new FutureCallback<Void>() {
+    private void handleStaleGroupResultFuture(FluentFuture<?> submitFuture) {
+        submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(Object result) {
                 LOG.debug("Stale Group creation success");
             }
 

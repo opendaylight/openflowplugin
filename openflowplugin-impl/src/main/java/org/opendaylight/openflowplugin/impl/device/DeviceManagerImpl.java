@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -122,12 +122,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> removeDeviceFromOperationalDS(
-            @Nonnull final KeyedInstanceIdentifier<Node, NodeKey> ii) {
+    public ListenableFuture<?> removeDeviceFromOperationalDS(@Nonnull final KeyedInstanceIdentifier<Node, NodeKey> ii) {
 
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
-        return delWtx.submit();
+        return delWtx.commit();
 
     }
 

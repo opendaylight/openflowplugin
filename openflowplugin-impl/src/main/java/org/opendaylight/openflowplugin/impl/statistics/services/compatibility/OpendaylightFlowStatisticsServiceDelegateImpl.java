@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.statistics.services.AggregateFlowsInTableService;
