@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.learningswitch.multi;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.learningswitch.DataTreeChangeListenerRegistrationHolder;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapperImpl;
@@ -97,7 +97,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class);
         final DataTreeIdentifier<Table> dataTreeIdentifier =
-                new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(dataTreeIdentifier, wakeupListener);
         LOG.debug("start() <--");
     }

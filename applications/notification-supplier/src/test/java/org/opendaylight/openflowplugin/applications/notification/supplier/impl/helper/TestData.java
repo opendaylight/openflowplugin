@@ -5,22 +5,21 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.binding.ChildOf;
+import org.opendaylight.yangtools.yang.binding.ChoiceIn;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifiable;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 
 /**
  * Created by eshuvka on 6/7/2016.
@@ -32,17 +31,15 @@ public class TestData<T extends DataObject> implements DataTreeModification<T> {
 
     public TestData(final InstanceIdentifier<T> path, final T dataBefore, final T dataAfter,
                     DataObjectModification.ModificationType modType) {
-        this.path = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, path);
-        this.rootNode = new Test(dataBefore, dataAfter, modType);
+        this.path = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, path);
+        this.rootNode = new Test<>(dataBefore, dataAfter, modType);
     }
 
-    @Nonnull
     @Override
     public DataTreeIdentifier<T> getRootPath() {
         return path;
     }
 
-    @Nonnull
     @Override
     public DataObjectModification<T> getRootNode() {
         return rootNode;
@@ -61,64 +58,79 @@ public class TestData<T extends DataObject> implements DataTreeModification<T> {
         }
 
         @Override
-        public InstanceIdentifier.PathArgument getIdentifier() {
+        public PathArgument getIdentifier() {
             return null;
         }
 
-        @Nonnull
         @Override
         public Class<T> getDataType() {
             return null;
         }
 
-        @Nonnull
         @Override
         public ModificationType getModificationType() {
             return modification;
         }
 
-        @Nullable
         @Override
         public T getDataBefore() {
             return dataObjBefore;
         }
 
-        @Nullable
         @Override
         public T getDataAfter() {
             return dataObjAfter;
         }
 
-        @Nonnull
         @Override
         public Collection<DataObjectModification<? extends DataObject>> getModifiedChildren() {
             return null;
         }
 
-        @Nullable
         @Override
-        public <C extends ChildOf<? super T>> DataObjectModification<C> getModifiedChildContainer(
-                @Nonnull Class<C> theClass) {
+        public <C extends ChildOf<? super T>> Collection<DataObjectModification<C>> getModifiedChildren(
+                Class<C> childType) {
             return null;
         }
 
-        @Nullable
+        @Override
+        public <H extends ChoiceIn<? super T> & DataObject, C extends ChildOf<? super H>>
+                Collection<DataObjectModification<C>> getModifiedChildren(Class<H> caseType, Class<C> childType) {
+            return null;
+        }
+
+        @Override
+        public <C extends ChildOf<? super T>> DataObjectModification<C> getModifiedChildContainer(Class<C> theClass) {
+            return null;
+        }
+
+        @Override
+        public <H extends ChoiceIn<? super T> & DataObject, C extends ChildOf<? super H>> DataObjectModification<C>
+                getModifiedChildContainer(Class<H> caseType, Class<C> child) {
+            return null;
+        }
+
         @Override
         public <C extends Augmentation<T> & DataObject> DataObjectModification<C> getModifiedAugmentation(
-                @Nonnull Class<C> theClass) {
+                Class<C> theClass) {
             return null;
         }
 
         @Override
         public <C extends Identifiable<K> & ChildOf<? super T>, K extends Identifier<C>> DataObjectModification<C>
-            getModifiedChildListItem(@Nonnull Class<C> theClass, @Nonnull K listKey) {
+                getModifiedChildListItem(Class<C> theClass, K listKey) {
             return null;
         }
 
-        @Nullable
         @Override
-        public DataObjectModification<? extends DataObject> getModifiedChild(
-                InstanceIdentifier.PathArgument pathArgument) {
+        public <H extends ChoiceIn<? super T> & DataObject, C extends Identifiable<K> & ChildOf<? super H>,
+                K extends Identifier<C>> DataObjectModification<C> getModifiedChildListItem(Class<H> caseType,
+                        Class<C> listItem, K listKey) {
+            return null;
+        }
+
+        @Override
+        public DataObjectModification<? extends DataObject> getModifiedChild(PathArgument pathArgument) {
             return null;
         }
     }

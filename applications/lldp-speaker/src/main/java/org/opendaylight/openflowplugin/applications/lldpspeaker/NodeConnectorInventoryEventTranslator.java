@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import com.google.common.collect.ImmutableSet;
@@ -15,12 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
@@ -64,10 +63,10 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     @SuppressWarnings("IllegalCatch")
     public NodeConnectorInventoryEventTranslator(DataBroker dataBroker, NodeConnectorEventsObserver... observers) {
         this.observers = ImmutableSet.copyOf(observers);
-        final DataTreeIdentifier<T> dtiToNodeConnector = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
-                                                                                II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
-        final DataTreeIdentifier<T> dtiToNodeConnectorState = new DataTreeIdentifier(LogicalDatastoreType.OPERATIONAL,
-                                                                                     II_TO_STATE);
+        final DataTreeIdentifier dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+                                                                                   II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
+        final DataTreeIdentifier dtiToNodeConnectorState = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+                                                                                   II_TO_STATE);
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
         try {
             listenerOnPortRegistration = looper.loopUntilNoException(() ->

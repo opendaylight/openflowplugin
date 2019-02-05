@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
@@ -44,12 +44,12 @@ public class NodeConnectorNotificationSupplierImplTest {
     private static final String FLOW_NODE_ID = "openflow:111";
     private static final String FLOW_CODE_CONNECTOR_ID = "test-con-111";
     private NodeConnectorNotificationSupplierImpl notifSupplierImpl;
-    private NotificationProviderService notifProviderService;
+    private NotificationPublishService notifProviderService;
     private DataBroker dataBroker;
 
     @Before
     public void initalization() {
-        notifProviderService = mock(NotificationProviderService.class);
+        notifProviderService = mock(NotificationPublishService.class);
         dataBroker = mock(DataBroker.class);
         notifSupplierImpl = new NodeConnectorNotificationSupplierImpl(notifProviderService, dataBroker);
         TestSupplierVerifyHelper.verifyDataTreeChangeListenerRegistration(dataBroker);
@@ -84,14 +84,13 @@ public class NodeConnectorNotificationSupplierImplTest {
     }
 
     @Test
-    public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestFlowCapableConnectorNodePath(), null,
-                                               createTestFlowCapableNodeConnecor(),
-                                               DataObjectModification.ModificationType.WRITE);
+    public void testCreateChangeEvent() throws InterruptedException {
+        final TestData<FlowCapableNodeConnector> testData = new TestData<>(createTestFlowCapableConnectorNodePath(),
+                null, createTestFlowCapableNodeConnecor(), DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowCapableNodeConnector>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(any(NodeConnectorUpdated.class));
+        verify(notifProviderService, times(1)).putNotification(any(NodeConnectorUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -117,14 +116,13 @@ public class NodeConnectorNotificationSupplierImplTest {
     }
 
     @Test
-    public void testDeleteChangeEvent() {
-        final TestData testData = new TestData(createTestFlowCapableConnectorNodePath(),
-                                               createTestFlowCapableNodeConnecor(), null,
-                                               DataObjectModification.ModificationType.DELETE);
+    public void testDeleteChangeEvent() throws InterruptedException {
+        final TestData<FlowCapableNodeConnector> testData = new TestData<>(createTestFlowCapableConnectorNodePath(),
+                createTestFlowCapableNodeConnecor(), null, DataObjectModification.ModificationType.DELETE);
         Collection<DataTreeModification<FlowCapableNodeConnector>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(any(NodeConnectorRemoved.class));
+        verify(notifProviderService, times(1)).putNotification(any(NodeConnectorRemoved.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

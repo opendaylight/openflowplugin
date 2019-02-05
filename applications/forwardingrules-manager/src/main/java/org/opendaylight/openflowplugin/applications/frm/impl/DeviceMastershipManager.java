@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2016, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -17,13 +16,13 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
+import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
@@ -36,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -53,19 +53,25 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     private final ClusterSingletonServiceProvider clusterSingletonService;
     private final FlowNodeReconciliation reconcliationAgent;
     private final DataBroker dataBroker;
-    private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap();
+    private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
     private final Object lockObj = new Object();
+    private final RpcProviderService rpcProviderService;
+    private final FrmReconciliationService reconcliationService;
+
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
-    private RoutedRpcRegistration routedRpcReg;
     private MastershipChangeRegistration mastershipChangeServiceRegistration;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
                                    final FlowNodeReconciliation reconcliationAgent,
                                    final DataBroker dataBroker,
-                                   final MastershipChangeServiceManager mastershipChangeServiceManager) {
+                                   final MastershipChangeServiceManager mastershipChangeServiceManager,
+                                   final RpcProviderService rpcProviderService,
+                                   final FrmReconciliationService reconciliationService) {
         this.clusterSingletonService = clusterSingletonService;
         this.reconcliationAgent = reconcliationAgent;
+        this.rpcProviderService = rpcProviderService;
+        this.reconcliationService = reconciliationService;
         this.dataBroker = dataBroker;
         registerNodeListener();
         this.mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
@@ -88,7 +94,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> changes) {
+    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
 
         for (DataTreeModification<FlowCapableNode> change : changes) {
@@ -116,8 +122,8 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         }
     }
 
-    public void remove(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final InstanceIdentifier<FlowCapableNode> identifier, final FlowCapableNode del,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Node removed: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
@@ -136,8 +142,8 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         }
     }
 
-    public void add(InstanceIdentifier<FlowCapableNode> identifier, FlowCapableNode add,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void add(final InstanceIdentifier<FlowCapableNode> identifier, final FlowCapableNode add,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Node added: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
@@ -168,22 +174,18 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         }
     }
 
-    private boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
-            InstanceIdentifier<?> identifier2) {
+    private boolean compareInstanceIdentifierTail(final InstanceIdentifier<?> identifier1,
+            final InstanceIdentifier<?> identifier2) {
         return Iterables.getLast(identifier1.getPathArguments())
                 .equals(Iterables.getLast(identifier2.getPathArguments()));
     }
 
-    private void setNodeOperationalStatus(InstanceIdentifier<FlowCapableNode> nodeIid, boolean status) {
+    private void setNodeOperationalStatus(final InstanceIdentifier<FlowCapableNode> nodeIid, final boolean status) {
         NodeId nodeId = nodeIid.firstKeyOf(Node.class).getId();
         if (nodeId != null && deviceMasterships.containsKey(nodeId)) {
             deviceMasterships.get(nodeId).setDeviceOperationalStatus(status);
             LOG.debug("Operational status of device {} is set to {}", nodeId, status);
         }
-    }
-
-    public void setRoutedRpcReg(RoutedRpcRegistration routedRpcReg) {
-        this.routedRpcReg = routedRpcReg;
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -192,7 +194,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         final InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class).augmentation(FlowCapableNode.class);
 
-        final DataTreeIdentifier<FlowCapableNode> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+        final DataTreeIdentifier<FlowCapableNode> treeId = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                 flowNodeWildCardIdentifier);
 
         try {
@@ -212,13 +214,13 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     public void onBecomeOwner(@Nonnull final DeviceInfo deviceInfo) {
         LOG.debug("Mastership role notification received for device : {}", deviceInfo.getDatapathId());
         DeviceMastership membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
-            device -> new DeviceMastership(deviceInfo.getNodeId(), routedRpcReg));
+            device -> new DeviceMastership(deviceInfo.getNodeId()));
         membership.reconcile();
-        membership.registerReconciliationRpc();
+        membership.registerReconciliationRpc(rpcProviderService, reconcliationService);
     }
 
     @Override
-    public void onLoseOwnership(@Nonnull DeviceInfo deviceInfo) {
+    public void onLoseOwnership(@Nonnull final DeviceInfo deviceInfo) {
         final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
         if (mastership != null) {
             mastership.deregisterReconciliationRpc();

@@ -8,18 +8,21 @@
 
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
+import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -36,15 +39,15 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final AtomicBoolean isDeviceInOperDS = new AtomicBoolean(false);
     private final InstanceIdentifier<FlowCapableNode> fcnIID;
     private final KeyedInstanceIdentifier<Node, NodeKey> path;
-    private final RoutedRpcRegistration routedRpcReg;
 
-    public DeviceMastership(final NodeId nodeId, final RoutedRpcRegistration routedRpcReg) {
+    private ObjectRegistration<@NonNull FrmReconciliationService> reg;
+
+    public DeviceMastership(final NodeId nodeId) {
         this.nodeId = nodeId;
         this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId))
                 .augmentation(FlowCapableNode.class);
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
-        this.routedRpcReg = routedRpcReg;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
         return deviceMastered.get();
     }
 
-    public void setDeviceOperationalStatus(boolean inOperDS) {
+    public void setDeviceOperationalStatus(final boolean inOperDS) {
         isDeviceInOperDS.set(inOperDS);
     }
 
@@ -81,13 +84,24 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
         deviceMastered.set(true);
     }
 
-    public void registerReconciliationRpc() {
-        LOG.debug("The path is registered : {}", path);
-        routedRpcReg.registerPath(NodeContext.class, path);
+    public void registerReconciliationRpc(final RpcProviderService rpcProviderService,
+            final FrmReconciliationService reconcliationService) {
+        if (reg == null) {
+            LOG.debug("The path is registered : {}", path);
+            reg = rpcProviderService.registerRpcImplementation(FrmReconciliationService.class, reconcliationService,
+                ImmutableSet.of(path));
+        } else {
+            LOG.debug("The path is already registered : {}", path);
+        }
     }
 
     public void deregisterReconciliationRpc() {
-        LOG.debug("The path is unregistered : {}", path);
-        routedRpcReg.unregisterPath(NodeContext.class, path);
+        if (reg != null) {
+            reg.close();
+            reg = null;
+            LOG.debug("The path is unregistered : {}", path);
+        } else {
+            LOG.debug("The path is already unregistered : {}", path);
+        }
     }
 }

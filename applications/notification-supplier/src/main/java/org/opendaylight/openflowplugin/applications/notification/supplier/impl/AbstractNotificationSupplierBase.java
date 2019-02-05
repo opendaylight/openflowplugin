@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.notification.supplier.NotificationSupplierDefinition;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Public abstract basic Supplier implementation contains code for a make Supplier instance,
- * registration Supplier like {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener}
+ * registration Supplier like {@link DataTreeChangeListener}
  * and close method. In additional case, it contains help methods for all Supplier implementations.
  *
  * @param <O> - data tree item Object extends {@link DataObject}
@@ -45,7 +44,7 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
 
 
-    final DataTreeIdentifier<O> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
+    final DataTreeIdentifier<O> treeId = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
 
     /**
      * Default constructor for all Notification Supplier implementation.

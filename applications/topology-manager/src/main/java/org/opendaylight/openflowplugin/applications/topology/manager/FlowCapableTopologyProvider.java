@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
@@ -17,9 +17,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
@@ -43,7 +43,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     static final String TOPOLOGY_ID = "flow:1";
 
     private final DataBroker dataBroker;
-    private final NotificationProviderService notificationService;
+    private final NotificationService notificationService;
     private final OperationProcessor processor;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private InstanceIdentifier<Topology> topologyPathIID;
@@ -53,7 +53,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
 
     @Inject
     public FlowCapableTopologyProvider(@Reference final DataBroker dataBroker,
-                                       @Reference final NotificationProviderService notificationService,
+                                       @Reference final NotificationService notificationService,
                                        final OperationProcessor processor,
                                        @Reference final ClusterSingletonServiceProvider
                                                clusterSingletonServiceProvider) {

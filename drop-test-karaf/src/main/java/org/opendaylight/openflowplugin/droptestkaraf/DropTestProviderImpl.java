@@ -9,8 +9,8 @@
 package org.opendaylight.openflowplugin.droptestkaraf;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;

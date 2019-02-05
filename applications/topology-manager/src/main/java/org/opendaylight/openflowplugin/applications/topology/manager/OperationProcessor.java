@@ -14,7 +14,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
 
     private final BlockingQueue<TopologyOperation> queue = new LinkedBlockingQueue<>(OPERATION_QUEUE_DEPTH);
     private final Thread thread;
-    private TransactionChainManager transactionChainManager;
+    private final TransactionChainManager transactionChainManager;
     private volatile boolean finishing = false;
 
     @Inject

@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
@@ -46,12 +46,12 @@ public class QueueStatNotificationSupplierImplTest {
     private static final String FLOW_NODE_ID = "openflow:111";
     private static final String FLOW_CODE_CONNECTOR_ID = "test-con-111";
     private QueueStatNotificationSupplierImpl notifSupplierImpl;
-    private NotificationProviderService notifProviderService;
+    private NotificationPublishService notifProviderService;
     private DataBroker dataBroker;
 
     @Before
     public void initalization() {
-        notifProviderService = mock(NotificationProviderService.class);
+        notifProviderService = mock(NotificationPublishService.class);
         dataBroker = mock(DataBroker.class);
         notifSupplierImpl = new QueueStatNotificationSupplierImpl(notifProviderService, dataBroker);
         TestSupplierVerifyHelper.verifyDataTreeChangeListenerRegistration(dataBroker);
@@ -82,13 +82,13 @@ public class QueueStatNotificationSupplierImplTest {
     }
 
     @Test
-    public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestQueueStatPath(), null, createTestQueueStat(),
-                                               DataObjectModification.ModificationType.WRITE);
+    public void testCreateChangeEvent() throws InterruptedException {
+        final TestData<FlowCapableNodeConnectorQueueStatisticsData> testData = new TestData<>(createTestQueueStatPath(),
+                null, createTestQueueStat(), DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<FlowCapableNodeConnectorQueueStatisticsData>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(any(QueueStatisticsUpdate.class));
+        verify(notifProviderService, times(1)).putNotification(any(QueueStatisticsUpdate.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
