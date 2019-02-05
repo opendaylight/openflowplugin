@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
@@ -19,28 +18,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -107,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -139,9 +139,9 @@ public class DeviceContextImplTest {
     @Mock
     private ReadWriteTransaction writeTx;
     @Mock
-    private ReadOnlyTransaction readTx;
+    private ReadTransaction readTx;
     @Mock
-    private BindingTransactionChain txChainFactory;
+    private TransactionChain txChainFactory;
     @Mock
     private HashedWheelTimer timer;
     @Mock
@@ -182,8 +182,8 @@ public class DeviceContextImplTest {
 
     @Before
     public void setUp() throws Exception {
-        final CheckedFuture<Optional<Node>, ReadFailedException> noExistNodeFuture =
-                Futures.immediateCheckedFuture(Optional.<Node>absent());
+        final FluentFuture<Optional<Node>> noExistNodeFuture =
+                FluentFutures.immediateFluentFuture(Optional.<Node>empty());
         Mockito.lenient().when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent))
                 .thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
@@ -279,13 +279,13 @@ public class DeviceContextImplTest {
 
     @Test
     public void testInitialSubmitTransaction() throws Exception {
-        Mockito.when(writeTx.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        Mockito.doReturn(CommitInfo.emptyFluentFuture()).when(writeTx).commit();
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
-        verify(writeTx).submit();
+        verify(writeTx).commit();
     }
 
     private ConnectionContext prepareConnectionContext() {

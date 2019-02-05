@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -21,10 +20,11 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -85,7 +85,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
     private final MastershipChangeServiceManager mastershipChangeServiceManager;
-    private final RpcProviderRegistry rpcRegistry;
+    private final RpcProviderService rpcProviderService;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
@@ -97,7 +97,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ReconciliationManager reconciliationManager;
     private DevicesGroupRegistry devicesGroupRegistry;
     private NodeConfigurator nodeConfigurator;
-    private ArbitratorReconcileService arbitratorReconciliationManager;
+    private final ArbitratorReconcileService arbitratorReconciliationManager;
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
@@ -107,7 +107,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Inject
     public ForwardingRulesManagerImpl(@Reference final DataBroker dataBroker,
-                                      @Reference final RpcProviderRegistry rpcRegistry,
+                                      @Reference final RpcConsumerRegistry rpcRegistry,
+                                      @Reference final RpcProviderService rpcProviderService,
                                       final ForwardingRulesManagerConfig config,
                                       @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
                                       @Reference final ClusterSingletonServiceProvider clusterSingletonService,
@@ -124,7 +125,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
         this.reconciliationManager = reconciliationManager;
-        this.rpcRegistry = rpcRegistry;
+        this.rpcProviderService = rpcProviderService;
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
@@ -164,7 +165,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         }
         this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, this.nodeListener,
                 dataService, mastershipChangeServiceManager);
-        this.deviceMastershipManager.setRoutedRpcReg(rpcRegistry.addRoutedRpcImplementation(
+        this.deviceMastershipManager.setRoutedRpcReg(rpcProviderService.addRoutedRpcImplementation(
                 FrmReconciliationService.class, new FrmReconciliationServiceImpl(this)));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
@@ -210,7 +211,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public ReadOnlyTransaction getReadTransaction() {
+    public ReadTransaction getReadTransaction() {
         return dataService.newReadOnlyTransaction();
     }
 
@@ -228,10 +229,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident) {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
-        try (ReadOnlyTransaction transaction = dataService.newReadOnlyTransaction()) {
-            ListenableFuture<com.google.common.base.Optional<Node>> future = transaction
+        try (ReadTransaction transaction = dataService.newReadOnlyTransaction()) {
+            ListenableFuture<Optional<Node>> future = transaction
                 .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
-            com.google.common.base.Optional<Node> optionalDataObject = future.get();
+            Optional<Node> optionalDataObject = future.get();
             if (optionalDataObject.isPresent()) {
                 result = true;
             } else {

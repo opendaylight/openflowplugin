@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -73,7 +72,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
         return deviceMastered.get();
     }
 
-    public void setDeviceOperationalStatus(boolean inOperDS) {
+    public void setDeviceOperationalStatus(final boolean inOperDS) {
         isDeviceInOperDS.set(inOperDS);
     }
 

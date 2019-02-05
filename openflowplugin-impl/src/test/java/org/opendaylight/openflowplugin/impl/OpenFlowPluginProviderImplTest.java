@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,12 +19,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
@@ -34,6 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationP
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenFlowPluginProviderImplTest {
@@ -42,7 +43,7 @@ public class OpenFlowPluginProviderImplTest {
     PingPongDataBroker dataBroker;
 
     @Mock
-    RpcProviderRegistry rpcProviderRegistry;
+    RpcProviderService rpcProviderRegistry;
 
     @Mock
     NotificationPublishService notificationPublishService;
@@ -63,7 +64,7 @@ public class OpenFlowPluginProviderImplTest {
     EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
 
     @Mock
-    BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
 
     @Mock
     SwitchConnectionProvider switchConnectionProvider;
@@ -89,9 +90,9 @@ public class OpenFlowPluginProviderImplTest {
     @Before
     public void setUp() throws Exception {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
-        when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
-        when(rpcProviderRegistry.addRpcImplementation(eq(StatisticsManagerControlService.class), any()))
+        when(rpcProviderRegistry.registerRpcImplementation(eq(StatisticsManagerControlService.class), any()))
                 .thenReturn(controlServiceRegistration);
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateFuture(true));
         when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));

@@ -5,22 +5,21 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,10 +29,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -50,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -69,7 +69,7 @@ public class DeviceFlowRegistryImplTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private ReadOnlyTransaction readOnlyTransaction;
+    private ReadTransaction readOnlyTransaction;
 
     @Before
     public void setUp() throws Exception {
@@ -162,8 +162,8 @@ public class DeviceFlowRegistryImplTest {
 
     private Map<FlowRegistryKey, FlowDescriptor> fillRegistry(final InstanceIdentifier<FlowCapableNode> path,
                                                               final FlowCapableNode flowCapableNode) throws Exception {
-        when(readOnlyTransaction.read(any(), any()))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.fromNullable(flowCapableNode)));
+        doReturn(FluentFutures.immediateFluentFuture(Optional.ofNullable(flowCapableNode))).when(readOnlyTransaction)
+            .read(any(), any());
         deviceFlowRegistry.fill().get();
         return deviceFlowRegistry.getAllFlowDescriptors();
     }

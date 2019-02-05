@@ -5,25 +5,24 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 
 /**
  * Test for {@link FlowReader}.
@@ -34,7 +33,7 @@ public class FlowReaderTest {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private ReadOnlyTransaction readOnlyTransaction;
+    private ReadTransaction readOnlyTransaction;
     @Mock
     private Node node;
 
@@ -42,8 +41,8 @@ public class FlowReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class), Mockito.<InstanceIdentifier<Node>>any()))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.of(node)));
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(node))).when(readOnlyTransaction)
+            .read(any(LogicalDatastoreType.class), any());
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         flowReader = FlowReader.getNewInstance(mockDataBroker, 2, 5, true, false, (short) 1, (short) 2);
     }

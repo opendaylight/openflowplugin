@@ -1,20 +1,20 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +24,7 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
     private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginTestActivator.class);
 
-    private DataBroker dataBroker;
-    private NotificationProviderService notificationService;
-    private RpcProviderRegistry rpcRegistry;
+    private RpcProviderService rpcRegistry;
     private final OpenflowpluginTestServiceProvider provider;
     private final OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
     private final OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
@@ -54,8 +52,9 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
     public static final String NODE_ID = "foo:node:1";
 
     public OpenflowpluginTestActivator(@Reference DataBroker dataBroker,
-            @Reference NotificationProviderService notificationService, BundleContext ctx) {
-        provider = new OpenflowpluginTestServiceProvider(dataBroker, notificationService);
+            @Reference NotificationService notificationService,
+            @Reference NotificationPublishService notificationPublishService, BundleContext ctx) {
+        provider = new OpenflowpluginTestServiceProvider(dataBroker, notificationPublishService);
         OpenflowpluginTestCommandProvider openflowpluginTestCommandProvider = new OpenflowpluginTestCommandProvider(
                 dataBroker, notificationService, ctx);
         this.cmdProvider = openflowpluginTestCommandProvider;

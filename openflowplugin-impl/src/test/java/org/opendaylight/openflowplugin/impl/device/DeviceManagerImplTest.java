@@ -5,19 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.lang.reflect.Field;
@@ -29,13 +28,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -57,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,7 +71,7 @@ public class DeviceManagerImplTest {
             .createNodeInstanceIdentifier(DUMMY_NODE_ID);
 
     @Mock
-    private CheckedFuture<Void, TransactionCommitFailedException> mockedFuture;
+    private FluentFuture<CommitInfo> mockedFuture;
     @Mock
     private FeaturesReply mockFeatures;
     @Mock
@@ -90,7 +91,7 @@ public class DeviceManagerImplTest {
     @Mock
     private WriteTransaction writeTransaction;
     @Mock
-    private BindingTransactionChain transactionChain;
+    private TransactionChain transactionChain;
     @Mock
     private Capabilities capabilities;
     @Mock
@@ -111,7 +112,7 @@ public class DeviceManagerImplTest {
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
 
         when(mockedFuture.isDone()).thenReturn(true);
-        when(writeTransaction.submit()).thenReturn(mockedFuture);
+        doReturn(mockedFuture).when(writeTransaction).commit();
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
 
         deviceManager = new DeviceManagerImpl(
@@ -134,7 +135,7 @@ public class DeviceManagerImplTest {
         deviceManager.setTranslatorLibrary(translatorLibrary);
         verify(dataBroker).newWriteOnlyTransaction();
         verify(writeTransaction).merge(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
-        verify(writeTransaction).submit();
+        verify(writeTransaction).commit();
     }
 
     @Test
@@ -146,7 +147,7 @@ public class DeviceManagerImplTest {
 
     @Test
     public void removeDeviceFromOperationalDS() throws Exception {
-        final ListenableFuture<Void> future = deviceManager
+        final ListenableFuture<?> future = deviceManager
                 .removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
 
         future.get();
@@ -156,12 +157,10 @@ public class DeviceManagerImplTest {
 
     @Test(expected = ExecutionException.class)
     public void removeDeviceFromOperationalDSException() throws Exception {
-        final CheckedFuture<Void, TransactionCommitFailedException> failedFuture =
-                Futures.immediateFailedCheckedFuture(
+        final FluentFuture<CommitInfo> failedFuture = FluentFutures.immediateFailedFluentFuture(
                         new TransactionCommitFailedException("Test failed transaction"));
-        Mockito.when(writeTransaction.submit()).thenReturn(failedFuture);
-        final ListenableFuture<Void> future = deviceManager
-                .removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
+        Mockito.doReturn(failedFuture).when(writeTransaction).commit();
+        final ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
         future.get();
         assertTrue(future.isDone());
         verify(writeTransaction).delete(LogicalDatastoreType.OPERATIONAL, DUMMY_IDENTIFIER);

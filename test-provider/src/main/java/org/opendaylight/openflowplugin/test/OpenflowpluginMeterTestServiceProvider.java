@@ -1,19 +1,17 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -28,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +35,8 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     private static final Logger LOG = LoggerFactory
             .getLogger(OpenflowpluginMeterTestServiceProvider.class);
     private DataBroker dataService;
-    private RoutedRpcRegistration<SalMeterService> meterRegistration;
-    private NotificationProviderService notificationService;
+    private ObjectRegistration<SalMeterService> meterRegistration;
+    private NotificationPublishService notificationService;
 
     /**
      * Gets the data service.
@@ -62,15 +59,14 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      *
      * @return {@link #meterRegistration}
      */
-    public RoutedRpcRegistration<SalMeterService> getMeterRegistration() {
+    public ObjectRegistration<SalMeterService> getMeterRegistration() {
         return this.meterRegistration;
     }
 
     /**
      * Sets the {@link #meterRegistration}.
      */
-    public void setMeterRegistration(
-            final RoutedRpcRegistration<SalMeterService> meterRegistration) {
+    public void setMeterRegistration(final ObjectRegistration<SalMeterService> meterRegistration) {
         this.meterRegistration = meterRegistration;
     }
 
@@ -79,15 +75,14 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      *
      * @return {@link #notificationService}
      */
-    public NotificationProviderService getNotificationService() {
+    public NotificationPublishService getNotificationService() {
         return this.notificationService;
     }
 
     /**
      * Sets the {@link #notificationService}.
      */
-    public void setNotificationService(
-            final NotificationProviderService notificationService) {
+    public void setNotificationService(final NotificationPublishService notificationService) {
         this.notificationService = notificationService;
     }
 
@@ -155,35 +150,16 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(
-            final RpcProviderRegistry rpcRegistry) {
-
-        RoutedRpcRegistration<SalMeterService> addRoutedRpcImplementation = rpcRegistry.addRoutedRpcImplementation(
-                        SalMeterService.class, this);
-
-        setMeterRegistration(addRoutedRpcImplementation);
-
-        InstanceIdentifierBuilder<Nodes> builder1 = InstanceIdentifier
-                .<Nodes>builder(Nodes.class);
-
-        NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
-        NodeKey nodeKey = new NodeKey(nodeId);
-
-        InstanceIdentifierBuilder<Node> nodeIndentifier = builder1
-                .<Node, NodeKey>child(Node.class, nodeKey);
-
-        InstanceIdentifier<Node> instance = nodeIndentifier.build();
-
-        meterRegistration.registerPath(NodeContext.class, instance);
-
-        RoutedRpcRegistration<SalMeterService> meterRegistration1 = this
-                .getMeterRegistration();
+    public ObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(final RpcProviderService rpcRegistry) {
+        setMeterRegistration(rpcRegistry.registerRpcImplementation(SalMeterService.class, this, ImmutableSet.of(
+            InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
         return new AbstractObjectRegistration<OpenflowpluginMeterTestServiceProvider>(this) {
 
             @Override
             protected void removeRegistration() {
-                meterRegistration1.close();
+                meterRegistration.close();
             }
         };
     }

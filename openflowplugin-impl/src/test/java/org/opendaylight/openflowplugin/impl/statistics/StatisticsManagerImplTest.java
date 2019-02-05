@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,10 +26,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -56,11 +55,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsManagerImplTest {
@@ -84,13 +83,13 @@ public class StatisticsManagerImplTest {
     @Mock
     private DeviceInfo mockedDeviceInfo;
     @Mock
-    private RpcProviderRegistry rpcProviderRegistry;
+    private RpcProviderService rpcProviderRegistry;
     @Mock
     private OutboundQueue outboundQueue;
     @Mock
     private MultiMsgCollector multiMagCollector;
     @Mock
-    private BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> serviceControlRegistration;
+    private ObjectRegistration<StatisticsManagerControlService> serviceControlRegistration;
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
@@ -108,9 +107,9 @@ public class StatisticsManagerImplTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
 
-        when(rpcProviderRegistry.addRpcImplementation(
+        when(rpcProviderRegistry.registerRpcImplementation(
                 eq(StatisticsManagerControlService.class),
-                ArgumentMatchers.<StatisticsManagerControlService>any())).thenReturn(serviceControlRegistration);
+                ArgumentMatchers.any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         final long basicTimerDelay = 3000L;

@@ -1,18 +1,17 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -20,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -28,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +37,11 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
             .getLogger(OpenflowpluginTestServiceProvider.class);
 
     private final DataBroker dataService;
-    private RoutedRpcRegistration<SalFlowService> flowRegistration;
-    private final NotificationProviderService notificationProviderService;
+    private ObjectRegistration<SalFlowService> flowRegistration;
+    private final NotificationPublishService notificationProviderService;
 
     public OpenflowpluginTestServiceProvider(DataBroker dataService,
-            NotificationProviderService notificationProviderService) {
+            NotificationPublishService notificationProviderService) {
         this.dataService = dataService;
         this.notificationProviderService = notificationProviderService;
     }
@@ -63,15 +60,14 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      *
      * @return {@link #flowRegistration}
      */
-    public RoutedRpcRegistration<SalFlowService> getFlowRegistration() {
+    public ObjectRegistration<SalFlowService> getFlowRegistration() {
         return flowRegistration;
     }
 
     /**
      * Set {@link #flowRegistration}.
      */
-    public void setFlowRegistration(
-            final RoutedRpcRegistration<SalFlowService> flowRegistration) {
+    public void setFlowRegistration(final ObjectRegistration<SalFlowService> flowRegistration) {
         this.flowRegistration = flowRegistration;
     }
 
@@ -80,7 +76,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      *
      * @return {@link #notificationProviderService}
      */
-    public NotificationProviderService getNotificationService() {
+    public NotificationPublishService getNotificationService() {
         return notificationProviderService;
     }
 
@@ -141,31 +137,15 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(RpcProviderRegistry rpcRegistry) {
-        RoutedRpcRegistration<SalFlowService> addRoutedRpcImplementation =
-                rpcRegistry.addRoutedRpcImplementation(SalFlowService.class, this);
-
-        setFlowRegistration(addRoutedRpcImplementation);
-
-        InstanceIdentifierBuilder<Nodes> builderII = InstanceIdentifier
-                .<Nodes>builder(Nodes.class);
-
-        NodeId nodeId = new NodeId(OpenflowpluginTestActivator.NODE_ID);
-        NodeKey nodeKey = new NodeKey(nodeId);
-
-        InstanceIdentifierBuilder<Node> nodeIdentifier = builderII
-                .<Node, NodeKey>child(Node.class, nodeKey);
-
-        InstanceIdentifier<Node> instance = nodeIdentifier.build();
-
-        flowRegistration.registerPath(NodeContext.class, instance);
-
-        RoutedRpcRegistration<SalFlowService> flowRegistration2 = getFlowRegistration();
+    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(RpcProviderService rpcRegistry) {
+        setFlowRegistration(rpcRegistry.registerRpcImplementation(SalFlowService.class, this, ImmutableSet.of(
+            InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
         return new AbstractObjectRegistration<OpenflowpluginTestServiceProvider>(this) {
             @Override
             protected void removeRegistration() {
-                flowRegistration2.close();
+                flowRegistration.close();
             }
         };
     }

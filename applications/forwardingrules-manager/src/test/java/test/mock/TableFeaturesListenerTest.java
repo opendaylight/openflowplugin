@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,10 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
@@ -47,7 +46,7 @@ public class TableFeaturesListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    RpcProviderRegistryMock rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
@@ -63,9 +62,10 @@ public class TableFeaturesListenerTest extends FRMTest {
 
     @Before
     public void setUp() {
-        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock, getConfig(),
-                mastershipChangeServiceManager, clusterSingletonService, getConfigurationService(),
-                reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry);
+        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
+                rpcProviderRegistryMock, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
+                getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
+                serviceRecoveryRegistry);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
@@ -86,12 +86,12 @@ public class TableFeaturesListenerTest extends FRMTest {
                 .child(TableFeatures.class, tableFeaturesKey);
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
 
         tableFeaturesData = new TableFeaturesBuilder().withKey(tableFeaturesKey).setName("dummy name").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
 
         SalTableServiceMock salTableServiceMock = (SalTableServiceMock) forwardingRulesManager.getSalTableService();
         List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();

@@ -8,16 +8,15 @@
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -99,9 +98,9 @@ public class TableWriter implements FlowCounterMBean {
                         wtx.delete(LogicalDatastoreType.CONFIGURATION, tableIId);
                     }
 
-                    Futures.addCallback(wtx.submit(), new FutureCallback<Void>() {
+                    wtx.commit().addCallback(new FutureCallback<Object>() {
                         @Override
-                        public void onSuccess(Void voidParameter) {
+                        public void onSuccess(Object voidParameter) {
                             if (successfulWrites.incrementAndGet() == totalTables) {
                                 if (failedWrites.get() > 0) {
                                     writeOpStatus.set(FlowCounter.OperationStatus.FAILURE.status());

@@ -8,29 +8,30 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -40,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -85,13 +87,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         final InstanceIdentifier<FlowCapableNode> path = instanceIdentifier.augmentation(FlowCapableNode.class);
 
         // First, try to fill registry with flows from DS/Configuration
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> configFuture =
+        final FluentFuture<Optional<FlowCapableNode>> configFuture =
                 fillFromDatastore(LogicalDatastoreType.CONFIGURATION, path);
 
         // Now, try to fill registry with flows from DS/Operational
         // in case of cluster fail over, when clients are not using DS/Configuration
         // for adding flows, but only RPCs
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> operationalFuture =
+        final FluentFuture<Optional<FlowCapableNode>> operationalFuture =
                 fillFromDatastore(LogicalDatastoreType.OPERATIONAL, path);
 
         // And at last, chain and return futures created above.
@@ -103,32 +105,30 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         return lastFillFuture;
     }
 
-    private CheckedFuture<Optional<FlowCapableNode>, ReadFailedException>
-            fillFromDatastore(final LogicalDatastoreType logicalDatastoreType,
+    private FluentFuture<Optional<FlowCapableNode>> fillFromDatastore(final LogicalDatastoreType logicalDatastoreType,
                               final InstanceIdentifier<FlowCapableNode> path) {
         // Create new read-only transaction
-        final ReadOnlyTransaction transaction = dataBroker.newReadOnlyTransaction();
+        final ReadTransaction transaction = dataBroker.newReadOnlyTransaction();
 
         // Bail out early if transaction is null
         if (transaction == null) {
-            return Futures.immediateFailedCheckedFuture(
+            return FluentFutures.immediateFailedFluentFuture(
                     new ReadFailedException("Read transaction is null"));
         }
 
         // Prepare read operation from datastore for path
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> future =
-                transaction.read(logicalDatastoreType, path);
+        final FluentFuture<Optional<FlowCapableNode>> future = transaction.read(logicalDatastoreType, path);
 
         // Bail out early if future is null
         if (future == null) {
-            return Futures.immediateFailedCheckedFuture(
+            return FluentFutures.immediateFailedFluentFuture(
                     new ReadFailedException("Future from read transaction is null"));
         }
 
-        Futures.addCallback(future, new FutureCallback<Optional<FlowCapableNode>>() {
+        future.addCallback(new FutureCallback<Optional<FlowCapableNode>>() {
             @Override
             public void onSuccess(@Nonnull Optional<FlowCapableNode> result) {
-                result.asSet().stream()
+                result.map(Collections::singleton).orElse(Collections.emptySet()).stream()
                         .filter(Objects::nonNull)
                         .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
                         .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
