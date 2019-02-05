@@ -5,15 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
@@ -22,6 +21,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -34,10 +34,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.ReadFailedException;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -132,10 +132,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGatheringUtilsTest {
@@ -162,7 +162,7 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private GetFeaturesOutput features;
     @Mock
-    private ReadOnlyTransaction readTx;
+    private ReadTransaction readTx;
     @Mock
     private ConnectionContext connectionAdapter;
     @Mock
@@ -427,7 +427,8 @@ public class StatisticsGatheringUtilsTest {
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
                 Futures.immediateCheckedFuture(flowNodeOpt);
-        when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        doReturn(FluentFutures.immediateFluentFuture(flowNodeOpt)).when(readTx)
+            .read(LogicalDatastoreType.OPERATIONAL, nodePath);
         when(flowDescriptor.getFlowId()).thenReturn(flowId);
 
         final org.opendaylight.yang.gen.v1.urn
@@ -544,9 +545,8 @@ public class StatisticsGatheringUtilsTest {
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
-                Futures.immediateCheckedFuture(flowNodeOpt);
-        when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodePath)).thenReturn(flowNodeFuture);
+        doReturn(FluentFutures.immediateFluentFuture(flowNodeOpt)).when(readTx)
+            .read(LogicalDatastoreType.OPERATIONAL, nodePath);
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceInfo.getNodeInstanceIdentifier()
             .augmentation(FlowCapableNode.class), deviceFlowRegistry);
 

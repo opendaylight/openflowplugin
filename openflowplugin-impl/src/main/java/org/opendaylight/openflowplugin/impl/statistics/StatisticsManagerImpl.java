@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.base.Preconditions;
@@ -15,8 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
@@ -32,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -46,19 +45,19 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private final ConvertorExecutor converterExecutor;
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
     private final Semaphore workModeGuard = new Semaphore(1, true);
-    private final BindingAwareBroker.RpcRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    private final ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
     private final ListeningExecutorService executorService;
     private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
-                                 @Nonnull final RpcProviderRegistry rpcProviderRegistry,
+                                 @Nonnull final RpcProviderService rpcProviderRegistry,
                                  final ConvertorExecutor convertorExecutor,
                                  @Nonnull final ListeningExecutorService executorService) {
         this.config = config;
         this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
-                .addRpcImplementation(StatisticsManagerControlService.class, this));
+                .registerRpcImplementation(StatisticsManagerControlService.class, this));
         this.executorService = executorService;
     }
 

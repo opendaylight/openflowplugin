@@ -1,22 +1,22 @@
-/**
+/*
  * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +26,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
@@ -66,19 +67,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link SalBulkFlowServiceImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SalBulkFlowServiceImplTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowServiceImplTest.class);
 
     @Mock
     private DataBroker mockDataBroker;
@@ -87,7 +85,7 @@ public class SalBulkFlowServiceImplTest {
     @Mock
     private WriteTransaction writeTransaction;
     @Mock
-    private ReadOnlyTransaction readOnlyTransaction;
+    private ReadTransaction readOnlyTransaction;
     @Mock
     private Nodes mockNodes;
     @Mock
@@ -101,15 +99,15 @@ public class SalBulkFlowServiceImplTest {
     public void setUp() throws Exception {
         when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        Mockito.lenient().when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
-                Mockito.<InstanceIdentifier<Node>>any()))
-                .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNode)));
+
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNode))).when(readOnlyTransaction)
+            .read(any(LogicalDatastoreType.class), any());
         salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
     }
 
     @Test
     public void testAddRemoveFlowsDs() throws Exception {
-        Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
 
         final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
                 .setTableId((short) 2);
@@ -127,7 +125,7 @@ public class SalBulkFlowServiceImplTest {
         final AddFlowsDsInput addFlowsDsInput = addFlowsDsInputBuilder.build();
         salBulkFlowService.addFlowsDs(addFlowsDsInput);
 
-        verify(writeTransaction).submit();
+        verify(writeTransaction).commit();
         verify(writeTransaction).put(ArgumentMatchers.<LogicalDatastoreType>any(),
                 ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
                 flowArgumentCaptor.capture(), Mockito.anyBoolean());
@@ -144,7 +142,7 @@ public class SalBulkFlowServiceImplTest {
         salBulkFlowService.removeFlowsDs(removeFlowsDsInput);
         verify(writeTransaction).delete(ArgumentMatchers.<LogicalDatastoreType>any(),
                 ArgumentMatchers.<InstanceIdentifier<Flow>>any());
-        verify(writeTransaction, times(2)).submit();
+        verify(writeTransaction, times(2)).commit();
     }
 
     @Test
@@ -194,9 +192,8 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowRpcAddTest() throws Exception {
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
-                Mockito.<InstanceIdentifier<Nodes>>any()))
-                        .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
+            .read(any(LogicalDatastoreType.class), any());
 
         final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder().setFlowCount(1L)
                 .setDpnId("1").setRpcBatchSize(1L);
@@ -246,9 +243,8 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowRpcAddMultiple() throws Exception {
-        when(readOnlyTransaction.read(Mockito.any(LogicalDatastoreType.class),
-                Mockito.<InstanceIdentifier<Nodes>>any()))
-                        .thenReturn(Futures.immediateCheckedFuture(Optional.of(mockNodes)));
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
+            .read(any(LogicalDatastoreType.class), any());
 
         final FlowRpcAddMultipleInputBuilder flowRpcAddMultipleInputBuilder = new FlowRpcAddMultipleInputBuilder()
                 .setFlowCount(1L).setRpcBatchSize(1L);

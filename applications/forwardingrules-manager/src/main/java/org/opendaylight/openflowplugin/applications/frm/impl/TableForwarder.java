@@ -5,16 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
 import java.util.concurrent.Future;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -45,7 +44,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     @SuppressWarnings("IllegalCatch")
     @Override
     public void registerListener() {
-        final DataTreeIdentifier<TableFeatures> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+        final DataTreeIdentifier<TableFeatures> treeId = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
                 getWildCardPath());
 
         try {

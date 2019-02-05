@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,18 +10,20 @@ package org.opendaylight.openflowplugin.impl.rpc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -30,11 +32,11 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
@@ -47,7 +49,7 @@ public class RpcContextImplTest {
 
 
     @Mock
-    private RpcProviderRegistry rpcProviderRegistry;
+    private RpcProviderService rpcProviderRegistry;
     @Mock
     private DeviceState deviceState;
     @Mock
@@ -55,7 +57,7 @@ public class RpcContextImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private BindingAwareBroker.RoutedRpcRegistration<TestRpcService> routedRpcReg;
+    private ObjectRegistration<TestRpcService> routedRpcReg;
 
     @Mock
     private NotificationPublishService notificationPublishService;
@@ -88,7 +90,7 @@ public class RpcContextImplTest {
                 convertorExecutor,
                 notificationPublishService, true);
 
-        when(rpcProviderRegistry.addRoutedRpcImplementation(TestRpcService.class, serviceInstance))
+        when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
                 .thenReturn(routedRpcReg);
     }
 
@@ -138,8 +140,8 @@ public class RpcContextImplTest {
 
     public void testRegisterRpcServiceImplementation() {
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        verify(rpcProviderRegistry, Mockito.times(1)).addRoutedRpcImplementation(TestRpcService.class,serviceInstance);
-        verify(routedRpcReg,Mockito.times(1)).registerPath(NodeContext.class,nodeInstanceIdentifier);
+        verify(rpcProviderRegistry, Mockito.times(1)).registerRpcImplementation(TestRpcService.class, serviceInstance,
+            ImmutableSet.of(nodeInstanceIdentifier));
         assertEquals(rpcContext.isEmptyRpcRegistrations(), false);
     }
 
@@ -153,8 +155,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testClose() {
-        Class<TestRpcService> serviceClass = TestRpcService.class;
-        when(routedRpcReg.getServiceType()).thenReturn(serviceClass);
+        when(routedRpcReg.getInstance()).thenReturn(serviceInstance);
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
         rpcContext.close();
         assertEquals(rpcContext.isEmptyRpcRegistrations(), true);

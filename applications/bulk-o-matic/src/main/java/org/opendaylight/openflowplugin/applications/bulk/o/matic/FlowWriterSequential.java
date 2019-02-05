@@ -8,14 +8,13 @@
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -133,7 +132,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             LOG.debug("Submitting Txn for dpId: {}, begin tableId: {}, end tableId: {}, sourceIp: {}", dpId, tableId,
                     calculatedTableId, sourceIp);
 
-            Futures.addCallback(writeTransaction.submit(), new DsCallBack(dpId, sourceIp, calculatedTableId),
+            writeTransaction.commit().addCallback(new DsCallBack(dpId, sourceIp, calculatedTableId),
                     MoreExecutors.directExecutor());
         }
 
@@ -148,7 +147,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             }
         }
 
-        private class DsCallBack implements FutureCallback<Void> {
+        private class DsCallBack implements FutureCallback<Object> {
             private final String dpId;
             private int sourceIp;
             private final Short tableId;
@@ -162,7 +161,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             }
 
             @Override
-            public void onSuccess(Void notUsed) {
+            public void onSuccess(Object notUsed) {
                 if (sourceIp > flowsPerDpn) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {}, tableId: {}, sourceIp: {} in {}ns", dpId,
@@ -205,7 +204,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
                 }
                 LOG.debug("OnSuccess: Submitting Txn for dpId: {}, begin tableId: {}, end tableId: {}, sourceIp: {}",
                         dpId, tableId, calculatedTableId, sourceIp);
-                Futures.addCallback(writeTransaction.submit(), new DsCallBack(dpId, sourceIp, calculatedTableId),
+                writeTransaction.commit().addCallback(new DsCallBack(dpId, sourceIp, calculatedTableId),
                         MoreExecutors.directExecutor());
             }
 
