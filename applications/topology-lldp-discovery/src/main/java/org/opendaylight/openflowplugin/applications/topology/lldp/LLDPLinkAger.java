@@ -20,12 +20,13 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -39,7 +40,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     private final long linkExpirationTime;
     private final Map<LinkDiscovered, Date> linkToDate;
     private final Timer timer;
-    private final NotificationProviderService notificationService;
+    private final NotificationPublishService notificationService;
     private final AutoCloseable configurationServiceRegistration;
     private final EntityOwnershipService eos;
 
@@ -48,7 +49,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
      */
     @Inject
     public LLDPLinkAger(final TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig,
-            @Reference final NotificationProviderService notificationService,
+            @Reference final NotificationPublishService notificationService,
             @Reference final ConfigurationService configurationService,
             @Reference final EntityOwnershipService entityOwnershipService) {
         this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
@@ -92,7 +93,12 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                         linkToDate.remove(link);
                         if (nodeKey != null && LLDPDiscoveryUtils.isEntityOwned(eos, nodeKey.getId().getValue())) {
                             LOG.info("Publish Link Remove event for the link {}", link);
-                            notificationService.publish(lrb.build());
+                            final LinkRemoved lr = lrb.build();
+                            try {
+                                notificationService.putNotification(lr);
+                            } catch (InterruptedException e) {
+                                LOG.warn("Interrupted while publishing notification {}", lr, e);
+                            }
                         } else {
                             LOG.trace("Skip publishing Link Remove event for the link {} because link destination "
                                     + "node is not owned by the controller", link);

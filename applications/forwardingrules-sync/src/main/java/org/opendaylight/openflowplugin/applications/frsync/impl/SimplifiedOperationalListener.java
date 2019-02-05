@@ -1,14 +1,12 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,10 +14,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
@@ -82,11 +81,11 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         final DataObjectModification<Node> nodeModification = modification.getRootNode();
 
         if (isDelete(nodeModification) || isDeleteLogical(nodeModification)) {
-            operationalSnapshot.updateCache(nodeId, Optional.absent());
+            operationalSnapshot.updateCache(nodeId, Optional.empty());
             deviceMastershipManager.onDeviceDisconnected(nodeId);
             result = skipModification(modification);
         } else {
-            operationalSnapshot.updateCache(nodeId, Optional.fromNullable(
+            operationalSnapshot.updateCache(nodeId, Optional.ofNullable(
                     ModificationUtil.flowCapableNodeAfter(modification)));
 
             final boolean isAdd = isAdd(nodeModification) || isAddLogical(nodeModification);
@@ -114,7 +113,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                     modification.getRootNode().getDataBefore() == null ? "null" : "nonnull",
                     modification.getRootNode().getDataAfter() == null ? "null" : "nonnull");
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private boolean isDelete(final DataObjectModification<Node> nodeModification) {

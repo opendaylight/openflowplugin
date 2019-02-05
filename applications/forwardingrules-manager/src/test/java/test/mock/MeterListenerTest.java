@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,10 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
@@ -52,7 +51,7 @@ public class MeterListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    RpcProviderRegistryMock rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
@@ -70,6 +69,7 @@ public class MeterListenerTest extends FRMTest {
     public void setUp() {
         forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
+                rpcProviderRegistryMock,
                 rpcProviderRegistryMock,
                 getConfig(),
                 mastershipChangeServiceManager,
@@ -96,7 +96,7 @@ public class MeterListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalMeterServiceMock salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
@@ -108,7 +108,7 @@ public class MeterListenerTest extends FRMTest {
         meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
         addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(2, addMeterCalls.size());
@@ -127,7 +127,7 @@ public class MeterListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalMeterServiceMock salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
@@ -136,7 +136,7 @@ public class MeterListenerTest extends FRMTest {
         meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
         List<UpdateMeterInput> updateMeterCalls = salMeterService.getUpdateMeterCalls();
         assertEquals(1, updateMeterCalls.size());
@@ -155,7 +155,7 @@ public class MeterListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalMeterServiceMock salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
@@ -163,7 +163,7 @@ public class MeterListenerTest extends FRMTest {
 
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION, meterII);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salMeterService = (SalMeterServiceMock) forwardingRulesManager.getSalMeterService();
         List<RemoveMeterInput> removeMeterCalls = salMeterService.getRemoveMeterCalls();
         assertEquals(1, removeMeterCalls.size());
@@ -182,7 +182,7 @@ public class MeterListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
     }
 
     @After

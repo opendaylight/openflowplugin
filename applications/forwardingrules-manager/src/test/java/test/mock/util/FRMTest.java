@@ -7,14 +7,16 @@
  */
 package test.mock.util;
 
+import com.google.common.util.concurrent.FluentFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import org.mockito.Mockito;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.binding.dom.adapter.test.AbstractDataBrokerTest;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -48,14 +50,20 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         writeTx.put(LogicalDatastoreType.OPERATIONAL, flowNodeIdentifier, nodeBuilder.build());
         writeTx.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(Nodes.class), nodes);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowNodeIdentifier, nodeBuilder.build());
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
+    }
+
+    // TODO: remove with mdsal-3.0.7 or later
+    @SuppressWarnings("unchecked")
+    protected static final void assertCommit(FluentFuture<?> future) {
+        assertCommit((ListenableFuture<Void>) future);
     }
 
     public void removeNode(NodeKey nodeKey) throws ExecutionException, InterruptedException {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey));
-        writeTx.submit().get();
+        writeTx.commit().get();
     }
 
     public void addTable(final TableKey tableKey, final NodeKey nodeKey) {
@@ -65,7 +73,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
     }
 
     public ForwardingRulesManagerConfig getConfig() {

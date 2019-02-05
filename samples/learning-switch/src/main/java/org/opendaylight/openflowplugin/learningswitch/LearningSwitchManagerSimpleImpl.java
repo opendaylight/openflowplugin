@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -90,7 +90,7 @@ public class LearningSwitchManagerSimpleImpl
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class);
         final DataTreeIdentifier<Table> dataTreeIdentifier =
-                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
+                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
         dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(dataTreeIdentifier, wakeupListener);
         LOG.debug("start() <--");
     }

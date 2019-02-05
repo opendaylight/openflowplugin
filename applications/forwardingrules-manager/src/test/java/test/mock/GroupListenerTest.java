@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,10 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
@@ -54,7 +53,7 @@ public class GroupListenerTest extends FRMTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistry rpcProviderRegistryMock = new RpcProviderRegistryMock();
+    RpcProviderRegistryMock rpcProviderRegistryMock = new RpcProviderRegistryMock();
     @Mock
     ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
@@ -72,6 +71,7 @@ public class GroupListenerTest extends FRMTest {
     public void setUp() {
         forwardingRulesManager = new ForwardingRulesManagerImpl(
                 getDataBroker(),
+                rpcProviderRegistryMock,
                 rpcProviderRegistryMock,
                 getConfig(),
                 mastershipChangeServiceManager,
@@ -98,7 +98,7 @@ public class GroupListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalGroupServiceMock salGroupService = (SalGroupServiceMock) forwardingRulesManager.getSalGroupService();
         await().until(listSize(salGroupService.getAddGroupCalls()), equalTo(1));
         List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
@@ -111,7 +111,7 @@ public class GroupListenerTest extends FRMTest {
         group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salGroupService = (SalGroupServiceMock) forwardingRulesManager.getSalGroupService();
         await().until(listSize(salGroupService.getAddGroupCalls()), equalTo(2));
         addGroupCalls = salGroupService.getAddGroupCalls();
@@ -130,7 +130,7 @@ public class GroupListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalGroupServiceMock salGroupService = (SalGroupServiceMock) forwardingRulesManager.getSalGroupService();
         await().until(listSize(salGroupService.getAddGroupCalls()), equalTo(1));
         List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
@@ -140,7 +140,7 @@ public class GroupListenerTest extends FRMTest {
         group = new GroupBuilder().withKey(groupKey).setGroupName("Group2").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salGroupService = (SalGroupServiceMock) forwardingRulesManager.getSalGroupService();
         await().until(listSize(salGroupService.getUpdateGroupCalls()), equalTo(1));
         List<UpdateGroupInput> updateGroupCalls = salGroupService.getUpdateGroupCalls();
@@ -159,7 +159,7 @@ public class GroupListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         SalGroupServiceMock salGroupService = (SalGroupServiceMock) forwardingRulesManager.getSalGroupService();
         await().until(listSize(salGroupService.getAddGroupCalls()), equalTo(1));
         List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
@@ -168,7 +168,7 @@ public class GroupListenerTest extends FRMTest {
 
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION, groupII);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
         salGroupService = (SalGroupServiceMock) forwardingRulesManager.getSalGroupService();
         await().until(listSize(salGroupService.getRemoveGroupCalls()), equalTo(1));
         List<RemoveGroupInput> removeGroupCalls = salGroupService.getRemoveGroupCalls();
@@ -187,7 +187,7 @@ public class GroupListenerTest extends FRMTest {
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
-        assertCommit(writeTx.submit());
+        assertCommit(writeTx.commit());
     }
 
     @After

@@ -7,19 +7,19 @@
  */
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
-import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -77,9 +77,8 @@ public class FlowWriterDirectOFRpc {
         Set<String> nodeIds = new HashSet<>();
         InstanceIdentifier<Nodes> nodes = InstanceIdentifier.create(Nodes.class);
 
-        try (ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
-            Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes)
-                    .checkedGet();
+        try (ReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
+            Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes).get();
             if (nodesDataNode.isPresent()) {
                 List<Node> nodesCollection = nodesDataNode.get().getNode();
                 if (nodesCollection != null && !nodesCollection.isEmpty()) {
@@ -93,8 +92,8 @@ public class FlowWriterDirectOFRpc {
             } else {
                 return Collections.emptySet();
             }
-        } catch (ReadFailedException rdFailedException) {
-            LOG.error("Failed to read connected nodes {}", rdFailedException);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Failed to read connected nodes {}", e);
         }
         return nodeIds;
     }

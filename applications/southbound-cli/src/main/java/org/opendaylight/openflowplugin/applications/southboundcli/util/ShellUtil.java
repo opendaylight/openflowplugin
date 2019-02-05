@@ -8,15 +8,15 @@
 
 package org.opendaylight.openflowplugin.applications.southboundcli.util;
 
-import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -42,7 +42,7 @@ public final class ShellUtil {
     public static List<OFNode> getAllNodes(final DataBroker broker) {
         List<Node> nodes = null;
         InstanceIdentifier<Nodes> path = InstanceIdentifier.builder(Nodes.class).build();
-        try (ReadOnlyTransaction tx = broker.newReadOnlyTransaction()) {
+        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
             Optional<Nodes> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 nodes = result.get().getNode();
@@ -97,7 +97,7 @@ public final class ShellUtil {
         InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(NODE_PREFIX + nodeId))).build();
 
-        try (ReadOnlyTransaction tx = broker.newReadOnlyTransaction()) {
+        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
             Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 Node node = result.get();
@@ -138,7 +138,7 @@ public final class ShellUtil {
         InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationCounter.class).build();
         List<ReconcileCounter> output = Collections.emptyList();
-        try (ReadOnlyTransaction tx = dataBroker.newReadOnlyTransaction()) {
+        try (ReadTransaction tx = dataBroker.newReadOnlyTransaction()) {
             Optional<ReconciliationCounter> result =
                     tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             if (result.isPresent()) {

@@ -9,10 +9,10 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyLink;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
@@ -64,7 +64,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
         processor.enqueueOperation(new TopologyOperation() {
             @Override
             public void applyOperation(final TransactionChainManager manager) {
-                Optional<Link> linkOptional = Optional.absent();
+                Optional<Link> linkOptional = Optional.empty();
                 try {
                     // read that checks if link exists (if we do not do this we might get an exception on delete)
                     linkOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL,

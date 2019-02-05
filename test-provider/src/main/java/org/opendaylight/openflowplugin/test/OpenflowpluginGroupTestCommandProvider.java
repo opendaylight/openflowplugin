@@ -5,21 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
@@ -584,10 +581,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        ListenableFuture<Void> commitFuture = modification.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+        modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Void notUsed) {
+            public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -619,10 +615,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 .child(Group.class, new GroupKey(group.getGroupId()));
         modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
-        ListenableFuture<Void> commitFuture = modification.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+        modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Void notUsed) {
+            public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 

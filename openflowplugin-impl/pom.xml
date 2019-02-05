@@ -45,12 +45,12 @@
             <artifactId>model-inventory</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-api</artifactId>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-binding-broker-impl</artifactId>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding-spi</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
@@ -109,16 +109,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-util</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflowjava-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>sal-common-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>

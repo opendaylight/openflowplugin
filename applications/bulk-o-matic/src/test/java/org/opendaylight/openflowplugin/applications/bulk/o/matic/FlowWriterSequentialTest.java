@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import static org.mockito.Mockito.doReturn;
 
-import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,22 +17,19 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link FlowWriterSequential}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FlowWriterSequentialTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FlowWriterSequentialTest.class);
     private static final int FLOWS_PER_DPN = 100;
 
     @Mock
@@ -49,7 +45,7 @@ public class FlowWriterSequentialTest {
     public void setUp() throws Exception {
 
         doReturn(writeTransaction).when(mockDataBroker).newWriteOnlyTransaction();
-        Mockito.when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
 
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.junit.Assert.assertEquals;
@@ -24,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
@@ -48,7 +47,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     private StatisticsContextImpl<MultipartReply> statisticsContext;
     private ConvertorManager convertorManager;
     @Mock
-    private OpenflowProviderConfig config =
+    private final OpenflowProviderConfig config =
             Mockito.mock(OpenflowProviderConfig.class);
 
     @Before

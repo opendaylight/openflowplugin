@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
 import java.util.List;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -65,7 +64,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<Node> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             Node node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getNodeConnector() != null) {
@@ -107,7 +106,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<Node> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
 
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             Node node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getNodeConnector() != null) {
@@ -152,7 +151,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
 
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
 
             if (node != null) {
@@ -207,7 +206,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
 
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 List<Table> tables = node.getTable();
@@ -246,7 +245,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getGroup() != null) {
@@ -287,7 +286,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
 
             if (node != null) {
@@ -329,7 +328,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getMeter() != null) {
@@ -370,7 +369,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getMeter() != null) {
@@ -411,7 +410,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 List<Table> tables = node.getTable();
@@ -450,7 +449,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
                     .child(Node.class, nodeKey).augmentation(FlowCapableNode.class);
-            ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+            ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (null != node.getHardware() && null != node.getManufacturer() && null != node.getSoftware()) {
@@ -469,7 +468,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     }
 
     private List<Node> getNodes() {
-        ReadOnlyTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
+        ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
         InstanceIdentifier<Nodes> nodesID = InstanceIdentifier.create(Nodes.class);
         Nodes nodes = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodesID);
         if (nodes == null) {

@@ -1,16 +1,15 @@
-/**
+/*
  * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
@@ -24,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -31,10 +31,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -176,11 +176,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         @Override
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
-            Optional<FlowCapableNode> flowNode = Optional.absent();
+            Optional<FlowCapableNode> flowNode = Optional.empty();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
             BigInteger dpnId = getDpnIdFromNodeName(node);
             LOG.info("Triggering bundle based reconciliation for device : {}", dpnId);
-            try (ReadOnlyTransaction trans = provider.getReadTransaction()) {
+            try (ReadTransaction trans = provider.getReadTransaction()) {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (ExecutionException | InterruptedException e) {
                 LOG.error("Error occurred while reading the configuration data store for node {}", nodeIdentity, e);
@@ -313,7 +313,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             Optional<FlowCapableNode> flowNode;
             // initialize the counter
             int counter = 0;
-            try (ReadOnlyTransaction trans = provider.getReadTransaction()) {
+            try (ReadTransaction trans = provider.getReadTransaction()) {
                 flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (ExecutionException | InterruptedException e) {
                 LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
@@ -544,9 +544,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
         List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = Lists.newArrayList();
 
-        Optional<FlowCapableNode> flowNode = Optional.absent();
+        Optional<FlowCapableNode> flowNode = Optional.empty();
 
-        try (ReadOnlyTransaction trans = provider.getReadTransaction()) {
+        try (ReadTransaction trans = provider.getReadTransaction()) {
             flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Reconciliation Pre-Processing Fail with read Config/DS for Node {} !", nodeIdent, e);
@@ -637,7 +637,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
         }
 
-        ListenableFuture<Void> submitFuture = writeTransaction.submit();
+        FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -648,7 +648,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
         }
 
-        ListenableFuture<Void> submitFuture = writeTransaction.submit();
+        FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -659,7 +659,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
         }
 
-        ListenableFuture<Void> submitFuture = writeTransaction.submit();
+        FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -683,10 +683,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 
-    private void handleStaleEntityDeletionResultFuture(ListenableFuture<Void> submitFuture) {
-        Futures.addCallback(submitFuture, new FutureCallback<Void>() {
+    private void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
+        submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(Object result) {
                 LOG.debug("Stale entity removal success");
             }
 

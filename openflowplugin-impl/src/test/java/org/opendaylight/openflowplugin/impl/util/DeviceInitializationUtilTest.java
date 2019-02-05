@@ -5,27 +5,27 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.util.concurrent.Futures;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -71,7 +71,7 @@ public class DeviceInitializationUtilTest {
     @Before
     public void setUp() throws Exception {
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
-        when(writeTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(connectionAdapter.getRemoteAddress()).thenReturn(INET_SOCKET_ADDRESS);
         when(featuresReply.getTables()).thenReturn(TABLES);
@@ -90,7 +90,7 @@ public class DeviceInitializationUtilTest {
                 .create(Nodes.class), new NodesBuilder()
                 .setNode(Collections.emptyList())
                 .build());
-        verify(writeTransaction).submit();
+        verify(writeTransaction).commit();
     }
 
     @Test

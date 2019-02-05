@@ -7,11 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 
 /**
  * An <code>odl:type="pingpong"</code> {@link DataBroker}.
  *
  * @author Michael Vorburger.ch
  */
-public interface PingPongDataBroker extends DataBroker {}
+public interface PingPongDataBroker extends DataBroker {
+
+}

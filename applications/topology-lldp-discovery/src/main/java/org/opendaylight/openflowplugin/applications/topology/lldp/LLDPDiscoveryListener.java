@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
@@ -28,11 +28,11 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryListener.class);
 
     private final LLDPLinkAger lldpLinkAger;
-    private final NotificationProviderService notificationService;
+    private final NotificationPublishService notificationService;
     private final EntityOwnershipService eos;
 
     @Inject
-    public LLDPDiscoveryListener(@Reference final NotificationProviderService notificationService,
+    public LLDPDiscoveryListener(@Reference final NotificationPublishService notificationService,
             final LLDPLinkAger lldpLinkAger, @Reference final EntityOwnershipService entityOwnershipService) {
         this.notificationService = notificationService;
         this.lldpLinkAger = lldpLinkAger;
@@ -54,7 +54,11 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
                 lldpLinkAger.put(ld);
                 if (LLDPDiscoveryUtils.isEntityOwned(this.eos, nodeKey.getId().getValue())) {
                     LOG.debug("Publish add event for link {}", ld);
-                    notificationService.publish(ld);
+                    try {
+                        notificationService.putNotification(ld);
+                    } catch (InterruptedException e) {
+                        LOG.warn("Interrupted while publishing notification {}", ld, e);
+                    }
                 } else {
                     LOG.trace("Skip publishing the add event for link because controller is non-owner of the "
                             + "node {}. Link : {}", nodeKey.getId().getValue(), ld);

@@ -5,12 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,10 +17,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
@@ -3151,10 +3148,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
                 .child(Flow.class, tf.key());
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        final ListenableFuture<Void> commitFuture = modification.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+        modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(final Void notUsed) {
+            public void onSuccess(final Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -3191,10 +3187,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         modification.merge(LogicalDatastoreType.CONFIGURATION,
                 nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
-        final ListenableFuture<Void> commitFuture = modification.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
+        modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(final Void notUsed) {
+            public void onSuccess(final Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 

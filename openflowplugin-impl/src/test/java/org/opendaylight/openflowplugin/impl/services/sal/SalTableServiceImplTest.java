@@ -23,7 +23,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -48,7 +48,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class SalTableServiceImplTest extends ServiceMocking {
 
     @Mock
-    RpcProviderRegistry mockedRpcProviderRegistry;
+    RpcProviderService mockedRpcProviderRegistry;
 
     private SettableFuture<Object> handleResultFuture;
     private SalTableServiceImpl salTableService;

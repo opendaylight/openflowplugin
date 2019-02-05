@@ -5,12 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -36,10 +35,10 @@ public class FlowNotificationSupplierImpl extends AbstractNotificationSupplierFo
     /**
      * Constructor register supplier as DataTreeChangeListener and create wildCarded InstanceIdentifier.
      *
-     * @param notifProviderService - {@link NotificationProviderService}
+     * @param notifProviderService - {@link NotificationPublishService}
      * @param db                   - {@link DataBroker}
      */
-    public FlowNotificationSupplierImpl(final NotificationProviderService notifProviderService, final DataBroker db) {
+    public FlowNotificationSupplierImpl(final NotificationPublishService notifProviderService, final DataBroker db) {
         super(notifProviderService, db, Flow.class);
     }
 

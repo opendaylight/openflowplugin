@@ -5,11 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -57,7 +56,7 @@ public interface TxFacade {
      * as write transaction in this context.
      * @return readOnlyTransaction - Don't forget to close it after finish reading
      */
-    ReadOnlyTransaction getReadTransaction();
+    ReadTransaction getReadTransaction();
 
     /**
      * Method returns true if transaction chain manager is enabled.

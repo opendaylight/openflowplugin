@@ -14,14 +14,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.eos.binding.api.Entity;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
@@ -61,7 +60,7 @@ public class LLDPLinkAgerTest {
     @Mock
     private LinkDiscovered link;
     @Mock
-    private NotificationProviderService notificationService;
+    private NotificationPublishService notificationService;
     @Mock
     private EntityOwnershipService eos;
     @Mock
@@ -96,7 +95,7 @@ public class LLDPLinkAgerTest {
     public void testLLDPAgingTask() throws InterruptedException {
         lldpLinkAger.put(link);
         Thread.sleep(SLEEP);
-        verify(notificationService).publish(any(LinkRemoved.class));
+        verify(notificationService).putNotification(any(LinkRemoved.class));
     }
 
     private TopologyLldpDiscoveryConfig getConfig() {
