@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -12,7 +12,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.NotificationListener;
@@ -29,7 +29,7 @@ public class LLDPActivator implements AutoCloseable {
 
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     @Inject
-    public LLDPActivator(@Reference NotificationProviderService notificationService,
+    public LLDPActivator(@Reference NotificationService notificationService,
                          LLDPDiscoveryListener lldpDiscoveryListener,
                          TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig) {
         lldpSecureKey = topologyLldpDiscoveryConfig.getLldpSecureKey();

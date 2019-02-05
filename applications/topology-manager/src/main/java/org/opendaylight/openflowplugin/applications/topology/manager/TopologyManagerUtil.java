@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -30,7 +30,7 @@ final class TopologyManagerUtil {
 
     static void removeAffectedLinks(final NodeId id, final TransactionChainManager manager,
                                     InstanceIdentifier<Topology> topology) {
-        Optional<Topology> topologyOptional = Optional.absent();
+        Optional<Topology> topologyOptional = Optional.empty();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -60,7 +60,7 @@ final class TopologyManagerUtil {
 
     static void removeAffectedLinks(final TpId id, final TransactionChainManager manager,
                                     final InstanceIdentifier<Topology> topology) {
-        Optional<Topology> topologyOptional = Optional.absent();
+        Optional<Topology> topologyOptional = Optional.empty();
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
         } catch (InterruptedException | ExecutionException e) {

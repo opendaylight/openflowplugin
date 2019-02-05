@@ -23,7 +23,7 @@
   </bean>
   <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
 
-  <reference id="ppDB" interface="org.opendaylight.controller.md.sal.binding.api.DataBroker" odl:type="pingpong"/>
+  <reference id="ppDB" interface="org.opendaylight.mdsal.binding.api.DataBroker" odl:type="pingpong"/>
   <bean id="pingPongDataBroker" class="org.opendaylight.openflowplugin.impl.ForwardingPingPongDataBroker">
     <argument ref="ppDB"/>
   </bean>

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import static org.junit.Assert.assertEquals;
@@ -19,10 +18,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestChangeEventBuildHelper;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestData;
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
@@ -45,12 +44,12 @@ public class GroupStatNotificationSupplierImplTest {
     private static final String FLOW_NODE_ID = "openflow:111";
     private static final Long FLOW_TABLE_ID = 111L;
     private GroupStatNotificationSupplierImpl notifSupplierImpl;
-    private NotificationProviderService notifProviderService;
+    private NotificationPublishService notifProviderService;
     private DataBroker dataBroker;
 
     @Before
     public void initalization() {
-        notifProviderService = mock(NotificationProviderService.class);
+        notifProviderService = mock(NotificationPublishService.class);
         dataBroker = mock(DataBroker.class);
         notifSupplierImpl = new GroupStatNotificationSupplierImpl(notifProviderService, dataBroker);
         TestSupplierVerifyHelper.verifyDataTreeChangeListenerRegistration(dataBroker);
@@ -80,13 +79,13 @@ public class GroupStatNotificationSupplierImplTest {
     }
 
     @Test
-    public void testCreateChangeEvent() {
-        final TestData testData = new TestData(createTestGroupStatPath(), null, createTestGroupStat(),
-                                               DataObjectModification.ModificationType.WRITE);
+    public void testCreateChangeEvent() throws InterruptedException {
+        final TestData<GroupStatistics> testData = new TestData<>(createTestGroupStatPath(), null,
+                createTestGroupStat(), DataObjectModification.ModificationType.WRITE);
         Collection<DataTreeModification<GroupStatistics>> collection = new ArrayList<>();
         collection.add(testData);
         notifSupplierImpl.onDataTreeChanged(collection);
-        verify(notifProviderService, times(1)).publish(any(GroupStatisticsUpdated.class));
+        verify(notifProviderService, times(1)).putNotification(any(GroupStatisticsUpdated.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

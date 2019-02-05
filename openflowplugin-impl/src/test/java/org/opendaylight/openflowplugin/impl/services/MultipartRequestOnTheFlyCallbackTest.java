@@ -18,8 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
@@ -29,10 +27,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -106,7 +103,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Mock
     private FlowDescriptor mockedFlowDescriptor;
     @Mock
-    private ReadOnlyTransaction mockedReadOnlyTx;
+    private ReadTransaction mockedReadOnlyTx;
 
     private AbstractRequestContext<List<MultipartReply>> dummyRequestContext;
     private final EventIdentifier dummyEventIdentifier = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
@@ -135,8 +132,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.<Table>emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture =
-                Futures.immediateCheckedFuture(flowNodeOpt);
         dummyRequestContext = new AbstractRequestContext<List<MultipartReply>>(DUMMY_XID) {
 
             @Override
@@ -227,8 +222,6 @@ public class MultipartRequestOnTheFlyCallbackTest {
         tableDataBld.setId(tableId);
         flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        final CheckedFuture<Optional<FlowCapableNode>, ReadFailedException> flowNodeFuture = Futures
-                .immediateCheckedFuture(flowNodeOpt);
 
         multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());
 

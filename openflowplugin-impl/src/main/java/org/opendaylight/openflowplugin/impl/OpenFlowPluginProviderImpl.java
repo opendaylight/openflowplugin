@@ -41,12 +41,12 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.annotation.service.Service;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -114,7 +114,7 @@ public class OpenFlowPluginProviderImpl implements
     private final Collection<SwitchConnectionProvider> switchConnectionProviders;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorManager convertorManager;
-    private final RpcProviderRegistry rpcProviderRegistry;
+    private final RpcProviderService rpcProviderRegistry;
     private final ClusterSingletonServiceProvider singletonServicesProvider;
     private final OpenflowProviderConfig config;
     private final EntityOwnershipService entityOwnershipService;
@@ -137,7 +137,7 @@ public class OpenFlowPluginProviderImpl implements
     public OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
                                final SwitchConnectionProviderList switchConnectionProviders,
                                final PingPongDataBroker pingPongDataBroker,
-                               final @Reference RpcProviderRegistry rpcProviderRegistry,
+                               final @Reference RpcProviderService rpcProviderRegistry,
                                final @Reference NotificationPublishService notificationPublishService,
                                final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
                                final @Reference EntityOwnershipService entityOwnershipService,

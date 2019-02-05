@@ -12,7 +12,6 @@ import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.o
 import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.FAILED;
 import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.INPROGRESS;
 
-import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
@@ -20,15 +19,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
@@ -141,13 +141,13 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationState.class).child(ReconciliationStateList.class,
                         new ReconciliationStateListKey(new BigInteger(String.valueOf(nodeId)))).build();
-        try (ReadOnlyTransaction tx = broker.newReadOnlyTransaction()) {
+        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
             return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
 
         } catch (InterruptedException  | ExecutionException e) {
             LOG.error("Exception while reading reconciliation state for {}", nodeId, e);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
@@ -232,7 +232,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             }
             try {
                 tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
-                tx.submit().get();
+                tx.commit().get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Exception while submitting counter for {}", nodeId, e);
             }
@@ -245,7 +245,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Exception while reading counter for node: {}", nodeId, e);
             }
-            return Optional.absent();
+            return Optional.empty();
         }
 
         private void updateReconciliationState(State state) {
@@ -258,7 +258,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                     .setState(state);
             try {
                 tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, stateBuilder.build(), true);
-                tx.submit().get();
+                tx.commit().get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Exception while updating reconciliation state: {}", nodeId, e);
             }

@@ -15,8 +15,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.DELETE;
-import static org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType.WRITE;
+import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.DELETE;
+import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestTp;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeConnKey;
@@ -31,19 +31,17 @@ import static org.opendaylight.openflowplugin.applications.topology.manager.Test
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForDeletes;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForSubmit;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -56,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TerminationPointChangeListenerImplTest extends DataTreeChangeListenerBase {
@@ -93,13 +92,11 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         final SettableFuture<Optional<Topology>> readFuture = SettableFuture.create();
         readFuture.set(Optional.of(topology));
         ReadWriteTransaction mockTx1 = mock(ReadWriteTransaction.class);
-        doReturn(Futures.makeChecked(readFuture, ReadFailedException.MAPPER)).when(mockTx1)
-                .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
+        doReturn(readFuture).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topologyIID);
 
         SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
         readFutureNode.set(Optional.of(topoNode));
-        doReturn(Futures.makeChecked(readFutureNode, ReadFailedException.MAPPER)).when(mockTx1)
-                .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
+        doReturn(readFutureNode).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
         final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
 
@@ -149,13 +146,11 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
             };
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
-        doReturn(Futures.immediateCheckedFuture(Optional.absent())).when(mockTx)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
 
-        SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
-        readFutureNode.set(Optional.of(topoNode));
-        doReturn(Futures.makeChecked(readFutureNode, ReadFailedException.MAPPER)).when(mockTx)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(topoNode))).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
@@ -227,7 +222,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         Topology topology = new TopologyBuilder().setLink(linkList).build();
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
-        doReturn(Futures.immediateCheckedFuture(Optional.of(topology))).when(mockTx)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(topology))).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
         setupStubbedSubmit(mockTx);
 
@@ -272,7 +267,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         Topology topology = new TopologyBuilder().setLink(linkList).build();
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
-        doReturn(Futures.immediateCheckedFuture(Optional.of(topology))).when(mockTx)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(topology))).when(mockTx)
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
         setupStubbedSubmit(mockTx);
 

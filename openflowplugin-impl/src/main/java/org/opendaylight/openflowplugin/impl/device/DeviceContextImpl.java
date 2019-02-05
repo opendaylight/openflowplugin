@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,10 +27,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -218,7 +218,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ReadOnlyTransaction getReadTransaction() {
+    public ReadTransaction getReadTransaction() {
         return dataBroker.newReadOnlyTransaction();
     }
 
@@ -557,8 +557,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<Void> closeServiceInstance() {
-        final ListenableFuture<Void> listenableFuture = initialized.get()
+    public ListenableFuture<?> closeServiceInstance() {
+        final ListenableFuture<?> listenableFuture = initialized.get()
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
 
@@ -595,11 +595,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
-            final ListenableFuture<Void> txChainShuttingDown = transactionChainManager.shuttingDown();
+            final ListenableFuture<?> txChainShuttingDown = transactionChainManager.shuttingDown();
 
-            Futures.addCallback(txChainShuttingDown, new FutureCallback<Void>() {
+            Futures.addCallback(txChainShuttingDown, new FutureCallback<Object>() {
                 @Override
-                public void onSuccess(@Nullable final Void result) {
+                public void onSuccess(final Object result) {
                     transactionChainManager.close();
                     transactionChainManager = null;
                 }
@@ -663,7 +663,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     deviceInfo.toString()));
         }
 
-        final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill =
+        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill =
                 getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
                 new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher),
@@ -708,20 +708,19 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         hasState.set(true);
     }
 
-    private class DeviceFlowRegistryCallback implements FutureCallback<List<com.google.common.base
-            .Optional<FlowCapableNode>>> {
-        private final ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill;
+    private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
+        private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
         private final ContextChainMastershipWatcher contextChainMastershipWatcher;
 
         DeviceFlowRegistryCallback(
-                ListenableFuture<List<com.google.common.base.Optional<FlowCapableNode>>> deviceFlowRegistryFill,
+                ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
                 ContextChainMastershipWatcher contextChainMastershipWatcher) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
             this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         }
 
         @Override
-        public void onSuccess(@Nullable List<com.google.common.base.Optional<FlowCapableNode>> result) {
+        public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
             if (LOG.isDebugEnabled()) {
                 // Count all flows we read from datastore for debugging purposes.
                 // This number do not always represent how many flows were actually added
@@ -732,7 +731,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .stream()
                         .flatMap(Collection::stream)
                         .filter(Objects::nonNull)
-                        .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
+                        .flatMap(flowCapableNodeOptional
+                            -> com.google.common.base.Optional.fromJavaUtil(flowCapableNodeOptional).asSet().stream())
                         .filter(Objects::nonNull)
                         .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
                         .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())

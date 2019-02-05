@@ -29,10 +29,10 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
@@ -110,7 +110,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                     flowBuilder.build(), createParents);
             createParents = createParentsNextTime;
         }
-        ListenableFuture<Void> submitFuture = writeTransaction.submit();
+        ListenableFuture<?> submitFuture = writeTransaction.commit();
         return Futures.transform(handleResultFuture(Futures.allAsList(submitFuture)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
                 return RpcResultBuilder.<AddFlowsDsOutput>success().build();
@@ -133,7 +133,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow));
         }
-        return Futures.transform(handleResultFuture(Futures.allAsList(writeTransaction.submit())), voidRpcResult -> {
+        return Futures.transform(handleResultFuture(Futures.allAsList(writeTransaction.commit())), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
                 return RpcResultBuilder.<RemoveFlowsDsOutput>success().build();
             } else {

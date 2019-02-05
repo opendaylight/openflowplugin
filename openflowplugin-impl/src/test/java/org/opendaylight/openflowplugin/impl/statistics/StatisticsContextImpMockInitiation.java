@@ -33,8 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
-
-class StatisticsContextImpMockInitiation {
+public class StatisticsContextImpMockInitiation {
     Boolean isTable = false;
     Boolean isFlow = false;
     Boolean isGroup = false;
