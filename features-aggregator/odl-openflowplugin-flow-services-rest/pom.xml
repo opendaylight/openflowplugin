@@ -11,12 +11,12 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-flow-services-rest</artifactId>
     <packaging>feature</packaging>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.3-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Flow Services :: REST</name>
 
     <properties>
-        <restconf.version>1.8.2-SNAPSHOT</restconf.version>
+        <restconf.version>1.8.3-SNAPSHOT</restconf.version>
     </properties>
 
     <dependencyManagement>

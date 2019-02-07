@@ -11,7 +11,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-nsf-model</artifactId>
     <packaging>feature</packaging>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.3-SNAPSHOT</version>
 
     <name>OpenDaylight :: OpenflowPlugin :: NSF :: Model</name>
 
@@ -21,7 +21,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal.model</groupId>
                 <artifactId>mdsal-model-artifacts</artifactId>
-                <version>0.13.2-SNAPSHOT</version>
+                <version>0.13.3-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>1.8.2-SNAPSHOT</version>
+                <version>1.8.3-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
