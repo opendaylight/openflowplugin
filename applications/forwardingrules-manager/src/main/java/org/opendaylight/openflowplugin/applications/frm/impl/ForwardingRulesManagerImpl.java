@@ -25,6 +25,7 @@ import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -102,6 +103,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private boolean isBundleBasedReconciliationEnabled;
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
+    private final FlowGroupCacheManager flowGroupCacheManager;
 
     @Inject
     public ForwardingRulesManagerImpl(@Reference final DataBroker dataBroker,
@@ -113,7 +115,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       @Reference final ConfigurationService configurationService,
                                       @Reference final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
-                                      @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry) {
+                                      @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry,
+                                      final FlowGroupCacheManager flowGroupCacheManager) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount();
@@ -125,6 +128,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         this.reconciliationManager = reconciliationManager;
         this.rpcProviderService = rpcProviderService;
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
+        this.flowGroupCacheManager = flowGroupCacheManager;
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
@@ -152,9 +156,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void start() {
         nodeConfigurator = new NodeConfiguratorImpl();
         this.devicesGroupRegistry = new DevicesGroupRegistry();
-
         this.nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
-                ResultState.DONOTHING);
+                ResultState.DONOTHING, flowGroupCacheManager);
         if (this.isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {

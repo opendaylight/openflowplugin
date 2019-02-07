@@ -22,6 +22,13 @@
         <module>openflowjava-util</module>
     </modules>
 
+    <properties>
+    <commons.codec.version>1.8</commons.codec.version>
+    <httpclient.version>4.3.5</httpclient.version>
+    <httpcore.version>4.3.2</httpcore.version>
+    <gson.version>2.3.1</gson.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>

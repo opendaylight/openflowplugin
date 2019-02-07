@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
@@ -46,6 +47,9 @@ public class NodeListenerTest extends FRMTest {
     private ServiceRecoveryRegistry serviceRecoveryRegistry;
     @Mock
     private MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    private FlowGroupCacheManager flowGroupCacheManager;
+
 
     @Before
     public void setUp() {
@@ -59,9 +63,9 @@ public class NodeListenerTest extends FRMTest {
                 getConfigurationService(),
                 reconciliationManager,
                 openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry);
-
-
+                serviceRecoveryRegistry,
+                flowGroupCacheManager
+             );
         forwardingRulesManager.start();
     }
 
