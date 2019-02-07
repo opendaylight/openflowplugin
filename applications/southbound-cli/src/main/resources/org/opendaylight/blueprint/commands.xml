@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="floGroupCacheManager"
+               interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"
+               availability="optional"/>
+    <reference id="reconciliationJMXServiceMBean"
+               interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"
+               availability="optional"/>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="openflow/getflownodecache">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetFlowGroupCacheProvider">
+                <property name="flowGroupCacheManager" ref="floGroupCacheManager" />
+            </action>
+        </command>
+        <command name="openflow/getreconciliationstate">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetReconciliationStateProvider">
+                <property name="reconciliationJMXServiceMBean" ref="reconciliationJMXServiceMBean" />
+            </action>
+        </command>
+    </command-bundle>
+
+</blueprint>
