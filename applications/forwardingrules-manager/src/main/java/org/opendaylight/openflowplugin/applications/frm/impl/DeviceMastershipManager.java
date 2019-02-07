@@ -134,6 +134,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
                     if (activeNodes.contains(nodeIdent)) {
                         Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
                         set.remove(nodeIdent);
+                        reconcliationAgent.flowNodeDisconnected(nodeIdent);
                         activeNodes = Collections.unmodifiableSet(set);
                         setNodeOperationalStatus(nodeIdent, false);
                     }
