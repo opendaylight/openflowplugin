@@ -60,6 +60,10 @@
             <artifactId>forwardingrules-manager</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
+            <artifactId>openflow-protocol-impl</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <optional>true</optional>
@@ -75,5 +79,4 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
 </project>
