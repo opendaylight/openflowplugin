@@ -7,4 +7,22 @@
   <odl:clustered-app-config id="forwardingRulesManagerConfig"
         binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
 
+  <bean id="reconciliationJMXService"
+        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
+    <argument ref="flowGroupCacheManager"/>
+  </bean>
+  <bean id="reconciliationJMXAgent"
+        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXAgent">
+    <argument ref="reconciliationJMXService"/>
+  </bean>
+  <bean id="reconciliationJMXServiceMBean"
+        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
+    <argument ref="flowGroupCacheManager"/>
+  </bean>
+  <bean id="ClusterMemberInfo"
+        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
+    <argument ref="flowGroupCacheManager"/>
+  </bean>
+  <service ref="reconciliationJMXServiceMBean" interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"/>
+
 </blueprint>
