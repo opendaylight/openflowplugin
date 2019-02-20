@@ -75,7 +75,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     private void createTxChain() {
         TransactionChain txChainFactoryTemp = transactionChain;
         transactionChain = dataBroker.createTransactionChain(TransactionChainManager.this);
-        Optional.ofNullable(txChainFactoryTemp).ifPresent(TransactionChain::close);
+        if (txChainFactoryTemp != null) {
+            txChainFactoryTemp.close();
+        }
     }
 
     public boolean initialSubmitWriteTransaction() {
@@ -148,8 +150,10 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             writeTx.cancel();
             writeTx = null;
         }
-        Optional.ofNullable(transactionChain).ifPresent(TransactionChain::close);
-        transactionChain = null;
+        if (transactionChain != null) {
+            transactionChain.close();
+            transactionChain = null;
+        }
     }
 
     @GuardedBy("txLock")
