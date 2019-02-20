@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.Futures;
@@ -13,7 +12,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -35,12 +33,13 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
         super(delegate, executorService);
     }
 
+    @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                             final SyncupEntry syncupEntry) {
         Semaphore guard = null;
         try {
             guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);
-            if (Objects.isNull(guard)) {
+            if (guard == null) {
                 return Futures.immediateFuture(Boolean.FALSE);
             }
             final boolean newTaskNecessary = updateCompressionState(flowcapableNodePath, syncupEntry);
@@ -53,6 +52,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
         }
     }
 
+    @Override
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
                                                          final SyncupEntry syncupEntry) {
         final SyncupEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
@@ -93,10 +93,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
         Semaphore guard = null;
         try {
             guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);
-            if (Objects.isNull(guard)) {
-                return null;
-            }
-            return compressionQueue.remove(flowcapableNodePath);
+            return guard == null ? null : compressionQueue.remove(flowcapableNodePath);
         } finally {
             semaphoreKeeper.releaseGuard(guard);
         }

@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.util.concurrent.Service;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -41,7 +40,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceRegistry deviceRegistry;
     private volatile Service.State gatheringState = Service.State.NEW;
-    private ConvertorExecutor convertorExecutor;
+    private final ConvertorExecutor convertorExecutor;
 
     public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
                                                     final DeviceContext deviceContext,
@@ -61,7 +60,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     @Override
     @SuppressWarnings({"unchecked", "checkstyle:IllegalCatch"})
     public void onSuccess(final OfHeader result) {
-        if (Objects.isNull(result)) {
+        if (result == null) {
             LOG.warn("Response received was null.");
 
             if (!Service.State.TERMINATED.equals(gatheringState)) {

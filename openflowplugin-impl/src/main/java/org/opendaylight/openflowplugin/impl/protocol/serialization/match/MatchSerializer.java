@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -134,7 +132,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     @Override
     public void registerEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization
                                                     .MatchEntrySerializerKey key, MatchEntrySerializer serializer) {
-        if (Objects.isNull(key) || Objects.isNull(serializer)) {
+        if (key == null || serializer == null) {
             throw new IllegalArgumentException("MatchEntrySerializerKey or Serializer is null");
         }
 
@@ -148,6 +146,6 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     @Override
     public boolean unregisterEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization
                                                          .MatchEntrySerializerKey key) {
-        return Objects.nonNull(entryRegistry.remove(key));
+        return entryRegistry.remove(key) != null;
     }
 }
