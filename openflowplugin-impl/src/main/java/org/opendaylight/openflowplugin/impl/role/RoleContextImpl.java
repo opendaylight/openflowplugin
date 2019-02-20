@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.role;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -18,7 +17,6 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -132,7 +130,7 @@ public class RoleContextImpl implements RoleContext {
     private void changeLastRoleFuture(final ListenableFuture<RpcResult<SetRoleOutput>> newFuture) {
         slaveTask.cancel();
         lastRoleFuture.getAndUpdate(lastFuture -> {
-            if (Objects.nonNull(lastFuture) && !lastFuture.isCancelled() && !lastFuture.isDone()) {
+            if (lastFuture != null && !lastFuture.isCancelled() && !lastFuture.isDone()) {
                 lastFuture.cancel(true);
             }
 

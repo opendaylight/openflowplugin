@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.util;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -58,7 +56,7 @@ public final class ActionUtil {
 
             return deserializer.deserialize(message);
         } catch (ClassCastException | IllegalStateException e) {
-            final MessageCodeKey key = Objects.nonNull(expId)
+            final MessageCodeKey key = expId != null
                     ? new ExperimenterActionDeserializerKey(version, expId)
                     : new ActionDeserializerKey(version, type, expId);
 
@@ -97,7 +95,7 @@ public final class ActionUtil {
 
             return deserializer.deserializeHeader(message);
         } catch (ClassCastException | IllegalStateException e) {
-            final MessageCodeKey key = Objects.nonNull(expId)
+            final MessageCodeKey key = expId != null
                     ? new ExperimenterActionDeserializerKey(version, expId)
                     : new ActionDeserializerKey(version, type, expId);
 
@@ -108,5 +106,4 @@ public final class ActionUtil {
                     OpenflowVersion.get(version), path);
         }
     }
-
 }

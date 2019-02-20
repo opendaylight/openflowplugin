@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.base.MoreObjects;
@@ -14,7 +13,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
@@ -125,8 +123,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     private void disconnectDevice(final boolean propagate,
                                   final boolean forced) {
-        final String device =
-                Objects.nonNull(nodeId) ? nodeId.getValue() : getConnectionAdapter().getRemoteAddress().toString();
+        final String device = nodeId != null ? nodeId.getValue() : getConnectionAdapter().getRemoteAddress().toString();
         final short auxiliaryId = Optional
                 .ofNullable(getFeatures())
                 .flatMap(features -> Optional
@@ -165,7 +162,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     private void propagateDeviceDisconnectedEvent() {
-        if (Objects.nonNull(deviceDisconnectedHandler)) {
+        if (deviceDisconnectedHandler != null) {
             final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Propagating connection closed event: {}, datapathId:{}.",
@@ -182,7 +179,7 @@ public class ConnectionContextImpl implements ConnectionContext {
      */
     @Override
     public String getSafeNodeIdForLOG() {
-        return Objects.nonNull(nodeId) ? nodeId.getValue() : "null";
+        return nodeId == null ? "null" : nodeId.getValue();
     }
 
     @Override
@@ -366,7 +363,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         @Override
         public String toString() {
-            return Objects.isNull(nodeId) ? "null" : getNodeId().getValue();
+            return nodeId == null ? "null" : getNodeId().getValue();
         }
 
         public void setOutboundQueueProvider(final OutboundQueue outboundQueueProvider) {

@@ -131,7 +131,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                         flowStats.getMatchV10(), data);
 
                 if (matchBuilderOptional.isPresent()) {
-                    if (Objects.nonNull(matchBuilderOptional.get().getIpMatch())) {
+                    if (matchBuilderOptional.get().getIpMatch() != null) {
                         ipProtocol = matchBuilderOptional.get().getIpMatch().getIpProtocol();
                     }
 

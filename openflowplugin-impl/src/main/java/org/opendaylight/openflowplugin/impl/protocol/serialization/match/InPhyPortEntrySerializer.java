@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -28,7 +26,7 @@ public class InPhyPortEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getInPhyPort());
+        return match.getInPhyPort() != null;
     }
 
     @Override
@@ -50,5 +48,4 @@ public class InPhyPortEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_INT_IN_BYTES;
     }
-
 }
