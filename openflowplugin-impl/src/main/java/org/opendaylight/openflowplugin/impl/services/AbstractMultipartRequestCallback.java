@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -35,7 +34,7 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
     @Override
     @SuppressWarnings("unchecked")
     public void onSuccess(final OfHeader result) {
-        if (Objects.isNull(result)) {
+        if (result == null) {
             LOG.info("Response received was null.");
             collector.endCollecting(getEventIdentifier());
             return;

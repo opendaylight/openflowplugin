@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -32,12 +30,12 @@ public class Ipv6FlabelEntryDeserializer extends AbstractMatchEntryDeserializer 
             ipv6labelBuilder.setFlabelMask(new Ipv6FlowLabel(ByteUtil.bytesToUnsignedInt(mask)));
         }
 
-        if (Objects.isNull(builder.getLayer3Match())) {
+        if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6Label(ipv6labelBuilder.build())
                     .build());
         } else if (builder.getLayer3Match() instanceof Ipv6Match
-            && Objects.isNull(((Ipv6Match) builder.getLayer3Match()).getIpv6Label())) {
+                && ((Ipv6Match) builder.getLayer3Match()).getIpv6Label() == null) {
             final Ipv6Match match = (Ipv6Match) builder.getLayer3Match();
             builder.setLayer3Match(new Ipv6MatchBuilder(match)
                     .setIpv6Label(ipv6labelBuilder.build())
@@ -45,7 +43,5 @@ public class Ipv6FlabelEntryDeserializer extends AbstractMatchEntryDeserializer 
         } else {
             throwErrorOnMalformed(builder, "layer3Match", "ipv6Label");
         }
-
     }
-
 }

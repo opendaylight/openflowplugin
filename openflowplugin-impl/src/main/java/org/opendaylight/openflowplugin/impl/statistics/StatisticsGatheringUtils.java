@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -83,7 +82,7 @@ public final class StatisticsGatheringUtils {
                         // TODO: in case the result value is null then multipart data probably got processed
                         // TODO: on the fly. This contract should by clearly stated and enforced.
                         // TODO: Now simple true value is returned
-                    if (Objects.nonNull(rpcResult.getResult()) && !rpcResult.getResult().isEmpty()) {
+                    if (rpcResult.getResult() != null && !rpcResult.getResult().isEmpty()) {
                         final List<DataContainer> allMultipartData = rpcResult.getResult().stream()
                                 .map(reply -> MultipartReplyTranslatorUtil
                                                     .translate(reply, deviceInfo, convertorExecutor, null))

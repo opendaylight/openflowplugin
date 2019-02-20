@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -70,7 +69,7 @@ public final class MatchExtensionHelper {
 
         final ExtensionListBuilder extBuilder = processExtension(matchEntry, ofVersion, matchPath);
 
-        if (Objects.isNull(extBuilder)) {
+        if (extBuilder == null) {
             LOG.warn("Convertor for {} for version {} with match path {} not found.",
                     matchEntry.toString(),
                     ofVersion,

@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 
@@ -20,11 +19,11 @@ public class IpProtoEntryDeserializer extends AbstractMatchEntryDeserializer {
         processHeader(message);
         final short proto = message.readUnsignedByte();
 
-        if (Objects.isNull(builder.getIpMatch())) {
+        if (builder.getIpMatch() == null) {
             builder.setIpMatch(new IpMatchBuilder()
                     .setIpProtocol(proto)
                     .build());
-        } else if (Objects.isNull(builder.getIpMatch().getIpProtocol())) {
+        } else if (builder.getIpMatch().getIpProtocol() == null) {
             builder.setIpMatch(new IpMatchBuilder(builder.getIpMatch())
                     .setIpProtocol(proto)
                     .build());

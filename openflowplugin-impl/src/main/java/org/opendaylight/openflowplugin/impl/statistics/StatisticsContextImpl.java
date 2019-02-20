@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -19,14 +18,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -219,9 +216,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
             StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceInfo, deviceContext);
 
             // recreate gathering future if it should be recreated
-            final ListenableFuture<Boolean> lastDataGathering =
-                    Objects.isNull(future) || future.isCancelled() || future.isDone() ? Futures
-                            .immediateFuture(Boolean.TRUE) : future;
+            final ListenableFuture<Boolean> lastDataGathering = future == null || future.isCancelled()
+                    || future.isDone() ? Futures.immediateFuture(Boolean.TRUE) : future;
 
             // build statistics gathering future
             final ListenableFuture<Boolean> newDataGathering = collectingStatType.stream()
@@ -303,7 +299,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private void cancelLastDataGathering() {
         final ListenableFuture<Boolean> future = lastDataGatheringRef.getAndSet(null);
 
-        if (Objects.nonNull(future) && !future.isDone() && !future.isCancelled()) {
+        if (future != null && !future.isDone() && !future.isCancelled()) {
             future.cancel(true);
         }
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -205,7 +204,7 @@ public class SalFlowServiceImpl implements SalFlowService {
             if (rpcResult.isSuccessful()) {
                 final FlowDescriptor flowDescriptor;
 
-                if (Objects.nonNull(input.getFlowRef())) {
+                if (input.getFlowRef() != null) {
                     final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
                     flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
                     deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
@@ -280,10 +279,10 @@ public class SalFlowServiceImpl implements SalFlowService {
                     FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
             final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(origFlowRegistryKey);
 
-            final boolean isUpdate = Objects.nonNull(origFlowDescriptor);
+            final boolean isUpdate = origFlowDescriptor != null;
             final FlowDescriptor updatedFlowDescriptor;
 
-            if (Objects.nonNull(input.getFlowRef())) {
+            if (input.getFlowRef() != null) {
                 updatedFlowDescriptor =
                         FlowDescriptorFactory.create(updated.getTableId(),
                                                      input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());

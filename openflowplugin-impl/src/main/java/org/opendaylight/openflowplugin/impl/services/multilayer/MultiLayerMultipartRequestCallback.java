@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
@@ -34,6 +32,6 @@ public class MultiLayerMultipartRequestCallback<T extends OfHeader> extends Abst
     @Override
     protected boolean isReqMore(T result) {
         final MultipartRequestFlags flags = ((MultipartReply) result).getFlags();
-        return Objects.nonNull(flags) && flags.isOFPMPFREQMORE();
+        return flags != null && flags.isOFPMPFREQMORE();
     }
 }

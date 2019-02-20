@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -50,7 +48,7 @@ public final class AddressNormalizationUtil {
      */
     @Nullable
     public static Uri normalizeProtocolAgnosticPort(@Nullable final Uri port, final short protocolVersion) {
-        if (Objects.isNull(port)) {
+        if (port == null) {
             return null;
         }
 
@@ -68,7 +66,7 @@ public final class AddressNormalizationUtil {
      */
     @Nullable
     public static Ipv6Prefix normalizeIpv6Prefix(@Nullable final Ipv6Prefix ipv6Prefix) {
-        if (Objects.isNull(ipv6Prefix)) {
+        if (ipv6Prefix == null) {
             return null;
         }
 
@@ -88,7 +86,7 @@ public final class AddressNormalizationUtil {
     @Nullable
     public static Ipv6Prefix normalizeIpv6Arbitrary(@Nullable final Ipv6Address ipv6Address,
                                                     @Nullable final Ipv6ArbitraryMask ipv4Mask) {
-        if (Objects.isNull(ipv6Address)) {
+        if (ipv6Address == null) {
             return null;
         }
 
@@ -106,9 +104,7 @@ public final class AddressNormalizationUtil {
     @Nullable
     public static Ipv6Address normalizeIpv6AddressWithoutMask(@Nullable final Ipv6Address ipv6Address) {
         final Ipv6Prefix ipv6Prefix = normalizeIpv6Arbitrary(ipv6Address, null);
-        return Objects.nonNull(ipv6Prefix)
-                ? new Ipv6Address(ipv6Prefix.getValue().split(PREFIX_SEPARATOR)[0])
-                : null;
+        return ipv6Prefix == null ? null : new Ipv6Address(ipv6Prefix.getValue().split(PREFIX_SEPARATOR)[0]);
     }
 
     /**
@@ -119,7 +115,7 @@ public final class AddressNormalizationUtil {
      */
     @Nullable
     public static Ipv4Prefix normalizeIpv4Prefix(@Nullable final Ipv4Prefix ipv4Prefix) {
-        if (Objects.isNull(ipv4Prefix)) {
+        if (ipv4Prefix == null) {
             return null;
         }
 
@@ -139,7 +135,7 @@ public final class AddressNormalizationUtil {
     @Nullable
     public static Ipv4Prefix normalizeIpv4Arbitrary(@Nullable final Ipv4Address ipv4Address,
                                                     @Nullable final DottedQuad ipv4Mask) {
-        if (Objects.isNull(ipv4Address)) {
+        if (ipv4Address == null) {
             return null;
         }
 
@@ -159,7 +155,7 @@ public final class AddressNormalizationUtil {
     public static Ipv4Prefix normalizeIpv4Address(@Nullable final byte[] address, @Nullable final byte[] mask) {
         final String addressPrefix = normalizeInetAddressWithMask(normalizeIpAddress(address, mask), mask);
 
-        if (Objects.isNull(addressPrefix)) {
+        if (addressPrefix == null) {
             return null;
         }
 
@@ -178,7 +174,7 @@ public final class AddressNormalizationUtil {
     public static Ipv6Prefix normalizeIpv6Address(@Nullable final byte[] address, @Nullable final byte[] mask) {
         final String addressPrefix = normalizeInetAddressWithMask(normalizeIpAddress(address, mask), mask);
 
-        if (Objects.isNull(addressPrefix)) {
+        if (addressPrefix == null) {
             return null;
         }
 
@@ -194,16 +190,14 @@ public final class AddressNormalizationUtil {
      */
     @Nullable
     public static InetAddress normalizeIpAddress(@Nullable final byte[] address, @Nullable final byte[] mask) {
-        if (Objects.isNull(address)) {
+        if (address == null) {
             return null;
         }
 
         final byte[] result = new byte[address.length];
 
         for (int i = 0; i < address.length; i++) {
-            result[i] = Objects.nonNull(mask)
-                    ? (byte) (address[i] & mask[i])
-                    : address[i];
+            result[i] = mask != null ? (byte) (address[i] & mask[i]) : address[i];
         }
 
         try {
@@ -224,14 +218,12 @@ public final class AddressNormalizationUtil {
     @Nullable
     public static String normalizeInetAddressWithMask(@Nullable final InetAddress address,
                                                       @Nullable final byte[] mask) {
-        if (Objects.isNull(address)) {
+        if (address == null) {
             return null;
         }
 
         return address.getHostAddress()
-                + (Objects.nonNull(mask)
-                        ? PREFIX_SEPARATOR + String.valueOf(IpConversionUtil.countBits(mask))
-                        : "");
+                + (mask == null ? "" : PREFIX_SEPARATOR + String.valueOf(IpConversionUtil.countBits(mask)));
     }
 
     /**
@@ -242,11 +234,7 @@ public final class AddressNormalizationUtil {
      */
     @Nullable
     public static MacAddress normalizeMacAddress(@Nullable final MacAddress macAddress) {
-        if (Objects.isNull(macAddress)) {
-            return null;
-        }
-
-        return new MacAddress(macAddress.getValue().toLowerCase(Locale.ROOT));
+        return macAddress == null ? null : new MacAddress(macAddress.getValue().toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -259,7 +247,7 @@ public final class AddressNormalizationUtil {
     public static MacAddress normalizeMacAddressMask(@Nullable final MacAddress macAddress) {
         final MacAddress normalizedMacAddress = normalizeMacAddress(macAddress);
 
-        if (Objects.isNull(normalizedMacAddress)) {
+        if (normalizedMacAddress == null) {
             return null;
         }
 
@@ -269,5 +257,4 @@ public final class AddressNormalizationUtil {
 
         return normalizedMacAddress;
     }
-
 }
