@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -162,15 +161,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     public boolean submitTransaction(boolean doSync) {
         synchronized (txLock) {
             if (!submitIsEnabled) {
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("transaction not committed - submit block issued");
-                }
+                LOG.trace("transaction not committed - submit block issued");
                 return false;
             }
-            if (Objects.isNull(writeTx)) {
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("nothing to commit - submit returns true");
-                }
+            if (writeTx == null) {
+                LOG.trace("nothing to commit - submit returns true");
                 return true;
             }
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,

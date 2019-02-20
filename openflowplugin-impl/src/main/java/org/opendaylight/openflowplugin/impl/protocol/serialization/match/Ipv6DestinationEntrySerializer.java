@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -41,13 +39,11 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
     @Override
     public boolean matchTypeCheck(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(match.getLayer3Match())
-                    && Objects.nonNull(((Ipv6Match) match.getLayer3Match()).getIpv6Destination());
+            return match.getLayer3Match() != null
+                    && ((Ipv6Match) match.getLayer3Match()).getIpv6Destination() != null;
         } else if (isArbitrary(match)) {
-
-            return Objects.nonNull(match.getLayer3Match())
-                    && Objects.nonNull(((Ipv6MatchArbitraryBitMask) match.getLayer3Match())
-                    .getIpv6DestinationAddressNoMask());
+            return match.getLayer3Match() != null
+                    && ((Ipv6MatchArbitraryBitMask) match.getLayer3Match()).getIpv6DestinationAddressNoMask() != null;
         }
 
         return false;
@@ -56,14 +52,12 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
     @Override
     protected boolean getHasMask(Match match) {
         if (isPrefix(match)) {
-            if (null != IpConversionUtil.hasIpv6Prefix(((Ipv6Match) match.getLayer3Match())
-                    .getIpv6Destination())) {
-                return Objects.nonNull(IpConversionUtil
-                        .extractIpv6Prefix(((Ipv6Match) match.getLayer3Match()).getIpv6Destination()));
+            if (null != IpConversionUtil.hasIpv6Prefix(((Ipv6Match) match.getLayer3Match()).getIpv6Destination())) {
+                return IpConversionUtil.extractIpv6Prefix(
+                    ((Ipv6Match) match.getLayer3Match()).getIpv6Destination()) != null;
             }
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(((Ipv6MatchArbitraryBitMask) match.getLayer3Match())
-                    .getIpv6DestinationArbitraryBitmask());
+            return ((Ipv6MatchArbitraryBitMask) match.getLayer3Match()).getIpv6DestinationArbitraryBitmask() != null;
         }
 
         return false;
@@ -91,5 +85,4 @@ public class Ipv6DestinationEntrySerializer extends AbstractMatchEntrySerializer
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES;
     }
-
 }

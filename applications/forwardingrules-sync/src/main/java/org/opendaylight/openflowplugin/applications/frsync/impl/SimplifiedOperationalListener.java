@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
@@ -106,7 +105,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return result;
     }
 
-    private Optional<ListenableFuture<Boolean>> skipModification(final DataTreeModification<Node> modification) {
+    private static Optional<ListenableFuture<Boolean>> skipModification(final DataTreeModification<Node> modification) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Skipping operational modification: {}, before {}, after {}",
                     ModificationUtil.nodeIdValue(modification),
@@ -116,27 +115,27 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         return Optional.empty();
     }
 
-    private boolean isDelete(final DataObjectModification<Node> nodeModification) {
-        return Objects.nonNull(nodeModification.getDataBefore()) && Objects.isNull(nodeModification.getDataAfter());
+    private static boolean isDelete(final DataObjectModification<Node> nodeModification) {
+        return nodeModification.getDataBefore() != null && nodeModification.getDataAfter() == null;
     }
 
     /**
      * All connectors disappeared from operational store (logical delete).
      */
-    private boolean isDeleteLogical(final DataObjectModification<Node> nodeModification) {
+    private static boolean isDeleteLogical(final DataObjectModification<Node> nodeModification) {
         return !safeConnectorsEmpty(nodeModification.getDataBefore())
                 && safeConnectorsEmpty(nodeModification.getDataAfter());
 
     }
 
-    private boolean isAdd(final DataObjectModification<Node> nodeModification) {
-        return Objects.isNull(nodeModification.getDataBefore()) && Objects.nonNull(nodeModification.getDataAfter());
+    private static boolean isAdd(final DataObjectModification<Node> nodeModification) {
+        return nodeModification.getDataBefore() == null && nodeModification.getDataAfter() != null;
     }
 
     /**
      * All connectors appeared in operational store (logical add).
      */
-    private boolean isAddLogical(final DataObjectModification<Node> nodeModification) {
+    private static boolean isAddLogical(final DataObjectModification<Node> nodeModification) {
         return safeConnectorsEmpty(nodeModification.getDataBefore())
                 && !safeConnectorsEmpty(nodeModification.getDataAfter());
     }

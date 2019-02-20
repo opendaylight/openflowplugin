@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -32,13 +30,12 @@ public class EthernetSourceEntrySerializer extends AbstractMatchEntrySerializer 
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getEthernetMatch())
-                && Objects.nonNull(match.getEthernetMatch().getEthernetSource());
+        return match.getEthernetMatch() != null && match.getEthernetMatch().getEthernetSource() != null;
     }
 
     @Override
     protected boolean getHasMask(Match match) {
-        return Objects.nonNull(match.getEthernetMatch().getEthernetSource().getMask());
+        return match.getEthernetMatch().getEthernetSource().getMask() != null;
     }
 
     @Override
@@ -55,5 +52,4 @@ public class EthernetSourceEntrySerializer extends AbstractMatchEntrySerializer 
     protected int getValueLength() {
         return EncodeConstants.MAC_ADDRESS_LENGTH;
     }
-
 }

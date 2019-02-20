@@ -117,7 +117,7 @@ public class ContextChainImpl implements ContextChain {
         auxiliaryConnections.clear();
 
         // If we are still registered and we are not already closing, then close the registration
-        if (Objects.nonNull(registration)) {
+        if (registration != null) {
             try {
                 registration.close();
                 registration = null;

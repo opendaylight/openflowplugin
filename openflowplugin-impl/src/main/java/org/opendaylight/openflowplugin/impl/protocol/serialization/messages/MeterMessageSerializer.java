@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -59,7 +57,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
     }
 
     private void serializeBands(final MeterBandHeaders meterBandHeaders, final ByteBuf outBuffer) {
-        if (Objects.nonNull(meterBandHeaders) && Objects.nonNull(meterBandHeaders.getMeterBandHeader())) {
+        if (meterBandHeaders != null && meterBandHeaders.getMeterBandHeader() != null) {
             meterBandHeaders.getMeterBandHeader().forEach(meterBandHeader ->
                     Optional.ofNullable(meterBandHeader.getMeterBandTypes())
                             .flatMap(m -> Optional.ofNullable(m.getFlags()))

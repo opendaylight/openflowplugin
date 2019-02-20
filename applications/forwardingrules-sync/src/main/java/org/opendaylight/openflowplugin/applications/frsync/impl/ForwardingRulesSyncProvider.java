@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -132,17 +131,16 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
 
     @Override
     public void close() {
-        if (Objects.nonNull(dataTreeConfigChangeListener)) {
+        if (dataTreeConfigChangeListener != null) {
             dataTreeConfigChangeListener.close();
             dataTreeConfigChangeListener = null;
         }
 
-        if (Objects.nonNull(dataTreeOperationalChangeListener)) {
+        if (dataTreeOperationalChangeListener != null) {
             dataTreeOperationalChangeListener.close();
             dataTreeOperationalChangeListener = null;
         }
 
         syncThreadPool.shutdown();
     }
-
 }

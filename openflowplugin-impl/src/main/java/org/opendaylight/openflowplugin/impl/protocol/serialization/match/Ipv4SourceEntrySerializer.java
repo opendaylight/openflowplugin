@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import java.util.Iterator;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -41,12 +39,11 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     public boolean matchTypeCheck(Match match) {
         if (isPrefix(match)) {
-            return Objects.nonNull(match.getLayer3Match())
-                    && Objects.nonNull(((Ipv4Match) match.getLayer3Match()).getIpv4Source());
+            return match.getLayer3Match() != null
+                    && ((Ipv4Match) match.getLayer3Match()).getIpv4Source() != null;
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(match.getLayer3Match())
-                    && Objects.nonNull(((Ipv4MatchArbitraryBitMask) match.getLayer3Match())
-                    .getIpv4SourceAddressNoMask());
+            return match.getLayer3Match() != null
+                    && ((Ipv4MatchArbitraryBitMask) match.getLayer3Match()).getIpv4SourceAddressNoMask() != null;
         }
 
         return false;
@@ -63,8 +60,7 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
             // Check if we have mask
             return addressParts.hasNext() && Integer.parseInt(addressParts.next()) < 32;
         } else if (isArbitrary(match)) {
-            return Objects.nonNull(((Ipv4MatchArbitraryBitMask) match.getLayer3Match())
-                    .getIpv4SourceArbitraryBitmask());
+            return ((Ipv4MatchArbitraryBitMask) match.getLayer3Match()).getIpv4SourceArbitraryBitmask() != null;
         }
 
         return false;
@@ -92,5 +88,4 @@ public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_INT_IN_BYTES;
     }
-
 }

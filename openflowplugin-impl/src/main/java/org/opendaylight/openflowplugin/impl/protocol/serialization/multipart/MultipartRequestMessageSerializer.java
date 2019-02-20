@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -88,7 +87,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
             : MultipartRequestExperimenter.class.equals(clazz) ? MultipartType.OFPMPEXPERIMENTER
             : null;
 
-        if (Objects.isNull(multipartType)) {
+        if (multipartType == null) {
             throw new IllegalArgumentException(clazz.toString() + " is not valid multipart type");
         }
 

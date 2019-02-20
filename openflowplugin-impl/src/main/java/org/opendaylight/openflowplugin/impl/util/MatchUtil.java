@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -119,7 +117,7 @@ public final class MatchUtil {
 
 
     public static MatchV10Builder createEmptyV10Match() {
-        Short zeroShort = Short.valueOf("0");
+        Short zeroShort = 0;
         Integer zeroInteger = 0;
         MatchV10Builder matchV10Builder = new MatchV10Builder();
         matchV10Builder.setDlDst(ZERO_MAC_ADDRESS);
@@ -145,7 +143,7 @@ public final class MatchUtil {
     @Nullable
     public static <T extends Match> T transformMatch(@Nullable final Match match,
                                                      @Nonnull final Class<T> implementedInterface) {
-        if (Objects.isNull(match)) {
+        if (match == null) {
             return null;
         }
 
@@ -154,12 +152,7 @@ public final class MatchUtil {
         }
 
         final Function<Match, Match> matchMatchFunction = TRANSFORMERS.get(implementedInterface);
-
-        if (Objects.isNull(matchMatchFunction)) {
-            return null;
-        }
-
-        return implementedInterface.cast(matchMatchFunction.apply(match));
+        return matchMatchFunction == null ? null : implementedInterface.cast(matchMatchFunction.apply(match));
     }
 
     private static Optional<List<ExtensionList>> resolveExtensions(final Match match) {
