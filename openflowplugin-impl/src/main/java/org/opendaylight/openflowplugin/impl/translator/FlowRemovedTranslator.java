@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -48,7 +47,7 @@ public class FlowRemovedTranslator implements MessageTranslator
                 .setPriority(input.getPriority())
                 .setTableId(translateTableId(input));
 
-        if (Objects.nonNull(input.getReason())) {
+        if (input.getReason() != null) {
             flowRemovedBld.setReason(translateReason(input));
         }
 

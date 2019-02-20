@@ -396,7 +396,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         final OpenflowVersion openflowVersion = OpenflowVersion.get(deviceInfo.getVersion());
 
         // Try to get ingress from match
-        final NodeConnectorRef nodeConnectorRef = Objects.nonNull(packetIn.getIngress())
+        final NodeConnectorRef nodeConnectorRef = packetIn.getIngress() != null
                 ? packetIn.getIngress() : Optional.ofNullable(match)
                 .map(Match::getInPort)
                 .map(nodeConnectorId -> InventoryDataServiceUtil
@@ -496,8 +496,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public boolean processAlienMessage(final OfHeader message) {
         final Class<? extends DataContainer> implementedInterface = message.getImplementedInterface();
 
-        if (Objects.nonNull(implementedInterface) && org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
-                .rev130709.PacketInMessage.class.equals(implementedInterface)) {
+        if (org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage.class
+                .equals(implementedInterface)) {
             final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
                     .PacketInMessage packetInMessage = (org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
                 .rev130709.PacketInMessage) message;

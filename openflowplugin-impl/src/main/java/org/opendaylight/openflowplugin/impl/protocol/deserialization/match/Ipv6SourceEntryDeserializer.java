@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -43,12 +41,12 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
     }
 
     private static void setPrefixMatch(final MatchBuilder builder, final Ipv6Address address, final byte[] mask) {
-        if (Objects.isNull(builder.getLayer3Match())) {
+        if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
                     .build());
         } else if (builder.getLayer3Match() instanceof Ipv6Match
-                && Objects.isNull(((Ipv6Match) builder.getLayer3Match()).getIpv6Source())) {
+                && ((Ipv6Match) builder.getLayer3Match()).getIpv6Source() == null) {
             builder.setLayer3Match(new Ipv6MatchBuilder((Ipv6Match) builder.getLayer3Match())
                     .setIpv6Source(IpConversionUtil.createPrefix(address, mask))
                     .build());
@@ -59,14 +57,13 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
 
     private static void setArbitraryMatch(final MatchBuilder builder, final Ipv6Address address,
                                           final byte[] mask) {
-        if (Objects.isNull(builder.getLayer3Match())) {
+        if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv6MatchArbitraryBitMaskBuilder()
                     .setIpv6SourceAddressNoMask(address)
                     .setIpv6SourceArbitraryBitmask(IpConversionUtil.createIpv6ArbitraryBitMask(mask))
                     .build());
         } else if (builder.getLayer3Match() instanceof Ipv6MatchArbitraryBitMask
-                && Objects.isNull(((Ipv6MatchArbitraryBitMask) builder.getLayer3Match())
-                .getIpv6SourceAddressNoMask())) {
+                && ((Ipv6MatchArbitraryBitMask) builder.getLayer3Match()).getIpv6SourceAddressNoMask() == null) {
             final Ipv6MatchArbitraryBitMask match = (Ipv6MatchArbitraryBitMask) builder.getLayer3Match();
             builder.setLayer3Match(new Ipv6MatchArbitraryBitMaskBuilder(match)
                     .setIpv6SourceAddressNoMask(address)
@@ -76,5 +73,4 @@ public class Ipv6SourceEntryDeserializer extends AbstractMatchEntryDeserializer 
             throwErrorOnMalformed(builder, "layer3Match", "ipv6SourceAddressNoMask");
         }
     }
-
 }

@@ -7,13 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.key;
 
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 
 public class MessageCodeMatchKey extends MessageCodeKey {
 
-    private MatchPath matchPath;
+    private final MatchPath matchPath;
 
     /**
      * Constructor.
@@ -35,7 +34,7 @@ public class MessageCodeMatchKey extends MessageCodeKey {
     @Override
     public int hashCode() {
         final int prime = 31;
-        return prime * super.hashCode() + (Objects.isNull(matchPath) ? 0 : matchPath.ordinal());
+        return prime * super.hashCode() + (matchPath == null ? 0 : matchPath.ordinal());
     }
 
     @Override
