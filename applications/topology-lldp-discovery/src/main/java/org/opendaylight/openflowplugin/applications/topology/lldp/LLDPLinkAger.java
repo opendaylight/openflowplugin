@@ -11,7 +11,6 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,7 +115,9 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
 
     @Override
     public void onPropertyChanged(@Nonnull final String propertyName, @Nonnull final String propertyValue) {
-        Optional.ofNullable(TopologyLLDPDiscoveryProperty.forValue(propertyName)).ifPresent(lldpDiscoveryProperty -> {
+        final TopologyLLDPDiscoveryProperty lldpDiscoveryProperty = TopologyLLDPDiscoveryProperty.forValue(
+            propertyName);
+        if (lldpDiscoveryProperty != null) {
             switch (lldpDiscoveryProperty) {
                 case LLDP_SECURE_KEY:
                 case TOPOLOGY_LLDP_INTERVAL:
@@ -127,6 +128,6 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
                     LOG.warn("No topology lldp discovery property found.");
                     break;
             }
-        });
+        }
     }
 }

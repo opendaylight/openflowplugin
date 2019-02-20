@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
-import java.util.Optional;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IPProtocols;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -21,19 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
-    private static final Logger LOG = LoggerFactory.getLogger(SetTpSrcActionSerializer.class);
-
     @Override
     protected SetFieldCase buildAction(Action input) {
         final SetTpSrcAction setTpSrcAction = ((SetTpSrcActionCase) input).getSetTpSrcAction();
         final PortNumber port = setTpSrcAction.getPort();
         final SetFieldBuilder builder = new SetFieldBuilder();
-
-        Optional.ofNullable(IPProtocols.fromProtocolNum(setTpSrcAction.getIpProtocol())).ifPresent(proto -> {
+        final IPProtocols proto = IPProtocols.fromProtocolNum(setTpSrcAction.getIpProtocol());
+        if (proto != null) {
             switch (proto) {
                 case ICMP: {
                     builder.setIcmpv4Match(new Icmpv4MatchBuilder()
@@ -62,9 +56,8 @@ public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
                 default:
                     // no operation
             }
-        });
+        }
 
         return new SetFieldCaseBuilder().setSetField(builder.build()).build();
     }
-
 }

@@ -136,8 +136,7 @@ public final class ActionUtil {
 
         final ConvertorToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
                 .grouping.Action> converter = provider.getConverter(key);
-
-        return Optional.ofNullable(converter).map(c -> c.convert(action.getExtension()));
+        return converter == null ? Optional.empty() : Optional.of(converter.convert(action.getExtension()));
     }
 
     /**
@@ -159,9 +158,6 @@ public final class ActionUtil {
 
         final ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
                 .rev150203.actions.grouping.Action> converter = provider.getConverter(key);
-
-
-        return Optional.ofNullable(converter).map(c -> c.convert(action));
-
+        return converter == null ? Optional.empty() : Optional.of(converter.convert(action));
     }
 }
