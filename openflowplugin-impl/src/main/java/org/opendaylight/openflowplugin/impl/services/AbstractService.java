@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
-import java.util.Objects;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -123,7 +122,7 @@ public abstract class AbstractService<I, O> {
         LOG.trace("Handling general service call");
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
 
-        if (Objects.isNull(requestContext)) {
+        if (requestContext == null) {
             LOG.trace("Request context refused.");
             getMessageSpy().spyMessage(AbstractService.class, MessageSpy.StatisticsGroup.TO_SWITCH_DISREGARDED);
             return Futures.immediateFuture(RpcResultBuilder
@@ -132,7 +131,7 @@ public abstract class AbstractService<I, O> {
                     .build());
         }
 
-        if (Objects.isNull(requestContext.getXid())) {
+        if (requestContext.getXid() == null) {
             getMessageSpy().spyMessage(requestContext.getClass(),
                                        MessageSpy.StatisticsGroup.TO_SWITCH_RESERVATION_REJECTED);
             return RequestContextUtil
@@ -157,7 +156,7 @@ public abstract class AbstractService<I, O> {
             final OutboundQueue outboundQueue =
                     getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-            if (Objects.nonNull(isComplete)) {
+            if (isComplete != null) {
                 outboundQueue.commitEntry(xid.getValue(),
                                           request,
                                           createCallback(requestContext, requestType), isComplete);

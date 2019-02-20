@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -14,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -58,11 +56,11 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         final Map<Class<?>, Convertor<?, ?, ? extends ConvertorData>> convertorsForVersion =
                 convertors.get(version);
 
-        if (Objects.nonNull(convertorsForVersion)) {
+        if (convertorsForVersion != null) {
             for (final Class<?> type : convertor.getTypes()) {
                 final Convertor<?, ?, ? extends ConvertorData> result = convertorsForVersion.get(type);
 
-                if (Objects.isNull(result)) {
+                if (result == null) {
                     convertor.setConvertorExecutor(this);
                     convertorsForVersion.put(type, convertor);
                     LOG.debug("{} for version {} is now converted by {}", type, version, convertor);
@@ -82,7 +80,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
     public <F, T, D extends ConvertorData> Optional<T> convert(final F source, final D data) {
         Optional<T> result = Optional.empty();
 
-        if (Objects.isNull(source)) {
+        if (source == null) {
             LOG.trace("Cannot extract type from null source");
             return result;
         }
@@ -90,7 +88,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         final Class<?> type = source instanceof DataContainer ? ((DataContainer) source).getImplementedInterface()
                 : source.getClass();
 
-        if (Objects.isNull(type)) {
+        if (type == null) {
             LOG.warn("Cannot extract type from {}, because getImplementedInterface() returns null", source);
             return result;
         }
@@ -103,7 +101,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
     public <F, T, D extends ConvertorData> Optional<T> convert(final Collection<F> source, final D data) {
         Optional<T> result = Optional.empty();
 
-        if (Objects.isNull(source)) {
+        if (source == null) {
             LOG.trace("Cannot extract type from null source");
             return result;
         }
@@ -120,13 +118,12 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         final Class<?> type = first instanceof DataContainer ? ((DataContainer) first).getImplementedInterface()
                 : first.getClass();
 
-        if (Objects.isNull(type)) {
+        if (type == null) {
             LOG.warn("Cannot extract type from {}, because getImplementedInterface() returns null", source);
             return result;
         }
 
-        return findConvertor(data.getVersion(), type)
-                .map(convertor -> (T)convertor.convert(source, data));
+        return findConvertor(data.getVersion(), type).map(convertor -> (T)convertor.convert(source, data));
     }
 
     /**
@@ -143,7 +140,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
 
         Optional<Convertor> convertor = Optional.empty();
 
-        if (Objects.nonNull(convertorsForVersion)) {
+        if (convertorsForVersion != null) {
             convertor = Optional.ofNullable(convertorsForVersion.get(type));
 
             if (!convertor.isPresent()) {

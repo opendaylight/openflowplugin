@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -24,8 +23,7 @@ public class IpDscpEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIpMatch())
-                && Objects.nonNull(match.getIpMatch().getIpDscp());
+        return match.getIpMatch() != null && match.getIpMatch().getIpDscp() != null;
     }
 
     @Override
