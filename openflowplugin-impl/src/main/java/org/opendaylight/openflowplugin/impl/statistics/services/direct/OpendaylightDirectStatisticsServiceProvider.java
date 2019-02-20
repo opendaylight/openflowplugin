@@ -5,19 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.MutableClassToInstanceMap;
 import java.util.Optional;
 
 /**
  * The Opendaylight direct statistics service provider.
  */
 public class OpendaylightDirectStatisticsServiceProvider {
-    private Map<Class<? extends AbstractDirectStatisticsService>, AbstractDirectStatisticsService> services =
-            new HashMap<>();
+    private final ClassToInstanceMap<AbstractDirectStatisticsService> services = MutableClassToInstanceMap.create();
 
     /**
      * Register direct statistics service.
@@ -38,6 +36,6 @@ public class OpendaylightDirectStatisticsServiceProvider {
      */
     public Optional<? extends AbstractDirectStatisticsService>
             lookup(Class<? extends AbstractDirectStatisticsService> type) {
-        return Optional.ofNullable(services.get(type)).map(type::cast);
+        return Optional.ofNullable(services.getInstance(type));
     }
 }
