@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.internal.ConcurrentSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -101,9 +100,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void close() {
         deviceContexts.values().forEach(OFPContext::close);
         deviceContexts.clear();
-        Optional.ofNullable(spyPool).ifPresent(ScheduledThreadPoolExecutor::shutdownNow);
-        spyPool = null;
-
+        if (spyPool != null) {
+            spyPool.shutdownNow();
+            spyPool = null;
+        }
     }
 
     @Override
