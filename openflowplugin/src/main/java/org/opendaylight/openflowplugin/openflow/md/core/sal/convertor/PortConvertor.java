@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
@@ -63,7 +61,7 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     private static PortConfig maskPortConfigFields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
 
-        if (Objects.isNull(configData)) {
+        if (configData == null) {
             return null;
         }
 
@@ -79,7 +77,7 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     private static PortConfigV10 maskPortConfigV10Fields(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
 
-        if (Objects.isNull(configData)) {
+        if (configData == null) {
             return null;
         }
 

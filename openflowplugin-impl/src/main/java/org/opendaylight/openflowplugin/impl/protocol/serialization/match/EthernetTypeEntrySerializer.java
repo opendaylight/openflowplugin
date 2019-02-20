@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -24,8 +23,7 @@ public class EthernetTypeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getEthernetMatch())
-                && Objects.nonNull(match.getEthernetMatch().getEthernetType());
+        return match.getEthernetMatch() != null && match.getEthernetMatch().getEthernetType() != null;
     }
 
     @Override
@@ -47,5 +45,4 @@ public class EthernetTypeEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
-
 }

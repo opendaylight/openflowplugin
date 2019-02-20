@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import io.netty.buffer.ByteBuf;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -55,7 +53,7 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
     }
 
     private static void serializePacketInMask(final PacketInMask mask, final ByteBuf outBuffer) {
-        if (Objects.isNull(mask)) {
+        if (mask == null) {
             return;
         }
 
@@ -77,7 +75,7 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
     }
 
     private static void serializePortStatusMask(final PortStatusMask mask, final ByteBuf outBuffer) {
-        if (Objects.isNull(mask)) {
+        if (mask == null) {
             return;
         }
 
@@ -99,7 +97,7 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
     }
 
     private static void serializeFlowRemovedMask(final FlowRemovedMask mask, final ByteBuf outBuffer) {
-        if (Objects.isNull(mask)) {
+        if (mask == null) {
             return;
         }
 

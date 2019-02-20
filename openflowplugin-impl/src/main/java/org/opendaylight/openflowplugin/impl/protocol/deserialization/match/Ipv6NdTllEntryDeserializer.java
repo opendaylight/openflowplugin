@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -23,12 +21,12 @@ public class Ipv6NdTllEntryDeserializer extends AbstractMatchEntryDeserializer {
         processHeader(message);
         final MacAddress address = OxmDeserializerHelper.convertMacAddress(message);
 
-        if (Objects.isNull(builder.getLayer3Match())) {
+        if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv6MatchBuilder()
                     .setIpv6NdTll(address)
                     .build());
         } else if (builder.getLayer3Match() instanceof Ipv6Match
-            && Objects.isNull(((Ipv6Match) builder.getLayer3Match()).getIpv6NdTll())) {
+                && ((Ipv6Match) builder.getLayer3Match()).getIpv6NdTll() == null) {
             final Ipv6Match match = (Ipv6Match) builder.getLayer3Match();
             builder.setLayer3Match(new Ipv6MatchBuilder(match)
                     .setIpv6NdTll(address)
@@ -36,7 +34,5 @@ public class Ipv6NdTllEntryDeserializer extends AbstractMatchEntryDeserializer {
         } else {
             throwErrorOnMalformed(builder, "layer3Match", "ipv6NdTll");
         }
-
     }
-
 }

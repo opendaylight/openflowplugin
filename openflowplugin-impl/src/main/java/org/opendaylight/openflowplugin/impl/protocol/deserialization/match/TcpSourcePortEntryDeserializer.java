@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
@@ -22,12 +20,12 @@ public class TcpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializ
         processHeader(message);
         final int port = message.readUnsignedShort();
 
-        if (Objects.isNull(builder.getLayer4Match())) {
+        if (builder.getLayer4Match() == null) {
             builder.setLayer4Match(new TcpMatchBuilder()
                     .setTcpSourcePort(new PortNumber(port))
                     .build());
         } else if (builder.getLayer4Match() instanceof TcpMatch
-            && Objects.isNull(((TcpMatch) builder.getLayer4Match()).getTcpSourcePort())) {
+            && ((TcpMatch) builder.getLayer4Match()).getTcpSourcePort() == null) {
             builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
                     .setTcpSourcePort(new PortNumber(port))
                     .build());
@@ -35,5 +33,4 @@ public class TcpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializ
             throwErrorOnMalformed(builder, "layer4Match", "tcpSource");
         }
     }
-
 }
