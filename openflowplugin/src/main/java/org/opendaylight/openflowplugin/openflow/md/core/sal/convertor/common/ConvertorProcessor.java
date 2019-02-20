@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -72,7 +70,7 @@ public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorD
         Optional<T> result = Optional.empty();
         final short version = data != null ? data.getVersion() : OFP_VERSION_ALL;
 
-        if (Objects.isNull(source)) {
+        if (source == null) {
             LOG.trace("Failed to convert null for version {}", version);
             return result;
         }
@@ -83,7 +81,7 @@ public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorD
 
         final ConvertorCase<?, T, D> processorCase = caseOptional.orElse(defaultCase);
 
-        if (Objects.nonNull(processorCase)) {
+        if (processorCase != null) {
             result = processorCase.processRaw(source, data, convertorExecutor);
 
             if (processorCase.isErrorOnEmpty() && !result.isPresent()) {

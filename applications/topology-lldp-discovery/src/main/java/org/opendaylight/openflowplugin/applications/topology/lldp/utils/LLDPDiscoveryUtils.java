@@ -17,9 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.opendaylight.mdsal.eos.binding.api.Entity;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
@@ -176,7 +174,7 @@ public final class LLDPDiscoveryUtils {
     }
 
     private static boolean isLLDP(final byte[] packet) {
-        if (Objects.isNull(packet) || packet.length < MINIMUM_LLDP_SIZE) {
+        if (packet == null || packet.length < MINIMUM_LLDP_SIZE) {
             return false;
         }
 

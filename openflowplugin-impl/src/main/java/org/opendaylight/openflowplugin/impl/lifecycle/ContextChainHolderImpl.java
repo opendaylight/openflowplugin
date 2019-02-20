@@ -89,16 +89,16 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public <T extends OFPManager> void addManager(final T manager) {
-        if (Objects.isNull(deviceManager) && manager instanceof DeviceManager) {
+        if (deviceManager == null && manager instanceof DeviceManager) {
             LOG.trace("Context chain holder: Device manager OK.");
             deviceManager = (DeviceManager) manager;
-        } else if (Objects.isNull(rpcManager) && manager instanceof RpcManager) {
+        } else if (rpcManager == null && manager instanceof RpcManager) {
             LOG.trace("Context chain holder: RPC manager OK.");
             rpcManager = (RpcManager) manager;
-        } else if (Objects.isNull(statisticsManager) && manager instanceof StatisticsManager) {
+        } else if (statisticsManager == null && manager instanceof StatisticsManager) {
             LOG.trace("Context chain holder: Statistics manager OK.");
             statisticsManager = (StatisticsManager) manager;
-        } else if (Objects.isNull(roleManager) && manager instanceof RoleManager) {
+        } else if (roleManager == null && manager instanceof RoleManager) {
             LOG.trace("Context chain holder: Role manager OK.");
             roleManager = (RoleManager) manager;
         }
@@ -259,8 +259,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @VisibleForTesting
     boolean checkAllManagers() {
-        return Objects.nonNull(deviceManager) && Objects.nonNull(rpcManager) && Objects.nonNull(statisticsManager)
-                && Objects.nonNull(roleManager);
+        return deviceManager != null && rpcManager != null && statisticsManager != null && roleManager != null;
     }
 
     @Override
@@ -293,7 +292,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .firstKeyOf(Entity.class)
                 .getName();
 
-        if (Objects.nonNull(entityName)) {
+        if (entityName != null) {
             LOG.debug("Entity {} has no owner", entityName);
             try {
                 //TODO:Remove notifications

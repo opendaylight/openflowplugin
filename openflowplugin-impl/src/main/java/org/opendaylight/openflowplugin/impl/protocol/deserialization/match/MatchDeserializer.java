@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
@@ -97,7 +95,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
 
         final MatchEntryDeserializer entryDeserializer = entryRegistry.get(key);
 
-        if (Objects.nonNull(entryDeserializer)) {
+        if (entryDeserializer != null) {
             entryDeserializer.deserializeEntry(inBuffer, builder);
         } else {
             final OFDeserializer<MatchEntry> deserializer = registry.getDeserializer(key);
@@ -108,7 +106,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
 
     @Override
     public void registerEntryDeserializer(MatchEntryDeserializerKey key, MatchEntryDeserializer deserializer) {
-        if (Objects.isNull(key) || Objects.isNull(deserializer)) {
+        if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MatchEntryDeserializerKey or Deserializer is null");
         }
 
@@ -122,16 +120,15 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
 
     @Override
     public boolean unregisterEntryDeserializer(MatchEntryDeserializerKey key) {
-        if (Objects.isNull(key)) {
+        if (key == null) {
             throw new IllegalArgumentException("MatchEntryDeserializerKey is null");
         }
 
-        return Objects.nonNull(entryRegistry.remove(key));
+        return entryRegistry.remove(key) != null;
     }
 
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
-
 }

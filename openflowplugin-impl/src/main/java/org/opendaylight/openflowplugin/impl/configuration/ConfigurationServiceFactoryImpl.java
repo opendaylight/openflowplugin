@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
@@ -95,7 +94,7 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
             properties.forEach((propertyName, newValue) -> {
                 final String originalValue = propertyMap.get(propertyName);
 
-                if (Objects.nonNull(originalValue)) {
+                if (originalValue != null) {
                     if (originalValue.equals(newValue)) {
                         return;
                     }
@@ -105,7 +104,7 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             originalValue,
                             newValue);
                 } else {
-                    if (Objects.isNull(newValue)) {
+                    if (newValue == null) {
                         return;
                     }
 

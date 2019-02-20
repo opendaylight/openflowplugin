@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGetAsyncConfigService;
@@ -43,7 +41,7 @@ public class SalAsyncConfigServiceImpl implements SalAsyncConfigService {
     @Override
     public ListenableFuture<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input) {
         return Futures.transform(getAsyncConfigService.handleServiceCall(input), result ->
-                Objects.nonNull(result) && result.isSuccessful()
+                result != null && result.isSuccessful()
                         ? RpcResultBuilder.success(new GetAsyncOutputBuilder(result.getResult())).build()
                         : RpcResultBuilder.<GetAsyncOutput>failed().build(),
                 MoreExecutors.directExecutor());

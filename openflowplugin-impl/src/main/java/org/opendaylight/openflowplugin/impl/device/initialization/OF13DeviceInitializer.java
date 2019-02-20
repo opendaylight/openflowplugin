@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import com.google.common.base.Function;
@@ -16,7 +15,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -138,7 +136,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         Futures.addCallback(future, new FutureCallback<RpcResult<List<OfHeader>>>() {
             @Override
             public void onSuccess(@Nonnull final RpcResult<List<OfHeader>> result) {
-                if (Objects.nonNull(result.getResult())) {
+                if (result.getResult() != null) {
                     LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo(), type);
                     translateAndWriteResult(
                         type,
@@ -150,7 +148,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     result.getErrors().forEach(rpcError -> {
                         LOG.warn("Failed to retrieve static node {} info: {}", type, rpcError.getMessage());
 
-                        if (LOG.isTraceEnabled() && Objects.nonNull(rpcError.getCause())) {
+                        if (LOG.isTraceEnabled() && rpcError.getCause() != null) {
                             LOG.trace("Detailed error:", rpcError.getCause());
                         }
                     });
@@ -188,7 +186,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                                 final DeviceContext deviceContext,
                                                 @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                 @Nullable final ConvertorExecutor convertorExecutor) {
-        if (Objects.nonNull(result)) {
+        if (result != null) {
             try {
                 result.forEach(reply -> {
                     // First, translate collected data to proper openflowplugin representation
@@ -240,7 +238,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
             return Futures.transform(service.handleServiceCall(multipartType),
                 input -> {
-                    if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
+                    if (input.getResult() == null && input.isSuccessful()) {
                         return RpcResultBuilder.<List<OfHeader>>success(null).build();
                     }
 
@@ -261,7 +259,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             new MultiLayerMultipartCollectorService(deviceContext, deviceContext);
 
         return Futures.transform(service.handleServiceCall(multipartType), input -> {
-            if (Objects.isNull(input.getResult()) && input.isSuccessful()) {
+            if (input.getResult() == null && input.isSuccessful()) {
                 return RpcResultBuilder.<List<OfHeader>>success(null).build();
             }
 
@@ -270,5 +268,4 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     : RpcResultBuilder.<List<OfHeader>>failed().withRpcErrors(input.getErrors()).build();
         }, MoreExecutors.directExecutor());
     }
-
 }
