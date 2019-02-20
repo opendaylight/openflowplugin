@@ -1,17 +1,15 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device.listener;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -24,7 +22,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Implementation for {@link MultiMsgCollector} interface.
@@ -62,7 +59,7 @@ public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollec
     public void endCollecting(@Nullable final EventIdentifier eventIdentifier) {
         final RpcResult<List<T>> rpcResult = RpcResultBuilder.success(replyCollection).build();
 
-        if (Objects.nonNull(eventIdentifier)) {
+        if (eventIdentifier != null) {
             EventsTimeCounter.markEnd(eventIdentifier);
         }
 

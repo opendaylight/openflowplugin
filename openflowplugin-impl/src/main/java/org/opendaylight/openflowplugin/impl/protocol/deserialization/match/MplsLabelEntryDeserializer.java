@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 
@@ -20,11 +18,11 @@ public class MplsLabelEntryDeserializer extends AbstractMatchEntryDeserializer {
         processHeader(message);
         final long mplsLabel = message.readUnsignedInt();
 
-        if (Objects.isNull(builder.getProtocolMatchFields())) {
+        if (builder.getProtocolMatchFields() == null) {
             builder.setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
                     .setMplsLabel(mplsLabel)
                     .build());
-        } else if (Objects.isNull(builder.getProtocolMatchFields().getMplsLabel())) {
+        } else if (builder.getProtocolMatchFields().getMplsLabel() == null) {
             builder.setProtocolMatchFields(new ProtocolMatchFieldsBuilder(builder.getProtocolMatchFields())
                     .setMplsLabel(mplsLabel)
                     .build());

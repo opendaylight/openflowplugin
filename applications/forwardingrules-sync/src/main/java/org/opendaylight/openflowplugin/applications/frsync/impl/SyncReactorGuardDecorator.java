@@ -1,18 +1,16 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -47,7 +45,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         final long stampBeforeGuard = System.nanoTime();
         final Semaphore guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);
-        if (Objects.isNull(guard)) {
+        if (guard == null) {
             return Futures.immediateFuture(Boolean.FALSE);
         }
         final long stampAfterGuard = System.nanoTime();

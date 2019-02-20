@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -131,7 +130,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                         flowStats.getMatchV10(), data);
 
                 if (matchBuilderOptional.isPresent()) {
-                    if (Objects.nonNull(matchBuilderOptional.get().getIpMatch())) {
+                    if (matchBuilderOptional.get().getIpMatch() != null) {
                         ipProtocol = matchBuilderOptional.get().getIpMatch().getIpProtocol();
                     }
 

@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -24,8 +23,7 @@ public class Icmpv4TypeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIcmpv4Match())
-                && Objects.nonNull(match.getIcmpv4Match().getIcmpv4Type());
+        return match.getIcmpv4Match() != null && match.getIcmpv4Match().getIcmpv4Type() != null;
     }
 
     @Override
