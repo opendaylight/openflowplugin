@@ -137,6 +137,6 @@ public class AlarmAgent {
      * @param nodeId Source of the alarm nodeId
      */
     private String getSourceText(final Long nodeId) {
-        return new StringBuffer("Device=").append(nodeId).toString();
+        return new StringBuffer("Dpn=").append(nodeId).toString();
     }
 }
