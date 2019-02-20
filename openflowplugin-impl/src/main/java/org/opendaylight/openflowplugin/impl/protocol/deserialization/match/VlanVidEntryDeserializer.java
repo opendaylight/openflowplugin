@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
@@ -30,18 +28,18 @@ public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
                     .setVlanId(new VlanId(0))
                     .setVlanIdPresent(true);
         } else {
-            final boolean vidPresent = (vlanVidValue & (1 << 12)) != 0;
+            final boolean vidPresent = (vlanVidValue & 1 << 12) != 0;
 
             vlanIdBuilder
-                    .setVlanId(new VlanId((vidPresent ? vlanVidValue & ((1 << 12) - 1) : vlanVidValue)))
+                    .setVlanId(new VlanId(vidPresent ? vlanVidValue & (1 << 12) - 1 : vlanVidValue))
                     .setVlanIdPresent(vidPresent);
         }
 
-        if (Objects.isNull(builder.getVlanMatch())) {
+        if (builder.getVlanMatch() == null) {
             builder.setVlanMatch(new VlanMatchBuilder()
                     .setVlanId(vlanIdBuilder.build())
                     .build());
-        } else if (Objects.isNull(builder.getVlanMatch().getVlanId())) {
+        } else if (builder.getVlanMatch().getVlanId() == null) {
             builder.setVlanMatch(new VlanMatchBuilder(builder.getVlanMatch())
                     .setVlanId(vlanIdBuilder.build())
                     .build());
@@ -49,5 +47,4 @@ public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
             throwErrorOnMalformed(builder, "vlanMatch", "vlanVid");
         }
     }
-
 }

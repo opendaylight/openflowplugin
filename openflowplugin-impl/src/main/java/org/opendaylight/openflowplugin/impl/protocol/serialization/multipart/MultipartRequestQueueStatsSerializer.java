@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -22,7 +20,7 @@ public class MultipartRequestQueueStatsSerializer implements OFSerializer<Multip
 
     @Override
     public void serialize(final MultipartRequestQueueStats multipartRequestQueueStats, final ByteBuf byteBuf) {
-        if (Objects.isNull(multipartRequestQueueStats.getNodeConnectorId())) {
+        if (multipartRequestQueueStats.getNodeConnectorId() == null) {
             byteBuf.writeInt(OFConstants.OFPP_ANY.intValue());
         } else {
             byteBuf.writeInt(InventoryDataServiceUtil
@@ -35,5 +33,4 @@ public class MultipartRequestQueueStatsSerializer implements OFSerializer<Multip
             .firstNonNull(multipartRequestQueueStats.getQueueId(), new QueueId(OFConstants.OFPQ_ALL))
                 .getValue().intValue());
     }
-
 }

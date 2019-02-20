@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
@@ -97,7 +96,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
                 Nxm1Class.class,
                 regCaseValueBuilder.build())
-            .setHasMask(Objects.nonNull(nxmNxReg.getMask()))
+            .setHasMask(nxmNxReg.getMask() != null)
             .build();
     }
 

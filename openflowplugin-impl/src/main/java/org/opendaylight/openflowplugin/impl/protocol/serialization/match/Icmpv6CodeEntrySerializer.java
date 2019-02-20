@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -24,8 +22,7 @@ public class Icmpv6CodeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getIcmpv6Match())
-                && Objects.nonNull(match.getIcmpv6Match().getIcmpv6Code());
+        return match.getIcmpv6Match() != null && match.getIcmpv6Match().getIcmpv6Code() != null;
     }
 
     @Override
@@ -47,5 +44,4 @@ public class Icmpv6CodeEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
     }
-
 }

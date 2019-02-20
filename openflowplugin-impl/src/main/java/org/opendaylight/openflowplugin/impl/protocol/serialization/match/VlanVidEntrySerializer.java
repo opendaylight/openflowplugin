@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -24,7 +22,7 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId =
                 match.getVlanMatch().getVlanId().getVlanId();
 
-        int vlanVidValue = Objects.nonNull(vlanId) ? vlanId.getValue() : 0;
+        int vlanVidValue = vlanId != null ? vlanId.getValue() : 0;
 
         if (Boolean.TRUE.equals(match.getVlanMatch().getVlanId().isVlanIdPresent())) {
             short cfi = 1 << 12;
@@ -40,15 +38,14 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getVlanMatch())
-                && Objects.nonNull(match.getVlanMatch().getVlanId());
+        return match.getVlanMatch() != null && match.getVlanMatch().getVlanId() != null;
     }
 
     @Override
     protected boolean getHasMask(Match match) {
         final VlanId vlanId = match.getVlanMatch().getVlanId();
         return Boolean.TRUE.equals(vlanId.isVlanIdPresent())
-                && (Objects.isNull(vlanId.getVlanId()) || vlanId.getVlanId().getValue() == 0);
+                && (vlanId.getVlanId() == null || vlanId.getVlanId().getValue() == 0);
     }
 
     @Override
@@ -65,5 +62,4 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
-
 }

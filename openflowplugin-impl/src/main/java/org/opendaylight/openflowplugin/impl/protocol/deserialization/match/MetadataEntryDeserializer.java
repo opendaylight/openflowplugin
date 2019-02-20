@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata;
@@ -33,11 +31,10 @@ public class MetadataEntryDeserializer extends AbstractMatchEntryDeserializer {
             metadataBuilder.setMetadataMask(new BigInteger(1, metaMask));
         }
 
-        if (Objects.isNull(metadata)) {
+        if (metadata == null) {
             builder.setMetadata(metadataBuilder.build());
         } else {
             throwErrorOnMalformed(builder, "metadata");
         }
     }
-
 }

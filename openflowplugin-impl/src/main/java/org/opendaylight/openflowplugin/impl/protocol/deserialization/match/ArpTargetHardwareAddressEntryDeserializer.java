@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
@@ -30,12 +28,11 @@ public class ArpTargetHardwareAddressEntryDeserializer extends AbstractMatchEntr
             arpBuilder.setMask(OxmDeserializerHelper.convertMacAddress(message));
         }
 
-        if (Objects.isNull(layer3Match)) {
+        if (layer3Match == null) {
             builder.setLayer3Match(new ArpMatchBuilder()
                     .setArpTargetHardwareAddress(arpBuilder.build())
                     .build());
-        } else if (layer3Match instanceof ArpMatch
-            && Objects.isNull(((ArpMatch) layer3Match).getArpTargetHardwareAddress())) {
+        } else if (layer3Match instanceof ArpMatch && ((ArpMatch) layer3Match).getArpTargetHardwareAddress() == null) {
             builder.setLayer3Match(new ArpMatchBuilder((ArpMatch) layer3Match)
                     .setArpTargetHardwareAddress(arpBuilder.build())
                     .build());
@@ -43,5 +40,4 @@ public class ArpTargetHardwareAddressEntryDeserializer extends AbstractMatchEntr
             throwErrorOnMalformed(builder, "layer3Match", "arpTargetHardwareAddress");
         }
     }
-
 }
