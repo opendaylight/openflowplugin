@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -32,13 +30,12 @@ public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getTunnel())
-                && Objects.nonNull(match.getTunnel().getTunnelId());
+        return match.getTunnel() != null && match.getTunnel().getTunnelId() != null;
     }
 
     @Override
     protected boolean getHasMask(Match match) {
-        return Objects.nonNull(match.getTunnel().getTunnelMask());
+        return match.getTunnel().getTunnelMask() != null;
     }
 
     @Override
@@ -55,5 +52,4 @@ public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
     }
-
 }

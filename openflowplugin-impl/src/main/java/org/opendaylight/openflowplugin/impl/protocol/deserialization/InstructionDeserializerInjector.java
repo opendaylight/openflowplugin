@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExtensionProvider;
@@ -68,14 +66,13 @@ public final class InstructionDeserializerInjector {
     private static Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> createInjector(
             final DeserializerExtensionProvider provider,
             final short version) {
-        return code -> actionPath -> deserializer -> provider.registerDeserializer((Objects.nonNull(actionPath)
+        return code -> actionPath -> deserializer -> provider.registerDeserializer(actionPath != null
                         ? new MessageCodeActionExperimenterKey(version,
                                                                code,
                                                                Instruction.class,
                                                                actionPath,
                                                                null)
-                        : new MessageCodeExperimenterKey(version, code, Instruction.class, null)),
+                        : new MessageCodeExperimenterKey(version, code, Instruction.class, null),
                 deserializer);
     }
-
 }

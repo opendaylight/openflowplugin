@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 
@@ -20,11 +18,11 @@ public class Icmpv6CodeEntryDeserializer extends AbstractMatchEntryDeserializer 
         processHeader(message);
         final short code = message.readUnsignedByte();
 
-        if (Objects.isNull(builder.getIcmpv6Match())) {
+        if (builder.getIcmpv6Match() == null) {
             builder.setIcmpv6Match(new Icmpv6MatchBuilder()
                     .setIcmpv6Code(code)
                     .build());
-        } else if (Objects.isNull(builder.getIcmpv6Match().getIcmpv6Code())) {
+        } else if (builder.getIcmpv6Match().getIcmpv6Code() == null) {
             builder.setIcmpv6Match(new Icmpv6MatchBuilder(builder.getIcmpv6Match())
                     .setIcmpv6Code(code)
                     .build());
@@ -32,5 +30,4 @@ public class Icmpv6CodeEntryDeserializer extends AbstractMatchEntryDeserializer 
             throwErrorOnMalformed(builder, "icmpv6Match", "icmpv6Code");
         }
     }
-
 }

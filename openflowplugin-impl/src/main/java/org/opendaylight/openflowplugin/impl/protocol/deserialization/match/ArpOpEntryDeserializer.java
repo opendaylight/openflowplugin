@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
@@ -23,12 +21,11 @@ public class ArpOpEntryDeserializer extends AbstractMatchEntryDeserializer {
         final Layer3Match layer3Match = builder.getLayer3Match();
         final int arpOp = message.readUnsignedShort();
 
-        if (Objects.isNull(layer3Match)) {
+        if (layer3Match == null) {
             builder.setLayer3Match(new ArpMatchBuilder()
                 .setArpOp(arpOp)
                 .build());
-        } else if (layer3Match instanceof ArpMatch
-            && Objects.isNull(((ArpMatch) layer3Match).getArpOp())) {
+        } else if (layer3Match instanceof ArpMatch && ((ArpMatch) layer3Match).getArpOp() == null) {
             builder.setLayer3Match(new ArpMatchBuilder((ArpMatch) layer3Match)
                 .setArpOp(arpOp)
                 .build());
@@ -36,5 +33,4 @@ public class ArpOpEntryDeserializer extends AbstractMatchEntryDeserializer {
             throwErrorOnMalformed(builder, "layer3Match", "arpOp");
         }
     }
-
 }

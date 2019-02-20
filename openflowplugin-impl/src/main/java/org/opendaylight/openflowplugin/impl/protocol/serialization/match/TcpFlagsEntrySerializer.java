@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -32,13 +31,12 @@ public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySeria
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getTcpFlagsMatch())
-                && Objects.nonNull(match.getTcpFlagsMatch().getTcpFlags());
+        return match.getTcpFlagsMatch() != null && match.getTcpFlagsMatch().getTcpFlags() != null;
     }
 
     @Override
     protected boolean getHasMask(Match match) {
-        return Objects.nonNull(match.getTcpFlagsMatch().getTcpFlagsMask());
+        return match.getTcpFlagsMatch().getTcpFlagsMask() != null;
     }
 
     @Override
@@ -60,5 +58,4 @@ public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySeria
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
-
 }

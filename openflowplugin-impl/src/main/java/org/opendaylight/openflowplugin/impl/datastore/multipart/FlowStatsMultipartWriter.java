@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
-import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -64,9 +62,8 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                         .getDeviceFlowRegistry()
                         .retrieveDescriptor(flowRegistryKey);
 
-                if (Objects.nonNull(flowDescriptor)) {
-                    final FlowKey key = new FlowKey(flowDescriptor
-                            .getFlowId());
+                if (flowDescriptor != null) {
+                    final FlowKey key = new FlowKey(flowDescriptor.getFlowId());
 
                     writeToTransaction(
                             getInstanceIdentifier()

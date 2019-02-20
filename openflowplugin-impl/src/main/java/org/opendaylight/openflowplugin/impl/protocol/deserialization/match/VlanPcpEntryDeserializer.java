@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -21,11 +19,11 @@ public class VlanPcpEntryDeserializer extends AbstractMatchEntryDeserializer {
         processHeader(message);
         final short pcp = message.readUnsignedByte();
 
-        if (Objects.isNull(builder.getVlanMatch())) {
+        if (builder.getVlanMatch() == null) {
             builder.setVlanMatch(new VlanMatchBuilder()
                     .setVlanPcp(new VlanPcp(pcp))
                     .build());
-        } else if (Objects.isNull(builder.getVlanMatch().getVlanPcp())) {
+        } else if (builder.getVlanMatch().getVlanPcp() == null) {
             builder.setVlanMatch(new VlanMatchBuilder(builder.getVlanMatch())
                     .setVlanPcp(new VlanPcp(pcp))
                     .build());
@@ -33,5 +31,4 @@ public class VlanPcpEntryDeserializer extends AbstractMatchEntryDeserializer {
             throwErrorOnMalformed(builder, "vlanMatch", "vlanPcp");
         }
     }
-
 }

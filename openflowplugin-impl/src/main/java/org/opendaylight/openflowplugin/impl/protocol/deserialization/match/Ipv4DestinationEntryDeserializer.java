@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
@@ -44,12 +42,12 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
 
     private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address, @Nullable final byte[]
             mask) {
-        if (Objects.isNull(builder.getLayer3Match())) {
+        if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv4MatchBuilder()
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
                     .build());
         } else if (builder.getLayer3Match() instanceof Ipv4Match
-                && Objects.isNull(((Ipv4Match) builder.getLayer3Match()).getIpv4Destination())) {
+                && ((Ipv4Match) builder.getLayer3Match()).getIpv4Destination() == null) {
             builder.setLayer3Match(new Ipv4MatchBuilder((Ipv4Match) builder.getLayer3Match())
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
                     .build());
@@ -60,14 +58,13 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
 
     private static void setArbitraryMatch(final MatchBuilder builder, final Ipv4Address address,
                                           final byte[] mask) {
-        if (Objects.isNull(builder.getLayer3Match())) {
+        if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder()
                     .setIpv4DestinationAddressNoMask(address)
                     .setIpv4DestinationArbitraryBitmask(IpConversionUtil.createArbitraryBitMask(mask))
                     .build());
         } else if (builder.getLayer3Match() instanceof Ipv4MatchArbitraryBitMask
-                && Objects.isNull(((Ipv4MatchArbitraryBitMask) builder.getLayer3Match())
-                .getIpv4DestinationAddressNoMask())) {
+                && ((Ipv4MatchArbitraryBitMask) builder.getLayer3Match()).getIpv4DestinationAddressNoMask() == null) {
             builder.setLayer3Match(new Ipv4MatchArbitraryBitMaskBuilder((Ipv4MatchArbitraryBitMask) builder
                 .getLayer3Match())
                     .setIpv4DestinationAddressNoMask(address)
@@ -77,5 +74,4 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
             throwErrorOnMalformed(builder, "layer3Match", "ipv4DestinationAddressNoMask");
         }
     }
-
 }

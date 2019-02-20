@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -29,7 +27,7 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_01 = 4;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_02 = 2;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_03 = 4;
-    private static final int DEFAULT_PORT_CONFIG_MASK = createPortConfigBitMask(
+    private static final Integer DEFAULT_PORT_CONFIG_MASK = createPortConfigBitMask(
             new PortConfig(true, true, true, true));
 
     @Override
@@ -55,7 +53,7 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
     }
 
     private static Integer createPortConfigBitMask(final PortConfig config) {
-        return Objects.isNull(config) ? null : ByteBufUtils.fillBitMaskFromMap(ImmutableMap
+        return config == null ? null : ByteBufUtils.fillBitMaskFromMap(ImmutableMap
                 .<Integer, Boolean>builder()
                 .put(0, config.isPORTDOWN())
                 .put(2, config.isNORECV())

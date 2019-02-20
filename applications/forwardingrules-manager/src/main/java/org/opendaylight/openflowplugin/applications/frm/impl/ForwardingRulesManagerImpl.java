@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -340,8 +339,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident) {
-        return Objects.nonNull(ident) && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
+    public boolean isNodeOwner(final InstanceIdentifier<FlowCapableNode> ident) {
+        return ident != null && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
     }
 
     @VisibleForTesting
