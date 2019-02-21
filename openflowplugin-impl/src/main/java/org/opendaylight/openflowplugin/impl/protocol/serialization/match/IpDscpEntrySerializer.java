@@ -11,24 +11,20 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 
-public class IpDscpEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class IpDscpEntrySerializer extends AbstractPrimitiveEntrySerializer<Dscp> {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIpMatch().getIpDscp().getValue());
+    protected Dscp extractEntry(Match match) {
+        final IpMatch ipMatch = match.getIpMatch();
+        return ipMatch == null ? null : ipMatch.getIpDscp();
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getIpMatch() != null && match.getIpMatch().getIpDscp() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
+    protected void serializeEntry(Dscp entry, Void mask, ByteBuf outBuffer) {
+        outBuffer.writeByte(entry.getValue());
     }
 
     @Override
@@ -45,5 +41,4 @@ public class IpDscpEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
     }
-
 }

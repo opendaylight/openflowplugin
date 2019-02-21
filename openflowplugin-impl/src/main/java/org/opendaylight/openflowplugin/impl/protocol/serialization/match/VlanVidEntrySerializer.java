@@ -11,41 +11,39 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
 
-public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
+public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId, Boolean> {
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId =
-                match.getVlanMatch().getVlanId().getVlanId();
+    protected VlanId extractEntry(Match match) {
+        final VlanMatch vlanMatch = match.getVlanMatch();
+        return vlanMatch == null ? null : vlanMatch.getVlanId();
+    }
+
+    @Override
+    protected Boolean extractEntryMask(VlanId entry) {
+        return Boolean.TRUE.equals(entry.isVlanIdPresent())
+                && (entry.getVlanId() == null || entry.getVlanId().getValue() == 0) ? Boolean.TRUE : null;
+    }
+
+    @Override
+    protected void serializeEntry(VlanId entry, Boolean mask, ByteBuf outBuffer) {
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId = entry.getVlanId();
 
         int vlanVidValue = vlanId != null ? vlanId.getValue() : 0;
 
-        if (Boolean.TRUE.equals(match.getVlanMatch().getVlanId().isVlanIdPresent())) {
+        if (Boolean.TRUE.equals(entry.isVlanIdPresent())) {
             short cfi = 1 << 12;
             vlanVidValue = vlanVidValue | cfi;
         }
-
         outBuffer.writeShort(vlanVidValue);
 
-        if (getHasMask(match)) {
+        if (mask != null) {
             writeMask(VLAN_VID_MASK, outBuffer, getValueLength());
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getVlanMatch() != null && match.getVlanMatch().getVlanId() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        final VlanId vlanId = match.getVlanMatch().getVlanId();
-        return Boolean.TRUE.equals(vlanId.isVlanIdPresent())
-                && (vlanId.getVlanId() == null || vlanId.getVlanId().getValue() == 0);
     }
 
     @Override

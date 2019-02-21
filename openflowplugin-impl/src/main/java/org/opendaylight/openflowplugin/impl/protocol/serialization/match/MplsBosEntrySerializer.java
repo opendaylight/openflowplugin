@@ -11,25 +11,21 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
 
-public class MplsBosEntrySerializer extends AbstractMatchEntrySerializer {
+public class MplsBosEntrySerializer extends AbstractPrimitiveEntrySerializer<Short> {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeBoolean(match.getProtocolMatchFields().getMplsBos() != 0);
+    protected Short extractEntry(Match match) {
+        final ProtocolMatchFields protoFields = match.getProtocolMatchFields();
+        return protoFields == null ? null : protoFields.getMplsBos();
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getProtocolMatchFields() != null && match.getProtocolMatchFields().getMplsBos() != null;
-    }
+    protected void serializeEntry(Short entry, Void mask, ByteBuf outBuffer) {
+        outBuffer.writeBoolean(entry != 0);
 
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
     }
-
     @Override
     protected int getOxmFieldCode() {
         return OxmMatchConstants.MPLS_BOS;
