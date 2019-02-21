@@ -8,13 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -118,33 +116,24 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
     @Override
     public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
-        return Futures.transform(handleServiceCall(input),
-                     (Function<RpcResult<List<MultipartReply>>,
-                             RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>)
-            result -> {
-                if (Preconditions.checkNotNull(result).isSuccessful()) {
-                    final MessageTranslator<MultipartReply, AggregatedFlowStatistics>
-                             messageTranslator = translatorLibrary.lookupTranslator(
-                             new TranslatorKey(getVersion(),
-                                               MultipartReplyAggregateCase.class.getName()));
+        return Futures.transform(handleServiceCall(input), result -> {
+            if (Preconditions.checkNotNull(result).isSuccessful()) {
+                final MessageTranslator<MultipartReply, AggregatedFlowStatistics>
+                         messageTranslator = translatorLibrary.lookupTranslator(new TranslatorKey(getVersion(),
+                                     MultipartReplyAggregateCase.class.getName()));
 
-                    return RpcResultBuilder.success(
-                             new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
-                                     .setAggregatedFlowStatistics(result.getResult().stream()
-                                                                          .map(multipartReply ->
-                                                                                       messageTranslator
-                                                                                  .translate(
-                                                                                          multipartReply,
-                                                                                          getDeviceInfo(),
-                                                                                          null))
-                                                                          .collect(Collectors
-                                                                                           .toList())))
-                             .build();
-                }
+                return RpcResultBuilder.success(
+                         new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
+                                 .setAggregatedFlowStatistics(result.getResult().stream()
+                                     .map(multipartReply -> messageTranslator.translate(multipartReply,
+                                             getDeviceInfo(), null))
+                                     .collect(Collectors.toList())))
+                         .build();
+            }
 
-                return RpcResultBuilder
-                             .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
-                             .withRpcErrors(result.getErrors()).build();
-            }, MoreExecutors.directExecutor());
+            return RpcResultBuilder
+                         .<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>failed()
+                         .withRpcErrors(result.getErrors()).build();
+        }, MoreExecutors.directExecutor());
     }
 }

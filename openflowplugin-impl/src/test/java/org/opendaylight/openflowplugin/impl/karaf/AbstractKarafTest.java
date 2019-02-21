@@ -8,15 +8,15 @@
 
 package org.opendaylight.openflowplugin.impl.karaf;
 
-import com.google.common.base.Function;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.felix.service.command.CommandSession;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Created by mirehak on 7/29/15.
