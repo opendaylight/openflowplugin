@@ -11,12 +11,10 @@ package org.opendaylight.openflowplugin.impl.services.batch;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroup;
@@ -127,9 +125,7 @@ public final class FlatBatchGroupAdapters {
     @VisibleForTesting
     static <T extends BatchGroupOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchGroupResult(final int stepOffset) {
-        return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
-            @Override
-            public RpcResult<ProcessFlatBatchOutput> apply(final RpcResult<T> input) {
+        return input -> {
                 List<BatchFailure> batchFailures = wrapBatchGroupFailuresForFlat(input, stepOffset);
                 ProcessFlatBatchOutputBuilder outputBuilder =
                         new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
@@ -137,7 +133,6 @@ public final class FlatBatchGroupAdapters {
                                        .withRpcErrors(input.getErrors())
                                        .withResult(outputBuilder.build())
                                        .build();
-            }
         };
     }
 
@@ -167,10 +162,9 @@ public final class FlatBatchGroupAdapters {
      * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchGroupOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-        convertGroupBatchFutureForChain(final Future<RpcResult<T>> resultUpdateGroupFuture,
+        convertGroupBatchFutureForChain(final ListenableFuture<RpcResult<T>> resultUpdateGroupFuture,
                                     final int currentOffset) {
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateGroupFuture),
-                FlatBatchGroupAdapters.convertBatchGroupResult(currentOffset),
-                MoreExecutors.directExecutor());
+        return Futures.transform(resultUpdateGroupFuture,
+                FlatBatchGroupAdapters.convertBatchGroupResult(currentOffset), MoreExecutors.directExecutor());
     }
 }

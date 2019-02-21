@@ -12,7 +12,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
@@ -22,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -171,8 +169,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
-            Future<RpcResult<AddFlowOutput>> rpcAddFlowResult = flowService.addFlow(flowInputBuilder.build());
-            bulkResults.add(JdkFutureAdapters.listenInPoolThread(rpcAddFlowResult));
+            bulkResults.add(flowService.addFlow(flowInputBuilder.build()));
         }
         return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
@@ -231,8 +228,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
-            Future<RpcResult<RemoveFlowOutput>> rpcAddFlowResult = flowService.removeFlow(flowInputBuilder.build());
-            bulkResults.add(JdkFutureAdapters.listenInPoolThread(rpcAddFlowResult));
+            bulkResults.add(flowService.removeFlow(flowInputBuilder.build()));
         }
         return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
