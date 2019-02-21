@@ -162,23 +162,25 @@ public class ContextChainHolderImplTest {
         Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
             .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         contextChainHolder.createContextChain(connectionContext);
-        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
-        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
+        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
+        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
         Mockito.verify(reconciliationFrameworkEvent).onDevicePrepared(deviceInfo);
     }
 
     @Test
     public void reconciliationFrameworkSuccessButNotSubmit() throws Exception {
         contextChainHolder.createContextChain(connectionContext);
+        Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
+                .thenReturn(Futures.immediateFuture(ResultState.DONOTHING));
         // TODO when if (future != null) check in MastershipChangeServiceManagerImpl's becomeSlaveOrDisconnect() is rm
         // Mockito.when(reconciliationFrameworkEvent.onDevicePrepared(deviceInfo))
         //    .thenReturn(Futures.immediateFuture(null));
         contextChainHolder.createContextChain(connectionContext);
-        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
+        contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL);
         contextChainHolder.onNotAbleToStartMastershipMandatory(deviceInfo, "Test reason");
         Mockito.verify(reconciliationFrameworkEvent).onDeviceDisconnected(deviceInfo);
         Mockito.verify(connectionContext).closeConnection(false);

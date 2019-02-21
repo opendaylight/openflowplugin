@@ -622,12 +622,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
     }
 
+    @Override
+    public void instantiateServiceInstance() {
+        lazyTransactionManagerInitialization();
+    }
+
     // TODO: exception handling should be fixed by using custom checked exception, never RuntimeExceptions
     @Override
     @SuppressWarnings({"checkstyle:IllegalCatch"})
-    public void instantiateServiceInstance() {
-        lazyTransactionManagerInitialization();
-
+    public void initializeDevice() {
+        LOG.debug("Device initialization started for device {}", deviceInfo);
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
                     .retrieveAndClearPortStatusMessages();
