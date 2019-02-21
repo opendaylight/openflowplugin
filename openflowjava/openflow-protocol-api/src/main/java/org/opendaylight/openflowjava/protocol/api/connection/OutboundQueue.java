@@ -9,6 +9,7 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 
 import com.google.common.annotations.Beta;
 import com.google.common.util.concurrent.FutureCallback;
+import java.math.BigInteger;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -83,4 +84,38 @@ public interface OutboundQueue {
             @Nullable OfHeader message,
             @Nullable FutureCallback<OfHeader> callback,
             @Nullable Function<OfHeader, Boolean> isComplete);
+
+    /**
+     * Commit the specified offset using a message. Specified callback will
+     * be invoked once we know how it has resolved, either with a normal response,
+     * implied completion via a barrier, or failure (such as connection drop). For
+     * multipart responses, {@link FutureCallback#onSuccess(Object)} will be invoked
+     * multiple times as the corresponding responses arrive. If the request is completed
+     * with a response, the object reported will be non-null. If the request's completion
+     * is implied by a barrier, the object reported will be null.
+     *
+     * <p>
+     * If this request fails on the remote device, {@link FutureCallback#onFailure(Throwable)}
+     * will be called with an instance of {@link DeviceRequestFailedException}.
+     *
+     * <p>
+     * If the request fails due to local reasons, {@link FutureCallback#onFailure(Throwable)}
+     * will be called with an instance of {@link OutboundQueueException}. In particular, if
+     * this request failed because the device disconnected, {@link OutboundQueueException#DEVICE_DISCONNECTED}
+     * will be reported.
+     *
+     * @param xid Previously-reserved XID
+     * @param message Message which should be sent out, or null if the reservation
+     *                should be cancelled.
+     * @param callback Callback to be invoked, or null if no callback should be invoked.
+     * @param isComplete Function to determine if OfHeader is processing is complete
+     * @param datapathId dpnId of the device connected.
+     * @throws IllegalArgumentException if the slot is already committed or was never reserved.
+     */
+    void commitEntry(
+            @Nonnull Long xid,
+            @Nullable OfHeader message,
+            @Nullable FutureCallback<OfHeader> callback,
+            @Nullable Function<OfHeader, Boolean> isComplete,
+            @Nonnull BigInteger datapathId);
 }
