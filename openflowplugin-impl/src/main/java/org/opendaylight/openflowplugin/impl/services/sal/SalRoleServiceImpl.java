@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,11 +9,9 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -80,17 +78,13 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     private ListenableFuture<RpcResult<SetRoleOutput>> tryToChangeRole(final OfpRole role) {
         LOG.info("RoleChangeTask called on device:{} OFPRole:{}", getDeviceInfo().getNodeId().getValue(), role);
 
-        final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
-
-        return Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(generationFuture), generationId -> {
+        return Futures.transformAsync(roleService.getGenerationIdFromDevice(getVersion()), generationId -> {
             LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}",
                     getDeviceInfo().getNodeId().getValue(), generationId);
             final BigInteger nextGenerationId = getNextGenerationId(generationId);
             LOG.debug("nextGenerationId received from device:{} is {}",
                     getDeviceInfo().getNodeId().getValue(), nextGenerationId);
-            final Future<RpcResult<SetRoleOutput>> submitRoleFuture =
-                    roleService.submitRoleChange(role, getVersion(), nextGenerationId);
-            return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
+            return roleService.submitRoleChange(role, getVersion(), nextGenerationId);
         }, MoreExecutors.directExecutor());
     }
 

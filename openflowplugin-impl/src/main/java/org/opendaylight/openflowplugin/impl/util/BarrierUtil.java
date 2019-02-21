@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -55,7 +54,7 @@ public final class BarrierUtil {
             interInput -> {
                 resultPair.setLeft(interInput);
                 final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
-                return JdkFutureAdapters.listenInPoolThread(transactionService.sendBarrier(barrierInput));
+                return transactionService.sendBarrier(barrierInput);
             }, MoreExecutors.directExecutor());
         // store barrier result and return initiated pair
         final ListenableFuture<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>> compositeResult = Futures.transform(

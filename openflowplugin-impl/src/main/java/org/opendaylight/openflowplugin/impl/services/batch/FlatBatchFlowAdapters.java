@@ -11,12 +11,10 @@ package org.opendaylight.openflowplugin.impl.services.batch;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -171,10 +169,9 @@ public final class FlatBatchFlowAdapters {
      * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchFlowOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-        convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
+        convertFlowBatchFutureForChain(final ListenableFuture<RpcResult<T>> resultUpdateFlowFuture,
                                    final int currentOffset) {
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
-                FlatBatchFlowAdapters.convertBatchFlowResult(currentOffset),
+        return Futures.transform(resultUpdateFlowFuture, FlatBatchFlowAdapters.convertBatchFlowResult(currentOffset),
                 MoreExecutors.directExecutor());
     }
 }
