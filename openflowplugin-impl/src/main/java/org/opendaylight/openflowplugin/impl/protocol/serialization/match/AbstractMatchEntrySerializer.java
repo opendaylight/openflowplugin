@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
+
+import static com.google.common.base.Verify.verifyNotNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.Iterator;
 import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializer;
@@ -25,27 +28,82 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<Match>, MatchEntrySerializer {
+public abstract class AbstractMatchEntrySerializer<E, M> implements HeaderSerializer<Match>, MatchEntrySerializer {
+    private final int oxmFieldCode;
+    private final int oxmClassCode;
+    private final int valueLength;
+
+    protected AbstractMatchEntrySerializer(final int oxmFieldCode, int oxmClassCode, int valueLength) {
+        this.oxmFieldCode = oxmFieldCode;
+        this.oxmClassCode = oxmClassCode;
+        this.valueLength = valueLength;
+    }
+
+    /**
+     * Oxm field numeric representation.
+     *
+     * @return numeric representation of oxm_field
+     */
+    protected final int getOxmFieldCode() {
+        return oxmFieldCode;
+    }
+
+    /**
+     * Oxm class code.
+     *
+     * @return numeric representation of oxm_class
+     */
+    protected final int getOxmClassCode() {
+        return oxmClassCode;
+    }
+
+    /**
+     * Get value length.
+     *
+     * @return match entry value length (without mask length)
+     */
+    protected final int getValueLength() {
+        return valueLength;
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        serializeHeader(match, outBuffer);
+    public final void serialize(Match match, ByteBuf outBuffer) {
+        final E entry = verifyNotNull(extractEntry(match), "Entry serialized by %s is not present in %s", this, match);
+        final M mask = extractEntryMask(entry);
+        serializeHeader(mask != null, outBuffer);
+        serializeEntry(entry, mask, outBuffer);
     }
 
     @Override
     public void serializeHeader(Match match, ByteBuf outBuffer) {
+        final E entry = extractEntry(match);
+        final M mask = entry != null ? extractEntryMask(entry) : null;
+        serializeHeader(mask != null, outBuffer);
+    }
+
+    protected void serializeHeader(boolean hasMask, ByteBuf outBuffer) {
         outBuffer.writeShort(getOxmClassCode());
 
         int fieldAndMask = getOxmFieldCode() << 1;
         int length = getValueLength();
 
-        if (getHasMask(match)) {
+        if (hasMask) {
             fieldAndMask |= 1;
             length *= 2;
         }
 
         outBuffer.writeByte(fieldAndMask);
         outBuffer.writeByte(length);
+    }
+
+    @Override
+    public final void serializeIfPresent(Match match, ByteBuf outBuffer) {
+        final E entry = extractEntry(match);
+        if (entry != null) {
+            final M mask = extractEntryMask(entry);
+            serializeHeader(mask != null, outBuffer);
+            serializeEntry(entry, mask, outBuffer);
+        }
     }
 
     /**
@@ -133,31 +191,27 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
     }
 
     /**
-     * Has mask getter.
+     * Extract the corresponding entry from a match.
      *
      * @param match Openflow match
-     * @return if field has or has not mask
+     * @return Entry, null if not present
      */
-    protected abstract boolean getHasMask(Match match);
+    protected abstract @Nullable E extractEntry(Match match);
 
     /**
-     * Oxm field numeric representation.
+     * Extract the mask contained in an entry.
      *
-     * @return numeric representation of oxm_field
+     * @param entry entry to examine
+     * @return Mask, null if not present
      */
-    protected abstract int getOxmFieldCode();
+    protected abstract @Nullable M extractEntryMask(@NonNull E entry);
 
     /**
-     * Oxm class code.
+     * Extract the corresponding entry from a match.
      *
-     * @return numeric representation of oxm_class
+     * @param entry entry to serialize
+     * @param mask mask as extracted from entry
+     * @param outBuffer output buffer
      */
-    protected abstract int getOxmClassCode();
-
-    /**
-     * Get value length.
-     *
-     * @return match entry value length (without mask length)
-     */
-    protected abstract int getValueLength();
+    protected abstract void serializeEntry(@NonNull E entry, @Nullable M mask, @NonNull ByteBuf outBuffer);
 }
