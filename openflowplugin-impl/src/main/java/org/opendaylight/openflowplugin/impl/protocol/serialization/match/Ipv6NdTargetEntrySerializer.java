@@ -10,41 +10,25 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 
-public class Ipv6NdTargetEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        writeIpv6Address(((Ipv6Match) match.getLayer3Match()).getIpv6NdTarget(), outBuffer);
+public class Ipv6NdTargetEntrySerializer extends AbstractPrimitiveEntrySerializer<Ipv6Address> {
+    public Ipv6NdTargetEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_ND_TARGET,
+            EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof Ipv6Match
-                && ((Ipv6Match) match.getLayer3Match()).getIpv6NdTarget() != null;
+    protected Ipv6Address extractEntry(final Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof Ipv6Match ? ((Ipv6Match) l3Match).getIpv6NdTarget() : null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IPV6_ND_TARGET;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES;
+    protected void serializeEntry(final Ipv6Address entry, final ByteBuf outBuffer) {
+        writeIpv6Address(entry, outBuffer);
     }
 }
