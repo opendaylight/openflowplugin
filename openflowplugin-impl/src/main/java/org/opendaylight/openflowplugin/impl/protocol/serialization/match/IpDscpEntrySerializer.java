@@ -5,45 +5,28 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 
-public class IpDscpEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIpMatch().getIpDscp().getValue().toJava());
+public class IpDscpEntrySerializer extends AbstractPrimitiveEntrySerializer<Dscp> {
+    public IpDscpEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_DSCP, EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
     }
 
     @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getIpMatch() != null && match.getIpMatch().getIpDscp() != null;
+    protected Dscp extractEntry(final Match match) {
+        final IpMatch ipMatch = match.getIpMatch();
+        return ipMatch == null ? null : ipMatch.getIpDscp();
     }
 
     @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
+    protected void serializeEntry(final Dscp entry, final ByteBuf outBuffer) {
+        outBuffer.writeByte(entry.getValue().byteValue());
     }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IP_DSCP;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
-    }
-
 }

@@ -7,55 +7,22 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 
-public class ArpTargetHardwareAddressEntrySerializer extends AbstractMatchEntrySerializer {
+public class ArpTargetHardwareAddressEntrySerializer
+        extends AbstractMacAddressFilterEntrySerializer<ArpTargetHardwareAddress> {
 
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        final ArpTargetHardwareAddress arpTargetHardwareAddress =
-                ((ArpMatch) match.getLayer3Match()).getArpTargetHardwareAddress();
-        writeMacAddress(arpTargetHardwareAddress.getAddress(), outBuffer);
-
-        if (getHasMask(match)) {
-            writeMask(ByteBufUtils.macAddressToBytes(
-                    arpTargetHardwareAddress.getMask().getValue()),
-                    outBuffer,
-                    getValueLength());
-        }
+    public ArpTargetHardwareAddressEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_THA);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof ArpMatch
-                && ((ArpMatch) match.getLayer3Match()).getArpTargetHardwareAddress() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return ((ArpMatch) match.getLayer3Match()).getArpTargetHardwareAddress().getMask() != null;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ARP_THA;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.MAC_ADDRESS_LENGTH;
+    protected ArpTargetHardwareAddress extractEntry(final Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof ArpMatch ? ((ArpMatch) l3Match).getArpTargetHardwareAddress() : null;
     }
 }

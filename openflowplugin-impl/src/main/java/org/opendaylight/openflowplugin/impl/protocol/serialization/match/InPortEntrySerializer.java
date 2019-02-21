@@ -12,45 +12,26 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class InPortEntrySerializer extends AbstractMatchEntrySerializer {
+public class InPortEntrySerializer extends AbstractPrimitiveEntrySerializer<NodeConnectorId> {
+    public InPortEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PORT,EncodeConstants.SIZE_OF_INT_IN_BYTES);
+    }
 
     @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        Uint32 value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
-                OpenflowVersion.OF13,
-                match.getInPort().getValue());
+    protected NodeConnectorId extractEntry(final Match match) {
+        return match.getInPort();
+    }
+
+    @Override
+    protected void serializeEntry(final NodeConnectorId entry, final ByteBuf outBuffer) {
+        Uint32 value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, entry.getValue());
         if (value == null) {
-            throw new IllegalArgumentException("Not a valid port number: " + match.getInPort().getValue());
+            throw new IllegalArgumentException("Not a valid port number: " + entry.getValue());
         }
         outBuffer.writeInt(value.intValue());
-    }
-
-    @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getInPort() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IN_PORT;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
     }
 }

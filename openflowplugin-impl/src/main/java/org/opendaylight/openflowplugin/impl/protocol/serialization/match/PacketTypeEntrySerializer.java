@@ -7,40 +7,19 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.PacketTypeMatch;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class PacketTypeEntrySerializer extends AbstractMatchEntrySerializer {
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeInt(match.getPacketTypeMatch().getPacketType().intValue());
+public class PacketTypeEntrySerializer extends AbstractUint32EntrySerializer {
+    public PacketTypeEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.PACKET_TYPE);
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.PACKET_TYPE;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getPacketTypeMatch() != null && match.getPacketTypeMatch().getPacketType() != null;
+    protected Uint32 extractEntry(final Match match) {
+        final PacketTypeMatch typeMatch = match.getPacketTypeMatch();
+        return typeMatch == null ? null : typeMatch.getPacketType();
     }
 }
