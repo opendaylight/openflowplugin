@@ -12,44 +12,31 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.Pbb;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class PbbEntrySerializer extends AbstractMatchEntrySerializer {
+public class PbbEntrySerializer extends AbstractMatchEntrySerializer<Pbb, Uint32> {
+    public PbbEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.PBB_ISID, EncodeConstants.SIZE_OF_3_BYTES);
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeMedium(match.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
+    protected Pbb extractEntry(Match match) {
+        final ProtocolMatchFields protoFields = match.getProtocolMatchFields();
+        return protoFields == null ? null : protoFields.getPbb();
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.unsignedMediumToBytes(
-                    match.getProtocolMatchFields().getPbb().getPbbMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected Uint32 extractEntryMask(Pbb entry) {
+        return entry.getPbbMask();
+    }
+
+    @Override
+    protected void serializeEntry(Pbb entry, Uint32 mask, ByteBuf outBuffer) {
+        outBuffer.writeMedium(entry.getPbbIsid().intValue());
+        if (mask != null) {
+            writeMask(ByteUtil.unsignedMediumToBytes(mask), outBuffer, EncodeConstants.SIZE_OF_3_BYTES);
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getProtocolMatchFields() != null && match.getProtocolMatchFields().getPbb() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return match.getProtocolMatchFields().getPbb().getPbbMask() != null;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.PBB_ISID;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_3_BYTES;
     }
 }

@@ -13,48 +13,32 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
-public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer {
+public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer<Ipv6ExtHeader, Uint16> {
+    public Ipv6ExtHeaderEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_EXTHDR,
+            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+    }
 
     @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        final Ipv6ExtHeader ipv6ExtHeader = ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader();
-        outBuffer.writeShort(ipv6ExtHeader.getIpv6Exthdr().toJava());
+    protected Ipv6ExtHeader extractEntry(final Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof Ipv6Match ? ((Ipv6Match) l3Match).getIpv6ExtHeader() : null;
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.unsignedShortToBytes(
-                    ipv6ExtHeader.getIpv6ExthdrMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected Uint16 extractEntryMask(final Ipv6ExtHeader entry) {
+        return entry.getIpv6ExthdrMask();
+    }
+
+    @Override
+    protected void serializeEntry(final Ipv6ExtHeader entry, final Uint16 mask, final ByteBuf outBuffer) {
+        outBuffer.writeShort(entry.getIpv6Exthdr().shortValue());
+        if (mask != null) {
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof Ipv6Match
-                && ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader().getIpv6ExthdrMask() != null;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IPV6_EXTHDR;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
 }

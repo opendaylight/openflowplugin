@@ -11,55 +11,45 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
+import org.opendaylight.yangtools.yang.common.Empty;
 
-public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
+public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId, Empty> {
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
 
+    public VlanVidEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_VID,
+            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+    }
+
     @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId =
-                match.getVlanMatch().getVlanId().getVlanId();
+    protected VlanId extractEntry(Match match) {
+        final VlanMatch vlanMatch = match.getVlanMatch();
+        return vlanMatch == null ? null : vlanMatch.getVlanId();
+    }
+
+    @Override
+    protected Empty extractEntryMask(VlanId entry) {
+        return Boolean.TRUE.equals(entry.isVlanIdPresent())
+                && (entry.getVlanId() == null || entry.getVlanId().getValue().shortValue() == 0) ? Empty.getInstance()
+                        : null;
+    }
+
+    @Override
+    protected void serializeEntry(VlanId entry, Empty mask, ByteBuf outBuffer) {
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId = entry.getVlanId();
 
         int vlanVidValue = vlanId != null ? vlanId.getValue().toJava() : 0;
 
-        if (Boolean.TRUE.equals(match.getVlanMatch().getVlanId().isVlanIdPresent())) {
+        if (Boolean.TRUE.equals(entry.isVlanIdPresent())) {
             short cfi = 1 << 12;
             vlanVidValue = vlanVidValue | cfi;
         }
-
         outBuffer.writeShort(vlanVidValue);
 
-        if (getHasMask(match)) {
-            writeMask(VLAN_VID_MASK, outBuffer, getValueLength());
+        if (mask != null) {
+            writeMask(VLAN_VID_MASK, outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getVlanMatch() != null && match.getVlanMatch().getVlanId() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        final VlanId vlanId = match.getVlanMatch().getVlanId();
-        return Boolean.TRUE.equals(vlanId.isVlanIdPresent())
-                && (vlanId.getVlanId() == null || vlanId.getVlanId().getValue().toJava() == 0);
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.VLAN_VID;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
 }
