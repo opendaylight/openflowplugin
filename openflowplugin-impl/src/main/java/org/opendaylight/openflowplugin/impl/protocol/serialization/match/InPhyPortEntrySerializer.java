@@ -12,40 +12,23 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public class InPhyPortEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeInt(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
-                OpenflowVersion.OF13,
-                match.getInPhyPort()).intValue());
+public class InPhyPortEntrySerializer extends AbstractPrimitiveEntrySerializer<NodeConnectorId> {
+    public InPhyPortEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PHY_PORT,
+            EncodeConstants.SIZE_OF_INT_IN_BYTES);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getInPhyPort() != null;
+    protected NodeConnectorId extractEntry(final Match match) {
+        return match.getInPhyPort();
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IN_PHY_PORT;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+    protected void serializeEntry(final NodeConnectorId entry, final ByteBuf outBuffer) {
+        outBuffer.writeInt(
+            InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, entry).intValue());
     }
 }
