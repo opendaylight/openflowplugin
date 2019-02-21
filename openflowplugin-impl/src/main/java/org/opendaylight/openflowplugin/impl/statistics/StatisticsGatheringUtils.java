@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -173,7 +172,7 @@ public final class StatisticsGatheringUtils {
 
         try {
             Futures.transform(Futures.catchingAsync(future, Throwable.class, Futures::immediateFailedFuture,
-                MoreExecutors.directExecutor()), (Function<Optional<FlowCapableNode>, Void>) flowCapNodeOpt -> {
+                MoreExecutors.directExecutor()), flowCapNodeOpt -> {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
