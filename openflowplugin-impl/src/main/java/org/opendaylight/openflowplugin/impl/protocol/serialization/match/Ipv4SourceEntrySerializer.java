@@ -8,84 +8,54 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Iterator;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchArbitraryBitMask;
+import org.opendaylight.yangtools.yang.common.Empty;
 
-public class Ipv4SourceEntrySerializer extends AbstractMatchEntrySerializer {
+public class Ipv4SourceEntrySerializer
+        extends AbstractPolymorphicEntrySerializer<Ipv4MatchArbitraryBitMask, Ipv4Match, Ipv4Prefix, DottedQuad> {
+    public Ipv4SourceEntrySerializer() {
+        super(OxmMatchConstants.IPV4_SRC, OxmMatchConstants.OPENFLOW_BASIC_CLASS, EncodeConstants.SIZE_OF_INT_IN_BYTES,
+            Ipv4MatchArbitraryBitMask.class, Ipv4Match.class, Ipv4Prefix.class, DottedQuad.class);
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
+    protected boolean useArbitraryEntry(Ipv4MatchArbitraryBitMask arbitraryMatch) {
+        return arbitraryMatch.getIpv4SourceAddressNoMask() != null;
+    }
 
-        if (isPrefix(match)) {
-            writeIpv4Prefix(((Ipv4Match) match.getLayer3Match()).getIpv4Source(), outBuffer);
-        } else if (isArbitrary(match)) {
-            final Ipv4MatchArbitraryBitMask ipv4 = (Ipv4MatchArbitraryBitMask) match.getLayer3Match();
-            writeIpv4Address(ipv4.getIpv4SourceAddressNoMask(), outBuffer);
+    @Override
+    protected Ipv4Prefix extractNormalEntry(Ipv4Match normalMatch) {
+        return normalMatch.getIpv4Source();
+    }
 
-            if (getHasMask(match)) {
-                writeMask(IpConversionUtil.convertArbitraryMaskToByteArray(ipv4.getIpv4SourceArbitraryBitmask()),
-                        outBuffer,
-                        getValueLength());
-            }
+    @Override
+    protected DottedQuad extractArbitraryEntryMask(Ipv4MatchArbitraryBitMask arbitraryMatch) {
+        return arbitraryMatch.getIpv4SourceArbitraryBitmask();
+    }
+
+    @Override
+    protected Empty extractNormalEntryMask(Ipv4Prefix entry) {
+        return AbstractIpv4PrefixEntrySerializer.extractMask(entry);
+    }
+
+    @Override
+    protected void serializeArbitraryEntry(Ipv4MatchArbitraryBitMask arbitraryMatch, DottedQuad mask,
+            ByteBuf outBuffer) {
+        writeIpv4Address(arbitraryMatch.getIpv4SourceAddressNoMask(), outBuffer);
+        if (mask != null) {
+            writeMask(IpConversionUtil.convertArbitraryMaskToByteArray(mask), outBuffer, getValueLength());
         }
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        if (isPrefix(match)) {
-            return match.getLayer3Match() != null
-                    && ((Ipv4Match) match.getLayer3Match()).getIpv4Source() != null;
-        } else if (isArbitrary(match)) {
-            return match.getLayer3Match() != null
-                    && ((Ipv4MatchArbitraryBitMask) match.getLayer3Match()).getIpv4SourceAddressNoMask() != null;
-        }
-
-        return false;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        if (isPrefix(match)) {
-            // Split address to IP and mask
-            final Iterator<String> addressParts = IpConversionUtil.splitToParts(
-                    ((Ipv4Match) match.getLayer3Match()).getIpv4Source());
-            addressParts.next();
-
-            // Check if we have mask
-            return addressParts.hasNext() && Integer.parseInt(addressParts.next()) < 32;
-        } else if (isArbitrary(match)) {
-            return ((Ipv4MatchArbitraryBitMask) match.getLayer3Match()).getIpv4SourceArbitraryBitmask() != null;
-        }
-
-        return false;
-    }
-
-    private static boolean isPrefix(Match match) {
-        return match.getLayer3Match() instanceof Ipv4Match;
-    }
-
-    private static boolean isArbitrary(Match match) {
-        return match.getLayer3Match() instanceof Ipv4MatchArbitraryBitMask;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IPV4_SRC;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+    protected void serializeNormalEntry(@NonNull Ipv4Prefix entry, @NonNull ByteBuf outBuffer) {
+        writeIpv4Prefix(entry, outBuffer);
     }
 }

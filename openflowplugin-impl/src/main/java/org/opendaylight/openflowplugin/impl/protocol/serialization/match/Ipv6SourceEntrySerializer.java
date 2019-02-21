@@ -11,76 +11,52 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchArbitraryBitMask;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
+import org.opendaylight.yangtools.yang.common.Empty;
 
-public class Ipv6SourceEntrySerializer extends AbstractMatchEntrySerializer {
+public class Ipv6SourceEntrySerializer extends
+        AbstractPolymorphicEntrySerializer<Ipv6MatchArbitraryBitMask, Ipv6Match, Ipv6Prefix, Ipv6ArbitraryMask> {
+
+    public Ipv6SourceEntrySerializer() {
+        super(OxmMatchConstants.IPV6_SRC, OxmMatchConstants.OPENFLOW_BASIC_CLASS,
+            EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES, Ipv6MatchArbitraryBitMask.class, Ipv6Match.class,
+            Ipv6Prefix.class, Ipv6ArbitraryMask.class);
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
+    protected boolean useArbitraryEntry(Ipv6MatchArbitraryBitMask arbitraryMatch) {
+        return arbitraryMatch.getIpv6SourceAddressNoMask() != null;
+    }
 
-        if (isPrefix(match)) {
-            writeIpv6Prefix(((Ipv6Match) match.getLayer3Match()).getIpv6Source(), outBuffer);
-        } else if (isArbitrary(match)) {
-            final Ipv6MatchArbitraryBitMask ipv6 = (Ipv6MatchArbitraryBitMask) match.getLayer3Match();
-            writeIpv6Address(ipv6.getIpv6SourceAddressNoMask(), outBuffer);
+    @Override
+    protected Ipv6Prefix extractNormalEntry(Ipv6Match normalMatch) {
+        return normalMatch.getIpv6Source();
+    }
 
-            if (getHasMask(match)) {
-                writeMask(IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(ipv6.getIpv6SourceArbitraryBitmask()),
-                        outBuffer,
-                        getValueLength());
-            }
+    @Override
+    protected Ipv6ArbitraryMask extractArbitraryEntryMask(Ipv6MatchArbitraryBitMask arbitraryMatch) {
+        return arbitraryMatch.getIpv6SourceArbitraryBitmask();
+    }
+
+    @Override
+    protected Empty extractNormalEntryMask(Ipv6Prefix entry) {
+        return IpConversionUtil.hasIpv6Prefix(entry) != null ? Empty.getInstance() : null;
+    }
+
+    @Override
+    protected void serializeArbitraryEntry(Ipv6MatchArbitraryBitMask arbitraryMatch, Ipv6ArbitraryMask mask,
+            ByteBuf outBuffer) {
+        writeIpv6Address(arbitraryMatch.getIpv6SourceAddressNoMask(), outBuffer);
+        if (mask != null) {
+            writeMask(IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(mask), outBuffer, getValueLength());
         }
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        if (isPrefix(match)) {
-            return match.getLayer3Match() != null && ((Ipv6Match) match.getLayer3Match()).getIpv6Source() != null;
-        } else if (isArbitrary(match)) {
-
-            return match.getLayer3Match() != null
-                    && ((Ipv6MatchArbitraryBitMask) match.getLayer3Match()).getIpv6SourceAddressNoMask() != null;
-        }
-
-        return false;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        if (isPrefix(match)) {
-            if (null != IpConversionUtil.hasIpv6Prefix(((Ipv6Match) match.getLayer3Match()).getIpv6Source())) {
-                return IpConversionUtil.extractIpv6Prefix(((Ipv6Match) match.getLayer3Match()).getIpv6Source()) != null;
-            }
-        } else if (isArbitrary(match)) {
-            return ((Ipv6MatchArbitraryBitMask) match.getLayer3Match()).getIpv6SourceArbitraryBitmask() != null;
-        }
-
-        return false;
-    }
-
-    private static boolean isPrefix(Match match) {
-        return match.getLayer3Match() instanceof Ipv6Match;
-    }
-
-    private static boolean isArbitrary(Match match) {
-        return match.getLayer3Match() instanceof Ipv6MatchArbitraryBitMask;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IPV6_SRC;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES;
+    protected void serializeNormalEntry(Ipv6Prefix entry, ByteBuf outBuffer) {
+        writeIpv6Prefix(entry, outBuffer);
     }
 }
