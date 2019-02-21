@@ -12,37 +12,23 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 
-public class EthernetTypeEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(match.getEthernetMatch().getEthernetType().getType().getValue().shortValue());
+public class EthernetTypeEntrySerializer extends AbstractPrimitiveEntrySerializer<EthernetType> {
+    public EthernetTypeEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ETH_TYPE,
+            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getEthernetMatch() != null && match.getEthernetMatch().getEthernetType() != null;
+    protected EthernetType extractEntry(final Match match) {
+        final EthernetMatch ethMatch = match.getEthernetMatch();
+        return ethMatch == null ? null : ethMatch.getEthernetType();
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ETH_TYPE;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+    protected void serializeEntry(final EthernetType entry, final ByteBuf outBuffer) {
+        outBuffer.writeShort(entry.getType().getValue().shortValue());
     }
 }

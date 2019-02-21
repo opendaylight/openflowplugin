@@ -7,44 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 
-public class TcpDestinationPortEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(((TcpMatch) match.getLayer4Match()).getTcpDestinationPort().getValue());
+public class TcpDestinationPortEntrySerializer extends AbstractPortNumberEntrySerializer {
+    public TcpDestinationPortEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TCP_DST);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer4Match() != null
-                && match.getLayer4Match() instanceof TcpMatch
-                && ((TcpMatch) match.getLayer4Match()).getTcpDestinationPort() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.TCP_DST;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+    protected PortNumber extractPort(final Match match) {
+        final Layer4Match l4match = match.getLayer4Match();
+        return l4match instanceof TcpMatch ? ((TcpMatch) l4match).getTcpDestinationPort() : null;
     }
 }

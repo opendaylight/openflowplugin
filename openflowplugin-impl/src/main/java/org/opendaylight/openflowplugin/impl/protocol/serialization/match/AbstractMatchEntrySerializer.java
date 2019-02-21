@@ -5,13 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
+import static com.google.common.base.Verify.verify;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Iterator;
-import java.util.Optional;
-import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
+import io.netty.buffer.Unpooled;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -25,27 +27,96 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<Match>, MatchEntrySerializer {
+public abstract class AbstractMatchEntrySerializer<E, M> implements MatchEntrySerializer {
+    protected abstract static class HeaderWriter<E, M> {
 
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        serializeHeader(match, outBuffer);
+        protected abstract void writeHeader(@NonNull E entry, @Nullable M mask, @NonNull ByteBuf outBuffer);
+
+        protected static void writeHeader(final int oxmClassCode, final int oxmFieldCode, final int valueLength,
+                final boolean hasMask, final ByteBuf outBuffer) {
+            outBuffer.writeShort(oxmClassCode);
+
+            int fieldAndMask = oxmFieldCode << 1;
+            int length = valueLength;
+
+            if (hasMask) {
+                fieldAndMask |= 1;
+                length *= 2;
+            }
+
+            outBuffer.writeByte(fieldAndMask);
+            outBuffer.writeByte(length);
+        }
+
+        protected static void writeHeader(final int oxmClassCode, final int oxmFieldCode, final int valueLength,
+                final boolean hasMask, final int extraLength, final ByteBuf outBuffer) {
+            outBuffer.writeShort(oxmClassCode);
+
+            int fieldAndMask = oxmFieldCode << 1;
+            int length = valueLength;
+
+            if (hasMask) {
+                fieldAndMask |= 1;
+                length *= 2;
+            }
+
+            outBuffer.writeByte(fieldAndMask);
+            outBuffer.writeByte(length + extraLength);
+        }
+    }
+
+    protected static final class ConstantHeaderWriter<E, M> extends HeaderWriter<E, M> {
+        private final int withMask;
+        private final int withoutMask;
+
+        protected ConstantHeaderWriter(final int withMask, final int withoutMask) {
+            this.withMask = withMask;
+            this.withoutMask = withoutMask;
+        }
+
+        protected ConstantHeaderWriter(final int oxmClassCode, final int oxmFieldCode, final int valueLength) {
+            this(oxmClassCode, oxmFieldCode, valueLength, 0);
+        }
+
+        protected ConstantHeaderWriter(final int oxmClassCode, final int oxmFieldCode, final int valueLength,
+                final int extraLength) {
+            this(constructHeader(oxmClassCode, oxmFieldCode, valueLength, extraLength, true),
+                constructHeader(oxmClassCode, oxmFieldCode, valueLength, extraLength, false));
+        }
+
+        @Override
+        protected void writeHeader(final E entry, final M mask, final ByteBuf outBuffer) {
+            outBuffer.writeInt(mask != null ? withMask : withoutMask);
+        }
+
+        private static int constructHeader(final int oxmClassCode, final int oxmFieldCode, final int valueLength,
+                final int extraLength, final boolean withMask) {
+            final ByteBuf buf = Unpooled.buffer();
+            writeHeader(oxmClassCode, oxmFieldCode, valueLength, withMask, extraLength, buf);
+            final int header = buf.readInt();
+            verify(buf.readableBytes() == 0);
+            return header;
+        }
+    }
+
+    private final HeaderWriter<E, M> headerWriter;
+
+    protected AbstractMatchEntrySerializer(final HeaderWriter<E, M> headerWriter) {
+        this.headerWriter = requireNonNull(headerWriter);
+    }
+
+    protected AbstractMatchEntrySerializer(final int oxmClassCode, final int oxmFieldCode, final int valueLength) {
+        this(new ConstantHeaderWriter<>(oxmClassCode, oxmFieldCode, valueLength));
     }
 
     @Override
-    public void serializeHeader(Match match, ByteBuf outBuffer) {
-        outBuffer.writeShort(getOxmClassCode());
-
-        int fieldAndMask = getOxmFieldCode() << 1;
-        int length = getValueLength();
-
-        if (getHasMask(match)) {
-            fieldAndMask |= 1;
-            length *= 2;
+    public final void serializeIfPresent(final Match match, final ByteBuf outBuffer) {
+        final E entry = extractEntry(match);
+        if (entry != null) {
+            final M mask = extractEntryMask(entry);
+            headerWriter.writeHeader(entry, mask, outBuffer);
+            serializeEntry(entry, mask, outBuffer);
         }
-
-        outBuffer.writeByte(fieldAndMask);
-        outBuffer.writeByte(length);
     }
 
     /**
@@ -55,17 +126,14 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
      * @param outBuffer output buffer
      * @param length mask length
      */
-    protected static void writeMask(byte[] mask, ByteBuf outBuffer, int length) {
-        if (mask == null) {
-            return;
+    protected static void writeMask(final byte[] mask, final ByteBuf outBuffer, final int length) {
+        if (mask != null) {
+            if (mask.length != length) {
+                throw new IllegalArgumentException("incorrect length of mask: " + mask.length + ", expected: "
+                        + length);
+            }
+            outBuffer.writeBytes(mask);
         }
-
-        if (mask.length != length) {
-            throw new IllegalArgumentException("incorrect length of mask: "
-                    + mask.length + ", expected: " + length);
-        }
-
-        outBuffer.writeBytes(mask);
     }
 
     /**
@@ -95,7 +163,8 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
      * @param outBuffer output buffer
      */
     protected static void writeMacAddress(final MacAddress address, final ByteBuf outBuffer) {
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(address)); // 48 b + mask [OF 1.3.2 spec]
+        // 48 b + mask [OF 1.3.2 spec]
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(address));
     }
 
     /**
@@ -104,16 +173,15 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
      * @param prefix Ipv4 prefix
      * @param outBuffer output buffer
      */
-    protected static void writeIpv4Prefix(final Ipv4Prefix prefix, final ByteBuf outBuffer) {
-        // Split address to IP and mask
-        final Iterator<String> addressParts = IpConversionUtil.splitToParts(prefix);
-
+    protected static void writeIpv4Prefix(final @NonNull Ipv4Prefix prefix, final @Nullable Integer mask,
+            final @NonNull ByteBuf outBuffer) {
         // Write address part of prefix
-        writeIpv4Address(new Ipv4Address(addressParts.next()), outBuffer);
+        writeIpv4Address(IetfInetUtil.INSTANCE.ipv4AddressFrom(prefix), outBuffer);
 
         // If prefix had mask, also write prefix
-        Optional.ofNullable(MatchConvertorUtil.extractIpv4Mask(addressParts)).ifPresent(mask ->
-                writeMask(mask, outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS));
+        if (mask != null) {
+            writeMask(MatchConvertorUtil.extractIpv4Mask(mask), outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
+        }
     }
 
     /**
@@ -122,42 +190,40 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
      * @param prefix Ipv6 prefix
      * @param outBuffer output buffer
      */
-    protected static void writeIpv6Prefix(final Ipv6Prefix prefix, final ByteBuf outBuffer) {
+    protected static void writeIpv6Prefix(final @NonNull Ipv6Prefix prefix, final @Nullable Integer mask,
+            final @NonNull ByteBuf outBuffer) {
         // Write address part of prefix
         writeIpv6Address(IpConversionUtil.extractIpv6Address(prefix), outBuffer);
 
         // If prefix had mask, also write prefix
-        Optional.ofNullable(IpConversionUtil.hasIpv6Prefix(prefix)).ifPresent(mask ->
-                writeMask(IpConversionUtil.convertIpv6PrefixToByteArray(mask), outBuffer,
-                        EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES));
+        if (mask != null) {
+            writeMask(IpConversionUtil.convertIpv6PrefixToByteArray(mask), outBuffer,
+                EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES);
+        }
     }
 
     /**
-     * Has mask getter.
+     * Extract the corresponding entry from a match.
      *
      * @param match Openflow match
-     * @return if field has or has not mask
+     * @return Entry, null if not present
      */
-    protected abstract boolean getHasMask(Match match);
+    protected abstract @Nullable E extractEntry(Match match);
 
     /**
-     * Oxm field numeric representation.
+     * Extract the mask contained in an entry.
      *
-     * @return numeric representation of oxm_field
+     * @param entry entry to examine
+     * @return Mask, null if not present
      */
-    protected abstract int getOxmFieldCode();
+    protected abstract @Nullable M extractEntryMask(@NonNull E entry);
 
     /**
-     * Oxm class code.
+     * Extract the corresponding entry from a match.
      *
-     * @return numeric representation of oxm_class
+     * @param entry entry to serialize
+     * @param mask mask as extracted from entry
+     * @param outBuffer output buffer
      */
-    protected abstract int getOxmClassCode();
-
-    /**
-     * Get value length.
-     *
-     * @return match entry value length (without mask length)
-     */
-    protected abstract int getValueLength();
+    protected abstract void serializeEntry(@NonNull E entry, @Nullable M mask, @NonNull ByteBuf outBuffer);
 }
