@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
@@ -82,7 +81,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                     .setMeterRef(createMeterRef(input.getNode(), batchMeter))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salMeterService.updateMeter(updateMeterInput)));
+            resultsLot.add(salMeterService.updateMeter(updateMeterInput));
         }
 
         final Iterable<Meter> meters = batchUpdateMeters.stream()
@@ -114,7 +113,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                     .setMeterRef(createMeterRef(input.getNode(), addMeter))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salMeterService.addMeter(addMeterInput)));
+            resultsLot.add(salMeterService.addMeter(addMeterInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
@@ -144,7 +143,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                     .setMeterRef(createMeterRef(input.getNode(), addMeter))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salMeterService.removeMeter(removeMeterInput)));
+            resultsLot.add(salMeterService.removeMeter(removeMeterInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
