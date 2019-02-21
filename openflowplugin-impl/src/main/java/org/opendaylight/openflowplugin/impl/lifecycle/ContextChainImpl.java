@@ -22,6 +22,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
@@ -209,6 +210,15 @@ public class ContextChainImpl implements ContextChain {
         contexts.forEach(context -> {
             if (context.map(ReconciliationFrameworkStep.class::isInstance)) {
                 context.map(ReconciliationFrameworkStep.class::cast).continueInitializationAfterReconciliation();
+            }
+        });
+    }
+
+    @Override
+    public void initializeDevice() {
+        contexts.forEach(context -> {
+            if (context.map(DeviceContext.class::isInstance)) {
+                context.map(DeviceContext.class::cast).initializeDevice();
             }
         });
     }
