@@ -10,14 +10,12 @@ package org.opendaylight.openflowplugin.impl.connection;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -330,11 +328,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         LOG.debug("sending hello message: version{}, xid={}, version bitmap={}", helloVersion, helloXid,
                   MessageFactory.digVersions(helloInput.getElements()));
 
-        Future<RpcResult<HelloOutput>> helloResult = connectionAdapter.hello(helloInput);
-
-        ListenableFuture<RpcResult<HelloOutput>> rpcResultListenableFuture
-                = JdkFutureAdapters.listenInPoolThread(helloResult);
-        Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<HelloOutput>>() {
+        Futures.addCallback(connectionAdapter.hello(helloInput), new FutureCallback<RpcResult<HelloOutput>>() {
             @Override
             public void onSuccess(@Nonnull RpcResult<HelloOutput> result) {
                 if (result.isSuccessful()) {
@@ -383,9 +377,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
         featuresBuilder.setVersion(version).setXid(xid);
         LOG.debug("sending feature request for version={} and xid={}", version, xid);
-        Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter.getFeatures(featuresBuilder.build());
 
-        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(featuresFuture),
+        Futures.addCallback(connectionAdapter.getFeatures(featuresBuilder.build()),
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
                     public void onSuccess(@Nonnull RpcResult<GetFeaturesOutput> rpcFeatures) {

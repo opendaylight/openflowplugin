@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -55,7 +54,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         return input.build();
     }
 
-    public Future<BigInteger> getGenerationIdFromDevice(final Short version) {
+    public ListenableFuture<BigInteger> getGenerationIdFromDevice(final Short version) {
         LOG.info("getGenerationIdFromDevice called for device: {}", getDeviceInfo().getNodeId().getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
@@ -99,8 +98,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
 
-    public Future<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole,
-                                                             final Short version,
+    public ListenableFuture<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Short version,
                                                              final BigInteger generationId) {
         LOG.info("submitRoleChange called for device:{}, role:{}",
                 getDeviceInfo().getNodeId(), ofpRole);

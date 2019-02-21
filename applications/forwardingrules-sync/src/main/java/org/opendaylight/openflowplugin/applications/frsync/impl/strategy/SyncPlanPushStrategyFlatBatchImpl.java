@@ -14,14 +14,12 @@ import com.google.common.collect.PeekingIterator;
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
@@ -141,15 +139,15 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     .setBatch(batchBag)
                     .build();
 
-            final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+            final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
                     flatBatchService.processFlatBatch(flatBatchInput);
 
             if (LOG.isDebugEnabled()) {
-                Futures.addCallback(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
-                        createCounterCallback(batchBag, batchOrder, counters), MoreExecutors.directExecutor());
+                Futures.addCallback(rpcResultFuture, createCounterCallback(batchBag, batchOrder, counters),
+                    MoreExecutors.directExecutor());
             }
 
-            return Futures.transform(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
+            return Futures.transform(rpcResultFuture,
                     ReconcileUtil.<ProcessFlatBatchOutput>createRpcResultToVoidFunction("flat-batch"),
                     MoreExecutors.directExecutor());
         }, MoreExecutors.directExecutor());
