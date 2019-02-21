@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -43,7 +43,7 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier,
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier,
             final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         LOG.trace("Received the Meter REMOVE request [Tbl id, node Id {} {}",
@@ -57,7 +57,7 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     }
 
     @Override
-    public Future<RpcResult<UpdateMeterOutput>> update(final InstanceIdentifier<Meter> identifier,
+    public ListenableFuture<RpcResult<UpdateMeterOutput>> update(final InstanceIdentifier<Meter> identifier,
                                                        final Meter original, final Meter update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter UPDATE request [Tbl id, node Id {} {} {}",
@@ -74,8 +74,8 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
     }
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
-                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
+            final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter ADD request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, addDataObj);
 
