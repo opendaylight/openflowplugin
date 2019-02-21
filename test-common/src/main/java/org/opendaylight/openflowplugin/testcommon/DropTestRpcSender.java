@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.testcommon;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
@@ -100,8 +99,7 @@ public class DropTestRpcSender extends AbstractDropTest {
         if (LOG.isDebugEnabled()) {
             LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
         }
-        ListenableFuture<RpcResult<AddFlowOutput>> result =
-                JdkFutureAdapters.listenInPoolThread(flowService.addFlow(flow));
+        ListenableFuture<RpcResult<AddFlowOutput>> result = flowService.addFlow(flow);
         Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> result) {

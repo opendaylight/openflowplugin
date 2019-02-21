@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepJob;
 import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchFlowAdapters;
@@ -102,7 +101,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             firedJobs.add(Futures.transformAsync(chainSummaryResult, batchJob.getStepFunction(),
                     MoreExecutors.directExecutor()));
             // if barrier after actual job is needed or it is the last job -> merge fired job results with chain result
-            if ((batchJob.getPlanStep().isBarrierAfter()) || (i == batchJobsChain.size() - 1)) {
+            if (batchJob.getPlanStep().isBarrierAfter() || i == batchJobsChain.size() - 1) {
                 firedJobs.add(0, chainSummaryResult);
                 chainSummaryResult = FlatBatchUtil.mergeJobsResultsFutures(firedJobs);
                 firedJobs.clear();
@@ -144,14 +143,14 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case FLOW_ADD:
                 final AddFlowsBatchInput addFlowsBatchInput =
                         FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, node);
-                final Future<RpcResult<AddFlowsBatchOutput>> resultAddFlowFuture =
+                final ListenableFuture<RpcResult<AddFlowsBatchOutput>> resultAddFlowFuture =
                         salFlowService.addFlowsBatch(addFlowsBatchInput);
                 chainOutput = FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultAddFlowFuture, currentOffset);
                 break;
             case FLOW_REMOVE:
                 final RemoveFlowsBatchInput removeFlowsBatchInput =
                         FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, node);
-                final Future<RpcResult<RemoveFlowsBatchOutput>> resultRemoveFlowFuture =
+                final ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> resultRemoveFlowFuture =
                         salFlowService.removeFlowsBatch(removeFlowsBatchInput);
                 chainOutput =
                         FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultRemoveFlowFuture, currentOffset);
@@ -159,7 +158,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case FLOW_UPDATE:
                 final UpdateFlowsBatchInput updateFlowsBatchInput =
                         FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, node);
-                final Future<RpcResult<UpdateFlowsBatchOutput>> resultUpdateFlowFuture =
+                final ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> resultUpdateFlowFuture =
                         salFlowService.updateFlowsBatch(updateFlowsBatchInput);
                 chainOutput =
                         FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultUpdateFlowFuture, currentOffset);
@@ -167,7 +166,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case GROUP_ADD:
                 final AddGroupsBatchInput addGroupsBatchInput =
                         FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, node);
-                final Future<RpcResult<AddGroupsBatchOutput>> resultAddGroupFuture =
+                final ListenableFuture<RpcResult<AddGroupsBatchOutput>> resultAddGroupFuture =
                         salGroupService.addGroupsBatch(addGroupsBatchInput);
                 chainOutput =
                         FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultAddGroupFuture, currentOffset);
@@ -175,7 +174,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case GROUP_REMOVE:
                 final RemoveGroupsBatchInput removeGroupsBatchInput =
                         FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, node);
-                final Future<RpcResult<RemoveGroupsBatchOutput>> resultRemoveGroupFuture =
+                final ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> resultRemoveGroupFuture =
                         salGroupService.removeGroupsBatch(removeGroupsBatchInput);
                 chainOutput =
                         FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultRemoveGroupFuture, currentOffset);
@@ -183,7 +182,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case GROUP_UPDATE:
                 final UpdateGroupsBatchInput updateGroupsBatchInput =
                         FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, node);
-                final Future<RpcResult<UpdateGroupsBatchOutput>> resultUpdateGroupFuture =
+                final ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> resultUpdateGroupFuture =
                         salGroupService.updateGroupsBatch(updateGroupsBatchInput);
                 chainOutput =
                         FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultUpdateGroupFuture, currentOffset);
@@ -191,7 +190,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case METER_ADD:
                 final AddMetersBatchInput addMetersBatchInput =
                         FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, node);
-                final Future<RpcResult<AddMetersBatchOutput>> resultAddMeterFuture =
+                final ListenableFuture<RpcResult<AddMetersBatchOutput>> resultAddMeterFuture =
                         salMeterService.addMetersBatch(addMetersBatchInput);
                 chainOutput =
                         FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultAddMeterFuture, currentOffset);
@@ -199,7 +198,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case METER_REMOVE:
                 final RemoveMetersBatchInput removeMetersBatchInput =
                         FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, node);
-                final Future<RpcResult<RemoveMetersBatchOutput>> resultRemoveMeterFuture =
+                final ListenableFuture<RpcResult<RemoveMetersBatchOutput>> resultRemoveMeterFuture =
                         salMeterService.removeMetersBatch(removeMetersBatchInput);
                 chainOutput =
                         FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultRemoveMeterFuture, currentOffset);
@@ -207,7 +206,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
             case METER_UPDATE:
                 final UpdateMetersBatchInput updateMetersBatchInput =
                         FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, node);
-                final Future<RpcResult<UpdateMetersBatchOutput>> resultUpdateMeterFuture =
+                final ListenableFuture<RpcResult<UpdateMetersBatchOutput>> resultUpdateMeterFuture =
                         salMeterService.updateMetersBatch(updateMetersBatchInput);
                 chainOutput =
                         FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultUpdateMeterFuture, currentOffset);
