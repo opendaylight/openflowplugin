@@ -7,42 +7,18 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 
-public class IpEcnEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIpMatch().getIpEcn());
+public class IpEcnEntrySerializer extends AbstractUint8EntrySerializer {
+    public IpEcnEntrySerializer() {
+        super(OxmMatchConstants.IP_ECN, OxmMatchConstants.OPENFLOW_BASIC_CLASS);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getIpMatch() != null && match.getIpMatch().getIpEcn() != null;
+    protected Short extractEntry(Match match) {
+        final IpMatch ipMatch = match.getIpMatch();
+        return ipMatch == null ? null : ipMatch.getIpEcn();
     }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.IP_ECN;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
-    }
-
 }

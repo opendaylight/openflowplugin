@@ -7,52 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import java.util.Iterator;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 
-public class ArpTargetTransportAddressEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        writeIpv4Prefix(((ArpMatch) match.getLayer3Match()).getArpTargetTransportAddress(), outBuffer);
+public class ArpTargetTransportAddressEntrySerializer extends AbstractIpv4PrefixEntrySerializer {
+    public ArpTargetTransportAddressEntrySerializer() {
+        super(OxmMatchConstants.ARP_TPA, OxmMatchConstants.OPENFLOW_BASIC_CLASS);
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof ArpMatch
-                && ((ArpMatch) match.getLayer3Match()).getArpTargetTransportAddress() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        // Split address to IP and mask
-        final Iterator<String> addressParts = IpConversionUtil.splitToParts(
-                ((ArpMatch) match.getLayer3Match()).getArpTargetTransportAddress());
-        addressParts.next();
-
-        // Check if we have mask
-        return addressParts.hasNext() && Integer.parseInt(addressParts.next()) < 32;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ARP_TPA;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+    protected Ipv4Prefix extractEntry(Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof ArpMatch ? ((ArpMatch) l3Match).getArpTargetTransportAddress() : null;
     }
 }
