@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
@@ -43,7 +43,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     }
 
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier,
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier,
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
@@ -58,7 +58,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     }
 
     @Override
-    public Future<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
+    public ListenableFuture<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
                                                        final Group original, final Group update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}",
@@ -75,8 +75,8 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
     }
 
     @Override
-    public Future<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
-                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier,
+            final Group addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}",
                 identifier, nodeIdent, addDataObj);
 

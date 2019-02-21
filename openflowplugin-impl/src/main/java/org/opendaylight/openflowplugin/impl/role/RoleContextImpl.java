@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.role;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
@@ -19,7 +18,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -161,7 +159,7 @@ public class RoleContextImpl implements RoleContext {
                     .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                     .build();
 
-            final Future<RpcResult<SetRoleOutput>> setRoleOutputFuture = roleService.setRole(setRoleInput);
+            final ListenableFuture<RpcResult<SetRoleOutput>> setRoleOutputFuture = roleService.setRole(setRoleInput);
 
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
@@ -172,7 +170,7 @@ public class RoleContextImpl implements RoleContext {
             };
 
             timer.newTimeout(timerTask, SET_ROLE_TIMEOUT, TimeUnit.MILLISECONDS);
-            return JdkFutureAdapters.listenInPoolThread(setRoleOutputFuture);
+            return setRoleOutputFuture;
         }
 
         LOG.info("Device: {} with version: {} does not support role {}", deviceInfo, deviceInfo.getVersion(), newRole);
