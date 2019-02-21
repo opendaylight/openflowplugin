@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
+import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.function.Function;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -30,7 +31,7 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
      */
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
-            final Function<OfHeader, Boolean> isCompletedFunction) {
+                            final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid);
 
         entry.commit(message, callback, isCompletedFunction);
@@ -51,6 +52,38 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
 
         LOG.trace("Queue {} committed XID {}", this, xid);
         manager.ensureFlushing();
+    }
+
+    /*
+     * This method is expected to be called from multiple threads concurrently
+     */
+    @Override
+    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
+                            final Function<OfHeader, Boolean> isCompletedFunction, final BigInteger datapathId) {
+        final OutboundQueueEntry entry = getEntry(xid);
+        if (message.getClass().getSimpleName().equals("MultipartRequestImpl")) {
+            LOG.error("StackedOutboundQueue received commitEntry request for MultipartRequest for device {} with"
+                    + "xid {}", datapathId, xid);
+        }
+
+        entry.commit(message, callback, isCompletedFunction, datapathId);
+        if (entry.isBarrier()) {
+            long my = xid;
+            for (;;) {
+                final long prev = BARRIER_XID_UPDATER.getAndSet(this, my);
+                if (prev < my) {
+                    LOG.debug("Queue {} recorded pending barrier XID {}", this, my);
+                    break;
+                }
+
+                // We have traveled back, recover
+                LOG.debug("Queue {} retry pending barrier {} >= {}", this, prev, my);
+                my = prev;
+            }
+        }
+
+        LOG.error("Queue {} committed XID {} and device {}", this, xid, datapathId);
+        manager.ensureFlushing(datapathId);
     }
 
     Long reserveBarrierIfNeeded() {

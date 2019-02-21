@@ -217,9 +217,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             if (ownershipChangeListener.isReconciliationFrameworkRegistered()
                     && !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
-                if (contextChain.isMastered(mastershipState, true)) {
+                if (contextChain.isMastered(mastershipState, true)
+                        && !ContextChainMastershipState.INITIAL_FLOW_REGISTRY_FILL.equals(mastershipState)
+                        && !ContextChainMastershipState.INITIAL_GATHERING.equals(mastershipState)) {
                     Futures.addCallback(ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
-                                        reconciliationFrameworkCallback(deviceInfo, contextChain),
+                                        reconciliationFrameworkCallback(deviceInfo, contextChain, mastershipState),
                                         MoreExecutors.directExecutor());
                 }
             } else if (contextChain.isMastered(mastershipState, false)) {
@@ -342,12 +344,16 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull DeviceInfo deviceInfo,
-                                                                        ContextChain contextChain) {
+                                                                        ContextChain contextChain,
+                                                                        ContextChainMastershipState mastershipState) {
         return new FutureCallback<ResultState>() {
             @Override
             public void onSuccess(@Nullable ResultState result) {
                 if (ResultState.DONOTHING == result) {
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
+                    if (mastershipState == ContextChainMastershipState.MASTER_ON_DEVICE) {
+                        contextChain.initializeDevice();
+                    }
                     contextChain.continueInitializationAfterReconciliation();
                 } else {
                     LOG.warn("Reconciliation framework failure for device {}", deviceInfo);
