@@ -78,7 +78,7 @@ public final class IpConversionUtil {
         final DottedQuad[] quads = new DottedQuad[IPV4_ADDRESS_LENGTH + 1];
 
         for (int i = 0; i <= IPV4_ADDRESS_LENGTH; ++i) {
-            final int maskBits = (int) (0xffffffffL << IPV4_ADDRESS_LENGTH - i);
+            final int maskBits = maskForIpv4Prefix(i);
             quads[i] = new DottedQuad(new StringBuilder(15)
                 .append(maskBits >>> 24).append('.')
                 .append(maskBits >>> 16 & 0xff).append('.')
@@ -234,6 +234,10 @@ public final class IpConversionUtil {
 
     private static Integer hasPrefix(final Integer prefix, final int addressLength) {
         return prefix != null && prefix < addressLength ? prefix : null;
+    }
+
+    public static int maskForIpv4Prefix(final int prefixLength) {
+        return (int) (0xffffffffL << IPV4_ADDRESS_LENGTH - prefixLength);
     }
 
     /*
