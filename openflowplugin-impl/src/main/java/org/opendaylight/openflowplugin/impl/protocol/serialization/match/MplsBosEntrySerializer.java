@@ -11,37 +11,23 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
-public class MplsBosEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeBoolean(match.getProtocolMatchFields().getMplsBos().toJava() != 0);
+public class MplsBosEntrySerializer extends AbstractPrimitiveEntrySerializer<Uint8> {
+    public MplsBosEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_BOS,
+            EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
     }
 
     @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getProtocolMatchFields() != null && match.getProtocolMatchFields().getMplsBos() != null;
+    protected Uint8 extractEntry(final Match match) {
+        final ProtocolMatchFields protoFields = match.getProtocolMatchFields();
+        return protoFields == null ? null : protoFields.getMplsBos();
     }
 
     @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.MPLS_BOS;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+    protected void serializeEntry(final Uint8 entry, final ByteBuf outBuffer) {
+        outBuffer.writeBoolean(entry.byteValue() != 0);
     }
 }

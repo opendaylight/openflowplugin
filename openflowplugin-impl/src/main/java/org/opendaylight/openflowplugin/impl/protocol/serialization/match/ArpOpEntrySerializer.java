@@ -7,44 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
-public class ArpOpEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(((ArpMatch) match.getLayer3Match()).getArpOp().toJava());
+public class ArpOpEntrySerializer extends AbstractUint16EntrySerializer {
+    public ArpOpEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ARP_OP);
     }
 
     @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof ArpMatch
-                && ((ArpMatch) match.getLayer3Match()).getArpOp() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ARP_OP;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+    protected Uint16 extractEntry(final Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof ArpMatch ? ((ArpMatch) l3Match).getArpOp() : null;
     }
 }

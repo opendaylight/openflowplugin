@@ -7,41 +7,19 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6Match;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
-public class Icmpv6CodeEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIcmpv6Match().getIcmpv6Code().toJava());
+public class Icmpv6CodeEntrySerializer extends AbstractUint8EntrySerializer {
+    public Icmpv6CodeEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ICMPV6_CODE);
     }
 
     @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getIcmpv6Match() != null && match.getIcmpv6Match().getIcmpv6Code() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ICMPV6_CODE;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+    protected Uint8 extractEntry(final Match match) {
+        final Icmpv6Match icmpMatch = match.getIcmpv6Match();
+        return icmpMatch == null ? null : icmpMatch.getIcmpv6Code();
     }
 }

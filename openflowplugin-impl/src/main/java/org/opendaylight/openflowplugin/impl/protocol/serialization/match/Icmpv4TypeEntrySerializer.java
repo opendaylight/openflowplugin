@@ -5,45 +5,21 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
-public class Icmpv4TypeEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIcmpv4Match().getIcmpv4Type().toJava());
+public class Icmpv4TypeEntrySerializer extends AbstractUint8EntrySerializer {
+    public Icmpv4TypeEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ICMPV4_TYPE);
     }
 
     @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getIcmpv4Match() != null && match.getIcmpv4Match().getIcmpv4Type() != null;
+    protected Uint8 extractEntry(final Match match) {
+        final Icmpv4Match icmpMatch = match.getIcmpv4Match();
+        return icmpMatch == null ? null : icmpMatch.getIcmpv4Type();
     }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ICMPV4_TYPE;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
-    }
-
 }
