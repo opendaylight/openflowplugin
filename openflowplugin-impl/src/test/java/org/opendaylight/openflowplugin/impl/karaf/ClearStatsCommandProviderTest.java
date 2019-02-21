@@ -10,8 +10,7 @@ package org.opendaylight.openflowplugin.impl.karaf;
 
 import static org.mockito.ArgumentMatchers.anyString;
 
-import com.google.common.base.Function;
-import javax.annotation.Nullable;
+import java.util.function.Function;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,13 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class ClearStatsCommandProviderTest extends AbstractKarafTest {
 
     private ClearStatsCommandProvider clearStatsCommandProvider;
-    private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = new Function<String, Boolean>() {
-        @Nullable
-        @Override
-        public Boolean apply(String input) {
-            return input.endsWith(": no activity detected");
-        }
-    };
+    private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION =
+            input -> input.endsWith(": no activity detected");
     private MessageIntelligenceAgency mi5;
 
     @Override
