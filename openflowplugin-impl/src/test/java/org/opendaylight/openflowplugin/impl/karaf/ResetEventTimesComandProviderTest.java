@@ -10,8 +10,7 @@ package org.opendaylight.openflowplugin.impl.karaf;
 
 import static org.mockito.ArgumentMatchers.anyString;
 
-import com.google.common.base.Function;
-import javax.annotation.Nullable;
+import java.util.function.Function;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,16 +24,9 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCou
 public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
 
     private ResetEventTimesComandProvider resetEventTimesComandProvider;
-    private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = new Function<String, Boolean>() {
-        @Nullable
-        @Override
-        public Boolean apply(String input) {
-            return input.isEmpty();
-        }
-    };
+    private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
     @Override
-
     public void doSetUp() {
         resetEventTimesComandProvider = new ResetEventTimesComandProvider();
         EventsTimeCounter.resetAllCounters();
