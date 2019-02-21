@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import javax.annotation.Nullable;
@@ -103,8 +102,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
                 .setXid(xid)
                 .setVersion(version)
                 .build();
-        return JdkFutureAdapters.listenInPoolThread(
-                this.connectionContext.getConnectionAdapter().barrier(barrierInput));
+        return this.connectionContext.getConnectionAdapter().barrier(barrierInput);
     }
 
     @Override

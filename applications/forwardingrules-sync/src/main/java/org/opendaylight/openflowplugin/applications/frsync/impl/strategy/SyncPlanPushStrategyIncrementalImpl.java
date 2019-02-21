@@ -1,16 +1,14 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
@@ -159,8 +157,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 LOG.trace("adding flow {} in table {} - absent on device {} match{}",
                         flow.getId(), tableKey, nodeId, flow.getMatch());
 
-                allResults.add(JdkFutureAdapters.listenInPoolThread(
-                        flowForwarder.add(flowIdent, flow, nodeIdent)));
+                allResults.add(flowForwarder.add(flowIdent, flow, nodeIdent));
                 flowCrudCounts.incAdded();
             }
 
@@ -173,8 +170,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 LOG.trace("flow {} in table {} - needs update on device {} match{}",
                         updatedFlow.getId(), tableKey, nodeId, updatedFlow.getMatch());
 
-                allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
-                        flowForwarder.update(flowIdent, existingFlow, updatedFlow, nodeIdent)));
+                allUpdateResults.add(flowForwarder.update(flowIdent, existingFlow, updatedFlow, nodeIdent));
                 flowCrudCounts.incUpdated();
             }
         }
@@ -214,8 +210,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             for (final Flow flow : flowsPerTable.getValue().getItemsToPush()) {
                 final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent =
                         tableIdent.child(Flow.class, flow.key());
-                allResults.add(JdkFutureAdapters.listenInPoolThread(
-                        flowForwarder.remove(flowIdent, flow, nodeIdent)));
+                allResults.add(flowForwarder.remove(flowIdent, flow, nodeIdent));
                 flowCrudCounts.incRemoved();
             }
         }
@@ -248,8 +243,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                     meter.getMeterId(), nodeId);
             final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent =
                     nodeIdent.child(Meter.class, meter.key());
-            allResults.add(JdkFutureAdapters.listenInPoolThread(
-                    meterForwarder.remove(meterIdent, meter, nodeIdent)));
+            allResults.add(meterForwarder.remove(meterIdent, meter, nodeIdent));
             meterCrudCounts.incRemoved();
         }
 
@@ -305,7 +299,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         List<ListenableFuture<RpcResult<RemoveGroupOutput>>> allResults = new ArrayList<>();
         for (Group group : groupsPortion.getItemsToPush()) {
             final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
-            allResults.add(JdkFutureAdapters.listenInPoolThread(groupForwarder.remove(groupIdent, group, nodeIdent)));
+            allResults.add(groupForwarder.remove(groupIdent, group, nodeIdent));
         }
 
         final ListenableFuture<RpcResult<Void>> singleVoidResult = Futures.transform(
@@ -356,7 +350,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
         for (Group group : groupsPortion.getItemsToPush()) {
             final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
-            allResults.add(JdkFutureAdapters.listenInPoolThread(groupForwarder.add(groupIdent, group, nodeIdent)));
+            allResults.add(groupForwarder.add(groupIdent, group, nodeIdent));
 
         }
 
@@ -365,8 +359,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final Group group = groupTuple.getUpdated();
 
             final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
-            allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
-                    groupForwarder.update(groupIdent, existingGroup, group, nodeIdent)));
+            allUpdateResults.add(groupForwarder.update(groupIdent, existingGroup, group, nodeIdent));
         }
 
         final ListenableFuture<RpcResult<Void>> singleVoidAddResult = Futures.transform(
@@ -406,8 +399,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, meter.key());
             LOG.debug("adding meter {} - absent on device {}",
                     meter.getMeterId(), nodeId);
-            allResults.add(JdkFutureAdapters.listenInPoolThread(
-                    meterForwarder.add(meterIdent, meter, nodeIdent)));
+            allResults.add(meterForwarder.add(meterIdent, meter, nodeIdent));
             meterCrudCounts.incAdded();
         }
 
@@ -416,8 +408,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final Meter updated = meterTuple.getUpdated();
             final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, updated.key());
             LOG.trace("meter {} - needs update on device {}", updated.getMeterId(), nodeId);
-            allUpdateResults.add(JdkFutureAdapters.listenInPoolThread(
-                    meterForwarder.update(meterIdent, existingMeter, updated, nodeIdent)));
+            allUpdateResults.add(meterForwarder.update(meterIdent, existingMeter, updated, nodeIdent));
             meterCrudCounts.incUpdated();
         }
 
