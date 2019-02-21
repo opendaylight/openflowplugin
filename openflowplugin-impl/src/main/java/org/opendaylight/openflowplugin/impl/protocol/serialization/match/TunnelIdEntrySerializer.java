@@ -12,41 +12,31 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
-public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer {
+public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer<Tunnel, Uint64> {
+    public TunnelIdEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TUNNEL_ID,
+            EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+    }
 
     @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        // TODO: writeLong() should be faster
-        outBuffer.writeBytes(ByteUtil.uint64toBytes(match.getTunnel().getTunnelId()));
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.uint64toBytes(match.getTunnel().getTunnelMask()), outBuffer, getValueLength());
+    protected Tunnel extractEntry(Match match) {
+        final Tunnel tunnel = match.getTunnel();
+        return tunnel == null || tunnel.getTunnelId() == null ? null : tunnel;
+    }
+
+    @Override
+    protected Uint64 extractEntryMask(Tunnel entry) {
+        return entry.getTunnelMask();
+    }
+
+    @Override
+    protected void serializeEntry(Tunnel entry, Uint64 mask, ByteBuf outBuffer) {
+        outBuffer.writeBytes(ByteUtil.uint64toBytes(entry.getTunnelId()));
+        if (mask != null) {
+            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, EncodeConstants.SIZE_OF_LONG_IN_BYTES);
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getTunnel() != null && match.getTunnel().getTunnelId() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return match.getTunnel().getTunnelMask() != null;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.TUNNEL_ID;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
     }
 }

@@ -5,57 +5,37 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatch;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
-public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySerializer {
+public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySerializer<TcpFlagsMatch, Uint16> {
+    public TcpFlagsEntrySerializer() {
+        super(EncodeConstants.ONFOXM_ET_TCP_FLAGS, EncodeConstants.SIZE_OF_SHORT_IN_BYTES,
+            EncodeConstants.ONF_EXPERIMENTER_ID.toJava());
+    }
 
     @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(match.getTcpFlagsMatch().getTcpFlags().toJava());
+    protected TcpFlagsMatch extractEntry(Match match) {
+        final TcpFlagsMatch flagsMatch = match.getTcpFlagsMatch();
+        return flagsMatch == null || flagsMatch.getTcpFlags() == null ? null : flagsMatch;
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.unsignedShortToBytes(
-                    match.getTcpFlagsMatch().getTcpFlagsMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected Uint16 extractEntryMask(TcpFlagsMatch entry) {
+        return entry.getTcpFlagsMask();
+    }
+
+    @Override
+    protected void serializeEntryContent(TcpFlagsMatch entry, Uint16 mask, ByteBuf outBuffer) {
+        outBuffer.writeShort(entry.getTcpFlags().shortValue());
+        if (mask != null) {
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getTcpFlagsMatch() != null && match.getTcpFlagsMatch().getTcpFlags() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return match.getTcpFlagsMatch().getTcpFlagsMask() != null;
-    }
-
-    @Override
-    protected long getExperimenterId() {
-        return EncodeConstants.ONF_EXPERIMENTER_ID.toJava();
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return EncodeConstants.ONFOXM_ET_TCP_FLAGS;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.EXPERIMENTER_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
 }

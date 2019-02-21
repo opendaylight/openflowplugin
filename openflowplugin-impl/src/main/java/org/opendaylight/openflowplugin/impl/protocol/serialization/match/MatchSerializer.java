@@ -77,11 +77,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
         }
 
         // Serialize match entries
-        entryRegistry.forEach((key, value) -> {
-            if (value.matchTypeCheck(match)) {
-                value.serialize(match, outBuffer);
-            }
-        });
+        entryRegistry.values().forEach(value -> value.serializeIfPresent(match, outBuffer));
 
         // Serialize match extensions
         ExtensionResolvers

@@ -7,44 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatch;
 
-public class SctpSourcePortEntrySerializer extends AbstractMatchEntrySerializer {
-
-    @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(((SctpMatch) match.getLayer4Match()).getSctpSourcePort().getValue().toJava());
+public class SctpSourcePortEntrySerializer extends AbstractPortNumberEntrySerializer {
+    public SctpSourcePortEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.SCTP_SRC);
     }
 
     @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getLayer4Match() != null
-                && match.getLayer4Match() instanceof SctpMatch
-                && ((SctpMatch) match.getLayer4Match()).getSctpSourcePort() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return false;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.SCTP_SRC;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+    protected PortNumber extractPort(final Match match) {
+        final Layer4Match l4match = match.getLayer4Match();
+        return l4match instanceof SctpMatch ? ((SctpMatch) l4match).getSctpSourcePort() : null;
     }
 }

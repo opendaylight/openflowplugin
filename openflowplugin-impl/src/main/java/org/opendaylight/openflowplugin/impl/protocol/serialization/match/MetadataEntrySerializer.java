@@ -12,45 +12,30 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
-public class MetadataEntrySerializer extends AbstractMatchEntrySerializer {
+public class MetadataEntrySerializer extends AbstractMatchEntrySerializer<Metadata, Uint64> {
+    public MetadataEntrySerializer() {
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.METADATA,
+            EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+    }
 
     @Override
-    public void serialize(final Match match, final ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        // TODO: writeLong() should be faster
-        outBuffer.writeBytes(ByteUtil.uint64toBytes(match.getMetadata().getMetadata()));
+    protected Metadata extractEntry(Match match) {
+        return match.getMetadata();
+    }
 
-        if (getHasMask(match)) {
-            // TODO: writeLong() should be faster
-            writeMask(ByteUtil.uint64toBytes(match.getMetadata().getMetadataMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected Uint64 extractEntryMask(Metadata entry) {
+        return entry.getMetadataMask();
+    }
+
+    @Override
+    protected void serializeEntry(Metadata entry, Uint64 mask, ByteBuf outBuffer) {
+        outBuffer.writeBytes(ByteUtil.uint64toBytes(entry.getMetadata()));
+        if (mask != null) {
+            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, EncodeConstants.SIZE_OF_LONG_IN_BYTES);
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(final Match match) {
-        return match.getMetadata() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(final Match match) {
-        return match.getMetadata().getMetadataMask() != null;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.METADATA;
-    }
-
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
     }
 }
