@@ -7,30 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
 
-public class UdpDestinationPortEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class UdpDestinationPortEntrySerializer extends AbstractPortNumberEntrySerializer {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(((UdpMatch) match.getLayer4Match()).getUdpDestinationPort().getValue());
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer4Match() != null
-                && match.getLayer4Match() instanceof UdpMatch
-                && ((UdpMatch) match.getLayer4Match()).getUdpDestinationPort() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
+    protected PortNumber extractPort(Match match) {
+        final Layer4Match l4match = match.getLayer4Match();
+        return l4match instanceof UdpMatch ? ((UdpMatch) l4match).getUdpDestinationPort() : null;
     }
 
     @Override
@@ -41,10 +28,5 @@ public class UdpDestinationPortEntrySerializer extends AbstractMatchEntrySeriali
     @Override
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
 }

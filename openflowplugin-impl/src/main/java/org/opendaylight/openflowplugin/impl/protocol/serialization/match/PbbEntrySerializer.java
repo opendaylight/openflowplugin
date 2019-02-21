@@ -12,30 +12,27 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.Pbb;
 
-public class PbbEntrySerializer extends AbstractMatchEntrySerializer {
+public class PbbEntrySerializer extends AbstractMatchEntrySerializer<Pbb, Long> {
+    @Override
+    protected Pbb extractEntry(Match match) {
+        final ProtocolMatchFields protoFields = match.getProtocolMatchFields();
+        return protoFields == null ? null : protoFields.getPbb();
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeMedium(match.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
+    protected Long extractEntryMask(Pbb entry) {
+        return entry.getPbbMask();
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.unsignedMediumToBytes(
-                    match.getProtocolMatchFields().getPbb().getPbbMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected void serializeEntry(Pbb entry, Long mask, ByteBuf outBuffer) {
+        outBuffer.writeMedium(entry.getPbbIsid().intValue());
+        if (mask != null) {
+            writeMask(ByteUtil.unsignedMediumToBytes(mask), outBuffer, getValueLength());
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getProtocolMatchFields() != null && match.getProtocolMatchFields().getPbb() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return match.getProtocolMatchFields().getPbb().getPbbMask() != null;
     }
 
     @Override

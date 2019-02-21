@@ -7,27 +7,15 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
 
-public class MplsTcEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class MplsTcEntrySerializer extends AbstractUint8EntrySerializer {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getProtocolMatchFields().getMplsTc());
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getProtocolMatchFields() != null && match.getProtocolMatchFields().getMplsTc() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
+    protected Short extractEntry(Match match) {
+        final ProtocolMatchFields protoFields = match.getProtocolMatchFields();
+        return protoFields == null ? null : protoFields.getMplsTc();
     }
 
     @Override
@@ -38,10 +26,5 @@ public class MplsTcEntrySerializer extends AbstractMatchEntrySerializer {
     @Override
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
     }
 }

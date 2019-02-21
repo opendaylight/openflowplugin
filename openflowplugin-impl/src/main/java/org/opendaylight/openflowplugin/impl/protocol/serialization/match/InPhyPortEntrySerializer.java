@@ -12,26 +12,19 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public class InPhyPortEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class InPhyPortEntrySerializer extends AbstractPrimitiveEntrySerializer<NodeConnectorId> {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeInt(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
-                OpenflowVersion.OF13,
-                match.getInPhyPort()).intValue());
+    protected NodeConnectorId extractEntry(Match match) {
+        return match.getInPhyPort();
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getInPhyPort() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
+    protected void serializeEntry(NodeConnectorId entry, Void mask, ByteBuf outBuffer) {
+        outBuffer.writeInt(
+            InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, entry).intValue());
     }
 
     @Override
