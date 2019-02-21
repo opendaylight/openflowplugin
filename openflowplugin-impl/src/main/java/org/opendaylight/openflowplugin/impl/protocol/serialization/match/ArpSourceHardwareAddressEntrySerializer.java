@@ -7,41 +7,18 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 
-public class ArpSourceHardwareAddressEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class ArpSourceHardwareAddressEntrySerializer
+        extends AbstractMacAddressFilterEntrySerializer<ArpSourceHardwareAddress> {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        final ArpSourceHardwareAddress arpSourceHardwareAddress =
-                ((ArpMatch) match.getLayer3Match()).getArpSourceHardwareAddress();
-        writeMacAddress(arpSourceHardwareAddress.getAddress(), outBuffer);
-
-        if (getHasMask(match)) {
-            writeMask(ByteBufUtils.macAddressToBytes(
-                    arpSourceHardwareAddress.getMask().getValue()),
-                    outBuffer,
-                    getValueLength());
-        }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof ArpMatch
-                && ((ArpMatch) match.getLayer3Match()).getArpSourceHardwareAddress() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return ((ArpMatch) match.getLayer3Match()).getArpSourceHardwareAddress().getMask() != null;
+    protected ArpSourceHardwareAddress extractEntry(Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof ArpMatch ? ((ArpMatch) l3Match).getArpSourceHardwareAddress() : null;
     }
 
     @Override
@@ -53,10 +30,4 @@ public class ArpSourceHardwareAddressEntrySerializer extends AbstractMatchEntryS
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
     }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.MAC_ADDRESS_LENGTH;
-    }
-
 }

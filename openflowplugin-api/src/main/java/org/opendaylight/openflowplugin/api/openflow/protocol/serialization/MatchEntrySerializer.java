@@ -5,19 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.protocol.serialization;
 
+import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
 public interface MatchEntrySerializer extends OFSerializer<Match> {
 
     /**
-     * Checks if current match is this match type.
+     * Serialize this match entry if it is present in the match.
+     *
      * @param match Openflow match
-     * @return true if matched
+     * @param outBuffer output buffer
      */
-    boolean matchTypeCheck(Match match);
-
+    void serializeIfPresent(Match match, ByteBuf outBuffer);
 }

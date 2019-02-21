@@ -12,23 +12,19 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 
-public class EthernetTypeEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class EthernetTypeEntrySerializer extends AbstractPrimitiveEntrySerializer<EthernetType> {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(match.getEthernetMatch().getEthernetType().getType().getValue().shortValue());
+    protected EthernetType extractEntry(Match match) {
+        final EthernetMatch ethMatch = match.getEthernetMatch();
+        return ethMatch == null ? null : ethMatch.getEthernetType();
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getEthernetMatch() != null && match.getEthernetMatch().getEthernetType() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
+    protected void serializeEntry(EthernetType entry, Void mask, ByteBuf outBuffer) {
+        outBuffer.writeShort(entry.getType().getValue().shortValue());
     }
 
     @Override

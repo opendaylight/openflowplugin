@@ -8,34 +8,32 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
+import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
 
-public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer {
+public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer<Tunnel, BigInteger> {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeBytes(ByteUtil.convertBigIntegerToNBytes(match.getTunnel().getTunnelId(), getValueLength()));
+    protected Tunnel extractEntry(Match match) {
+        final Tunnel tunnel = match.getTunnel();
+        return tunnel == null || tunnel.getTunnelId() == null ? null : tunnel;
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.convertBigIntegerToNBytes(
-                    match.getTunnel().getTunnelMask(), getValueLength()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected BigInteger extractEntryMask(Tunnel entry) {
+        return entry.getTunnelMask();
+    }
+
+    @Override
+    protected void serializeEntry(Tunnel entry, BigInteger mask, ByteBuf outBuffer) {
+        outBuffer.writeBytes(ByteUtil.convertBigIntegerToNBytes(entry.getTunnelId(), getValueLength()));
+        if (mask != null) {
+            writeMask(ByteUtil.convertBigIntegerToNBytes(mask, getValueLength()), outBuffer, getValueLength());
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getTunnel() != null && match.getTunnel().getTunnelId() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return match.getTunnel().getTunnelMask() != null;
     }
 
     @Override

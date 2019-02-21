@@ -13,34 +13,27 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer3Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
 
-public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer {
+public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer<Ipv6ExtHeader, Integer> {
+    @Override
+    protected Ipv6ExtHeader extractEntry(Match match) {
+        final Layer3Match l3Match = match.getLayer3Match();
+        return l3Match instanceof Ipv6Match ? ((Ipv6Match) l3Match).getIpv6ExtHeader() : null;
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        final Ipv6ExtHeader ipv6ExtHeader = ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader();
-        outBuffer.writeShort(ipv6ExtHeader.getIpv6Exthdr());
+    protected Integer extractEntryMask(Ipv6ExtHeader entry) {
+        return entry.getIpv6ExthdrMask();
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.unsignedShortToBytes(
-                    ipv6ExtHeader.getIpv6ExthdrMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected void serializeEntry(Ipv6ExtHeader entry, Integer mask, ByteBuf outBuffer) {
+        outBuffer.writeShort(entry.getIpv6Exthdr());
+        if (mask != null) {
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, getValueLength());
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getLayer3Match() != null
-                && match.getLayer3Match() instanceof Ipv6Match
-                && ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader().getIpv6ExthdrMask() != null;
     }
 
     @Override

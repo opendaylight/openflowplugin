@@ -7,35 +7,16 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSource;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 
-public class EthernetSourceEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class EthernetSourceEntrySerializer extends AbstractMacAddressFilterEntrySerializer<EthernetSource> {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        writeMacAddress(match.getEthernetMatch().getEthernetSource().getAddress(), outBuffer);
-
-        if (getHasMask(match)) {
-            writeMask(ByteBufUtils.macAddressToBytes(
-                    match.getEthernetMatch().getEthernetSource().getMask().getValue()),
-                    outBuffer,
-                    getValueLength());
-        }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getEthernetMatch() != null && match.getEthernetMatch().getEthernetSource() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return match.getEthernetMatch().getEthernetSource().getMask() != null;
+    protected EthernetSource extractEntry(Match match) {
+        final EthernetMatch ethMatch = match.getEthernetMatch();
+        return ethMatch == null ? null : ethMatch.getEthernetSource();
     }
 
     @Override
@@ -46,10 +27,5 @@ public class EthernetSourceEntrySerializer extends AbstractMatchEntrySerializer 
     @Override
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return EncodeConstants.MAC_ADDRESS_LENGTH;
     }
 }

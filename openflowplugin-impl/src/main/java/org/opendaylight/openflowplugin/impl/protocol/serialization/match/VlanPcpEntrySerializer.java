@@ -5,30 +5,25 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 
-public class VlanPcpEntrySerializer extends AbstractMatchEntrySerializer {
-
+public class VlanPcpEntrySerializer extends AbstractPrimitiveEntrySerializer<VlanPcp> {
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getVlanMatch().getVlanPcp().getValue());
+    protected VlanPcp extractEntry(Match match) {
+        final VlanMatch vlanMatch = match.getVlanMatch();
+        return vlanMatch == null ? null : vlanMatch.getVlanPcp();
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getVlanMatch() != null && match.getVlanMatch().getVlanPcp() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return false;
+    protected void serializeEntry(VlanPcp entry, Void mask, ByteBuf outBuffer) {
+        outBuffer.writeByte(entry.getValue());
     }
 
     @Override
@@ -45,5 +40,4 @@ public class VlanPcpEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
     }
-
 }

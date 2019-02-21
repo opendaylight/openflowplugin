@@ -13,30 +13,26 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatch;
 
-public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySerializer {
+public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySerializer<TcpFlagsMatch, Integer> {
+    @Override
+    protected TcpFlagsMatch extractEntry(Match match) {
+        final TcpFlagsMatch flagsMatch = match.getTcpFlagsMatch();
+        return flagsMatch == null || flagsMatch.getTcpFlags() == null ? null : flagsMatch;
+    }
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
-        super.serialize(match, outBuffer);
-        outBuffer.writeShort(match.getTcpFlagsMatch().getTcpFlags());
+    protected Integer extractEntryMask(TcpFlagsMatch entry) {
+        return entry.getTcpFlagsMask();
+    }
 
-        if (getHasMask(match)) {
-            writeMask(ByteUtil.unsignedShortToBytes(
-                    match.getTcpFlagsMatch().getTcpFlagsMask()),
-                    outBuffer,
-                    getValueLength());
+    @Override
+    protected void serializeEntryContent(TcpFlagsMatch entry, Integer mask, ByteBuf outBuffer) {
+        outBuffer.writeShort(entry.getTcpFlags());
+        if (mask != null) {
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, getValueLength());
         }
-    }
-
-    @Override
-    public boolean matchTypeCheck(Match match) {
-        return match.getTcpFlagsMatch() != null && match.getTcpFlagsMatch().getTcpFlags() != null;
-    }
-
-    @Override
-    protected boolean getHasMask(Match match) {
-        return match.getTcpFlagsMatch().getTcpFlagsMask() != null;
     }
 
     @Override
