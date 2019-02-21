@@ -8,13 +8,11 @@
 
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -54,7 +52,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(OF10DeviceInitializer.class);
 
     @Override
-    protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+    protected ListenableFuture<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
                                                      final boolean switchFeaturesMandatory,
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
@@ -92,14 +90,10 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             }
         }, MoreExecutors.directExecutor());
 
-        return Futures.transform(future, new Function<Boolean, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable final Boolean input) {
-                LOG.debug("Writing physical port information for {}", deviceInfo);
-                writePhyPortInformation(deviceContext);
-                return null;
-            }
+        return Futures.transform(future, input -> {
+            LOG.debug("Writing physical port information for {}", deviceInfo);
+            writePhyPortInformation(deviceContext);
+            return null;
         }, MoreExecutors.directExecutor());
     }
 
