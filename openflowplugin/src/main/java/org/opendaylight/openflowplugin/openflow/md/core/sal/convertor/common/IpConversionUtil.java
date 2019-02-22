@@ -12,7 +12,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -41,6 +40,8 @@ public final class IpConversionUtil {
     private static final Logger LOG = LoggerFactory.getLogger(IpConversionUtil.class);
     public static final String PREFIX_SEPARATOR = "/";
     public static final Splitter PREFIX_SPLITTER = Splitter.on('/');
+    private static final Splitter PREFIX_TRIM_SPLITTER = PREFIX_SPLITTER.trimResults().omitEmptyStrings();
+    private static final Splitter PERCENT_SPLITTER = Splitter.on('%').trimResults().omitEmptyStrings();
     private static final int INADDR4SZ = 4;
     private static final int INADDR6SZ = 16;
     private static final int INT16SZ = 2;
@@ -250,11 +251,7 @@ public final class IpConversionUtil {
 
 
     private static byte[] canonicalBinaryV6AddressFromString(final String ipv6Address) {
-        Iterable<String> splittedV6Address = Splitter.on("%")
-                .trimResults()
-                .omitEmptyStrings()
-                .split(ipv6Address);
-        List<String> partsV6Address = Lists.newArrayList(splittedV6Address.iterator());
+        List<String> partsV6Address = PERCENT_SPLITTER.splitToList(ipv6Address);
 
         int colonp;
         char ch;
@@ -399,11 +396,7 @@ public final class IpConversionUtil {
 
         int initialMask = 128;
 
-        Iterable<String> splittedV6Prefix = Splitter.on("/")
-                .trimResults()
-                .omitEmptyStrings()
-                .split(ipv6Prefix.getValue());
-        List<String> partsV6Prefix = Lists.newArrayList(splittedV6Prefix.iterator());
+        List<String> partsV6Prefix = PREFIX_TRIM_SPLITTER.splitToList(ipv6Prefix.getValue());
 
         boolean valid = true;
 
