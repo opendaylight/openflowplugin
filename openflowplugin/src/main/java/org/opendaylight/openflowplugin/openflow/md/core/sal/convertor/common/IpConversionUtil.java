@@ -47,8 +47,9 @@ public final class IpConversionUtil {
     private static final int INT16SZ = 2;
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
-    private static final String DEFAULT_ARBITRARY_BIT_MASK = "255.255.255.255";
-    private static final String DEFAULT_IPV6_ARBITRARY_BITMASK = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
+    private static final DottedQuad DEFAULT_ARBITRARY_BITMASK = new DottedQuad("255.255.255.255");
+    private static final Ipv6ArbitraryMask DEFAULT_IPV6_ARBITRARY_BITMASK =
+            new Ipv6ArbitraryMask("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
 
     /*
      * Prefix bytearray lookup table. We concatenate the prefixes
@@ -165,32 +166,37 @@ public final class IpConversionUtil {
         return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, countBits(bytemask));
     }
 
-    public static DottedQuad createArbitraryBitMask(final byte [] bitmask)  {
-        DottedQuad dottedQuad = null;
+    public static DottedQuad createArbitraryBitMask(final byte[] bitmask)  {
         if (bitmask == null) {
-            dottedQuad = new DottedQuad(DEFAULT_ARBITRARY_BIT_MASK);
-        } else {
-            try {
-                dottedQuad = new DottedQuad(InetAddress.getByAddress(bitmask).getHostAddress());
-            } catch (UnknownHostException e) {
-                LOG.error("Failed to create the dottedQuad notation for the given mask ", e);
-            }
+            return DEFAULT_ARBITRARY_BITMASK;
         }
-        return dottedQuad;
+
+        final String hostAddress;
+        try {
+            hostAddress = InetAddress.getByAddress(bitmask).getHostAddress();
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to create the dottedQuad notation for the given mask {}", Arrays.toString(bitmask), e);
+            return null;
+        }
+
+        return new DottedQuad(hostAddress);
     }
 
-    public static Ipv6ArbitraryMask createIpv6ArbitraryBitMask(final byte [] bitmask) {
-        Ipv6ArbitraryMask ipv6ArbitraryMask = null;
+    public static Ipv6ArbitraryMask createIpv6ArbitraryBitMask(final byte[] bitmask) {
         if (bitmask == null) {
-            ipv6ArbitraryMask = new Ipv6ArbitraryMask(DEFAULT_IPV6_ARBITRARY_BITMASK);
-        } else {
-            try {
-                ipv6ArbitraryMask = new Ipv6ArbitraryMask(InetAddress.getByAddress(bitmask).getHostAddress());
-            } catch (UnknownHostException e) {
-                LOG.error("Failed to create the Ipv6ArbitraryMask notation for the given mask ", e);
-            }
+            return DEFAULT_IPV6_ARBITRARY_BITMASK;
         }
-        return ipv6ArbitraryMask;
+
+        final String hostAddress;
+        try {
+            hostAddress = InetAddress.getByAddress(bitmask).getHostAddress();
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to create the Ipv6ArbitraryMask notation for the given mask {}", Arrays.toString(bitmask),
+                e);
+            return null;
+        }
+
+        return new Ipv6ArbitraryMask(hostAddress);
     }
 
     public static Integer extractPrefix(final Ipv4Prefix ipv4Prefix) {
@@ -686,14 +692,15 @@ public final class IpConversionUtil {
 
     @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
-        String maskValue;
+    public static byte[] convertArbitraryMaskToByteArray(final DottedQuad mask) {
+        final String maskValue;
         if (mask != null && mask.getValue() != null) {
-            maskValue  = mask.getValue();
+            maskValue = mask.getValue();
         } else {
-            maskValue = DEFAULT_ARBITRARY_BIT_MASK;
+            maskValue = DEFAULT_ARBITRARY_BITMASK.getValue();
         }
-        InetAddress maskInIpFormat = null;
+
+        final InetAddress maskInIpFormat;
         try {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
@@ -738,13 +745,14 @@ public final class IpConversionUtil {
     @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     public static byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
-        String maskValue;
+        final String maskValue;
         if (mask != null && mask.getValue() != null) {
-            maskValue  = mask.getValue();
+            maskValue = mask.getValue();
         } else {
-            maskValue = DEFAULT_IPV6_ARBITRARY_BITMASK;
+            maskValue = DEFAULT_IPV6_ARBITRARY_BITMASK.getValue();
         }
-        InetAddress maskInIpFormat = null;
+
+        final InetAddress maskInIpFormat;
         try {
             maskInIpFormat = InetAddress.getByName(maskValue);
         } catch (UnknownHostException e) {
