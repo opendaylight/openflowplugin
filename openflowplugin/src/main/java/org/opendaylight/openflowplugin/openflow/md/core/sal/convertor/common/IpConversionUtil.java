@@ -625,8 +625,7 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Address extractIpv4Address(final Ipv4Prefix ipv4Prefix) {
-        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
-        return new Ipv4Address(addressParts.next());
+        return IetfInetUtil.INSTANCE.ipv4AddressFrom(ipv4Prefix);
     }
 
     public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
