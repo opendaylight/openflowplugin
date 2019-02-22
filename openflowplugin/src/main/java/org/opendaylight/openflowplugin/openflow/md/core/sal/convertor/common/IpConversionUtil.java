@@ -630,18 +630,18 @@ public final class IpConversionUtil {
     }
 
     public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
-        Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
-        addressParts.next();
-        Integer cidrMask = 0;
-        if (addressParts.hasNext()) {
-            cidrMask = Integer.parseInt(addressParts.next());
+        final String value = ipv4Prefix.getValue();
+        final int cidrMask = Integer.parseInt(value.substring(value.indexOf('/') + 1));
+        if (cidrMask == IPV4_ADDRESS_LENGTH) {
+            return DEFAULT_ARBITRARY_BITMASK;
         }
-        long maskBits = 0;
-        maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - cidrMask;
-        String mask = String.format("%d.%d.%d.%d", (maskBits & 0x0000000000ff000000L) >> 24,
-                (maskBits & 0x0000000000ff0000) >> 16, (maskBits & 0x0000000000ff00) >> 8, maskBits & 0xff);
-        DottedQuad netMask = new DottedQuad(mask);
-        return netMask;
+
+        final long maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - cidrMask;
+        return new DottedQuad(new StringBuilder(15)
+            .append((maskBits & 0x0000000000ff000000L) >> 24).append('.')
+            .append((maskBits & 0x0000000000ff0000) >> 16).append('.')
+            .append((maskBits & 0x0000000000ff00) >> 8).append('.')
+            .append(maskBits & 0xff).toString());
     }
 
     @Nullable
