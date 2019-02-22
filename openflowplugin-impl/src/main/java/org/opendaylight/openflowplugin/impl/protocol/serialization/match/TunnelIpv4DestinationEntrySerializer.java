@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Iterator;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -33,13 +32,8 @@ public class TunnelIpv4DestinationEntrySerializer extends AbstractMatchEntrySeri
 
     @Override
     protected boolean getHasMask(Match match) {
-        // Split address to IP and mask
-        final Iterator<String> addressParts = IpConversionUtil.splitToParts(
-                ((TunnelIpv4Match) match.getLayer3Match()).getTunnelIpv4Destination());
-        addressParts.next();
-
-        // Check if we have mask
-        return addressParts.hasNext() && Integer.parseInt(addressParts.next()) < 32;
+        return IpConversionUtil.hasIpv4Prefix(((TunnelIpv4Match) match.getLayer3Match()).getTunnelIpv4Destination())
+                != null;
     }
 
     @Override
