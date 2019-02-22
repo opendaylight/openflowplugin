@@ -222,6 +222,20 @@ public final class IpConversionUtil {
         return 128;
     }
 
+    /**
+     * Check if the supplied Ipv4Prefix has a prefix shorter than IPv4 address length.
+     *
+     * @param ipv4Prefix Ipv4 prefix
+     * @return prefix if there is one, else null
+     */
+    public static Integer hasIpv4Prefix(final Ipv4Prefix ipv4Prefix) {
+        return hasPrefix(extractPrefix(ipv4Prefix), IPV4_ADDRESS_LENGTH);
+    }
+
+    private static Integer hasPrefix(final Integer prefix, final int addressLength) {
+        return prefix != null && prefix < addressLength ? prefix : null;
+    }
+
     /*
      * BIG FAT WARNING!!!
      * Read all of the following before you touch any v6 code or decide to
@@ -595,14 +609,13 @@ public final class IpConversionUtil {
     }
 
     /**
-     * Check if the supplied IPv6Address has any prefix.
+     * Check if the supplied Ipv6Prefix has a prefix shorter than IPv6 address length.
      *
      * @param ipv6Prefix Ipv6 prefix
      * @return prefix if there is one, else null
      */
     public static Integer hasIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
-        final int prefix = IpConversionUtil.extractIpv6Prefix(ipv6Prefix);
-        return prefix < IPV6_ADDRESS_LENGTH ? prefix : null;
+        return hasPrefix(extractIpv6Prefix(ipv6Prefix), IPV6_ADDRESS_LENGTH);
     }
 
     private static int ipv6PrefixByteArrayOffset(final int mask) {
