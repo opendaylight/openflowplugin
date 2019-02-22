@@ -80,11 +80,11 @@ public final class IpConversionUtil {
         final DottedQuad[] quads = new DottedQuad[IPV4_ADDRESS_LENGTH + 1];
 
         for (int i = 0; i <= IPV4_ADDRESS_LENGTH; ++i) {
-            final long maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - i;
+            final int maskBits = (int) (0xffffffffL << IPV4_ADDRESS_LENGTH - i);
             quads[i] = new DottedQuad(new StringBuilder(15)
-                .append((maskBits & 0x0000000000ff000000L) >> 24).append('.')
-                .append((maskBits & 0x0000000000ff0000) >> 16).append('.')
-                .append((maskBits & 0x0000000000ff00) >> 8).append('.')
+                .append(maskBits >>> 24).append('.')
+                .append(maskBits >>> 16 & 0xff).append('.')
+                .append(maskBits >>>  8 & 0xff).append('.')
                 .append(maskBits & 0xff).toString());
         }
 

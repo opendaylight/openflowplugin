@@ -125,6 +125,7 @@ public class IpConversionUtilTest {
 
     @Test
     public void extractIpv4AddressMaskTest() {
+        assertAddressMask("0.0.0.0", 0);
         assertAddressMask("128.0.0.0", 1);
         assertAddressMask("255.0.0.0", 8);
         assertAddressMask("255.128.0.0", 9);
