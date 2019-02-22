@@ -77,7 +77,8 @@ public final class IpConversionUtil {
     static {
         final DottedQuad[] quads = new DottedQuad[IPV4_ADDRESS_LENGTH + 1];
 
-        for (int i = 0; i <= IPV4_ADDRESS_LENGTH; ++i) {
+        quads[0] = new DottedQuad("0.0.0.0");
+        for (int i = 1; i <= IPV4_ADDRESS_LENGTH; ++i) {
             final int maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - i;
             quads[i] = new DottedQuad(new StringBuilder(15)
                 .append((maskBits & 0xff000000) >>> 24).append('.')
