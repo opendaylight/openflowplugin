@@ -30,16 +30,16 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
     }
 
     private static void setIpv4MatchBuilderFields(final Ipv4MatchBuilder ipv4MatchBuilder, final byte[] mask,
-            final String ipv4PrefixStr) {
+            final Ipv4Address address) {
         final Ipv4Prefix ipv4Prefix;
         if (mask != null) {
-            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr), mask);
+            ipv4Prefix = IpConversionUtil.createPrefix(address, mask);
         } else {
             //Openflow Spec : 1.3.2
             //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
             // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
             // statistics response.
-            ipv4Prefix = IpConversionUtil.createPrefix(new Ipv4Address(ipv4PrefixStr));
+            ipv4Prefix = IpConversionUtil.createPrefix(address);
         }
 
         ipv4MatchBuilder.setIpv4Destination(ipv4Prefix);
@@ -57,17 +57,17 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
 
     private static void setDstIpv4MatchArbitraryBitMaskBuilderFields(
             final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder,
-            final DottedQuad mask, final String ipv4AddressStr) {
+            final DottedQuad mask, final Ipv4Address ipv4Address) {
         if (mask != null) {
             ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationArbitraryBitmask(mask);
         }
 
-        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(new Ipv4Address(ipv4AddressStr));
+        ipv4MatchArbitraryBitMaskBuilder.setIpv4DestinationAddressNoMask(ipv4Address);
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv4DstCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull final Ipv4DstCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv4MatchBuilder ipv4MatchBuilder = data.getIpv4MatchBuilder();
         final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder =
@@ -90,9 +90,8 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
                 }
 
                 DottedQuad dstDottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
-                String stringIpv4DstAddress = ipv4Address.getIpv4Address().getValue();
                 setDstIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder,
-                        dstDottedQuadMask, stringIpv4DstAddress);
+                        dstDottedQuadMask, ipv4Address.getIpv4Address());
                 matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
             } else if (ipv4MatchArbitraryBitMaskBuilder.getIpv4SourceAddressNoMask() != null) {
                         /*
@@ -110,13 +109,11 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
                         <ipv4-destination-arbitrary-bitmask>255.0.255.0</ipv4-destination-arbitrary-bitmask>
                         */
                 DottedQuad dstDottedQuadMask = IpConversionUtil.createArbitraryBitMask(mask);
-                String stringIpv4DstAddress = ipv4Address.getIpv4Address().getValue();
                 setDstIpv4MatchArbitraryBitMaskBuilderFields(ipv4MatchArbitraryBitMaskBuilder,
-                        dstDottedQuadMask, stringIpv4DstAddress);
+                        dstDottedQuadMask, ipv4Address.getIpv4Address());
                 matchBuilder.setLayer3Match(ipv4MatchArbitraryBitMaskBuilder.build());
             } else {
-                String ipv4PrefixStr = ipv4Address.getIpv4Address().getValue();
-                setIpv4MatchBuilderFields(ipv4MatchBuilder, mask, ipv4PrefixStr);
+                setIpv4MatchBuilderFields(ipv4MatchBuilder, mask, ipv4Address.getIpv4Address());
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
