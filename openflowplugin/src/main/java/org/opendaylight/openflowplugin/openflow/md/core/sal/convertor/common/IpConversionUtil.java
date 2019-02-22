@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -42,6 +43,7 @@ public final class IpConversionUtil {
     public static final Splitter PREFIX_SPLITTER = Splitter.on('/');
     private static final Splitter PREFIX_TRIM_SPLITTER = PREFIX_SPLITTER.trimResults().omitEmptyStrings();
     private static final Splitter PERCENT_SPLITTER = Splitter.on('%').trimResults().omitEmptyStrings();
+    private static final Pattern BITMASK_SPLIT_PATTERN = Pattern.compile("(?!^)");
     private static final int INADDR4SZ = 4;
     private static final int INADDR6SZ = 16;
     private static final int INT16SZ = 2;
@@ -725,8 +727,7 @@ public final class IpConversionUtil {
         String maskInBits;
         // converting byte array to bits
         maskInBits = new BigInteger(1, byteMask).toString(2);
-        ArrayList<String> stringMaskArrayList = new ArrayList<>(Arrays.asList(maskInBits.split("(?!^)")));
-        for (String string : stringMaskArrayList) {
+        for (String string : BITMASK_SPLIT_PATTERN.split(maskInBits)) {
             integerMaskArrayList.add(Integer.parseInt(string));
         }
 
