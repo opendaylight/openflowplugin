@@ -125,9 +125,20 @@ public class IpConversionUtilTest {
 
     @Test
     public void extractIpv4AddressMaskTest() {
-        DottedQuad dottedQuad;
-        dottedQuad = IpConversionUtil.extractIpv4AddressMask(new Ipv4Prefix("1.1.1.1/24"));
-        Assert.assertEquals(dottedQuad.getValue(),"255.255.255.0");
+        assertAddressMask("128.0.0.0", 1);
+        assertAddressMask("255.0.0.0", 8);
+        assertAddressMask("255.128.0.0", 9);
+        assertAddressMask("255.255.0.0", 16);
+        assertAddressMask("255.255.128.0", 17);
+        assertAddressMask("255.255.255.0", 24);
+        assertAddressMask("255.255.255.128", 25);
+        assertAddressMask("255.255.255.254", 31);
+        assertAddressMask("255.255.255.255", 32);
+    }
+
+    private static void assertAddressMask(final String expected, final int prefix) {
+        Assert.assertEquals(expected,
+            IpConversionUtil.extractIpv4AddressMask(new Ipv4Prefix("1.1.1.1/" + prefix)).getValue());
     }
 
     @Test
