@@ -47,7 +47,6 @@ public final class IpConversionUtil {
     private static final int INT16SZ = 2;
     private static final int IPV4_ADDRESS_LENGTH = 32;
     private static final int IPV6_ADDRESS_LENGTH = 128;
-    private static final DottedQuad DEFAULT_ARBITRARY_BITMASK = new DottedQuad("255.255.255.255");
     private static final Ipv6ArbitraryMask DEFAULT_IPV6_ARBITRARY_BITMASK =
             new Ipv6ArbitraryMask("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
 
@@ -72,6 +71,24 @@ public final class IpConversionUtil {
 
         PREFIX_BYTEARRAYS = a;
     }
+
+    private static final DottedQuad[] IPV4_BITMASKS;
+
+    static {
+        final DottedQuad[] quads = new DottedQuad[IPV4_ADDRESS_LENGTH + 1];
+
+        for (int i = 0; i <= IPV4_ADDRESS_LENGTH; ++i) {
+            final long maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - i;
+            quads[i] = new DottedQuad(new StringBuilder(15)
+                .append((maskBits & 0x0000000000ff000000L) >> 24).append('.')
+                .append((maskBits & 0x0000000000ff0000) >> 16).append('.')
+                .append((maskBits & 0x0000000000ff00) >> 8).append('.')
+                .append(maskBits & 0xff).toString());
+        }
+
+        IPV4_BITMASKS = quads;
+    }
+
 
     private IpConversionUtil() {
         throw new UnsupportedOperationException("This class should not be instantiated.");
@@ -158,7 +175,7 @@ public final class IpConversionUtil {
 
     public static DottedQuad createArbitraryBitMask(final byte[] bitmask)  {
         if (bitmask == null) {
-            return DEFAULT_ARBITRARY_BITMASK;
+            return IPV4_BITMASKS[IPV4_ADDRESS_LENGTH];
         }
 
         final String hostAddress;
@@ -631,17 +648,7 @@ public final class IpConversionUtil {
 
     public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
         final String value = ipv4Prefix.getValue();
-        final int cidrMask = Integer.parseInt(value.substring(value.indexOf('/') + 1));
-        if (cidrMask == IPV4_ADDRESS_LENGTH) {
-            return DEFAULT_ARBITRARY_BITMASK;
-        }
-
-        final long maskBits = 0xffffffff << IPV4_ADDRESS_LENGTH - cidrMask;
-        return new DottedQuad(new StringBuilder(15)
-            .append((maskBits & 0x0000000000ff000000L) >> 24).append('.')
-            .append((maskBits & 0x0000000000ff0000) >> 16).append('.')
-            .append((maskBits & 0x0000000000ff00) >> 8).append('.')
-            .append(maskBits & 0xff).toString());
+        return IPV4_BITMASKS[Integer.parseInt(value.substring(value.indexOf('/') + 1))];
     }
 
     @Nullable
@@ -686,7 +693,7 @@ public final class IpConversionUtil {
         if (mask != null && mask.getValue() != null) {
             maskValue = mask.getValue();
         } else {
-            maskValue = DEFAULT_ARBITRARY_BITMASK.getValue();
+            maskValue = IPV4_BITMASKS[IPV4_ADDRESS_LENGTH].getValue();
         }
 
         final InetAddress maskInIpFormat;
