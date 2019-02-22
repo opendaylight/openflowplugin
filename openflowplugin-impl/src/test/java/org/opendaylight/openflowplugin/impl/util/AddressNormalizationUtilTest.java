@@ -80,14 +80,16 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeIpv4Prefix() throws Exception {
-        final Ipv4Prefix left = new Ipv4Prefix("192.168.72.1/16");
-        final Ipv4Prefix right = new Ipv4Prefix("192.168.0.0/16");
+    public void normalizeIpv4Prefix() {
+        assertNormalizedIpv4Prefix("192.168.72.1/32", "192.168.72.1/32");
+        assertNormalizedIpv4Prefix("192.168.0.0/16", "192.168.72.1/16");
+        assertNormalizedIpv4Prefix("192.0.0.0/2", "192.168.72.1/2");
+        assertNormalizedIpv4Prefix("128.0.0.0/1", "192.168.72.1/1");
+        assertNormalizedIpv4Prefix("0.0.0.0/0", "192.168.72.1/0");
+    }
 
-        assertEquals(
-                right,
-                AddressNormalizationUtil.normalizeIpv4Prefix(left)
-        );
+    private static void assertNormalizedIpv4Prefix(final String expected, final String input) {
+        assertEquals(new Ipv4Prefix(expected), AddressNormalizationUtil.normalizeIpv4Prefix(new Ipv4Prefix(input)));
     }
 
     @Test
