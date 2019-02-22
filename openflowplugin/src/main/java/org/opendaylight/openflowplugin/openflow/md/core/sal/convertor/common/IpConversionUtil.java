@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
 import com.google.common.primitives.UnsignedBytes;
@@ -79,18 +77,8 @@ public final class IpConversionUtil {
         return PREFIX_SPLITTER.split(ipv4Prefix.getValue()).iterator();
     }
 
-    public static Iterator<String> splitToParts(final Ipv4Address ipv4Address) {
-        /* Invalid (Ab)use of ip address as prefix!!! */
-        return Iterators.forArray(ipv4Address.getValue(), String.valueOf(IPV4_ADDRESS_LENGTH));
-    }
-
     public static Iterator<String> splitToParts(final Ipv6Prefix ipv6Prefix) {
         return PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
-    }
-
-    public static Iterator<String> splitToParts(final Ipv6Address ipv6Address) {
-        /* Invalid (Ab)use of ip address as prefix!!! */
-        return Iterators.forArray(ipv6Address.getValue(), String.valueOf(IPV6_ADDRESS_LENGTH));
     }
 
     /* This forest of functions has a purpose:
@@ -693,7 +681,7 @@ public final class IpConversionUtil {
 
     @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] convertArbitraryMaskToByteArray(DottedQuad mask) {
+    public static byte[] convertArbitraryMaskToByteArray(final DottedQuad mask) {
         String maskValue;
         if (mask != null && mask.getValue() != null) {
             maskValue  = mask.getValue();
@@ -711,7 +699,7 @@ public final class IpConversionUtil {
         return bytes;
     }
 
-    public static boolean isArbitraryBitMask(byte[] byteMask) {
+    public static boolean isArbitraryBitMask(final byte[] byteMask) {
         if (byteMask == null) {
             return false;
         } else {
@@ -727,7 +715,7 @@ public final class IpConversionUtil {
         }
     }
 
-    private static boolean checkArbitraryBitMask(ArrayList<Integer> arrayList) {
+    private static boolean checkArbitraryBitMask(final ArrayList<Integer> arrayList) {
         // checks 0*1* case - Leading zeros in arrayList are truncated
         if (arrayList.size() > 0 && arrayList.size() < IPV4_ADDRESS_LENGTH) {
             return true;
