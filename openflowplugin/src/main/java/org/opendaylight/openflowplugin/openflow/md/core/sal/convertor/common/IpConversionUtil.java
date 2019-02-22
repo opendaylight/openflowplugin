@@ -711,32 +711,35 @@ public final class IpConversionUtil {
         return bytes;
     }
 
-    public static boolean isArbitraryBitMask(byte[] byteMask) {
-        if (byteMask == null) {
-            return false;
-        } else {
-            ArrayList<Integer> integerMaskArrayList = new ArrayList<>();
-            String maskInBits;
-            // converting byte array to bits
-            maskInBits = new BigInteger(1, byteMask).toString(2);
-            ArrayList<String> stringMaskArrayList = new ArrayList<>(Arrays.asList(maskInBits.split("(?!^)")));
-            for (String string:stringMaskArrayList) {
-                integerMaskArrayList.add(Integer.parseInt(string));
-            }
-            return checkArbitraryBitMask(integerMaskArrayList);
-        }
+    public static boolean isArbitraryBitMask(final byte[] byteMask) {
+        return isArbitraryBitMask(byteMask, IPV4_ADDRESS_LENGTH);
     }
 
+    private static boolean isArbitraryBitMask(final byte[] byteMask, final int addressLength) {
+        if (byteMask == null) {
+            return false;
+        }
+
     private static boolean checkArbitraryBitMask(ArrayList<Integer> arrayList) {
+        ArrayList<Integer> integerMaskArrayList = new ArrayList<>();
+        String maskInBits;
+        // converting byte array to bits
+        maskInBits = new BigInteger(1, byteMask).toString(2);
+        ArrayList<String> stringMaskArrayList = new ArrayList<>(Arrays.asList(maskInBits.split("(?!^)")));
+        for (String string : stringMaskArrayList) {
+            integerMaskArrayList.add(Integer.parseInt(string));
+        }
+
+        final int size = integerMaskArrayList.size();
         // checks 0*1* case - Leading zeros in arrayList are truncated
-        if (arrayList.size() > 0 && arrayList.size() < IPV4_ADDRESS_LENGTH) {
+        if (size > 0 && size < addressLength) {
             return true;
-        } else {
-            // checks 1*0*1 case
-            for (int i = 0; i < arrayList.size() - 1; i++) {
-                if (arrayList.get(i) == 0 && arrayList.get(i + 1) == 1) {
-                    return true;
-                }
+        }
+
+        // checks 1*0*1 case
+        for (int i = 0; i < size - 1; i++) {
+            if (integerMaskArrayList.get(i) == 0 && integerMaskArrayList.get(i + 1) == 1) {
+                return true;
             }
         }
         return false;
@@ -763,34 +766,7 @@ public final class IpConversionUtil {
     }
 
     public static boolean isIpv6ArbitraryBitMask(final byte[] byteMask) {
-        if (byteMask == null) {
-            return false;
-        } else {
-            ArrayList<Integer> integerMaskArrayList = new ArrayList<>();
-            String maskInBits;
-            // converting byte array to bits
-            maskInBits = new BigInteger(1, byteMask).toString(2);
-            ArrayList<String> stringMaskArrayList = new ArrayList<>(Arrays.asList(maskInBits.split("(?!^)")));
-            for (String string:stringMaskArrayList) {
-                integerMaskArrayList.add(Integer.parseInt(string));
-            }
-            return checkIpv6ArbitraryBitMask(integerMaskArrayList);
-        }
-    }
-
-    private static boolean checkIpv6ArbitraryBitMask(final ArrayList<Integer> arrayList) {
-        // checks 0*1* case - Leading zeros in arrayList are truncated
-        if (arrayList.size() > 0 && arrayList.size() < IPV6_ADDRESS_LENGTH) {
-            return true;
-        } else {
-            //checks 1*0*1 case
-            for (int i = 0; i < arrayList.size() - 1; i++) {
-                if (arrayList.get(i) == 0 && arrayList.get(i + 1) == 1) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return isArbitraryBitMask(byteMask, IPV6_ADDRESS_LENGTH);
     }
 
     private static String compressedIpv6FormatFromString(final String ipv6Address) {
