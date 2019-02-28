@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3e916b3_9f412b9b",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OpenflowPluginDiagStatusProviderImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-02-28T10:00:28Z",
+      "side": 1,
+      "message": "move this to constructor and make sure it registers only once",
+      "range": {
+        "startLine": 72,
+        "startChar": 15,
+        "endLine": 72,
+        "endChar": 66
+      },
+      "revId": "7b9120135ad9f867545dc4dbef557917e08d6fa7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
