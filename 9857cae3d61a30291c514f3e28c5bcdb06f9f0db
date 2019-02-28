@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "408d3d9f_8dd881e6",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OpenflowDiagStatusProviderImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-02-28T10:00:28Z",
+      "side": 1,
+      "message": "remove extra lines in import statements",
+      "revId": "9857cae3d61a30291c514f3e28c5bcdb06f9f0db",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "df3bd7e8_cc9b151b",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OpenflowDiagStatusProviderImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-02-28T10:00:28Z",
+      "side": 1,
+      "message": "OPENFLOW_SERVICE",
+      "range": {
+        "startLine": 38,
+        "startChar": 61,
+        "endLine": 38,
+        "endChar": 72
+      },
+      "revId": "9857cae3d61a30291c514f3e28c5bcdb06f9f0db",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
