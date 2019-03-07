@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 import com.google.common.annotations.Beta;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
@@ -115,4 +116,11 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
      */
     @Beta
     void setPacketInFiltering(boolean enabled);
+
+    /**
+     * Set datapathId for the dpn.
+     * @param datapathId of the dpn
+     */
+    default void setDatapathId(BigInteger datapathId) {
+    }
 }
