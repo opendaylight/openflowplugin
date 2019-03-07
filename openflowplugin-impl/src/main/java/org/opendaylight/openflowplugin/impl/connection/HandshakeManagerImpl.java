@@ -15,6 +15,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -391,6 +393,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
+                            BigInteger dpnID = featureOutput.getDatapathId();
+                            connectionAdapter.setDatapathId(dpnID);
                             if (!deviceConnectionRateLimiter.tryAquire()) {
                                 LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
                                         + " the connection from device {}", featureOutput.getDatapathId());
