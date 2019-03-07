@@ -27,6 +27,7 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.applications.frm.BundleMessagesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -88,6 +89,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
+    private BundleMessagesCommiter<Flow> bundleFlowListener;
+    private BundleMessagesCommiter<Group> bundleGroupListener;
     private FlowNodeReconciliation nodeListener;
     private NotificationRegistration reconciliationNotificationRegistration;
     private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
@@ -166,6 +169,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                 new FrmReconciliationServiceImpl(this));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
+        this.bundleFlowListener = new BundleFlowForwarder(this);
+        this.bundleGroupListener = new BundleGroupForwarder(this);
         this.flowListener = new FlowForwarder(this, dataService);
         this.groupListener = new GroupForwarder(this, dataService);
         this.meterListener = new MeterForwarder(this, dataService);
@@ -290,6 +295,16 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @Override
     public ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter() {
         return tableListener;
+    }
+
+    @Override
+    public BundleMessagesCommiter<Flow> getBundleFlowListener() {
+        return bundleFlowListener;
+    }
+
+    @Override
+    public BundleMessagesCommiter<Group> getBundleGroupListener() {
+        return bundleGroupListener;
     }
 
     @Override
