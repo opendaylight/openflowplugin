@@ -384,6 +384,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
+                            connectionAdapter.setDatapathId(featureOutput.getDatapathId());
                             if (!deviceConnectionRateLimiter.tryAquire()) {
                                 LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
                                         + " the connection from device {}", featureOutput.getDatapathId());
