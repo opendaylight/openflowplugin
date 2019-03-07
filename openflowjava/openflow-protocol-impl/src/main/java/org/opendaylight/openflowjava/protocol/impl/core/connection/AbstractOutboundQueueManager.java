@@ -13,6 +13,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -235,8 +237,10 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * Method immediately response on Echo message.
      *
      * @param message incoming Echo message from device
+     * @param datapathId the dpnId of the node
      */
-    void onEchoRequest(final EchoRequestMessage message) {
+    void onEchoRequest(final EchoRequestMessage message, BigInteger datapathId) {
+        LOG.debug("echo request received: {} for the DPN {}", message.getXid(), datapathId);
         final EchoReplyInput reply = new EchoReplyInputBuilder().setData(message.getData())
                 .setVersion(message.getVersion()).setXid(message.getXid()).build();
         parent.getChannel().writeAndFlush(makeMessageListenerWrapper(reply));
