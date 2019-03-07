@@ -138,6 +138,20 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
     ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
 
     /**
+     * Return BundleFlowListener instance.
+     *
+     * @return BundleFlowListener
+     */
+    BundleMessagesCommiter<Flow> getBundleFlowListener();
+
+    /**
+     * Return BundleGroupListener instance.
+     *
+     * @return BundleGroupListener
+     */
+    BundleMessagesCommiter<Group> getBundleGroupListener();
+
+    /**
      * Check if reconciliation is disabled by user.
      *
      * @return true if reconciliation is disabled, else false

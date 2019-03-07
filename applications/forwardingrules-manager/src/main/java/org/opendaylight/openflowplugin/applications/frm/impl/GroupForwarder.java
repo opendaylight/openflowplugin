@@ -61,12 +61,11 @@ import org.slf4j.LoggerFactory;
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
+
     private ListenerRegistration<GroupForwarder> listenerRegistration;
-    private final BundleGroupForwarder bundleGroupForwarder;
 
     public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, db);
-        this.bundleGroupForwarder = new BundleGroupForwarder(manager);
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -108,7 +107,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
-            bundleGroupForwarder.remove(identifier, removeDataObj, nodeIdent, bundleId);
+            provider.getBundleGroupListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
         } else {
             final Group group = removeDataObj;
             final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
@@ -146,7 +145,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
-            bundleGroupForwarder.update(identifier, original, update, nodeIdent, bundleId);
+            provider.getBundleGroupListener().update(identifier, original, update, nodeIdent, bundleId);
         } else {
             final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
             nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
@@ -175,7 +174,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
-            return bundleGroupForwarder.add(identifier, addDataObj, nodeIdent, bundleId);
+            return provider.getBundleGroupListener().add(identifier, addDataObj, nodeIdent, bundleId);
         } else {
             final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
             return nodeConfigurator
