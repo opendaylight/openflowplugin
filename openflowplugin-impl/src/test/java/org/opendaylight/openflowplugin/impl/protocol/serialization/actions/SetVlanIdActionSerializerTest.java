@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 public class SetVlanIdActionSerializerTest extends AbstractSetFieldActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final int vlan = 1;
 
         final Action action = new SetVlanIdActionCaseBuilder()

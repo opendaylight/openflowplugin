@@ -53,7 +53,7 @@ public class RegLoadConvertorTest {
     private RegLoadConvertor regLoadConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxRegLoad nxRegLoad = Mockito.mock(NxRegLoad.class);
         final Dst dst = Mockito.mock(Dst.class);
 
@@ -76,14 +76,14 @@ public class RegLoadConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionRegLoad actionRegLoad = (ActionRegLoad)regLoadConvertor.convert(actionsCase).getActionChoice();
         Assert.assertEquals(Integer.valueOf(65), actionRegLoad.getNxActionRegLoad().getOfsNbits());
         Assert.assertEquals(BigInteger.valueOf(3), actionRegLoad.getNxActionRegLoad().getValue());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = regLoadConvertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1

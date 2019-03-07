@@ -16,7 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
@@ -56,7 +55,7 @@ final class MeterFeaturesService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetMeterFeaturesInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetMeterFeaturesInput input) {
         MultipartRequestInputBuilder mprInput =
                 RequestInputUtils.createMultipartHeader(MultipartType.OFPMPMETERFEATURES, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(METER_FEATURES_CASE);

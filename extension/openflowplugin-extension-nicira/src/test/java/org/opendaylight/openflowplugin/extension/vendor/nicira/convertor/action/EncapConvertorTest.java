@@ -43,7 +43,7 @@ public class EncapConvertorTest {
     private EncapConvertor encapConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxEncap nxEncap = Mockito.mock(NxEncap.class);
         when(nxEncap.getPacketType()).thenReturn(PACKET_TYPE);
         when(actionsCase.getNxEncap()).thenReturn(nxEncap);

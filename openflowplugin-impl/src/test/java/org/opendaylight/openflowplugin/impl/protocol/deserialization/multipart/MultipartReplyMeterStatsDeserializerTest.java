@@ -30,7 +30,7 @@ public class MultipartReplyMeterStatsDeserializerTest extends AbstractMultipartD
     private static final long BYTE_BAND_COUNT = 8L;
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeInt(METER_ID);
         buffer.writeShort(ITEM_LENGTH);

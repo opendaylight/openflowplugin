@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class SetTpSrcActionSerializerTest extends AbstractSetFieldActionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final PortNumber port = new PortNumber(20);
         final short protocol = 6; // TCP
 

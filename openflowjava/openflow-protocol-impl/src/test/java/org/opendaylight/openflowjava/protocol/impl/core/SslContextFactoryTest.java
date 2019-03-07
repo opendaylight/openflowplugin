@@ -43,7 +43,7 @@ public class SslContextFactoryTest {
     }
 
     @Test
-    public void testGetServerContext() throws Exception {
+    public void testGetServerContext() {
         SSLContext context  = sslContextFactory.getServerContext() ;
 
         assertNotNull(context);

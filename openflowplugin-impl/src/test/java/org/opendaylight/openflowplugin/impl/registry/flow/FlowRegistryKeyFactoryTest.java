@@ -66,7 +66,7 @@ public class FlowRegistryKeyFactoryTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         HashSet<FlowRegistryKey> flowRegistryKeys = new HashSet<>();
@@ -81,7 +81,7 @@ public class FlowRegistryKeyFactoryTest {
     }
 
     @Test
-    public void testEqualsNegative() throws Exception {
+    public void testEqualsNegative() {
         final FlowAndStatisticsMapList flowStatisticsMapList1 =
                 TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapList1);
@@ -111,7 +111,7 @@ public class FlowRegistryKeyFactoryTest {
     }
 
     @Test
-    public void testGetHash2() throws Exception {
+    public void testGetHash2() {
         MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
         FlowBuilder flow1Builder = new FlowBuilder()
@@ -137,7 +137,7 @@ public class FlowRegistryKeyFactoryTest {
     }
 
     @Test
-    public void testGetHashNPE() throws Exception {
+    public void testGetHashNPE() {
         MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
         FlowBuilder flow1Builder = new FlowBuilder()
@@ -173,7 +173,7 @@ public class FlowRegistryKeyFactoryTest {
     }
 
     @Test
-    public void testGetHash() throws Exception {
+    public void testGetHash() {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {

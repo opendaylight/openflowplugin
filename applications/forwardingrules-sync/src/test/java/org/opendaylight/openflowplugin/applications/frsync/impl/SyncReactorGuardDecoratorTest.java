@@ -45,7 +45,7 @@ public class SyncReactorGuardDecoratorTest {
     private SyncupEntry syncupEntry;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         reactor = new SyncReactorGuardDecorator(delegate);
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(NODE_ID));

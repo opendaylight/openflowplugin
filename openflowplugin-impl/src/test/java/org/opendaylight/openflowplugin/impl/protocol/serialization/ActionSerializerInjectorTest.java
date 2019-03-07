@@ -36,12 +36,12 @@ public class ActionSerializerInjectorTest {
     private Function<Class<? extends Action>, Consumer<OFSerializer<? extends Action>>> injector;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         injector = ActionSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
     }
 
     @Test
-    public void injectSerializers() throws Exception {
+    public void injectSerializers() {
         injector.apply(CopyTtlInCase.class).accept(actionSerializer);
         verify(switchConnectionProvider).registerSerializer(
                 new MessageTypeKey<Object>(EncodeConstants.OF13_VERSION_ID, CopyTtlInCase.class),

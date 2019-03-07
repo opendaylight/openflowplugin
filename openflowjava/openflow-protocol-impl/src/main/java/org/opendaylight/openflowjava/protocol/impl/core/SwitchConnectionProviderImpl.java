@@ -203,7 +203,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         shutdown();
     }
 

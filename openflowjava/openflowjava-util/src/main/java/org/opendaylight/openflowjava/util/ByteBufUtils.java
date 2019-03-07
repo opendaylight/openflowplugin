@@ -14,7 +14,6 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.UnsignedBytes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -395,7 +394,7 @@ public abstract class ByteBufUtils {
         return IetfYangUtil.INSTANCE.macAddressFor(tmp);
     }
 
-    public static byte[] serializeList(final List<Short> list) throws IOException {
+    public static byte[] serializeList(final List<Short> list) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(list.size() * 2);
         for (Short shortValue : list) {
             byteBuffer.putShort(shortValue);

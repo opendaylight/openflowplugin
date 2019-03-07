@@ -14,7 +14,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractGroupDirectStatisticsService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
@@ -48,7 +47,7 @@ public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsS
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetGroupStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetGroupStatisticsInput input) {
         return new MultipartRequestBuilder()
             .setXid(xid.getValue())
             .setVersion(getVersion())

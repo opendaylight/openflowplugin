@@ -64,7 +64,7 @@ public class SimplifiedConfigListenerTest {
     private FlowCapableNode dataAfter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final DataBroker db = Mockito.mock(DataBroker.class);
         final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
         final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
@@ -84,7 +84,7 @@ public class SimplifiedConfigListenerTest {
     }
 
     @Test
-    public void testDSLogicalType() throws Exception {
+    public void testDSLogicalType() {
         Assert.assertEquals(LogicalDatastoreType.CONFIGURATION, nodeListenerConfig.dsType());
     }
 

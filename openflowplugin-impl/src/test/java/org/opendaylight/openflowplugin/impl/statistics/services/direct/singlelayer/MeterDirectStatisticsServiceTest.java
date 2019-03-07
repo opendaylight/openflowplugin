@@ -43,7 +43,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     private MeterDirectStatisticsService service;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         service = new MeterDirectStatisticsService(requestContextStack,
                                                    deviceContext,
                                                    convertorManager,
@@ -51,7 +51,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testBuildRequestBody() throws Exception {
+    public void testBuildRequestBody() {
         final GetMeterStatisticsInput input = mock(GetMeterStatisticsInput.class);
 
         lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
@@ -65,7 +65,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testBuildReply() throws Exception {
+    public void testBuildReply() {
         final MeterStats meterStat = new MeterStatsBuilder()
                 .setMeterId(new MeterId(METER_NO))
                 .setByteInCount(new Counter64(BigInteger.ONE))
@@ -94,7 +94,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     }
 
     @Override
-    public void testStoreStatistics() throws Exception {
+    public void testStoreStatistics() {
         final org.opendaylight.yang.gen.v1.urn
                 .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats stat =
                 mock(org.opendaylight.yang.gen.v1.urn

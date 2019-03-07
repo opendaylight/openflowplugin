@@ -181,7 +181,7 @@ public class DeviceContextImplTest {
     private DeviceContext deviceContextSpy;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final FluentFuture<Optional<Node>> noExistNodeFuture =
                 FluentFutures.immediateFluentFuture(Optional.<Node>empty());
         Mockito.lenient().when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent))
@@ -278,7 +278,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testInitialSubmitTransaction() throws Exception {
+    public void testInitialSubmitTransaction() {
         Mockito.doReturn(CommitInfo.emptyFluentFuture()).when(writeTx).commit();
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
@@ -297,7 +297,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testAddDeleteToTxChain() throws Exception {
+    public void testAddDeleteToTxChain() {
         final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
@@ -306,7 +306,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testSubmitTransaction() throws Exception {
+    public void testSubmitTransaction() {
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         assertTrue(deviceContext.submitTransaction());
@@ -413,7 +413,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testPortStatusMessage() throws Exception {
+    public void testPortStatusMessage() {
         final PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
         final Class dummyClass = Class.class;
         when(mockedPortStatusMessage.getImplementedInterface()).thenReturn(dummyClass);
@@ -431,7 +431,7 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void testProcessFlowRemovedMessage() throws Exception {
+    public void testProcessFlowRemovedMessage() {
         // prepare translation result
         final FlowRemovedBuilder flowRemovedMdsalBld = new FlowRemovedBuilder()
                 .setTableId((short) 0)
@@ -484,17 +484,17 @@ public class DeviceContextImplTest {
     }
 
     @Test
-    public void instantiateServiceInstance() throws Exception {
+    public void instantiateServiceInstance() {
         deviceContext.instantiateServiceInstance();
     }
 
     @Test
-    public void close() throws Exception {
+    public void close() {
         deviceContext.close();
     }
 
     @Test
-    public void closeServiceInstance() throws Exception {
+    public void closeServiceInstance() {
         deviceContext.closeServiceInstance();
     }
 

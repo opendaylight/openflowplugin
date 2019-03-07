@@ -189,7 +189,7 @@ public class MultipartReplyMessageFactoryTest {
     private OFSerializer<MultipartReplyMessage> factory;
 
     @Before
-    public void startUp() throws Exception {
+    public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry

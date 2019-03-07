@@ -32,7 +32,7 @@ public abstract class AbstractSerializerTest {
     private SerializerRegistry registry;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         registry = new SerializerRegistryImpl();
         registry.init();
         provider = new SerializerExtensionProviderImpl(registry);

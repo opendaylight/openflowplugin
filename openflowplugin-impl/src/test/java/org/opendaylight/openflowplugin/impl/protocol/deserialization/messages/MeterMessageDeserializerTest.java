@@ -50,7 +50,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
     }
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         buffer.writeByte(TYPE); // Message type
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         buffer.writeInt(XID);

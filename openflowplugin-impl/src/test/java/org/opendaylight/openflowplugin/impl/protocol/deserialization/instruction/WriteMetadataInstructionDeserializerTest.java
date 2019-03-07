@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class WriteMetadataInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final BigInteger metadata = BigInteger.valueOf(1234L);
         final BigInteger metadataMask = BigInteger.valueOf(9876L);

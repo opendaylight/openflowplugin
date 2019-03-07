@@ -49,7 +49,7 @@ public class UdpSrcConvertorTest {
     private UdpSrcConvertor udpSrcConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmOfUdpSrcBuilder nxmOfUdpSrcBuilder = new NxmOfUdpSrcBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
@@ -65,7 +65,7 @@ public class UdpSrcConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = udpSrcConvertor.convert(extension);
         Assert.assertEquals(Integer.valueOf(1),
                 ((UdpSrcCaseValue) converted.getMatchEntryValue()).getUdpSrcValues().getMask());
@@ -74,7 +74,7 @@ public class UdpSrcConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final UdpSrcValuesBuilder udpSrcValuesBuilder = new UdpSrcValuesBuilder()
                 .setMask(2)
                 .setPort(DEFAULT_PORT);

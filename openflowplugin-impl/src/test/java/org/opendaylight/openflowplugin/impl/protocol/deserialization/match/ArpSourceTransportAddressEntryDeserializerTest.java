@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class ArpSourceTransportAddressEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final Ipv4Prefix arpSourceTransportAddress = new Ipv4Prefix("192.168.0.0/24");
         final Ipv4Prefix arpSourceTransportAddressNoMask = new Ipv4Prefix("192.168.0.0/32");

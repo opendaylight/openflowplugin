@@ -48,7 +48,7 @@ public class NsiConvertorTest {
     private static final Short NSI_VALUE = (short) 255;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNsi nxmNxNsi = new NxmNxNsiBuilder().setNsi(NSI_VALUE).build();
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsi(nxmNxNsi)

@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class DecNwTtlActionDeserializerTest extends AbstractActionDeserializerTest {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         writeHeader(in);
         in.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);

@@ -44,7 +44,7 @@ public class ConnectionContextImplTest {
     private ConnectionContextImpl connectionContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(connetionAdapter.getRemoteAddress())
                 .thenReturn(InetSocketAddress.createUnresolved("ofp-ut.example.org", 4242));
         Mockito.when(connetionAdapter.isAlive()).thenReturn(true);
@@ -59,7 +59,7 @@ public class ConnectionContextImplTest {
     }
 
     @Test
-    public void testCloseConnection1() throws Exception {
+    public void testCloseConnection1() {
         connectionContext.closeConnection(true);
         Mockito.verify(outboundQueueRegistration).close();
         Mockito.verify(handshakeContext).close();
@@ -70,7 +70,7 @@ public class ConnectionContextImplTest {
     }
 
     @Test
-    public void testCloseConnection2() throws Exception {
+    public void testCloseConnection2() {
         connectionContext.closeConnection(false);
         Mockito.verify(outboundQueueRegistration).close();
         Mockito.verify(handshakeContext).close();
@@ -81,7 +81,7 @@ public class ConnectionContextImplTest {
     }
 
     @Test
-    public void testOnConnectionClosed() throws Exception {
+    public void testOnConnectionClosed() {
         connectionContext.onConnectionClosed();
         Assert.assertEquals(ConnectionContext.CONNECTION_STATE.RIP, connectionContext.getConnectionState());
         Mockito.verify(outboundQueueRegistration).close();
@@ -91,19 +91,19 @@ public class ConnectionContextImplTest {
     }
 
     @Test
-    public void testChangeStateToHandshaking() throws Exception {
+    public void testChangeStateToHandshaking() {
         connectionContext.changeStateToHandshaking();
         Assert.assertEquals(ConnectionContext.CONNECTION_STATE.HANDSHAKING, connectionContext.getConnectionState());
     }
 
     @Test
-    public void testChangeStateToTimeouting() throws Exception {
+    public void testChangeStateToTimeouting() {
         connectionContext.changeStateToTimeouting();
         Assert.assertEquals(ConnectionContext.CONNECTION_STATE.TIMEOUTING, connectionContext.getConnectionState());
     }
 
     @Test
-    public void testChangeStateToWorking() throws Exception {
+    public void testChangeStateToWorking() {
         connectionContext.changeStateToWorking();
         Assert.assertEquals(ConnectionContext.CONNECTION_STATE.WORKING, connectionContext.getConnectionState());
     }

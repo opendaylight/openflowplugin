@@ -56,7 +56,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testSendExperimenter() throws Exception {
+    public void testSendExperimenter() {
         SendExperimenterInput sendExperimenterInput = buildSendExperimenterInput();
         salExperimenterMessageService.sendExperimenter(sendExperimenterInput);
         verify(mockedRequestContextStack).createRequestContext();

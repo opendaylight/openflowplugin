@@ -62,7 +62,7 @@ public class FlowMessageDeserializerTest extends AbstractDeserializerTest {
     }
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         // Flow header
         buffer.writeByte(TYPE);
         buffer.writeShort(EncodeConstants.EMPTY_LENGTH);

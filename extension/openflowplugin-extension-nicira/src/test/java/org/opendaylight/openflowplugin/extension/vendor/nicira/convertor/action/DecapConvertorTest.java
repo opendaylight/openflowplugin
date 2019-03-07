@@ -43,7 +43,7 @@ public class DecapConvertorTest {
     private DecapConvertor decapConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxDecap nxDecap = Mockito.mock(NxDecap.class);
         when(nxDecap.getPacketType()).thenReturn(PACKET_TYPE);
         when(actionsCase.getNxDecap()).thenReturn(nxDecap);

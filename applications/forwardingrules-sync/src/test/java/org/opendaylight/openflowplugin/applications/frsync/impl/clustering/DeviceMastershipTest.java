@@ -33,7 +33,7 @@ public class DeviceMastershipTest {
     private ReconciliationRegistry reconciliationRegistry;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceMastership = new DeviceMastership(NODE_ID, reconciliationRegistry,
                 Mockito.mock(ClusterSingletonServiceProvider.class));
     }

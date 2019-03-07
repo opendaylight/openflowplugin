@@ -93,7 +93,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
     }
 
     @Test
-    public void testBuildRequest() throws Exception {
+    public void testBuildRequest() {
         Xid xid = new Xid(42L);
         GetFlowTablesStatisticsInputBuilder input = new GetFlowTablesStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));

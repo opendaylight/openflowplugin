@@ -38,7 +38,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
     private PortDirectStatisticsService service;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         service = new PortDirectStatisticsService(requestContextStack,
                                                   deviceContext,
                                                   convertorManager,
@@ -46,7 +46,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
     }
 
     @Override
-    public void testBuildRequestBody() throws Exception {
+    public void testBuildRequestBody() {
         final GetNodeConnectorStatisticsInput input = mock(GetNodeConnectorStatisticsInput.class);
 
         lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
@@ -62,7 +62,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
     }
 
     @Override
-    public void testBuildReply() throws Exception {
+    public void testBuildReply() {
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyPortStatsCase nodeConnectorCase = mock(MultipartReplyPortStatsCase.class);
         final MultipartReplyPortStats nodeConnector = mock(MultipartReplyPortStats.class);
@@ -97,7 +97,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
     }
 
     @Override
-    public void testStoreStatistics() throws Exception {
+    public void testStoreStatistics() {
         final NodeConnectorStatisticsAndPortNumberMap stat = mock(NodeConnectorStatisticsAndPortNumberMap.class);
         when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
 

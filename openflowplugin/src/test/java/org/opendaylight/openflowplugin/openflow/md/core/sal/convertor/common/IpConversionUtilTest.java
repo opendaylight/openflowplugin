@@ -57,7 +57,7 @@ public class IpConversionUtilTest {
     }
 
     @Test
-    public void testCountBitsAsCIDRReplacement() throws Exception {
+    public void testCountBitsAsCIDRReplacement() {
         BigInteger maskSeed = new BigInteger("1ffffffffffffffffffffffffffffffff", 16);
         byte[] maskArray = new byte[16];
         LOG.debug("maskSeed= {}", ByteBufUtils.bytesToHexString(maskSeed.toByteArray()));

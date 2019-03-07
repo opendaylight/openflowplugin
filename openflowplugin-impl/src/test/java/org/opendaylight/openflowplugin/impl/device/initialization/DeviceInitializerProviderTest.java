@@ -26,12 +26,12 @@ public class DeviceInitializerProviderTest {
     private DeviceInitializerProvider provider;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         provider = new DeviceInitializerProvider();
     }
 
     @Test
-    public void register() throws Exception {
+    public void register() {
         provider.register(OFConstants.OFP_VERSION_1_3, abstractDeviceInitializer);
         final Optional<AbstractDeviceInitializer> lookup = provider.lookup(OFConstants.OFP_VERSION_1_3);
         assertTrue(lookup.isPresent());
@@ -39,7 +39,7 @@ public class DeviceInitializerProviderTest {
     }
 
     @Test
-    public void lookup() throws Exception {
+    public void lookup() {
         assertFalse(provider.lookup(OFConstants.OFP_VERSION_1_0).isPresent());
     }
 

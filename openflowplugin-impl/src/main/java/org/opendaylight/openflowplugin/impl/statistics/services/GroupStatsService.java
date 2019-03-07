@@ -13,7 +13,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.GroupStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -45,7 +44,7 @@ final class GroupStatsService extends AbstractCompatibleStatService<GetGroupStat
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetGroupStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetGroupStatisticsInput input) {
         final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
         mprGroupBuild.setGroupId(new GroupId(input.getGroupId().getValue()));

@@ -48,7 +48,7 @@ public class ResubmitConvertorTest {
     private ResubmitConvertor resubmitConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxResubmit nxResubmit = Mockito.mock(NxResubmit.class);
         when(actionsCase.getNxResubmit()).thenReturn(nxResubmit);
         when(nxResubmit.getInPort()).thenReturn(1);
@@ -65,14 +65,14 @@ public class ResubmitConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ActionResubmit actionResubmit = (ActionResubmit) resubmitConvertor.convert(actionsCase).getActionChoice();
         Assert.assertEquals(1, actionResubmit.getNxActionResubmit().getInPort().intValue());
         Assert.assertEquals(2, actionResubmit.getNxActionResubmit().getTable().intValue());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = resubmitConvertor.convert(action, ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult1

@@ -19,7 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 public class VlanPcpEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final short vlanPcp = 7;
 

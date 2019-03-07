@@ -197,7 +197,7 @@ public class TcpHandlerTest {
         assertEquals("shutdown failed", true, shutdownRet.get());
     }
 
-    private Boolean startupServer(boolean isEpollEnabled) throws InterruptedException, IOException, ExecutionException {
+    private Boolean startupServer(boolean isEpollEnabled) throws InterruptedException {
         ListenableFuture<Boolean> online = tcpHandler.getIsOnlineFuture();
         /**
          * Test EPoll based native transport if isEpollEnabled is true.

@@ -15,7 +15,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -52,7 +51,7 @@ final class GroupDescriptionService
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetGroupDescriptionInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetGroupDescriptionInput input) {
         final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
                 MultipartType.OFPMPGROUPDESC, xid.getValue(), getVersion());
         mprInput.setMultipartRequestBody(GROUP_DESC_CASE);

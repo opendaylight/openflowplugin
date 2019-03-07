@@ -49,7 +49,7 @@ public class TcpSrcConvertorTest {
     private TcpSrcConvertor tcpSrcConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmOfTcpSrcBuilder nxmOfTcpSrcBuilder = new NxmOfTcpSrcBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
@@ -65,7 +65,7 @@ public class TcpSrcConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = tcpSrcConvertor.convert(extension);
         Assert.assertEquals(1,
                 ((TcpSrcCaseValue) converted.getMatchEntryValue()).getTcpSrcValues().getMask().intValue());
@@ -74,7 +74,7 @@ public class TcpSrcConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final TcpSrcValuesBuilder tcpSrcValuesBuilder = new TcpSrcValuesBuilder()
                 .setMask(2)
                 .setPort(DEFAULT_PORT);

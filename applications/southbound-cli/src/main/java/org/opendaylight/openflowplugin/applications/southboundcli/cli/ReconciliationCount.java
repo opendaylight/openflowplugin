@@ -27,7 +27,7 @@ public class ReconciliationCount extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         List<ReconcileCounter> result = ShellUtil.getReconcileCount(dataBroker);
         if (result.isEmpty()) {
             session.getConsole().println("Reconciliation count not yet available for openflow nodes.");

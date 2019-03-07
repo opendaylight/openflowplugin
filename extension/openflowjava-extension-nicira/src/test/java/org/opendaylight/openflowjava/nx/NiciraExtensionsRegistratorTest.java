@@ -544,7 +544,7 @@ public class NiciraExtensionsRegistratorTest {
     }
 
     @Test
-    public void unregisterExtensionsTest() throws Exception {
+    public void unregisterExtensionsTest() {
         niciraExtensionsRegistrator.close();
 
         Mockito.verify(registrator)

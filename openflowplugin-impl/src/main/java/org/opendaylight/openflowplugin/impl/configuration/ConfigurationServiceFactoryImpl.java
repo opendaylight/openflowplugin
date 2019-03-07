@@ -134,7 +134,7 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             propertyMap.clear();
             listeners.clear();
         }

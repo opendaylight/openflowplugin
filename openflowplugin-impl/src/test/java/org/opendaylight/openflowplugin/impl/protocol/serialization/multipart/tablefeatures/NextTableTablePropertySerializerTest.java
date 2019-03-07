@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 public class NextTableTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final short tableId = 42;
         final NextTable property = new NextTableBuilder()
                 .setTables(new TablesBuilder()

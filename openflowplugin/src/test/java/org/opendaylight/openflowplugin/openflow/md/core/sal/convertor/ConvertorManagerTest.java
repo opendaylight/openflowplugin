@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 @RunWith(MockitoJUnitRunner.class)
 public class ConvertorManagerTest {
     @Test
-    public void testRegisterConvertor() throws Exception {
+    public void testRegisterConvertor() {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<Action, String, VersionConvertorData>() {
                     @Override
@@ -50,7 +50,7 @@ public class ConvertorManagerTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<Action, String, VersionConvertorData>() {
                     @Override
@@ -77,7 +77,7 @@ public class ConvertorManagerTest {
      * Test for {@link ConvertorManager#convert(Collection, ConvertorData)}.
      */
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final ConvertorManager convertorManager = new ConvertorManager(OFConstants.OFP_VERSION_1_3)
             .registerConvertor(OFConstants.OFP_VERSION_1_3,
                 new Convertor<List<Action>, String, VersionConvertorData>() {

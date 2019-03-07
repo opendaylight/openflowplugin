@@ -16,7 +16,6 @@ import java.lang.management.ManagementFactory;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,7 +25,6 @@ import org.opendaylight.mdsal.eos.binding.api.Entity;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
 import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
-import org.opendaylight.openflowplugin.libraries.liblldp.BufferException;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDP;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV;
@@ -146,8 +144,7 @@ public final class LLDPDiscoveryUtils {
      * @param nodeConnectorId the NodeConnectorId
      * @return extra authenticator for lldp security
      */
-    public static byte[] getValueForLLDPPacketIntegrityEnsuring(final NodeConnectorId nodeConnectorId)
-            throws NoSuchAlgorithmException {
+    public static byte[] getValueForLLDPPacketIntegrityEnsuring(final NodeConnectorId nodeConnectorId) {
         String finalKey;
         if (LLDPActivator.getLldpSecureKey() != null && !LLDPActivator.getLldpSecureKey().isEmpty()) {
             finalKey = LLDPActivator.getLldpSecureKey();
@@ -163,8 +160,7 @@ public final class LLDPDiscoveryUtils {
         return hashedValue.asBytes();
     }
 
-    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId)
-            throws NoSuchAlgorithmException, BufferException {
+    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId) {
         final LLDPTLV hashLldptlv = lldp.getCustomTLV(LLDPTLV.createSecSubTypeCustomTLVKey());
         boolean secAuthenticatorOk = false;
         if (hashLldptlv != null) {

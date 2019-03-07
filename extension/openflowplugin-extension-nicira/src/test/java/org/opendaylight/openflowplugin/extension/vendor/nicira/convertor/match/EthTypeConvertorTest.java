@@ -47,7 +47,7 @@ public class EthTypeConvertorTest {
     private EthTypeConvertor ethTypeConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final NxmOfEthTypeBuilder nxmOfEthTypeBuilder = new NxmOfEthTypeBuilder()
                 .setValue(1);
@@ -64,14 +64,14 @@ public class EthTypeConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = ethTypeConvertor.convert(extension);
         Assert.assertEquals(1, ((EthTypeCaseValue)converted.getMatchEntryValue())
                 .getEthTypeValues().getValue().intValue());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final EthTypeValuesBuilder ethTypeValuesBuilder = new EthTypeValuesBuilder()
                 .setValue(Integer.valueOf(1));
         final EthTypeCaseValueBuilder ethTypeCaseValueBuilder = new EthTypeCaseValueBuilder()

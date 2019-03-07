@@ -64,14 +64,14 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
     }
 
     @Test
-    public void testGetPortNoFromPacketIn() throws Exception {
+    public void testGetPortNoFromPacketIn() {
         PacketIn packetIn = createPacketIn(PORT_NO);
         Long portNo = NodeConnectorRefToPortTranslator.getPortNoFromPacketIn(packetIn);
         assertEquals(portNo, PORT_NO);
     }
 
     @Test
-    public void testNodeConnectorConversion() throws Exception {
+    public void testNodeConnectorConversion() {
         // Mock the packet in message
         PacketIn packetIn = createPacketIn(PORT_NO);
 

@@ -49,7 +49,7 @@ public class GroupUtilTest {
             0b00000000000000000000000000000000000001111111111111001100000000001L;
 
     @Test
-    public void testBuildGroupPath() throws Exception {
+    public void testBuildGroupPath() {
         final InstanceIdentifier<Node> nodePath = InstanceIdentifier
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
@@ -61,7 +61,7 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testCreateCumulatingFunction() throws Exception {
+    public void testCreateCumulatingFunction() {
         final Function<List<RpcResult<String>>, RpcResult<List<BatchFailedGroupsOutput>>> function =
                 GroupUtil.createCumulatingFunction(Lists.newArrayList(createBatchGroup(DUMMY_GROUP_ID),
                         createBatchGroup(DUMMY_GROUP_ID_2)));
@@ -84,37 +84,37 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testGroupAddTransformFailure() throws Exception {
+    public void testGroupAddTransformFailure() {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(GroupUtil.GROUP_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testGroupAddTransformFailureSuccess() throws Exception {
+    public void testGroupAddTransformFailureSuccess() {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_ADD_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testGroupRemoveTransformFailure() throws Exception {
+    public void testGroupRemoveTransformFailure() {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(GroupUtil.GROUP_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowRemoveTransformSuccess() throws Exception {
+    public void testFlowRemoveTransformSuccess() {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_REMOVE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowUpdateTransformFailure() throws Exception {
+    public void testFlowUpdateTransformFailure() {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createBatchOutcomeWithError();
         checkBatchErrorOutcomeTransformation(GroupUtil.GROUP_UPDATE_TRANSFORM.apply(input));
     }
 
     @Test
-    public void testFlowUpdateTransformSuccess() throws Exception {
+    public void testFlowUpdateTransformSuccess() {
         final RpcResult<List<BatchFailedGroupsOutput>> input = createEmptyBatchOutcome();
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_UPDATE_TRANSFORM.apply(input));
     }
@@ -151,7 +151,7 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_success_success() throws Exception {
+    public void testCreateComposingFunction_success_success() {
         final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
@@ -167,7 +167,7 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_failure_success() throws Exception {
+    public void testCreateComposingFunction_failure_success() {
         final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
@@ -183,7 +183,7 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_success_failure() throws Exception {
+    public void testCreateComposingFunction_success_failure() {
         final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 
@@ -199,7 +199,7 @@ public class GroupUtilTest {
     }
 
     @Test
-    public void testCreateComposingFunction_failure_failure() throws Exception {
+    public void testCreateComposingFunction_failure_failure() {
         final Function<Pair<RpcResult<AddGroupsBatchOutput>, RpcResult<SendBarrierOutput>>,
                 RpcResult<AddGroupsBatchOutput>> compositeFunction = GroupUtil.createComposingFunction();
 

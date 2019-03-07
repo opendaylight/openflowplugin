@@ -19,7 +19,7 @@ import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 public class ShowStatsCommandProvider extends OsgiCommandSupport {
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         final MessageIntelligenceAgency messageIntelligenceAgency =
                 OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();

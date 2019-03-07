@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class ClearActionsInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Instruction instruction = new ClearActionsCaseBuilder()
                 .setClearActions(new ClearActionsBuilder()
                         .build())

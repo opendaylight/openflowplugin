@@ -53,7 +53,7 @@ public class FlatBatchGroupAdaptersTest {
     private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Test
-    public void testAdaptFlatBatchAddGroup() throws Exception {
+    public void testAdaptFlatBatchAddGroup() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -93,7 +93,7 @@ public class FlatBatchGroupAdaptersTest {
     }
 
     @Test
-    public void testAdaptFlatBatchRemoveGroup() throws Exception {
+    public void testAdaptFlatBatchRemoveGroup() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -112,7 +112,7 @@ public class FlatBatchGroupAdaptersTest {
     }
 
     @Test
-    public void testAdaptFlatBatchUpdateGroup() throws Exception {
+    public void testAdaptFlatBatchUpdateGroup() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
@@ -131,7 +131,7 @@ public class FlatBatchGroupAdaptersTest {
     }
 
     @Test
-    public void testCreateBatchGroupChainingFunction_failures() throws Exception {
+    public void testCreateBatchGroupChainingFunction_failures() {
         final RpcResult<BatchGroupOutputListGrouping> input = RpcResultBuilder.<BatchGroupOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-groupError")
                 .withResult(new AddGroupsBatchOutputBuilder()
@@ -155,7 +155,7 @@ public class FlatBatchGroupAdaptersTest {
     }
 
     @Test
-    public void testCreateBatchGroupChainingFunction_successes() throws Exception {
+    public void testCreateBatchGroupChainingFunction_successes() {
         final RpcResult<BatchGroupOutputListGrouping> input = RpcResultBuilder
                 .<BatchGroupOutputListGrouping>success(new AddGroupsBatchOutputBuilder().build())
                 .build();

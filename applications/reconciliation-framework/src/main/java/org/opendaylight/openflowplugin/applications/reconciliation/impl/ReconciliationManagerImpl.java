@@ -99,7 +99,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
 
     @Override
     @PreDestroy
-    public void close() throws Exception {
+    public void close() {
     }
 
     @Override

@@ -33,7 +33,7 @@ public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void sendExperimenterMpRequest() throws Exception {
+    public void sendExperimenterMpRequest() {
         final SendExperimenterMpRequestInput data = new SendExperimenterMpRequestInputBuilder()
                 .setExperimenterMessageOfChoice(mockExperimenter())
                 .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))

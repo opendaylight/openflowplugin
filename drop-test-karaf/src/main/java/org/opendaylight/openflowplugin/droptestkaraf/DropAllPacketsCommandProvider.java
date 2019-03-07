@@ -25,7 +25,7 @@ public class DropAllPacketsCommandProvider extends OsgiCommandSupport {
 
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         PrintStream out = session.getConsole();
         final DropTestDsProvider provider = DropTestProviderImpl.getDropDsProvider();
 

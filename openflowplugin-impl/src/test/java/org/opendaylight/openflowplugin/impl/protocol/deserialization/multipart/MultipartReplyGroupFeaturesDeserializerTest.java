@@ -41,7 +41,7 @@ public class MultipartReplyGroupFeaturesDeserializerTest extends AbstractMultipa
             GroupCapabilities.ChainingChecks);
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
 
         int bitMaskGroups = ByteBufUtils.fillBitMask(0,
                 GROUP_TYPES_SUPPORTED.contains(GroupTypes.GroupAll),

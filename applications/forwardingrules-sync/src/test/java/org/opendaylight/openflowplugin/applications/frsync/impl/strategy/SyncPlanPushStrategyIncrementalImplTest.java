@@ -175,7 +175,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(flowCapableTxService.sendBarrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success((SendBarrierOutput) null).buildFuture());
 

@@ -29,8 +29,7 @@ public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<Version
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public void channelRead0(final ChannelHandlerContext ctx, final VersionMessageUdpWrapper msg)
-            throws Exception {
+    public void channelRead0(final ChannelHandlerContext ctx, final VersionMessageUdpWrapper msg) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("UdpVersionMessageWrapper received: {}", ByteBufUtils.byteBufToHexString(msg.getMessageBuffer()));
         }

@@ -49,7 +49,7 @@ public class TcpDstConvertorTest {
     private TcpDstConvertor tcpDstConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmOfTcpDstBuilder nxmOfTcpDstBuilder = new NxmOfTcpDstBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
@@ -65,7 +65,7 @@ public class TcpDstConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = tcpDstConvertor.convert(extension);
         Assert.assertEquals(1,
                 ((TcpDstCaseValue) converted.getMatchEntryValue()).getTcpDstValues().getMask().intValue());
@@ -74,7 +74,7 @@ public class TcpDstConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final TcpDstValuesBuilder tcpDstValuesBuilder = new TcpDstValuesBuilder()
                 .setMask(2)
                 .setPort(DEFAULT_PORT);

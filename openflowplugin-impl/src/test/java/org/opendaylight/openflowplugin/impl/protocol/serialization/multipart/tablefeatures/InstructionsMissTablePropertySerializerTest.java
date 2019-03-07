@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 public class InstructionsMissTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final InstructionsMiss property = new InstructionsMissBuilder()
                 .setInstructionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight
                         .table.types.rev131026.table.feature.prop.type.table.feature.prop.type.instructions.miss

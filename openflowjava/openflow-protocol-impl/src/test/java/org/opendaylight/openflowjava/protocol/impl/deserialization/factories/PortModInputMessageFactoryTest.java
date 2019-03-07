@@ -32,7 +32,7 @@ public class PortModInputMessageFactoryTest {
     private OFDeserializer<PortModInput> factory;
 
     @Before
-    public void startUp() throws Exception {
+    public void startUp() {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
@@ -40,7 +40,7 @@ public class PortModInputMessageFactoryTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         ByteBuf bb = BufferHelper.buildBuffer(
                 "00 00 00 09 00 00 00 00 08 00 27 00 " + "b0 eb 00 00 00 00 00 24 00 00 00 41 00 00 01 10 00 00 00 00");
         PortModInput deserializedMessage = BufferHelper.deserialize(factory, bb);

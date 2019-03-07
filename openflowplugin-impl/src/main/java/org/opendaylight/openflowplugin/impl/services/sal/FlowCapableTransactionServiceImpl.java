@@ -12,7 +12,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
@@ -33,7 +32,7 @@ public class FlowCapableTransactionServiceImpl extends AbstractSimpleService<Sen
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final SendBarrierInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final SendBarrierInput input) {
         final BarrierInputBuilder barrierInputOFJavaBuilder = new BarrierInputBuilder();
         barrierInputOFJavaBuilder.setVersion(getVersion());
         barrierInputOFJavaBuilder.setXid(xid.getValue());

@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary
 public class Ipv6ArbitraryBitMaskDestinationEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Ipv6Address ipv6Address = new Ipv6Address("aaaa:bbbb:1111:2222::");
         final Ipv6ArbitraryMask ipv6mask = new Ipv6ArbitraryMask("ffff:ffff:ffff:ffff::");
 

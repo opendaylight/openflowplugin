@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class PacketTypeEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void serializeTest() throws Exception {
+    public void serializeTest() {
         final long packetType = 0x1894f;
 
         PacketTypeMatch packetTypeMatch = new PacketTypeMatchBuilder().setPacketType(packetType).build();

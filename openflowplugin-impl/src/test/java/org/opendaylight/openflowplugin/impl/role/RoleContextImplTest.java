@@ -54,7 +54,7 @@ public class RoleContextImplTest {
     private RoleContext roleContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DeviceStateUtil
                 .createNodeInstanceIdentifier(new NodeId("openflow:1")));
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
@@ -66,12 +66,12 @@ public class RoleContextImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         roleContext.close();
     }
 
     @Test
-    public void instantiateServiceInstance() throws Exception {
+    public void instantiateServiceInstance() {
         roleContext.instantiateServiceInstance();
         verify(roleService).setRole(new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMEMASTER)

@@ -36,13 +36,13 @@ public class MessageDeserializerInjectorTest {
             injector;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         injector = MessageDeserializerInjector.createInjector(switchConnectionProvider, EncodeConstants
                 .OF13_VERSION_ID);
     }
 
     @Test
-    public void injectDeserializers() throws Exception {
+    public void injectDeserializers() {
         injector.apply(10).apply(OfHeader.class).accept(ofDeserializer);
         verify(switchConnectionProvider).unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants
                 .OF13_VERSION_ID, 10));

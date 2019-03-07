@@ -31,7 +31,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
                 .weakValues()
                 .build(new CacheLoader<K, Semaphore>() {
                     @Override
-                    public Semaphore load(final K key) throws Exception {
+                    public Semaphore load(final K key) {
                         return new Semaphore(permits, fair);
                     }
                 });

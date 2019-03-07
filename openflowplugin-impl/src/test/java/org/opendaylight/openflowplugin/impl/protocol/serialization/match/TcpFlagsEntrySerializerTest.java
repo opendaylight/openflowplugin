@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class TcpFlagsEntrySerializerTest extends AbstractExperimenterMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final int tcp = 8;
         final byte[] tcpMask = new byte[] { 30, 30 };
 

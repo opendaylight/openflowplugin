@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary
 public class AddressNormalizationUtilTest {
 
     @Test
-    public void normalizeProtocolAgnosticPortOF10() throws Exception {
+    public void normalizeProtocolAgnosticPortOF10() {
         final Uri left = new Uri("openflow:1:INPORT");
         final Uri right = new Uri("IN_PORT");
 
@@ -35,7 +35,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeProtocolAgnosticPortOF13() throws Exception {
+    public void normalizeProtocolAgnosticPortOF13() {
         final Uri left = new Uri("openflow:1:ANY");
         final Uri right = new Uri("ANY");
 
@@ -46,7 +46,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeIpv6Prefix() throws Exception {
+    public void normalizeIpv6Prefix() {
         final Ipv6Prefix left = new Ipv6Prefix("1E3D:5678:9ABC::/24");
         final Ipv6Prefix right = new Ipv6Prefix("1e3d:5600:0:0:0:0:0:0/24");
 
@@ -57,7 +57,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeIpv6Arbitrary() throws Exception {
+    public void normalizeIpv6Arbitrary() {
         final Ipv6Address leftAddress = new Ipv6Address("1E3D:5678:9ABC::");
         final Ipv6ArbitraryMask leftMask = new Ipv6ArbitraryMask("FFFF:FF00::");
         final Ipv6Prefix right = new Ipv6Prefix("1e3d:5600:0:0:0:0:0:0/24");
@@ -69,7 +69,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeIpv6AddressWithoutMask() throws Exception {
+    public void normalizeIpv6AddressWithoutMask() {
         final Ipv6Address left = new Ipv6Address("1E3D:5678:9ABC::");
         final Ipv6Address right = new Ipv6Address("1e3d:5678:9abc:0:0:0:0:0");
 
@@ -80,7 +80,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeIpv4Prefix() throws Exception {
+    public void normalizeIpv4Prefix() {
         final Ipv4Prefix left = new Ipv4Prefix("192.168.72.1/16");
         final Ipv4Prefix right = new Ipv4Prefix("192.168.0.0/16");
 
@@ -91,7 +91,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeIpv4Arbitrary() throws Exception {
+    public void normalizeIpv4Arbitrary() {
         final Ipv4Address leftAddress = new Ipv4Address("192.168.72.1");
         final DottedQuad leftMask = new DottedQuad("255.255.0.0");
         final Ipv4Prefix right = new Ipv4Prefix("192.168.0.0/16");
@@ -103,7 +103,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeMacAddress() throws Exception {
+    public void normalizeMacAddress() {
         final MacAddress left = new MacAddress("01:23:45:AB:CD:EF");
         final MacAddress right = new MacAddress("01:23:45:ab:cd:ef");
 
@@ -114,7 +114,7 @@ public class AddressNormalizationUtilTest {
     }
 
     @Test
-    public void normalizeMacAddressMask() throws Exception {
+    public void normalizeMacAddressMask() {
         final MacAddress left = new MacAddress("FF:FF:FF:FF:FF:FF");
         final MacAddress right = null;
 

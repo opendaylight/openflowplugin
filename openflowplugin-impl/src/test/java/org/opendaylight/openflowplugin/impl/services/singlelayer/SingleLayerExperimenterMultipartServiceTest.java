@@ -28,14 +28,14 @@ public class SingleLayerExperimenterMultipartServiceTest extends ServiceMocking 
     private SingleLayerExperimenterMultipartService service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerExperimenterMultipartService(
                 mockedRequestContextStack, mockedDeviceContext,
                 mockedExtensionConverterProvider);
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final SendExperimenterMpRequestInput input = new SendExperimenterMpRequestInputBuilder()
                 .setExperimenterMessageOfChoice(mockExperimenter())
                 .build();

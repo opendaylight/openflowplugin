@@ -70,7 +70,7 @@ public class FlowModInputMessageFactoryTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         ByteBuf bb = BufferHelper.buildBuffer(
             "ff 01 04 01 06 00 07 01 ff 05 00 00 09 30 00 30 41 02 00 0c 00 00 00 7e 00 "
             + "00 00 02 00 00 11 46 00 00 00 62 00 0b 00 00 00 01 00 11 80 00 02 04 00 00 00 2a 80 00 12 01 04 00 "

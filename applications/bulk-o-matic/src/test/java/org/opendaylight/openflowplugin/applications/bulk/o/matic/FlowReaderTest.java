@@ -40,7 +40,7 @@ public class FlowReaderTest {
     private FlowReader flowReader;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(node))).when(readOnlyTransaction)
             .read(any(LogicalDatastoreType.class), any());
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
@@ -48,7 +48,7 @@ public class FlowReaderTest {
     }
 
     @Test
-    public void testRun() throws Exception {
+    public void testRun() {
         flowReader.run();
         Assert.assertEquals(10, flowReader.getFlowCount());
         Assert.assertEquals(FlowCounter.OperationStatus.SUCCESS.status(), flowReader.getReadOpStatus());

@@ -35,7 +35,7 @@ public class MultipartReplyMeterFeaturesDeserializerTest extends AbstractMultipa
     private static final byte MAX_COLOR = 48;
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeInt(MAX_METER);
 

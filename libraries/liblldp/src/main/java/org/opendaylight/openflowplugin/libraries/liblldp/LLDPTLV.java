@@ -380,11 +380,11 @@ public class LLDPTLV extends Packet {
         return BitBufferHelper.getByte(ArrayUtils.subarray(value, 3, 4));
     }
 
-    public static CustomTLVKey createPortSubTypeCustomTLVKey() throws BufferException {
+    public static CustomTLVKey createPortSubTypeCustomTLVKey() {
         return new CustomTLVKey(BitBufferHelper.getInt(OFOUI), CUSTOM_TLV_SUB_TYPE_NODE_CONNECTOR_ID[0]);
     }
 
-    public static CustomTLVKey createSecSubTypeCustomTLVKey() throws BufferException {
+    public static CustomTLVKey createSecSubTypeCustomTLVKey() {
         return new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC[0]);
     }
 }

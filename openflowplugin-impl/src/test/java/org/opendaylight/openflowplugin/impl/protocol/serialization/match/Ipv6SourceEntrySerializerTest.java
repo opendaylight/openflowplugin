@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Ipv6SourceEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Ipv6Prefix ipv6Address = new Ipv6Prefix("2001:db8::/32");
 
         final Match ipv6abmMatch = new MatchBuilder()
@@ -46,7 +46,7 @@ public class Ipv6SourceEntrySerializerTest extends AbstractMatchEntrySerializerT
     }
 
     @Test
-    public void testSerializeWithoutMask() throws Exception {
+    public void testSerializeWithoutMask() {
         final Ipv6Prefix ipv6Address = new Ipv6Prefix("2001:db8::123/128");
 
         final Match ipv6abmMatch = new MatchBuilder()

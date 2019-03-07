@@ -26,7 +26,7 @@ public class MultipartReplyDescDeserializerTest extends AbstractMultipartDeseria
     private static final String DESCRIPTION = "Description";
 
     @Test
-    public void deserialize() throws Exception {
+    public void deserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeBytes(MANUFACTURER.getBytes());
         buffer.writeZero(DESC_STR_LEN - MANUFACTURER.length());

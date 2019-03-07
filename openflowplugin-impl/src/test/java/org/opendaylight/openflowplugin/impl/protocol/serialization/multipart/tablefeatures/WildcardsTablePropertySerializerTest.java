@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 public class WildcardsTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Wildcards property = new WildcardsBuilder()
                 .setWildcardSetfield(new WildcardSetfieldBuilder()
                         .setSetFieldMatch(ImmutableList

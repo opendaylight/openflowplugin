@@ -29,7 +29,7 @@ public class MultipartReplyGroupStatsDeserializerTest extends AbstractMultipartD
     private static final long BYTE_COUNT = 2L;
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeShort(ITEM_LENGTH);
         buffer.writeZero(PADDING_IN_GROUP_HEADER_01);

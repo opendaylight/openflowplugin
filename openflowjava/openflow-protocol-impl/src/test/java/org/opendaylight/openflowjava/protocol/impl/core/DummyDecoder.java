@@ -26,7 +26,7 @@ public class DummyDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in,
-            List<Object> out) throws Exception {
+            List<Object> out) {
         LOG.debug("decoding");
         ctx.fireChannelReadComplete();
     }

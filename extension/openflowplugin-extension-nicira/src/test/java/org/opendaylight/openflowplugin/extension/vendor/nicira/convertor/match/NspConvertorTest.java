@@ -48,7 +48,7 @@ public class NspConvertorTest {
     private static final Long NSP_VALUE = 0xFFL;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         NxmNxNsp nxmNxNsp = new NxmNxNspBuilder().setValue(NSP_VALUE).build();
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsp(nxmNxNsp)

@@ -52,7 +52,7 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.warn("Unexpected exception from downstream.", cause);
         LOG.warn("Closing connection.");
         ctx.close();
@@ -60,7 +60,7 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket msg,
-           List<Object> out) throws Exception {
+           List<Object> out) {
         LOG.debug("OFDatagramPacketFramer");
         MessageConsumer consumer = UdpConnectionMap.getMessageConsumer(msg.sender());
         if (consumer == null) {

@@ -35,7 +35,7 @@ public class GetRegisteredServices extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         LOG.debug("Executing getRegisteredServices to Reconciliation Framework command");
         if (reconciliationManager.getRegisteredServices().isEmpty()) {
             session.getConsole().println("No Services have registered to Reconciliation Framework");

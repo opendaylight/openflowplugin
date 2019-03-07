@@ -47,7 +47,7 @@ public class FlowWriterTxChainTest {
     private FlowWriterTxChain flowWriterTxChain;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();
@@ -65,7 +65,7 @@ public class FlowWriterTxChainTest {
     }
 
     @Test
-    public void testAddFlows() throws Exception {
+    public void testAddFlows() {
         flowWriterTxChain.addFlows(1, FLOWS_PER_DPN, 10, 10, 10, (short) 0, (short) 1, true);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any(),
@@ -73,7 +73,7 @@ public class FlowWriterTxChainTest {
     }
 
     @Test
-    public void testDeleteFlows() throws Exception {
+    public void testDeleteFlows() {
         flowWriterTxChain.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN))
                 .delete(ArgumentMatchers.any(),

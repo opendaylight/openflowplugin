@@ -20,7 +20,7 @@ public abstract class AbstractExperimenterMatchEntrySerializerTest extends Abstr
 
     protected void assertMatch(final Match match,
                                final boolean hasMask,
-                               final Consumer<ByteBuf> assertBody) throws Exception {
+                               final Consumer<ByteBuf> assertBody) {
         final ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         getSerializer().serialize(match, buffer);
 

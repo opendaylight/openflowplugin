@@ -32,12 +32,12 @@ public class MastershipServiceDelegateTest {
     private MastershipServiceDelegate mastershipServiceDelegate;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mastershipServiceDelegate = new MastershipServiceDelegate(mastershipChangeService, unregisterService);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(mastershipChangeService);
         verifyNoMoreInteractions(unregisterService);
     }
@@ -49,13 +49,13 @@ public class MastershipServiceDelegateTest {
     }
 
     @Test
-    public void onBecomeOwner() throws Exception {
+    public void onBecomeOwner() {
         mastershipServiceDelegate.onBecomeOwner(deviceInfo);
         verify(mastershipChangeService).onBecomeOwner(deviceInfo);
     }
 
     @Test
-    public void onLoseOwnership() throws Exception {
+    public void onLoseOwnership() {
         mastershipServiceDelegate.onLoseOwnership(deviceInfo);
         verify(mastershipChangeService).onLoseOwnership(deviceInfo);
     }

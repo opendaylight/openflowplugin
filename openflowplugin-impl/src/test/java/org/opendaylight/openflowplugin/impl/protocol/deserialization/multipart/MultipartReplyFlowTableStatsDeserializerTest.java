@@ -24,7 +24,7 @@ public class MultipartReplyFlowTableStatsDeserializerTest extends AbstractMultip
     private static final byte PADDING_IN_TABLE_HEADER = 3;
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         buffer.writeByte(TABLE_ID);
         buffer.writeZero(PADDING_IN_TABLE_HEADER);

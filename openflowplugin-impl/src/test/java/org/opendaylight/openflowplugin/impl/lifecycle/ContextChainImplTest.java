@@ -56,7 +56,7 @@ public class ContextChainImplTest {
     private ContextChain contextChain;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceInfo.getServiceIdentifier()).thenReturn(SERVICE_GROUP_IDENTIFIER);
         Mockito.when(deviceContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
@@ -75,7 +75,7 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void closeServiceInstance() throws Exception {
+    public void closeServiceInstance() {
         contextChain.closeServiceInstance();
         Mockito.verify(deviceContext).closeServiceInstance();
         Mockito.verify(rpcContext).closeServiceInstance();
@@ -83,7 +83,7 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void close() throws Exception {
+    public void close() {
         contextChain.registerDeviceRemovedHandler(deviceRemovedHandler);
         contextChain.close();
         Mockito.verify(statisticsContext).close();
@@ -93,7 +93,7 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void closeTwoTimes() throws Exception {
+    public void closeTwoTimes() {
         contextChain.registerDeviceRemovedHandler(deviceRemovedHandler);
         contextChain.close();
         contextChain.close();
@@ -102,7 +102,7 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void closeThreeTimes() throws Exception {
+    public void closeThreeTimes() {
         contextChain.registerDeviceRemovedHandler(deviceRemovedHandler);
         contextChain.close();
         contextChain.close();
@@ -111,12 +111,12 @@ public class ContextChainImplTest {
     }
 
     @Test
-    public void getIdentifier() throws Exception {
+    public void getIdentifier() {
         Assert.assertEquals(contextChain.getIdentifier(), SERVICE_GROUP_IDENTIFIER);
     }
 
     @Test
-    public void instantiateServiceInstanceFail() throws Exception {
+    public void instantiateServiceInstanceFail() {
         Mockito.doThrow(new IllegalStateException()).when(deviceContext).instantiateServiceInstance();
         contextChain.instantiateServiceInstance();
         Mockito.verify(contextChainMastershipWatcher)

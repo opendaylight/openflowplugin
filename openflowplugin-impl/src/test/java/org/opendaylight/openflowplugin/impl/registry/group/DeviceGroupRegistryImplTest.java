@@ -24,7 +24,7 @@ public class DeviceGroupRegistryImplTest {
     private DeviceGroupRegistryImpl deviceGroupRegistry;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deviceGroupRegistry = new DeviceGroupRegistryImpl();
         groupId = new GroupId(42L);
         groupId2 = new GroupId(84L);
@@ -34,27 +34,27 @@ public class DeviceGroupRegistryImplTest {
     }
 
     @Test
-    public void testStore() throws Exception {
+    public void testStore() {
         deviceGroupRegistry.store(groupId2);
         Assert.assertEquals(2, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test
-    public void testRemoveMarked() throws Exception {
+    public void testRemoveMarked() {
         deviceGroupRegistry.addMark(groupId);
         deviceGroupRegistry.processMarks();
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test
-    public void testRemoveMarkedNegative() throws Exception {
+    public void testRemoveMarkedNegative() {
         deviceGroupRegistry.addMark(groupId2);
         deviceGroupRegistry.processMarks();
         Assert.assertEquals(1, deviceGroupRegistry.getAllGroupIds().size());
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void testClose() {
         deviceGroupRegistry.addMark(groupId);
         deviceGroupRegistry.close();
 
@@ -67,7 +67,7 @@ public class DeviceGroupRegistryImplTest {
     }
 
     @Test
-    public void testForEach() throws Exception {
+    public void testForEach() {
         final AtomicInteger counter = new AtomicInteger(0);
         deviceGroupRegistry.store(groupId2);
         deviceGroupRegistry.forEach(group -> counter.incrementAndGet());

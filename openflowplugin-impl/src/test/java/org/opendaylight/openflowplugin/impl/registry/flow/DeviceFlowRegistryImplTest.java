@@ -72,7 +72,7 @@ public class DeviceFlowRegistryImplTest {
     private ReadTransaction readOnlyTransaction;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         nodeInstanceIdentifier =
                 InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
@@ -169,12 +169,12 @@ public class DeviceFlowRegistryImplTest {
     }
 
     @Test
-    public void testRetrieveIdForFlow() throws Exception {
+    public void testRetrieveIdForFlow() {
         Assert.assertEquals(descriptor, deviceFlowRegistry.retrieveDescriptor(key));
     }
 
     @Test
-    public void testStore() throws Exception {
+    public void testStore() {
         //store the same key with different value
         final FlowDescriptor descriptor2 = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:2"));
         deviceFlowRegistry.storeDescriptor(key, descriptor2);
@@ -190,7 +190,7 @@ public class DeviceFlowRegistryImplTest {
     }
 
     @Test
-    public void testStoreIfNecessary() throws Exception {
+    public void testStoreIfNecessary() {
         FlowId newFlowId;
 
         //store existing key
@@ -214,19 +214,19 @@ public class DeviceFlowRegistryImplTest {
     }
 
     @Test
-    public void testRemoveDescriptor() throws Exception {
+    public void testRemoveDescriptor() {
         deviceFlowRegistry.addMark(key);
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void testClose() {
         deviceFlowRegistry.close();
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
     @Test
-    public void createAlienFlowIdTest() throws Exception {
+    public void createAlienFlowIdTest() {
         final String alienFlowId1 = DeviceFlowRegistryImpl.createAlienFlowId(DUMMY_TABLE_ID).getValue();
         final Integer index1 = parseIndex(alienFlowId1);
         final String alienFlowId2 = DeviceFlowRegistryImpl.createAlienFlowId(DUMMY_TABLE_ID).getValue();
@@ -238,7 +238,7 @@ public class DeviceFlowRegistryImplTest {
     }
 
     @Test
-    public void testForEach() throws Exception {
+    public void testForEach() {
         final AtomicInteger counter = new AtomicInteger(0);
         deviceFlowRegistry.forEach(k -> counter.incrementAndGet());
         Assert.assertEquals(1, counter.get());

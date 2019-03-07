@@ -59,7 +59,6 @@ import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
@@ -472,17 +471,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             }
             // build notification
             final ExperimenterMessageOfChoice messageOfChoice;
-            try {
-                messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
-                final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
-                        ExperimenterMessageFromDevBuilder()
-                        .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
-                        .setExperimenterMessageOfChoice(messageOfChoice);
-                // publish
-                notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
-            } catch (final ConversionException e) {
-                LOG.error("Conversion of experimenter notification failed", e);
-            }
+            messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
+            final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
+                    ExperimenterMessageFromDevBuilder()
+                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
+                    .setExperimenterMessageOfChoice(messageOfChoice);
+            // publish
+            notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());
         } else {
             LOG.debug("Controller is not owner of the device {}, skipping experimenter message",
                     deviceInfo.getLOGValue());

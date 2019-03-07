@@ -37,7 +37,7 @@ public class ApplyActionsInstructionDeserializerTest extends AbstractInstruction
     }
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
 
         // Header

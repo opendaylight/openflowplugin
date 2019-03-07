@@ -25,13 +25,13 @@ public class SingleLayerGroupServiceTest extends ServiceMocking {
     private SingleLayerGroupService<AddGroupOutput> service;
 
     @Override
-    protected void setup() throws Exception {
+    protected void setup() {
         service = new SingleLayerGroupService<>(mockedRequestContextStack,
                 mockedDeviceContext, AddGroupOutput.class);
     }
 
     @Test
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         final AddGroupInput input = new AddGroupInputBuilder()
                 .setGroupId(new GroupId(GROUP_ID))
                 .build();

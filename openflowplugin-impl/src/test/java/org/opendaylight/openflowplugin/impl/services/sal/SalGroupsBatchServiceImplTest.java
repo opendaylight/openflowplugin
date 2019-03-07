@@ -89,7 +89,7 @@ public class SalGroupsBatchServiceImplTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         salGroupsBatchService = new SalGroupsBatchServiceImpl(salGroupService, transactionService);
 
         Mockito.when(transactionService.sendBarrier(ArgumentMatchers.any()))
@@ -97,7 +97,7 @@ public class SalGroupsBatchServiceImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Mockito.verifyNoMoreInteractions(salGroupService, transactionService);
     }
 

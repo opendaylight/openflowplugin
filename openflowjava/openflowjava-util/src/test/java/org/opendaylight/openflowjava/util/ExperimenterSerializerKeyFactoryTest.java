@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class ExperimenterSerializerKeyFactoryTest {
 
     @Test
-    public void testCreateExperimenterMessageSerializerKey() throws Exception {
+    public void testCreateExperimenterMessageSerializerKey() {
         ExperimenterIdSerializerKey<?> createdKey;
         ExperimenterIdSerializerKey<?> comparationKey;
 
@@ -39,7 +39,7 @@ public class ExperimenterSerializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMultipartRequestSerializerKey() throws Exception {
+    public void testCreateMultipartRequestSerializerKey() {
         ExperimenterIdSerializerKey<?> createdKey;
         ExperimenterIdSerializerKey<?> comparationKey;
 
@@ -51,7 +51,7 @@ public class ExperimenterSerializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMultipartRequestTFSerializerKey() throws Exception {
+    public void testCreateMultipartRequestTFSerializerKey() {
         ExperimenterIdSerializerKey<?> createdKey;
         ExperimenterIdSerializerKey<?> comparationKey;
 
@@ -63,7 +63,7 @@ public class ExperimenterSerializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMeterBandSerializerKey() throws Exception {
+    public void testCreateMeterBandSerializerKey() {
         ExperimenterIdSerializerKey<?> createdKey;
         ExperimenterIdSerializerKey<?> comparationKey;
 
@@ -75,7 +75,7 @@ public class ExperimenterSerializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMeterBandSubTypeSerializerKey() throws Exception {
+    public void testCreateMeterBandSubTypeSerializerKey() {
         final ExperimenterIdSerializerKey<?> createdKey;
         final ExperimenterIdSerializerKey<?> comparationKey1;
         final ExperimenterIdSerializerKey<?> comparationKey2;

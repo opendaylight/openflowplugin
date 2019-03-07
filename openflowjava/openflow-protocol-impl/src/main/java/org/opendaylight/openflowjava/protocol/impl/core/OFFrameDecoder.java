@@ -47,7 +47,7 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (cause instanceof io.netty.handler.ssl.NotSslRecordException) {
             LOG.warn("Not an TLS record exception - please verify TLS configuration.");
         } else {
@@ -58,7 +58,7 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext chc, ByteBuf bb, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext chc, ByteBuf bb, List<Object> list) {
         if (firstTlsPass) {
             connectionFacade.fireConnectionReadyNotification();
             firstTlsPass = false;

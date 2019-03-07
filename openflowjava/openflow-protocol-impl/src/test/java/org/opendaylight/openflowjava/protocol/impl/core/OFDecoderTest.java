@@ -55,7 +55,7 @@ public class OFDecoderTest {
     }
 
     @Test
-    public void testDecode() throws Exception {
+    public void testDecode() {
         when(mockDeserializationFactory.deserialize(any(ByteBuf.class), anyShort())).thenReturn(mockDataObject);
 
         ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
@@ -66,7 +66,7 @@ public class OFDecoderTest {
     }
 
     @Test
-    public void testDecodeDeserializeException() throws Exception {
+    public void testDecodeDeserializeException() {
         when(mockDeserializationFactory.deserialize(any(ByteBuf.class), anyShort()))
                 .thenThrow(new IllegalArgumentException());
 
@@ -78,7 +78,7 @@ public class OFDecoderTest {
     }
 
     @Test
-    public void testDecodeDeserializeNull() throws Exception {
+    public void testDecodeDeserializeNull() {
         when(mockDeserializationFactory.deserialize(any(ByteBuf.class), anyShort())).thenReturn(null);
 
         ofDecoder.decode(mockChHndlrCtx, inMsg, outList);

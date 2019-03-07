@@ -14,7 +14,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.util.RequestInputUtils;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.AbstractCompatibleStatService;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.MeterStatisticsToNotificationTransformer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -60,7 +59,7 @@ final class AllMeterStatsService extends AbstractCompatibleStatService<GetAllMet
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final GetAllMeterStatisticsInput input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final GetAllMeterStatisticsInput input) {
         MultipartRequestInputBuilder mprInput = RequestInputUtils
                 .createMultipartHeader(MultipartType.OFPMPMETER, xid.getValue(), getVersion());
         return mprInput.setMultipartRequestBody(METER_CASE).build();

@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Ipv4ArbitraryBitMaskSourceEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Ipv4Address ipv4Address = new Ipv4Address("192.168.10.0");
         final DottedQuad ipv4mask = new DottedQuad("255.255.255.0");
 

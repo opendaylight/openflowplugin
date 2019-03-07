@@ -47,7 +47,7 @@ public class TunIdConvertorTest {
     private TunIdConvertor tunIdConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmNxTunIdBuilder nxmNxTunIdBuilder = new NxmNxTunIdBuilder()
                 .setValue(BigInteger.ONE);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
@@ -62,14 +62,14 @@ public class TunIdConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = tunIdConvertor.convert(extension);
         Assert.assertEquals(BigInteger.ONE, ((TunIdCaseValue)converted.getMatchEntryValue())
                 .getTunIdValues().getValue());
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final TunIdValuesBuilder tunIdValuesBuilder = new TunIdValuesBuilder()
                 .setValue(BigInteger.TEN);
         final TunIdCaseValueBuilder tunIdCaseValueBuilder = new TunIdCaseValueBuilder()

@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class ExperimenterDeserializerKeyFactoryTest {
 
     @Test
-    public void testCreateExperimenterErrorDeserializerKey() throws Exception {
+    public void testCreateExperimenterErrorDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -38,7 +38,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateExperimenterMessageDeserializerKey() throws Exception {
+    public void testCreateExperimenterMessageDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -50,7 +50,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMultipartReplyMessageDeserializerKey() throws Exception {
+    public void testCreateMultipartReplyMessageDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -62,7 +62,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMultipartReplyTFDeserializerKey() throws Exception {
+    public void testCreateMultipartReplyTFDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -74,7 +74,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateQueuePropertyDeserializerKey() throws Exception {
+    public void testCreateQueuePropertyDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -86,7 +86,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMeterBandDeserializerKey() throws Exception {
+    public void testCreateMeterBandDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -98,7 +98,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateVendorMessageDeserializerKey() throws Exception {
+    public void testCreateVendorMessageDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 
@@ -110,7 +110,7 @@ public class ExperimenterDeserializerKeyFactoryTest {
     }
 
     @Test
-    public void testCreateMultipartReplyVendorMessageDeserializerKey() throws Exception {
+    public void testCreateMultipartReplyVendorMessageDeserializerKey() {
         ExperimenterIdDeserializerKey createdKey;
         ExperimenterIdDeserializerKey comparationKey;
 

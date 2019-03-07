@@ -97,7 +97,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
     }
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
                 DATAPATH_ID, PORT_NO, OpenflowVersion.get(OF_VERSION));
 
@@ -129,14 +129,14 @@ public abstract class AbstractDirectStatisticsServiceTest {
         setUp();
     }
 
-    protected abstract void setUp() throws Exception;
+    protected abstract void setUp();
 
     @Test
-    public abstract void testBuildRequestBody() throws Exception;
+    public abstract void testBuildRequestBody();
 
     @Test
-    public abstract void testBuildReply() throws Exception;
+    public abstract void testBuildReply();
 
     @Test
-    public abstract void testStoreStatistics() throws Exception;
+    public abstract void testStoreStatistics();
 }

@@ -12,7 +12,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
-import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.GroupConvertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
@@ -36,7 +35,7 @@ public final class MultiLayerGroupService<I extends Group, O extends DataObject>
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid, final I input) throws ServiceException {
+    protected OfHeader buildRequest(final Xid xid, final I input) {
         final Optional<GroupModInputBuilder> ofGroupModInput = convertorExecutor.convert(input, data);
 
         final GroupModInputBuilder groupModInputBuilder = ofGroupModInput

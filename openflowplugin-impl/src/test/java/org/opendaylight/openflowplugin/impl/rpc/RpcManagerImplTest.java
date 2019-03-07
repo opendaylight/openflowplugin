@@ -94,7 +94,7 @@ public class RpcManagerImplTest {
     }
 
     @Test
-    public void createContext() throws Exception {
+    public void createContext() {
         final RpcContext context = rpcManager.createContext(deviceContext);
         assertEquals(deviceInfo, context.getDeviceInfo());
     }

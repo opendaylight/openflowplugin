@@ -56,7 +56,7 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
     private static final int MPLS_LABEL = 135;
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
 
         ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer();
 

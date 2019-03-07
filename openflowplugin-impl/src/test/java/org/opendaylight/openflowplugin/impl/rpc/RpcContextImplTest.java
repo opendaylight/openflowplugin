@@ -95,7 +95,7 @@ public class RpcContextImplTest {
     }
 
     @Test
-    public void testStoreOrFail() throws Exception {
+    public void testStoreOrFail() {
         try (RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 100,
@@ -109,7 +109,7 @@ public class RpcContextImplTest {
     }
 
     @Test
-    public void testStoreOrFailThatFails() throws Exception {
+    public void testStoreOrFailThatFails() {
         try (RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 0,
@@ -123,7 +123,7 @@ public class RpcContextImplTest {
     }
 
     @Test
-    public void testStoreAndCloseOrFail() throws Exception {
+    public void testStoreAndCloseOrFail() {
         try (RpcContext rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 100,
@@ -165,7 +165,7 @@ public class RpcContextImplTest {
      * When deviceContext.reserveXidForDeviceMessage returns null, null should be returned.
      */
     @Test
-    public void testCreateRequestContext1() throws InterruptedException {
+    public void testCreateRequestContext1() {
         when(deviceInfo.reserveXidForDeviceMessage()).thenReturn(null);
         assertEquals(rpcContext.createRequestContext(),null);
     }
@@ -175,7 +175,7 @@ public class RpcContextImplTest {
      */
 
     @Test
-    public void testCreateRequestContext2() throws InterruptedException {
+    public void testCreateRequestContext2() {
         RequestContext temp = rpcContext.createRequestContext();
         temp.close();
         verify(messageSpy).spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);

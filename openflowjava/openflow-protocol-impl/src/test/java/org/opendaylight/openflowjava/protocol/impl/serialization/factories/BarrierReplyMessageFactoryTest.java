@@ -30,7 +30,7 @@ public class BarrierReplyMessageFactoryTest {
     private OFSerializer<BarrierOutput> factory;
 
     @Before
-    public void startUp() throws Exception {
+    public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, BarrierOutput.class));

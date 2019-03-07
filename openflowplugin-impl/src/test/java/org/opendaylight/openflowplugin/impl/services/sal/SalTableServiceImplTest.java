@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,7 +67,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testUpdateTableFail1() throws ExecutionException, InterruptedException {
+    public void testUpdateTableFail1() {
         Mockito.doAnswer((Answer<Void>) invocation -> {
             final RpcResult<List<MultipartReply>> rpcResult =
                     RpcResultBuilder.<List<MultipartReply>>failed().build();
@@ -82,7 +81,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testUpdateTableFail2() throws ExecutionException, InterruptedException {
+    public void testUpdateTableFail2() {
         Mockito.doAnswer((Answer<Void>) invocation -> {
             final RpcResult<List<MultipartReply>> rpcResult =
                     RpcResultBuilder.success(Collections.<MultipartReply>emptyList())
@@ -97,7 +96,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testUpdateTableSuccess() throws ExecutionException, InterruptedException {
+    public void testUpdateTableSuccess() {
         Mockito.doAnswer((Answer<Void>) invocation -> {
             TableFeaturesBuilder tableFeaturesBld = new TableFeaturesBuilder()
                     .setTableId((short) 0)

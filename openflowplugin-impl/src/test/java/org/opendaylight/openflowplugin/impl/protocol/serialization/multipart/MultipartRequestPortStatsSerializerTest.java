@@ -36,7 +36,7 @@ public class MultipartRequestPortStatsSerializerTest extends AbstractSerializerT
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(BODY, out);
 

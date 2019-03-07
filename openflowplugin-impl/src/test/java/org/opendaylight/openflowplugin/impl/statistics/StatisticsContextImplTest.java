@@ -51,7 +51,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
             Mockito.mock(OpenflowProviderConfig.class);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceInfo.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
         Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
@@ -93,7 +93,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
      */
     @Test
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public void testClose() throws Exception {
+    public void testClose() {
         statisticsContext =
                 new StatisticsContextImpl<>(mockedDeviceContext,
                         convertorManager,
@@ -118,13 +118,13 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     }
 
     @Test
-    public void testGatherDynamicData_none() throws Exception {
+    public void testGatherDynamicData_none() {
         statisticsContext.instantiateServiceInstance();
         Mockito.verifyNoMoreInteractions(mockedStatisticsGatheringService, mockedStatisticsOnFlyGatheringService);
     }
 
     @Test
-    public void testGatherDynamicData_all() throws Exception {
+    public void testGatherDynamicData_all() {
         Mockito.reset(mockedDeviceState);
         when(mockedDeviceState.isTableStatisticsAvailable()).thenReturn(Boolean.TRUE);
         when(mockedDeviceState.isFlowStatisticsAvailable()).thenReturn(Boolean.TRUE);

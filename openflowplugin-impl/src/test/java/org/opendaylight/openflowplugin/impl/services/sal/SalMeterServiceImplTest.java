@@ -46,7 +46,7 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testAddMeter() throws Exception {
+    public void testAddMeter() {
         addMeter();
     }
 
@@ -60,12 +60,12 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testUpdateMeter() throws Exception {
+    public void testUpdateMeter() {
         updateMeter();
     }
 
 
-    private void updateMeter() throws Exception {
+    private void updateMeter() {
         final UpdatedMeter dummyUpdatedMeter =
                 new UpdatedMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
         final OriginalMeter dummyOriginalMeter =
@@ -80,12 +80,12 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     }
 
     @Test
-    public void testRemoveMeter() throws Exception {
+    public void testRemoveMeter() {
         removeMeter();
     }
 
 
-    private void removeMeter() throws Exception {
+    private void removeMeter() {
         final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
         RemoveMeterInput removeMeterInput = new RemoveMeterInputBuilder().setMeterId(dummyMeterId).build();
         this.<RemoveMeterOutput>mockSuccessfulFuture();

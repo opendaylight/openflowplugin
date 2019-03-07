@@ -58,7 +58,7 @@ public class FlowWriterDirectOFRpcTest {
     private FlowWriterDirectOFRpc flowWriterDirectOFRpc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(mockSalFlowService).addFlow(any());
 
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
@@ -83,13 +83,13 @@ public class FlowWriterDirectOFRpcTest {
     }
 
     @Test
-    public void testRpcFlowAdd() throws Exception {
+    public void testRpcFlowAdd() {
         flowWriterDirectOFRpc.rpcFlowAdd("1", FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.any());
     }
 
     @Test
-    public void testRpcFlowAddAll() throws Exception {
+    public void testRpcFlowAddAll() {
         flowWriterDirectOFRpc.rpcFlowAddAll(FLOWS_PER_DPN, 10);
         Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.any());
     }

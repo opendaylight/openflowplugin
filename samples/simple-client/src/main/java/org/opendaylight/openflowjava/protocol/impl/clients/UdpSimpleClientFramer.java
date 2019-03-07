@@ -37,13 +37,13 @@ public class UdpSimpleClientFramer extends MessageToMessageDecoder<DatagramPacke
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.warn("Unexpected exception from downstream.", cause);
         ctx.close();
     }
 
     @Override
-    protected void decode(ChannelHandlerContext chc, DatagramPacket msg, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext chc, DatagramPacket msg, List<Object> list) {
         ByteBuf bb = msg.content();
         if (bb.readableBytes() < LENGTH_OF_HEADER) {
             LOG.debug("skipping bb - too few data for header: {}", bb.readableBytes());

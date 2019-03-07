@@ -49,7 +49,7 @@ public class UdpDstConvertorTest {
     private UdpDstConvertor udpDstConvertor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final NxmOfUdpDstBuilder nxmOfUdpDstBuilder = new NxmOfUdpDstBuilder()
                 .setMask(1)
                 .setPort(DEFAULT_PORT);
@@ -65,7 +65,7 @@ public class UdpDstConvertorTest {
     }
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         final MatchEntry converted = udpDstConvertor.convert(extension);
         Assert.assertEquals(Integer.valueOf(1),
                 ((UdpDstCaseValue) converted.getMatchEntryValue()).getUdpDstValues().getMask());
@@ -74,7 +74,7 @@ public class UdpDstConvertorTest {
     }
 
     @Test
-    public void testConvert1() throws Exception {
+    public void testConvert1() {
         final UdpDstValuesBuilder udpDstValuesBuilder = new UdpDstValuesBuilder()
                 .setMask(2)
                 .setPort(DEFAULT_PORT);

@@ -12,7 +12,6 @@ import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErr
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -182,7 +181,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
                     .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
                     .setNode(new NodeRef(nodeInstanceId)).setPayload(LLDPUtil.buildLldpFrame(nodeId,
                             nodeConnectorId, srcMacAddress, outputPortNo, addressDestination)).build();
-        } catch (NoSuchAlgorithmException | PacketException e) {
+        } catch (PacketException e) {
             LOG.error("Error building LLDP frame", e);
             return;
         }

@@ -42,7 +42,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     }
 
     @Test
-    public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() throws Exception {
+    public void testGetAggregateFlowStatisticsFromFlowTableForAllFlows() {
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
@@ -54,7 +54,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     }
 
     @Test
-    public void testGetAllFlowStatisticsFromFlowTable() throws Exception {
+    public void testGetAllFlowStatisticsFromFlowTable() {
         GetAllFlowStatisticsFromFlowTableInput input = new GetAllFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId((short) 1))
@@ -65,7 +65,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     }
 
     @Test
-    public void testGetAllFlowsStatisticsFromAllFlowTables() throws Exception {
+    public void testGetAllFlowsStatisticsFromAllFlowTables() {
         GetAllFlowsStatisticsFromAllFlowTablesInput input = new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .build();
@@ -75,7 +75,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     }
 
     @Test
-    public void testGetFlowStatisticsFromFlowTable() throws Exception {
+    public void testGetFlowStatisticsFromFlowTable() {
         GetFlowStatisticsFromFlowTableInput input = new GetFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setPriority(5)

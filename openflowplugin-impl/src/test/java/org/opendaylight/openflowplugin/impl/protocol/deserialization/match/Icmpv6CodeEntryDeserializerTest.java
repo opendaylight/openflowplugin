@@ -19,7 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 public class Icmpv6CodeEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
-    public void deserializeEntry() throws Exception {
+    public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
         final short code = 7;
 

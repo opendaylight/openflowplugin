@@ -69,7 +69,7 @@ public class DeviceInitializationUtilTest {
     private FeaturesReply featuresReply;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_II);
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
@@ -83,7 +83,7 @@ public class DeviceInitializationUtilTest {
     }
 
     @Test
-    public void makeEmptyNodes() throws Exception {
+    public void makeEmptyNodes() {
         DeviceInitializationUtil.makeEmptyNodes(dataBroker);
         verify(dataBroker).newWriteOnlyTransaction();
         verify(writeTransaction).merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier
@@ -94,26 +94,26 @@ public class DeviceInitializationUtilTest {
     }
 
     @Test
-    public void makeEmptyTables() throws Exception {
+    public void makeEmptyTables() {
         DeviceInitializationUtil.makeEmptyTables(txFacade, deviceInfo, (short) 10);
         verify(txFacade, times(10)).writeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 
     @Test
-    public void getIpAddress() throws Exception {
+    public void getIpAddress() {
         final IpAddress ipAddress = DeviceInitializationUtil.getIpAddress(connectionContext, NODE_II);
         assertEquals(ipAddress, IetfInetUtil.INSTANCE.ipAddressFor(INET_SOCKET_ADDRESS.getAddress()));
     }
 
     @Test
-    public void getPortNumber() throws Exception {
+    public void getPortNumber() {
         final PortNumber portNumber = DeviceInitializationUtil.getPortNumber(connectionContext, NODE_II);
         assertEquals(portNumber, new PortNumber(PORT));
     }
 
     @Test
-    public void getSwitchFeatures() throws Exception {
+    public void getSwitchFeatures() {
         final SwitchFeatures switchFeatures = DeviceInitializationUtil.getSwitchFeatures(connectionContext);
         assertEquals(TABLES, switchFeatures.getMaxTables().shortValue());
     }
