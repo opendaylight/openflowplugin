@@ -19,6 +19,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.openflowplugin.applications.frm.BundleMessagesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -47,7 +48,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BundleGroupForwarder {
+public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BundleGroupForwarder.class);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
@@ -110,8 +111,9 @@ public class BundleGroupForwarder {
         });
     }
 
-    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier, final Group group,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Group> identifier,
+                                      final Group group, final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                    final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         final Long groupId = group.getGroupId().getValue();
         return nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
@@ -136,6 +138,11 @@ public class BundleGroupForwarder {
                     MoreExecutors.directExecutor());
             return resultFuture;
         });
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 
     private final class BundleAddGroupCallBack implements FutureCallback<RpcResult<AddBundleMessagesOutput>> {

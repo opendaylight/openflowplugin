@@ -65,7 +65,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -80,12 +79,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddFlowCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.add.flow._case.AddFlowCaseDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.add.group._case.AddGroupCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.flow._case.RemoveFlowCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.group._case.RemoveGroupCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
@@ -204,10 +199,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
 
-                final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                final AddBundleMessagesInput deleteAllFlowGroupsInput = new AddBundleMessagesInputBuilder()
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                        .setMessages(createMessages(nodeRef, flowNode)).build();
+                        .setMessages(createMessages(nodeRef)).build();
 
+                LOG.debug("Closing openflow bundle for device {}", dpnId);
                 /* Close previously opened bundle on the openflow switch if any */
                 ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
                         = salBundleService.controlBundle(closeBundleInput);
@@ -219,22 +215,32 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             MoreExecutors.directExecutor());
 
                 /* Push groups and flows via bundle add messages */
-                ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessagesFuture
+                ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
                         = Futures.transformAsync(openBundle, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
-                                return salBundleService.addBundleMessages(addBundleMessagesInput);
+                                return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
+                            }
+                            return Futures.immediateFuture(null);
+                        }, MoreExecutors.directExecutor());
+
+                /* Push flows and groups via bundle add messages */
+                Optional<FlowCapableNode> finalFlowNode = flowNode;
+                ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture = Futures
+                        .transformAsync(JdkFutureAdapters.listenInPoolThread(deleteAllFlowGroupsFuture), rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
+                                return Futures.allAsList(addBundleMessages(nodeRef, finalFlowNode, bundleIdValue,
+                                        nodeIdentity));
                             }
                             return Futures.immediateFuture(null);
                         }, MoreExecutors.directExecutor());
 
                 /* Commit the bundle on the openflow switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture
-                        = Futures.transformAsync(addBundleMessagesFuture, rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                return salBundleService.controlBundle(commitBundleInput);
-                            }
-                            return Futures.immediateFuture(null);
-                        }, MoreExecutors.directExecutor());
+                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
+                        addbundlesFuture, rpcResult -> {
+                        return JdkFutureAdapters.listenInPoolThread(
+                                    salBundleService.controlBundle(commitBundleInput));
+                    }, MoreExecutors.directExecutor());
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
@@ -250,9 +256,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         }
                         return Futures.immediateFuture(null);
                     }, MoreExecutors.directExecutor());
-
                 try {
-                    if (commitBundleFuture.get().isSuccessful()) {
+                    if (commitBundleFuture.get() != null && commitBundleFuture.get().isSuccessful()) {
                         LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
                         OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
                         return true;
@@ -260,7 +265,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", nodeIdentity);
+                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId);
                     return false;
                 }
             }
@@ -690,6 +695,36 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 
+    private List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> addBundleMessages(final NodeRef nodeRef,
+                                                                      final Optional<FlowCapableNode> flowNode,
+                                                                      final BundleId bundleIdValue,
+                                                                     InstanceIdentifier<FlowCapableNode> nodeIdentity) {
+        List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> futureList = new ArrayList<>();
+        if (flowNode.get().getGroup() != null) {
+            for (Group group : flowNode.get().getGroup()) {
+                final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class,
+                        group.key());
+                futureList.add(JdkFutureAdapters.listenInPoolThread(provider.getBundleGroupListener()
+                        .add(groupIdent, group, nodeIdentity, bundleIdValue)));
+            }
+        }
+        if (flowNode.get().getTable() != null) {
+            for (Table table : flowNode.get().getTable()) {
+                final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
+                        table.key());
+                if (table.getFlow() != null) {
+                    for (Flow flow : table.getFlow()) {
+                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
+                                flow.key());
+                        futureList.add(JdkFutureAdapters.listenInPoolThread(
+                                provider.getBundleFlowListener().add(flowIdent, flow, nodeIdentity, bundleIdValue)));
+                    }
+                }
+            }
+        }
+        return futureList;
+    }
+
     private void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
@@ -717,7 +752,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return groupBuilder.build();
     }
 
-    private Messages createMessages(final NodeRef nodeRef, final Optional<FlowCapableNode> flowNode) {
+    private Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder().setNode(nodeRef)
                 .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
@@ -728,29 +763,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
                         .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(getDeleteAllGroup()).build()).build())
                 .build());
-
-        NodeId nodeId = nodeRef.getValue().firstKeyOf(Node.class).getId();
-        if (flowNode.get().getGroup() != null) {
-            for (Group gr : flowNode.get().getGroup()) {
-                provider.getDevicesGroupRegistry().storeGroup(nodeId,gr.getGroupId().getValue());
-                messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
-                        .setAddGroupCaseData(new AddGroupCaseDataBuilder(gr).build()).build()).build());
-            }
-        }
-
-        if (flowNode.get().getTable() != null) {
-            for (Table table : flowNode.get().getTable()) {
-                for (Flow flow : table.getFlow()) {
-                    messages.add(
-                            new MessageBuilder().setNode(nodeRef)
-                                    .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
-                                            .setAddFlowCaseData(new AddFlowCaseDataBuilder(flow).build()).build())
-                                    .build());
-                }
-            }
-        }
-
-        LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
         return new MessagesBuilder().setMessage(messages).build();
     }
 }
