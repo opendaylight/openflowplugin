@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.frm.BundleMessagesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -63,7 +66,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BundleFlowForwarder {
+public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BundleFlowForwarder.class);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
@@ -113,7 +116,7 @@ public class BundleFlowForwarder {
         });
     }
 
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow flow,
+    public Future<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Flow> identifier, final Flow flow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
@@ -195,6 +198,12 @@ public class BundleFlowForwarder {
         return resultFuture;
     }
 
+    @Override
+    public void close() throws Exception {
+
+    }
+
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
     private final class BundleFlowCallBack implements FutureCallback<RpcResult<AddBundleMessagesOutput>> {
         private final InstanceIdentifier<FlowCapableNode> nodeIdent;
         private final BundleId bundleId;
