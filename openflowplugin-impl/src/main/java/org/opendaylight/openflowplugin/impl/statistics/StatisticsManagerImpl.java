@@ -10,10 +10,11 @@ package org.opendaylight.openflowplugin.impl.statistics;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Semaphore;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -43,12 +44,17 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final OpenflowProviderConfig config;
     private final ConvertorExecutor converterExecutor;
-    private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
-    private final Semaphore workModeGuard = new Semaphore(1, true);
-    private final ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
     private final ListeningExecutorService executorService;
-    private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
-    private boolean isStatisticsFullyDisabled;
+
+    @GuardedBy("this")
+    private final Map<DeviceInfo, StatisticsContext> contexts = new HashMap<>();
+
+    @GuardedBy("this")
+    // null indicates we are closed
+    private ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
+
+    @GuardedBy("this")
+    private StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
 
     public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
                                  @Nonnull final RpcProviderService rpcProviderRegistry,
@@ -62,7 +68,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode(
+    public synchronized ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode(
             GetStatisticsWorkModeInput input) {
         return RpcResultBuilder.success(new GetStatisticsWorkModeOutputBuilder()
                 .setMode(workMode)
@@ -70,38 +76,44 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> changeStatisticsWorkMode(
+    public synchronized ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> changeStatisticsWorkMode(
             ChangeStatisticsWorkModeInput input) {
-        if (workModeGuard.tryAcquire()) {
-            final StatisticsWorkMode targetWorkMode = input.getMode();
-            isStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
+        if (controlServiceRegistration == null) {
+            return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>failed()
+                    .withError(RpcError.ErrorType.APPLICATION, "Statistics manager is shut down")
+                    .buildFuture();
+        }
 
-            contexts.values().forEach(context -> {
-                switch (targetWorkMode) {
-                    case COLLECTALL:
-                        context.enableGathering();
-                        break;
-                    case FULLYDISABLED:
-                        context.disableGathering();
-                        break;
-                    default:
-                        LOG.warn("Statistics work mode not supported: {}", targetWorkMode);
-                }
-            });
-
-            workModeGuard.release();
+        final StatisticsWorkMode targetWorkMode = input.getMode();
+        if (workMode.equals(targetWorkMode)) {
+            LOG.debug("Statistics work mode already set to {}", targetWorkMode);
             return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>success().buildFuture();
         }
 
-        return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION,
-                        "Statistics work mode change is already in progress")
-                .buildFuture();
+        final Consumer<StatisticsContext> method;
+        switch (targetWorkMode) {
+            case COLLECTALL:
+                method = StatisticsContext::enableGathering;
+                break;
+            case FULLYDISABLED:
+                method = StatisticsContext::disableGathering;
+                break;
+            default:
+                return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>failed()
+                        .withError(RpcError.ErrorType.APPLICATION,
+                            "Statistics work mode " + targetWorkMode + " not supported")
+                        .buildFuture();
+        }
+
+        workMode = targetWorkMode;
+        contexts.values().forEach(method);
+        return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>success().buildFuture();
     }
 
     @Override
-    public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext,
+    public synchronized StatisticsContext createContext(@Nonnull final DeviceContext deviceContext,
                                            final boolean useReconciliationFramework) {
+        Preconditions.checkState(controlServiceRegistration != null, "Statistics manager already shut down");
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
                 .createDefaultProvider(deviceContext);
 
@@ -111,7 +123,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 statisticsWriterProvider,
                 executorService,
                 config,
-                !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
+                !StatisticsWorkMode.FULLYDISABLED.equals(workMode) && config.isIsStatisticsPollingOn(),
                 useReconciliationFramework);
 
         contexts.put(deviceContext.getDeviceInfo(), statisticsContext);
@@ -119,20 +131,21 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public void onDeviceRemoved(final DeviceInfo deviceInfo) {
+    public synchronized void onDeviceRemoved(final DeviceInfo deviceInfo) {
         contexts.remove(deviceInfo);
         LOG.debug("Statistics context removed for node {}", deviceInfo);
     }
 
     @Override
-    public void close() {
-        isStatisticsFullyDisabled = true;
-        controlServiceRegistration.close();
+    public synchronized void close() {
+        if (controlServiceRegistration != null) {
+            controlServiceRegistration.close();
+            controlServiceRegistration = null;
 
-        for (StatisticsContext context : contexts.values()) {
-            context.close();
+            for (StatisticsContext context : contexts.values()) {
+                context.close();
+            }
+            contexts.clear();
         }
-
-        contexts.clear();
     }
 }
