@@ -127,7 +127,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {
-                bundleFlowForwarder.remove(identifier, removeDataObj, nodeIdent, bundleId);
+                provider.getBundleFlowListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
             } else {
                 final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
                 builder.setFlowRef(new FlowRef(identifier));
@@ -179,7 +179,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         if (tableIdValidationPrecondition(tableKey, update)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {
-                bundleFlowForwarder.update(identifier, original, update, nodeIdent, bundleId);
+                provider.getBundleFlowListener().update(identifier, original, update, nodeIdent, bundleId);
             } else {
                 final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
                 nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
@@ -231,7 +231,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {
-                return bundleFlowForwarder.add(identifier, addDataObj, nodeIdent, bundleId);
+                return provider.getBundleFlowListener().add(identifier, addDataObj, nodeIdent, bundleId);
             } else {
                 final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
                 nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {

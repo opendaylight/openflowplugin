@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -24,6 +25,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -61,20 +65,28 @@ public class ConnectionManagerImplTest {
     private ArgumentCaptor<ConnectionReadyListener> connectionReadyListenerAC;
     @Captor
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
+    @Mock
+    DataBroker dataBroker;
+    @Mock
+    private ReadWriteTransaction txn;
+    @Mock
+    CheckedFuture<Void, TransactionCommitFailedException> checkedFuture;
 
     private static final long ECHO_REPLY_TIMEOUT = 500;
     private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final int DPN_HOLD_TIME_IN_SECONDS = 90;
 
     @Before
     public void setUp() {
         final ThreadPoolLoggingExecutor threadPool = new ThreadPoolLoggingExecutor(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), "ofppool");
-
+        Mockito.when(dataBroker.newReadWriteTransaction()).thenReturn(txn);
         connectionManagerImpl = new ConnectionManagerImpl(new OpenflowProviderConfigBuilder()
                 .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
                 .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
-                .build(), threadPool);
+                .setDpnHoldTimeInSeconds(DPN_HOLD_TIME_IN_SECONDS)
+                .build(), threadPool, dataBroker);
 
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);

@@ -202,5 +202,14 @@ module openflow-provider-config {
             type uint16;
             default 0;
         }
+
+        leaf dpn-hold-time-in-seconds {
+            description "dpn hold time is the least time delay a dpn has to mantain between
+            its consecutive connection attempts. If time delay between the previous connection
+            and the current connection is within dpn hold time, the switch will not be allowed
+            to connect to the controller. Default value of the dpn hold time is 0 second.";
+            type uint16;
+            default 0;
+        }
     }
 }

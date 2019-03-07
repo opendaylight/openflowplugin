@@ -11,7 +11,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyShort;
 
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
+
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -23,8 +27,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.DpnConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.impl.common.DeviceConnectionRateLimiter;
@@ -58,12 +65,16 @@ public class HandshakeManagerImplTest {
     private ErrorHandler errorHandler;
     @Mock
     private HandshakeListener handshakeListener;
+    @Mock
+    private DpnConnectionStatusProvider dpnConnectionStatusProvider;
 
     private DeviceConnectionRateLimiter deviceConnectionRateLimiter;
 
     private RpcResult<GetFeaturesOutput> resultFeatures;
 
     private final long helloXid = 42L;
+
+    private static final int DPN_HOLD_TIME_IN_SECONDS = 90;
 
     private int expectedErrors = 0;
 
@@ -77,12 +88,15 @@ public class HandshakeManagerImplTest {
         deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(new OpenflowProviderConfigBuilder()
                 .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN).build());
         handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3, OFConstants.VERSION_ORDER,
-                errorHandler, handshakeListener, false, deviceConnectionRateLimiter);
+                errorHandler, handshakeListener, false, deviceConnectionRateLimiter,
+                DPN_HOLD_TIME_IN_SECONDS, dpnConnectionStatusProvider);
 
         resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
 
         Mockito.when(adapter.hello(any(HelloInput.class)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success((HelloOutput) null).build()));
+        Mockito.when(dpnConnectionStatusProvider.getDpnLastConnectionTime(BigInteger.ONE))
+                .thenReturn(LocalDateTime.now().minusSeconds(DPN_HOLD_TIME_IN_SECONDS));
     }
 
     /**

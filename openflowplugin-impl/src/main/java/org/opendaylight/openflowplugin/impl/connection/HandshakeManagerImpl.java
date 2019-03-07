@@ -15,11 +15,15 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.DpnConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
@@ -59,6 +63,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private boolean useVersionBitmap; // not final just for unit test
 
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
+    private final DpnConnectionStatusProvider dpnConnectionStatusProvider;
+    private final int dpnHoldTimeInSeconds;
 
     /**
      * Constructor.
@@ -72,7 +78,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      */
     public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
                                 ErrorHandler errorHandler, HandshakeListener handshakeListener,
-                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter) {
+                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter,
+                                int dpnHoldTimeInSeconds, DpnConnectionStatusProvider dpnConnectionStatusProvider) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
@@ -80,6 +87,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
         this.handshakeListener = handshakeListener;
         this.useVersionBitmap = useVersionBitmap;
         this.deviceConnectionRateLimiter = deviceConnectionRateLimiter;
+        this.dpnConnectionStatusProvider = dpnConnectionStatusProvider;
+        this.dpnHoldTimeInSeconds = dpnHoldTimeInSeconds;
     }
 
     @Override
@@ -427,6 +436,31 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     }
                 }, MoreExecutors.directExecutor());
         LOG.debug("future features [{}] hooked ..", xid);
+    }
+
+   /* public boolean isAllowedToConnect(BigInteger dpnID) {
+        // The DPN isnt allowed for connection till 120s of the initial connect to prevent HX45644
+        connectionAdapter.setDatapathId(dpnID);
+        LocalDateTime lastConnectionTime = dpnConnectionStatusProvider.getDpnLastConnectionTime(dpnID);
+        if (lastConnectionTime == null) {
+            LOG.debug("Initial connection attempt by DPN {} to the node. Allowing to connect after {} seconds", dpnID,
+                    dpnHoldTimeInSeconds);
+            dpnConnectionStatusProvider.addDpnLastConnectionTime(dpnID, LocalDateTime.now());
+            connectionAdapter.disconnect();
+            return false;
+        } else if (LocalDateTime.now().isBefore(lastConnectionTime.plusSeconds(dpnHoldTimeInSeconds))) {
+            LOG.trace("DPN trying to connect before the connection delay {} seconds, disconnecting the DPN {}",
+                    dpnHoldTimeInSeconds, dpnID);
+            connectionAdapter.disconnect();
+            return false;
+        }
+
+        if (!deviceConnectionRateLimiter.tryAquire()) {
+            LOG.debug("Permit not acquired for device {}, disconnecting the device.", dpnID);
+            connectionAdapter.disconnect();
+            return false;
+        }
+        return true;
     }
 
     /**

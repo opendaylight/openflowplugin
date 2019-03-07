@@ -11,6 +11,8 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
+
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
@@ -52,6 +54,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     private AlienMessageListener alienMessageListener;
     private AbstractOutboundQueueManager<?, ?> outputManager;
     private OFVersionDetector versionDetector;
+    private BigInteger datapathId;
 
     private final boolean useBarrier;
 
@@ -91,7 +94,11 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
 
     @Override
     public void consumeDeviceMessage(final DataObject message) {
-        LOG.debug("ConsumeIntern msg on {}", channel);
+        LOG.debug("ConsumeIntern msg {} for dpn {} on {}", message.implementedInterface().getName(),
+                datapathId, channel);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("ConsumeIntern msg {}", message);
+        }
         if (disconnectOccured) {
             return;
         }
@@ -107,7 +114,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             // OpenFlow messages
             } else if (message instanceof EchoRequestMessage) {
                 if (outputManager != null) {
-                    outputManager.onEchoRequest((EchoRequestMessage) message);
+                    outputManager.onEchoRequest((EchoRequestMessage) message, datapathId);
                 } else {
                     messageListener.onEchoRequestMessage((EchoRequestMessage) message);
                 }
@@ -227,5 +234,10 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     public void setPacketInFiltering(final boolean enabled) {
         versionDetector.setFilterPacketIns(enabled);
         LOG.debug("PacketIn filtering {}abled", enabled ? "en" : "dis");
+    }
+
+    @Override
+    public void setDatapathId(final BigInteger datapathId) {
+        this.datapathId = datapathId;
     }
 }
