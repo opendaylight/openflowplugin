@@ -99,7 +99,7 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.emptyList()).build();
         Flow flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -137,7 +137,7 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.emptyList()).build();
         Flow flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -177,7 +177,7 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.emptyList()).build();
         IpMatch ipMatch = new IpMatchBuilder().setIpDscp(new Dscp((short) 4)).build();
         Match match = new MatchBuilder().setIpMatch(ipMatch).build();
         Flow flow = new FlowBuilder().setMatch(match).withKey(flowKey).setTableId((short) 2).build();
@@ -219,7 +219,7 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<Flow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(Flow.class, flowKey);
-        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.<Flow>emptyList()).build();
+        Table table = new TableBuilder().withKey(tableKey).setFlow(Collections.emptyList()).build();
         Flow flow = new FlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -254,7 +254,7 @@ public class FlowListenerTest extends FRMTest {
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
         InstanceIdentifier<StaleFlow> flowII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Table.class, tableKey).child(StaleFlow.class, flowKey);
-        Table table = new TableBuilder().withKey(tableKey).setStaleFlow(Collections.<StaleFlow>emptyList()).build();
+        Table table = new TableBuilder().withKey(tableKey).setStaleFlow(Collections.emptyList()).build();
         StaleFlow flow = new StaleFlowBuilder().withKey(flowKey).setTableId((short) 2).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();

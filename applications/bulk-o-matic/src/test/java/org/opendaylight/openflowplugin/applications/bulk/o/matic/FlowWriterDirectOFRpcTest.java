@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -78,7 +77,7 @@ public class FlowWriterDirectOFRpcTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable)invocation.getArguments()[0]).run();
             return null;
-        }).when(mockFlowPusher).execute(ArgumentMatchers.<Runnable>any());
+        }).when(mockFlowPusher).execute(ArgumentMatchers.any());
 
         flowWriterDirectOFRpc = new FlowWriterDirectOFRpc(mockDataBroker, mockSalFlowService, mockFlowPusher);
     }
@@ -86,12 +85,12 @@ public class FlowWriterDirectOFRpcTest {
     @Test
     public void testRpcFlowAdd() throws Exception {
         flowWriterDirectOFRpc.rpcFlowAdd("1", FLOWS_PER_DPN, 10);
-        Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
+        Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.any());
     }
 
     @Test
     public void testRpcFlowAddAll() throws Exception {
         flowWriterDirectOFRpc.rpcFlowAddAll(FLOWS_PER_DPN, 10);
-        Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.<AddFlowInput>any());
+        Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.any());
     }
 }

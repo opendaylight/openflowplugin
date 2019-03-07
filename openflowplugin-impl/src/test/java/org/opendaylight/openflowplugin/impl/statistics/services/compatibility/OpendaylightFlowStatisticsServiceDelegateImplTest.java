@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
-import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.impl.statistics.services.AbstractSingleStatsServiceTest;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
@@ -49,7 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
@@ -86,7 +84,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
-        Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.<TranslatorKey>any())).thenReturn(translator);
+        Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.any())).thenReturn(translator);
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -171,7 +169,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                                         .setCookie(BigInteger.ZERO)
                                         .setPriority(14)
                                         .setMatch(new MatchBuilder()
-                                                .setMatchEntry(Collections.<MatchEntry>emptyList())
+                                                .setMatchEntry(Collections.emptyList())
                                                 .build())
                                         .setHardTimeout(15)
                                         .setIdleTimeout(16)

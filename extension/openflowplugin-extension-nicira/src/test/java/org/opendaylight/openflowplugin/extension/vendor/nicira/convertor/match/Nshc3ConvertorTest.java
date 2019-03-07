@@ -54,7 +54,7 @@ public class Nshc3ConvertorTest {
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNshc3(nxmNxNshc3)
                 .build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
                 .thenReturn(nxAugMatchNotifUpdateFlowStats);
 
         nshc3Convertor = new Nshc3Convertor();

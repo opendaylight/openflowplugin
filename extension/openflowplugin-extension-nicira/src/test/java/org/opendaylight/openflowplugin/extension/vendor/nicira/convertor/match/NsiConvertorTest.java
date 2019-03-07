@@ -53,7 +53,7 @@ public class NsiConvertorTest {
         NxAugMatchNodesNodeTableFlow nxAugMatchNotifUpdateFlowStats = new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxNsi(nxmNxNsi)
                 .build();
-        when(extension.augmentation(ArgumentMatchers.<Class<Augmentation<Extension>>>any()))
+        when(extension.augmentation(ArgumentMatchers.any()))
                 .thenReturn(nxAugMatchNotifUpdateFlowStats);
 
         nsiConvertor = new NsiConvertor();

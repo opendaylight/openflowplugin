@@ -173,7 +173,7 @@ public final class FlatBatchGroupAdapters {
         convertGroupBatchFutureForChain(final Future<RpcResult<T>> resultUpdateGroupFuture,
                                     final int currentOffset) {
         return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateGroupFuture),
-                FlatBatchGroupAdapters.<T>convertBatchGroupResult(currentOffset),
+                FlatBatchGroupAdapters.convertBatchGroupResult(currentOffset),
                 MoreExecutors.directExecutor());
     }
 }

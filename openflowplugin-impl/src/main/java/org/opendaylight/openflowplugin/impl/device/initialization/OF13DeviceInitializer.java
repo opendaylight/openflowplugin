@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -64,7 +63,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         // First process description reply, write data to DS and write consequent data if successful
         return Futures.transformAsync(
             requestMultipart(MultipartType.OFPMPDESC, deviceContext),
-            (AsyncFunction<RpcResult<List<OfHeader>>, Void>) input -> {
+            input -> {
                 translateAndWriteResult(
                     MultipartType.OFPMPDESC,
                     input.getResult(),

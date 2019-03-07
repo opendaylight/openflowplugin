@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
@@ -108,7 +107,7 @@ public class FlowRemovedTranslatorTest {
         if (isV10) {
             builder.setMatchV10(new MatchV10Builder().setWildcards(flowWildcards).build());
         } else {
-            builder.setMatch(new MatchBuilder().setMatchEntry(Collections.<MatchEntry>emptyList()).build())
+            builder.setMatch(new MatchBuilder().setMatchEntry(Collections.emptyList()).build())
                 .setTableId(new TableId(42L));
         }
 

@@ -25,7 +25,6 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SynchronizationDiffInput;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
-import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
@@ -39,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,9 +103,9 @@ public class SyncReactorImplTest {
                                                         operationalFcn, LogicalDatastoreType.OPERATIONAL);
 
         Mockito.when(syncPlanPushStrategy.executeSyncStrategy(
-                ArgumentMatchers.<ListenableFuture<RpcResult<Void>>>any(),
-                ArgumentMatchers.<SynchronizationDiffInput>any(),
-                ArgumentMatchers.<SyncCrudCounters>any()))
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<Void>success().buildFuture());
 
         final ListenableFuture<Boolean> syncupResult = reactor.syncup(NODE_IDENT, syncupEntry);
@@ -116,9 +114,9 @@ public class SyncReactorImplTest {
         Assert.assertTrue(voidRpcResult);
 
         Mockito.verify(syncPlanPushStrategy).executeSyncStrategy(
-                ArgumentMatchers.<ListenableFuture<RpcResult<Void>>>any(),
+                ArgumentMatchers.any(),
                 syncDiffInputCaptor.capture(),
-                ArgumentMatchers.<SyncCrudCounters>any());
+                ArgumentMatchers.any());
 
         final SynchronizationDiffInput diffInput = syncDiffInputCaptor.getValue();
         Assert.assertEquals(1, ReconcileUtil.countTotalPushed(diffInput.getFlowsToAddOrUpdate().values()));

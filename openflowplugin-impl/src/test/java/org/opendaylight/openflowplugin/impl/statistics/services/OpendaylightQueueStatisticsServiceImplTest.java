@@ -38,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromGivenPortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortOutput;
-import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -59,7 +58,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
     @After
     public void tearDown() throws Exception {
-        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.<Notification>any());
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
     }
 
     @Test

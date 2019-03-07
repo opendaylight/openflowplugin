@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
@@ -99,7 +98,7 @@ public class SalFlowsBatchServiceImplTest {
     public void setUp() throws Exception {
         salFlowsBatchService = new SalFlowsBatchServiceImpl(salFlowService, transactionService);
 
-        Mockito.when(transactionService.sendBarrier(ArgumentMatchers.<SendBarrierInput>any()))
+        Mockito.when(transactionService.sendBarrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
@@ -110,7 +109,7 @@ public class SalFlowsBatchServiceImplTest {
 
     @Test
     public void testRemoveFlowsBatch_success() throws Exception {
-        Mockito.when(salFlowService.removeFlow(ArgumentMatchers.<RemoveFlowInput>any()))
+        Mockito.when(salFlowService.removeFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build())
                         .buildFuture());
 
@@ -141,12 +140,12 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertEquals(42, allValues.get(0).getPriority().longValue());
         Assert.assertEquals(43, allValues.get(1).getPriority().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testRemoveFlowsBatch_failed() throws Exception {
-        Mockito.when(salFlowService.removeFlow(ArgumentMatchers.<RemoveFlowInput>any()))
+        Mockito.when(salFlowService.removeFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<RemoveFlowOutput>failed()
                         .withError(RpcError.ErrorType.APPLICATION, "flow-remove-fail-1")
                         .buildFuture());
@@ -178,7 +177,7 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertEquals(42, allValues.get(0).getPriority().longValue());
         Assert.assertEquals(43, allValues.get(1).getPriority().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
     }
 
     private static BatchAddFlows createEmptyBatchAddFlow(final String flowIdValue, final int priority) {
@@ -211,7 +210,7 @@ public class SalFlowsBatchServiceImplTest {
 
     @Test
     public void testAddFlowsBatch_success() throws Exception {
-        Mockito.when(salFlowService.addFlow(ArgumentMatchers.<AddFlowInput>any()))
+        Mockito.when(salFlowService.addFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 
         final AddFlowsBatchInput input = new AddFlowsBatchInputBuilder()
@@ -235,12 +234,12 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertEquals(42, allValues.get(0).getPriority().longValue());
         Assert.assertEquals(43, allValues.get(1).getPriority().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testAddFlowsBatch_failed() throws Exception {
-        Mockito.when(salFlowService.addFlow(ArgumentMatchers.<AddFlowInput>any()))
+        Mockito.when(salFlowService.addFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder
                         .<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
@@ -272,12 +271,12 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertEquals(42, allValues.get(0).getPriority().longValue());
         Assert.assertEquals(43, allValues.get(1).getPriority().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testUpdateFlowsBatch_success() throws Exception {
-        Mockito.when(salFlowService.updateFlow(ArgumentMatchers.<UpdateFlowInput>any()))
+        Mockito.when(salFlowService.updateFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateFlowOutputBuilder().build()).buildFuture());
 
         final UpdateFlowsBatchInput input = new UpdateFlowsBatchInputBuilder()
@@ -303,12 +302,12 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalFlow().getPriority().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedFlow().getPriority().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testUpdateFlowsBatch_failure() throws Exception {
-        Mockito.when(salFlowService.updateFlow(ArgumentMatchers.<UpdateFlowInput>any()))
+        Mockito.when(salFlowService.updateFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<UpdateFlowOutput>failed()
                         .withError(RpcError.ErrorType.APPLICATION, "ut-flowUpdateError")
                         .buildFuture());
@@ -342,6 +341,6 @@ public class SalFlowsBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalFlow().getPriority().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedFlow().getPriority().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.<SendBarrierInput>any());
+        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
     }
 }

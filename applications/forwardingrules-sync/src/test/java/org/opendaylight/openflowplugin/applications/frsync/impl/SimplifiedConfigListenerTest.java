@@ -145,7 +145,7 @@ public class SimplifiedConfigListenerTest {
         Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(dataBefore))).when(roTx)
             .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);
-        Mockito.when(reactor.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(),
+        Mockito.when(reactor.syncup(ArgumentMatchers.any(),
                 Mockito.eq(syncupEntry))).thenReturn(Futures.immediateFuture(Boolean.TRUE));
         return syncupEntry;
     }

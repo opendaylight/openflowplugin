@@ -60,9 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.list.grouping.BulkFlowItemBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -127,8 +125,7 @@ public class SalBulkFlowServiceImplTest {
         salBulkFlowService.addFlowsDs(addFlowsDsInput);
 
         verify(writeTransaction).commit();
-        verify(writeTransaction).put(ArgumentMatchers.<LogicalDatastoreType>any(),
-                ArgumentMatchers.<InstanceIdentifier<Flow>>any(),
+        verify(writeTransaction).put(ArgumentMatchers.any(), ArgumentMatchers.any(),
                 flowArgumentCaptor.capture(), Mockito.anyBoolean());
 
         Flow flow = flowArgumentCaptor.getValue();
@@ -141,17 +138,17 @@ public class SalBulkFlowServiceImplTest {
         final RemoveFlowsDsInput removeFlowsDsInput = removeFlowsDsInputBuilder.build();
 
         salBulkFlowService.removeFlowsDs(removeFlowsDsInput);
-        verify(writeTransaction).delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+        verify(writeTransaction).delete(ArgumentMatchers.any(),
                 ArgumentMatchers.<InstanceIdentifier<Flow>>any());
         verify(writeTransaction, times(2)).commit();
     }
 
     @Test
     public void testAddRemoveFlowsRpc() throws Exception {
-        Mockito.when(mockSalFlowService.addFlow(ArgumentMatchers.<AddFlowInput>any()))
+        Mockito.when(mockSalFlowService.addFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
 
-        Mockito.when(mockSalFlowService.removeFlow(ArgumentMatchers.<RemoveFlowInput>any()))
+        Mockito.when(mockSalFlowService.removeFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
 
         final BulkFlowItemBuilder bulkFlowItemBuilder = new BulkFlowItemBuilder();
@@ -168,7 +165,7 @@ public class SalBulkFlowServiceImplTest {
         final AddFlowsRpcInput addFlowsRpcInput = addFlowsRpcInputBuilder.build();
         salBulkFlowService.addFlowsRpc(addFlowsRpcInput);
 
-        verify(mockSalFlowService).addFlow(ArgumentMatchers.<AddFlowInput>any());
+        verify(mockSalFlowService).addFlow(ArgumentMatchers.any());
 
         final RemoveFlowsRpcInputBuilder removeFlowsRpcInputBuilder = new RemoveFlowsRpcInputBuilder();
         removeFlowsRpcInputBuilder.setBulkFlowItem(bulkFlowItems);
@@ -176,7 +173,7 @@ public class SalBulkFlowServiceImplTest {
         final RemoveFlowsRpcInput removeFlowsRpcInput = removeFlowsRpcInputBuilder.build();
         salBulkFlowService.removeFlowsRpc(removeFlowsRpcInput);
 
-        verify(mockSalFlowService).removeFlow(ArgumentMatchers.<RemoveFlowInput>any());
+        verify(mockSalFlowService).removeFlow(ArgumentMatchers.any());
     }
 
     @Test

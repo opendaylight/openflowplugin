@@ -13,7 +13,6 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterStatisticsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
@@ -58,7 +57,7 @@ public class MeterStatNotificationSupplierImpl extends AbstractNotificationSuppl
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.<NodeConnector>emptyList());
+        builder.setNodeConnector(Collections.emptyList());
         builder.setMeterStats(Collections.singletonList(new MeterStatsBuilder(meterStatistics).build()));
         return builder.build();
     }

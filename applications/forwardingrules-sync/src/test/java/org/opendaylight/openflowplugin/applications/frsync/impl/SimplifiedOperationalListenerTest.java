@@ -290,7 +290,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(configNode))).when(roTx)
             .read(LogicalDatastoreType.CONFIGURATION, fcNodePath);
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);
-        Mockito.when(reactor.syncup(ArgumentMatchers.<InstanceIdentifier<FlowCapableNode>>any(),
+        Mockito.when(reactor.syncup(ArgumentMatchers.any(),
                 Mockito.eq(syncupEntry))).thenReturn(Futures.immediateFuture(Boolean.TRUE));
         return syncupEntry;
     }

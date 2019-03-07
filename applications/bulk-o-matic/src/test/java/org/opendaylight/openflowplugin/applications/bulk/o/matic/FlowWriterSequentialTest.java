@@ -21,7 +21,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -50,7 +49,7 @@ public class FlowWriterSequentialTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
-        }).when(mockFlowPusher).execute(ArgumentMatchers.<Runnable>any());
+        }).when(mockFlowPusher).execute(ArgumentMatchers.any());
 
         flowWriterSequential = new FlowWriterSequential(mockDataBroker, mockFlowPusher);
     }
@@ -58,8 +57,8 @@ public class FlowWriterSequentialTest {
     @Test
     public void testAddFlows() throws Exception {
         flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short) 0, (short) 1, true);
-        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.<LogicalDatastoreType>any(),
-                ArgumentMatchers.<InstanceIdentifier<DataObject>>any(), ArgumentMatchers.<DataObject>any(),
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(),
                 ArgumentMatchers.anyBoolean());
     }
 
@@ -67,7 +66,7 @@ public class FlowWriterSequentialTest {
     public void testDeleteFlows() throws Exception {
         flowWriterSequential.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN))
-                .delete(ArgumentMatchers.<LogicalDatastoreType>any(),
+                .delete(ArgumentMatchers.any(),
                         ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
     }
 }

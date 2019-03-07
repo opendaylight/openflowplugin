@@ -84,7 +84,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
             }
         }, MoreExecutors.directExecutor());
 
-        return RpcResultBuilder.<O>success(buildTxCapableResult(emulatedTxId)).buildFuture();
+        return RpcResultBuilder.success(buildTxCapableResult(emulatedTxId)).buildFuture();
     }
 
     public abstract O buildTxCapableResult(TransactionId emulatedTxId);

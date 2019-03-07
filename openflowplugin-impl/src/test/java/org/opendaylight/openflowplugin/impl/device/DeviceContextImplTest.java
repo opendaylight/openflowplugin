@@ -227,11 +227,11 @@ public class DeviceContextImplTest {
                         .build())
                 .build();
 
-        Mockito.when(messageTranslatorPacketReceived.translate(Mockito.<Object>any(), Mockito.<DeviceInfo>any(),
-                Mockito.<Object>any())).thenReturn(packetReceived);
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.<Object>any(),
-                Mockito.<DeviceInfo>any(),
-                Mockito.<Object>any())).thenReturn(mock(FlowCapableNodeConnector.class));
+        Mockito.when(messageTranslatorPacketReceived.translate(Mockito.any(), Mockito.any(),
+                Mockito.any())).thenReturn(packetReceived);
+        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.any(),
+                Mockito.any(),
+                Mockito.any())).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
