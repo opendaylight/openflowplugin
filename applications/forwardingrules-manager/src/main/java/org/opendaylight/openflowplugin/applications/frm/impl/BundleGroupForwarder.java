@@ -151,16 +151,17 @@ public class BundleGroupForwarder {
         public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                LOG.debug("Group add with id {} finished without error for node {}", groupId, nodeId);
+                LOG.debug("Group add with id {} finished without error for node {}", groupId, nodeId.getValue());
             } else {
-                LOG.debug("Group add with id {} failed for node {} with error {}", groupId, nodeId,
+                LOG.error("Group add with id {} failed for node {} with error: {}", groupId, nodeId.getValue(),
                         result.getErrors().toString());
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for adding group {} failed for node with error {}", groupId, nodeId, throwable);
+            LOG.error("Service call for adding group {} failed for node {} with error ", groupId, nodeId.getValue(),
+                    throwable);
         }
     }
 
@@ -177,16 +178,16 @@ public class BundleGroupForwarder {
         public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                LOG.debug("Group update with id {} finished without error for node {}", groupId, nodeId);
+                LOG.debug("Group update with id {} finished without error for node {}", groupId, nodeId.getValue());
             } else {
-                LOG.debug("Group update with id {} failed for node {} with error {}", groupId, nodeId,
+                LOG.error("Group update with id {} failed for node {} with error: {}", groupId, nodeId.getValue(),
                         result.getErrors().toString());
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for updating group {} failed for node {}", groupId, nodeId, throwable);
+            LOG.error("Service call for updating group {} failed for node {}", groupId, nodeId.getValue(), throwable);
         }
     }
 
@@ -202,17 +203,18 @@ public class BundleGroupForwarder {
         @Override
         public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
-                LOG.debug("Group remove with id {} finished without error for node {}", groupId, nodeId);
+                LOG.debug("Group remove with id {} finished without error for node {}", groupId, nodeId.getValue());
                 forwardingRulesManager.getDevicesGroupRegistry().removeGroup(nodeId, groupId);
             } else {
-                LOG.debug("Group remove with id {} failed for node {} with error {}", groupId, nodeId,
+                LOG.error("Group remove with id {} failed for node {} with error {}", groupId, nodeId.getValue(),
                         result.getErrors().toString());
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for removing group {} failed for node with error {}", groupId, nodeId, throwable);
+            LOG.error("Service call for removing group {} failed for node {} with error", groupId, nodeId.getValue(),
+                    throwable);
         }
     }
 

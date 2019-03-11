@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getTableId;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
@@ -33,6 +34,7 @@ import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
@@ -50,11 +52,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdateFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.add.flow._case.AddFlowCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.add.group._case.AddGroupCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.flow._case.RemoveFlowCaseDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.update.flow._case.UpdateFlowCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -98,19 +98,8 @@ public class BundleFlowForwarder {
 
     public void update(final InstanceIdentifier<Flow> identifier, final Flow originalFlow, final Flow updatedFlow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
-        final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-        nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
-            BundleInnerMessage bundleInnerMessage = new BundleUpdateFlowCaseBuilder()
-                    .setUpdateFlowCaseData(new UpdateFlowCaseDataBuilder(updatedFlow).build()).build();
-            Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleInnerMessage(bundleInnerMessage).build();
-            ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent,
-                    updatedFlow, identifier, bundleId);
-            SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = SettableFuture.create();
-            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, resultFuture),
-                    MoreExecutors.directExecutor());
-            return resultFuture;
-        });
+        remove(identifier, originalFlow, nodeIdent, bundleId);
+        add(identifier, updatedFlow, nodeIdent, bundleId);
     }
 
     public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow flow,
@@ -124,8 +113,10 @@ public class BundleFlowForwarder {
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent, flow,
                     identifier, bundleId);
             SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = SettableFuture.create();
-            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, resultFuture),
-                    MoreExecutors.directExecutor());
+            short tableId = getTableId(new FlowTableRef(identifier));
+            String flowId = getFlowId(new FlowRef(identifier));
+            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, flowId, tableId,
+                    resultFuture), MoreExecutors.directExecutor());
             return resultFuture;
         });
     }
@@ -200,14 +191,18 @@ public class BundleFlowForwarder {
         private final BundleId bundleId;
         private final Message message;
         private final NodeId nodeId;
+        private final String flowId;
+        private final short tableId;
         private final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
 
         BundleFlowCallBack(InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId, Message message,
-                SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
+                        String flowId, short tableId, SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
             this.nodeIdent = nodeIdent;
             this.bundleId = bundleId;
             this.message = message;
             this.resultFuture = resultFuture;
+            this.flowId = flowId;
+            this.tableId = tableId;
             nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         }
 
@@ -228,6 +223,11 @@ public class BundleFlowForwarder {
                     @Override
                     public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
                         resultFuture.set(result);
+                        if (result.getErrors().size() > 0) {
+                            LOG.error("Flow add with flowId {} and tableId {} failed for node {} with error: {}",
+                                    flowId, tableId, nodeId.getValue(), result.getErrors().toString());
+                        }
+
                     }
 
                     @Override
@@ -242,7 +242,7 @@ public class BundleFlowForwarder {
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Error while pushing flow add bundle {} for device {}", message, nodeId);
+            LOG.error("Error while pushing flow add bundle {} for device {}", message, nodeId.getValue());
             resultFuture.setException(throwable);
         }
     }
