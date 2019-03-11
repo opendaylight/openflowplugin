@@ -159,14 +159,15 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 LOG.debug("Group add with id {} finished without error for node {}", groupId, nodeId);
             } else {
-                LOG.debug("Group add with id {} failed for node {} with error {}", groupId, nodeId,
+                LOG.error("Group add with id {} failed for node {} with error: {}", groupId, nodeId,
                         result.getErrors().toString());
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for adding group {} failed for node with error {}", groupId, nodeId, throwable);
+            LOG.error("Service call for adding group {} failed for node {} with error ", groupId, nodeId,
+                    throwable);
         }
     }
 
@@ -185,7 +186,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 LOG.debug("Group update with id {} finished without error for node {}", groupId, nodeId);
             } else {
-                LOG.debug("Group update with id {} failed for node {} with error {}", groupId, nodeId,
+                LOG.error("Group update with id {} failed for node {} with error: {}", groupId, nodeId,
                         result.getErrors().toString());
             }
         }
@@ -211,14 +212,15 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                 LOG.debug("Group remove with id {} finished without error for node {}", groupId, nodeId);
                 forwardingRulesManager.getDevicesGroupRegistry().removeGroup(nodeId, groupId);
             } else {
-                LOG.debug("Group remove with id {} failed for node {} with error {}", groupId, nodeId,
+                LOG.error("Group remove with id {} failed for node {} with error {}", groupId, nodeId,
                         result.getErrors().toString());
             }
         }
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Service call for removing group {} failed for node with error {}", groupId, nodeId, throwable);
+            LOG.error("Service call for removing group {} failed for node {} with error", groupId, nodeId,
+                    throwable);
         }
     }
 
