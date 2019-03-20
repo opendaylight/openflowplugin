@@ -183,4 +183,10 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
         return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
                 Integer::valueOf);
     }
+
+    @Override
+    public Integer getDeviceConnectionHoldTime() {
+        return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME.toString(),
+                Integer::valueOf);
+    }
 }
