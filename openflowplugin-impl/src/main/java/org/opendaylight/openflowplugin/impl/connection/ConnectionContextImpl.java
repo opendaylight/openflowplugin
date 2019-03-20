@@ -19,6 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -47,14 +48,17 @@ public class ConnectionContextImpl implements ConnectionContext {
     private HandshakeContext handshakeContext;
     private DeviceInfo deviceInfo;
     private final List<PortStatusMessage> portStatusMessages = new ArrayList<>();
+    private final DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
     /**
      * Constructor.
      *
      * @param connectionAdapter - connection adapter
      */
-    public ConnectionContextImpl(final ConnectionAdapter connectionAdapter) {
+    public ConnectionContextImpl(final ConnectionAdapter connectionAdapter,
+                                 final DeviceConnectionStatusProvider deviceConnectionStatusProvider) {
         this.connectionAdapter = connectionAdapter;
+        this.deviceConnectionStatusProvider = deviceConnectionStatusProvider;
     }
 
     @Override
@@ -137,6 +141,9 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         connectionState = ConnectionContext.CONNECTION_STATE.RIP;
+        if (deviceInfo != null) {
+            deviceConnectionStatusProvider.removeDeviceLastConnectionTime(deviceInfo.getDatapathId());
+        }
 
         SessionStatistics.countEvent(device, forced
                 ? SessionStatistics.ConnectionStatus.CONNECTION_DISCONNECTED_BY_OFP
