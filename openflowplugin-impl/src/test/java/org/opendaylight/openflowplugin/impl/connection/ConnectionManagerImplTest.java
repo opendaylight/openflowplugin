@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
@@ -24,6 +25,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -61,9 +63,12 @@ public class ConnectionManagerImplTest {
     private ArgumentCaptor<ConnectionReadyListener> connectionReadyListenerAC;
     @Captor
     private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
+    @Mock
+    DataBroker dataBroker;
 
     private static final long ECHO_REPLY_TIMEOUT = 500;
     private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final int DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = 60;
 
     @Before
     public void setUp() {
@@ -74,7 +79,8 @@ public class ConnectionManagerImplTest {
         connectionManagerImpl = new ConnectionManagerImpl(new OpenflowProviderConfigBuilder()
                 .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
                 .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
-                .build(), threadPool);
+                .setDeviceConnectionHoldTimeInSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS)
+                .build(), threadPool, dataBroker);
 
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
@@ -126,6 +132,10 @@ public class ConnectionManagerImplTest {
         final RpcResult<HelloOutput> helloResponse = RpcResultBuilder.success((HelloOutput) null).build();
         voidResponseFx.set(helloResponse);
 
+        //set dpn last connected time to be before dpn hold time seconds from now
+        connectionManagerImpl.getDeviceConnectionStatusProvider().addDeviceLastConnectionTime(BigInteger.TEN,
+                LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS));
+
         // send hello reply
         final HelloMessage hello = new HelloMessageBuilder().setVersion(OFConstants.OFP_VERSION_1_3).setXid(1L).build();
         ofpListenerAC.getValue().onHelloMessage(hello);
@@ -173,6 +183,9 @@ public class ConnectionManagerImplTest {
                 SettableFuture.create();
         Mockito.when(connection.getFeatures(any(GetFeaturesInput.class))).thenReturn(featureResponseFx);
 
+        //set dpn last connected time to be before dpn hold time seconds from now
+        connectionManagerImpl.getDeviceConnectionStatusProvider().addDeviceLastConnectionTime(BigInteger.TEN,
+                LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS));
 
         // fire handshake - send hello reply
         final HelloMessage hello = new HelloMessageBuilder().setVersion(OFConstants.OFP_VERSION_1_3).setXid(1L).build();

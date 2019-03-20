@@ -19,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDisconnectedHandler;
@@ -40,6 +41,8 @@ public class ConnectionContextImplTest {
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     @Mock
     private OutboundQueueProvider outboundQueueProvider;
+    @Mock
+    private DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
     private ConnectionContextImpl connectionContext;
 
@@ -49,7 +52,7 @@ public class ConnectionContextImplTest {
                 .thenReturn(InetSocketAddress.createUnresolved("ofp-ut.example.org", 4242));
         Mockito.when(connetionAdapter.isAlive()).thenReturn(true);
 
-        connectionContext = new ConnectionContextImpl(connetionAdapter);
+        connectionContext = new ConnectionContextImpl(connetionAdapter, deviceConnectionStatusProvider);
         connectionContext.setHandshakeContext(handshakeContext);
         connectionContext.setNodeId(new NodeId("ut-node:123"));
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueRegistration);
