@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
-    private static final int CONFIG_PROP_COUNT = 23;
+    private static final int CONFIG_PROP_COUNT = 24;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
     private static final int BARRIER_COUNT_LIMIT = 2000;
     private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
@@ -51,6 +51,7 @@ public class ConfigurationServiceFactoryImplTest {
     private static final int THREAD_POOL_MAX_THREADS = 1000;
     private static final long THREAD_POOL_TIMEOUT = 60;
     private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final int DEVICE_CONNECTION_HOLD_TIME = 60;
 
     @Mock
     private OpenflowProviderConfig config;
@@ -86,6 +87,7 @@ public class ConfigurationServiceFactoryImplTest {
         when(config.getThreadPoolMaxThreads()).thenReturn(new NonZeroUint16Type(THREAD_POOL_MAX_THREADS));
         when(config.getThreadPoolTimeout()).thenReturn(THREAD_POOL_TIMEOUT);
         when(config.getDeviceConnectionRateLimitPerMin()).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
+        when(config.getDeviceConnectionHoldTime()).thenReturn(DEVICE_CONNECTION_HOLD_TIME);
 
         final Map<String, String> properties = new Hashtable<>();
         properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),

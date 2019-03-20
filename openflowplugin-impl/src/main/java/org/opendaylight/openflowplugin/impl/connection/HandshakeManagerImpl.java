@@ -15,11 +15,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
@@ -59,6 +62,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
     private boolean useVersionBitmap; // not final just for unit test
 
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
+    private final int deviceConnectionHoldTime;
+    private final DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
     /**
      * Constructor.
@@ -69,10 +74,15 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param errorHandler      the ErrorHandler
      * @param handshakeListener the HandshakeListener
      * @param useVersionBitmap  should use negotiation bit map
+     * @param deviceConnectionRateLimiter  device connection rate limiter utility
+     * @param deviceConnectionHoldTime  deivce connection hold time in seconds
+     * @param deviceConnectionStatusProvider  utility for maintaining device connection states
      */
     public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
                                 ErrorHandler errorHandler, HandshakeListener handshakeListener,
-                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter) {
+                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter,
+                                int deviceConnectionHoldTime,
+                                DeviceConnectionStatusProvider deviceConnectionStatusProvider) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
@@ -80,6 +90,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
         this.handshakeListener = handshakeListener;
         this.useVersionBitmap = useVersionBitmap;
         this.deviceConnectionRateLimiter = deviceConnectionRateLimiter;
+        this.deviceConnectionHoldTime = deviceConnectionHoldTime;
+        this.deviceConnectionStatusProvider = deviceConnectionStatusProvider;
     }
 
     @Override
@@ -391,10 +403,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
-                            if (!deviceConnectionRateLimiter.tryAquire()) {
-                                LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
-                                        + " the connection from device {}", featureOutput.getDatapathId());
-                                connectionAdapter.disconnect();
+                            BigInteger nodeId = featureOutput.getDatapathId();
+                            if (!isAllowedToConnect(nodeId)) {
                                 return;
                             }
 
@@ -427,6 +437,30 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     }
                 }, MoreExecutors.directExecutor());
         LOG.debug("future features [{}] hooked ..", xid);
+    }
+
+    public boolean isAllowedToConnect(BigInteger nodeId) {
+        // The device isn't allowed for connection till device connection hold time is over
+        LocalDateTime lastConnectionTime = deviceConnectionStatusProvider.getDeviceLastConnectionTime(nodeId);
+        if (lastConnectionTime == null) {
+            LOG.debug("Initial connection attempt by device {} to the controller node. Allowing to connect after {}"
+                    + "seconds", nodeId, deviceConnectionHoldTime);
+            deviceConnectionStatusProvider.addDeviceLastConnectionTime(nodeId, LocalDateTime.now());
+            connectionAdapter.disconnect();
+            return false;
+        } else if (LocalDateTime.now().isBefore(lastConnectionTime.plusSeconds(deviceConnectionHoldTime))) {
+            LOG.trace("Device trying to connect before the connection delay {} seconds, disconnecting the device {}",
+                    deviceConnectionHoldTime, nodeId);
+            connectionAdapter.disconnect();
+            return false;
+        }
+
+        if (!deviceConnectionRateLimiter.tryAquire()) {
+            LOG.debug("Permit not acquired for device {}, disconnecting the device.", nodeId);
+            connectionAdapter.disconnect();
+            return false;
+        }
+        return true;
     }
 
     /**
