@@ -202,5 +202,15 @@ module openflow-provider-config {
             type uint16;
             default 0;
         }
+
+        leaf device-connection-hold-time-in-seconds {
+            description "device connection hold time is the least time delay in seconds a
+            device has to maintain between its consecutive connection attempts. If time delay
+            between the previous connection and the current connection is within device
+            connection hold time, the device will not be allowed to connect to the controller.
+            Default value of the device connection hold time is 0 second.";
+            type uint16;
+            default 0;
+        }
     }
 }
