@@ -282,7 +282,7 @@ public class OpenFlowPluginProviderImpl implements
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(roleManager);
 
-        connectionManager = new ConnectionManagerImpl(config, executorService);
+        connectionManager = new ConnectionManagerImpl(config, executorService, dataBroker);
         connectionManager.setDeviceConnectedHandler(contextChainHolder);
         connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
 
@@ -297,6 +297,7 @@ public class OpenFlowPluginProviderImpl implements
 
     @Override
     @PreDestroy
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         try {
             shutdownSwitchConnections().get(10, TimeUnit.SECONDS);
@@ -313,6 +314,14 @@ public class OpenFlowPluginProviderImpl implements
         gracefulShutdown(hashedWheelTimer);
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
         openflowDiagStatusProvider.reportStatus(ServiceState.UNREGISTERED);
+        try {
+            if (connectionManager != null) {
+                connectionManager.close();
+                connectionManager = null;
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to close ConnectionManager", e);
+        }
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")

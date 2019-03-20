@@ -25,6 +25,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
@@ -49,6 +50,8 @@ public class HandshakeListenerImplTest {
     private ConnectionAdapter connectionAdapter;
     @Mock
     private HandshakeContext handshakeContext;
+    @Mock
+    private DeviceConnectionStatusProvider deviceConnectionStatusProvider;
     @Captor
     private ArgumentCaptor<NodeId> nodeIdCaptor;
 
@@ -59,7 +62,8 @@ public class HandshakeListenerImplTest {
     public void setUp() {
         Mockito.when(connectionAdapter.barrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
-        connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
+        connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter,
+                deviceConnectionStatusProvider));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(features.getDatapathId()).thenReturn(Uint64.valueOf(10));
         handshakeListener = new HandshakeListenerImpl(connectionContextSpy, deviceConnectedHandler);
