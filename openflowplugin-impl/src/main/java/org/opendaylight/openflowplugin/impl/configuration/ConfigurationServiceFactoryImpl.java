@@ -87,6 +87,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getThreadPoolTimeout().toString())
                     .put(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
                             providerConfig.getDeviceConnectionRateLimitPerMin().toString())
+                    .put(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME.toString(),
+                            providerConfig.getDeviceConnectionHoldTime().toString())
                     .build());
         }
 
