@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
 import org.opendaylight.openflowplugin.impl.util.ThreadPoolLoggingExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -53,6 +54,8 @@ public class SystemNotificationsListenerImplTest {
     private ConnectionAdapter connectionAdapter;
     @Mock
     private FeaturesReply features;
+    @Mock
+    private DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
     private ConnectionContext connectionContext;
     private ConnectionContextImpl connectionContextGolem;
@@ -66,7 +69,7 @@ public class SystemNotificationsListenerImplTest {
 
     @Before
     public void setUp() {
-        connectionContextGolem = new ConnectionContextImpl(connectionAdapter);
+        connectionContextGolem = new ConnectionContextImpl(connectionAdapter, deviceConnectionStatusProvider);
         connectionContextGolem.changeStateToWorking();
         connectionContextGolem.setNodeId(NODE_ID);
         connectionContextGolem.setFeatures(features);

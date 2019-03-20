@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.anyShort;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -25,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeListener;
 import org.opendaylight.openflowplugin.impl.common.DeviceConnectionRateLimiter;
@@ -50,6 +53,8 @@ import org.slf4j.LoggerFactory;
 public class HandshakeManagerImplTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeManagerImplTest.class);
+    private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final int DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = 60;
 
     private HandshakeManagerImpl handshakeManager;
     @Mock
@@ -58,6 +63,8 @@ public class HandshakeManagerImplTest {
     private ErrorHandler errorHandler;
     @Mock
     private HandshakeListener handshakeListener;
+    @Mock
+    private DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
     private DeviceConnectionRateLimiter deviceConnectionRateLimiter;
 
@@ -67,8 +74,6 @@ public class HandshakeManagerImplTest {
 
     private int expectedErrors = 0;
 
-    private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
-
     /**
      * invoked before every test method.
      */
@@ -77,12 +82,16 @@ public class HandshakeManagerImplTest {
         deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(new OpenflowProviderConfigBuilder()
                 .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN).build());
         handshakeManager = new HandshakeManagerImpl(adapter, OFConstants.OFP_VERSION_1_3, OFConstants.VERSION_ORDER,
-                errorHandler, handshakeListener, false, deviceConnectionRateLimiter);
+                errorHandler, handshakeListener, false, deviceConnectionRateLimiter,
+                DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS, deviceConnectionStatusProvider);
 
-        resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().build()).build();
+        resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().setDatapathId(BigInteger.ONE).build())
+                .build();
 
         Mockito.when(adapter.hello(any(HelloInput.class)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder.success((HelloOutput) null).build()));
+        Mockito.when(deviceConnectionStatusProvider.getDeviceLastConnectionTime(BigInteger.ONE))
+                .thenReturn(LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS));
     }
 
     /**
