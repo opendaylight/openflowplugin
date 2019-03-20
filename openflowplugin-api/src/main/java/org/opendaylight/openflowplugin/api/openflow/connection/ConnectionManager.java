@@ -17,7 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceDiscon
  * It instantiates and registers {@link ConnectionContext}
  * used for handling all communication with device when onSwitchConnected notification is processed.
  */
-public interface ConnectionManager extends SwitchConnectionHandler {
+public interface ConnectionManager extends SwitchConnectionHandler, AutoCloseable {
 
     /**
      * Method registers handler responsible handling operations related to connected device after
