@@ -18,6 +18,7 @@ import com.google.common.util.concurrent.Futures;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
@@ -89,6 +90,7 @@ public class OpenFlowPluginProviderImplTest {
     private static final long BASIC_TIMER_DELAY = 1L;
     private static final boolean USE_SINGLE_LAYER_SERIALIZATION = false;
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
+    private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
 
     @Before
     public void setUp() {
@@ -109,6 +111,9 @@ public class OpenFlowPluginProviderImplTest {
                 .thenReturn(THREAD_POOL_TIMEOUT);
         when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString()),
                 any())).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
+        when(configurationService.getProperty(
+                Matchers.eq(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString()),
+                Matchers.any())).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
     }
 
     @Test

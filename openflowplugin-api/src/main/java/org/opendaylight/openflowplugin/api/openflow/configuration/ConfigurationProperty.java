@@ -115,7 +115,11 @@ public enum ConfigurationProperty {
     /**
      * Device connection rate limit property type.
      */
-    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN;
+    DEVICE_CONNECTION_RATE_LIMIT_PER_MIN,
+    /**
+     * Device connection hold time property type.
+     */
+    DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
