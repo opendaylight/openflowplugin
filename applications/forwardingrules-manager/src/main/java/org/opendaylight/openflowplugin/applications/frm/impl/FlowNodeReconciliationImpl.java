@@ -236,9 +236,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         }, MoreExecutors.directExecutor());
 
                 /* Commit the bundle on the openflow switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture
-                        = Futures.transformAsync(addbundlesFuture, rpcResult ->
-                        salBundleService.controlBundle(commitBundleInput), MoreExecutors.directExecutor());
+                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
+                        addbundlesFuture, rpcResult -> {
+                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
+                        return salBundleService.controlBundle(commitBundleInput);
+                    }, MoreExecutors.directExecutor());
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
@@ -261,6 +263,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
                         return true;
                     } else {
+                        LOG.error("commit bundle failed for device {} with error {}", dpnId,
+                                commitBundleFuture.get().getErrors());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {

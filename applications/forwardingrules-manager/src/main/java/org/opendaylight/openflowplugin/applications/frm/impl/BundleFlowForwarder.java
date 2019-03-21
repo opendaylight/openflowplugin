@@ -58,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -172,12 +173,15 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         }, MoreExecutors.directExecutor());
                     } else {
                         LOG.debug("Group {} not present in the config inventory", groupId);
-                        resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>success()
-                                .build());
+                        resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>failed()
+                                .withError(RpcError.ErrorType.APPLICATION,
+                                        "Group " + groupId + " not present in the config inventory").build());
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     LOG.error("Error while reading group from config datastore for the group ID {}", groupId, e);
-                    resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>success().build());
+                    resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>failed()
+                            .withError(RpcError.ErrorType.APPLICATION,
+                                    "Group " + groupId + " not present in the config inventory").build());
                 }
             }
         } else {
@@ -236,6 +240,8 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                     }
                 },  MoreExecutors.directExecutor());
             } else {
+                LOG.error("Error {} while pushing flow add bundle {} for device {}", rpcResult.getErrors(), messages,
+                        nodeId.getValue());
                 resultFuture.set(rpcResult);
             }
         }
