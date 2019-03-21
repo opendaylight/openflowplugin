@@ -99,6 +99,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,8 +262,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Commit the bundle on the openflow switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
                         addbundlesFuture, rpcResult -> {
+                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
                         return JdkFutureAdapters.listenInPoolThread(
-                                    salBundleService.controlBundle(commitBundleInput));
+                                salBundleService.controlBundle(commitBundleInput));
                     }, MoreExecutors.directExecutor());
 
                 /* Bundles not supported for meters */
@@ -287,10 +289,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
                         return true;
                     } else {
+                        List<RpcError> errors = new ArrayList<>(commitBundleFuture.get().getErrors());
                         reconciliationState.setStatus(FAILED);
                         reconciliationState.setTime(LocalDateTime.now());
-                        LOG.error("commit bundle failed for device {}", dpnId);
-
+                        LOG.error("commit bundle failed for device {} with error {}", dpnId, errors);
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
