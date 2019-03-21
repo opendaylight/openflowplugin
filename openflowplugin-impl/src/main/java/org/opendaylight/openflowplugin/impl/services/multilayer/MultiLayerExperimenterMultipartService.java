@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -16,7 +15,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -71,7 +69,7 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
         final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice,
             ConvertorData> messageConverter = getExtensionConverterProvider().getMessageConverter(key);
 
-        if (Objects.isNull(messageConverter)) {
+        if (messageConverter == null) {
             throw new ServiceException(new ConverterNotFoundException(key.toString()));
         }
 

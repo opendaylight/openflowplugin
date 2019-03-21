@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
@@ -35,14 +33,14 @@ public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
     public boolean matchTypeCheck(Match match) {
-        return Objects.nonNull(match.getLayer3Match())
+        return match.getLayer3Match() != null
                 && match.getLayer3Match() instanceof Ipv6Match
-                && Objects.nonNull(((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader());
+                && ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader() != null;
     }
 
     @Override
     protected boolean getHasMask(Match match) {
-        return Objects.nonNull(((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader().getIpv6ExthdrMask());
+        return ((Ipv6Match) match.getLayer3Match()).getIpv6ExtHeader().getIpv6ExthdrMask() != null;
     }
 
     @Override
@@ -59,5 +57,4 @@ public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer {
     protected int getValueLength() {
         return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
     }
-
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -48,8 +47,7 @@ import org.slf4j.LoggerFactory;
 
 public final class MatchExtensionHelper {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MatchExtensionHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MatchExtensionHelper.class);
 
     private MatchExtensionHelper() {
         throw new IllegalAccessError("singleton enforcement");
@@ -70,19 +68,18 @@ public final class MatchExtensionHelper {
 
         final ExtensionListBuilder extBuilder = processExtension(matchEntry, ofVersion, matchPath);
 
-        if (Objects.isNull(extBuilder)) {
-            LOG.warn("Convertor for {} for version {} with match path {} not found.",
-                    matchEntry.toString(),
-                    ofVersion,
-                    matchPath.name());
-        }
-
         final GeneralAugMatchNodesNodeTableFlowBuilder builder = Optional
                 .ofNullable(matchBuilder.augmentation(GeneralAugMatchNodesNodeTableFlow.class))
                 .map(GeneralAugMatchNodesNodeTableFlowBuilder::new)
                 .orElse(new GeneralAugMatchNodesNodeTableFlowBuilder().setExtensionList(new ArrayList<>()));
 
-        builder.getExtensionList().add(extBuilder.build());
+        if (extBuilder != null) {
+            builder.getExtensionList().add(extBuilder.build());
+        } else {
+            LOG.warn("Convertor for {} for version {} with match path {} not found.",
+                    matchEntry, ofVersion, matchPath.name());
+        }
+
         matchBuilder.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, builder.build());
     }
 

@@ -197,11 +197,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     @Override
     public void store(final FlowRegistryKey flowRegistryKey) {
-        if (Objects.isNull(retrieveDescriptor(flowRegistryKey))) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Flow descriptor for flow hash : {} not found, generating alien flow ID",
-                        flowRegistryKey.toString());
-            }
+        if (retrieveDescriptor(flowRegistryKey) == null) {
+            LOG.debug("Flow descriptor for flow hash : {} not found, generating alien flow ID", flowRegistryKey);
 
             // We do not found flow in flow registry, that means it do not have any ID already assigned, so we need
             // to generate new alien flow ID here.

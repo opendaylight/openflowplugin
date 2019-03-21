@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
 
@@ -27,11 +25,10 @@ public class TcpFlagsEntryDeserializer extends AbstractMatchEntryDeserializer {
             tcpFlagsBuilder.setTcpFlagsMask(message.readUnsignedShort());
         }
 
-        if (Objects.isNull(builder.getTcpFlagsMatch())) {
+        if (builder.getTcpFlagsMatch() == null) {
             builder.setTcpFlagsMatch(tcpFlagsBuilder.build());
         } else {
             throwErrorOnMalformed(builder, "tcpFlagsMatch");
         }
     }
-
 }

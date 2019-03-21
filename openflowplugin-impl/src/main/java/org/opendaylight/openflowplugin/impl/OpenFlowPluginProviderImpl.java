@@ -19,7 +19,6 @@ import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -316,38 +315,32 @@ public class OpenFlowPluginProviderImpl implements
 
     @SuppressWarnings("checkstyle:IllegalCatch")
     private static void gracefulShutdown(final AutoCloseable closeable) {
-        if (Objects.isNull(closeable)) {
-            return;
-        }
-
-        try {
-            closeable.close();
-        } catch (Exception e) {
-            LOG.warn("Failed to shutdown {} gracefully.", closeable);
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                LOG.warn("Failed to shutdown {} gracefully.", closeable);
+            }
         }
     }
 
     private static void gracefulShutdown(final Timer timer) {
-        if (Objects.isNull(timer)) {
-            return;
-        }
-
-        try {
-            timer.stop();
-        } catch (IllegalStateException e) {
-            LOG.warn("Failed to shutdown {} gracefully.", timer);
+        if (timer != null) {
+            try {
+                timer.stop();
+            } catch (IllegalStateException e) {
+                LOG.warn("Failed to shutdown {} gracefully.", timer);
+            }
         }
     }
 
     private static void gracefulShutdown(final ExecutorService executorService) {
-        if (Objects.isNull(executorService)) {
-            return;
-        }
-
-        try {
-            executorService.shutdownNow();
-        } catch (SecurityException e) {
-            LOG.warn("Failed to shutdown {} gracefully.", executorService);
+        if (executorService != null) {
+            try {
+                executorService.shutdownNow();
+            } catch (SecurityException e) {
+                LOG.warn("Failed to shutdown {} gracefully.", executorService);
+            }
         }
     }
 

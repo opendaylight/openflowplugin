@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -39,7 +38,7 @@ public final class ActionExtensionHelper {
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action alienAction = null;
         final ExtensionConverterProvider extensionConvertorProvider = OFSessionUtil.getExtensionConvertorProvider();
 
-        if (Objects.isNull(extensionConvertorProvider)) {
+        if (extensionConvertorProvider == null) {
             return null;
         }
 

@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.util;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -43,11 +41,13 @@ public final class ActionUtil {
     public static Action readAction(short version, ByteBuf message, DeserializerRegistry registry,
                                     ActionPath path) {
         int type = message.getUnsignedShort(message.readerIndex());
-        Long expId = null;
+        final Long expId;
 
         if (type == EncodeConstants.EXPERIMENTER_VALUE) {
             expId = message.getUnsignedInt(message.readerIndex()
                     + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        } else {
+            expId = null;
         }
 
         try {
@@ -58,9 +58,7 @@ public final class ActionUtil {
 
             return deserializer.deserialize(message);
         } catch (ClassCastException | IllegalStateException e) {
-            final MessageCodeKey key = Objects.nonNull(expId)
-                    ? new ExperimenterActionDeserializerKey(version, expId)
-                    : new ActionDeserializerKey(version, type, expId);
+            final MessageCodeKey key = getCodeKey(version, type, expId);
 
             final OFDeserializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                     .actions.grouping.Action> deserializer = registry.getDeserializer(key);
@@ -82,11 +80,13 @@ public final class ActionUtil {
     public static Action readActionHeader(short version, ByteBuf message, DeserializerRegistry registry,
                                           ActionPath path) {
         int type = message.getUnsignedShort(message.readerIndex());
-        Long expId = null;
+        final Long expId;
 
         if (type == EncodeConstants.EXPERIMENTER_VALUE) {
             expId = message.getUnsignedInt(message.readerIndex()
                     + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        } else {
+            expId = null;
         }
 
         try {
@@ -97,9 +97,7 @@ public final class ActionUtil {
 
             return deserializer.deserializeHeader(message);
         } catch (ClassCastException | IllegalStateException e) {
-            final MessageCodeKey key = Objects.nonNull(expId)
-                    ? new ExperimenterActionDeserializerKey(version, expId)
-                    : new ActionDeserializerKey(version, type, expId);
+            final MessageCodeKey key = getCodeKey(version, type, expId);
 
             final HeaderDeserializer<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                     .actions.grouping.Action> deserializer = registry.getDeserializer(key);
@@ -109,4 +107,8 @@ public final class ActionUtil {
         }
     }
 
+    private static MessageCodeKey getCodeKey(short version, int type, Long expId) {
+        return expId != null ? new ExperimenterActionDeserializerKey(version, expId)
+                : new ActionDeserializerKey(version, type, null);
+    }
 }
