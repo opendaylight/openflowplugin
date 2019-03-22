@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMaster
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceInitializationContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.GuardedContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkStep;
 import org.slf4j.Logger;
@@ -39,9 +40,7 @@ public class ContextChainImpl implements ContextChain {
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     private final AtomicBoolean masterStateOnDevice = new AtomicBoolean(false);
-    private final AtomicBoolean initialGathering = new AtomicBoolean(false);
     private final AtomicBoolean initialSubmitting = new AtomicBoolean(false);
-    private final AtomicBoolean registryFilling = new AtomicBoolean(false);
     private final AtomicBoolean rpcRegistration = new AtomicBoolean(false);
     private final List<DeviceRemovedHandler> deviceRemovedHandlers = new CopyOnWriteArrayList<>();
     private final List<GuardedContext> contexts = new CopyOnWriteArrayList<>();
@@ -173,21 +172,10 @@ public class ContextChainImpl implements ContextChain {
                 OF_EVENT_LOG.debug("Device {}, master state OK.", deviceInfo);
                 this.masterStateOnDevice.set(true);
                 break;
-            case INITIAL_GATHERING:
-                LOG.debug("Device {}, initial gathering OK.", deviceInfo);
-                OF_EVENT_LOG.debug("Device {}, initial gathering OK.", deviceInfo);
-                this.initialGathering.set(true);
-                break;
             case RPC_REGISTRATION:
                 LOG.debug("Device {}, RPC registration OK.", deviceInfo);
                 OF_EVENT_LOG.debug("Device {}, RPC registration OK.", deviceInfo);
                 this.rpcRegistration.set(true);
-                break;
-            case INITIAL_FLOW_REGISTRY_FILL:
-                // Flow registry fill is not mandatory to work as a master
-                LOG.debug("Device {}, initial registry filling OK.", deviceInfo);
-                OF_EVENT_LOG.debug("Device {}, initial registry filling OK.", deviceInfo);
-                this.registryFilling.set(true);
                 break;
             case CHECK:
                 // no operation
@@ -197,12 +185,11 @@ public class ContextChainImpl implements ContextChain {
                 break;
         }
 
-        final boolean result = initialGathering.get() && masterStateOnDevice.get() && rpcRegistration.get()
+        final boolean result = masterStateOnDevice.get() && rpcRegistration.get()
                 && inReconciliationFrameworkStep || initialSubmitting.get();
 
         if (!inReconciliationFrameworkStep && result && mastershipState != ContextChainMastershipState.CHECK) {
-            LOG.info("Device {} is able to work as master{}", deviceInfo,
-                     registryFilling.get() ? "." : " WITHOUT flow registry !!!");
+            LOG.info("Device {} is able to work as master", deviceInfo);
             changeMastershipState(ContextChainState.WORKING_MASTER);
         }
 
@@ -219,6 +206,15 @@ public class ContextChainImpl implements ContextChain {
         contexts.forEach(context -> {
             if (context.map(ReconciliationFrameworkStep.class::isInstance)) {
                 context.map(ReconciliationFrameworkStep.class::cast).continueInitializationAfterReconciliation();
+            }
+        });
+    }
+
+    @Override
+    public void initializeDevice() {
+        contexts.forEach(context -> {
+            if (context.map(DeviceInitializationContext.class::isInstance)) {
+                context.map(DeviceInitializationContext.class::cast).initializeDevice();
             }
         });
     }
@@ -258,9 +254,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     private void unMasterMe() {
-        registryFilling.set(false);
         initialSubmitting.set(false);
-        initialGathering.set(false);
         masterStateOnDevice.set(false);
         rpcRegistration.set(false);
     }

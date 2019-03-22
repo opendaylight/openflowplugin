@@ -49,6 +49,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceInitializationContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -105,7 +106,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
+public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper, DeviceInitializationContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
@@ -621,12 +622,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
     }
 
+    @Override
+    public void instantiateServiceInstance() {
+        lazyTransactionManagerInitialization();
+    }
+
     // TODO: exception handling should be fixed by using custom checked exception, never RuntimeExceptions
     @Override
     @SuppressWarnings({"checkstyle:IllegalCatch"})
-    public void instantiateServiceInstance() {
-        lazyTransactionManagerInitialization();
-
+    public void initializeDevice() {
+        LOG.debug("Device initialization started for device {}", deviceInfo);
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
                     .retrieveAndClearPortStatusMessages();
@@ -743,8 +748,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo);
             }
-            this.contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState
-                    .INITIAL_FLOW_REGISTRY_FILL);
         }
 
         @Override
