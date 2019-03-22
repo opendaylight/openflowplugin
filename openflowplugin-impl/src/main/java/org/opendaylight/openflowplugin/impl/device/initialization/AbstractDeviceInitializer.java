@@ -44,7 +44,7 @@ public abstract class AbstractDeviceInitializer {
         Preconditions.checkNotNull(deviceContext);
 
         // Write node to datastore
-        LOG.debug("Initializing node information for node {}", deviceContext.getDeviceInfo());
+        LOG.info("Initializing node information for node {}", deviceContext.getDeviceInfo());
         try {
             deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL, deviceContext
                     .getDeviceInfo()
@@ -53,6 +53,7 @@ public abstract class AbstractDeviceInitializer {
                     .setId(deviceContext.getDeviceInfo().getNodeId())
                     .setNodeConnector(Collections.emptyList())
                     .build());
+            LOG.info("Finished writing node info for node {} into operational DS", deviceContext.getDeviceInfo());
         } catch (final Exception e) {
             LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);
             return Futures.immediateFailedFuture(new ConnectionException(

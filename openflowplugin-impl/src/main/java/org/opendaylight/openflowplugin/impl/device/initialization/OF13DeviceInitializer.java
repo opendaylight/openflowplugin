@@ -55,8 +55,9 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
         final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
-        LOG.debug("Setting capabilities for device {}", deviceInfo);
+        LOG.info("Setting capabilities for device {}", deviceInfo);
         DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
+        LOG.info("Capabilities for device {} are set", deviceInfo);
 
         // First process description reply, write data to DS and write consequent data if successful
         return Futures.transformAsync(
@@ -68,6 +69,9 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     deviceContext,
                     multipartWriterProvider,
                     convertorExecutor);
+                LOG.info("Multipart reply translation is done for device {} and info {}", deviceInfo,
+                        input.getResult().stream().map(r -> r.getClass().getSimpleName())
+                                .collect(Collectors.joining(",")));
 
                 final List<ListenableFuture<RpcResult<List<OfHeader>>>> futures = new ArrayList<>();
                 futures.add(requestAndProcessMultipart(MultipartType.OFPMPMETERFEATURES, deviceContext,
@@ -239,8 +243,12 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             return Futures.transform(service.handleServiceCall(multipartType),
                 input -> {
                     if (input.getResult() == null && input.isSuccessful()) {
+                        LOG.info("Multipart response for multiparttype {} and device {}, is empty",
+                                multipartType.getName(), deviceContext.getDeviceInfo());
                         return RpcResultBuilder.<List<OfHeader>>success(null).build();
                     }
+                    LOG.info("Multipart response received for multiparttype {} and device {}", multipartType.getName(),
+                            deviceContext.getDeviceInfo());
 
                     return input.isSuccessful()
                             ? RpcResultBuilder.success(input

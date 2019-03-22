@@ -28,6 +28,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -111,6 +112,9 @@ public abstract class AbstractService<I, O> {
 
     public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input,
             @Nullable final Function<OfHeader, Boolean> isComplete) {
+        if (input instanceof MultipartType) {
+            LOG.error("Abstract service request received for device {} for type Multiplart", getDeviceInfo());
+        }
         Preconditions.checkNotNull(input);
 
         final Class<?> requestType = input instanceof DataContainer
@@ -118,8 +122,6 @@ public abstract class AbstractService<I, O> {
             : input.getClass();
 
         getMessageSpy().spyMessage(requestType, MessageSpy.StatisticsGroup.TO_SWITCH_ENTERED);
-
-        LOG.trace("Handling general service call");
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
 
         if (requestContext == null) {
@@ -157,9 +159,14 @@ public abstract class AbstractService<I, O> {
                     getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
             if (isComplete != null) {
+
+                if (input instanceof MultipartType) {
+                    LOG.error("Abstract service request committing msg for device {} for type Multiplart",
+                            getDeviceInfo());
+                }
                 outboundQueue.commitEntry(xid.getValue(),
                                           request,
-                                          createCallback(requestContext, requestType), isComplete);
+                                          createCallback(requestContext, requestType), isComplete, datapathId);
             } else {
                 outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
             }

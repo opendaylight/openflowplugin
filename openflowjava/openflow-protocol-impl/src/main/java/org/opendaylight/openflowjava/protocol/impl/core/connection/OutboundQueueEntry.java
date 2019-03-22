@@ -11,6 +11,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import java.math.BigInteger;
 import java.util.function.Function;
 
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueException;
@@ -44,13 +45,39 @@ final class OutboundQueueEntry {
     }
 
     void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback,
-            final Function<OfHeader, Boolean> isCommitCompletedFunction) {
+                final Function<OfHeader, Boolean> isCommitCompletedFunction) {
         if (this.completed) {
             LOG.warn("Can't commit a completed message.");
             if (commitCallback != null) {
                 commitCallback.onFailure(new OutboundQueueException("Can't commit a completed message."));
             }
         } else {
+            this.message = messageToCommit;
+            this.callback = commitCallback;
+            this.barrier = messageToCommit instanceof BarrierInput;
+            this.isCompletedFunction = isCommitCompletedFunction;
+
+            // Volatile write, needs to be last
+            this.committed = true;
+        }
+    }
+
+    void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback,
+                final Function<OfHeader, Boolean> isCommitCompletedFunction, final BigInteger datapathId) {
+        if (messageToCommit.getClass().getSimpleName().equals("MultipartRequestImpl")) {
+            LOG.error("Received outbound queue entry commit request for message type multipart request for device {}",
+                    datapathId);
+        }
+        if (this.completed) {
+            LOG.warn("Can't commit a completed message.");
+            if (commitCallback != null) {
+                commitCallback.onFailure(new OutboundQueueException("Can't commit a completed message."));
+            }
+        } else {
+            if (messageToCommit.getClass().getSimpleName().equals("MultipartRequestImpl")) {
+                LOG.error("Committed outbound queue entry request for message type multipart request for device {}",
+                        datapathId);
+            }
             this.message = messageToCommit;
             this.callback = commitCallback;
             this.barrier = messageToCommit instanceof BarrierInput;

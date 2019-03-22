@@ -13,6 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,6 +78,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     // Updated from netty only
     private boolean alreadyReading;
     protected boolean shuttingDown;
+    private BigInteger datapathId;
 
     // Passed to executor to request triggering of flush
     protected final Runnable flushRunnable = this::flush;
@@ -143,6 +145,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
         // will be the queue becoming writable).
         writeAndFlush();
         alreadyReading = false;
+        LOG.info("channelReadComplete for device {} and changed to state {}", datapathId, state);
     }
 
     @Override
@@ -183,6 +186,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
         // (and repeated) chance to detect reading. Since this callback can be invoked
         // multiple times, we keep a boolean we check. That prevents a volatile write
         // on repeated invocations. It will be cleared in channelReadComplete().
+        LOG.info("channelRead started for device {} and state {}", datapathId, state);
         if (!alreadyReading) {
             alreadyReading = true;
             state = PipelineState.READING;
@@ -218,6 +222,34 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
         // flush state.
         final PipelineState localState = state;
         LOG.debug("Synchronize on pipeline state {}", localState);
+        switch (localState) {
+            case READING:
+                // Netty thread is currently reading, it will flush the pipeline once it
+                // finishes reading. This is a no-op situation.
+                break;
+            case WRITING:
+            case IDLE:
+            default:
+                // We cannot rely on the change being flushed, schedule a request
+                scheduleFlush();
+        }
+    }
+
+    @SuppressWarnings("checkstyle:hiddenfield")
+    void ensureFlushing(BigInteger datapathId) {
+        // If the channel is not writable, there's no point in waking up,
+        // once we become writable, we will run a full flush
+        if (!parent.getChannel().isWritable()) {
+            return;
+        }
+        if (this.datapathId == null) {
+            this.datapathId = datapathId;
+        }
+
+        // We are currently reading something, just a quick sync to ensure we will in fact
+        // flush state.
+        final PipelineState localState = state;
+        LOG.error("Synchronize on pipeline state {} for device {}", localState, datapathId);
         switch (localState) {
             case READING:
                 // Netty thread is currently reading, it will flush the pipeline once it
