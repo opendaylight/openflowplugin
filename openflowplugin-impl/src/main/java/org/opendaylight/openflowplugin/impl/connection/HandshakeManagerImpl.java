@@ -15,6 +15,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -392,15 +394,17 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
+                            BigInteger datapathId = featureOutput.getDatapathId();
+                            connectionAdapter.setDatapathId(datapathId);
                             if (!deviceConnectionRateLimiter.tryAquire()) {
                                 LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
-                                        + " the connection from device {}", featureOutput.getDatapathId());
+                                        + " the connection from device {}", datapathId);
                                 connectionAdapter.disconnect();
                                 return;
                             }
 
-                            LOG.debug("obtained features: datapathId={}", featureOutput.getDatapathId());
-                            LOG.debug("obtained features: auxiliaryId={}", featureOutput.getAuxiliaryId());
+                            LOG.debug("obtained features: datapathId={}", datapathId);
+                            LOG.debug("obtained features: auxiliaryId={}", datapathId);
                             LOG.trace("handshake SETTLED: version={}, datapathId={}, auxiliaryId={}",
                                       version, featureOutput.getDatapathId(),
                                       featureOutput.getAuxiliaryId());

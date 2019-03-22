@@ -153,7 +153,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public void instantiateServiceInstance() {
+    public void instantiateServiceInstance() {}
+
+    @Override
+    public void initializeDevice() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
 
         if (devState.isTableStatisticsAvailable() && config.isIsTableStatisticsPollingOn()) {
