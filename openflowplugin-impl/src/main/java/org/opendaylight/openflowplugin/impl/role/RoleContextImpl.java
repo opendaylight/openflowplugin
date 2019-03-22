@@ -99,7 +99,7 @@ public class RoleContextImpl implements RoleContext {
     public void instantiateServiceInstance() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
         changeLastRoleFuture(future);
-        Futures.addCallback(future, new MasterRoleCallback(), MoreExecutors.directExecutor());
+        Futures.addCallback(future, new MasterRoleCallback(), MoreExecutors.newDirectExecutorService());
     }
 
     @Override
@@ -181,10 +181,10 @@ public class RoleContextImpl implements RoleContext {
     private final class MasterRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
         public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+            LOG.info("Role MASTER was successfully set on device, node {}", deviceInfo);
             contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE);
-            LOG.debug("Role MASTER was successfully set on device, node {}", deviceInfo);
         }
 
         @Override

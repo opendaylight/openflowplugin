@@ -18,10 +18,15 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMultipartRequestCallback;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMultipartRequestCallback;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMultipartService<I, T extends OfHeader> extends AbstractService<I, List<T>> {
+
+    private static final Logger LOG = LoggerFactory.getLogger("AbstractMultipartService");
 
     private static final Function<OfHeader, Boolean> ALTERNATE_IS_COMPLETE = message ->
         !(message instanceof MultipartReply) || !((MultipartReply) message).isRequestMore();
@@ -40,6 +45,10 @@ public abstract class AbstractMultipartService<I, T extends OfHeader> extends Ab
 
     @Override
     public final ListenableFuture<RpcResult<List<T>>> handleServiceCall(@Nonnull final I input) {
+        if (input instanceof MultipartType) {
+            LOG.error("Multiplart request received for device {} for type {}", getDeviceInfo(),
+                    ((MultipartType)input).getName());
+        }
         return canUseSingleLayerSerialization()
             ? super.handleServiceCall(input, ALTERNATE_IS_COMPLETE)
             : super.handleServiceCall(input);

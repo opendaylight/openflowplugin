@@ -22,6 +22,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
+import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemovedHandler;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
@@ -31,6 +32,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateListener;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.GuardedContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkStep;
+import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,7 +189,7 @@ public class ContextChainImpl implements ContextChain {
                 break;
         }
 
-        final boolean result = initialGathering.get() && masterStateOnDevice.get() && rpcRegistration.get()
+        final boolean result = masterStateOnDevice.get() && rpcRegistration.get()
                 && inReconciliationFrameworkStep || initialSubmitting.get();
 
         if (!inReconciliationFrameworkStep && result && mastershipState != ContextChainMastershipState.CHECK) {
@@ -209,6 +211,17 @@ public class ContextChainImpl implements ContextChain {
         contexts.forEach(context -> {
             if (context.map(ReconciliationFrameworkStep.class::isInstance)) {
                 context.map(ReconciliationFrameworkStep.class::cast).continueInitializationAfterReconciliation();
+            }
+        });
+    }
+
+    @Override
+    public void initializeDevice() {
+        contexts.forEach(context -> {
+            if (context.map(DeviceContext.class::isInstance)) {
+                context.map(DeviceContext.class::cast).initializeDevice();
+            } else if (context.map(StatisticsContext.class::isInstance)) {
+                context.map(StatisticsContext.class::cast).initializeDevice();
             }
         });
     }
