@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
+import java.math.BigInteger;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -83,7 +84,16 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
 
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
-            final Function<OfHeader, Boolean> isComplete) {
+                            final Function<OfHeader, Boolean> isComplete) {
         outboundQueue.commitEntry(xid, message, callback, isComplete);
+    }
+
+    @Override
+    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
+                            final Function<OfHeader, Boolean> isComplete, final BigInteger datapathId) {
+        if (message.getClass().getSimpleName().equals("MultipartRequestImpl")) {
+            LOG.error("MultipartRequestImpl received for device {}", datapathId);
+        }
+        outboundQueue.commitEntry(xid, message, callback, isComplete, datapathId);
     }
 }
