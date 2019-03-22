@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,8 +18,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -38,7 +41,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 @RunWith(MockitoJUnitRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RoleContextImplTest {
+    // Timeout  after what we will give up on propagating role
+    private static final long SET_ROLE_TIMEOUT = 10000;
     @Mock
     private SalRoleService roleService;
     @Mock
@@ -77,13 +83,13 @@ public class RoleContextImplTest {
                 .setControllerRole(OfpRole.BECOMEMASTER)
                 .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                 .build());
-        verify(contextChainMastershipWatcher).onMasterRoleAcquired(
+        verify(contextChainMastershipWatcher, timeout(SET_ROLE_TIMEOUT)).onMasterRoleAcquired(
                 deviceInfo,
                 ContextChainMastershipState.MASTER_ON_DEVICE);
     }
 
     @Test
-    public void closeServiceInstance() throws Exception {
+    public void terminateServiceInstance() throws Exception {
         when(setRoleFuture.isCancelled()).thenReturn(false);
         when(setRoleFuture.isDone()).thenReturn(false);
         when(roleService.setRole(any())).thenReturn(setRoleFuture);
