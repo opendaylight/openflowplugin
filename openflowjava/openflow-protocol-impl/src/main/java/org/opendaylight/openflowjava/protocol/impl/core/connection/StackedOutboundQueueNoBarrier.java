@@ -34,7 +34,7 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
      */
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
-            final Function<OfHeader, Boolean> isCompletedFunction) {
+                            final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid);
 
         if (message instanceof FlowModInput) {

@@ -44,7 +44,7 @@ final class OutboundQueueEntry {
     }
 
     void commit(final OfHeader messageToCommit, final FutureCallback<OfHeader> commitCallback,
-            final Function<OfHeader, Boolean> isCommitCompletedFunction) {
+                final Function<OfHeader, Boolean> isCommitCompletedFunction) {
         if (this.completed) {
             LOG.warn("Can't commit a completed message.");
             if (commitCallback != null) {

@@ -83,7 +83,7 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
 
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
-            final Function<OfHeader, Boolean> isComplete) {
+                            final Function<OfHeader, Boolean> isComplete) {
         outboundQueue.commitEntry(xid, message, callback, isComplete);
     }
 }

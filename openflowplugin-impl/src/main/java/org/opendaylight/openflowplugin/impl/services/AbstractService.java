@@ -118,8 +118,6 @@ public abstract class AbstractService<I, O> {
             : input.getClass();
 
         getMessageSpy().spyMessage(requestType, MessageSpy.StatisticsGroup.TO_SWITCH_ENTERED);
-
-        LOG.trace("Handling general service call");
         final RequestContext<O> requestContext = requestContextStack.createRequestContext();
 
         if (requestContext == null) {

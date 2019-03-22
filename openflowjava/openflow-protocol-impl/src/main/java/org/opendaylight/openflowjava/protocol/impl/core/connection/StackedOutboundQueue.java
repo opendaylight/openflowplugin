@@ -30,7 +30,7 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
      */
     @Override
     public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
-            final Function<OfHeader, Boolean> isCompletedFunction) {
+                            final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid);
 
         entry.commit(message, callback, isCompletedFunction);
