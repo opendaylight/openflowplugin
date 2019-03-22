@@ -400,7 +400,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                             }
 
                             LOG.debug("obtained features: datapathId={}", featureOutput.getDatapathId());
-                            LOG.debug("obtained features: auxiliaryId={}", featureOutput.getAuxiliaryId());
+                            LOG.debug("obtained features: auxiliaryId={}", featureOutput.getDatapathId());
                             LOG.trace("handshake SETTLED: version={}, datapathId={}, auxiliaryId={}",
                                       version, featureOutput.getDatapathId(),
                                       featureOutput.getAuxiliaryId());
