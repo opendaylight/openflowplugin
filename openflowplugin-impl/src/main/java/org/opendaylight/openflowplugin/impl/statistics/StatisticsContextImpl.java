@@ -150,7 +150,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public void instantiateServiceInstance() {
+    public void instantiateServiceInstance() {}
+
+    @Override
+    public void initializeDevice() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
 
         if (devState.isTableStatisticsAvailable() && config.isIsTableStatisticsPollingOn()) {
@@ -318,9 +321,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final class InitialSubmitCallback implements FutureCallback<Boolean> {
         @Override
         public void onSuccess(@Nullable final Boolean result) {
-            contextChainMastershipWatcher
-                    .onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
-
             if (!isUsingReconciliationFramework) {
                 continueInitializationAfterReconciliation();
             }
