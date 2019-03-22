@@ -78,4 +78,9 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * @param deviceRemovedHandler device removed handler
      */
     void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
+
+    /**
+     * This method intializes the device once mastership role is acquired.
+     */
+    void initializeDevice();
 }
