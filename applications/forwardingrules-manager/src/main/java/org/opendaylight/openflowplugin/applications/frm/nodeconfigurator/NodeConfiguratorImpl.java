@@ -97,7 +97,7 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
 
                 @Override
                 public void onFailure(final Throwable cause) {
-                    LOG.error("Job {} failed", jobEntry.getKey(), cause);
+                    LOG.error("Job {} failed {}", jobEntry.getKey(), cause.getMessage());
                 }
             }, MoreExecutors.directExecutor());
         }
