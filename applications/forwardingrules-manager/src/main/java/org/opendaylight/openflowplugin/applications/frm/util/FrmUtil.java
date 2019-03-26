@@ -108,7 +108,7 @@ public final class FrmUtil {
                 return result.getResult().getResult();
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Error while retrieving active bundle present for node {}", dpId , e);
+            LOG.error("Error while retrieving active bundle present for node {}", dpId , e.getMessage());
         }
         return null;
     }

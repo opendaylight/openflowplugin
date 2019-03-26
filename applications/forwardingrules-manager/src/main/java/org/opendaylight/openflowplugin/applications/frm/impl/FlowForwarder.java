@@ -398,10 +398,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     },  MoreExecutors.directExecutor());
 
                 LOG.debug("Flow add with id {} finished without error for node {}",
-                        getFlowId(addFlowInput.getFlowRef()), nodeId);
+                        getFlowId(addFlowInput.getFlowRef()), nodeId.getValue());
             } else {
                 LOG.error("Flow add with id {} failed for node {} with error {}", getFlowId(addFlowInput.getFlowRef()),
-                        nodeId, rpcResult.getErrors().toString());
+                        nodeId.getValue(), rpcResult.getErrors().toString());
                 resultFuture.set(RpcResultBuilder.<AddFlowOutput>failed()
                         .withRpcErrors(rpcResult.getErrors()).build());
             }
