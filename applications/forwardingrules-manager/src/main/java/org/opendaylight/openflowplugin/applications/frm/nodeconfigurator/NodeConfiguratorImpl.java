@@ -86,11 +86,10 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
 
             @Override
             public void onFailure(final Throwable cause) {
-                LOG.error("Job {} failed", job.getKey(), cause);
+                LOG.error("Job {} failed", job.getKey(), cause.getMessage());
                 job.setFailure(cause);
             }
         }, MoreExecutors.directExecutor());
-
         LOG.trace("Finished running job: {}", job);
     }
 }
