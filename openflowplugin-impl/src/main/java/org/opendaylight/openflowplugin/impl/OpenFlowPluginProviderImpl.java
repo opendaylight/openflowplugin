@@ -355,7 +355,7 @@ public class OpenFlowPluginProviderImpl implements
                 | NotCompliantMBeanException
                 | MBeanRegistrationException
                 | InstanceAlreadyExistsException e) {
-            LOG.warn("Error registering MBean {}", e);
+            LOG.warn("Error registering MBean {}", beanName, e);
         }
     }
 
@@ -367,7 +367,7 @@ public class OpenFlowPluginProviderImpl implements
         } catch (InstanceNotFoundException
                 | MBeanRegistrationException
                 | MalformedObjectNameException e) {
-            LOG.warn("Error unregistering MBean {}", e);
+            LOG.warn("Error unregistering MBean {}", beanName, e);
         }
     }
 }
