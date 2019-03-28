@@ -85,11 +85,11 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
             return result;
         }
 
-        final Class<?> type = source instanceof DataContainer ? ((DataContainer) source).getImplementedInterface()
+        final Class<?> type = source instanceof DataContainer ? ((DataContainer) source).implementedInterface()
                 : source.getClass();
 
         if (type == null) {
-            LOG.warn("Cannot extract type from {}, because getImplementedInterface() returns null", source);
+            LOG.warn("Cannot extract type from {}, because implementedInterface() returns null", source);
             return result;
         }
 
@@ -115,11 +115,11 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
 
         final F first = firstOptional.get();
 
-        final Class<?> type = first instanceof DataContainer ? ((DataContainer) first).getImplementedInterface()
+        final Class<?> type = first instanceof DataContainer ? ((DataContainer) first).implementedInterface()
                 : first.getClass();
 
         if (type == null) {
-            LOG.warn("Cannot extract type from {}, because getImplementedInterface() returns null", source);
+            LOG.warn("Cannot extract type from {}, because implementedInterface() returns null", source);
             return result;
         }
 

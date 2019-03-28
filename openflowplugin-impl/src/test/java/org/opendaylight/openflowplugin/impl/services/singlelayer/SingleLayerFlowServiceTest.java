@@ -36,7 +36,7 @@ public class SingleLayerFlowServiceTest extends ServiceMocking {
                 .build();
 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
-        assertEquals(FlowMessage.class, ofHeader.getImplementedInterface());
+        assertEquals(FlowMessage.class, ofHeader.implementedInterface());
 
         final FlowMessage result = (FlowMessage) ofHeader;
 

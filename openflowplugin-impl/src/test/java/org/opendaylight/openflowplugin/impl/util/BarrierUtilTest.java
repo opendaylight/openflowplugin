@@ -85,6 +85,6 @@ public class BarrierUtilTest {
         final SendBarrierInput barrierInput = BarrierUtil.createSendBarrierInput(NODE_REF);
 
         Assert.assertEquals(NODE_REF, barrierInput.getNode());
-        Assert.assertEquals(SendBarrierInput.class, barrierInput.getImplementedInterface());
+        Assert.assertEquals(SendBarrierInput.class, barrierInput.implementedInterface());
     }
 }

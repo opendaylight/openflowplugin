@@ -520,7 +520,7 @@ public class TableFeaturesResponseConvertor
                 actionBuilder.setOrder(order++);
                 ActionChoice actionType = action.getActionChoice();
                 org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action salAction =
-                        OF_TO_SAL_ACTION.get(actionType.getImplementedInterface());
+                        OF_TO_SAL_ACTION.get(actionType.implementedInterface());
 
                 actionBuilder.setAction(salAction);
                 actionList.add(actionBuilder.build());
