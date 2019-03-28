@@ -410,7 +410,7 @@ public class TableFeaturesConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
             .prop.type.ApplyActionsMiss applyActionsMiss = null;
         for (int i = 0; i < tableFeaturePropertieses.size(); i++) {
-            if (tableFeaturePropertieses.get(i).getTableFeaturePropType().getImplementedInterface().isAssignableFrom(
+            if (tableFeaturePropertieses.get(i).getTableFeaturePropType().implementedInterface().isAssignableFrom(
                     org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table
                         .feature.prop.type.ApplyActionsMiss.class)) {
                 applyActionsMiss = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature

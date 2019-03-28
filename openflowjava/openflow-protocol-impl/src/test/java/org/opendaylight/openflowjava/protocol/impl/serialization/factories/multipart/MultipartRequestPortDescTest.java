@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.desc._case.MultipartRequestPortDescBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Unit tests for MultipartRequestPortDesc.
@@ -59,7 +60,7 @@ public class MultipartRequestPortDescTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestPortDescCaseBuilder caseBuilder = new MultipartRequestPortDescCaseBuilder();
         MultipartRequestPortDescBuilder descBuilder = new MultipartRequestPortDescBuilder();
-        descBuilder.setEmpty(true);
+        descBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestPortDesc(descBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
