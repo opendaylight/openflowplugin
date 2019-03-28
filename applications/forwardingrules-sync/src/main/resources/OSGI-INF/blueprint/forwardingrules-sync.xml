@@ -10,7 +10,7 @@
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            odl:use-default-for-reference-types="true">
 
-    <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker" odl:type="pingpong"/>
+    <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
     <reference id="rpcRegistry" interface="org.opendaylight.mdsal.binding.api.RpcConsumerRegistry"/>
     <reference id="clusterSingletonService" interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
 

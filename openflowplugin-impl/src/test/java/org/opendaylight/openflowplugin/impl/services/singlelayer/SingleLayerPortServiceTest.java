@@ -36,7 +36,7 @@ public class SingleLayerPortServiceTest extends ServiceMocking {
                 .build();
 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
-        assertEquals(PortMessage.class, ofHeader.getImplementedInterface());
+        assertEquals(PortMessage.class, ofHeader.implementedInterface());
 
         final PortMessage result = (PortMessage) ofHeader;
 

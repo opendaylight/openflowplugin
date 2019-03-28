@@ -65,13 +65,13 @@ public final class ActionUtil {
                     ).orElseGet(() -> {
                         final OFSerializer<Action> serializer = registry.getSerializer(
                                 new MessageTypeKey<>(
-                                        version, (Class<? extends Action>) action.getImplementedInterface()));
+                                        version, (Class<? extends Action>) action.implementedInterface()));
 
                         serializer.serialize(action, outBuffer);
                         return action;
                     });
         } catch (final IllegalStateException | ClassCastException e) {
-            LOG.warn("Serializer for action {} for version {} not found.", action.getImplementedInterface(), version);
+            LOG.warn("Serializer for action {} for version {} not found.", action.implementedInterface(), version);
         }
     }
 
@@ -105,13 +105,13 @@ public final class ActionUtil {
                     ).orElseGet(() -> {
                         final HeaderSerializer<Action> serializer = registry.getSerializer(
                                 new MessageTypeKey<>(
-                                        version, (Class<? extends Action>) action.getImplementedInterface()));
+                                        version, (Class<? extends Action>) action.implementedInterface()));
 
                         serializer.serializeHeader(action, outBuffer);
                         return action;
                     });
         } catch (final IllegalStateException | ClassCastException e) {
-            LOG.warn("Header Serializer for action {} for version {} not found.", action.getImplementedInterface(),
+            LOG.warn("Header Serializer for action {} for version {} not found.", action.implementedInterface(),
                     version);
         }
     }
@@ -155,7 +155,7 @@ public final class ActionUtil {
                                                    final short version) {
 
         final TypeVersionKey<Action> key =
-                new TypeVersionKey<>((Class<? extends Action>) action.getImplementedInterface(), version);
+                new TypeVersionKey<>((Class<? extends Action>) action.implementedInterface(), version);
 
         final ConvertorActionToOFJava<Action, org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
                 .rev150203.actions.grouping.Action> converter = provider.getConverter(key);

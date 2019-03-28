@@ -60,7 +60,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(), MultipartRequestDescCase.class);
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(), MultipartRequestDescCase.class);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(),
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(),
                 MultipartRequestAggregateCase.class);
     }
 
@@ -120,7 +120,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(), MultipartRequestTableCase.class);
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(), MultipartRequestTableCase.class);
     }
 
     @Test
@@ -169,7 +169,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(),
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(),
                 MultipartRequestGroupDescCase.class);
     }
 
@@ -179,7 +179,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(),
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(),
                 MultipartRequestGroupFeaturesCase.class);
     }
 
@@ -216,7 +216,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(),
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(),
                 MultipartRequestMeterFeaturesCase.class);
     }
 
@@ -240,7 +240,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(),
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(),
                 MultipartRequestPortDescCase.class);
     }
 
@@ -250,7 +250,7 @@ public class MultipartRequestInputFactoryTest {
         final MultipartRequestInput mpRqInput =
             (MultipartRequestInput) MultipartRequestInputFactory.makeMultipartRequest(xid, ofVersion, mpType, false);
         checkHeader(mpRqInput, mpType);
-        checkEmptyBody(mpRqInput.getMultipartRequestBody().getImplementedInterface(),
+        checkEmptyBody(mpRqInput.getMultipartRequestBody().implementedInterface(),
                 MultipartRequestExperimenterCase.class);
     }
 
