@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +36,6 @@ public abstract class AbstractSilentErrorService<I, O extends DataObject>
         return Futures.catching(
             super.handleServiceCall(input, isComplete),
             Throwable.class,
-            t -> RpcResultBuilder.<O>failed().build());
+            t -> RpcResultBuilder.<O>failed().build(), MoreExecutors.directExecutor());
     }
 }
