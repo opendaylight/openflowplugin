@@ -55,11 +55,11 @@ public class ApplyActionsInstructionDeserializerTest extends AbstractInstruction
         in.setShort(index, in.writerIndex() - startIndex);
 
         final Instruction instruction = deserializer.deserialize(in);
-        assertEquals(ApplyActionsCase.class, instruction.getImplementedInterface());
+        assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
         final ApplyActionsCase actionCase = (ApplyActionsCase) instruction;
         assertEquals(1, actionCase.getApplyActions().getAction().size());
         assertEquals(PopPbbActionCase.class, actionCase.getApplyActions().getAction().get(0)
-                .getAction().getImplementedInterface());
+                .getAction().implementedInterface());
         assertEquals(0, in.readableBytes());
     }
 

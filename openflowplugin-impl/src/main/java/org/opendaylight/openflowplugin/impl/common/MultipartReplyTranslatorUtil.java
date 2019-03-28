@@ -184,7 +184,7 @@ public final class MultipartReplyTranslatorUtil {
                 .MultipartReply) message).getMultipartReplyBody());
         }
 
-        LOG.debug("Failed to translate {} for node {}.", message.getImplementedInterface(), deviceInfo);
+        LOG.debug("Failed to translate {} for node {}.", message.implementedInterface(), deviceInfo);
         return Optional.empty();
     }
 

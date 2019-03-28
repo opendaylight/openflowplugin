@@ -150,11 +150,11 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
 
         final Instruction instruction =
                 flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
-        assertEquals(ApplyActionsCase.class, instruction.getImplementedInterface());
+        assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().getAction().size());
         assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
-                .getAction().getImplementedInterface());
+                .getAction().implementedInterface());
     }
 }

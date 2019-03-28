@@ -26,7 +26,7 @@ public class ClearActionsInstructionDeserializerTest extends AbstractInstruction
         in.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
 
         final Instruction instruction = deserializeInstruction(in);
-        assertEquals(ClearActionsCase.class, instruction.getImplementedInterface());
+        assertEquals(ClearActionsCase.class, instruction.implementedInterface());
         assertEquals(0, in.readableBytes());
     }
 

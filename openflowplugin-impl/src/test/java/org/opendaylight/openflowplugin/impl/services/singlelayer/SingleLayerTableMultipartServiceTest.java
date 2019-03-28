@@ -50,7 +50,7 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
                 .build();
 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
-        assertEquals(MultipartRequest.class, ofHeader.getImplementedInterface());
+        assertEquals(MultipartRequest.class, ofHeader.implementedInterface());
 
         final MultipartRequestTableFeatures result = (MultipartRequestTableFeatures) ((MultipartRequest) ofHeader)
             .getMultipartRequestBody();

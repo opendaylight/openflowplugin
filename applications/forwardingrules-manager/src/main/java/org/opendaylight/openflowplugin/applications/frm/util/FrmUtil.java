@@ -68,13 +68,13 @@ public final class FrmUtil {
             List<Instruction> instructions = flow.getInstructions().getInstruction();
             for (Instruction instruction : instructions) {
                 List<Action> actions = Collections.emptyList();
-                if (instruction.getInstruction().getImplementedInterface()
+                if (instruction.getInstruction().implementedInterface()
                         .equals(ActionType.APPLY_ACTION.getActionType())) {
                     actions = ((ApplyActionsCase) instruction.getInstruction())
                             .getApplyActions().getAction();
                 }
                 for (Action action : actions) {
-                    if (action.getAction().getImplementedInterface()
+                    if (action.getAction().implementedInterface()
                             .equals(ActionType.GROUP_ACTION.getActionType())) {
                         return ((GroupActionCase) action.getAction()).getGroupAction()
                                 .getGroupId();

@@ -8,6 +8,8 @@
 package org.opendaylight.openflowplugin.impl;
 
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.spi.ForwardingDataBroker;
 
 /**
@@ -16,6 +18,7 @@ import org.opendaylight.mdsal.binding.spi.ForwardingDataBroker;
  *
  * @author Michael Vorburger.ch
  */
+// FIXME: this should not be necessary
 public class ForwardingPingPongDataBroker extends ForwardingDataBroker implements PingPongDataBroker {
 
     private final DataBroker delegate;
@@ -27,5 +30,10 @@ public class ForwardingPingPongDataBroker extends ForwardingDataBroker implement
     @Override
     protected DataBroker delegate() {
         return delegate;
+    }
+
+    @Override
+    public TransactionChain createTransactionChain(final TransactionChainListener listener) {
+        return delegate().createMergingTransactionChain(listener);
     }
 }

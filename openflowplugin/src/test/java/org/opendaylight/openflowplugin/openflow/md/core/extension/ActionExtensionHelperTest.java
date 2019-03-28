@@ -59,14 +59,14 @@ public class ActionExtensionHelperTest {
         Action action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13,
                 ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         assertNotNull(action);
-        assertEquals(MockAction.class, action.getImplementedInterface());
+        assertEquals(MockAction.class, action.implementedInterface());
     }
 
 
     private class MockAction implements Action {
 
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
+        public Class<? extends DataContainer> implementedInterface() {
             return MockAction.class;
         }
     }

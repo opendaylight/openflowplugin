@@ -80,15 +80,15 @@ public class BundleAddMessageConverter implements
         LOG.trace("Flow or group pushed to the node: {} with transaction id : {} is {}",
                 data.getDatapathId(), data.getXid(),
                 experimenterMessageCase.getSalAddMessageData().getBundleInnerMessage());
-        if (innerMessage.getImplementedInterface().equals(BundleAddFlowCase.class)
-                || innerMessage.getImplementedInterface().equals(BundleUpdateFlowCase.class)
-                || innerMessage.getImplementedInterface().equals(BundleRemoveFlowCase.class)) {
+        if (innerMessage.implementedInterface().equals(BundleAddFlowCase.class)
+                || innerMessage.implementedInterface().equals(BundleUpdateFlowCase.class)
+                || innerMessage.implementedInterface().equals(BundleRemoveFlowCase.class)) {
             dataBuilder.setBundleInnerMessage(convertBundleFlowCase(innerMessage, data));
-        } else if (innerMessage.getImplementedInterface().equals(BundleAddGroupCase.class)
-                || innerMessage.getImplementedInterface().equals(BundleUpdateGroupCase.class)
-                || innerMessage.getImplementedInterface().equals(BundleRemoveGroupCase.class)) {
+        } else if (innerMessage.implementedInterface().equals(BundleAddGroupCase.class)
+                || innerMessage.implementedInterface().equals(BundleUpdateGroupCase.class)
+                || innerMessage.implementedInterface().equals(BundleRemoveGroupCase.class)) {
             dataBuilder.setBundleInnerMessage(convertBundleGroupCase(innerMessage, data));
-        } else if (innerMessage.getImplementedInterface().equals(BundleUpdatePortCase.class)) {
+        } else if (innerMessage.implementedInterface().equals(BundleUpdatePortCase.class)) {
             dataBuilder.setBundleInnerMessage(convertBundlePortCase(innerMessage, data));
         } else {
             throw new ConversionException("Unsupported inner message");
@@ -108,7 +108,7 @@ public class BundleAddMessageConverter implements
     private BundleFlowModCase convertBundleFlowCase(final BundleInnerMessage messageCase,
             final XidConvertorData data) throws ConversionException {
         Optional<List<FlowModInputBuilder>> flowModInputs = Optional.empty();
-        final Class clazz = messageCase.getImplementedInterface();
+        final Class clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleAddFlowCase.class)) {
             flowModInputs = CONVERTER_EXECUTOR.convert(
                     new AddFlowInputBuilder(((BundleAddFlowCase) messageCase).getAddFlowCaseData()).build(), data);
@@ -145,7 +145,7 @@ public class BundleAddMessageConverter implements
     private BundleGroupModCase convertBundleGroupCase(final BundleInnerMessage messageCase,
             final XidConvertorData data) throws ConversionException {
         Optional<GroupModInputBuilder> groupModInput = Optional.empty();
-        final Class clazz = messageCase.getImplementedInterface();
+        final Class clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleAddGroupCase.class)) {
             groupModInput = CONVERTER_EXECUTOR.convert(
                     new AddGroupInputBuilder(((BundleAddGroupCase) messageCase).getAddGroupCaseData()).build(), data);
@@ -176,7 +176,7 @@ public class BundleAddMessageConverter implements
     private BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase,
             final XidConvertorData data) throws ConversionException {
         Optional<PortModInput> portModInput = Optional.empty();
-        final Class<?> clazz = messageCase.getImplementedInterface();
+        final Class<?> clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleUpdatePortCase.class)) {
             portModInput = CONVERTER_EXECUTOR.convert(new PortBuilder(
                     ((BundleUpdatePortCase) messageCase).getUpdatePortCaseData().getPort().getPort().get(0)).build(),

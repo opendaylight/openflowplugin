@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Translates MultipartRequestInput messages.
@@ -120,7 +121,7 @@ public class OF10StatsRequestInputFactory
     private MultipartRequestTableCase setTable(ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
-        tableBuilder.setEmpty(true);
+        tableBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestTable(tableBuilder.build());
         return caseBuilder.build();
     }
@@ -154,7 +155,7 @@ public class OF10StatsRequestInputFactory
     private MultipartRequestDescCase setDesc(ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
-        descBuilder.setEmpty(true);
+        descBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }
