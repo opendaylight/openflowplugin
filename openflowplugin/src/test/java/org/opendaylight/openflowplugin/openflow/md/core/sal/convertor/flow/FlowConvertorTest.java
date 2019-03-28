@@ -69,7 +69,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Unit tests for flow conversion.
@@ -225,13 +224,13 @@ public class FlowConvertorTest {
             .grouping.Instruction instruction = flowMod.get(0).getInstruction().get(0);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase",
-                instruction.getInstructionChoice().getImplementedInterface().getName());
+                instruction.getInstructionChoice().implementedInterface().getName());
         GotoTableCase gotoTableCase = (GotoTableCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong table id", 1, gotoTableCase.getGotoTable().getTableId().intValue());
         instruction = flowMod.get(0).getInstruction().get(1);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase",
-                instruction.getInstructionChoice().getImplementedInterface().getName());
+                instruction.getInstructionChoice().implementedInterface().getName());
         WriteMetadataCase writeMetadataCase = (WriteMetadataCase) instruction.getInstructionChoice();
         Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 2},
                 writeMetadataCase.getWriteMetadata().getMetadata());
@@ -241,23 +240,23 @@ public class FlowConvertorTest {
         instruction = flowMod.get(0).getInstruction().get(2);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase",
-                instruction.getInstructionChoice().getImplementedInterface().getName());
+                instruction.getInstructionChoice().implementedInterface().getName());
         WriteActionsCase writeActionsCase = (WriteActionsCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().getAction().size());
         instruction = flowMod.get(0).getInstruction().get(3);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase",
-                instruction.getInstructionChoice().getImplementedInterface().getName());
+                instruction.getInstructionChoice().implementedInterface().getName());
         ApplyActionsCase applyActionsCase =  (ApplyActionsCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().getAction().size());
         instruction = flowMod.get(0).getInstruction().get(4);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase",
-                instruction.getInstructionChoice().getImplementedInterface().getName());
+                instruction.getInstructionChoice().implementedInterface().getName());
         instruction = flowMod.get(0).getInstruction().get(5);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.MeterCase",
-                instruction.getInstructionChoice().getImplementedInterface().getName());
+                instruction.getInstructionChoice().implementedInterface().getName());
         MeterCase meterCase = (MeterCase) instruction.getInstructionChoice();
         Assert.assertEquals("Wrong meter id", 5, meterCase.getMeter().getMeterId().intValue());
     }
@@ -434,8 +433,8 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
-            return Flow.class;
+        public Class<AddFlowInput> implementedInterface() {
+            return AddFlowInput.class;
         }
     }
 }
