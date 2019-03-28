@@ -104,6 +104,6 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         Assert.assertTrue(mpRequest.getMultipartRequestBody() instanceof MultipartRequestTableCase);
         final MultipartRequestTableCase mpRequestBody =
                 (MultipartRequestTableCase) (mpRequest.getMultipartRequestBody());
-        Assert.assertTrue(mpRequestBody.getMultipartRequestTable().isEmpty());
+        Assert.assertNotNull(mpRequestBody.getMultipartRequestTable().getEmpty());
     }
 }

@@ -72,7 +72,7 @@ public class PacketProcessingServiceImplTest extends ServiceMocking {
         final PacketOutInput input = (PacketOutInput) request;
         assertEquals(OFConstants.OFP_NO_BUFFER, input.getBufferId());
         assertEquals(1, input.getAction().size());
-        assertEquals(OutputActionCase.class, input.getAction().get(0).getActionChoice().getImplementedInterface());
+        assertEquals(OutputActionCase.class, input.getAction().get(0).getActionChoice().implementedInterface());
 
         final OutputActionCase actionChoice = (OutputActionCase) input.getAction().get(0).getActionChoice();
         assertEquals(1, actionChoice.getOutputAction().getPort().getValue().intValue());

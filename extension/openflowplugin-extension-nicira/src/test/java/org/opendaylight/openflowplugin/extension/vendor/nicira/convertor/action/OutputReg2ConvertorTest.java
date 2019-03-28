@@ -33,13 +33,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.nx.output.reg.Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OutputReg2ConvertorTest {
 
     private static final int OFS_N_BITS = 1;
     private static final int MAX_LEN = 2;
-    private static final SrcNxTunIdCase SRC_NX_TUN_ID_CASE = new SrcNxTunIdCaseBuilder().setNxTunId(true).build();
+    private static final SrcNxTunIdCase SRC_NX_TUN_ID_CASE = new SrcNxTunIdCaseBuilder()
+        .setNxTunId(Empty.getInstance()).build();
 
     @Mock
     private NxActionOutputRegNodesNodeGroupBucketsBucketActionsCase actionsCase;

@@ -416,7 +416,7 @@ public class DeviceContextImplTest {
     public void testPortStatusMessage() {
         final PortStatusMessage mockedPortStatusMessage = mock(PortStatusMessage.class);
         final Class dummyClass = Class.class;
-        when(mockedPortStatusMessage.getImplementedInterface()).thenReturn(dummyClass);
+        when(mockedPortStatusMessage.implementedInterface()).thenReturn(dummyClass);
 
 
         final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);

@@ -40,7 +40,7 @@ public class SalToOfVendorCodecCase extends ConvertorCase<org.opendaylight.yang.
         final TypeVersionKey<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key =
                 new TypeVersionKey<>(
                         (Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-                                .action.Action>) source.getImplementedInterface(),
+                                .action.Action>) source.implementedInterface(),
                         version);
 
         ExtensionConverterProvider extensionConverterProvider = OFSessionUtil.getExtensionConvertorProvider();

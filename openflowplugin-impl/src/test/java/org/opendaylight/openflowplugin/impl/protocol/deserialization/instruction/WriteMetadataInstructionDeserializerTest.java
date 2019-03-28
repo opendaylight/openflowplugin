@@ -34,7 +34,7 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
         in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
 
         final Instruction instruction = deserializeInstruction(in);
-        assertEquals(WriteMetadataCase.class, instruction.getImplementedInterface());
+        assertEquals(WriteMetadataCase.class, instruction.implementedInterface());
 
         assertArrayEquals(
                 ByteUtil

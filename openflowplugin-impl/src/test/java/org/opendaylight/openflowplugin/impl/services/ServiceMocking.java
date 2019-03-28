@@ -153,7 +153,7 @@ public abstract class ServiceMocking {
 
     public class DummyExperimenter implements ExperimenterMessageOfChoice {
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
+        public Class<DummyExperimenter> implementedInterface() {
             return DummyExperimenter.class;
         }
     }

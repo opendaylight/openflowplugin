@@ -82,6 +82,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpSrcCaseBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * A helper class that maps various NXM/OXM header representations to
@@ -103,61 +104,61 @@ public final class FieldChoiceResolver {
     static {
         final ImmutableMap<SrcChoice, NxmHeader> srcChoiceToNxmheader =
                 new ImmutableMap.Builder<SrcChoice, NxmHeader>()
-                        .put(new SrcNxTunIdCaseBuilder().setNxTunId(true).build(),
+                        .put(new SrcNxTunIdCaseBuilder().setNxTunId(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxArpShaCaseBuilder().setNxArpSha(true).build(),
+                        .put(new SrcNxArpShaCaseBuilder().setNxArpSha(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_SHA_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxArpThaCaseBuilder().setNxArpTha(true).build(),
+                        .put(new SrcNxArpThaCaseBuilder().setNxArpTha(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_THA_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfArpOpCaseBuilder().setOfArpOp(true).build(),
+                        .put(new SrcOfArpOpCaseBuilder().setOfArpOp(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_OP_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfArpSpaCaseBuilder().setOfArpSpa(true).build(),
+                        .put(new SrcOfArpSpaCaseBuilder().setOfArpSpa(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_SPA_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfArpTpaCaseBuilder().setOfArpTpa(true).build(),
+                        .put(new SrcOfArpTpaCaseBuilder().setOfArpTpa(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxOfInPortCaseBuilder().setOfInPort(true).build(),
+                        .put(new SrcNxOfInPortCaseBuilder().setOfInPort(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxOfMetadataCaseBuilder().setOfMetadata(true).build(),
+                        .put(new SrcNxOfMetadataCaseBuilder().setOfMetadata(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfEthDstCaseBuilder().setOfEthDst(true).build(),
+                        .put(new SrcOfEthDstCaseBuilder().setOfEthDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfEthSrcCaseBuilder().setOfEthSrc(true).build(),
+                        .put(new SrcOfEthSrcCaseBuilder().setOfEthSrc(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ETH_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfEthTypeCaseBuilder().setOfEthType(true).build(),
+                        .put(new SrcOfEthTypeCaseBuilder().setOfEthType(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ETH_TYPE_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(true).build(),
+                        .put(new SrcNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxTunIpv4SrcCaseBuilder().setNxTunIpv4Src(true).build(),
+                        .put(new SrcNxTunIpv4SrcCaseBuilder().setNxTunIpv4Src(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNspCaseBuilder().setNxNspDst(true).build(),
+                        .put(new SrcNxNspCaseBuilder().setNxNspDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSP_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNsiCaseBuilder().setNxNsiDst(true).build(),
+                        .put(new SrcNxNsiCaseBuilder().setNxNsiDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSI_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshc1CaseBuilder().setNxNshc1Dst(true).build(),
+                        .put(new SrcNxNshc1CaseBuilder().setNxNshc1Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC1_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshc2CaseBuilder().setNxNshc2Dst(true).build(),
+                        .put(new SrcNxNshc2CaseBuilder().setNxNshc2Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC2_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshc3CaseBuilder().setNxNshc3Dst(true).build(),
+                        .put(new SrcNxNshc3CaseBuilder().setNxNshc3Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC3_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshc4CaseBuilder().setNxNshc4Dst(true).build(),
+                        .put(new SrcNxNshc4CaseBuilder().setNxNshc4Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC4_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshFlagsCaseBuilder().setNxNshFlags(true).build(),
+                        .put(new SrcNxNshFlagsCaseBuilder().setNxNshFlags(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSH_FLAGS_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshTtlCaseBuilder().setNxNshTtl(true).build(),
+                        .put(new SrcNxNshTtlCaseBuilder().setNxNshTtl(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSH_TTL_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshMdtypeCaseBuilder().setNxNshMdtype(true).build(),
+                        .put(new SrcNxNshMdtypeCaseBuilder().setNxNshMdtype(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSH_MDTYPE_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxNshNpCaseBuilder().setNxNshNp(true).build(),
+                        .put(new SrcNxNshNpCaseBuilder().setNxNshNp(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSH_NP_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfIpDstCaseBuilder().setOfIpDst(true).build(),
+                        .put(new SrcOfIpDstCaseBuilder().setOfIpDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IP_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcOfIpSrcCaseBuilder().setOfIpSrc(true).build(),
+                        .put(new SrcOfIpSrcCaseBuilder().setOfIpSrc(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IP_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxIpv6SrcCaseBuilder().setNxIpv6Src(true).build(),
+                        .put(new SrcNxIpv6SrcCaseBuilder().setNxIpv6Src(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IPV6_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxIpv6DstCaseBuilder().setNxIpv6Dst(true).build(),
+                        .put(new SrcNxIpv6DstCaseBuilder().setNxIpv6Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IPV6_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxOfMplsLabelCaseBuilder().setOfMplsLabel(true).build(),
+                        .put(new SrcNxOfMplsLabelCaseBuilder().setOfMplsLabel(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask())
                         .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
                                 NiciraMatchCodecs.REG0_CODEC.getHeaderWithoutHasMask())
@@ -179,57 +180,57 @@ public final class FieldChoiceResolver {
 
         final ImmutableMap<DstChoice, NxmHeader> dstChoiceToNxmheader =
                 new ImmutableMap.Builder<DstChoice, NxmHeader>()
-                        .put(new DstNxTunIdCaseBuilder().setNxTunId(true).build(),
+                        .put(new DstNxTunIdCaseBuilder().setNxTunId(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxArpShaCaseBuilder().setNxArpSha(true).build(),
+                        .put(new DstNxArpShaCaseBuilder().setNxArpSha(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_SHA_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxArpThaCaseBuilder().setNxArpTha(true).build(),
+                        .put(new DstNxArpThaCaseBuilder().setNxArpTha(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_THA_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfArpOpCaseBuilder().setOfArpOp(true).build(),
+                        .put(new DstOfArpOpCaseBuilder().setOfArpOp(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_OP_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfArpSpaCaseBuilder().setOfArpSpa(true).build(),
+                        .put(new DstOfArpSpaCaseBuilder().setOfArpSpa(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_SPA_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfArpTpaCaseBuilder().setOfArpTpa(true).build(),
+                        .put(new DstOfArpTpaCaseBuilder().setOfArpTpa(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ARP_TPA_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxOfInPortCaseBuilder().setOfInPort(true).build(),
+                        .put(new DstNxOfInPortCaseBuilder().setOfInPort(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NXM_OF_IN_PORT_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfMetadataCaseBuilder().setOfMetadata(true).build(),
+                        .put(new DstOfMetadataCaseBuilder().setOfMetadata(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.OXM_OF_METADATA_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfEthSrcCaseBuilder().setOfEthSrc(true).build(),
+                        .put(new DstOfEthSrcCaseBuilder().setOfEthSrc(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ETH_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfEthDstCaseBuilder().setOfEthDst(true).build(),
+                        .put(new DstOfEthDstCaseBuilder().setOfEthDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ETH_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(true).build(),
+                        .put(new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.TUN_IPV4_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxTunIpv4SrcCaseBuilder().setNxTunIpv4Src(true).build(),
+                        .put(new DstNxTunIpv4SrcCaseBuilder().setNxTunIpv4Src(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.TUN_IPV4_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNspCaseBuilder().setNxNspDst(true).build(),
+                        .put(new DstNxNspCaseBuilder().setNxNspDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSP_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNsiCaseBuilder().setNxNsiDst(true).build(),
+                        .put(new DstNxNsiCaseBuilder().setNxNsiDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSI_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNshc1CaseBuilder().setNxNshc1Dst(true).build(),
+                        .put(new DstNxNshc1CaseBuilder().setNxNshc1Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC1_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNshc2CaseBuilder().setNxNshc2Dst(true).build(),
+                        .put(new DstNxNshc2CaseBuilder().setNxNshc2Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC2_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNshc3CaseBuilder().setNxNshc3Dst(true).build(),
+                        .put(new DstNxNshc3CaseBuilder().setNxNshc3Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC3_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNshc4CaseBuilder().setNxNshc4Dst(true).build(),
+                        .put(new DstNxNshc4CaseBuilder().setNxNshc4Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSC4_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNshFlagsCaseBuilder().setNxNshFlags(true).build(),
+                        .put(new DstNxNshFlagsCaseBuilder().setNxNshFlags(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSH_FLAGS_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxNshTtlCaseBuilder().setNxNshTtl(true).build(),
+                        .put(new DstNxNshTtlCaseBuilder().setNxNshTtl(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.NSH_TTL_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfIpDstCaseBuilder().setOfIpDst(true).build(),
+                        .put(new DstOfIpDstCaseBuilder().setOfIpDst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IP_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfIpSrcCaseBuilder().setOfIpSrc(true).build(),
+                        .put(new DstOfIpSrcCaseBuilder().setOfIpSrc(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IP_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxIpv6SrcCaseBuilder().setNxIpv6Src(true).build(),
+                        .put(new DstNxIpv6SrcCaseBuilder().setNxIpv6Src(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IPV6_SRC_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxIpv6DstCaseBuilder().setNxIpv6Dst(true).build(),
+                        .put(new DstNxIpv6DstCaseBuilder().setNxIpv6Dst(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.IPV6_DST_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstOfMplsLabelCaseBuilder().setOfMplsLabel(true).build(),
+                        .put(new DstOfMplsLabelCaseBuilder().setOfMplsLabel(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask())
-                        .put(new DstOfIcmpTypeCaseBuilder().setOfIcmpType(true).build(),
+                        .put(new DstOfIcmpTypeCaseBuilder().setOfIcmpType(Empty.getInstance()).build(),
                                 NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask())
                         .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
                                 NiciraMatchCodecs.REG0_CODEC.getHeaderWithoutHasMask())
@@ -258,7 +259,7 @@ public final class FieldChoiceResolver {
             if (srcChoice instanceof SrcNxRegCase) {
                 regSrcChoiceToHeaderBuilder.put(srcChoice, header);
             } else {
-                srcTypeToHeaderBuilder.put(srcChoice.getImplementedInterface(), header);
+                srcTypeToHeaderBuilder.put(srcChoice.implementedInterface(), header);
             }
         });
         NXMHEADER_TO_SRC_CHOICE = headerToSrcChoiceBuilder.build();
@@ -274,7 +275,7 @@ public final class FieldChoiceResolver {
             if (dstChoice instanceof DstNxRegCase) {
                 regDstChoiceToHeaderBuilder.put(dstChoice, header);
             } else {
-                dstTypeToHeaderBuilder.put(dstChoice.getImplementedInterface(), header);
+                dstTypeToHeaderBuilder.put(dstChoice.implementedInterface(), header);
             }
         });
         NXMHEADER_TO_DST_CHOICE = dstToHeaderBuilder.build();
@@ -337,7 +338,7 @@ public final class FieldChoiceResolver {
     static Long resolveDstHeaderUint32(DstChoice dstChoice) {
         NxmHeader nxmHeader = dstChoice instanceof DstNxRegCase
                 ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice)
-                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.getImplementedInterface());
+                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface());
         if (nxmHeader.isExperimenter()) {
             throw new IllegalArgumentException("Cannot fit experimenter destination choice on a uint32 header");
         }
@@ -354,7 +355,7 @@ public final class FieldChoiceResolver {
     static BigInteger resolveDstHeaderUint64(DstChoice dstChoice) {
         return dstChoice instanceof DstNxRegCase
                 ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).toBigInteger()
-                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.getImplementedInterface()).toBigInteger();
+                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface()).toBigInteger();
     }
 
     /**
@@ -368,7 +369,7 @@ public final class FieldChoiceResolver {
     static Long resolveSrcHeaderUint32(SrcChoice srcChoice) {
         NxmHeader nxmHeader = srcChoice instanceof SrcNxRegCase
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice)
-                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.getImplementedInterface());
+                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface());
         if (nxmHeader.isExperimenter()) {
             throw new IllegalArgumentException("Cannot fit experimenter source choice on a uint32 header");
         }
@@ -385,7 +386,7 @@ public final class FieldChoiceResolver {
     static BigInteger resolveSrcHeaderUint64(SrcChoice srcChoice) {
         return srcChoice instanceof SrcNxRegCase
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).toBigInteger()
-                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.getImplementedInterface()).toBigInteger();
+                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface()).toBigInteger();
     }
 
     /**
@@ -397,7 +398,7 @@ public final class FieldChoiceResolver {
     static boolean isExperimenter(SrcChoice srcChoice) {
         return srcChoice instanceof SrcNxRegCase
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).isExperimenter()
-                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.getImplementedInterface()).isExperimenter();
+                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface()).isExperimenter();
     }
 
     /**
@@ -409,6 +410,6 @@ public final class FieldChoiceResolver {
     static boolean isExperimenter(DstChoice dstChoice) {
         return dstChoice instanceof DstNxRegCase
                 ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).isExperimenter()
-                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.getImplementedInterface()).isExperimenter();
+                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface()).isExperimenter();
     }
 }

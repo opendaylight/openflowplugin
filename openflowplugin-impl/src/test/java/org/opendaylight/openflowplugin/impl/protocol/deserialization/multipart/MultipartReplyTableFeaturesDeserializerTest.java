@@ -73,85 +73,85 @@ public class MultipartReplyTableFeaturesDeserializerTest extends AbstractMultipa
         assertEquals(MAX_ENTRIES, reply.getTableFeatures().get(0).getMaxEntries().longValue());
         assertEquals(MAX_ENTRIES, reply.getTableFeatures().get(0).getMaxEntries().longValue());
         assertEquals(Instructions.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_INSTRUCTIONS_MISS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(InstructionsMiss.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_NEXT_TABLES);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(NextTable.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_NEXT_TABLES_MISS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(NextTableMiss.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_WRITE_ACTIONS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(WriteActions.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_WRITE_ACTIONS_MISS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(WriteActionsMiss.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_APPLY_ACTIONS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(ApplyActions.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_APPLY_ACTIONS_MISS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(ApplyActionsMiss.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_MATCH);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(Match.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_WILDCARDS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(Wildcards.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_WRITE_SETFIELD);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(WriteSetfield.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_WRITE_SETFIELD_MISS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(WriteSetfieldMiss.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_APPLY_SETFIELD);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(ApplySetfield.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
 
         writeValues(buffer, OFPTFPT_APPLY_SETFIELD_MISS);
         reply = (MultipartReplyTableFeatures) deserializeMultipart(buffer);
 
         assertEquals(ApplySetfieldMiss.class, reply.getTableFeatures().get(0).getTableProperties()
-                .getTableFeatureProperties().get(0).getTableFeaturePropType().getImplementedInterface());
+                .getTableFeatureProperties().get(0).getTableFeaturePropType().implementedInterface());
         assertEquals(0, buffer.readableBytes());
     }
 
