@@ -176,7 +176,7 @@ public class BundleAddMessageConverterTest {
                         original.getSalAddMessageData().getFlags().isOrdered()),
                 converted.getOnfAddMessageGroupingData().getFlags());
         Assert.assertEquals("Wrong inner message conversion", clazz,
-                converted.getOnfAddMessageGroupingData().getBundleInnerMessage().getImplementedInterface());
+                converted.getOnfAddMessageGroupingData().getBundleInnerMessage().implementedInterface());
         if (withProperty) {
             final BundlePropertyExperimenter originalProperty = (BundlePropertyExperimenter) original
                     .getSalAddMessageData().getBundleProperty().get(0).getBundlePropertyEntry();

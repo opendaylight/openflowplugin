@@ -52,7 +52,7 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
             final ExperimenterDataOfChoice data = deserializer.deserialize(message);
             final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                     EncodeConstants.OF13_VERSION_ID,
-                    (Class<? extends ExperimenterDataOfChoice>) data.getImplementedInterface());
+                    (Class<? extends ExperimenterDataOfChoice>) data.implementedInterface());
 
             final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor = OFSessionUtil
                     .getExtensionConvertorProvider()

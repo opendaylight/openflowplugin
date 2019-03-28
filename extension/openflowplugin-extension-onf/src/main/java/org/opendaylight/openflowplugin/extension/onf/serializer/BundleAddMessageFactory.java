@@ -50,7 +50,7 @@ public class BundleAddMessageFactory extends AbstractBundleMessageFactory<Bundle
     }
 
     private void serializeInnerMessage(final BundleInnerMessage message, final ByteBuf outBuffer) {
-        final Class clazz = message.getImplementedInterface();
+        final Class clazz = message.implementedInterface();
         if (clazz.equals(BundleFlowModCase.class)) {
             OFSerializer<FlowMod> serializer = serializerRegistry.getSerializer(
                     new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowModInput.class));

@@ -371,7 +371,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                             for (Action action : actions) {
                                 // chained-port
-                                if (action.getAction().getImplementedInterface().getName()
+                                if (action.getAction().implementedInterface().getName()
                                         .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
                                                 + ".action.types.rev131112.action.action.OutputActionCase")) {
                                     String nodeConnectorUri = ((OutputActionCase) action.getAction()).getOutputAction()
@@ -395,7 +395,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                                 nodeConnectorUri, group.getGroupId().toString());
                                         break;
                                     }
-                                } else if (action.getAction().getImplementedInterface().getName()
+                                } else if (action.getAction().implementedInterface().getName()
                                         .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
                                                 + ".action.types.rev131112.action.action.GroupActionCase")) {
                                     // chained groups
