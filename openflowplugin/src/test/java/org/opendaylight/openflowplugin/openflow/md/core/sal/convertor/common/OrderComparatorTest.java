@@ -12,7 +12,6 @@ import static org.junit.Assert.fail;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Ordered;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * To test OrderComparator.
@@ -95,7 +94,7 @@ public class OrderComparatorTest {
         }
 
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
+        public Class<Ordered> implementedInterface() {
             return Ordered.class;
         }
     }

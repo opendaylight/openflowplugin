@@ -28,7 +28,7 @@ public class GoToTableInstructionDeserializerTest extends AbstractInstructionDes
         in.writeZero(InstructionConstants.PADDING_IN_GOTO_TABLE);
 
         final Instruction instruction = deserializeInstruction(in);
-        assertEquals(GoToTableCase.class, instruction.getImplementedInterface());
+        assertEquals(GoToTableCase.class, instruction.implementedInterface());
         assertEquals(tableId, ((GoToTableCase) instruction).getGoToTable().getTableId().shortValue());
         assertEquals(0, in.readableBytes());
     }

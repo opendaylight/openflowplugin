@@ -46,7 +46,7 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
     @Override
     protected OfHeader buildRequest(Xid xid, SendExperimenterInput input) throws ServiceException {
         final TypeVersionKey key =
-                new TypeVersionKey(input.getExperimenterMessageOfChoice().getImplementedInterface(), getVersion());
+                new TypeVersionKey(input.getExperimenterMessageOfChoice().implementedInterface(), getVersion());
         final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice,
             ExtensionConvertorData> messageConverter = extensionConverterProvider.getMessageConverter(key);
 

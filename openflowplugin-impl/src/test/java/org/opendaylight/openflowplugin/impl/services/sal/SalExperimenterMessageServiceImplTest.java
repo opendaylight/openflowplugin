@@ -85,7 +85,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
     private static class DummyExperimenter implements ExperimenterMessageOfChoice {
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
+        public Class<DummyExperimenter> implementedInterface() {
             return DummyExperimenter.class;
         }
     }

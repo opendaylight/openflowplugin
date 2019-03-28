@@ -90,7 +90,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
 
         // Drop band
         final MeterBandHeader dropHeader = meterBandHeader.get(0);
-        assertEquals(Drop.class, dropHeader.getBandType().getImplementedInterface());
+        assertEquals(Drop.class, dropHeader.getBandType().implementedInterface());
         assertTrue(dropHeader.getMeterBandTypes().getFlags().isOfpmbtDrop());
 
         final Drop drop = (Drop) dropHeader.getBandType();
@@ -99,7 +99,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
 
         // Dscp band
         final MeterBandHeader dscpHeader = meterBandHeader.get(1);
-        assertEquals(DscpRemark.class, dscpHeader.getBandType().getImplementedInterface());
+        assertEquals(DscpRemark.class, dscpHeader.getBandType().implementedInterface());
         assertTrue(dscpHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark());
 
         final DscpRemark dscpRemark = (DscpRemark) dscpHeader.getBandType();

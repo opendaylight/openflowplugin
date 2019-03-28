@@ -75,7 +75,7 @@ public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorD
             return result;
         }
 
-        final Class<?> clazz = source.getImplementedInterface();
+        final Class<?> clazz = source.implementedInterface();
         final Optional<ConvertorCase<?, T, D>> caseOptional = Optional
                 .ofNullable(getCasesForVersion(version).get(clazz));
 
