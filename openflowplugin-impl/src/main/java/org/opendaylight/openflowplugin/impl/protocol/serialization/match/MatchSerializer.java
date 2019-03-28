@@ -117,7 +117,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                     })
                     .orElseGet(() -> {
                         LOG.warn("Serializer for match entry {} for version {} not found.",
-                                extension.getExtension().getImplementedInterface(),
+                                extension.getExtension().implementedInterface(),
                                 OFConstants.OFP_VERSION_1_3);
                         return null;
                     });

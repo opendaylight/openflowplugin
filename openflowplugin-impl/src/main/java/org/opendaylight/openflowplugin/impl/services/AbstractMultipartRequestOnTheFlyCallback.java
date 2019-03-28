@@ -69,7 +69,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
             return;
         } else if (Service.State.TERMINATED.equals(gatheringState)) {
-            LOG.warn("Unexpected response received: xid={}, {}", result.getXid(), result.getImplementedInterface());
+            LOG.warn("Unexpected response received: xid={}, {}", result.getXid(), result.implementedInterface());
             return;
         }
 

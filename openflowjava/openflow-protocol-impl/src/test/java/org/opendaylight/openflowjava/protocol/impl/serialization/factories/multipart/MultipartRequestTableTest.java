@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -26,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Unit tests for MultipartRequestTable.
@@ -59,7 +59,7 @@ public class MultipartRequestTableTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tablesBuilder = new MultipartRequestTableBuilder();
-        tablesBuilder.setEmpty(true);
+        tablesBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestTable(tablesBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
