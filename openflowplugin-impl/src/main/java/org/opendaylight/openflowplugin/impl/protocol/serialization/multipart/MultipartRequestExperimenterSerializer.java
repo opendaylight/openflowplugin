@@ -38,7 +38,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
             final OFSerializer<ExperimenterMessageOfChoice> serializer = Preconditions.checkNotNull(registry)
                     .getSerializer(new MessageTypeKey<>(
                             EncodeConstants.OF13_VERSION_ID,
-                            multipartRequestExperimenter.getExperimenterMessageOfChoice().getImplementedInterface()));
+                            multipartRequestExperimenter.getExperimenterMessageOfChoice().implementedInterface()));
 
             serializer.serialize(multipartRequestExperimenter.getExperimenterMessageOfChoice(), byteBuf);
         } catch (ClassCastException | IllegalStateException ex) {
@@ -46,7 +46,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
                     .ofNullable(OFSessionUtil.getExtensionConvertorProvider().<ExperimenterMessageOfChoice,
                             ExperimenterDataOfChoice, ConvertorData>getMessageConverter(new TypeVersionKey<>(
                             (Class<ExperimenterMessageOfChoice>) multipartRequestExperimenter
-                                    .getExperimenterMessageOfChoice().getImplementedInterface(),
+                                    .getExperimenterMessageOfChoice().implementedInterface(),
                             OFConstants.OFP_VERSION_1_3)))
                     .ifPresent(converter -> {
                         final OFSerializer<ExperimenterDataOfChoice> serializer = Preconditions.checkNotNull(registry)

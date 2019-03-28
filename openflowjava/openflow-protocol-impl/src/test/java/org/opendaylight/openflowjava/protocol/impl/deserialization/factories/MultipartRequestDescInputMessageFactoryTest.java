@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.desc._case.MultipartRequestDescBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Unit tests for MultipartRequestDescInputMessageFactory.
@@ -55,7 +56,7 @@ public class MultipartRequestDescInputMessageFactoryTest {
     private static MultipartRequestDescCase createRequestDesc() {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder builder = new MultipartRequestDescBuilder();
-        builder.setEmpty(true);
+        builder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestDesc(builder.build());
         return caseBuilder.build();
     }

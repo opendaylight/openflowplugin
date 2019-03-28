@@ -97,7 +97,7 @@ public class MeterConfigStatsResponseConvertorTest {
     private final class MockMeterBandBuilder implements org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
             .protocol.rev130731.meter.band.header.MeterBand {
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
+        public Class<? extends DataContainer> implementedInterface() {
             return MockMeterBandBuilder.class;
         }
     }
