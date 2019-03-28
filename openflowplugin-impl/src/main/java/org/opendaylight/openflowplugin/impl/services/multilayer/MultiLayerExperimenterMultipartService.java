@@ -63,7 +63,7 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
     @SuppressWarnings("unchecked")
     protected OfHeader buildRequest(Xid xid, SendExperimenterMpRequestInput input) throws ServiceException {
         final TypeVersionKey key = new TypeVersionKey<>(
-            input.getExperimenterMessageOfChoice().getImplementedInterface(),
+            input.getExperimenterMessageOfChoice().implementedInterface(),
             getVersion());
 
         final ConverterMessageToOFJava<ExperimenterMessageOfChoice, ExperimenterDataOfChoice,
@@ -121,12 +121,12 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
                             final ExperimenterDataOfChoice vendorData = replyBody.getExperimenterDataOfChoice();
                             final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                                     getVersion(),
-                                    (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
+                                    (Class<? extends ExperimenterDataOfChoice>) vendorData.implementedInterface());
                             final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter =
                                     getExtensionConverterProvider().getMessageConverter(key);
                             if (messageConverter == null) {
                                 LOG.warn("Custom converter for {}[OF:{}] not found",
-                                        vendorData.getImplementedInterface(),
+                                        vendorData.implementedInterface(),
                                         getVersion());
                                 finalFuture.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed()
                                         .withError(ErrorType.RPC, "Custom converter not found.").build());

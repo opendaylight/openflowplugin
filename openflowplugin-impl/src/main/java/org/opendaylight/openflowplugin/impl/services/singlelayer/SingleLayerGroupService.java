@@ -35,7 +35,7 @@ public final class SingleLayerGroupService<O extends DataObject> extends Abstrac
     @Override
     protected OfHeader buildRequest(final Xid xid, final Group input) {
         final GroupMessageBuilder groupMessageBuilder = new GroupMessageBuilder(input);
-        final Class<? extends DataContainer> clazz = input.getImplementedInterface();
+        final Class<? extends DataContainer> clazz = input.implementedInterface();
 
         if (clazz.equals(AddGroupInput.class)) {
             groupMessageBuilder.setCommand(GroupModCommand.OFPGCADD);

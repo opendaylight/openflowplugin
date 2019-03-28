@@ -40,7 +40,7 @@ public final class InstructionUtil {
         registry.<Instruction, OFSerializer<Instruction>>getSerializer(
             new MessageTypeKey<>(
                 version,
-                (Class<Instruction>) instruction.getImplementedInterface()))
+                (Class<Instruction>) instruction.implementedInterface()))
             .serialize(instruction, outBuffer);
     }
 
@@ -62,7 +62,7 @@ public final class InstructionUtil {
         registry.<Instruction, HeaderSerializer<Instruction>>getSerializer(
             new MessageTypeKey<>(
                 version,
-                (Class<Instruction>) instruction.getImplementedInterface()))
+                (Class<Instruction>) instruction.implementedInterface()))
             .serializeHeader(instruction, outBuffer);
     }
 
