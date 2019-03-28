@@ -33,7 +33,7 @@ public final class SingleLayerFlowService<O extends DataObject> extends Abstract
     @Override
     protected OfHeader buildRequest(final Xid xid, final Flow input) {
         final FlowMessageBuilder flowMessageBuilder = new FlowMessageBuilder(input);
-        final Class<? extends DataContainer> clazz = input.getImplementedInterface();
+        final Class<? extends DataContainer> clazz = input.implementedInterface();
 
         if (clazz.equals(AddFlowInput.class)
                 || clazz.equals(UpdatedFlow.class)) {

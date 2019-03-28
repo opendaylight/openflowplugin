@@ -94,6 +94,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Translates MultipartRequestInput messages.
@@ -306,7 +307,7 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestDescCase setDesc(ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
-        descBuilder.setEmpty(true);
+        descBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }
@@ -356,7 +357,7 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestPortDescCase setPortDesc(ByteBuf input) {
         MultipartRequestPortDescCaseBuilder caseBuilder = new MultipartRequestPortDescCaseBuilder();
         MultipartRequestPortDescBuilder portBuilder = new MultipartRequestPortDescBuilder();
-        portBuilder.setEmpty(true);
+        portBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestPortDesc(portBuilder.build());
         return caseBuilder.build();
     }
@@ -389,7 +390,7 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestGroupDescCase setGroupDesc(ByteBuf input) {
         MultipartRequestGroupDescCaseBuilder caseBuilder = new MultipartRequestGroupDescCaseBuilder();
         MultipartRequestGroupDescBuilder groupBuilder = new MultipartRequestGroupDescBuilder();
-        groupBuilder.setEmpty(true);
+        groupBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestGroupDesc(groupBuilder.build());
         return caseBuilder.build();
     }
@@ -397,7 +398,7 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestGroupFeaturesCase setGroupFeatures(ByteBuf input) {
         MultipartRequestGroupFeaturesCaseBuilder caseBuilder = new MultipartRequestGroupFeaturesCaseBuilder();
         MultipartRequestGroupFeaturesBuilder groupBuilder = new MultipartRequestGroupFeaturesBuilder();
-        groupBuilder.setEmpty(true);
+        groupBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestGroupFeatures(groupBuilder.build());
         return caseBuilder.build();
     }
@@ -421,7 +422,7 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestMeterFeaturesCase setMeterFeatures(ByteBuf input) {
         MultipartRequestMeterFeaturesCaseBuilder caseBuilder = new MultipartRequestMeterFeaturesCaseBuilder();
         MultipartRequestMeterFeaturesBuilder meterBuilder = new MultipartRequestMeterFeaturesBuilder();
-        meterBuilder.setEmpty(true);
+        meterBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestMeterFeatures(meterBuilder.build());
         return caseBuilder.build();
     }
@@ -429,7 +430,7 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestTableCase setTable(ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
-        tableBuilder.setEmpty(true);
+        tableBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestTable(tableBuilder.build());
         return caseBuilder.build();
     }

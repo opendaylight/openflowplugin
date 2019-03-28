@@ -37,7 +37,7 @@ public class SingleLayerGroupServiceTest extends ServiceMocking {
                 .build();
 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
-        assertEquals(GroupMessage.class, ofHeader.getImplementedInterface());
+        assertEquals(GroupMessage.class, ofHeader.implementedInterface());
 
         final GroupMessage result = (GroupMessage) ofHeader;
 
