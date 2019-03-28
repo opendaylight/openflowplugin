@@ -13,7 +13,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     private final ConfigurationService service;
@@ -171,11 +170,6 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
             .openflow.provider.config.rev160510.OpenflowProviderConfig>> E augmentation(
                     java.lang.Class<E> augmentationType) {
         return null;
-    }
-
-    @Override
-    public Class<? extends DataContainer> getImplementedInterface() {
-        return OpenflowProviderConfig.class;
     }
 
     @Override

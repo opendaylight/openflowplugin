@@ -63,7 +63,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
                 .forEach(property -> {
                     final Class<? extends TableFeaturePropType> clazz = (Class<? extends TableFeaturePropType>) property
                         .getTableFeaturePropType()
-                        .getImplementedInterface();
+                        .implementedInterface();
 
                     Preconditions.checkNotNull(registry)
                         .<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(

@@ -27,6 +27,7 @@ import static org.opendaylight.openflowplugin.applications.topology.manager.Test
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForDeletes;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.waitForSubmit;
 
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,11 +81,11 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         SettableFuture<Optional<Topology>> readFuture = SettableFuture.create();
         readFuture.set(Optional.of(topology));
         ReadWriteTransaction mockTx1 = mock(ReadWriteTransaction.class);
-        doReturn(readFuture).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topologyIID);
+        doReturn(FluentFuture.from(readFuture)).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topologyIID);
 
         SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
         readFutureNode.set(Optional.of(topoNode));
-        doReturn(readFutureNode).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
+        doReturn(FluentFuture.from(readFutureNode)).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
         final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
 

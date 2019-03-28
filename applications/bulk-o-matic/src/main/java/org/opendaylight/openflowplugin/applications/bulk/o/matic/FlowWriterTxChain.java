@@ -116,7 +116,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
             int newBatchSize = batchSize;
             LOG.info("Number of Txn for dpId: {} is: {}", dpId, numSubmits);
 
-            txChain = dataBroker.createTransactionChain(this);
+            txChain = dataBroker.createMergingTransactionChain(this);
             LOG.info("Creating new txChain: {} for dpid: {}", txChain, dpId);
 
             for (int i = 1; i <= numSubmits; i++) {

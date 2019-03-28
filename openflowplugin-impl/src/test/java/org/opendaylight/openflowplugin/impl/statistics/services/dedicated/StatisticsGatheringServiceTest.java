@@ -47,7 +47,7 @@ public class StatisticsGatheringServiceTest extends ServiceMocking {
         Xid xid = new Xid(xidValue);
         for (MultipartType mpType : MultipartType.values()) {
             final OfHeader request = statisticsGatheringService.buildRequest(xid, mpType);
-            Assert.assertEquals(MultipartRequestInput.class, request.getImplementedInterface());
+            Assert.assertEquals(MultipartRequestInput.class, request.implementedInterface());
             Assert.assertEquals(xidValue, request.getXid().longValue());
             Assert.assertNotNull(request);
         }

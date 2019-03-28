@@ -25,8 +25,6 @@ import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link FlowWriterTxChain}.
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class FlowWriterTxChainTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FlowWriterTxChainTest.class);
     private static final int FLOWS_PER_DPN = 100;
 
     @Mock
@@ -57,7 +54,7 @@ public class FlowWriterTxChainTest {
         final TransactionChain mockedTxChain = mock(TransactionChain.class);
         when(mockedTxChain.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         doReturn(mockedTxChain).when(mockDataBroker)
-                .createTransactionChain(ArgumentMatchers.any());
+                .createMergingTransactionChain(ArgumentMatchers.any());
 
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
 

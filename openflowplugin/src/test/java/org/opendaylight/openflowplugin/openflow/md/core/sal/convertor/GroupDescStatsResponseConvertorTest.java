@@ -195,7 +195,7 @@ public class GroupDescStatsResponseConvertorTest {
                 .Action action = bucket.getAction().get(0);
         Assert.assertEquals("Wrong type", 0, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
-                + ".action.action.CopyTtlInCase", action.getAction().getImplementedInterface().getName());
+                + ".action.action.CopyTtlInCase", action.getAction().implementedInterface().getName());
 
         // **********************************************
         // Test second group desc
@@ -219,19 +219,19 @@ public class GroupDescStatsResponseConvertorTest {
         action = bucket.getAction().get(0);
         Assert.assertEquals("Wrong type", 0, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
-                + ".action.action.CopyTtlOutCase", action.getAction().getImplementedInterface().getName());
+                + ".action.action.CopyTtlOutCase", action.getAction().implementedInterface().getName());
 
         // Test second action for first bucket of second group desc
         action = bucket.getAction().get(1);
         Assert.assertEquals("Wrong type", 1, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
-                + ".action.action.DecNwTtlCase", action.getAction().getImplementedInterface().getName());
+                + ".action.action.DecNwTtlCase", action.getAction().implementedInterface().getName());
 
         // Test third action for first bucket of second group desc
         action = bucket.getAction().get(2);
         Assert.assertEquals("Wrong type", 2, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
-                + ".action.action.PopPbbActionCase", action.getAction().getImplementedInterface().getName());
+                + ".action.action.PopPbbActionCase", action.getAction().implementedInterface().getName());
 
         // Test second bucket for second group desc
         bucket = stat.getBuckets().getBucket().get(1);

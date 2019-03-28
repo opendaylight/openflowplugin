@@ -27,7 +27,7 @@ public class MeterInstructionDeserializerTest extends AbstractInstructionDeseria
         in.writeInt(meterId);
 
         final Instruction instruction = deserializeInstruction(in);
-        assertEquals(MeterCase.class, instruction.getImplementedInterface());
+        assertEquals(MeterCase.class, instruction.implementedInterface());
         assertEquals(meterId, ((MeterCase) instruction).getMeter().getMeterId().getValue().intValue());
         assertEquals(0, in.readableBytes());
     }
