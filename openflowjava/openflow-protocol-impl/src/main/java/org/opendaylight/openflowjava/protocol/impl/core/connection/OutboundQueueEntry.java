@@ -130,7 +130,7 @@ final class OutboundQueueEntry {
                 callback = null;
             }
         } else {
-            LOG.warn("Ignoring failure {} for completed message", cause);
+            LOG.warn("Ignoring failure for completed message", cause);
         }
     }
 
