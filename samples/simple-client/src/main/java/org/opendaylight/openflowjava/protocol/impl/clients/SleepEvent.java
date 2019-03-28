@@ -37,7 +37,7 @@ public class SleepEvent implements ClientEvent {
             LOG.debug("Sleeping");
             return true;
         } catch (InterruptedException e) {
-            LOG.error("Error {}", e);
+            LOG.error("Error", e);
         }
         return false;
     }

@@ -100,7 +100,7 @@ public class CallableClient implements Callable<Boolean>, OFClient {
                 }
             }
         } catch (RuntimeException ex) {
-            LOG.error("Error {}", ex);
+            LOG.error("Error", ex);
             return false;
         }
         if (scenarioHandler.isFinishedOK()) {
