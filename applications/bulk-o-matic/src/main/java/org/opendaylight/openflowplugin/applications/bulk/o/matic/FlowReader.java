@@ -99,7 +99,7 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     readOpStatus.set(FlowCounter.OperationStatus.FAILURE.status());
-                    LOG.error("Error {}", e);
+                    LOG.error("Error", e);
                 }
             }
         }

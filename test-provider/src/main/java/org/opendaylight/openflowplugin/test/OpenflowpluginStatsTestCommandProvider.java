@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -142,6 +143,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
     }
 
+    @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
     public void _flowStats(CommandInterpreter ci) {
         int flowCount = 0;
         int flowStatsCount = 0;

@@ -72,7 +72,7 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
             listenerRegistration = looper.loopUntilNoException(
                 () -> dataBroker.registerDataTreeChangeListener(identifier, DefaultConfigPusher.this));
         } catch (Exception e) {
-            LOG.error("DataTreeChangeListener registration failed: {}", e);
+            LOG.error("DataTreeChangeListener registration failed", e);
             throw new IllegalStateException("DefaultConfigPusher startup failed!", e);
         }
         LOG.info("DefaultConfigPusher has started.");

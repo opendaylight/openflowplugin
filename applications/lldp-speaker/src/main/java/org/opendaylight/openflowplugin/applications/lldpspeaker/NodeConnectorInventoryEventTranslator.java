@@ -76,7 +76,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
                     dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState,
                             NodeConnectorInventoryEventTranslator.this));
         } catch (Exception e) {
-            LOG.error("DataTreeChangeListeners registration failed: {}", e);
+            LOG.error("DataTreeChangeListeners registration failed", e);
             throw new IllegalStateException("NodeConnectorInventoryEventTranslator startup failed!", e);
         }
         LOG.info("NodeConnectorInventoryEventTranslator has started.");

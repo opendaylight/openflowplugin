@@ -203,7 +203,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                 return true;
             }
         } catch (ParseException e) {
-            LOG.warn("Timestamp parsing error {}", e);
+            LOG.warn("Timestamp parsing error", e);
         }
         LOG.debug("Fresh operational not present: {}", nodeId.getValue());
         return false;

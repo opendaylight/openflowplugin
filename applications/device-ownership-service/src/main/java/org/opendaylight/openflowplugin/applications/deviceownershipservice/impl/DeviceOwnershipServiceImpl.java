@@ -55,7 +55,7 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
     public boolean isEntityOwned(final String nodeId) {
         EntityOwnershipState state = ownershipStateCache.get(nodeId);
         if (state == null) {
-            LOG.debug("The ownership state for node {} is not cached. Retrieving from the EOS Datastore");
+            LOG.debug("The ownership state for node {} is not cached. Retrieving from the EOS Datastore", nodeId);
             Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(nodeId);
             if (status.isPresent()) {
                 state = status.get();

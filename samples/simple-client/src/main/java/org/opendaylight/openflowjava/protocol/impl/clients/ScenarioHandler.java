@@ -62,7 +62,7 @@ public class ScenarioHandler extends Thread {
                     WaitForMessageEvent event = (WaitForMessageEvent) peek;
                     event.setHeaderReceived(ofMsg.poll(2000, TimeUnit.MILLISECONDS));
                 } catch (InterruptedException e) {
-                    LOG.error("Error {}", e);
+                    LOG.error("Error", e);
                     break;
                 }
             } else if (peek instanceof SendEvent) {
@@ -88,7 +88,7 @@ public class ScenarioHandler extends Thread {
             try {
                 sleep(sleepBetweenTries);
             } catch (InterruptedException e) {
-                LOG.error("Error {}", e);
+                LOG.error("Error", e);
             }
         }
         LOG.debug("Scenario finished");

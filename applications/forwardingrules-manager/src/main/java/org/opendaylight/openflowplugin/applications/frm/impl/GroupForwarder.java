@@ -229,7 +229,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.error("Stale Group creation failed {}", throwable);
+                LOG.error("Stale Group creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
 

@@ -318,7 +318,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.error("Stale Flow creation failed {}", throwable);
+                LOG.error("Stale Flow creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
 

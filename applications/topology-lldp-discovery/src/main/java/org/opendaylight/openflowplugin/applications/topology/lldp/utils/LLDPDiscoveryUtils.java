@@ -89,7 +89,7 @@ public final class LLDPDiscoveryUtils {
             try {
                 ethPkt.deserialize(payload, 0, payload.length * NetUtils.NUM_BITS_IN_A_BYTE);
             } catch (PacketException e) {
-                LOG.warn("Failed to decode LLDP packet {}", e);
+                LOG.warn("Failed to decode LLDP packet", e);
                 return nodeConnectorRef;
             }
 

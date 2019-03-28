@@ -90,7 +90,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.info("onFailure - getGenerationIdFromDevice RPC error {}", throwable);
+                LOG.info("onFailure - getGenerationIdFromDevice RPC error", throwable);
                 finalFuture.setException(new ExecutionException(throwable));
             }
         }, MoreExecutors.directExecutor());

@@ -692,7 +692,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.debug("Stale entity removal failed {}", throwable);
+                LOG.debug("Stale entity removal failed", throwable);
             }
         }, MoreExecutors.directExecutor());
     }

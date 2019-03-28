@@ -93,7 +93,7 @@ public class FlowWriterDirectOFRpc {
                 return Collections.emptySet();
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Failed to read connected nodes {}", e);
+            LOG.error("Failed to read connected nodes", e);
         }
         return nodeIds;
     }

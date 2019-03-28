@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
@@ -34,6 +35,7 @@ public class OpenflowpluginTestTopologyNotification {
 
     private static final class TopologyEventListener implements FlowTopologyDiscoveryListener {
         @Override
+        @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
         public void onLinkDiscovered(LinkDiscovered notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkDiscovered notification ........");
@@ -41,6 +43,7 @@ public class OpenflowpluginTestTopologyNotification {
         }
 
         @Override
+        @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
         public void onLinkOverutilized(LinkOverutilized notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkOverutilized notification ........");
@@ -48,6 +51,7 @@ public class OpenflowpluginTestTopologyNotification {
         }
 
         @Override
+        @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
         public void onLinkRemoved(LinkRemoved notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkRemoved notification   ........");
@@ -55,6 +59,7 @@ public class OpenflowpluginTestTopologyNotification {
         }
 
         @Override
+        @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
         public void onLinkUtilizationNormal(LinkUtilizationNormal notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkUtilizationNormal notification ........");

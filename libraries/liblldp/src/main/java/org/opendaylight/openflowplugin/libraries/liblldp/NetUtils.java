@@ -123,7 +123,7 @@ public abstract class NetUtils {
         try {
             ip = InetAddress.getByAddress(NetUtils.intToByteArray4(address));
         } catch (final UnknownHostException e) {
-            LOG.error("", e);
+            LOG.error("Failed to convert {}", address, e);
         }
         return ip;
     }
@@ -163,7 +163,7 @@ public abstract class NetUtils {
         try {
             return InetAddress.getByAddress(address);
         } catch (final UnknownHostException e) {
-            LOG.error("", e);
+            LOG.error("Failed to convert {}", address, e);
         }
         return null;
     }
@@ -368,7 +368,7 @@ public abstract class NetUtils {
         try {
             address = InetAddress.getByName(addressString);
         } catch (final UnknownHostException e) {
-            LOG.error("", e);
+            LOG.error("Failed to convert {}", addressString, e);
         }
         return address;
     }

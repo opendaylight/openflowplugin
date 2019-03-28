@@ -112,7 +112,7 @@ public class TableWriter implements FlowCounterMBean {
 
                         @Override
                         public void onFailure(Throwable throwable) {
-                            LOG.error("Table addition Failed. Error: {}", throwable);
+                            LOG.error("Table addition Failed.", throwable);
                             if (failedWrites.incrementAndGet() == totalTables) {
                                 writeOpStatus.set(FlowCounter.OperationStatus.FAILURE.status());
                             }
