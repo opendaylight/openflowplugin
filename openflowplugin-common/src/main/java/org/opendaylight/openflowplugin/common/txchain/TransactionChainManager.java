@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.checkerframework.checker.lock.qual.GuardedBy;
@@ -31,6 +30,7 @@ import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -165,6 +165,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     @GuardedBy("txLock")
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public boolean submitTransaction(boolean doSync) {
         synchronized (txLock) {
             if (!submitIsEnabled) {
@@ -184,10 +185,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
             if (initCommit || doSync) {
                 try {
-                    submitFuture.get(5L, TimeUnit.SECONDS);
-                } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                    LOG.error("Exception during INITIAL({}) || doSync({}) transaction submitting. ",
-                            initCommit, doSync, ex);
+                    SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(500, 6);
+                    looper.loopUntilNoException(() -> submitFuture.get(5L, TimeUnit.SECONDS));
+                } catch (Exception ex) {
+                    LOG.error("Exception during INITIAL({}) || doSync({}) transaction submitting for device {}",
+                            initCommit, doSync, nodeId, ex);
                     return false;
                 }
                 initCommit = false;
