@@ -3156,7 +3156,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.error("Status of Group Data Loaded Transaction : failure. Reason : {}", throwable);
+                LOG.error("Status of Group Data Loaded Transaction : failure.", throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
@@ -3195,7 +3195,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.error("Status of Group Data Loaded Transaction : failure. Reason : {}", throwable);
+                LOG.error("Status of Group Data Loaded Transaction : failure.", throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());

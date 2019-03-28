@@ -152,7 +152,7 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.warn("Failure multipart response for Experimenter-Mp request. Exception: {}", throwable);
+                LOG.warn("Failure multipart response for Experimenter-Mp request", throwable);
                 finalFuture.set(RpcResultBuilder.<SendExperimenterMpRequestOutput>failed()
                         .withError(ErrorType.RPC, "Future error", throwable).build());
             }
