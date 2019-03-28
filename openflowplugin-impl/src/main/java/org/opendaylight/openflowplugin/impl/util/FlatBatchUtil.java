@@ -150,8 +150,9 @@ public final class FlatBatchUtil {
     @VisibleForTesting
     static <T extends BatchChoice> BatchStepType detectBatchStepType(final T batchCase) {
         final BatchStepType type;
-        final Class<? extends DataContainer> implementedInterface = batchCase.getImplementedInterface();
+        final Class<? extends DataContainer> implementedInterface = batchCase.implementedInterface();
 
+        // FIXME: use a lookup table instead of this cascade
         if (FlatBatchAddFlowCase.class.equals(implementedInterface)) {
             type = BatchStepType.FLOW_ADD;
         } else if (FlatBatchRemoveFlowCase.class.equals(implementedInterface)) {

@@ -228,7 +228,7 @@ public final class ReconcileUtil {
         for (Bucket bucket : pendingGroup.getBuckets().getBucket()) {
             for (Action action : bucket.getAction()) {
                 // if the output action is a group
-                if (GroupActionCase.class.equals(action.getAction().getImplementedInterface())) {
+                if (GroupActionCase.class.equals(action.getAction().implementedInterface())) {
                     Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
                     // see if that output group is installed
                     if (!installedGroupIds.contains(groupId)) {

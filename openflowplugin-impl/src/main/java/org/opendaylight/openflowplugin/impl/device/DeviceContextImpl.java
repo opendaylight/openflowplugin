@@ -285,7 +285,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processReply(final OfHeader ofHeader) {
         messageSpy.spyMessage(
-                ofHeader.getImplementedInterface(),
+                ofHeader.implementedInterface(),
                 ofHeader instanceof Error
                         ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
                         : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
@@ -294,7 +294,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void processReply(final Xid xid, final List<? extends OfHeader> ofHeaderList) {
         ofHeaderList.forEach(header -> messageSpy.spyMessage(
-                header.getImplementedInterface(),
+                header.implementedInterface(),
                 header instanceof Error
                         ? MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE
                         : MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
@@ -321,7 +321,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
-        messageSpy.spyMessage(portStatus.getImplementedInterface(), MessageSpy.StatisticsGroup
+        messageSpy.spyMessage(portStatus.implementedInterface(), MessageSpy.StatisticsGroup
                 .FROM_SWITCH_PUBLISHED_SUCCESS);
 
         if (initialized.get()) {
@@ -365,7 +365,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         if (isMasterOfDevice()) {
             final PacketReceived packetReceived = packetInTranslator.translate(packetInMessage, getDeviceInfo(), null);
-            handlePacketInMessage(packetReceived, packetInMessage.getImplementedInterface(), packetReceived.getMatch());
+            handlePacketInMessage(packetReceived, packetInMessage.implementedInterface(), packetReceived.getMatch());
         } else {
             LOG.debug("Controller is not owner of the device {}, skipping packet_in message", deviceInfo.getLOGValue());
         }
@@ -460,12 +460,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             final ExperimenterDataOfChoice vendorData = notification.getExperimenterDataOfChoice();
             final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
                     getDeviceInfo().getVersion(),
-                    (Class<? extends ExperimenterDataOfChoice>) vendorData.getImplementedInterface());
+                    (Class<? extends ExperimenterDataOfChoice>) vendorData.implementedInterface());
             final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> messageConverter =
                     extensionConverterProvider.getMessageConverter(key);
             if (messageConverter == null) {
                 LOG.warn("custom converter for {}[OF:{}] not found",
-                        notification.getExperimenterDataOfChoice().getImplementedInterface(),
+                        notification.getExperimenterDataOfChoice().implementedInterface(),
                         getDeviceInfo().getVersion());
                 return;
             }
@@ -489,7 +489,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     // recognize it.
     @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
     public boolean processAlienMessage(final OfHeader message) {
-        final Class<? extends DataContainer> implementedInterface = message.getImplementedInterface();
+        final Class<? extends DataContainer> implementedInterface = message.implementedInterface();
 
         if (org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessage.class
                 .equals(implementedInterface)) {
