@@ -23,7 +23,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -106,12 +105,12 @@ public class GuardedContextImpl implements GuardedContext {
 
                 Futures.addCallback(resultFuture, new FutureCallback<Object>() {
                     @Override
-                    public void onSuccess(@Nullable final Object result) {
+                    public void onSuccess(final Object result) {
                         state = TERMINATED;
                     }
 
                     @Override
-                    public void onFailure(@Nonnull final Throwable throwable) {
+                    public void onFailure(final Throwable throwable) {
                         state = TERMINATED;
                     }
                 }, MoreExecutors.directExecutor());

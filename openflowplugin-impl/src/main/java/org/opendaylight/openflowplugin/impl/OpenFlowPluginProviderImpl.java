@@ -26,7 +26,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -179,14 +178,14 @@ public class OpenFlowPluginProviderImpl implements
             return switchConnectionProvider.startup();
         }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
             @Override
-            public void onSuccess(@Nonnull final List<Boolean> result) {
+            public void onSuccess(final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
                 openflowDiagStatusProvider.reportStatus(OPENFLOW_SERVICE_NAME, ServiceState.OPERATIONAL);
                 fullyStarted.set(null);
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to start.", throwable);
                 openflowDiagStatusProvider.reportStatus(OPENFLOW_SERVICE_NAME, throwable);
                 fullyStarted.setException(throwable);
@@ -213,12 +212,12 @@ public class OpenFlowPluginProviderImpl implements
 
         Futures.addCallback(listListenableFuture, new FutureCallback<List<Boolean>>() {
             @Override
-            public void onSuccess(@Nonnull final List<Boolean> result) {
+            public void onSuccess(final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders were successfully shut down ({}).", result.size());
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to shutdown.", throwable);
             }
         }, MoreExecutors.directExecutor());

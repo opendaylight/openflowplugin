@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,7 +48,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNodeConnector>> modifications) {
+    public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNodeConnector>> modifications) {
         for (DataTreeModification<FlowCapableNodeConnector> modification : modifications) {
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:

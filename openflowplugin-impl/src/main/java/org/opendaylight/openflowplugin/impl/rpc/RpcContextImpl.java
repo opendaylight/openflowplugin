@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -179,9 +178,8 @@ class RpcContextImpl implements RpcContext {
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
         return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
-            @Nullable
             @Override
-            public Void apply(@Nullable final Void input) {
+            public Void apply(final Void input) {
                 unregisterRPCs();
                 return null;
             }

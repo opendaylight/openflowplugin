@@ -82,9 +82,8 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                 return Futures.transform(
                     switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures),
                     new Function<List<RpcResult<List<OfHeader>>>, Void>() {
-                        @Nullable
                         @Override
-                        public Void apply(@Nullable final List<RpcResult<List<OfHeader>>> input) {
+                        public Void apply(final List<RpcResult<List<OfHeader>>> input) {
                             LOG.info("Static node {} successfully finished collecting",
                                     deviceContext.getDeviceInfo());
                             return null;
@@ -135,7 +134,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                        @Nullable final ConvertorExecutor convertorExecutor) {
         Futures.addCallback(future, new FutureCallback<RpcResult<List<OfHeader>>>() {
             @Override
-            public void onSuccess(@Nonnull final RpcResult<List<OfHeader>> result) {
+            public void onSuccess(final RpcResult<List<OfHeader>> result) {
                 if (result.getResult() != null) {
                     LOG.info("Static node {} info: {} collected", deviceContext.getDeviceInfo(), type);
                     translateAndWriteResult(
@@ -164,7 +163,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.warn("Request of type {} for static info of node {} failed.",
                         type, deviceContext.getDeviceInfo());
             }
