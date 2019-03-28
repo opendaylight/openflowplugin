@@ -67,11 +67,11 @@ public final class TypeKeyMakerFactory {
             public MessageTypeKey<?> make(Action entry) {
                 if (entry.getExperimenterId() != null) {
                     return new ActionSerializerKey<>(getVersion(),
-                            (Class<ActionChoice>) entry.getActionChoice().getImplementedInterface(),
+                            (Class<ActionChoice>) entry.getActionChoice().implementedInterface(),
                             entry.getExperimenterId().getValue());
                 }
                 return new ActionSerializerKey<>(getVersion(),
-                        (Class<ActionChoice>) entry.getActionChoice().getImplementedInterface(), null);
+                        (Class<ActionChoice>) entry.getActionChoice().implementedInterface(), null);
             }
         };
     }
@@ -88,11 +88,11 @@ public final class TypeKeyMakerFactory {
             public MessageTypeKey<?> make(Instruction entry) {
                 if (entry.getExperimenterId() != null) {
                     return new InstructionSerializerKey<>(getVersion(),
-                            (Class<InstructionChoice>) entry.getInstructionChoice().getImplementedInterface(),
+                            (Class<InstructionChoice>) entry.getInstructionChoice().implementedInterface(),
                             entry.getExperimenterId().getValue());
                 }
                 return new InstructionSerializerKey<>(getVersion(),
-                        (Class<InstructionChoice>) entry.getInstructionChoice().getImplementedInterface(), null);
+                        (Class<InstructionChoice>) entry.getInstructionChoice().implementedInterface(), null);
             }
         };
     }

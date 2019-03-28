@@ -41,12 +41,12 @@ public class SingleLayerExperimenterMultipartServiceTest extends ServiceMocking 
                 .build();
 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
-        assertEquals(MultipartRequest.class, ofHeader.getImplementedInterface());
+        assertEquals(MultipartRequest.class, ofHeader.implementedInterface());
 
         final MultipartRequestExperimenter result = (MultipartRequestExperimenter) ((MultipartRequest) ofHeader)
             .getMultipartRequestBody();
 
-        assertEquals(DummyExperimenter.class, result.getExperimenterMessageOfChoice().getImplementedInterface());
+        assertEquals(DummyExperimenter.class, result.getExperimenterMessageOfChoice().implementedInterface());
     }
 
     @Test
@@ -71,6 +71,6 @@ public class SingleLayerExperimenterMultipartServiceTest extends ServiceMocking 
                 .getResult()
                 .getExperimenterCoreMessageItem()
                 .get(0)
-                .getExperimenterMessageOfChoice().getImplementedInterface());
+                .getExperimenterMessageOfChoice().implementedInterface());
     }
 }

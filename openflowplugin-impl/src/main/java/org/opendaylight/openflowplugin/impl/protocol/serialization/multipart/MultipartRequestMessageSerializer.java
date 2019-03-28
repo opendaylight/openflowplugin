@@ -56,7 +56,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
         final OFSerializer<MultipartRequestBody> serializer = Preconditions.checkNotNull(registry)
             .getSerializer(new MessageTypeKey<>(
                 EncodeConstants.OF13_VERSION_ID,
-                multipartRequestBody.getImplementedInterface()));
+                multipartRequestBody.implementedInterface()));
 
         serializer.serialize(multipartRequestBody, outBuffer);
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
@@ -68,7 +68,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
     }
 
     private static MultipartType getMultipartType(final MultipartRequestBody multipartRequestBody) {
-        final Class<? extends DataContainer> clazz = multipartRequestBody.getImplementedInterface();
+        final Class<? extends DataContainer> clazz = multipartRequestBody.implementedInterface();
 
         final MultipartType multipartType = MultipartRequestDesc.class.equals(clazz) ? MultipartType.OFPMPDESC
             : MultipartRequestFlowTableStats.class.equals(clazz) ? MultipartType.OFPMPTABLE

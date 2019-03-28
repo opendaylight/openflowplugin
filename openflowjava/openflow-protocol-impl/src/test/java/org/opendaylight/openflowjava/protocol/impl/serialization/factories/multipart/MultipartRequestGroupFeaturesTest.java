@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -26,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupFeaturesCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group.features._case.MultipartRequestGroupFeaturesBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Unit tests for MultipartRequestGroupFeatures.
@@ -59,7 +59,7 @@ public class MultipartRequestGroupFeaturesTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestGroupFeaturesCaseBuilder caseBuilder = new MultipartRequestGroupFeaturesCaseBuilder();
         MultipartRequestGroupFeaturesBuilder featuresBuilder = new MultipartRequestGroupFeaturesBuilder();
-        featuresBuilder.setEmpty(true);
+        featuresBuilder.setEmpty(Empty.getInstance());
         caseBuilder.setMultipartRequestGroupFeatures(featuresBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();

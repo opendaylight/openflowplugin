@@ -206,22 +206,22 @@ public class ActionConvertorTest {
 
             }
             if (action.getActionChoice() instanceof CopyTtlInCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         CopyTtlInCase.class.getName());
 
             }
             if (action.getActionChoice() instanceof CopyTtlOutCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         CopyTtlOutCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof SetMplsTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         SetMplsTtlCase.class.getName());
 
             }
             if (action.getActionChoice() instanceof DecMplsTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         DecMplsTtlCase.class.getName());
             }
 
@@ -240,7 +240,7 @@ public class ActionConvertorTest {
             }
 
             if (action.getActionChoice() instanceof SetQueueCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         SetQueueCase.class.getName());
             }
 
@@ -250,21 +250,21 @@ public class ActionConvertorTest {
             }
 
             if (action.getActionChoice() instanceof PushVlanCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         PushVlanCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof PopVlanCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         PopVlanCase.class.getName());
             }
 
             if (action.getActionChoice() instanceof SetNwTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         SetNwTtlCase.class.getName());
             }
             if (action.getActionChoice() instanceof DecNwTtlCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         DecNwTtlCase.class.getName());
             }
             if (action.getActionChoice() instanceof PushPbbCase) {
@@ -275,7 +275,7 @@ public class ActionConvertorTest {
             }
 
             if (action.getActionChoice() instanceof PopMplsCase) {
-                Assert.assertEquals(action.getActionChoice().getImplementedInterface().getName(),
+                Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
                         PopMplsCase.class.getName());
             }
             if (action.getActionChoice() instanceof SetFieldCase) {
