@@ -16,7 +16,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -66,7 +65,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
         Futures.addCallback(handleServiceCall(input), new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
             @SuppressWarnings("checkstyle:IllegalCatch")
-            public void onSuccess(@Nonnull final RpcResult<List<MultipartReply>> result) {
+            public void onSuccess(final RpcResult<List<MultipartReply>> result) {
                 if (result.isSuccessful()) {
                     final List<MultipartReply> multipartReplies = result.getResult();
                     if (multipartReplies.isEmpty()) {

@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
@@ -69,7 +68,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         return new FutureCallback<RpcResult<BarrierOutput>>() {
             @Override
             @SuppressWarnings("checkstyle:IllegalCatch")
-            public void onSuccess(@Nullable final RpcResult<BarrierOutput> result) {
+            public void onSuccess(final RpcResult<BarrierOutput> result) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}",
                             connectionContext.getDeviceInfo());

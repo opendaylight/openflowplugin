@@ -16,10 +16,6 @@
             <artifactId>org.osgi.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-api</artifactId>
         </dependency>
@@ -42,11 +38,6 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
@@ -77,6 +68,11 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-maven-plugin-annotation</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>

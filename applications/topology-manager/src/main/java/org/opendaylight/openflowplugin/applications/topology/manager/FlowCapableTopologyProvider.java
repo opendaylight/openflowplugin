@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -114,7 +113,6 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
         return Futures.immediateFuture(null);
     }
 
-    @Nonnull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return ServiceGroupIdentifier.create(TOPOLOGY_PROVIDER);

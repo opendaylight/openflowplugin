@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
@@ -126,7 +125,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 LOG.info("Node connected:  {}",
