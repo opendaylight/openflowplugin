@@ -142,7 +142,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             LOG.debug("OF header msg received");
 
             if (alienMessageListener != null && alienMessageListener.onAlienMessage((OfHeader) message)) {
-                LOG.debug("Alien message {} received", message.getImplementedInterface());
+                LOG.debug("Alien message {} received", message.implementedInterface());
             } else if (outputManager == null || !outputManager.onMessage((OfHeader) message)
                     || message instanceof EchoOutput) {
                 final RpcResponseKey key = createRpcResponseKey((OfHeader) message);
@@ -160,7 +160,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     private static RpcResponseKey createRpcResponseKey(final OfHeader message) {
-        return new RpcResponseKey(message.getXid(), message.getImplementedInterface().getName());
+        return new RpcResponseKey(message.getXid(), message.implementedInterface().getName());
     }
 
     @Override

@@ -30,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl}.
@@ -85,7 +84,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
     private static class DummyExperimenter implements ExperimenterMessageOfChoice {
         @Override
-        public Class<? extends DataContainer> getImplementedInterface() {
+        public Class<DummyExperimenter> implementedInterface() {
             return DummyExperimenter.class;
         }
     }

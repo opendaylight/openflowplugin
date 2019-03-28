@@ -74,6 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * Convert between RegLoad SAL action and RegLoad2 nicira action.
@@ -167,54 +168,54 @@ public class RegLoad2Convertor implements
 
         if (NxmNxNshFlags.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSH_FLAGS_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNshFlagsCaseBuilder().setNxNshFlags(true).build());
+            dstBuilder.setDstChoice(new DstNxNshFlagsCaseBuilder().setNxNshFlags(Empty.getInstance()).build());
             NshFlagsValues nshFlagsValues = ((NshFlagsCaseValue) value).getNshFlagsValues();
             return resolveRegLoad(nshFlagsValues.getNshFlags(), nshFlagsValues.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNsp.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSP_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNspCaseBuilder().setNxNspDst(true).build());
+            dstBuilder.setDstChoice(new DstNxNspCaseBuilder().setNxNspDst(Empty.getInstance()).build());
             NspValues nspValues = ((NspCaseValue) value).getNspValues();
             return resolveRegLoad(nspValues.getNsp(), nspValues.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNsi.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSI_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNsiCaseBuilder().setNxNsiDst(true).build());
+            dstBuilder.setDstChoice(new DstNxNsiCaseBuilder().setNxNsiDst(Empty.getInstance()).build());
             NsiValues nsiValues = ((NsiCaseValue) value).getNsiValues();
             return resolveRegLoad(nsiValues.getNsi(), nsiValues.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc1.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC1_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNshc1CaseBuilder().setNxNshc1Dst(true).build());
+            dstBuilder.setDstChoice(new DstNxNshc1CaseBuilder().setNxNshc1Dst(Empty.getInstance()).build());
             NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc2.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC2_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNshc2CaseBuilder().setNxNshc2Dst(true).build());
+            dstBuilder.setDstChoice(new DstNxNshc2CaseBuilder().setNxNshc2Dst(Empty.getInstance()).build());
             NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc3.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC3_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNshc3CaseBuilder().setNxNshc3Dst(true).build());
+            dstBuilder.setDstChoice(new DstNxNshc3CaseBuilder().setNxNshc3Dst(Empty.getInstance()).build());
             NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc4.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC4_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNshc4CaseBuilder().setNxNshc4Dst(true).build());
+            dstBuilder.setDstChoice(new DstNxNshc4CaseBuilder().setNxNshc4Dst(Empty.getInstance()).build());
             NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshTtl.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSH_TTL_CODEC.getValueLength();
-            dstBuilder.setDstChoice(new DstNxNshTtlCaseBuilder().setNxNshTtl(true).build());
+            dstBuilder.setDstChoice(new DstNxNshTtlCaseBuilder().setNxNshTtl(Empty.getInstance()).build());
             NshTtlValues nshTtlValues = ((NshTtlCaseValue) value).getNshTtlValues();
             return resolveRegLoad(nshTtlValues.getNshTtl(), nshTtlValues.getMask(), valueLength, dstBuilder);
         }
 
-        throw new CodecPreconditionException("Missing codec for " + value.getImplementedInterface());
+        throw new CodecPreconditionException("Missing codec for " + value.implementedInterface());
     }
 
     private static NxRegLoad resolveRegLoad(Short value, @Nullable Short mask, int valueLength, DstBuilder dstBuilder) {

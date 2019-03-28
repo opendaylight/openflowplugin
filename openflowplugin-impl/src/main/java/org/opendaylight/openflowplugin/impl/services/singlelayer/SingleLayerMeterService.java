@@ -35,7 +35,7 @@ public final class SingleLayerMeterService<O extends DataObject> extends Abstrac
     @Override
     protected OfHeader buildRequest(final Xid xid, final Meter input) {
         final MeterMessageBuilder meterMessageBuilder = new MeterMessageBuilder(input);
-        final Class<? extends DataContainer> clazz = input.getImplementedInterface();
+        final Class<? extends DataContainer> clazz = input.implementedInterface();
 
         if (clazz.equals(AddMeterInput.class)
                 || clazz.equals(UpdatedMeter.class)) {
