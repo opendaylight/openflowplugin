@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
@@ -344,7 +343,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                                                                         ContextChain contextChain) {
         return new FutureCallback<ResultState>() {
             @Override
-            public void onSuccess(@Nullable ResultState result) {
+            public void onSuccess(ResultState result) {
                 if (ResultState.DONOTHING == result) {
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
                     contextChain.continueInitializationAfterReconciliation();
@@ -355,7 +354,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             }
 
             @Override
-            public void onFailure(@Nonnull Throwable throwable) {
+            public void onFailure(Throwable throwable) {
                 LOG.warn("Reconciliation framework failure.");
                 destroyContextChain(deviceInfo);
             }

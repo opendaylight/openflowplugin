@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -66,7 +65,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
         // hook notification publishing
         Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
-            public void onSuccess(@Nullable RpcResult<List<MultipartReply>> result) {
+            public void onSuccess(RpcResult<List<MultipartReply>> result) {
                 if (result != null && result.isSuccessful()) {
                     // transform rpc result (raw multipart) to notification
                     final N flowNotification = transformToNotification(result.getResult(), emulatedTxId);

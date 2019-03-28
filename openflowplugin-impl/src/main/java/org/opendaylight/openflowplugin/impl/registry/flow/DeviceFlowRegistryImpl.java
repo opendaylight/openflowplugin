@@ -127,7 +127,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
         future.addCallback(new FutureCallback<Optional<FlowCapableNode>>() {
             @Override
-            public void onSuccess(@Nonnull Optional<FlowCapableNode> result) {
+            public void onSuccess(Optional<FlowCapableNode> result) {
                 result.map(Collections::singleton).orElse(Collections.emptySet()).stream()
                         .filter(Objects::nonNull)
                         .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
