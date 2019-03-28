@@ -114,7 +114,7 @@ public abstract class AbstractService<I, O> {
         Preconditions.checkNotNull(input);
 
         final Class<?> requestType = input instanceof DataContainer
-            ? ((DataContainer) input).getImplementedInterface()
+            ? ((DataContainer) input).implementedInterface()
             : input.getClass();
 
         getMessageSpy().spyMessage(requestType, MessageSpy.StatisticsGroup.TO_SWITCH_ENTERED);

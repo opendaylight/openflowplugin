@@ -147,7 +147,7 @@ public final class MatchUtil {
             return null;
         }
 
-        if (implementedInterface.equals(match.getImplementedInterface())) {
+        if (implementedInterface.equals(match.implementedInterface())) {
             return implementedInterface.cast(match);
         }
 

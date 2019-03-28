@@ -52,7 +52,7 @@ public final class ActionExtensionHelper {
             convertor = extensionConvertorProvider.getActionConverter(key);
         } else if (action.getActionChoice() != null) {
             ActionSerializerKey<?> key = new ActionSerializerKey(EncodeConstants.OF13_VERSION_ID,
-                    action.getActionChoice().getImplementedInterface(), null);
+                    action.getActionChoice().implementedInterface(), null);
             convertor = extensionConvertorProvider.getActionConverter(key);
         }
 
