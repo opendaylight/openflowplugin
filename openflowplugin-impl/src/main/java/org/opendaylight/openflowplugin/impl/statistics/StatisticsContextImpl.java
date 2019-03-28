@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -192,7 +191,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     public void close() {
         Futures.addCallback(stopGatheringData(), new FutureCallback<Void>() {
             @Override
-            public void onSuccess(@Nullable final Void result) {
+            public void onSuccess(final Void result) {
                 requestContexts.forEach(requestContext -> RequestContextUtil
                         .closeRequestContextWithRpcError(requestContext, CONNECTION_CLOSED));
             }
@@ -317,7 +316,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
 
     private final class InitialSubmitCallback implements FutureCallback<Boolean> {
         @Override
-        public void onSuccess(@Nullable final Boolean result) {
+        public void onSuccess(final Boolean result) {
             contextChainMastershipWatcher
                     .onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
 
@@ -327,7 +326,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(deviceInfo,
                                                                               "Initial gathering statistics "
                                                                                       + "unsuccessful: "

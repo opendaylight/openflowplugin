@@ -71,7 +71,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
 
         Futures.addCallback(future, new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(@Nullable final Boolean result) {
+            public void onSuccess(final Boolean result) {
                 if (Boolean.TRUE.equals(result)) {
                     LOG.debug("Creating empty flow capable node: {}", deviceInfo);
                     makeEmptyFlowCapableNode(deviceContext, deviceInfo);
@@ -85,16 +85,15 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.warn("Error occurred in preparation node {} for protocol 1.0", deviceInfo);
                 LOG.trace("Error for node {} : ", deviceInfo, throwable);
             }
         }, MoreExecutors.directExecutor());
 
         return Futures.transform(future, new Function<Boolean, Void>() {
-            @Nullable
             @Override
-            public Void apply(@Nullable final Boolean input) {
+            public Void apply(final Boolean input) {
                 LOG.debug("Writing physical port information for {}", deviceInfo);
                 writePhyPortInformation(deviceContext);
                 return null;
