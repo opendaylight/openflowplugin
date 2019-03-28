@@ -40,12 +40,13 @@ public class DelegatingInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
+        LOG.trace("ChannelRead Message : {}", msg);
         consumer.consume((DataObject) msg);
     }
 
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
-        LOG.debug("Channel inactive");
+        LOG.debug("Channel inactive {}", ctx.channel());
         if (!inactiveMessageSent) {
             DisconnectEventBuilder builder = new DisconnectEventBuilder();
             builder.setInfo("Channel inactive");
@@ -56,7 +57,7 @@ public class DelegatingInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelUnregistered(final ChannelHandlerContext ctx) {
-        LOG.debug("Channel unregistered");
+        LOG.debug("Channel unregistered {}", ctx.channel());
         if (!inactiveMessageSent) {
             DisconnectEventBuilder builder = new DisconnectEventBuilder();
             builder.setInfo("Channel unregistered");
