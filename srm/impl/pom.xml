@@ -26,8 +26,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <name>ODL :: serviceutils :: ${project.artifactId}</name>
 
   <dependencies>
-
-  <dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>srm-api</artifactId>
       <version>${project.version}</version>
@@ -48,6 +47,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
       <groupId>org.apache.aries.blueprint</groupId>
       <artifactId>blueprint-maven-plugin-annotation</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
       <optional>true</optional>
     </dependency>
   </dependencies>
