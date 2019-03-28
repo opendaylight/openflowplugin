@@ -17,8 +17,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeter;
@@ -130,9 +128,8 @@ public final class FlatBatchMeterAdapters {
     static <T extends BatchMeterOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchMeterResult(final int stepOffset) {
         return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
-            @Nullable
             @Override
-            public RpcResult<ProcessFlatBatchOutput> apply(@Nonnull final RpcResult<T> input) {
+            public RpcResult<ProcessFlatBatchOutput> apply(final RpcResult<T> input) {
                 List<BatchFailure> batchFailures = wrapBatchMeterFailuresForFlat(input, stepOffset);
                 ProcessFlatBatchOutputBuilder outputBuilder =
                         new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);

@@ -9,8 +9,6 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -34,12 +32,12 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader>
 
         return new FutureCallback<OfHeader>() {
             @Override
-            public void onSuccess(@Nullable final OfHeader result) {
+            public void onSuccess(final OfHeader result) {
                 callback.onSuccess(result);
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 // If we failed getting table features, at least create empty tables
                 if (MultipartType.OFPMPTABLEFEATURES.getClass().equals(requestType)) {
                     DeviceInitializationUtil.makeEmptyTables(

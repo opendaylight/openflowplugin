@@ -22,7 +22,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -180,7 +179,7 @@ public class RoleContextImpl implements RoleContext {
 
     private final class MasterRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
-        public void onSuccess(@Nullable RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+        public void onSuccess(RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
             contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE);
@@ -188,7 +187,7 @@ public class RoleContextImpl implements RoleContext {
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             if (!(throwable instanceof CancellationException)) {
                 contextChainMastershipWatcher.onNotAbleToStartMastershipMandatory(
                         deviceInfo,
@@ -199,13 +198,13 @@ public class RoleContextImpl implements RoleContext {
 
     private final class SlaveRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
-        public void onSuccess(@Nullable final RpcResult<SetRoleOutput> result) {
+        public void onSuccess(final RpcResult<SetRoleOutput> result) {
             contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
             LOG.debug("Role SLAVE was successfully set on device, node {}", deviceInfo);
         }
 
         @Override
-        public void onFailure(@Nonnull final Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             if (!(throwable instanceof CancellationException)) {
                 contextChainMastershipWatcher.onSlaveRoleNotAcquired(deviceInfo,
                         "Was not able to propagate SLAVE role on device. Error: " + throwable.toString());

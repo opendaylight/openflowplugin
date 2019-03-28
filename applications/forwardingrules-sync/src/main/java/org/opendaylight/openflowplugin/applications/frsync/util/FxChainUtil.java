@@ -12,7 +12,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.Collection;
-import javax.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -34,7 +33,7 @@ public final class FxChainUtil {
     public static FutureCallback<RpcResult<Void>> logResultCallback(final NodeId nodeId, final String prefix) {
         return new FutureCallback<RpcResult<Void>>() {
             @Override
-            public void onSuccess(@Nullable final RpcResult<Void> result) {
+            public void onSuccess(final RpcResult<Void> result) {
                 if (result != null) {
                     if (result.isSuccessful()) {
                         LOG.debug("{} finished successfully: {}", prefix, nodeId.getValue());

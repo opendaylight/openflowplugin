@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="odl-openflowplugin-libraries">
     <feature name="odl-openflowplugin-libraries">
-        <feature version="[4,5)">odl-guava</feature>
+        <feature version="[5,6)">odl-guava</feature>
     </feature>
 </features>

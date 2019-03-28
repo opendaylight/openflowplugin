@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.concurrent.Future;
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -87,7 +86,7 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 String nodeId = modification.getRootPath().getRootIdentifier()

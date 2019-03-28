@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -65,7 +64,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                                          final NodeId nodeId) {
         return new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(@Nullable final Boolean result) {
+            public void onSuccess(final Boolean result) {
                 if (LOG.isDebugEnabled()) {
                     final long stampFinished = System.nanoTime();
                     LOG.debug("Syncup finished {} took:{} rpc:{} wait:{}", nodeId.getValue(),

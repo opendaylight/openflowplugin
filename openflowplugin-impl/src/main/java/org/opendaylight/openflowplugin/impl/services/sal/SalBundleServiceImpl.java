@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
@@ -17,7 +16,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
@@ -91,7 +89,7 @@ public class SalBundleServiceImpl implements SalBundleService {
         Futures.addCallback(Futures.successfulAsList(partialResults),new FutureCallback<
                 List<RpcResult<SendExperimenterOutput>>>() {
             @Override
-            public void onSuccess(@Nonnull List<RpcResult<SendExperimenterOutput>> results) {
+            public void onSuccess(List<RpcResult<SendExperimenterOutput>> results) {
                 final ArrayList<RpcError> errors = new ArrayList<>();
                 final RpcResultBuilder<AddBundleMessagesOutput> rpcResultBuilder;
                 for (RpcResult<SendExperimenterOutput> res : results) {
