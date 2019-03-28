@@ -131,11 +131,7 @@ public abstract class BitBufferHelper {
             LOG.error("getLong", new BufferException("Container is too small for the number of requested bits"));
         }
         if (numBits > data.length * NetUtils.NUM_BITS_IN_A_BYTE) {
-            try {
-                throw new BufferException("Trying to read more bits than contained in the data buffer");
-            } catch (final BufferException e) {
-                LOG.error("", e);
-            }
+            LOG.error("getLong", new BufferException("Trying to read more bits than contained in the data buffer"));
         }
         int startOffset = data.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits;
         try {

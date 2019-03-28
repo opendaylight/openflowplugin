@@ -104,7 +104,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOG.error("Failure multipart response for table features request. Exception: {}", throwable);
+                LOG.error("Failure multipart response for table features request", throwable);
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                     .withError(ErrorType.RPC, "Future error", throwable).build());
             }
