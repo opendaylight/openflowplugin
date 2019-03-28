@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -61,7 +62,8 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
         SettableFuture<RpcResult<ReconcileNodeOutput>> rpcResult = SettableFuture.create();
         ListenableFuture<Boolean> futureResult = forwardingRulesManagerImpl
                 .getNodeListener().reconcileConfiguration(connectedNode);
-        Futures.addCallback(futureResult, new ResultCallBack(futureResult, rpcResult));
+        Futures.addCallback(futureResult, new ResultCallBack(futureResult, rpcResult),
+                MoreExecutors.directExecutor());
         LOG.debug("Completing reconciliation for node: {}", input.getNodeId().toString());
         return rpcResult;
     }

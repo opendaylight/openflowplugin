@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,10 +88,11 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.createCumulatingFunction(groups, batchUpdateGroups.size()));
+                           GroupUtil.createCumulatingFunction(groups, batchUpdateGroups.size()),
+                           MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBulkFuture = Futures
-                .transform(commonResult, GroupUtil.GROUP_UPDATE_TRANSFORM);
+                .transform(commonResult, GroupUtil.GROUP_UPDATE_TRANSFORM, MoreExecutors.directExecutor());
 
         if (input.isBarrierAfter()) {
             updateGroupsBulkFuture = BarrierUtil
@@ -113,10 +115,11 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.createCumulatingFunction(input.getBatchAddGroups()));
+                           GroupUtil.createCumulatingFunction(input.getBatchAddGroups()),
+                           MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBulkFuture = Futures
-                .transform(commonResult, GroupUtil.GROUP_ADD_TRANSFORM);
+                .transform(commonResult, GroupUtil.GROUP_ADD_TRANSFORM, MoreExecutors.directExecutor());
 
         if (input.isBarrierAfter()) {
             addGroupsBulkFuture = BarrierUtil.chainBarrier(addGroupsBulkFuture, input.getNode(), transactionService,
@@ -139,10 +142,11 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.createCumulatingFunction(input.getBatchRemoveGroups()));
+                           GroupUtil.createCumulatingFunction(input.getBatchRemoveGroups()),
+                           MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBulkFuture = Futures
-                .transform(commonResult, GroupUtil.GROUP_REMOVE_TRANSFORM);
+                .transform(commonResult, GroupUtil.GROUP_REMOVE_TRANSFORM, MoreExecutors.directExecutor());
 
         if (input.isBarrierAfter()) {
             removeGroupsBulkFuture = BarrierUtil

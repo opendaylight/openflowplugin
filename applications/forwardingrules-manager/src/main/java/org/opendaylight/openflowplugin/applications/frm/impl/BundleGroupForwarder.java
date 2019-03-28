@@ -15,6 +15,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
@@ -77,7 +78,8 @@ public class BundleGroupForwarder {
                     bundleId.getValue(), nodeId.getValue());
             final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
-            Futures.addCallback(resultFuture, new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId));
+            Futures.addCallback(resultFuture, new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId),
+                    MoreExecutors.directExecutor());
             JdkFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
             return resultFuture;
         });
@@ -102,7 +104,7 @@ public class BundleGroupForwarder {
             final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
             Futures.addCallback(resultFuture, new BundleUpdateGroupCallBack(originalGroup.getGroupId().getValue(),
-                    nodeId));
+                    nodeId), MoreExecutors.directExecutor());
             JdkFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
             return resultFuture;
         });
@@ -130,7 +132,8 @@ public class BundleGroupForwarder {
                     bundleId.getValue(), nodeId.getValue());
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
-            Futures.addCallback(resultFuture, new BundleAddGroupCallBack(groupId, nodeId));
+            Futures.addCallback(resultFuture, new BundleAddGroupCallBack(groupId, nodeId),
+                    MoreExecutors.directExecutor());
             return resultFuture;
         });
     }
