@@ -715,7 +715,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         @Override
-        public void onSuccess(@Nullable List<Optional<FlowCapableNode>> result) {
+        public void onSuccess(List<Optional<FlowCapableNode>> result) {
             if (LOG.isDebugEnabled()) {
                 // Count all flows we read from datastore for debugging purposes.
                 // This number do not always represent how many flows were actually added

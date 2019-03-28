@@ -59,12 +59,12 @@ public class StatisticsPollingService extends AbstractScheduledService {
 
         Futures.addCallback(gatheringSupplier.get(), new FutureCallback<Boolean>() {
             @Override
-            public void onSuccess(@Nonnull final Boolean result) {
+            public void onSuccess(final Boolean result) {
                 waitFuture.complete(result);
             }
 
             @Override
-            public void onFailure(@Nonnull final Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 waitFuture.completeExceptionally(throwable);
             }
         }, MoreExecutors.directExecutor());

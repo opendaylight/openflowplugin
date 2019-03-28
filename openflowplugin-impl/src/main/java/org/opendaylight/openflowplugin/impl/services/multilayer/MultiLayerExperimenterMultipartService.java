@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -99,7 +98,7 @@ public class MultiLayerExperimenterMultipartService extends AbstractExperimenter
 
         class CallBackImpl implements FutureCallback<RpcResult<List<MultipartReply>>> {
             @Override
-            public void onSuccess(@Nonnull final RpcResult<List<MultipartReply>> result) {
+            public void onSuccess(final RpcResult<List<MultipartReply>> result) {
                 if (result.isSuccessful()) {
                     final List<MultipartReply> multipartReplies = result.getResult();
                     if (multipartReplies.isEmpty()) {
