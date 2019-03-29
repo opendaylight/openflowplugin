@@ -52,8 +52,8 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
         LOG.info("the getter is getting executed");
         List<String> result = new ArrayList<>();
-        Map<String, String> reconciliationStates  = getClusterwideReconcilitionStates();
         if (nodeId == null) {
+            Map<String, String> reconciliationStates  = getClusterwideReconcilitionStates();
             if (!reconciliationStates.isEmpty()) {
                 reconciliationStates.forEach((datapathId, reconciliationState) -> {
                     String status = String.format("%-17s %-50s", datapathId, reconciliationState);
@@ -63,19 +63,27 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
             } else {
                 session.getConsole().println("Reconciliation data not available");
             }
-        }
-        else {
-                //first checking reconciliation state locally
-            String reconciliationState = reconciliationJMXServiceMBean.acquireReconciliationStates().get(nodeId);
+        } else {
+            String reconciliationState = getReconciliationStateForNode();
             if (reconciliationState != null) {
                 String status = String.format("%-17s %-50s", nodeId, reconciliationState);
                 result.add(status);
                 printReconciliationStates(result);
             } else {
-                session.getConsole().println("Reconciliation data not available");
+                session.getConsole().println("Reconciliation data not available for the specified node");
             }
         }
         return null;
+    }
+
+    private String getReconciliationStateForNode() {
+        //first checking reconciliation state locally
+        String reconciliationState = reconciliationJMXServiceMBean.acquireReconciliationStates().get(nodeId);
+        if (reconciliationState == null) {
+            //checking reconciliation state in the cluster
+            reconciliationState = getClusterwideReconcilitionStates().get(nodeId);
+        }
+        return reconciliationState;
     }
 
     private void printReconciliationStates(List<String> result) {
@@ -99,9 +107,11 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         Map<String,String>  clusterwideReconcStates = new HashMap<>();
         List<String> clusterIPAddresses = clusterMemberInfoProvider.getClusterMembers().stream()
                 .map(s -> String.valueOf(s)).collect(Collectors.toList());
+        LOG.debug("The ip address of nodes in the cluster : {}", clusterIPAddresses);
         if (!clusterIPAddresses.isEmpty()) {
             String selfAddress = clusterMemberInfoProvider.getSelfAddress() != null
                     ? clusterMemberInfoProvider.getSelfAddress().toString() : ("localhost");
+            LOG.trace("The ip address of local node is {}", selfAddress);
             for (String memberAddress : clusterIPAddresses) {
                 try {
                     if (memberAddress.equals(selfAddress)) {
@@ -130,6 +140,8 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
                 String remoteJMXOperationResult = rootObj.getAsJsonObject().get("value").toString();
                 Type type = new TypeToken<HashMap<String, String>>(){}.getType();
                 jmxReconciliationStates.putAll(new Gson().fromJson(remoteJMXOperationResult, type));
+            } else {
+                LOG.error("Node with ip address {} is unreachable while acquiring reconciliation states", ipAddress);
             }
         } catch (Exception e) {
             LOG.error("Exception during reconciliation states from device with ip address {}", ipAddress, e);
