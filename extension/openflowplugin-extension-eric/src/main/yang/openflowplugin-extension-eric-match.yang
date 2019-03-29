@@ -1,0 +1,111 @@
+module openflowplugin-extension-eric-match {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowplugin:extension:eric:match";
+    prefix "openflowplugin-eric-match";
+
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
+    import packet-processing {prefix sal-packet;revision-date "2013-07-09";}
+    import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
+    import opendaylight-flow-statistics {prefix odl-flow-stats;revision-date "2013-08-19";}
+    import opendaylight-direct-statistics {prefix odl-direct-stats;revision-date "2016-05-11";}
+
+    description
+        "Eric openflow match extensions.";
+
+    revision "2018-07-30" {
+        description "Initial revision";
+    }
+
+    identity icmpv6-nd-reserved-key {
+        base ext-gen:extension-key;
+    }
+
+    identity icmpv6-nd-options-type-key {
+        base ext-gen:extension-key;
+    }
+
+    grouping eric-of-icmpv6-nd-reserved-grouping {
+        container eric-of-icmpv6-nd-reserved {
+            leaf icmpv6-nd-reserved {
+                type uint32;
+            }
+        }
+    }
+
+    grouping eric-of-icmpv6-nd-options-type-grouping {
+        container eric-of-icmpv6-nd-options-type {
+            leaf icmpv6-nd-options-type {
+                type uint8;
+            }
+        }
+    }
+
+    grouping all-matches-grouping {
+        uses eric-of-icmpv6-nd-reserved-grouping;
+        uses eric-of-icmpv6-nd-options-type-grouping;
+    }
+
+    // MATCH augmentations
+    // RPCS
+    augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-rpc-add-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-rpc-remove-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-rpc-update-flow-original";
+        uses all-matches-grouping;
+    }
+    augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-rpc-update-flow-updated";
+        uses all-matches-grouping;
+    }
+
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-nodes-node-table-flow";
+        uses all-matches-grouping;
+    }
+    augment "/sal-packet:packet-in-message/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-packet-in-message";
+        uses all-matches-grouping;
+    }
+
+    // NOTIFICATIONS
+    augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-notif-switch-flow-removed";
+        uses all-matches-grouping;
+    }
+    augment "/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-notif-packet-in";
+        uses all-matches-grouping;
+    }
+    augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-nodes-node-table-flow";
+        uses all-matches-grouping;
+    }
+    augment "/odl-direct-stats:get-flow-statistics/odl-direct-stats:output/odl-direct-stats:flow-and-statistics-map-list/odl-direct-stats:match/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-rpc-get-flow-stats";
+        uses all-matches-grouping;
+    }
+
+    // SetField augmentations
+
+    // DATA
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action/fni:set-field-case/fni:set-field/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-nodes-node-table-flow-write-actions-set-field";
+        uses all-matches-grouping;
+    }
+
+    augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action/fni:set-field-case/fni:set-field/ext-gen:extension-list/ext-gen:extension" {
+        ext:augment-identifier "eric-aug-match-nodes-node-table-flow-apply-actions-set-field";
+        uses all-matches-grouping;
+    }
+}

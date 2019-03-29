@@ -38,6 +38,10 @@
         description "Match class for backward compatibility with NXM";
         base oxm-class-base;
     }
+    identity eric-exp-class {
+        description "Ericsson experimenter class for openflow";
+        base oxm-class-base;
+    }
     identity openflow-basic-class {
         description "Basic class for OpenFlow";
         base oxm-class-base;
@@ -440,6 +444,20 @@
                 container arp-op {
                     leaf op-code {
                         type uint16;
+                    }
+                }
+            }
+            case icmpv6-nd-reserved-case {
+                container icmpv6-nd-reserved {
+                    leaf icmpv6-nd-reserved {
+                        type uint32;
+                    }
+                }
+            }
+            case icmpv6-nd-options-type-case {
+                container icmpv6-nd-options-type {
+                    leaf icmpv6-nd-options-type {
+                        type uint8;
                     }
                 }
             }

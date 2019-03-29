@@ -17,6 +17,8 @@
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
         <module>openflowplugin-extension-onf</module>
+        <module>openflowjava-extension-eric</module>
+        <module>openflowplugin-extension-eric</module>
         <module>test-extension</module>
         <module>features-extension-aggregator</module>
     </modules>

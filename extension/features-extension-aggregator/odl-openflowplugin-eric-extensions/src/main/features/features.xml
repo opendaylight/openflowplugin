@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="openflowplugin-extension-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="odl-openflowplugin-eric-extensions" version="${project.version}">
+    </feature>
+</features>
