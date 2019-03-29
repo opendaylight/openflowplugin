@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint odl:use-default-for-reference-types="true" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+ xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0" xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference interface="org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider" id="registratorProvider"/>
+    <bean id="ericExtensionProvider" destroy-method="close" class="org.opendaylight.openflowplugin.extension.vendor.eric.EricExtensionProvider">
+       <argument ref="registratorProvider"/>
+    </bean>
+</blueprint>
