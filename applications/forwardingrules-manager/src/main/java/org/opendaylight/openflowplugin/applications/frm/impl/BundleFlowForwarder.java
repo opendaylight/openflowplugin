@@ -210,7 +210,6 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
 
         BundleFlowCallBack(InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId, Message messages,
                  String flowId, short tableId, SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
-
             this.nodeIdent = nodeIdent;
             this.bundleId = bundleId;
             this.messages = messages;

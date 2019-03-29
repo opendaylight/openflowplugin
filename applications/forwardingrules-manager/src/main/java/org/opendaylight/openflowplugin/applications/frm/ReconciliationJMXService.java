@@ -29,7 +29,6 @@ public class ReconciliationJMXService implements ReconciliationJMXServiceMBean {
         Map<String, String> reconciliationStatesMap = new HashMap<>();
         flowGroupCacheManager.getReconciliationStates().forEach((datapathId, reconciliationState) ->
                 reconciliationStatesMap.put(datapathId, reconciliationState.toString()));
-        LOG.error("The reconcilation states map {}",reconciliationStatesMap);
         return reconciliationStatesMap;
     }
 }

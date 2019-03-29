@@ -133,7 +133,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private final SalBundleService salBundleService;
 
-
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private Map<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap();
@@ -149,7 +148,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         salBundleService = Preconditions.checkNotNull(manager.getSalBundleService(),
                 "salBundleService can not be null!");
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
-        LOG.error("The reconcilation states map {}",reconciliationStates);
     }
 
     @Override

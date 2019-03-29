@@ -179,14 +179,14 @@ public class JMXOperationsUtil {
     }
 
     private static String buildRemoteJMXReSTUrl(String host, String mbeanName, String operation) {
-        return "http://" + host + ":" + JMX_REST_HTTP_PORT + JMX_REST_HTTP_JOL_OKIA_BASE_URI + mbeanName + "/"
+        return "http:/" + host + ":" + JMX_REST_HTTP_PORT + JMX_REST_HTTP_JOL_OKIA_BASE_URI + mbeanName + "/"
                 + operation;
     }
 
     private static String buildRemoteJMXReSTUrlWithMultipleArg(String host, String mbeanName, String operation,
                                                                List<String> args) {
         StringBuilder jmxUrl = new StringBuilder();
-        jmxUrl.append("http://" + host + ":" + JMX_REST_HTTP_PORT + JMX_REST_HTTP_JOL_OKIA_BASE_URI + mbeanName + "/"
+        jmxUrl.append("http:/" + host + ":" + JMX_REST_HTTP_PORT + JMX_REST_HTTP_JOL_OKIA_BASE_URI + mbeanName + "/"
                 + operation);
         for (String str : args) {
             jmxUrl.append("/").append(str);
