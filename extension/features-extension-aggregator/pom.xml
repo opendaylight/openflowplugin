@@ -17,6 +17,7 @@
         <module>features-openflowplugin-extension</module>
         <module>odl-openflowplugin-nxm-extensions</module>
         <module>odl-openflowplugin-onf-extensions</module>
+        <module>odl-openflowplugin-eric-extensions</module>
     </modules>
 
 </project>
