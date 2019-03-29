@@ -49,7 +49,7 @@ public class HTTPClient {
     public static final int PORT = 8181;
     public static final char URL_SEPAR_TOR = ':';
     public static final String PREFX = "http://";
-    public static final String TEST_URL = "/apidoc/explorer/index.html";
+    public static final String TEST_URL = "/jolokia/read/akka:type=Cluster";
 
     protected HTTPClient() {
     }
