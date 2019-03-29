@@ -157,6 +157,7 @@ public class HTTPClient {
             targetUrl = PREFX + targetUrl + URL_SEPAR_TOR + PORT + TEST_URL;
             LOG.info("Target URI:: {}", targetUrl);
             HttpURLConnection httpUrlConnection = (HttpURLConnection)(new URL(targetUrl)).openConnection();
+            LOG.info("reach");
             String userpass = "admin:admin";
             String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(userpass.getBytes());
             httpUrlConnection.setRequestProperty("Authorization", basicAuth);
@@ -169,7 +170,7 @@ public class HTTPClient {
         } catch (UnknownHostException var6) {
             return false;
         } catch (Exception var7) {
-            LOG.debug("the exception is ",var7);
+            LOG.error("the exception is ",var7);
             return false;
         }
     }
