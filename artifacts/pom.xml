@@ -128,12 +128,22 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-extension-eric</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>openflowjava-extension-nicira-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>openflowjava-extension-nicira</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>openflowjava-extension-eric</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -340,6 +350,13 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>odl-openflowplugin-eric-extensions</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
                 <version>${project.version}</version>
