@@ -1,0 +1,55 @@
+module eric-match {
+    yang-version 1;
+
+    namespace "urn:opendaylight:openflowjava:eric:match";
+    prefix "eric-match";
+
+    import openflow-extensible-match {prefix ofoxm;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    description
+        "Eric openflow extensions of match.";
+
+    revision "2018-07-30" {
+        description "Initial revision";
+    }
+
+    identity icmpv6-nd-reserved {
+        base ofoxm:match-field;
+    }
+
+    identity icmpv6-nd-options-type {
+        base ofoxm:match-field;
+    }
+
+    grouping icmpv6-nd-reserved-grouping {
+        container icmpv6-nd-reserved-values {
+             leaf icmpv6-nd-reserved {
+                 type uint32;
+             }
+        }
+    }
+
+    grouping icmpv6-nd-options-type-grouping {
+        container icmpv6-nd-options-type-values {
+             leaf icmpv6-nd-options-type {
+                 type uint8;
+             }
+        }
+    }
+
+    augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
+        ext:augment-identifier "ofj-aug-eric-match";
+        case icmpv6-nd-reserved-case-value {
+            uses icmpv6-nd-reserved-grouping;
+        }
+    }
+
+    augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
+        ext:augment-identifier "ofj-aug-eric-match";
+        case icmpv6-nd-options-type-case-value {
+            uses icmpv6-nd-options-type-grouping;
+        }
+    }
+
+}

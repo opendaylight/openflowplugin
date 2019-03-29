@@ -9,11 +9,11 @@
     </parent>
 
     <groupId>org.opendaylight.openflowplugin</groupId>
-    <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
+    <artifactId>odl-openflowplugin-eric-extensions</artifactId>
     <packaging>feature</packaging>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>OpenDaylight :: Openflow Plugin :: Nicira Extensions</name>
+    <name>OpenDaylight :: Openflow Plugin :: Eric Extensions</name>
 
     <dependencyManagement>
         <dependencies>
@@ -38,15 +38,15 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowjava-extension-nicira-api</artifactId>
+            <artifactId>openflowjava-extension-eric</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowjava-extension-nicira</artifactId>
+            <artifactId>openflowplugin-extension-eric</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-extension-nicira</artifactId>
+            <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
     </dependencies>
 
