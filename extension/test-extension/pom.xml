@@ -27,11 +27,19 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-extension-eric</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowjava-extension-nicira</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowjava-extension-eric</artifactId>
         </dependency>
         <dependency>
             <!-- configSubsystem yang should be moved to API and this would be doomed for removal -->
