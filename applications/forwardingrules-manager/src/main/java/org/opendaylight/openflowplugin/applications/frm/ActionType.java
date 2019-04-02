@@ -10,10 +10,12 @@ package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 
 public enum ActionType {
     APPLY_ACTION(ApplyActionsCase.class),
-    GROUP_ACTION(GroupActionCase.class);
+    GROUP_ACTION(GroupActionCase.class),
+    WRITE_ACTION(WriteActionsCase.class);
 
     private Class<?> actionType;
 
