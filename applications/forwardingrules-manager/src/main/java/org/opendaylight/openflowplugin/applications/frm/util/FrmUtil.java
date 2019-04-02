@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -78,6 +79,10 @@ public final class FrmUtil {
                         .equals(ActionType.APPLY_ACTION.getActionType())) {
                     actions = ((ApplyActionsCase) instruction.getInstruction())
                             .getApplyActions().getAction();
+                } else if (instruction.getInstruction().implementedInterface()
+                        .equals(ActionType.WRITE_ACTION.getActionType())) {
+                    actions = ((WriteActionsCase)instruction.getInstruction())
+                            .getWriteActions().getAction();
                 }
                 for (Action action : actions) {
                     if (action.getAction().implementedInterface()
