@@ -79,7 +79,7 @@ public final class FrmUtil {
                         .equals(ActionType.APPLY_ACTION.getActionType())) {
                     actions = ((ApplyActionsCase) instruction.getInstruction())
                             .getApplyActions().getAction();
-                } else if (instruction.getInstruction().getImplementedInterface()
+                } else if (instruction.getInstruction().implementedInterface()
                         .equals(ActionType.WRITE_ACTION.getActionType())) {
                     actions = ((WriteActionsCase)instruction.getInstruction())
                             .getWriteActions().getAction();
