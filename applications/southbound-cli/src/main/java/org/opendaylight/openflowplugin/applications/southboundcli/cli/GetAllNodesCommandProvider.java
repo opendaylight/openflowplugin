@@ -7,11 +7,13 @@
  */
 
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
+
 import java.util.Formatter;
 import java.util.List;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.applications.southboundcli.NodeListener;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.slf4j.Logger;
@@ -22,14 +24,19 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
     private static final Logger LOG = LoggerFactory.getLogger(GetAllNodesCommandProvider.class);
 
     private DataBroker dataBroker;
+    private NodeListener nodeListener;
 
     public void setDataBroker(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
 
+    public void setNodeListener(final NodeListener nodeListener) {
+        this.nodeListener = nodeListener;
+    }
+
     @Override
-    protected Object doExecute() {
-        List<OFNode> ofNodeList = ShellUtil.getAllNodes(dataBroker);
+    protected Object doExecute() throws Exception {
+        List<OFNode> ofNodeList = ShellUtil.getAllNodes(nodeListener);
         if (ofNodeList.isEmpty()) {
             session.getConsole().println("No node is connected yet");
         } else {
