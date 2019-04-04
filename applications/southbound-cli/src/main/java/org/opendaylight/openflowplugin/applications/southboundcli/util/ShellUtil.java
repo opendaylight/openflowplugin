@@ -11,12 +11,13 @@ package org.opendaylight.openflowplugin.applications.southboundcli.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.southboundcli.NodeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,38 +39,15 @@ public final class ShellUtil {
     private ShellUtil() {
     }
 
-    @NonNull
-    public static List<OFNode> getAllNodes(final DataBroker broker) {
-        List<Node> nodes = null;
-        InstanceIdentifier<Nodes> path = InstanceIdentifier.builder(Nodes.class).build();
-        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
-            Optional<Nodes> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
-            if (result.isPresent()) {
-                nodes = result.get().getNode();
-            }
-        } catch (ExecutionException | InterruptedException | NullPointerException e) {
-            LOG.error("Error reading nodes from Inventory DS", e);
+    public static List<OFNode> getAllNodes(final NodeListener nodeListener) {
+        List<OFNode> dpnList = new ArrayList<>();
+        for (Map.Entry<Long, String> entry : nodeListener.getDpnIdToNameCache().entrySet()) {
+            OFNode dpn = new OFNode(entry.getKey(), entry.getValue());
+            dpnList.add(dpn);
+            LOG.trace("Added OFNode: {} to the list", dpn.getNodeId());
         }
-        if (nodes != null) {
-            List<OFNode> nodeList = new ArrayList<>();
-            for (Node node : nodes) {
-                String[] nodeId = node.getId().getValue().split(":");
-                String name = null;
-                FlowCapableNode flowCapableNode = node.<FlowCapableNode>augmentation(FlowCapableNode.class);
-                if (flowCapableNode != null) {
-                    name = node.<FlowCapableNode>augmentation(FlowCapableNode.class).getDescription();
-                } else {
-                    LOG.error("Error while converting OFNode: {} to FlowCapableNode", node.getId());
-                    return Collections.emptyList();
-                }
-                OFNode ofNode = new OFNode(Long.parseLong(nodeId[1]), name);
-                LOG.trace("Added OFNode: {} to the list", ofNode.getNodeId());
-                nodeList.add(ofNode);
-            }
-            Collections.sort(nodeList);
-            return nodeList;
-        }
-        return Collections.emptyList();
+        Collections.sort(dpnList);
+        return dpnList;
     }
 
     public static OFNode getNode(final long nodeId, final DataBroker broker) {
