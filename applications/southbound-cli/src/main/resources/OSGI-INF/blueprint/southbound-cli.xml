@@ -19,6 +19,13 @@
         <argument ref="dataBroker"/>
         <argument ref="frmReconciliationService"/>
         <argument ref="alarmAgent"/>
+        <argument ref="nodeListener"/>
+    </bean>
+    <bean id="nodeListener"
+          class="org.opendaylight.openflowplugin.applications.southboundcli.NodeListener"
+          init-method="start"
+          destroy-method="close">
+        <argument ref="dataBroker"/>
     </bean>
 
     <odl:rpc-implementation ref="reconciliationService"/>
@@ -28,6 +35,7 @@
         <command name="openflow/getallnodes">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetAllNodesCommandProvider">
                 <property name="dataBroker" ref="dataBroker" />
+                <property name="nodeListener" ref="nodeListener"/>
             </action>
         </command>
         <command name="openflow/shownode">
