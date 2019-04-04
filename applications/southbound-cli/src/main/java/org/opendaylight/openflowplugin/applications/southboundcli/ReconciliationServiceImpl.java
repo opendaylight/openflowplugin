@@ -12,6 +12,7 @@ import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.R
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.FAILED;
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.STARTED;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
@@ -68,17 +69,20 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final DataBroker broker;
     private final FrmReconciliationService frmReconciliationService;
     private final AlarmAgent alarmAgent;
+    private final NodeListener nodeListener;
     private final Long startCount = 1L;
     private final int threadPoolSize = 10;
     private final ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
     private volatile Map<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap();
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
-                                     final AlarmAgent alarmAgent, final FlowGroupCacheManager flowGroupCacheManager) {
+                                     final AlarmAgent alarmAgent, final FlowGroupCacheManager flowGroupCacheManager,
+                                     final NodeListener nodeListener) {
         this.broker = broker;
         this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
+        this.nodeListener = Preconditions.checkNotNull(nodeListener, "NodeListener cannot be null!");
     }
 
     @Override
@@ -151,8 +155,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     }
 
     private List<Long> getAllNodes() {
-        List<OFNode> nodeList = ShellUtil.getAllNodes(broker);
-        List<Long> nodes = nodeList.stream().distinct().map(OFNode::getNodeId).collect(Collectors.toList());
+        List<OFNode> nodeList = ShellUtil.getAllNodes(nodeListener);
+        List<Long> nodes = nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
         return nodes;
     }
 
@@ -231,7 +235,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         }
 
         private Optional<ReconcileCounter> getReconciliationCount(ReadWriteTransaction tx,
-                                InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
+                                                             InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
             try {
                 return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             } catch (InterruptedException | ExecutionException e) {
