@@ -105,9 +105,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
     private static String createConnectionSuffix(@Nullable ConnectionConfiguration config) {
-        if (config != null && config.getAddress() != null) {
-            return "-" + config.getAddress().toString() + "_" + config.getPort();
-        } else if (config != null) {
+        if (config != null) {
             return "_" + config.getPort();
         } else {
             return "-null-config";
