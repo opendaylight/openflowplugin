@@ -89,4 +89,11 @@ public interface TlsConfiguration {
      * @return list of cipher suites for TLS connection
      */
     List<String> getCipherSuites();
+
+    /**
+     * Return true if hostname (SAN and CN) verification is enabled else false.
+     *
+     * @return true if hostname (SAN and CN) verification is enabled else false.
+     */
+    Boolean isVerifyHostname();
 }

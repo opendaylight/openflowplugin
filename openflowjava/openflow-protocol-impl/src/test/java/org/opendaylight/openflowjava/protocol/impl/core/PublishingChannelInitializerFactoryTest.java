@@ -46,7 +46,8 @@ public class PublishingChannelInitializerFactoryTest {
         factory = new ChannelInitializerFactory();
         tlsConfiguration = new TlsConfigurationImpl(KeystoreType.JKS, "/exemplary-ctlTrustStore",
                 PathType.CLASSPATH, KeystoreType.JKS, "/exemplary-ctlKeystore", PathType.CLASSPATH,
-                Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256"));
+                Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_CBC_SHA256"),
+                false);
         factory.setDeserializationFactory(deserializationFactory);
         factory.setSerializationFactory(serializationFactory);
         factory.setSwitchConnectionHandler(switchConnectionHandler);

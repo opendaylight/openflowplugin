@@ -15,5 +15,6 @@
      <truststore-password>opendaylight</truststore-password>
      <certificate-password>opendaylight</certificate-password>
      <cipher-suites></cipher-suites>
+     <verify-hostname>true</verify-hostname>
   </tls>
 </switch-connection-config>

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterFactory;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterFactoryImpl;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionFacade;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChannel> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TcpChannelInitializer.class);
+    private static final String DEFAULT_ENDPOINT_IDENTIFICATION_ALGORITHM = "HTTPS";
     private final DefaultChannelGroup allChannels;
     private final ConnectionAdapterFactory connectionAdapterFactory;
 
@@ -92,6 +94,11 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
                     engine.setEnabledCipherSuites(suites);
                     LOG.debug("Cipher suites enabled in SSLEngine are: {}",
                             Arrays.toString(engine.getEnabledCipherSuites()));
+                }
+                if (Boolean.TRUE.equals(getTlsConfiguration().isVerifyHostname())) {
+                    SSLParameters sslParams = new SSLParameters();
+                    sslParams.setEndpointIdentificationAlgorithm(DEFAULT_ENDPOINT_IDENTIFICATION_ALGORITHM);
+                    engine.setSSLParameters(sslParams);
                 }
                 final SslHandler ssl = new SslHandler(engine);
                 final Future<Channel> handshakeFuture = ssl.handshakeFuture();

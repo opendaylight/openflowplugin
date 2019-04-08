@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -31,7 +32,7 @@ public class TlsConfigurationImplTest {
         List<String> cipherSuites = Lists.newArrayList("TLS_RSA_WITH_AES_128_CBC_SHA",
                 "TLS_RSA_WITH_AES_128_CBC_SHA256");
         TlsConfigurationImpl config = new TlsConfigurationImpl(KeystoreType.JKS,
-                "user/dir", PathType.CLASSPATH, KeystoreType.PKCS12, "/var/lib", PathType.PATH, cipherSuites);
+                "user/dir", PathType.CLASSPATH, KeystoreType.PKCS12, "/var/lib", PathType.PATH, cipherSuites, false);
         assertEquals("Wrong keystore location", "/var/lib", config.getTlsKeystore());
         assertEquals("Wrong truststore location", "user/dir", config.getTlsTruststore());
         assertEquals("Wrong keystore type", KeystoreType.PKCS12, config.getTlsKeystoreType());
@@ -42,5 +43,6 @@ public class TlsConfigurationImplTest {
         assertEquals("Wrong keystore password", "opendaylight", config.getKeystorePassword());
         assertEquals("Wrong truststore password", "opendaylight", config.getTruststorePassword());
         assertEquals("Wrong cipher suites", cipherSuites, config.getCipherSuites());
+        assertFalse(config.isVerifyHostname());
     }
 }

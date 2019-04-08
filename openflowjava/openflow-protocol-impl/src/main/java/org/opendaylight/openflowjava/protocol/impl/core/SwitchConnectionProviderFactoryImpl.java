@@ -144,6 +144,11 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
                 public List<String> getCipherSuites() {
                     return tlsConfig.getCipherSuites();
                 }
+
+                @Override
+                public Boolean isVerifyHostname() {
+                    return tlsConfig.isVerifyHostname();
+                }
             };
         }
 

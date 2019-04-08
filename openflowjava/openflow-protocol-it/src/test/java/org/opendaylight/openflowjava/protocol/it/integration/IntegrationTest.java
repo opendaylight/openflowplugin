@@ -81,7 +81,7 @@ public class IntegrationTest {
             tlsConfiguration = new TlsConfigurationImpl(KeystoreType.JKS,
                     "/selfSignedSwitch", PathType.CLASSPATH, KeystoreType.JKS,
                     "/selfSignedController", PathType.CLASSPATH,
-                    new ArrayList<String>());
+                    new ArrayList<String>(), false);
         }
         connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration,
                 SWITCH_IDLE_TIMEOUT, true, false, CHANNEL_OUTBOUND_QUEUE_SIZE);

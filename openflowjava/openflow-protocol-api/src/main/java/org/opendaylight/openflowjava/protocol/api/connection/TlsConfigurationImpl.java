@@ -26,6 +26,7 @@ public class TlsConfigurationImpl implements TlsConfiguration {
     private final PathType keystorePathType;
     private final PathType truststorePathType;
     private final List<String> cipherSuites;
+    private final Boolean verifyHostname;
 
     /**
      * Default constructor.
@@ -40,7 +41,7 @@ public class TlsConfigurationImpl implements TlsConfiguration {
     public TlsConfigurationImpl(KeystoreType trustStoreType, String trustStore,
             PathType trustStorePathType, KeystoreType keyStoreType,
             String keyStore, PathType keyStorePathType,
-            List<String> cipherSuites) {
+            List<String> cipherSuites, Boolean verifyHostname) {
         this.trustStoreType = trustStoreType;
         this.trustStore = trustStore;
         this.truststorePathType = trustStorePathType;
@@ -48,6 +49,7 @@ public class TlsConfigurationImpl implements TlsConfiguration {
         this.keyStore = keyStore;
         this.keystorePathType = keyStorePathType;
         this.cipherSuites = cipherSuites;
+        this.verifyHostname = verifyHostname;
     }
 
     @Override
@@ -98,5 +100,10 @@ public class TlsConfigurationImpl implements TlsConfiguration {
     @Override
     public List<String> getCipherSuites() {
         return cipherSuites;
+    }
+
+    @Override
+    public Boolean isVerifyHostname() {
+        return verifyHostname;
     }
 }

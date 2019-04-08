@@ -113,6 +113,11 @@ module openflow-switch-connection-config {
                 description "combination of cryptographic algorithms used by TLS connection";
                 type string;
             }
+
+            leaf verify-hostname {
+                description "enable verification of hostname (SAN and CN) in certificate";
+                type boolean;
+            }
         }
 
         container threads {
