@@ -1,0 +1,153 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ae2f0905_9a9afe78",
+        "filename": "1",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "Can you remove this file",
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7b539f8f_29e607d0",
+        "filename": "extension/features-extension-aggregator/odl-openflowplugin-nxm-extensions/pom.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "Can you exclude this file changes",
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "adb3860c_03b78723",
+        "filename": "extension/openflowjava-extension-eric/src/main/java/org/opendaylight/openflowjava/eric/EricExtensionCodecRegistratorImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "2019",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0e13a6aa_16f610e4",
+        "filename": "extension/openflowjava-extension-eric/src/main/java/org/opendaylight/openflowjava/eric/EricExtensionsRegistrator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "2019",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cf1466bf_2059ca26",
+        "filename": "extension/openflowjava-extension-eric/src/main/java/org/opendaylight/openflowjava/eric/api/EricConstants.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "2019",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cfd38196_84e977b2",
+        "filename": "extension/openflowjava-extension-eric/src/main/java/org/opendaylight/openflowjava/eric/api/EricExtensionCodecRegistrator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "2019 - Please change for all files",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5dd8c65c_9ad2ae82",
+        "filename": "extension/openflowplugin-extension-eric/src/main/resources/org/opendaylight/blueprint/openflowplugin-extension-eric.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-04-09T10:43:10Z",
+      "side": 1,
+      "message": "\u003creference id\u003d\"registratorProvider\" interface\u003d\"org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider\"/\u003e",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 142
+      },
+      "revId": "2e92e4cf61f666529561b9b0081cc856b0777a08",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
