@@ -18,6 +18,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
@@ -128,18 +129,24 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (bundleId != null) {
                 provider.getBundleFlowListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
             } else {
-                final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-                builder.setFlowRef(new FlowRef(identifier));
-                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                    final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
+                    builder.setFlowRef(new FlowRef(identifier));
+                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                    builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
 
-                // This method is called only when a given flow object has been
-                // removed from datastore. So FRM always needs to set strict flag
-                // into remove-flow input so that only a flow entry associated with
-                // a given flow object is removed.
-                builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-                LoggingFutures.addErrorLogging(provider.getSalFlowService().removeFlow(builder.build()), LOG,
-                    "removeFlow");
+                    // This method is called only when a given flow object has been
+                    // removed from datastore. So FRM always needs to set strict flag
+                    // into remove-flow input so that only a flow entry associated with
+                    // a given flow object is removed.
+                    builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
+                    final ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture =
+                            provider.getSalFlowService().removeFlow(builder.build());
+                    LoggingFutures.addErrorLogging(provider.getSalFlowService().removeFlow(builder.build()), LOG,
+                            "removeFlow");
+                    return resultFuture;
+                });
             }
         }
     }
