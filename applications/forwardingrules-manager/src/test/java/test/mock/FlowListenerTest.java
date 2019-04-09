@@ -7,6 +7,7 @@
  */
 package test.mock;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -227,7 +228,7 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
         SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
-        await().until(listSize(salFlowService.getAddFlowCalls()), equalTo(1));
+        await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());
         assertEquals("DOM-0", addFlowCalls.get(0).getTransactionUri().getValue());
@@ -235,8 +236,7 @@ public class FlowListenerTest extends FRMTest {
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION, flowII);
         assertCommit(writeTx.commit());
-        salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
-        await().until(listSize(salFlowService.getRemoveFlowCalls()), equalTo(1));
+        await().atMost(10, SECONDS).until(() -> salFlowService.getRemoveFlowCalls().size() == 1);
         List<RemoveFlowInput> removeFlowCalls = salFlowService.getRemoveFlowCalls();
         assertEquals(1, removeFlowCalls.size());
         assertEquals("DOM-1", removeFlowCalls.get(0).getTransactionUri().getValue());
