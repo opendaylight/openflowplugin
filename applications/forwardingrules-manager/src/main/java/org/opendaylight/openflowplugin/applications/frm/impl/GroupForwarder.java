@@ -108,20 +108,22 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         if (bundleId != null) {
             provider.getBundleGroupListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
         } else {
-            final Group group = removeDataObj;
-            final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
             final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+            nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                final Group group = removeDataObj;
+                final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
+                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+                builder.setGroupRef(new GroupRef(identifier));
+                builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setGroupRef(new GroupRef(identifier));
-            builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-
-            final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
+                final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
                     this.provider.getSalGroupService().removeGroup(builder.build());
-            Futures.addCallback(resultFuture,
+                Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
-            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
+                LoggingFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
+                return resultFuture;
+            });
         }
     }
 

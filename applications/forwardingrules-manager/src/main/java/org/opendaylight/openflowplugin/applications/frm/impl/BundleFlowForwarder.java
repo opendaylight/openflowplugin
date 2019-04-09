@@ -80,21 +80,25 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
 
     public void remove(final InstanceIdentifier<Flow> identifier, final Flow flow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
-        final List<Message> messages = new ArrayList<>(1);
-        String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
-        BundleInnerMessage bundleInnerMessage = new BundleRemoveFlowCaseBuilder()
+        final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+        nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+            final List<Message> messages = new ArrayList<>(1);
+            String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
+            BundleInnerMessage bundleInnerMessage = new BundleRemoveFlowCaseBuilder()
                 .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flow).build()).build();
-        Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
                 .setBundleInnerMessage(bundleInnerMessage).build();
-        messages.add(message);
-        AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+            messages.add(message);
+            AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                 .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class))).setBundleId(bundleId)
                 .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(messages).build()).build();
-        final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
+            final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                 .getSalBundleService().addBundleMessages(addBundleMessagesInput);
-        LOG.trace("Pushing flow remove message {} to bundle {} for device {}", addBundleMessagesInput,
+            LOG.trace("Pushing flow remove message {} to bundle {} for device {}", addBundleMessagesInput,
                 bundleId.getValue(), node);
-        LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
+            return resultFuture;
+        });
     }
 
     public void update(final InstanceIdentifier<Flow> identifier, final Flow originalFlow, final Flow updatedFlow,
