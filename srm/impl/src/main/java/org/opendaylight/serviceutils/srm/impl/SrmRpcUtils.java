@@ -168,7 +168,7 @@ public final class SrmRpcUtils {
         WriteTransaction tx = broker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, opsIid, operation, CREATE_MISSING_PARENT);
         try {
-            tx.submit().get();
+            tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error writing RecoveryOp to datastore. path:{}, data:{}", opsIid, operation);
             outputBuilder.setResponse(RpcFailUnknown.class).setMessage(e.getMessage());
@@ -223,7 +223,7 @@ public final class SrmRpcUtils {
         WriteTransaction tx = broker.newWriteOnlyTransaction();
         tx.put(LogicalDatastoreType.OPERATIONAL, opsIid, operation, CREATE_MISSING_PARENT);
         try {
-            tx.submit().get();
+            tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error writing RecoveryOp to datastore. path:{}, data:{}", opsIid, operation);
             outputBuilder.setSuccessful(REINSTALL_FAILED).setMessage(e.getMessage());
