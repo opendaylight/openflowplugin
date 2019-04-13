@@ -8,10 +8,8 @@
 
 package org.opendaylight.serviceutils.srm.impl;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractClusteredSyncDataTreeChangeListener;
@@ -37,20 +35,19 @@ public class ServiceRecoveryListener extends AbstractClusteredSyncDataTreeChange
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Operations> instanceIdentifier, @Nonnull Operations operations) {
+    public void add(InstanceIdentifier<Operations> instanceIdentifier, Operations operations) {
         LOG.info("Service Recovery operation triggered for service: {}", operations);
         serviceRecoveryManager.recoverService(operations.getEntityType(), operations.getEntityName(),
                 operations.getEntityId());
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Operations> instanceIdentifier,
-                       @Nonnull Operations removedDataObject) {
+    public void remove(InstanceIdentifier<Operations> instanceIdentifier, Operations removedDataObject) {
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Operations> instanceIdentifier,
-                       @Nonnull Operations originalDataObject, @Nonnull Operations updatedDataObject) {
+    public void update(InstanceIdentifier<Operations> instanceIdentifier,
+                       Operations originalDataObject, Operations updatedDataObject) {
         add(instanceIdentifier, updatedDataObject);
     }
 }
