@@ -130,8 +130,7 @@ public class ContextChainImpl implements ContextChain {
                         deviceInfo, e);
             }
         }
-
-
+        
         // Close all contexts (device, statistics, rpc)
         contexts.forEach(OFPContext::close);
         contexts.clear();
