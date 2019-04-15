@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -174,6 +176,8 @@ public class DeviceContextImplTest {
     private ContextChainHolder contextChainHolder;
     @Mock
     private ContextChain contextChain;
+    @Mock
+    private ExecutorService executorService;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -254,7 +258,8 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
-                contextChainHolder);
+                contextChainHolder,
+                executorService);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
