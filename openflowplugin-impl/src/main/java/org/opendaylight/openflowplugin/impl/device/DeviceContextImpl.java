@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collection;
@@ -21,7 +22,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -151,6 +155,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final AtomicBoolean hasState = new AtomicBoolean(false);
     private final AtomicBoolean isInitialTransactionSubmitted = new AtomicBoolean(false);
     private final ContextChainHolder contextChainHolder;
+    private final ExecutorService portStatusService;
     private NotificationPublishService notificationPublishService;
     private TransactionChainManager transactionChainManager;
     private DeviceFlowRegistry deviceFlowRegistry;
@@ -158,6 +163,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
+            .setNameFormat("port-status-%d")
+            .setDaemon(false)
+            .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
+            .build();
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DataBroker dataBroker,
@@ -200,6 +210,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
+        portStatusService = Executors.newSingleThreadExecutor(THREAD_FACTORY);
     }
 
     @Override
@@ -321,51 +332,53 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.implementedInterface(), MessageSpy.StatisticsGroup
                 .FROM_SWITCH_PUBLISHED_SUCCESS);
 
         if (initialized.get()) {
-            try {
-                writePortStatusMessage(portStatus);
-            } catch (final Exception e) {
-                LOG.warn("Error processing port status message for port {} on device {}",
-                        portStatus.getPortNo(), getDeviceInfo(), e);
-            }
+            writePortStatusMessage(portStatus);
         } else if (!hasState.get()) {
             primaryConnectionContext.handlePortStatusMessage(portStatus);
         }
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
-                .translate(portStatusMessage, getDeviceInfo(), null);
-        OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
-                deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
-                portStatusMessage.getReason());
+        portStatusService.submit(() -> {
+            try {
+            final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
+                    .translate(portStatusMessage, getDeviceInfo(), null);
+            OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                    deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
+                    portStatusMessage.getReason());
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
-                .getNodeInstanceIdentifier()
-                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
-                        .nodeConnectorIdfromDatapathPortNo(
-                                deviceInfo.getDatapathId(),
-                                portStatusMessage.getPortNo(),
-                                OpenflowVersion.get(deviceInfo.getVersion()))));
+            final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+                    .getNodeInstanceIdentifier()
+                    .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
+                            .nodeConnectorIdfromDatapathPortNo(
+                                    deviceInfo.getDatapathId(),
+                                    portStatusMessage.getPortNo(),
+                                    OpenflowVersion.get(deviceInfo.getVersion()))));
 
-        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                .withKey(iiToNodeConnector.getKey())
-                .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                        FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
-                .build());
-        syncSubmitTransaction();
-        if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
-            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                    .withKey(iiToNodeConnector.getKey())
+                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
+                            FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                    .build());
             syncSubmitTransaction();
-        }
+            if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+                syncSubmitTransaction();
+            }
+        }catch (final Exception e) {
+                LOG.warn("Error processing port status message for port {} on device {}",
+                        portStatusMessage.getPortNo(), getDeviceInfo(), e);
+            }
+        });
     }
-
     @Override
     public void processPacketInMessage(final PacketInMessage packetInMessage) {
         if (isMasterOfDevice()) {
@@ -610,6 +623,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     transactionChainManager = null;
                 }
             }, MoreExecutors.directExecutor());
+        }
+        portStatusService.shutdownNow();
+        try {
+            portStatusService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.warn("Failed to shutdown PortStatusService executor for device {} gracefully.", getDeviceInfo(), e);
         }
 
         requestContexts.forEach(requestContext -> RequestContextUtil

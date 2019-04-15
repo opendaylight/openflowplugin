@@ -131,6 +131,10 @@ public class ContextChainImpl implements ContextChain {
             }
         }
 
+        if (clusterSingletonServiceTimer != null) {
+            clusterSingletonServiceTimer.cancel(true);
+            clusterSingletonServiceTimer = null;
+        }
 
         // Close all contexts (device, statistics, rpc)
         contexts.forEach(OFPContext::close);

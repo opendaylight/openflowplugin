@@ -20,6 +20,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -70,6 +73,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final ExecutorService executorService;
     private final OwnershipChangeListener ownershipChangeListener;
+    private final ScheduledExecutorService clusterSingletonTimerTaskExecutor;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
@@ -85,6 +89,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         this.ownershipChangeListener.setMasterChecker(this);
         this.eosListenerRegistration = Objects
                 .requireNonNull(entityOwnershipService.registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
+        this.clusterSingletonTimerTaskExecutor = Executors.newSingleThreadScheduledExecutor();
     }
 
     @Override
@@ -274,6 +279,12 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         contextChainMap.clear();
         eosListenerRegistration.close();
         OF_EVENT_LOG.debug("EOS registration closed for all devices");
+        clusterSingletonTimerTaskExecutor.shutdown();
+        try {
+            clusterSingletonTimerTaskExecutor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.warn("Failed to shutdown cluster singleton timer executor gracefully.", e);
+        }
     }
 
     @Override
