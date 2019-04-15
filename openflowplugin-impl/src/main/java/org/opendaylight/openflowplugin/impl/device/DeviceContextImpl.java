@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -157,11 +158,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private ExecutorService executorService;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DataBroker dataBroker,
                       @Nonnull final MessageSpy messageSpy,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
+                      final TranslatorLibrary translatorLibrary,
                       final ConvertorExecutor convertorExecutor,
                       final boolean skipTableFeatures,
                       final HashedWheelTimer hashedWheelTimer,
@@ -169,8 +171,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final DeviceInitializerProvider deviceInitializerProvider,
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
-                      final ContextChainHolder contextChainHolder) {
-
+                      final ContextChainHolder contextChainHolder,
+                      final ExecutorService executorService) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
@@ -181,6 +183,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
         this.contextChainHolder = contextChainHolder;
+        this.executorService = executorService;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
@@ -320,49 +323,51 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public void processPortStatusMessage(final PortStatusMessage portStatus) {
         messageSpy.spyMessage(portStatus.implementedInterface(), MessageSpy.StatisticsGroup
                 .FROM_SWITCH_PUBLISHED_SUCCESS);
 
         if (initialized.get()) {
-            try {
-                writePortStatusMessage(portStatus);
-            } catch (final Exception e) {
-                LOG.warn("Error processing port status message for port {} on device {}",
-                        portStatus.getPortNo(), getDeviceInfo(), e);
-            }
+            writePortStatusMessage(portStatus);
         } else if (!hasState.get()) {
             primaryConnectionContext.handlePortStatusMessage(portStatus);
         }
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
-                .translate(portStatusMessage, getDeviceInfo(), null);
-        OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
-                deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
-                portStatusMessage.getReason());
+        executorService.execute(() -> {
+            try {
+                final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
+                        .translate(portStatusMessage, getDeviceInfo(), null);
+                OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                    deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
+                    portStatusMessage.getReason());
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
-                .getNodeInstanceIdentifier()
-                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
-                        .nodeConnectorIdfromDatapathPortNo(
-                                deviceInfo.getDatapathId(),
-                                portStatusMessage.getPortNo(),
-                                OpenflowVersion.get(deviceInfo.getVersion()))));
+                final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+                    .getNodeInstanceIdentifier()
+                    .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
+                            .nodeConnectorIdfromDatapathPortNo(
+                                    deviceInfo.getDatapathId(),
+                                    portStatusMessage.getPortNo(),
+                                    OpenflowVersion.get(deviceInfo.getVersion()))));
 
-        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                .withKey(iiToNodeConnector.getKey())
-                .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                        FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
-                .build());
-        syncSubmitTransaction();
-        if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
-            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
-            syncSubmitTransaction();
-        }
+                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                    .withKey(iiToNodeConnector.getKey())
+                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
+                            FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                    .build());
+                syncSubmitTransaction();
+                if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+                    addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+                    syncSubmitTransaction();
+                }
+            } catch (final Exception e) {
+                LOG.warn("Error processing port status message for port {} on device {}",
+                        portStatusMessage.getPortNo(), getDeviceInfo(), e);
+            }
+        });
     }
 
     @Override
@@ -610,7 +615,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 }
             }, MoreExecutors.directExecutor());
         }
-
         requestContexts.forEach(requestContext -> RequestContextUtil
                 .closeRequestContextWithRpcError(requestContext, "Connection closed."));
         requestContexts.clear();

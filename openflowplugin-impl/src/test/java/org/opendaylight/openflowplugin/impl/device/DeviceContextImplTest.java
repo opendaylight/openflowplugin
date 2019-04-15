@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
@@ -254,7 +255,8 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
-                contextChainHolder);
+                contextChainHolder,
+                Executors.newSingleThreadExecutor());
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
