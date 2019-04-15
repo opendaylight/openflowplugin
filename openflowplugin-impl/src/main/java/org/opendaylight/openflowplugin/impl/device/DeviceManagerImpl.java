@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import io.netty.util.HashedWheelTimer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,6 +68,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private ContextChainHolder contextChainHolder;
+    private ListeningExecutorService executorService;
 
     public DeviceManagerImpl(@Nonnull final OpenflowProviderConfig config,
                              @Nonnull final DataBroker dataBroker,
@@ -74,7 +76,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              @Nonnull final NotificationPublishService notificationPublishService,
                              @Nonnull final HashedWheelTimer hashedWheelTimer,
                              @Nonnull final ConvertorExecutor convertorExecutor,
-                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider) {
+                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
+                             @Nonnull final ListeningExecutorService executorService) {
         this.config = config;
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -83,6 +86,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.spyPool = new ScheduledThreadPoolExecutor(1);
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
+        this.executorService = executorService;
         DeviceInitializationUtil.makeEmptyNodes(dataBroker);
     }
 
@@ -163,7 +167,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 deviceInitializerProvider,
                 config.isEnableFlowRemovedNotification(),
                 config.isSwitchFeaturesMandatory(),
-                contextChainHolder);
+                contextChainHolder,
+                executorService);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(notificationPublishService);

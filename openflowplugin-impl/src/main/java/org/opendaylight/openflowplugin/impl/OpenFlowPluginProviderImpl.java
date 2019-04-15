@@ -250,7 +250,8 @@ public class OpenFlowPluginProviderImpl implements
                 notificationPublishService,
                 hashedWheelTimer,
                 convertorManager,
-                deviceInitializerProvider);
+                deviceInitializerProvider,
+                executorService);
 
         TranslatorLibraryUtil.injectBasicTranslatorLibrary(deviceManager, convertorManager);
         ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
