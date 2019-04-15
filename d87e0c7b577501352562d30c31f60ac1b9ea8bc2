@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff8c3468_7439e92e",
+        "filename": "extension/openflowjava-extension-eric/src/main/java/org/opendaylight/openflowjava/eric/codec/match/AbstractMatchCodec.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-04-15T15:40:51Z",
+      "side": 1,
+      "message": "can you take this as example and rework the code.\n\n\nhttps://git.opendaylight.org/gerrit/gitweb?p\u003dopenflowplugin.git;a\u003dblob;f\u003dextension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/AbstractMatchCodec.java;h\u003dea4ae77a267ce2e0d63b8bdd8a59681c7fba9162;hb\u003drefs/heads/master#l50",
+      "revId": "d87e0c7b577501352562d30c31f60ac1b9ea8bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e9f39957_eaaf6988",
+        "filename": "extension/openflowjava-extension-eric/src/main/java/org/opendaylight/openflowjava/eric/codec/match/EricHeader.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-04-15T15:40:51Z",
+      "side": 1,
+      "message": "2019",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "d87e0c7b577501352562d30c31f60ac1b9ea8bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
