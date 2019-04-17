@@ -226,7 +226,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 }
             } else if (contextChain.isMastered(mastershipState, false)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo);
-                ownershipChangeListener.becomeMaster(deviceInfo);
                 deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
             }
         });
@@ -366,6 +365,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     OF_EVENT_LOG.debug("Device {} connection is enabled by reconciliation framework", deviceInfo);
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
                     if (mastershipState == ContextChainMastershipState.MASTER_ON_DEVICE) {
+                        ownershipChangeListener.becomeMaster(deviceInfo);
                         contextChain.initializeDevice();
                     }
                     contextChain.continueInitializationAfterReconciliation();
