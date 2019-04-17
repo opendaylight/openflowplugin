@@ -3,7 +3,7 @@
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * and is available at http://www.eclipse.org/legal/epl-v1.html
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
@@ -111,8 +111,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // skip the flow/group/meter operational. This requires an addition check, where it reads
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
-        return provider.isNodeOwner(nodeIdent)
-                && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+        return provider.isNodeOwner(nodeIdent);
     }
 }
 
