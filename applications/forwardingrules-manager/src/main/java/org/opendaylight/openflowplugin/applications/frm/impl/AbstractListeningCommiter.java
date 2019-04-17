@@ -111,8 +111,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         // skip the flow/group/meter operational. This requires an addition check, where it reads
         // node from operational data store and if it's present it calls flowNodeConnected to explicitly
         // trigger the event of new node connected.
-        return provider.isNodeOwner(nodeIdent)
-                && (provider.isNodeActive(nodeIdent) || provider.checkNodeInOperationalDataStore(nodeIdent));
+        return provider.isNodeOwner(nodeIdent);
     }
 }
 
