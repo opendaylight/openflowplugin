@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowjava.protocol.impl.util;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * Abstract factory class to support OF protocol version assigning and reading.
@@ -21,7 +21,7 @@ public abstract class VersionAssignableFactory {
      *
      * @param newVersion OpenFlow protocol version
      */
-    public void assignVersion(@Nonnull final Short newVersion) {
+    public void assignVersion(@NonNull final Short newVersion) {
         if (this.version == null) {
             this.version = newVersion;
         } else {

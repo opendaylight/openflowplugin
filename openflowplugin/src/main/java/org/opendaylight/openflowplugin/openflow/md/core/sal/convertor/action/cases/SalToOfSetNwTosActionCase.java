@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -32,9 +32,9 @@ public class SalToOfSetNwTosActionCase extends ConvertorCase<SetNwTosActionCase,
         super(SetNwTosActionCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public Optional<Action> process(@Nonnull final SetNwTosActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(@NonNull final SetNwTosActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         SetNwTosAction setnwtosaction = source.getSetNwTosAction();
         SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();

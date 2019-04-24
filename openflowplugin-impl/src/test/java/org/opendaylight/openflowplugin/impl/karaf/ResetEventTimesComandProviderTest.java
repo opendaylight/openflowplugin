@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.impl.karaf;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import com.google.common.base.Function;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;

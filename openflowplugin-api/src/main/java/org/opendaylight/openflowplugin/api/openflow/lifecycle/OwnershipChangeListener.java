@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 
@@ -30,13 +30,13 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
      * </ul>
      * @param deviceInfo connected switch identification
      */
-    void becomeMaster(@Nonnull DeviceInfo deviceInfo);
+    void becomeMaster(@NonNull DeviceInfo deviceInfo);
 
     /**
      * Should be called when device is disconnected or going to be slaved.
      * @param deviceInfo connected switch identification
      */
-    void becomeSlaveOrDisconnect(@Nonnull DeviceInfo deviceInfo);
+    void becomeSlaveOrDisconnect(@NonNull DeviceInfo deviceInfo);
 
     /**
      * Should be called when device is being mastered as in {@link #becomeMaster(DeviceInfo)}.
@@ -47,12 +47,12 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
      * @param deviceInfo connected switch identification
      * @return future to be able handle device after reconciliation
      */
-    ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo);
+    ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@NonNull DeviceInfo deviceInfo);
 
     /**
      * Set the device mastership checker.
      * @param masterChecker {@link MasterChecker}
      */
-    void setMasterChecker(@Nonnull MasterChecker masterChecker);
+    void setMasterChecker(@NonNull MasterChecker masterChecker);
 
 }

@@ -22,8 +22,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
@@ -99,7 +99,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     protected Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache;
 
 
-    AbstractConnectionAdapter(@Nonnull final Channel channel, @Nullable final InetSocketAddress address,
+    AbstractConnectionAdapter(@NonNull final Channel channel, @Nullable final InetSocketAddress address,
                               @Nullable final int channelOutboundQueueSize) {
         this.channel = Preconditions.checkNotNull(channel);
         this.address = address;
