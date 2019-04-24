@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.common;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.multipart.request.multipart.request.body.MultipartRequestDescBuilder;
@@ -86,7 +86,7 @@ public final class MultipartRequestInputFactory {
      */
     public static OfHeader makeMultipartRequest(final long xid,
                                                 final short version,
-                                                @Nonnull final MultipartType type,
+                                                @NonNull final MultipartType type,
                                                 final boolean canUseSingleLayer) {
         return canUseSingleLayer
                 ? new MultipartRequestBuilder()
@@ -131,7 +131,7 @@ public final class MultipartRequestInputFactory {
         }
     }
 
-    private static MultipartRequestBody makeDefaultMultiLayerBody(@Nonnull final MultipartType type,
+    private static MultipartRequestBody makeDefaultMultiLayerBody(@NonNull final MultipartType type,
                                                                   final short version) {
         switch (type) {
             case OFPMPDESC:

@@ -12,8 +12,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -42,7 +42,7 @@ public final class NodeConnectorRefToPortTranslator {
      * @return packet input converted to node connector reference
      */
     @Nullable
-    public static NodeConnectorRef toNodeConnectorRef(@Nonnull PacketIn packetIn, BigInteger dataPathId) {
+    public static NodeConnectorRef toNodeConnectorRef(@NonNull PacketIn packetIn, BigInteger dataPathId) {
         Preconditions.checkNotNull(packetIn);
 
         NodeConnectorRef ref = null;
@@ -65,7 +65,7 @@ public final class NodeConnectorRefToPortTranslator {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static Long fromNodeConnectorRef(@Nonnull NodeConnectorRef nodeConnectorRef, short version) {
+    public static Long fromNodeConnectorRef(@NonNull NodeConnectorRef nodeConnectorRef, short version) {
         Preconditions.checkNotNull(nodeConnectorRef);
 
         Long port = null;
@@ -86,7 +86,7 @@ public final class NodeConnectorRefToPortTranslator {
 
     @VisibleForTesting
     @Nullable
-    static Long getPortNoFromPacketIn(@Nonnull PacketIn packetIn) {
+    static Long getPortNoFromPacketIn(@NonNull PacketIn packetIn) {
         Preconditions.checkNotNull(packetIn);
 
         Long port = null;
