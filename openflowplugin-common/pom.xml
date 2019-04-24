@@ -26,11 +26,6 @@
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>mdsal-binding-api</artifactId>
     </dependency>
-    <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <optional>true</optional>
-    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>

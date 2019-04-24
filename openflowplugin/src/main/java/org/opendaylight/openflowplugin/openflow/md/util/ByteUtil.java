@@ -12,7 +12,7 @@ import com.google.common.io.BaseEncoding;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.util.Arrays;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public final class ByteUtil {
     private ByteUtil() {

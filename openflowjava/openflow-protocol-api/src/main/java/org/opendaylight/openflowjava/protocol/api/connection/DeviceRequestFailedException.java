@@ -8,7 +8,7 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 import com.google.common.base.Preconditions;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 
 /**
@@ -19,17 +19,17 @@ public class DeviceRequestFailedException extends OutboundQueueException {
     private static final long serialVersionUID = 1L;
     private final transient Error error;
 
-    public DeviceRequestFailedException(final String message, @Nonnull final Error error) {
+    public DeviceRequestFailedException(final String message, @NonNull final Error error) {
         super(message);
         this.error = Preconditions.checkNotNull(error);
     }
 
-    public DeviceRequestFailedException(final String message, @Nonnull final Error error, final Throwable cause) {
+    public DeviceRequestFailedException(final String message, @NonNull final Error error, final Throwable cause) {
         super(message, cause);
         this.error = Preconditions.checkNotNull(error);
     }
 
-    @Nonnull public Error getError() {
+    @NonNull public Error getError() {
         return error;
     }
 }
