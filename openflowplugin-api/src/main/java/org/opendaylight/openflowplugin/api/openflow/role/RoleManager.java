@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.role;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 
@@ -23,5 +23,5 @@ public interface RoleManager extends OFPManager {
      * @param deviceContext the device context
      * @return the role context
      */
-    RoleContext createContext(@Nonnull DeviceContext deviceContext);
+    RoleContext createContext(@NonNull DeviceContext deviceContext);
 }

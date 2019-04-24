@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
@@ -27,7 +27,7 @@ public class FlowCapableNodeCachedDao implements FlowCapableNodeDao {
     }
 
     @Override
-    public Optional<FlowCapableNode> loadByNodeId(@Nonnull NodeId nodeId) {
+    public Optional<FlowCapableNode> loadByNodeId(@NonNull NodeId nodeId) {
         final Optional<FlowCapableNode> node = snapshotDao.loadByNodeId(nodeId);
 
         if (node.isPresent()) {
