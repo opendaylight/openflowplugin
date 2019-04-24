@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -44,7 +44,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 

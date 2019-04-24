@@ -11,7 +11,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -39,7 +39,7 @@ public abstract class AbstractMultipartService<I, T extends OfHeader> extends Ab
     }
 
     @Override
-    public final ListenableFuture<RpcResult<List<T>>> handleServiceCall(@Nonnull final I input) {
+    public final ListenableFuture<RpcResult<List<T>>> handleServiceCall(@NonNull final I input) {
         return canUseSingleLayerSerialization()
             ? super.handleServiceCall(input, ALTERNATE_IS_COMPLETE)
             : super.handleServiceCall(input);

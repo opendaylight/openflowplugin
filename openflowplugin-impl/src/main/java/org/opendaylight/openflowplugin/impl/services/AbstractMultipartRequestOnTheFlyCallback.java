@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.services;
 import com.google.common.util.concurrent.Service;
 import java.util.Collections;
 import java.util.List;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;

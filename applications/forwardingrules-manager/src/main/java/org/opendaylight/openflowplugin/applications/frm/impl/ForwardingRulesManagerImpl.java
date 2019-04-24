@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -348,7 +348,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     }
 
     @Override
-    public void onPropertyChanged(@Nonnull final String propertyName, @Nonnull final String propertyValue) {
+    public void onPropertyChanged(@NonNull final String propertyName, @NonNull final String propertyValue) {
         Optional.ofNullable(ForwardingRulesProperty.forValue(propertyName)).ifPresent(forwardingRulesProperty -> {
             switch (forwardingRulesProperty) {
                 case DISABLE_RECONCILIATION:

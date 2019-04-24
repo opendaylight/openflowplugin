@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Preconditions;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -86,8 +86,8 @@ public final class MdSalRegistrationUtils {
      *
      * @param convertorExecutor convertor executor
      */
-    public static void registerServices(@Nonnull final RpcContext rpcContext,
-                                        @Nonnull final DeviceContext deviceContext,
+    public static void registerServices(@NonNull final RpcContext rpcContext,
+                                        @NonNull final DeviceContext deviceContext,
                                         final ExtensionConverterProvider extensionConverterProvider,
                                         final ConvertorExecutor convertorExecutor) {
         // TODO: Use multipart writer provider from device context

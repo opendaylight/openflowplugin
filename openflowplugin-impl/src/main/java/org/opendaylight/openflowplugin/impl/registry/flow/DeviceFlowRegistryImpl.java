@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import javax.annotation.concurrent.ThreadSafe;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -154,7 +154,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public FlowDescriptor retrieveDescriptor(@Nonnull final FlowRegistryKey flowRegistryKey) {
+    public FlowDescriptor retrieveDescriptor(@NonNull final FlowRegistryKey flowRegistryKey) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Retrieving flow descriptor for flow registry : {}", flowRegistryKey.toString());
         }
@@ -167,8 +167,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void storeDescriptor(@Nonnull final FlowRegistryKey flowRegistryKey,
-                                @Nonnull final FlowDescriptor flowDescriptor) {
+    public void storeDescriptor(@NonNull final FlowRegistryKey flowRegistryKey,
+                                @NonNull final FlowDescriptor flowDescriptor) {
         try {
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",

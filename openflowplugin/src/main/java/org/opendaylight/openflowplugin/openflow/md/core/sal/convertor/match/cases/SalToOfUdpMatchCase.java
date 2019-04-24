@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -32,7 +32,7 @@ public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull UdpMatch source, VersionConvertorData data,
+    public Optional<List<MatchEntry>> process(@NonNull UdpMatch source, VersionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 

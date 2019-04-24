@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -70,8 +70,8 @@ public final class MatchNormalizationUtil {
      * @param version the OpenFlow version
      * @return normalized OpenFlow match
      */
-    @Nonnull
-    public static Match normalizeMatch(@Nonnull final Match match, final short version) {
+    @NonNull
+    public static Match normalizeMatch(@NonNull final Match match, final short version) {
         final MatchBuilder matchBuilder = new MatchBuilder(match);
 
         Optional.ofNullable(NORMALIZERS.get(version))
@@ -81,7 +81,7 @@ public final class MatchNormalizationUtil {
         return matchBuilder.build();
     }
 
-    @Nonnull
+    @NonNull
     private static Stream<Function<MatchBuilder, MatchBuilder>> createNormalizers(final short version) {
         return Stream.of(
             MatchNormalizationUtil::normalizeExtensionMatch,
@@ -96,14 +96,14 @@ public final class MatchNormalizationUtil {
             (match) -> normalizeInPhyPortMatch(match, version));
     }
 
-    @Nonnull
-    private static MatchBuilder normalizeExtensionMatch(@Nonnull final MatchBuilder match) {
+    @NonNull
+    private static MatchBuilder normalizeExtensionMatch(@NonNull final MatchBuilder match) {
         return new MatchBuilder(MatchUtil.transformMatch(match.build(), Match.class));
     }
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeInPortMatch(@Nonnull final MatchBuilder match, final short version) {
+    static MatchBuilder normalizeInPortMatch(@NonNull final MatchBuilder match, final short version) {
         return Optional
                 .ofNullable(match.getInPort())
                 .flatMap(inPort -> Optional.ofNullable(normalizeProtocolAgnosticPort(inPort, version)))
@@ -111,9 +111,9 @@ public final class MatchNormalizationUtil {
                 .orElse(match);
     }
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeInPhyPortMatch(@Nonnull final MatchBuilder match, final short version) {
+    static MatchBuilder normalizeInPhyPortMatch(@NonNull final MatchBuilder match, final short version) {
         return Optional
                 .ofNullable(match.getInPhyPort())
                 .flatMap(inPhyPort -> Optional.ofNullable(normalizeProtocolAgnosticPort(inPhyPort, version)))
@@ -121,9 +121,9 @@ public final class MatchNormalizationUtil {
                 .orElse(match);
     }
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeArpMatch(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeArpMatch(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getLayer3Match())
                 .filter(ArpMatch.class::isInstance)
@@ -151,9 +151,9 @@ public final class MatchNormalizationUtil {
     }
 
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeTunnelIpv4Match(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeTunnelIpv4Match(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getLayer3Match())
                 .filter(TunnelIpv4Match.class::isInstance)
@@ -165,9 +165,9 @@ public final class MatchNormalizationUtil {
                 .orElse(match);
     }
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv4Match(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeIpv4Match(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getLayer3Match())
                 .filter(Ipv4Match.class::isInstance)
@@ -179,9 +179,9 @@ public final class MatchNormalizationUtil {
                 .orElse(match);
     }
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv4MatchArbitraryBitMask(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeIpv4MatchArbitraryBitMask(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getLayer3Match())
                 .filter(Ipv4MatchArbitraryBitMask.class::isInstance)
@@ -198,9 +198,9 @@ public final class MatchNormalizationUtil {
     }
 
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv6Match(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeIpv6Match(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getLayer3Match())
                 .filter(Ipv6Match.class::isInstance)
@@ -216,9 +216,9 @@ public final class MatchNormalizationUtil {
     }
 
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv6MatchArbitraryBitMask(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeIpv6MatchArbitraryBitMask(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getLayer3Match())
                 .filter(Ipv6MatchArbitraryBitMask.class::isInstance)
@@ -234,9 +234,9 @@ public final class MatchNormalizationUtil {
                 .orElse(match);
     }
 
-    @Nonnull
+    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeEthernetMatch(@Nonnull final MatchBuilder match) {
+    static MatchBuilder normalizeEthernetMatch(@NonNull final MatchBuilder match) {
         return Optional
                 .ofNullable(match.getEthernetMatch())
                 .map(eth -> match.setEthernetMatch(new EthernetMatchBuilder(eth)
