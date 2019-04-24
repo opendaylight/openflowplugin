@@ -22,6 +22,14 @@
             <plugin>
               <groupId>org.apache.aries.blueprint</groupId>
               <artifactId>blueprint-maven-plugin</artifactId>
+              <configuration>
+                <scanPaths>
+                  <!-- This is code migrated from openflowjava project and the java package
+                       does not match artifact groupId, we therefore need to override it.
+                  -->
+                  <scanPath>org.opendaylight.openflowjava</scanPath>
+                </scanPaths>
+              </configuration>
             </plugin>
             <plugin>
               <groupId>org.apache.felix</groupId>
