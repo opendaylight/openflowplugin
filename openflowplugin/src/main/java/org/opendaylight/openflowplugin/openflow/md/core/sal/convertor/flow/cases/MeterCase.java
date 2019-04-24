@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -26,7 +25,7 @@ public class MeterCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.op
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+    public Optional<Instruction> process(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
             .rev131026.instruction.instruction.MeterCase source, final ActionConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         return Optional.of(new InstructionBuilder().setInstructionChoice(new MeterCaseBuilder()

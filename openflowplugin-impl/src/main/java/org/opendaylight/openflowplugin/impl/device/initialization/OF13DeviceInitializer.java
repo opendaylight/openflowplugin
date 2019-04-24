@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -44,7 +44,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(OF13DeviceInitializer.class);
 
     @Override
-    protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+    protected Future<Void> initializeNodeInformation(@NonNull final DeviceContext deviceContext,
                                                      final boolean switchFeaturesMandatory,
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,

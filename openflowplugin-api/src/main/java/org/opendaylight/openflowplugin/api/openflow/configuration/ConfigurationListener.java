@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.configuration;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * Listens for changes in OpenFlowPlugin configuration.
@@ -21,6 +21,6 @@ public interface ConfigurationListener {
      * @param propertyName  the property name
      * @param propertyValue the property value
      */
-    void onPropertyChanged(@Nonnull String propertyName, @Nonnull String propertyValue);
+    void onPropertyChanged(@NonNull String propertyName, @NonNull String propertyValue);
 
 }

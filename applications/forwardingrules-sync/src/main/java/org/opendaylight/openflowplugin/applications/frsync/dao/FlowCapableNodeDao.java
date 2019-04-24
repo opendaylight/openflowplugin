@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.dao;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
@@ -16,5 +16,5 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
  * Data access object for {@link FlowCapableNode}.
  */
 public interface FlowCapableNodeDao {
-    Optional<FlowCapableNode> loadByNodeId(@Nonnull NodeId nodeId);
+    Optional<FlowCapableNode> loadByNodeId(@NonNull NodeId nodeId);
 }

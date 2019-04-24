@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
@@ -94,7 +94,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<FlowCapableNode>> changes) {
+    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<FlowCapableNode>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
 
         for (DataTreeModification<FlowCapableNode> change : changes) {
@@ -211,7 +211,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     @Override
-    public void onBecomeOwner(@Nonnull final DeviceInfo deviceInfo) {
+    public void onBecomeOwner(@NonNull final DeviceInfo deviceInfo) {
         LOG.debug("Mastership role notification received for device : {}", deviceInfo.getDatapathId());
         DeviceMastership membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
             device -> new DeviceMastership(deviceInfo.getNodeId()));
@@ -220,7 +220,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     @Override
-    public void onLoseOwnership(@Nonnull final DeviceInfo deviceInfo) {
+    public void onLoseOwnership(@NonNull final DeviceInfo deviceInfo) {
         final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
         if (mastership != null) {
             mastership.deregisterReconciliationRpc();

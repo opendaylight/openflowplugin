@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Maps;
 import java.util.Objects;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;

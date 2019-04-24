@@ -13,11 +13,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import javax.annotation.concurrent.ThreadSafe;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 
-@ThreadSafe
+/*
+ * this class is marked to be thread safe
+ */
 public class DeviceMeterRegistryImpl implements DeviceMeterRegistry {
 
     private final List<MeterId> meterIds = Collections.synchronizedList(new ArrayList<>());

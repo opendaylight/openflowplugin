@@ -11,8 +11,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -30,7 +30,7 @@ public abstract class AbstractSilentErrorService<I, O extends DataObject>
     }
 
     @Override
-    public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull I input,
+    public ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull I input,
                                                             @Nullable final Function<OfHeader, Boolean> isComplete) {
         return Futures.catching(
             super.handleServiceCall(input, isComplete),

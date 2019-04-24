@@ -25,8 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -45,7 +44,9 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ThreadSafe
+/*
+ * this class is marked to be thread safe
+ */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
@@ -134,7 +135,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public FlowDescriptor retrieveDescriptor(@Nonnull final FlowRegistryKey flowRegistryKey) {
+    public FlowDescriptor retrieveDescriptor(@NonNull final FlowRegistryKey flowRegistryKey) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Retrieving flow descriptor for flow registry : {}", flowRegistryKey.toString());
         }
@@ -147,8 +148,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
-    public void storeDescriptor(@Nonnull final FlowRegistryKey flowRegistryKey,
-                                @Nonnull final FlowDescriptor flowDescriptor) {
+    public void storeDescriptor(@NonNull final FlowRegistryKey flowRegistryKey,
+                                @NonNull final FlowDescriptor flowDescriptor) {
         try {
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Storing flowDescriptor with table ID : {} and flow ID : {} for flow hash : {}",

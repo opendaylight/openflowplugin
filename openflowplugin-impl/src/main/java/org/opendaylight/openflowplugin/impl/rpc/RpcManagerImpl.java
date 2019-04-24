@@ -12,7 +12,7 @@ import com.google.common.collect.Iterators;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -66,7 +66,7 @@ public class RpcManagerImpl implements RpcManager {
     }
 
     @Override
-    public RpcContext createContext(final @Nonnull DeviceContext deviceContext) {
+    public RpcContext createContext(final @NonNull DeviceContext deviceContext) {
         final RpcContextImpl rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 config.getRpcRequestsQuota().getValue().toJava(),

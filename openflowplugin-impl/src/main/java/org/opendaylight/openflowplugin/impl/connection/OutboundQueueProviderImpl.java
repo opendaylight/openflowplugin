@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -28,9 +28,9 @@ public class OutboundQueueProviderImpl implements OutboundQueueProvider {
         this.ofVersion = ofVersion;
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BarrierInput createBarrierRequest(@Nonnull final Long xid) {
+    public BarrierInput createBarrierRequest(@NonNull final Long xid) {
         final BarrierInputBuilder biBuilder = new BarrierInputBuilder();
         biBuilder.setVersion(ofVersion);
         biBuilder.setXid(xid);

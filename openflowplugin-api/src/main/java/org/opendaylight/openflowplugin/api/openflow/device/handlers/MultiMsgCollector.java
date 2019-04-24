@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device.handlers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
@@ -24,7 +24,7 @@ public interface MultiMsgCollector<T extends OfHeader> {
      * @param reqMore request more replies
      * @param eventIdentifier event identifier
      */
-    void addMultipartMsg(@Nonnull T reply, boolean reqMore, @Nullable EventIdentifier eventIdentifier);
+    void addMultipartMsg(@NonNull T reply, boolean reqMore, @Nullable EventIdentifier eventIdentifier);
 
     /**
      * Null response could be a valid end multipart collecting event for barrier response scenario.

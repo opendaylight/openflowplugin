@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -27,9 +27,9 @@ public class SalToOfPushVlanActionCase extends ConvertorCase<PushVlanActionCase,
         super(PushVlanActionCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public Optional<Action> process(@Nonnull final PushVlanActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(@NonNull final PushVlanActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         PushVlanAction pushVlanAction = source.getPushVlanAction();
 

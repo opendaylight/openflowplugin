@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.case
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -31,7 +30,7 @@ public class ApplyActionsCase extends ConvertorCase<org.opendaylight.yang.gen.v1
     }
 
     @Override
-    public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+    public Optional<Instruction> process(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
             .rev131026.instruction.instruction.ApplyActionsCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         ApplyActions applyActions = source.getApplyActions();

@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
@@ -31,17 +31,17 @@ public interface DeviceManager extends
      */
     void initialize();
 
-    ListenableFuture<?> removeDeviceFromOperationalDS(@Nonnull KeyedInstanceIdentifier<Node, NodeKey> ii);
+    ListenableFuture<?> removeDeviceFromOperationalDS(@NonNull KeyedInstanceIdentifier<Node, NodeKey> ii);
 
-    DeviceContext createContext(@Nonnull ConnectionContext connectionContext);
+    DeviceContext createContext(@NonNull ConnectionContext connectionContext);
 
 
     void sendNodeAddedNotification(
-            @Nonnull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
+            @NonNull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
 
     void sendNodeRemovedNotification(
-            @Nonnull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
+            @NonNull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
 
-    void setContextChainHolder(@Nonnull ContextChainHolder contextChainHolder);
+    void setContextChainHolder(@NonNull ContextChainHolder contextChainHolder);
 }
 

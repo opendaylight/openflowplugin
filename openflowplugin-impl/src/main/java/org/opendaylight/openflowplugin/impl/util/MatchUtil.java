@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -142,7 +142,7 @@ public final class MatchUtil {
 
     @Nullable
     public static <T extends Match> T transformMatch(@Nullable final Match match,
-                                                     @Nonnull final Class<T> implementedInterface) {
+                                                     @NonNull final Class<T> implementedInterface) {
         if (match == null) {
             return null;
         }

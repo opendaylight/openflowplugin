@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.impl.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;

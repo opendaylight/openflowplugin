@@ -18,7 +18,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 
 public class StatisticsPollingService extends AbstractScheduledService {
@@ -30,10 +30,10 @@ public class StatisticsPollingService extends AbstractScheduledService {
     private final Supplier<ListenableFuture<Boolean>> gatheringSupplier;
     private final SettableFuture<Void> future = SettableFuture.create();
 
-    StatisticsPollingService(@Nonnull final TimeCounter counter,
+    StatisticsPollingService(@NonNull final TimeCounter counter,
                              final long pollingInterval,
                              final long maximumTimerDelay,
-                             @Nonnull final Supplier<ListenableFuture<Boolean>> gatheringSupplier) {
+                             @NonNull final Supplier<ListenableFuture<Boolean>> gatheringSupplier) {
         this.counter = counter;
         this.pollingInterval = pollingInterval;
         this.maximumTimerDelay = maximumTimerDelay;

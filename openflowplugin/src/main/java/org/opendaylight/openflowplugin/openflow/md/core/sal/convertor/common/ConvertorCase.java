@@ -12,7 +12,7 @@ import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 
 /**
@@ -49,7 +49,7 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      * @param convertorExecutor convertor executor
      * @return the optional
      */
-    public abstract Optional<T> process(@Nonnull F source, D data, ConvertorExecutor convertorExecutor);
+    public abstract Optional<T> process(@NonNull F source, D data, ConvertorExecutor convertorExecutor);
 
     /**
      * Should {@link org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor}
@@ -70,7 +70,7 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      * @param convertorExecutor convertor executor
      * @return the optional
      */
-    Optional<T> processRaw(@Nonnull final Object source, final D data, final ConvertorExecutor convertorExecutor) {
+    Optional<T> processRaw(@NonNull final Object source, final D data, final ConvertorExecutor convertorExecutor) {
         return process(getType().cast(source), data, convertorExecutor);
     }
 

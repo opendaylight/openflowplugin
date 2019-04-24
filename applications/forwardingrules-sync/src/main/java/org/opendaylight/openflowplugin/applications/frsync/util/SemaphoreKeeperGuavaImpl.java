@@ -12,8 +12,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.util.concurrent.Semaphore;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +36,12 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
     }
 
     @Override
-    public Semaphore summonGuard(@Nonnull final K key) {
+    public Semaphore summonGuard(@NonNull final K key) {
         return semaphoreCache.getUnchecked(key);
     }
 
     @Override
-    public Semaphore summonGuardAndAcquire(@Nonnull final K key) {
+    public Semaphore summonGuardAndAcquire(@NonNull final K key) {
         final Semaphore guard = Preconditions.checkNotNull(summonGuard(key), "Guard not available for " + key);
         try {
             guard.acquire();

@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -25,7 +25,7 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * Add context to the chain, if reference already exist ignore it.
      * @param context child of OFPContext
      */
-    <T extends OFPContext> void addContext(@Nonnull T context);
+    <T extends OFPContext> void addContext(@NonNull T context);
 
     @Override
     void close();
@@ -51,7 +51,7 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * @return true if everything done fine
      * @see org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService
      */
-    boolean isMastered(@Nonnull ContextChainMastershipState mastershipState,
+    boolean isMastered(@NonNull ContextChainMastershipState mastershipState,
                        boolean inReconciliationFrameworkStep);
 
     /**
@@ -65,18 +65,18 @@ public interface ContextChain extends ClusterSingletonService, AutoCloseable, Re
      * @param connectionContext new connection to the device.
      * @return false if primary connection is broken
      */
-    boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext);
+    boolean addAuxiliaryConnection(@NonNull ConnectionContext connectionContext);
 
     /**
      * Check if connection is auxiliary and if yes then continue working.
      * @param connectionContext connection to the device
      * @return false if this is primary connection
      */
-    boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext);
+    boolean auxiliaryConnectionDropped(@NonNull ConnectionContext connectionContext);
 
     /**
      * This method registers device removed handler what will be executed when device should be removed.
      * @param deviceRemovedHandler device removed handler
      */
-    void registerDeviceRemovedHandler(@Nonnull DeviceRemovedHandler deviceRemovedHandler);
+    void registerDeviceRemovedHandler(@NonNull DeviceRemovedHandler deviceRemovedHandler);
 }

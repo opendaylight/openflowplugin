@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm.nodeconfigurator;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.Callable;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * JobEntry is the entity built per job submitted by the application and

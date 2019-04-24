@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -26,9 +26,9 @@ public class SalToOfSetVlanPcpActionV10Case extends ConvertorCase<SetVlanPcpActi
         super(SetVlanPcpActionCase.class, true, OFConstants.OFP_VERSION_1_0);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public Optional<Action> process(@Nonnull final SetVlanPcpActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(@NonNull final SetVlanPcpActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         SetVlanPcpAction setvlanpcpaction = source.getSetVlanPcpAction();
         SetVlanPcpActionBuilder setVlanPcpActionBuilder = new SetVlanPcpActionBuilder();

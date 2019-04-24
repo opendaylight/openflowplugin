@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
@@ -90,7 +90,7 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
         }
 
         @Override
-        public void update(@Nonnull final Map<String, String> properties) {
+        public void update(@NonNull final Map<String, String> properties) {
             properties.forEach((propertyName, newValue) -> {
                 final String originalValue = propertyMap.get(propertyName);
 
@@ -116,15 +116,15 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
             });
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public <T> T getProperty(@Nonnull final String key, @Nonnull final Function<String, T> transformer) {
+        public <T> T getProperty(@NonNull final String key, @NonNull final Function<String, T> transformer) {
             return transformer.apply(propertyMap.get(key));
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public AutoCloseable registerListener(@Nonnull final ConfigurationListener listener) {
+        public AutoCloseable registerListener(@NonNull final ConfigurationListener listener) {
             Verify.verify(!listeners.contains(listener));
             LOG.info("{} was registered as configuration listener to OpenFlowPlugin configuration service", listener);
             listeners.add(listener);

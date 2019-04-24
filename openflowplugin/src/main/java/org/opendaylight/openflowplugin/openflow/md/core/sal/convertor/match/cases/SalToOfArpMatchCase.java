@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -49,7 +49,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull ArpMatch source, VersionConvertorData data,
+    public Optional<List<MatchEntry>> process(@NonNull ArpMatch source, VersionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 

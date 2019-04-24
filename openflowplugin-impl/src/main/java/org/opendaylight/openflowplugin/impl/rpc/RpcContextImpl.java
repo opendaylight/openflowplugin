@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -59,12 +59,12 @@ class RpcContextImpl implements RpcContext {
     private final NotificationPublishService notificationPublishService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    RpcContextImpl(@Nonnull final RpcProviderService rpcProviderRegistry,
+    RpcContextImpl(@NonNull final RpcProviderService rpcProviderRegistry,
                    final int maxRequests,
-                   @Nonnull final DeviceContext deviceContext,
-                   @Nonnull final ExtensionConverterProvider extensionConverterProvider,
-                   @Nonnull final ConvertorExecutor convertorExecutor,
-                   @Nonnull final NotificationPublishService notificationPublishService,
+                   @NonNull final DeviceContext deviceContext,
+                   @NonNull final ExtensionConverterProvider extensionConverterProvider,
+                   @NonNull final ConvertorExecutor convertorExecutor,
+                   @NonNull final NotificationPublishService notificationPublishService,
                    final boolean statisticsRpcEnabled) {
         this.deviceContext = deviceContext;
         this.deviceInfo = deviceContext.getDeviceInfo();
@@ -170,7 +170,7 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+    public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
         this.contextChainMastershipWatcher = newWatcher;
     }
 
@@ -197,7 +197,7 @@ class RpcContextImpl implements RpcContext {
         contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();

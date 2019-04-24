@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -33,9 +33,9 @@ public class SalToOfStripVlanActionCase extends ConvertorCase<StripVlanActionCas
         super(StripVlanActionCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public Optional<Action> process(@Nonnull final StripVlanActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(@NonNull final StripVlanActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
         matchBuilder.setOxmClass(OpenflowBasicClass.class);

@@ -11,8 +11,8 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import java.math.BigInteger;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -91,7 +91,7 @@ public abstract class InventoryDataServiceUtil {
     }
 
     @Nullable
-    public static Uint32 portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, @Nonnull final String ncId) {
+    public static Uint32 portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, @NonNull final String ncId) {
         String portNoString = portNoStringfromNodeConnectorID(ncId);
         return OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
     }

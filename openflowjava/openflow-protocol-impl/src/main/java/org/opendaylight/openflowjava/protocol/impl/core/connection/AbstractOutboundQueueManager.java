@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
@@ -260,7 +260,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * which is send to OFEncoder for serialization. Correct wrapper is
      * selected by communication pipeline.
      */
-    protected Object makeMessageListenerWrapper(@Nonnull final OfHeader msg) {
+    protected Object makeMessageListenerWrapper(@NonNull final OfHeader msg) {
         Preconditions.checkArgument(msg != null);
 
         if (address == null) {

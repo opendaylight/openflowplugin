@@ -17,8 +17,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.GuardedBy;
+import org.checkerframework.checker.lock.qual.GuardedBy;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.binding.api.Transaction;
@@ -64,14 +64,13 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
 
-    public TransactionChainManager(@Nonnull final DataBroker dataBroker,
-                                   @Nonnull final String deviceIdentifier) {
+    public TransactionChainManager(@NonNull final DataBroker dataBroker,
+                                   @NonNull final String deviceIdentifier) {
         this.dataBroker = dataBroker;
         this.nodeId = deviceIdentifier;
         this.lastSubmittedFuture = CommitInfo.emptyFluentFuture();
     }
 
-    @GuardedBy("txLock")
     private void createTxChain() {
         TransactionChain txChainFactoryTemp = transactionChain;
         transactionChain = dataBroker.createTransactionChain(TransactionChainManager.this);
@@ -133,7 +132,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     }
 
                     @Override
-                    public void onFailure(@Nonnull final Throwable throwable) {
+                    public void onFailure(@NonNull final Throwable throwable) {
                         closeTransactionChain();
                     }
                 }, MoreExecutors.directExecutor());
@@ -290,7 +289,6 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         // NOOP
     }
 
-    @GuardedBy("txLock")
     private void ensureTransaction() {
         if (writeTx == null && TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
                 && transactionChain != null) {

@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -64,7 +64,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<Node>> modifications) {
+    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<Node>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 

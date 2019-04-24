@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.lifecycle;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
@@ -40,7 +40,7 @@ public interface ContextChainMastershipWatcher {
      * @param deviceInfo connected switch identification
      * @param mastershipState state
      */
-    void onMasterRoleAcquired(DeviceInfo deviceInfo, @Nonnull ContextChainMastershipState mastershipState);
+    void onMasterRoleAcquired(DeviceInfo deviceInfo, @NonNull ContextChainMastershipState mastershipState);
 
     /**
      * Change to SLAVE role on device was successful.

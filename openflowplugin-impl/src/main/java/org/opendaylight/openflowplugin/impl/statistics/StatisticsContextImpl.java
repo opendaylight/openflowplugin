@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
@@ -73,11 +73,11 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     private StatisticsGatheringOnTheFlyService<T> statisticsGatheringOnTheFlyService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
-    StatisticsContextImpl(@Nonnull final DeviceContext deviceContext,
-                          @Nonnull final ConvertorExecutor convertorExecutor,
-                          @Nonnull final MultipartWriterProvider statisticsWriterProvider,
-                          @Nonnull final ListeningExecutorService executorService,
-                          @Nonnull final OpenflowProviderConfig config,
+    StatisticsContextImpl(@NonNull final DeviceContext deviceContext,
+                          @NonNull final ConvertorExecutor convertorExecutor,
+                          @NonNull final MultipartWriterProvider statisticsWriterProvider,
+                          @NonNull final ListeningExecutorService executorService,
+                          @NonNull final OpenflowProviderConfig config,
                           final boolean isStatisticsPollingOn,
                           final boolean isUsingReconciliationFramework) {
         this.deviceContext = deviceContext;
@@ -103,14 +103,14 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
         return this.deviceInfo;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+    public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
         this.contextChainMastershipWatcher = newWatcher;
     }
 

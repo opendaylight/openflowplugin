@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -26,9 +26,9 @@ public class SalToOfPopMplsActionCase extends ConvertorCase<PopMplsActionCase, A
         super(PopMplsActionCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public Optional<Action> process(@Nonnull final PopMplsActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(@NonNull final PopMplsActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         PopMplsCaseBuilder popMplsCaseBuilder = new PopMplsCaseBuilder();
         PopMplsActionBuilder popMplsBuilder = new PopMplsActionBuilder();

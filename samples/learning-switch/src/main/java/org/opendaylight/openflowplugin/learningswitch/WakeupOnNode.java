@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.learningswitch;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
@@ -25,7 +25,7 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
     private LearningSwitchHandler learningSwitchHandler;
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<Table>> modifications) {
+    public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Table>> modifications) {
         Uint8 requiredTableId = Uint8.ZERO;
         // TODO add flow
 

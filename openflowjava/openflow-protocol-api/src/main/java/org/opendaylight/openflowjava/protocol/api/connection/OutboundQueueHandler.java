@@ -8,7 +8,7 @@
 package org.opendaylight.openflowjava.protocol.api.connection;
 
 import com.google.common.annotations.Beta;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 
 /**
@@ -25,7 +25,7 @@ public interface OutboundQueueHandler {
      * @param xid XID for the barrier message
      * @return New barrier message.
      */
-    @Nonnull BarrierInput createBarrierRequest(@Nonnull Long xid);
+    @NonNull BarrierInput createBarrierRequest(@NonNull Long xid);
 
     /**
      * Invoked whenever the underlying queue is refreshed. Implementations should

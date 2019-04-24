@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
@@ -198,7 +198,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void onNotAbleToStartMastership(@Nonnull final DeviceInfo deviceInfo, @Nonnull final String reason,
+    public void onNotAbleToStartMastership(@NonNull final DeviceInfo deviceInfo, @NonNull final String reason,
                                            final boolean mandatory) {
         LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
 
@@ -214,8 +214,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void onMasterRoleAcquired(@Nonnull final DeviceInfo deviceInfo,
-                                     @Nonnull final ContextChainMastershipState mastershipState) {
+    public void onMasterRoleAcquired(@NonNull final DeviceInfo deviceInfo,
+                                     @NonNull final ContextChainMastershipState mastershipState) {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             if (ownershipChangeListener.isReconciliationFrameworkRegistered()
                     && !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
@@ -357,7 +357,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         LOG.debug("Context chain removed for node {}", deviceInfo);
     }
 
-    private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull final DeviceInfo deviceInfo,
+    private FutureCallback<ResultState> reconciliationFrameworkCallback(@NonNull final DeviceInfo deviceInfo,
             final ContextChain contextChain, final ContextChainMastershipState mastershipState) {
         return new FutureCallback<>() {
             @Override

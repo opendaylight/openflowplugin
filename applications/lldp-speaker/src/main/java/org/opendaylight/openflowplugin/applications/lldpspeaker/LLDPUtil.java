@@ -11,7 +11,7 @@ import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.L
 
 import com.google.common.base.Strings;
 import java.math.BigInteger;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
 import org.opendaylight.openflowplugin.libraries.liblldp.HexEncode;
@@ -36,7 +36,7 @@ public final class LLDPUtil {
     private LLDPUtil() {
     }
 
-    @Nonnull
+    @NonNull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
             final Uint32 outPortNo, final MacAddress destinationAddress)
                     throws PacketException {
@@ -102,7 +102,7 @@ public final class LLDPUtil {
         return ethPkt.serialize();
     }
 
-    @Nonnull
+    @NonNull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
             final MacAddress srcMacAddress, final Uint32 outputPortNo) throws PacketException {
         return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);

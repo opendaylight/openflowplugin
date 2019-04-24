@@ -11,7 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -29,7 +29,7 @@ public class OfToSalEthDstCase extends ConvertorCase<EthDstCase, MatchBuilder, M
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull EthDstCase source, MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(@NonNull EthDstCase source, MatchResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final EthernetMatchBuilder ethMatchBuilder = data.getEthernetMatchBuilder();

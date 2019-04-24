@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
@@ -36,7 +36,7 @@ public interface ReconciliationFrameworkEvent extends AutoCloseable {
      * @param deviceInfo connected switch identification
      * @return result state if the device can continue with connecting or should be disconnected
      */
-    ListenableFuture<ResultState> onDevicePrepared(@Nonnull DeviceInfo deviceInfo);
+    ListenableFuture<ResultState> onDevicePrepared(@NonNull DeviceInfo deviceInfo);
 
     /**
      * This event occurs after device is disconnected or being slaved.
@@ -46,7 +46,7 @@ public interface ReconciliationFrameworkEvent extends AutoCloseable {
      * @return future
      * @see MastershipChangeService
      */
-    ListenableFuture<Void> onDeviceDisconnected(@Nonnull DeviceInfo deviceInfo);
+    ListenableFuture<Void> onDeviceDisconnected(@NonNull DeviceInfo deviceInfo);
 
 
 }

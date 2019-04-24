@@ -16,8 +16,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -208,7 +208,7 @@ public final class FlowUtil {
         }
 
         public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> invoke() {
-            return (@Nonnull final List<RpcResult<O>> innerInput) -> {
+            return (@NonNull final List<RpcResult<O>> innerInput) -> {
                 final int sizeOfFutures = innerInput.size();
                 final int sizeOfInputBatch = inputBatchFlows.size();
                 Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,

@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Request context stack.
