@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -25,7 +25,7 @@ public class OfToSalMplsLabelCase extends ConvertorCase<MplsLabelCase, MatchBuil
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull MplsLabelCase source, MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(@NonNull MplsLabelCase source, MatchResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = data.getProtocolMatchFieldsBuilder();

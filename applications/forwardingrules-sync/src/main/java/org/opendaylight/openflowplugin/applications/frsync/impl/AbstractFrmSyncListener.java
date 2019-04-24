@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
@@ -31,7 +31,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
     private static final Logger LOG = LoggerFactory.getLogger(AbstractFrmSyncListener.class);
 
     @Override
-    public void onDataTreeChanged(@Nonnull final Collection<DataTreeModification<T>> modifications) {
+    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<T>> modifications) {
         for (DataTreeModification<T> modification : modifications) {
             final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
             if (LOG.isTraceEnabled()) {

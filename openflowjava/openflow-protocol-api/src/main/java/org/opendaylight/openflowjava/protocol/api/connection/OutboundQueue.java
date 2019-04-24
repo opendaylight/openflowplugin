@@ -10,8 +10,8 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import com.google.common.annotations.Beta;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 @Beta
@@ -48,7 +48,7 @@ public interface OutboundQueue {
      * @throws IllegalArgumentException if the slot is already committed or was never reserved.
      */
     void commitEntry(
-            @Nonnull Long xid,
+            @NonNull Long xid,
             @Nullable OfHeader message,
             @Nullable FutureCallback<OfHeader> callback);
 
@@ -79,7 +79,7 @@ public interface OutboundQueue {
      * @throws IllegalArgumentException if the slot is already committed or was never reserved.
      */
     void commitEntry(
-            @Nonnull Long xid,
+            @NonNull Long xid,
             @Nullable OfHeader message,
             @Nullable FutureCallback<OfHeader> callback,
             @Nullable Function<OfHeader, Boolean> isComplete);

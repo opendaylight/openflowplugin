@@ -19,7 +19,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -57,8 +57,8 @@ public class RoleContextImpl implements RoleContext {
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     private SalRoleService roleService;
 
-    RoleContextImpl(@Nonnull final DeviceInfo deviceInfo,
-                    @Nonnull final HashedWheelTimer timer,
+    RoleContextImpl(@NonNull final DeviceInfo deviceInfo,
+                    @NonNull final HashedWheelTimer timer,
                     final long checkRoleMasterTimeout,
                     final OpenflowProviderConfig config,
                     final ExecutorService executorService) {
@@ -84,7 +84,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+    public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
         this.contextChainMastershipWatcher = newWatcher;
     }
 
@@ -122,7 +122,7 @@ public class RoleContextImpl implements RoleContext {
         return ret;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();

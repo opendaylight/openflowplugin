@@ -22,7 +22,7 @@ import com.google.common.util.concurrent.Monitor.Guard;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -127,7 +127,7 @@ public class GuardedContextImpl implements GuardedContext {
         return result;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return delegate.getIdentifier();
@@ -144,7 +144,7 @@ public class GuardedContextImpl implements GuardedContext {
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
+    public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher contextChainMastershipWatcher) {
         delegate.registerMastershipWatcher(contextChainMastershipWatcher);
     }
 

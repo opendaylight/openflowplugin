@@ -13,11 +13,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import javax.annotation.concurrent.ThreadSafe;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 
-@ThreadSafe
+/*
+ * this class is marked to be thread safe
+ */
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
 
     private final List<GroupId> groupIds = Collections.synchronizedList(new ArrayList<>());

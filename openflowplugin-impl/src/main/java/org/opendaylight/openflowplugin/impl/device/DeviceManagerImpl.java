@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
@@ -71,14 +71,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ContextChainHolder contextChainHolder;
     private final QueuedNotificationManager<String, Runnable> queuedNotificationManager;
 
-    public DeviceManagerImpl(@Nonnull final OpenflowProviderConfig config,
-                             @Nonnull final DataBroker dataBroker,
-                             @Nonnull final MessageSpy messageSpy,
-                             @Nonnull final NotificationPublishService notificationPublishService,
-                             @Nonnull final HashedWheelTimer hashedWheelTimer,
-                             @Nonnull final ConvertorExecutor convertorExecutor,
-                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
-                             @Nonnull final ExecutorService executorService) {
+    public DeviceManagerImpl(@NonNull final OpenflowProviderConfig config,
+                             @NonNull final DataBroker dataBroker,
+                             @NonNull final MessageSpy messageSpy,
+                             @NonNull final NotificationPublishService notificationPublishService,
+                             @NonNull final HashedWheelTimer hashedWheelTimer,
+                             @NonNull final ConvertorExecutor convertorExecutor,
+                             @NonNull final DeviceInitializerProvider deviceInitializerProvider,
+                             @NonNull final ExecutorService executorService) {
         this.config = config;
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -129,7 +129,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<?> removeDeviceFromOperationalDS(@Nonnull final KeyedInstanceIdentifier<Node, NodeKey> ii) {
+    public ListenableFuture<?> removeDeviceFromOperationalDS(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> ii) {
 
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
@@ -138,7 +138,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public DeviceContext createContext(@Nonnull final ConnectionContext connectionContext) {
+    public DeviceContext createContext(@NonNull final ConnectionContext connectionContext) {
 
         LOG.info("ConnectionEvent: Device connected to controller, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(),
@@ -217,7 +217,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void sendNodeRemovedNotification(@Nonnull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public void sendNodeRemovedNotification(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         if (notificationCreateNodeSend.remove(instanceIdentifier)) {
             NodeRemovedBuilder builder = new NodeRemovedBuilder();
             builder.setNodeRef(new NodeRef(instanceIdentifier));
@@ -227,12 +227,12 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setContextChainHolder(@Nonnull final ContextChainHolder contextChainHolder) {
+    public void setContextChainHolder(@NonNull final ContextChainHolder contextChainHolder) {
         this.contextChainHolder = contextChainHolder;
     }
 
     @Override
-    public void sendNodeAddedNotification(@Nonnull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public void sendNodeAddedNotification(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         if (!notificationCreateNodeSend.contains(instanceIdentifier)) {
             notificationCreateNodeSend.add(instanceIdentifier);
             final NodeId id = instanceIdentifier.firstKeyOf(Node.class).getId();

@@ -12,7 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.math.LongMath;
 import java.math.RoundingMode;
 import java.util.Collections;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;

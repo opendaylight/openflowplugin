@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Request context handles all requests on device. Number of requests is limited by request quota. When this quota is

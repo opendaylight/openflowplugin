@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
@@ -25,7 +25,7 @@ public class OfToSalStripVlanCase extends ConvertorCase<StripVlanCase, Action, A
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final StripVlanCase source, final ActionResponseConvertorData data,
+    public Optional<Action> process(@NonNull final StripVlanCase source, final ActionResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         PopVlanActionBuilder popVlan = new PopVlanActionBuilder();
         return Optional.of(new PopVlanActionCaseBuilder().setPopVlanAction(popVlan.build()).build());

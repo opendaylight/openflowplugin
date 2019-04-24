@@ -13,8 +13,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -105,11 +105,11 @@ public abstract class AbstractService<I, O> {
 
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
-    public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input) {
+    public ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input) {
         return handleServiceCall(input, null);
     }
 
-    public ListenableFuture<RpcResult<O>> handleServiceCall(@Nonnull final I input,
+    public ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input,
             @Nullable final Function<OfHeader, Boolean> isComplete) {
         Preconditions.checkNotNull(input);
 

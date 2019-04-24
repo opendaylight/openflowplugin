@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -35,7 +35,7 @@ public final class FlowCapableNodeLookups {
         throw new IllegalAccessError("non instantiable util class");
     }
 
-    @Nonnull
+    @NonNull
     public static Map<Uint8, Table> wrapTablesToMap(@Nullable final List<Table> tables) {
         final Map<Uint8, Table> tableMap;
 
@@ -52,7 +52,7 @@ public final class FlowCapableNodeLookups {
         return tableMap;
     }
 
-    @Nonnull
+    @NonNull
     public static Map<FlowDescriptor, Flow> wrapFlowsToMap(@Nullable final List<Flow> flows) {
         final Map<FlowDescriptor, Flow> flowMap;
 
@@ -73,7 +73,7 @@ public final class FlowCapableNodeLookups {
         return flowConfigMap.get(new FlowDescriptor(flow));
     }
 
-    @Nonnull
+    @NonNull
     public static Map<MeterId, Meter> wrapMetersToMap(@Nullable final List<Meter> meters) {
         final Map<MeterId, Meter> meterMap;
 
@@ -90,7 +90,7 @@ public final class FlowCapableNodeLookups {
         return meterMap;
     }
 
-    @Nonnull
+    @NonNull
     public static Map<Uint32, Group> wrapGroupsToMap(@Nullable final List<Group> groups) {
         final Map<Uint32, Group> groupMap;
 

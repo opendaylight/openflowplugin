@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
@@ -45,7 +45,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
         context.close();
     }
 
-    protected final void spyMessage(@Nonnull final StatisticsGroup group) {
+    protected final void spyMessage(@NonNull final StatisticsGroup group) {
         spy.spyMessage(requestType, Preconditions.checkNotNull(group));
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     }
 
     @Override
-    public final void onFailure(@Nonnull final Throwable throwable) {
+    public final void onFailure(@NonNull final Throwable throwable) {
         final RpcResultBuilder<T> builder;
         if (null != eventIdentifier) {
             EventsTimeCounter.markEnd(eventIdentifier);
