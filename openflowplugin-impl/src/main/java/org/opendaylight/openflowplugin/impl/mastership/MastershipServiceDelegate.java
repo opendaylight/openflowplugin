@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
@@ -35,12 +35,12 @@ public class MastershipServiceDelegate implements MastershipChangeService, Maste
     }
 
     @Override
-    public void onBecomeOwner(@Nonnull final DeviceInfo deviceInfo) {
+    public void onBecomeOwner(@NonNull final DeviceInfo deviceInfo) {
         this.service.onBecomeOwner(deviceInfo);
     }
 
     @Override
-    public void onLoseOwnership(@Nonnull final DeviceInfo deviceInfo) {
+    public void onLoseOwnership(@NonNull final DeviceInfo deviceInfo) {
         this.service.onLoseOwnership(deviceInfo);
     }
 

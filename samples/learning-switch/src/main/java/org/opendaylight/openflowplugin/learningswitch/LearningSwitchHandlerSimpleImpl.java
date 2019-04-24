@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -69,8 +69,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     private Map<MacAddress, NodeConnectorRef> mac2portMapping;
     private final Set<String> coveredMacPaths = new HashSet<>();
 
-    public LearningSwitchHandlerSimpleImpl(@Nonnull FlowCommitWrapper dataStoreAccessor,
-            @Nonnull PacketProcessingService packetProcessingService,
+    public LearningSwitchHandlerSimpleImpl(@NonNull FlowCommitWrapper dataStoreAccessor,
+            @NonNull PacketProcessingService packetProcessingService,
             @Nullable DataTreeChangeListenerRegistrationHolder registrationPublisher) {
         this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
         this.packetProcessingService = Objects.requireNonNull(packetProcessingService);

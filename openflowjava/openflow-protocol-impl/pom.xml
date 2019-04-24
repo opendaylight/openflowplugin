@@ -119,11 +119,5 @@
             <!-- Explicitly bring in the linux classifier, test may fail on 32-bit linux -->
             <classifier>linux-x86_64</classifier>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
-            <optional>true</optional>
-        </dependency>
     </dependencies>
 </project>

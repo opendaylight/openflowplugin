@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 
@@ -17,6 +17,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
  */
 public interface RpcManager extends OFPManager {
 
-    RpcContext createContext(@Nonnull DeviceContext deviceContext);
+    RpcContext createContext(@NonNull DeviceContext deviceContext);
 
 }

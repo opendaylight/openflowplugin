@@ -24,8 +24,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -161,10 +161,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final NotificationManager<String, Runnable> queuedNotificationManager;
     private final boolean isStatisticsPollingOn;
 
-    DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
-                      @Nonnull final DataBroker dataBroker,
-                      @Nonnull final MessageSpy messageSpy,
-                      @Nonnull final TranslatorLibrary translatorLibrary,
+    DeviceContextImpl(@NonNull final ConnectionContext primaryConnectionContext,
+                      @NonNull final DataBroker dataBroker,
+                      @NonNull final MessageSpy messageSpy,
+                      @NonNull final TranslatorLibrary translatorLibrary,
                       final ConvertorExecutor convertorExecutor,
                       final boolean skipTableFeatures,
                       final HashedWheelTimer hashedWheelTimer,
@@ -596,11 +596,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
-    public void registerMastershipWatcher(@Nonnull final ContextChainMastershipWatcher newWatcher) {
+    public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
         this.contextChainMastershipWatcher = newWatcher;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();

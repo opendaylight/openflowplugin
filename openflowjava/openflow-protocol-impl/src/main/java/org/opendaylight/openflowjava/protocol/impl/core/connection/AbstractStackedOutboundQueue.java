@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.GuardedBy;
+import org.checkerframework.checker.lock.qual.GuardedBy;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -60,7 +60,6 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
         commitEntry(xid, message, callback, OutboundQueueEntry.DEFAULT_IS_COMPLETE);
     }
 
-    @GuardedBy("unflushedSegments")
     protected void ensureSegment(final StackedSegment first, final int offset) {
         final int segmentOffset = offset / StackedSegment.SEGMENT_SIZE;
         LOG.debug("Queue {} slow offset {} maps to {} segments {}", this, offset, segmentOffset,
@@ -125,7 +124,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * @param now time stamp
      * @return Number of entries written out
      */
-    int writeEntries(@Nonnull final Channel channel, final long now) {
+    int writeEntries(@NonNull final Channel channel, final long now) {
         // Local cache
         StackedSegment segment = firstSegment;
         int entries = 0;

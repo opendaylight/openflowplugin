@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -134,7 +133,7 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
     }
 
     @Override
-    public void onPropertyChanged(@Nonnull final String propertyName, @Nonnull final String propertyValue) {
+    public void onPropertyChanged(@NonNull final String propertyName, @NonNull final String propertyValue) {
         final TopologyLLDPDiscoveryProperty lldpDiscoveryProperty = TopologyLLDPDiscoveryProperty.forValue(
                 propertyName);
         if (lldpDiscoveryProperty != null) {

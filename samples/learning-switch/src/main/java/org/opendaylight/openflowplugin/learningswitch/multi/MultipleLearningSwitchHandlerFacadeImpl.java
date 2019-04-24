@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.learningswitch.multi;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
 import org.opendaylight.openflowplugin.learningswitch.InstanceIdentifierUtils;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandler;
@@ -27,9 +27,9 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
     private final PacketProcessingService packetProcessingService;
     private final PacketInDispatcherImpl packetInDispatcher;
 
-    public MultipleLearningSwitchHandlerFacadeImpl(@Nonnull FlowCommitWrapper dataStoreAccessor,
-            @Nonnull PacketProcessingService packetProcessingService,
-            @Nonnull PacketInDispatcherImpl packetInDispatcher) {
+    public MultipleLearningSwitchHandlerFacadeImpl(@NonNull FlowCommitWrapper dataStoreAccessor,
+            @NonNull PacketProcessingService packetProcessingService,
+            @NonNull PacketInDispatcherImpl packetInDispatcher) {
         this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
         this.packetProcessingService = Objects.requireNonNull(packetProcessingService);
         this.packetInDispatcher = Objects.requireNonNull(packetInDispatcher);

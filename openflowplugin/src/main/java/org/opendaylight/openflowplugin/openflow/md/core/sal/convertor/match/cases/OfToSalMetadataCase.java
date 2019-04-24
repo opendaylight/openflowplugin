@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 
 import java.math.BigInteger;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -26,7 +26,7 @@ public class OfToSalMetadataCase extends ConvertorCase<MetadataCase, MatchBuilde
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull MetadataCase source, MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(@NonNull MetadataCase source, MatchResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final MetadataBuilder metadataBuilder = new MetadataBuilder();

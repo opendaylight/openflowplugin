@@ -12,7 +12,7 @@ import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -39,7 +39,7 @@ public class RoleManagerImpl implements RoleManager {
     }
 
     @Override
-    public RoleContext createContext(@Nonnull final DeviceContext deviceContext) {
+    public RoleContext createContext(@NonNull final DeviceContext deviceContext) {
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final RoleContextImpl roleContext = new RoleContextImpl(
                 deviceContext.getDeviceInfo(),

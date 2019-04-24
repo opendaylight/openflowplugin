@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm.nodeconfigurator;
 import com.google.common.base.MoreObjects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A queue which holds job entries and the current running job.

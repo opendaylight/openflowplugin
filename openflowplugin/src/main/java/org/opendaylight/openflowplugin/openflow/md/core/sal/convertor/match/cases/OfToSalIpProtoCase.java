@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -25,7 +25,7 @@ public class OfToSalIpProtoCase extends ConvertorCase<IpProtoCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull final IpProtoCase source, final MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(@NonNull final IpProtoCase source, final MatchResponseConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final IpMatchBuilder ipMatchBuilder = data.getIpMatchBuilder();

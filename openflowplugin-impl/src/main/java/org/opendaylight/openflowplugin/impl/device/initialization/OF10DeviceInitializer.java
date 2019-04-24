@@ -13,8 +13,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -52,7 +52,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(OF10DeviceInitializer.class);
 
     @Override
-    protected ListenableFuture<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+    protected ListenableFuture<Void> initializeNodeInformation(@NonNull final DeviceContext deviceContext,
                                                      final boolean switchFeaturesMandatory,
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,

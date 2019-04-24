@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.impl.device.listener;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
@@ -42,7 +42,7 @@ public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollec
     }
 
     @Override
-    public void addMultipartMsg(@Nonnull final T reply, final boolean reqMore,
+    public void addMultipartMsg(@NonNull final T reply, final boolean reqMore,
                                 @Nullable final EventIdentifier eventIdentifier) {
         Preconditions.checkNotNull(reply);
         Preconditions.checkNotNull(requestContext.getXid());

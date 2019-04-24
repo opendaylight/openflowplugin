@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.base.Preconditions;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.concurrent.GuardedBy;
+import org.checkerframework.checker.lock.qual.GuardedBy;
 
 abstract class SimpleRatelimiter {
     private final AtomicInteger counter = new AtomicInteger();
@@ -69,7 +69,6 @@ abstract class SimpleRatelimiter {
         }
     }
 
-    @GuardedBy("counterLock")
     private void resetLowWaterMark() {
         lowWatermarkEffective = lowWatermark;
     }

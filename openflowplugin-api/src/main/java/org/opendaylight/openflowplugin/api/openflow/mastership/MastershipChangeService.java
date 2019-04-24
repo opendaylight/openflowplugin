@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 
@@ -30,13 +30,13 @@ public interface MastershipChangeService extends AutoCloseable {
      * {@link OwnershipChangeListener#becomeMaster(DeviceInfo)}
      * @param deviceInfo connected switch identification
      */
-    void onBecomeOwner(@Nonnull DeviceInfo deviceInfo);
+    void onBecomeOwner(@NonNull DeviceInfo deviceInfo);
 
     /**
      * Event when device disconnected or become slave. This event is evoked by
      * {@link OwnershipChangeListener#becomeSlaveOrDisconnect(DeviceInfo)}
      * @param deviceInfo connected switch identification
      */
-    void onLoseOwnership(@Nonnull DeviceInfo deviceInfo);
+    void onLoseOwnership(@NonNull DeviceInfo deviceInfo);
 
 }

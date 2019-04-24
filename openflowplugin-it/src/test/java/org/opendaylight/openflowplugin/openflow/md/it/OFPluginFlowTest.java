@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Assert;
@@ -164,7 +164,7 @@ public class OFPluginFlowTest {
         }
 
         @Override
-        public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<FlowCapableNode>> modifications) {
+        public void onDataTreeChanged(@NonNull Collection<DataTreeModification<FlowCapableNode>> modifications) {
 
             for (DataTreeModification modification : modifications) {
                 if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {

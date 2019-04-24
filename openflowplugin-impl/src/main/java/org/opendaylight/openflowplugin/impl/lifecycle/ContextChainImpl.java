@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
@@ -53,9 +53,9 @@ public class ContextChainImpl implements ContextChain {
             new AtomicReference<>(ContextChainState.UNDEFINED);
     private AutoCloseable registration;
 
-    ContextChainImpl(@Nonnull final ContextChainMastershipWatcher contextChainMastershipWatcher,
-                     @Nonnull final ConnectionContext connectionContext,
-                     @Nonnull final ExecutorService executorService) {
+    ContextChainImpl(@NonNull final ContextChainMastershipWatcher contextChainMastershipWatcher,
+                     @NonNull final ConnectionContext connectionContext,
+                     @NonNull final ExecutorService executorService) {
         this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         this.primaryConnection = connectionContext;
         this.deviceInfo = connectionContext.getDeviceInfo();
@@ -63,7 +63,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public <T extends OFPContext> void addContext(@Nonnull final T context) {
+    public <T extends OFPContext> void addContext(@NonNull final T context) {
         contexts.add(new GuardedContextImpl(context));
     }
 
@@ -97,7 +97,7 @@ public class ContextChainImpl implements ContextChain {
         }, executorService);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
@@ -159,7 +159,7 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState,
+    public boolean isMastered(@NonNull final ContextChainMastershipState mastershipState,
                               final boolean inReconciliationFrameworkStep) {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
@@ -220,19 +220,19 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean addAuxiliaryConnection(@Nonnull final ConnectionContext connectionContext) {
+    public boolean addAuxiliaryConnection(@NonNull final ConnectionContext connectionContext) {
         return connectionContext.getFeatures().getAuxiliaryId().toJava() != 0
                 && !ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())
                 && auxiliaryConnections.add(connectionContext);
     }
 
     @Override
-    public boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext) {
+    public boolean auxiliaryConnectionDropped(@NonNull final ConnectionContext connectionContext) {
         return auxiliaryConnections.remove(connectionContext);
     }
 
     @Override
-    public void registerDeviceRemovedHandler(@Nonnull final DeviceRemovedHandler deviceRemovedHandler) {
+    public void registerDeviceRemovedHandler(@NonNull final DeviceRemovedHandler deviceRemovedHandler) {
         deviceRemovedHandlers.add(deviceRemovedHandler);
     }
 
