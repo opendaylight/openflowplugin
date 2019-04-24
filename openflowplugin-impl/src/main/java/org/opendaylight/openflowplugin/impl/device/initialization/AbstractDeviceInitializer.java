@@ -11,8 +11,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
 import java.util.concurrent.Future;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -36,7 +36,7 @@ public abstract class AbstractDeviceInitializer {
      * @param convertorExecutor convertor executor
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
+    public Future<Void> initialize(@NonNull final DeviceContext deviceContext,
                                    final boolean switchFeaturesMandatory,
                                    final boolean skipTableFeatures,
                                    @Nullable final MultipartWriterProvider multipartWriterProvider,
@@ -64,7 +64,7 @@ public abstract class AbstractDeviceInitializer {
                 multipartWriterProvider, convertorExecutor);
     }
 
-    protected abstract Future<Void> initializeNodeInformation(@Nonnull DeviceContext deviceContext,
+    protected abstract Future<Void> initializeNodeInformation(@NonNull DeviceContext deviceContext,
                                                               boolean switchFeaturesMandatory,
                                                               boolean skipTableFeatures,
                                                               @Nullable MultipartWriterProvider multipartWriterProvider,

@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.util.Arrays;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +163,7 @@ public abstract class BitBufferHelper {
      *             when the startOffset and numBits parameters are not congruent
      *             with the data buffer size
      */
-    @Nonnull
+    @NonNull
     public static byte[] getBits(final byte[] data, final int startOffset, final int numBits) throws BufferException {
         int startByteOffset;
         int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;

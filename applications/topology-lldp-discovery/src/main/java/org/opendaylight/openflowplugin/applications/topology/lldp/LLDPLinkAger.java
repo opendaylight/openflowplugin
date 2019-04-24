@@ -15,11 +15,11 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
@@ -115,7 +115,7 @@ public class LLDPLinkAger implements ConfigurationListener, AutoCloseable {
     }
 
     @Override
-    public void onPropertyChanged(@Nonnull final String propertyName, @Nonnull final String propertyValue) {
+    public void onPropertyChanged(@NonNull final String propertyName, @NonNull final String propertyValue) {
         Optional.ofNullable(TopologyLLDPDiscoveryProperty.forValue(propertyName)).ifPresent(lldpDiscoveryProperty -> {
             switch (lldpDiscoveryProperty) {
                 case LLDP_SECURE_KEY:

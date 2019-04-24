@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.mastership;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeListener;
 
 /**
@@ -24,8 +24,8 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
      * @return registration
      * @see ReconciliationFrameworkEvent
      */
-    @Nonnull
-    MastershipChangeRegistration register(@Nonnull MastershipChangeService service);
+    @NonNull
+    MastershipChangeRegistration register(@NonNull MastershipChangeService service);
 
     /**
      * Setter for reconciliation framework event listener. It can be registered only once.
@@ -35,7 +35,7 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener,
      * @throws MastershipChangeException if already reconciliation framework registered
      */
     ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
-            @Nonnull ReconciliationFrameworkEvent mastershipRFRegistration) throws MastershipChangeException;
+            @NonNull ReconciliationFrameworkEvent mastershipRFRegistration) throws MastershipChangeException;
 
     @Override
     void close();

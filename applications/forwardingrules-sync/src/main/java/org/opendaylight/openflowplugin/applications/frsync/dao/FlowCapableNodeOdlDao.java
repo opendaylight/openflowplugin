@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -41,7 +41,7 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
     }
 
     @Override
-    public Optional<FlowCapableNode> loadByNodeId(@Nonnull NodeId nodeId) {
+    public Optional<FlowCapableNode> loadByNodeId(@NonNull NodeId nodeId) {
         try (ReadTransaction roTx = dataBroker.newReadOnlyTransaction()) {
             final InstanceIdentifier<FlowCapableNode> path =
                     NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);

@@ -12,7 +12,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.util.MatchNormalizationUtil;
@@ -27,8 +27,8 @@ public final class FlowRegistryKeyFactory {
         // Hide implicit constructor
     }
 
-    @Nonnull
-    public static FlowRegistryKey create(final short version, @Nonnull final Flow flow) {
+    @NonNull
+    public static FlowRegistryKey create(final short version, @NonNull final Flow flow) {
         //TODO: mandatory flow input values (or default values) should be specified via yang model
         final short tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
         final int priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
@@ -47,8 +47,8 @@ public final class FlowRegistryKeyFactory {
 
         private FlowRegistryKeyDto(final short tableId,
                                    final int priority,
-                                   @Nonnull final BigInteger cookie,
-                                   @Nonnull final Match match) {
+                                   @NonNull final BigInteger cookie,
+                                   @NonNull final Match match) {
             this.tableId = tableId;
             this.priority = priority;
             this.cookie = cookie;
