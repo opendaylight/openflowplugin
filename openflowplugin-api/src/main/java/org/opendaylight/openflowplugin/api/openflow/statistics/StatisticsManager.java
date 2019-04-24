@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.api.openflow.statistics;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 
@@ -16,6 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
  * Manages statistics contexts.
  */
 public interface StatisticsManager extends OFPManager {
-    StatisticsContext createContext(@Nonnull DeviceContext deviceContext,
+    StatisticsContext createContext(@NonNull DeviceContext deviceContext,
                                     boolean useReconciliationFramework);
 }

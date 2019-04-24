@@ -13,9 +13,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nonnull;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Service;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
@@ -38,9 +38,9 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     private ReconciliationFrameworkEvent rfService = null;
     private MasterChecker masterChecker;
 
-    @Nonnull
+    @NonNull
     @Override
-    public MastershipChangeRegistration register(@Nonnull MastershipChangeService service) {
+    public MastershipChangeRegistration register(@NonNull MastershipChangeService service) {
         final MastershipServiceDelegate registration =
                 new MastershipServiceDelegate(service, () -> serviceGroup.remove(service));
         serviceGroup.add(service);
@@ -52,7 +52,7 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
 
     @Override
     public ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
-            @Nonnull ReconciliationFrameworkEvent reconciliationFrameworkEvent) throws MastershipChangeException {
+            @NonNull ReconciliationFrameworkEvent reconciliationFrameworkEvent) throws MastershipChangeException {
         if (rfService != null) {
             throw new MastershipChangeException("Reconciliation framework already registered.");
         } else {
@@ -67,12 +67,12 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public void becomeMaster(@Nonnull final DeviceInfo deviceInfo) {
+    public void becomeMaster(@NonNull final DeviceInfo deviceInfo) {
         serviceGroup.forEach(mastershipChangeService -> mastershipChangeService.onBecomeOwner(deviceInfo));
     }
 
     @Override
-    public void becomeSlaveOrDisconnect(@Nonnull final DeviceInfo deviceInfo) {
+    public void becomeSlaveOrDisconnect(@NonNull final DeviceInfo deviceInfo) {
         if (rfService != null) {
             ListenableFuture<Void> future = rfService.onDeviceDisconnected(deviceInfo);
             // TODO This null future check here should ideally not be required, but some tests currently rely on it
@@ -84,12 +84,12 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo) {
+    public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@NonNull DeviceInfo deviceInfo) {
         return rfService == null ? null : rfService.onDevicePrepared(deviceInfo);
     }
 
     @Override
-    public void setMasterChecker(@Nonnull final MasterChecker masterChecker) {
+    public void setMasterChecker(@NonNull final MasterChecker masterChecker) {
         this.masterChecker = masterChecker;
     }
 

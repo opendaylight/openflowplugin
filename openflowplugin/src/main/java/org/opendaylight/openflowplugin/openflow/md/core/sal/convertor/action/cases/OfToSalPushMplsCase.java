@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
@@ -26,7 +26,7 @@ public class OfToSalPushMplsCase extends ConvertorCase<PushMplsCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@Nonnull final PushMplsCase source, final ActionResponseConvertorData data,
+    public Optional<Action> process(@NonNull final PushMplsCase source, final ActionResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         PushMplsAction pushMplsActionFromOF = source.getPushMplsAction();
         PushMplsActionBuilder pushMplsAction = new PushMplsActionBuilder();
