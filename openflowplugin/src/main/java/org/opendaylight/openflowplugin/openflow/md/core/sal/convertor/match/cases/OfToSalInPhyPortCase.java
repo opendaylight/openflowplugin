@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cas
 
 import java.math.BigInteger;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -27,7 +27,7 @@ public class OfToSalInPhyPortCase extends ConvertorCase<InPhyPortCase, MatchBuil
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull InPhyPortCase source, MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(@NonNull InPhyPortCase source, MatchResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());

@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
@@ -40,9 +40,9 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     private final long echoReplyTimeout;
     private final ExecutorService executorService;
 
-    public SystemNotificationsListenerImpl(@Nonnull final ConnectionContext connectionContext,
+    public SystemNotificationsListenerImpl(@NonNull final ConnectionContext connectionContext,
                                            long echoReplyTimeout,
-                                           @Nonnull final ExecutorService executorService) {
+                                           @NonNull final ExecutorService executorService) {
         this.executorService = executorService;
         this.connectionContext = Preconditions.checkNotNull(connectionContext);
         this.echoReplyTimeout = echoReplyTimeout;

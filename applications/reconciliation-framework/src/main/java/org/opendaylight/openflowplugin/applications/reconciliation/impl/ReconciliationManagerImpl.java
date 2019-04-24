@@ -20,13 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.annotation.service.Service;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -103,13 +103,13 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     }
 
     @Override
-    public ListenableFuture<ResultState> onDevicePrepared(@Nonnull DeviceInfo node) {
+    public ListenableFuture<ResultState> onDevicePrepared(@NonNull DeviceInfo node) {
         LOG.debug("Triggering reconciliation for node : {}", node.getNodeId());
         return futureMap.computeIfAbsent(node, value -> reconcileNode(node));
     }
 
     @Override
-    public ListenableFuture<Void> onDeviceDisconnected(@Nonnull DeviceInfo node) {
+    public ListenableFuture<Void> onDeviceDisconnected(@NonNull DeviceInfo node) {
         LOG.info("Stopping reconciliation for node {}", node.getNodeId());
         if (futureMap.containsKey(node)) {
             return cancelNodeReconciliation(node);

@@ -9,7 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -25,7 +25,7 @@ public class OfToSalIpv6NdTargetCase extends ConvertorCase<Ipv6NdTargetCase, Mat
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Ipv6NdTargetCase source, MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(@NonNull Ipv6NdTargetCase source, MatchResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv6MatchBuilder ipv6MatchBuilder = data.getIpv6MatchBuilder();

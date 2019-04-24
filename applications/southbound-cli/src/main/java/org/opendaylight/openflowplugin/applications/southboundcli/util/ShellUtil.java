@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -38,7 +38,7 @@ public final class ShellUtil {
     private ShellUtil() {
     }
 
-    @Nonnull
+    @NonNull
     public static List<OFNode> getAllNodes(final DataBroker broker) {
         List<Node> nodes = null;
         InstanceIdentifier<Nodes> path = InstanceIdentifier.builder(Nodes.class).build();
