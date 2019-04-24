@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -50,10 +50,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
-    public StatisticsManagerImpl(@Nonnull final OpenflowProviderConfig config,
-                                 @Nonnull final RpcProviderService rpcProviderRegistry,
+    public StatisticsManagerImpl(@NonNull final OpenflowProviderConfig config,
+                                 @NonNull final RpcProviderService rpcProviderRegistry,
                                  final ConvertorExecutor convertorExecutor,
-                                 @Nonnull final ListeningExecutorService executorService) {
+                                 @NonNull final ListeningExecutorService executorService) {
         this.config = config;
         this.converterExecutor = convertorExecutor;
         this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
@@ -100,7 +100,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
     }
 
     @Override
-    public StatisticsContext createContext(@Nonnull final DeviceContext deviceContext,
+    public StatisticsContext createContext(@NonNull final DeviceContext deviceContext,
                                            final boolean useReconciliationFramework) {
         final MultipartWriterProvider statisticsWriterProvider = MultipartWriterProviderFactory
                 .createDefaultProvider(deviceContext);
