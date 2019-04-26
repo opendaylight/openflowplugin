@@ -28,6 +28,7 @@ public class ExtensionAugment<T extends Augmentation<Extension>> extends Augment
 
     /**
      * Returns the key which represents an extension type.
+     * @return key
      */
     public Class<? extends ExtensionKey> getKey() {
         return key;

@@ -25,6 +25,7 @@ public interface ExtensionConverterProviderKeeper {
 
     /**
      * Returns the extension converters registry access point for by inner infrastructure.
+     * @return extensionConverterProvider
      */
     ExtensionConverterProvider getExtensionConverterProvider();
 }

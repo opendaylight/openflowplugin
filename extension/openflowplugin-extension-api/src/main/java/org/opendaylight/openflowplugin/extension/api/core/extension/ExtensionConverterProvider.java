@@ -27,6 +27,8 @@ public interface ExtensionConverterProvider {
     /**
      * Lookup converter.
      *
+     * @param <F> type of parameter for getConverter
+     * @param <P> augmentationPath
      * @param key the message type key
      * @return found converter
      */
@@ -35,6 +37,7 @@ public interface ExtensionConverterProvider {
     /**
      * Lookup converter.
      *
+     * @param <T> type of parameter
      * @param key the converter extension key
      * @return found converter
      */
@@ -43,6 +46,8 @@ public interface ExtensionConverterProvider {
     /**
      * Lookup converter.
      *
+     * @param <F> Actiontype
+     * @param <T> datacontainer
      * @param key the type version key
      * @return found converter
      */
@@ -52,6 +57,8 @@ public interface ExtensionConverterProvider {
      * Lookup converter.
      * TODO: this method should be compatible with {@link #getConverter(MessageTypeKey)} after matches are migrated
      * to similar structure
+     *  @param <F> DataContainer
+     *  @param <P> AugmentationPath
      * @param key the message type key
      * @return found converter
      */
@@ -61,6 +68,9 @@ public interface ExtensionConverterProvider {
     /**
      * Lookup converter for experimenter message.
      *
+     * @param <F> ExperimenterMessageOfChoice
+     * @param <T> DataContainer
+     * @param <D> DataConvertor
      * @param key the type version key
      * @return found converter
      */
@@ -70,6 +80,8 @@ public interface ExtensionConverterProvider {
     /**
      * Lookup converter for experimenter message.
      *
+     * @param <F> DataContainer
+     * @param <P> AugmentationPath
      * @param key the message type key
      * @return found converter
      */

@@ -21,6 +21,7 @@ public interface ExtensionSessionManager {
 
     /**
      * Returns the ExtensionConverterProvider.
+     * @return extension Converter Provider
      */
     ExtensionConverterProvider getExtensionConverterProvider();
 }

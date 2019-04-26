@@ -41,6 +41,7 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      * Adds an augmentation class.
      *
      * @param cls equivalent augmentation class
+     * @param <X> type of parameter
      * @return this for chaining
      */
     public <X extends Augmentation<T>> GroupingResolver<G, T> add(final Class<X> cls) {
