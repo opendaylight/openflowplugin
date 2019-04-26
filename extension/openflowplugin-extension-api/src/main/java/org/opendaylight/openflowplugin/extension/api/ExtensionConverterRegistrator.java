@@ -65,6 +65,9 @@ public interface ExtensionConverterRegistrator {
      * Registers a message converter.
      *
      * @param key consists of: experimenter type, version
+     * @param <I> experimenterMessageOfChoice
+     * @param <O> DataContainer
+     * @param <D> ConvertorData
      * @param converter TO OFJava (suitable for both: symmetric and multipart)
      * @return closeable registration
      */
@@ -76,6 +79,7 @@ public interface ExtensionConverterRegistrator {
      * Registers a message converter.
      *
      * @param key consists of: experimenter type, version
+     * @param <I> experimenterMessageOfChoice
      * @param converter FROM OFJava (suitable for both: symmetric and multipart)
      * @return closeable registration
      */
