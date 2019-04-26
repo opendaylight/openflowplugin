@@ -68,7 +68,8 @@ public class GroupingLooseResolver<G> {
     /**
      * Gets the extension for the give data.
      *
-     * @param data expected to match <tt>&lt;T extends Augmentable&lt;T&gt;&gt;</tt>
+     * @param data parameter(data) for getExtension
+     * @param <T> type of data
      * @return shared grouping
      */
     @SuppressWarnings("unchecked")

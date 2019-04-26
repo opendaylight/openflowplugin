@@ -27,16 +27,19 @@ public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice,
      * @param experimenterMessageCase where is vendor's augmentation
      * @param data which contains the Xid and datapathId
      * @return message converted to OFJava-API
+     * @throws ConversionException if given argument is none of valid types
      */
     T convert(F experimenterMessageCase, D data) throws ConversionException;
 
     /**
      * Returns the corresponding experimenter id (vendor id).
+     * @return experimenter id
      */
     ExperimenterId getExperimenterId();
 
     /**
      * Returns the corresponding experimenter message type.
+     * @return experimenter message type.
      */
     long getType();
 }

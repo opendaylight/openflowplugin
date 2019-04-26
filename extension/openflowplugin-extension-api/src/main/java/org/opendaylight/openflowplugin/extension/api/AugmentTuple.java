@@ -27,6 +27,7 @@ public class AugmentTuple<E extends Augmentable<E>> {
 
     /**
      * Returns the instance of wrapped augmentation.
+     * @return augmentation object
      */
     public Augmentation<E> getAugmentationObject() {
         return augmentationObject;
@@ -34,6 +35,7 @@ public class AugmentTuple<E extends Augmentable<E>> {
 
     /**
      * Returns the type of wrapped augmentation.
+     * @return augmentation class
      */
     public Class<? extends Augmentation<E>> getAugmentationClass() {
         return augmentationClass;
