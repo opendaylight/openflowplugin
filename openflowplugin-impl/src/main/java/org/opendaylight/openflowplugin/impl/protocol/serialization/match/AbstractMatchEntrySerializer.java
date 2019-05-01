@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import java.util.Iterator;
-import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializer;
@@ -112,8 +111,10 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
         writeIpv4Address(new Ipv4Address(addressParts.next()), outBuffer);
 
         // If prefix had mask, also write prefix
-        Optional.ofNullable(MatchConvertorUtil.extractIpv4Mask(addressParts)).ifPresent(mask ->
-                writeMask(mask, outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS));
+        final byte[] mask = MatchConvertorUtil.extractIpv4Mask(addressParts);
+        if (mask != null) {
+            writeMask(mask, outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
+        }
     }
 
     /**
@@ -127,9 +128,11 @@ public abstract class AbstractMatchEntrySerializer implements HeaderSerializer<M
         writeIpv6Address(IpConversionUtil.extractIpv6Address(prefix), outBuffer);
 
         // If prefix had mask, also write prefix
-        Optional.ofNullable(IpConversionUtil.hasIpv6Prefix(prefix)).ifPresent(mask ->
-                writeMask(IpConversionUtil.convertIpv6PrefixToByteArray(mask), outBuffer,
-                        EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES));
+        final Integer mask = IpConversionUtil.hasIpv6Prefix(prefix);
+        if (mask != null) {
+            writeMask(IpConversionUtil.convertIpv6PrefixToByteArray(mask), outBuffer,
+                EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES);
+        }
     }
 
     /**

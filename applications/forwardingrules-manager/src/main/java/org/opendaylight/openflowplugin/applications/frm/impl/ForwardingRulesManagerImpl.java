@@ -349,7 +349,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public void onPropertyChanged(@Nonnull final String propertyName, @Nonnull final String propertyValue) {
-        Optional.ofNullable(ForwardingRulesProperty.forValue(propertyName)).ifPresent(forwardingRulesProperty -> {
+        final ForwardingRulesProperty forwardingRulesProperty = ForwardingRulesProperty.forValue(propertyName);
+        if (forwardingRulesProperty != null) {
             switch (forwardingRulesProperty) {
                 case DISABLE_RECONCILIATION:
                     disableReconciliation = Boolean.valueOf(propertyValue);
@@ -367,6 +368,6 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                     LOG.warn("No forwarding rule property found.");
                     break;
             }
-        });
+        }
     }
 }
