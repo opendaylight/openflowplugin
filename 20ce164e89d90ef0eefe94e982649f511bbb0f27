@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9dbe214e_51496790",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-01T21:42:56Z",
+      "side": 1,
+      "message": "Please mention that the value is in seconds.",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "451e8137_b09e3f9a",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-01T21:42:56Z",
+      "side": 1,
+      "message": "Please mention that the value is in seconds.",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f16770d2_dd674f88",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-01T21:42:56Z",
+      "side": 1,
+      "message": "Changes may not be null --\u003e Changes must not be null",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62eb1d05_1d7db340",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-01T21:42:56Z",
+      "side": 1,
+      "message": "in the clustered setup, where you can connect switch to all the three controller, removing device last connection time on the clustere data change listener can be an issue. For example, switch connects to controller-1 and it gets the mastership and update the inventory, and than switch connects to the second second controller ( who already got the inventory notification) and connection start flapping, will the connection hold work here ? \nAlso i am not sure why are we cleaning the last connection time the moment device is written in the inventory? rather then keeping it till the connection is active ?",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f83e8ea3_8244e24c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-01T21:42:56Z",
+      "side": 1,
+      "message": "i don\u0027t see anybody calling his close() method.",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "67a48084_c047aab8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/HandshakeManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-01T21:42:56Z",
+      "side": 1,
+      "message": "why do we want to disconnect the device, if it\u0027s connecting for the first time? For some reason, we want to disconnect, i think we should disconnect the device outside of this method, in the caller code. THis method is just giving you decision whether it\u0027s allowed or not, so should not take an action.",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
