@@ -50,8 +50,8 @@ public class LLDPTLV extends Packet {
 
     public enum TLVType {
         Unknown((byte) 0), ChassisID((byte) 1), PortID((byte) 2), TTL((byte) 3), PortDesc(
-                (byte) 4), SystemName((byte) 5), SystemDesc((byte) 6), Custom(
-                        (byte) 127);
+                (byte) 4), SystemName((byte) 5), SystemDesc((byte) 6), SystemCapabilities((byte) 7),
+                ManagementAddress((byte) 8), Custom((byte) 127);
 
         private final byte value;
 
@@ -388,3 +388,4 @@ public class LLDPTLV extends Packet {
         return new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC[0]);
     }
 }
+
