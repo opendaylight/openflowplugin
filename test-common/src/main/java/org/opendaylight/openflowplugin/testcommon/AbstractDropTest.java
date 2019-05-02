@@ -190,6 +190,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             SENT_UPDATER.incrementAndGet(this);
         } catch (RuntimeException e) {
             LOG.warn("Failed to process packet: {}", e.getMessage());
+            LOG.info("Print something stupid");
             LOG.debug("Failed to process packet.. ", e);
             EXCS_UPDATER.incrementAndGet(this);
         }
