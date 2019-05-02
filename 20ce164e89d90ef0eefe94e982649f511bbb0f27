@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "58a95d9b_25b8793f",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-02T12:21:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9dbe214e_51496790",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "451e8137_b09e3f9a",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 4
@@ -30,6 +48,24 @@
       "writtenOn": "2019-05-01T21:42:56Z",
       "side": 1,
       "message": "Please mention that the value is in seconds.",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eae09e4f_d44b2fa7",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-02T12:21:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "451e8137_b09e3f9a",
       "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "f64d94d1_270a8372",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-02T12:21:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f16770d2_dd674f88",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "62eb1d05_1d7db340",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
         "patchSetId": 4
@@ -64,6 +118,24 @@
       "writtenOn": "2019-05-01T21:42:56Z",
       "side": 1,
       "message": "in the clustered setup, where you can connect switch to all the three controller, removing device last connection time on the clustere data change listener can be an issue. For example, switch connects to controller-1 and it gets the mastership and update the inventory, and than switch connects to the second second controller ( who already got the inventory notification) and connection start flapping, will the connection hold work here ? \nAlso i am not sure why are we cleaning the last connection time the moment device is written in the inventory? rather then keeping it till the connection is active ?",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fcf6e950_be75983a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-02T12:21:56Z",
+      "side": 1,
+      "message": "In the clustered setup, for example lets consider device is connected to controller-1 and it got disconnected and got connected to controller-2. Here while connecting to controller-2 we are making it to wait for hold time, because recently we faced  an issue where node remove DTCN event processing took more time but the device was already connected to other controller by that time, making data inconsistency. We decided to maintain individual last connected time cache in each controller for a device. If it connects to any of the controllers, the last connected time cache will be cleared in all the controllers based on DTCN. When again device disconnects and connects to other controller, we will make it to wait for hold time and allow it to connect after that. This ensures that we are giving enough time to process disconnect event in old controller. For the first time connection also we are making it to wait, because we cant distinguish between first connection and subsequent ones.",
+      "parentUuid": "62eb1d05_1d7db340",
       "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "a7124b19_a8afa5bb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-02T12:21:56Z",
+      "side": 1,
+      "message": "calling this now",
+      "parentUuid": "f83e8ea3_8244e24c",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67a48084_c047aab8",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/HandshakeManagerImpl.java",
         "patchSetId": 4
@@ -98,6 +188,24 @@
       "writtenOn": "2019-05-01T21:42:56Z",
       "side": 1,
       "message": "why do we want to disconnect the device, if it\u0027s connecting for the first time? For some reason, we want to disconnect, i think we should disconnect the device outside of this method, in the caller code. THis method is just giving you decision whether it\u0027s allowed or not, so should not take an action.",
+      "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9548fd3c_adcf6680",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/HandshakeManagerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-02T12:21:56Z",
+      "side": 1,
+      "message": "Moved device disconnection code",
+      "parentUuid": "67a48084_c047aab8",
       "revId": "20ce164e89d90ef0eefe94e982649f511bbb0f27",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
