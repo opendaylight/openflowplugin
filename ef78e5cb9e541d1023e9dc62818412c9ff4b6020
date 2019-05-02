@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6101a78d_6b86e6cc",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 8439
+      },
+      "writtenOn": "2019-05-02T11:17:51Z",
+      "side": 1,
+      "message": "removing this",
+      "range": {
+        "startLine": 170,
+        "startChar": 57,
+        "endLine": 170,
+        "endChar": 63
+      },
+      "revId": "ef78e5cb9e541d1023e9dc62818412c9ff4b6020",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
