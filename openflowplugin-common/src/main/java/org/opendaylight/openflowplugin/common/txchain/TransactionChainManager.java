@@ -147,7 +147,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     private void closeTransactionChain() {
         if (writeTx != null) {
-            writeTx.cancel();
+             // writeTx.cancel();
             writeTx = null;
         }
         if (transactionChain != null) {
