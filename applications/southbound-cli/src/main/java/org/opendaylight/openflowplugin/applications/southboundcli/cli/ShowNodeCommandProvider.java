@@ -59,15 +59,10 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
         session.getConsole().println(HEADER_SEPARATOR);
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private void printNodeOutput(final OFNode ofNode) {
         String ofNodeId = ofNode.getNodeId().toString();
         String ofNodeName = ofNode.getNodeName();
-        for (String port : ofNode.getPorts()) {
-            if (port != null) {
-                session.getConsole().println(new Formatter().format(NEW_LINE, ofNodeId, ofNodeName, port).toString());
-                ofNodeId = "";
-                ofNodeName = "";
-            }
-        }
+        System.out.print(new Formatter().format(NEW_LINE, ofNodeId, ofNodeName, ofNode.getPorts()).toString());
     }
 }
