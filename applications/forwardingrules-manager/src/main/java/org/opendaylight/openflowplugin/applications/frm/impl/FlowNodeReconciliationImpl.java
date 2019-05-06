@@ -204,7 +204,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             if (flowNode.isPresent()) {
                 ReconciliationState reconciliationState = new ReconciliationState(
                         STARTED, LocalDateTime.now());
-                    //put the dpn info into the map
+                //put the dpn info into the map
                 reconciliationStates.put(dpnId.toString(), reconciliationState);
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
@@ -235,17 +235,17 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Open a new bundle on the switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
                         Futures.transformAsync(closeBundle,
-                            rpcResult -> salBundleService.controlBundle(openBundleInput),
+                                rpcResult -> salBundleService.controlBundle(openBundleInput),
                                 service);
 
                 /* Push groups and flows via bundle add messages */
                 ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
                         = Futures.transformAsync(openBundle, rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
-                            }
-                            return Futures.immediateFuture(null);
-                        }, service);
+                    if (rpcResult.isSuccessful()) {
+                        return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
+                    }
+                    return Futures.immediateFuture(null);
+                }, service);
 
                 /* Push flows and groups via bundle add messages */
                 Optional<FlowCapableNode> finalFlowNode = flowNode;
@@ -262,25 +262,25 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Commit the bundle on the openflow switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
                         addbundlesFuture, rpcResult -> {
-                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
-                        return JdkFutureAdapters.listenInPoolThread(
-                                salBundleService.controlBundle(commitBundleInput));
-                    }, service);
+                            LOG.debug("Adding bundle messages completed for device {}", dpnId);
+                            return JdkFutureAdapters.listenInPoolThread(
+                                    salBundleService.controlBundle(commitBundleInput));
+                        }, service);
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
                         : Collections.emptyList();
                 Futures.transformAsync(commitBundleFuture,
-                    rpcResult -> {
-                        if (rpcResult.isSuccessful()) {
-                            for (Meter meter : meters) {
-                                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
-                                        .child(Meter.class, meter.key());
-                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                        rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                for (Meter meter : meters) {
+                                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
+                                            .child(Meter.class, meter.key());
+                                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                                }
                             }
-                        }
-                        return Futures.immediateFuture(null);
-                    }, service);
+                            return Futures.immediateFuture(null);
+                        }, service);
                 try {
                     if (commitBundleFuture.get() != null && commitBundleFuture.get().isSuccessful()) {
                         reconciliationState.setStatus(COMPLETED);
@@ -308,228 +308,227 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         LOG.warn("Failed to shutdown BundleResync executor for device {} gracefully.", dpnId, e);
                     }
                 }
-            LOG.error("FlowNode not present for Datapath ID {}", dpnId);
-            return false;
-        }
-    }
-
-    @Override
-    public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
-        InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
-        return futureMap.computeIfAbsent(node, future -> reconcileConfiguration(connectedNode));
-    }
-
-    @Override
-    public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
-        futureMap.computeIfPresent(node, (key, future) -> future).cancel(true);
-        futureMap.remove(node);
-
-        return Futures.immediateFuture(true);
-    }
-
-    @Override
-    public int getPriority() {
-        return priority;
-    }
-
-    @Override
-    public String getName() {
-        return serviceName;
-    }
-
-    @Override
-    public ResultState getResultState() {
-        return resultState;
-    }
-
-    private class ReconciliationTask implements Callable<Boolean> {
-
-        InstanceIdentifier<FlowCapableNode> nodeIdentity;
-
-        ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-            nodeIdentity = nodeIdent;
+                LOG.error("FlowNode not present for Datapath ID {}", dpnId);
+                return false;
+            }
         }
 
         @Override
-        public Boolean call() {
-            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
-            BigInteger dpnId = getDpnIdFromNodeName(node);
-            OF_EVENT_LOG.debug("Reconciliation Start, Node: {}", dpnId);
+        public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
+            InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
+                    .augmentation(FlowCapableNode.class);
+            return futureMap.computeIfAbsent(node, future -> reconcileConfiguration(connectedNode));
+        }
 
-            Optional<FlowCapableNode> flowNode;
-            // initialize the counter
-            int counter = 0;
-            try (ReadTransaction trans = provider.getReadTransaction()) {
-                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
-            } catch (ExecutionException | InterruptedException e) {
-                LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
-                return false;
+        @Override
+        public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
+            futureMap.computeIfPresent(node, (key, future) -> future).cancel(true);
+            futureMap.remove(node);
+
+            return Futures.immediateFuture(true);
+        }
+
+        @Override
+        public int getPriority() {
+            return priority;
+        }
+
+        @Override
+        public String getName() {
+            return serviceName;
+        }
+
+        @Override
+        public ResultState getResultState() {
+            return resultState;
+        }
+
+        private class ReconciliationTask implements Callable<Boolean> {
+
+            InstanceIdentifier<FlowCapableNode> nodeIdentity;
+
+            ReconciliationTask(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+                nodeIdentity = nodeIdent;
             }
 
-            if (flowNode.isPresent()) {
-                /* Tables - have to be pushed before groups */
-                // CHECK if while pushing the update, updateTableInput can be null to emulate a
-                // table add
-                ReconciliationState reconciliationState = new ReconciliationState(
-                        STARTED, LocalDateTime.now());
-                //put the dpn info into the map
-                reconciliationStates.put(dpnId.toString(), reconciliationState);
-                LOG.debug("Triggering reconciliation for node {} with state: {}", dpnId, STARTED);
-                List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
-                        ? flowNode.get().getTableFeatures()
-                        : Collections.<TableFeatures>emptyList();
-                for (TableFeatures tableFeaturesItem : tableList) {
-                    TableFeaturesKey tableKey = tableFeaturesItem.key();
-                    KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdentity
-                            .child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
-                    provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
+            @Override
+            public Boolean call() {
+                String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
+                BigInteger dpnId = getDpnIdFromNodeName(node);
+                OF_EVENT_LOG.debug("Reconciliation Start, Node: {}", dpnId);
+
+                Optional<FlowCapableNode> flowNode;
+                // initialize the counter
+                int counter = 0;
+                try (ReadTransaction trans = provider.getReadTransaction()) {
+                    flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
+                } catch (ExecutionException | InterruptedException e) {
+                    LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
+                    return false;
                 }
 
-                /* Groups - have to be first */
-                List<Group> groups = flowNode.get().getGroup() != null ? flowNode.get().getGroup()
-                        : Collections.<Group>emptyList();
-                List<Group> toBeInstalledGroups = new ArrayList<>();
-                toBeInstalledGroups.addAll(groups);
-                // new list for suspected groups pointing to ports .. when the ports come up
-                // late
-                List<Group> suspectedGroups = new ArrayList<>();
-                Map<Long, ListenableFuture<?>> groupFutures = new HashMap<>();
-
-                while ((!toBeInstalledGroups.isEmpty() || !suspectedGroups.isEmpty())
-                        && counter <= provider.getReconciliationRetryCount()) { // also check if the counter has not
-                                                                                // crossed the threshold
-
-                    if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
-                        LOG.debug("These Groups are pointing to node-connectors that are not up yet {}",
-                                suspectedGroups.toString());
-                        toBeInstalledGroups.addAll(suspectedGroups);
-                        break;
+                if (flowNode.isPresent()) {
+                    /* Tables - have to be pushed before groups */
+                    // CHECK if while pushing the update, updateTableInput can be null to emulate a
+                    // table add
+                    ReconciliationState reconciliationState = new ReconciliationState(
+                            STARTED, LocalDateTime.now());
+                    //put the dpn info into the map
+                    reconciliationStates.put(dpnId.toString(), reconciliationState);
+                    LOG.debug("Triggering reconciliation for node {} with state: {}", dpnId, STARTED);
+                    List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
+                            ? flowNode.get().getTableFeatures()
+                            : Collections.<TableFeatures>emptyList();
+                    for (TableFeatures tableFeaturesItem : tableList) {
+                        TableFeaturesKey tableKey = tableFeaturesItem.key();
+                        KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdentity
+                                .child(TableFeatures.class, new TableFeaturesKey(tableKey.getTableId()));
+                        provider.getTableFeaturesCommiter().update(tableFeaturesII, tableFeaturesItem, null, nodeIdentity);
                     }
 
-                    ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
-                    while (iterator.hasNext()) {
-                        Group group = iterator.next();
-                        boolean okToInstall = true;
-                        Buckets buckets = group.getBuckets();
-                        List<Bucket> bucketList = buckets == null ? null : buckets.getBucket();
-                        if (bucketList == null) {
-                            bucketList = Collections.<Bucket>emptyList();
+                    /* Groups - have to be first */
+                    List<Group> groups = flowNode.get().getGroup() != null ? flowNode.get().getGroup()
+                            : Collections.<Group>emptyList();
+                    List<Group> toBeInstalledGroups = new ArrayList<>();
+                    toBeInstalledGroups.addAll(groups);
+                    // new list for suspected groups pointing to ports .. when the ports come up
+                    // late
+                    List<Group> suspectedGroups = new ArrayList<>();
+                    Map<Long, ListenableFuture<?>> groupFutures = new HashMap<>();
+
+                    while ((!toBeInstalledGroups.isEmpty() || !suspectedGroups.isEmpty())
+                            && counter <= provider.getReconciliationRetryCount()) { // also check if the counter has not
+                        // crossed the threshold
+
+                        if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
+                            LOG.debug("These Groups are pointing to node-connectors that are not up yet {}",
+                                    suspectedGroups.toString());
+                            toBeInstalledGroups.addAll(suspectedGroups);
+                            break;
                         }
-                        for (Bucket bucket : bucketList) {
-                            List<Action> actions = bucket.getAction();
-                            if (actions == null) {
-                                actions = Collections.<Action>emptyList();
+
+                        ListIterator<Group> iterator = toBeInstalledGroups.listIterator();
+                        while (iterator.hasNext()) {
+                            Group group = iterator.next();
+                            boolean okToInstall = true;
+                            Buckets buckets = group.getBuckets();
+                            List<Bucket> bucketList = buckets == null ? null : buckets.getBucket();
+                            if (bucketList == null) {
+                                bucketList = Collections.<Bucket>emptyList();
                             }
-                            for (Action action : actions) {
-                                // chained-port
-                                if (action.getAction().implementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.OutputActionCase")) {
-                                    String nodeConnectorUri = ((OutputActionCase) action.getAction()).getOutputAction()
-                                            .getOutputNodeConnector().getValue();
+                            for (Bucket bucket : bucketList) {
+                                List<Action> actions = bucket.getAction();
+                                if (actions == null) {
+                                    actions = Collections.<Action>emptyList();
+                                }
+                                for (Action action : actions) {
+                                    // chained-port
+                                    if (action.getAction().implementedInterface().getName()
+                                            .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
+                                                    + ".action.types.rev131112.action.action.OutputActionCase")) {
+                                        String nodeConnectorUri = ((OutputActionCase) action.getAction()).getOutputAction()
+                                                .getOutputNodeConnector().getValue();
 
-                                    LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
+                                        LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
 
-                                    // check if the nodeconnector is there in the multimap
-                                    boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
-                                            .isNodeConnectorUpdated(dpnId, nodeConnectorUri);
-                                    // if yes set okToInstall = true
+                                        // check if the nodeconnector is there in the multimap
+                                        boolean isPresent = provider.getFlowNodeConnectorInventoryTranslatorImpl()
+                                                .isNodeConnectorUpdated(dpnId, nodeConnectorUri);
+                                        // if yes set okToInstall = true
 
-                                    if (isPresent) {
-                                        break;
-                                    } else {
-                                        // else put it in a different list and still set okToInstall = true
-                                        suspectedGroups.add(group);
-                                        LOG.debug(
-                                                "Not yet received the node-connector updated for {} "
-                                                        + "for the group with id {}",
-                                                nodeConnectorUri, group.getGroupId().toString());
-                                        break;
+                                        if (isPresent) {
+                                            break;
+                                        } else {
+                                            // else put it in a different list and still set okToInstall = true
+                                            suspectedGroups.add(group);
+                                            LOG.debug(
+                                                    "Not yet received the node-connector updated for {} "
+                                                            + "for the group with id {}",
+                                                    nodeConnectorUri, group.getGroupId().toString());
+                                            break;
+                                        }
+                                    } else if (action.getAction().implementedInterface().getName()
+                                            .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
+                                                    + ".action.types.rev131112.action.action.GroupActionCase")) {
+                                        // chained groups
+                                        Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                                        ListenableFuture<?> future = groupFutures.get(groupId);
+                                        if (future == null) {
+                                            okToInstall = false;
+                                            break;
+                                        }
+                                        // Need to ensure that the group specified
+                                        // by group-action is already installed.
+                                        awaitGroup(node, future);
                                     }
-                                } else if (action.getAction().implementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.GroupActionCase")) {
-                                    // chained groups
-                                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
-                                    ListenableFuture<?> future = groupFutures.get(groupId);
-                                    if (future == null) {
-                                        okToInstall = false;
-                                        break;
-                                    }
-                                    // Need to ensure that the group specified
-                                    // by group-action is already installed.
-                                    awaitGroup(node, future);
+                                }
+                                if (!okToInstall) {
+                                    // increment retry counter value
+                                    counter++;
+                                    break;
                                 }
                             }
-                            if (!okToInstall) {
-                                // increment retry counter value
-                                counter++;
-                                break;
+                            if (okToInstall) {
+                                addGroup(groupFutures, group);
+                                iterator.remove();
+                                // resetting the counter to zero
+                                counter = 0;
                             }
                         }
-                        if (okToInstall) {
+                    }
+
+                    /* installation of suspected groups */
+                    if (!toBeInstalledGroups.isEmpty()) {
+                        for (Group group : toBeInstalledGroups) {
+                            LOG.debug(
+                                    "Installing the group {} finally although "
+                                            + "the port is not up after checking for {} times ",
+                                    group.getGroupId().toString(), provider.getReconciliationRetryCount());
                             addGroup(groupFutures, group);
-                            iterator.remove();
-                            // resetting the counter to zero
-                            counter = 0;
                         }
                     }
-                }
-
-                /* installation of suspected groups */
-                if (!toBeInstalledGroups.isEmpty()) {
-                    for (Group group : toBeInstalledGroups) {
-                        LOG.debug(
-                                "Installing the group {} finally although "
-                                        + "the port is not up after checking for {} times ",
-                                group.getGroupId().toString(), provider.getReconciliationRetryCount());
-                        addGroup(groupFutures, group);
+                    /* Meters */
+                    List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
+                            : Collections.<Meter>emptyList();
+                    for (Meter meter : meters) {
+                        final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
+                                meter.key());
+                        provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
                     }
-                }
-                /* Meters */
-                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
-                        : Collections.<Meter>emptyList();
-                for (Meter meter : meters) {
-                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
-                            meter.key());
-                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
-                }
 
-                // Need to wait for all groups to be installed before adding
-                // flows.
-                awaitGroups(node, groupFutures.values());
+                    // Need to wait for all groups to be installed before adding
+                    // flows.
+                    awaitGroups(node, groupFutures.values());
 
-                /* Flows */
-                List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
-                        : Collections.<Table>emptyList();
-                int flowCount = 0;
-                for (Table table : tables) {
-                    final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
-                            table.key());
-                    List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
-                    flowCount += flows.size();
-                    for (Flow flow : flows) {
-                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                                flow.key());
-                        provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
+                    /* Flows */
+                    List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
+                            : Collections.<Table>emptyList();
+                    int flowCount = 0;
+                    for (Table table : tables) {
+                        final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
+                                table.key());
+                        List<Flow> flows = table.getFlow() != null ? table.getFlow() : Collections.<Flow>emptyList();
+                        flowCount += flows.size();
+                        for (Flow flow : flows) {
+                            final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
+                                    flow.key());
+                            provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
+                        }
                     }
+                    reconciliationState.setStatus(COMPLETED);
+                    reconciliationState.setTime(LocalDateTime.now());
+                    OF_EVENT_LOG.debug("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
                 }
-                reconciliationState.setStatus(COMPLETED);
-                reconciliationState.setTime(LocalDateTime.now());
-                OF_EVENT_LOG.debug("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
+                return true;
             }
-            return true;
         }
 
         /**
          * Invoke add-group RPC, and put listenable future associated with the RPC into
          * the given map.
          *
-         * @param map
-         *            The map to store listenable futures associated with add-group RPC.
-         * @param group
-         *            The group to add.
+         * @param map   The map to store listenable futures associated with add-group RPC.
+         * @param group The group to add.
          */
         private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
@@ -559,11 +558,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         /**
          * Wait for completion of add-group RPC.
          *
-         * @param nodeId
-         *            The identifier for the target node.
-         * @param future
-         *            Future associated with add-group RPC that installs the target
-         *            group.
+         * @param nodeId The identifier for the target node.
+         * @param future Future associated with add-group RPC that installs the target
+         *               group.
          */
         private void awaitGroup(String nodeId, ListenableFuture<?> future) {
             awaitGroups(nodeId, Collections.singleton(future));
@@ -572,10 +569,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         /**
          * Wait for completion of add-group RPCs.
          *
-         * @param nodeId
-         *            The identifier for the target node.
-         * @param futures
-         *            A collection of futures associated with add-group RPCs.
+         * @param nodeId  The identifier for the target node.
+         * @param futures A collection of futures associated with add-group RPCs.
          */
         private void awaitGroups(String nodeId, Collection<ListenableFuture<?>> futures) {
             if (!futures.isEmpty()) {
@@ -590,224 +585,225 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
-    private BigInteger getDpnIdFromNodeName(String nodeName) {
+        private BigInteger getDpnIdFromNodeName(String nodeName) {
 
-        String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
-        return new BigInteger(dpId);
-    }
-
-    private void reconciliationPreProcess(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        List<InstanceIdentifier<StaleFlow>> staleFlowsToBeBulkDeleted = Lists.newArrayList();
-        List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
-        List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = Lists.newArrayList();
-
-        Optional<FlowCapableNode> flowNode = Optional.empty();
-
-        try (ReadTransaction trans = provider.getReadTransaction()) {
-            flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.warn("Reconciliation Pre-Processing Fail with read Config/DS for Node {} !", nodeIdent, e);
+            String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
+            return new BigInteger(dpId);
         }
 
-        if (flowNode.isPresent()) {
+        private void reconciliationPreProcess(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            List<InstanceIdentifier<StaleFlow>> staleFlowsToBeBulkDeleted = Lists.newArrayList();
+            List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
+            List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = Lists.newArrayList();
 
-            LOG.debug("Proceeding with deletion of stale-marked Flows on switch {} using Openflow interface",
+            Optional<FlowCapableNode> flowNode = Optional.empty();
+
+            try (ReadTransaction trans = provider.getReadTransaction()) {
+                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
+            } catch (ExecutionException | InterruptedException e) {
+                LOG.warn("Reconciliation Pre-Processing Fail with read Config/DS for Node {} !", nodeIdent, e);
+            }
+
+            if (flowNode.isPresent()) {
+
+                LOG.debug("Proceeding with deletion of stale-marked Flows on switch {} using Openflow interface",
+                        nodeIdent.toString());
+                /* Stale-Flows - Stale-marked Flows have to be removed first for safety */
+                List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
+                        : Collections.<Table>emptyList();
+                for (Table table : tables) {
+                    final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdent.child(Table.class,
+                            table.key());
+                    List<StaleFlow> staleFlows = table.getStaleFlow() != null ? table.getStaleFlow()
+                            : Collections.<StaleFlow>emptyList();
+                    for (StaleFlow staleFlow : staleFlows) {
+
+                        FlowBuilder flowBuilder = new FlowBuilder(staleFlow);
+                        Flow toBeDeletedFlow = flowBuilder.setId(staleFlow.getId()).build();
+
+                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
+                                toBeDeletedFlow.key());
+
+                        this.provider.getFlowCommiter().remove(flowIdent, toBeDeletedFlow, nodeIdent);
+
+                        staleFlowsToBeBulkDeleted.add(getStaleFlowInstanceIdentifier(staleFlow, nodeIdent));
+                    }
+                }
+
+                LOG.debug("Proceeding with deletion of stale-marked Groups for switch {} using Openflow interface",
+                        nodeIdent.toString());
+
+                // TODO: Should we collate the futures of RPC-calls to be sure that groups are
+                // Flows are fully deleted
+                // before attempting to delete groups - just in case there are references
+
+                /* Stale-marked Groups - Can be deleted after flows */
+                List<StaleGroup> staleGroups = flowNode.get().getStaleGroup() != null ? flowNode.get().getStaleGroup()
+                        : Collections.<StaleGroup>emptyList();
+                for (StaleGroup staleGroup : staleGroups) {
+
+                    GroupBuilder groupBuilder = new GroupBuilder(staleGroup);
+                    Group toBeDeletedGroup = groupBuilder.setGroupId(staleGroup.getGroupId()).build();
+
+                    final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class,
+                            toBeDeletedGroup.key());
+
+                    this.provider.getGroupCommiter().remove(groupIdent, toBeDeletedGroup, nodeIdent);
+
+                    staleGroupsToBeBulkDeleted.add(getStaleGroupInstanceIdentifier(staleGroup, nodeIdent));
+                }
+
+                LOG.debug("Proceeding with deletion of stale-marked Meters for switch {} using Openflow interface",
+                        nodeIdent.toString());
+                /* Stale-marked Meters - can be deleted anytime - so least priority */
+                List<StaleMeter> staleMeters = flowNode.get().getStaleMeter() != null ? flowNode.get().getStaleMeter()
+                        : Collections.<StaleMeter>emptyList();
+
+                for (StaleMeter staleMeter : staleMeters) {
+
+                    MeterBuilder meterBuilder = new MeterBuilder(staleMeter);
+                    Meter toBeDeletedMeter = meterBuilder.setMeterId(staleMeter.getMeterId()).build();
+
+                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class,
+                            toBeDeletedMeter.key());
+
+                    this.provider.getMeterCommiter().remove(meterIdent, toBeDeletedMeter, nodeIdent);
+
+                    staleMetersToBeBulkDeleted.add(getStaleMeterInstanceIdentifier(staleMeter, nodeIdent));
+                }
+
+            }
+
+            LOG.debug("Deleting all stale-marked flows/groups/meters of for switch {} in Configuration DS",
                     nodeIdent.toString());
-            /* Stale-Flows - Stale-marked Flows have to be removed first for safety */
-            List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
-                    : Collections.<Table>emptyList();
-            for (Table table : tables) {
-                final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdent.child(Table.class,
-                        table.key());
-                List<StaleFlow> staleFlows = table.getStaleFlow() != null ? table.getStaleFlow()
-                        : Collections.<StaleFlow>emptyList();
-                for (StaleFlow staleFlow : staleFlows) {
+            // Now, do the bulk deletions
+            deleteDSStaleFlows(staleFlowsToBeBulkDeleted);
+            deleteDSStaleGroups(staleGroupsToBeBulkDeleted);
+            deleteDSStaleMeters(staleMetersToBeBulkDeleted);
+        }
 
-                    FlowBuilder flowBuilder = new FlowBuilder(staleFlow);
-                    Flow toBeDeletedFlow = flowBuilder.setId(staleFlow.getId()).build();
+        private void deleteDSStaleFlows(List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
+            WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
-                    final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                            toBeDeletedFlow.key());
+            for (InstanceIdentifier<StaleFlow> staleFlowIId : flowsForBulkDelete) {
+                writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
+            }
 
-                    this.provider.getFlowCommiter().remove(flowIdent, toBeDeletedFlow, nodeIdent);
+            FluentFuture<?> submitFuture = writeTransaction.commit();
+            handleStaleEntityDeletionResultFuture(submitFuture);
+        }
 
-                    staleFlowsToBeBulkDeleted.add(getStaleFlowInstanceIdentifier(staleFlow, nodeIdent));
+        private void deleteDSStaleGroups(List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
+            WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+
+            for (InstanceIdentifier<StaleGroup> staleGroupIId : groupsForBulkDelete) {
+                writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
+            }
+
+            FluentFuture<?> submitFuture = writeTransaction.commit();
+            handleStaleEntityDeletionResultFuture(submitFuture);
+        }
+
+        private void deleteDSStaleMeters(List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
+            WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+
+            for (InstanceIdentifier<StaleMeter> staleMeterIId : metersForBulkDelete) {
+                writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
+            }
+
+            FluentFuture<?> submitFuture = writeTransaction.commit();
+            handleStaleEntityDeletionResultFuture(submitFuture);
+        }
+
+        private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+                .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
+                StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
+                    new StaleFlowKey(new FlowId(staleFlow.getId())));
+        }
+
+        private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+                .group.types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
+                StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
+        }
+
+        private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+                .flow.inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
+                StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
+        }
+
+        private List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> addBundleMessages(final NodeRef nodeRef,
+                                                                                             final Optional<FlowCapableNode> flowNode,
+                                                                                             final BundleId bundleIdValue,
+                                                                                             InstanceIdentifier<FlowCapableNode> nodeIdentity) {
+            List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> futureList = new ArrayList<>();
+            if (flowNode.get().getGroup() != null) {
+                for (Group group : flowNode.get().getGroup()) {
+                    final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class,
+                            group.key());
+                    futureList.add(JdkFutureAdapters.listenInPoolThread(provider.getBundleGroupListener()
+                            .add(groupIdent, group, nodeIdentity, bundleIdValue)));
                 }
             }
-
-            LOG.debug("Proceeding with deletion of stale-marked Groups for switch {} using Openflow interface",
-                    nodeIdent.toString());
-
-            // TODO: Should we collate the futures of RPC-calls to be sure that groups are
-            // Flows are fully deleted
-            // before attempting to delete groups - just in case there are references
-
-            /* Stale-marked Groups - Can be deleted after flows */
-            List<StaleGroup> staleGroups = flowNode.get().getStaleGroup() != null ? flowNode.get().getStaleGroup()
-                    : Collections.<StaleGroup>emptyList();
-            for (StaleGroup staleGroup : staleGroups) {
-
-                GroupBuilder groupBuilder = new GroupBuilder(staleGroup);
-                Group toBeDeletedGroup = groupBuilder.setGroupId(staleGroup.getGroupId()).build();
-
-                final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class,
-                        toBeDeletedGroup.key());
-
-                this.provider.getGroupCommiter().remove(groupIdent, toBeDeletedGroup, nodeIdent);
-
-                staleGroupsToBeBulkDeleted.add(getStaleGroupInstanceIdentifier(staleGroup, nodeIdent));
-            }
-
-            LOG.debug("Proceeding with deletion of stale-marked Meters for switch {} using Openflow interface",
-                    nodeIdent.toString());
-            /* Stale-marked Meters - can be deleted anytime - so least priority */
-            List<StaleMeter> staleMeters = flowNode.get().getStaleMeter() != null ? flowNode.get().getStaleMeter()
-                    : Collections.<StaleMeter>emptyList();
-
-            for (StaleMeter staleMeter : staleMeters) {
-
-                MeterBuilder meterBuilder = new MeterBuilder(staleMeter);
-                Meter toBeDeletedMeter = meterBuilder.setMeterId(staleMeter.getMeterId()).build();
-
-                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class,
-                        toBeDeletedMeter.key());
-
-                this.provider.getMeterCommiter().remove(meterIdent, toBeDeletedMeter, nodeIdent);
-
-                staleMetersToBeBulkDeleted.add(getStaleMeterInstanceIdentifier(staleMeter, nodeIdent));
-            }
-
-        }
-
-        LOG.debug("Deleting all stale-marked flows/groups/meters of for switch {} in Configuration DS",
-                nodeIdent.toString());
-        // Now, do the bulk deletions
-        deleteDSStaleFlows(staleFlowsToBeBulkDeleted);
-        deleteDSStaleGroups(staleGroupsToBeBulkDeleted);
-        deleteDSStaleMeters(staleMetersToBeBulkDeleted);
-    }
-
-    private void deleteDSStaleFlows(List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-
-        for (InstanceIdentifier<StaleFlow> staleFlowIId : flowsForBulkDelete) {
-            writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
-        }
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
-    }
-
-    private void deleteDSStaleGroups(List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-
-        for (InstanceIdentifier<StaleGroup> staleGroupIId : groupsForBulkDelete) {
-            writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
-        }
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
-    }
-
-    private void deleteDSStaleMeters(List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-
-        for (InstanceIdentifier<StaleMeter> staleMeterIId : metersForBulkDelete) {
-            writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
-        }
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
-    }
-
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
-            StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
-                new StaleFlowKey(new FlowId(staleFlow.getId())));
-    }
-
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .group.types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
-            StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
-    }
-
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .flow.inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
-            StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
-    }
-
-    private List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> addBundleMessages(final NodeRef nodeRef,
-                                                                      final Optional<FlowCapableNode> flowNode,
-                                                                      final BundleId bundleIdValue,
-                                                                     InstanceIdentifier<FlowCapableNode> nodeIdentity) {
-        List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> futureList = new ArrayList<>();
-        if (flowNode.get().getGroup() != null) {
-            for (Group group : flowNode.get().getGroup()) {
-                final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class,
-                        group.key());
-                futureList.add(JdkFutureAdapters.listenInPoolThread(provider.getBundleGroupListener()
-                        .add(groupIdent, group, nodeIdentity, bundleIdValue)));
-            }
-        }
-        if (flowNode.get().getTable() != null) {
-            for (Table table : flowNode.get().getTable()) {
-                final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
-                        table.key());
-                if (table.getFlow() != null) {
-                    for (Flow flow : table.getFlow()) {
-                        final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                                flow.key());
-                        futureList.add(JdkFutureAdapters.listenInPoolThread(
-                                provider.getBundleFlowListener().add(flowIdent, flow, nodeIdentity, bundleIdValue)));
+            if (flowNode.get().getTable() != null) {
+                for (Table table : flowNode.get().getTable()) {
+                    final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
+                            table.key());
+                    if (table.getFlow() != null) {
+                        for (Flow flow : table.getFlow()) {
+                            final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
+                                    flow.key());
+                            futureList.add(JdkFutureAdapters.listenInPoolThread(
+                                    provider.getBundleFlowListener().add(flowIdent, flow, nodeIdentity, bundleIdValue)));
+                        }
                     }
                 }
             }
+            OF_EVENT_LOG.debug("The flow and group count is {}", futureList.size());
+            return futureList;
         }
-        return futureList;
+
+        private void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
+            submitFuture.addCallback(new FutureCallback<Object>() {
+                @Override
+                public void onSuccess(Object result) {
+                    LOG.debug("Stale entity removal success");
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    LOG.debug("Stale entity removal failed", throwable);
+                }
+            }, MoreExecutors.directExecutor());
+        }
+
+        private Flow getDeleteAllFlow() {
+            final FlowBuilder flowBuilder = new FlowBuilder();
+            flowBuilder.setTableId(OFConstants.OFPTT_ALL);
+            return flowBuilder.build();
+        }
+
+        private Group getDeleteAllGroup() {
+            final GroupBuilder groupBuilder = new GroupBuilder();
+            groupBuilder.setGroupType(GroupTypes.GroupAll);
+            groupBuilder.setGroupId(new GroupId(OFConstants.OFPG_ALL));
+            return groupBuilder.build();
+        }
+
+        private Messages createMessages(final NodeRef nodeRef) {
+            final List<Message> messages = new ArrayList<>();
+            messages.add(new MessageBuilder().setNode(nodeRef)
+                    .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
+                            .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(getDeleteAllFlow()).build()).build())
+                    .build());
+
+            messages.add(new MessageBuilder().setNode(nodeRef)
+                    .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
+                            .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(getDeleteAllGroup()).build()).build())
+                    .build());
+            return new MessagesBuilder().setMessage(messages).build();
+        }
     }
-
-    private void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
-            @Override
-            public void onSuccess(Object result) {
-                LOG.debug("Stale entity removal success");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOG.debug("Stale entity removal failed", throwable);
-            }
-        }, MoreExecutors.directExecutor());
-    }
-
-    private Flow getDeleteAllFlow() {
-        final FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.setTableId(OFConstants.OFPTT_ALL);
-        return flowBuilder.build();
-    }
-
-    private Group getDeleteAllGroup() {
-        final GroupBuilder groupBuilder = new GroupBuilder();
-        groupBuilder.setGroupType(GroupTypes.GroupAll);
-        groupBuilder.setGroupId(new GroupId(OFConstants.OFPG_ALL));
-        return groupBuilder.build();
-    }
-
-    private Messages createMessages(final NodeRef nodeRef) {
-        final List<Message> messages = new ArrayList<>();
-        messages.add(new MessageBuilder().setNode(nodeRef)
-                .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
-                        .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(getDeleteAllFlow()).build()).build())
-                .build());
-
-        messages.add(new MessageBuilder().setNode(nodeRef)
-                .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
-                        .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(getDeleteAllGroup()).build()).build())
-                .build());
-        return new MessagesBuilder().setMessage(messages).build();
-    }
-}
