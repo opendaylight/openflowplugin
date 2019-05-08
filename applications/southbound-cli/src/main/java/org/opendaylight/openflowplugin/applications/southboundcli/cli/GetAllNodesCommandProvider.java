@@ -50,7 +50,7 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
 
     private String getAllLocalNodesHeaderOutput() {
         Formatter formatter = new Formatter();
-        String header = formatter.format("%-15s %3s %-15s %n", "NodeId", "", "NodeName").toString();
+        String header = formatter.format("%-15s %3s %-15s", "NodeId", "", "NodeName").toString();
         formatter.close();
         return header;
     }
