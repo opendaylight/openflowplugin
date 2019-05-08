@@ -50,7 +50,7 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
 
     private void printNodeHeaderOutput() {
         Formatter formatter = new Formatter();
-        String header = formatter.format(OUTPUT_FORMAT, "OFNode", "Name", "Ports").toString();
+        String header = formatter.format(OUTPUT_FORMAT, "NodeId", "Name", "Ports").toString();
         formatter.close();
         session.getConsole().println(header);
     }
