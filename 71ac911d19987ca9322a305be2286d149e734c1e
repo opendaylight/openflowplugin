@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc8279d1_2b5df645",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryListener.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "Rephrase it to \"Link {} already present in the cache, skip publishing the notification.\"",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "008b90ad_f5589a74",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "close this listenerRegistration in the close() method.",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "27392230_b129845a",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "I believe you don\u0027t have to use SimpleTaskRetryLooper here, it\u0027s not required. We removed the other instances of the SimpleTaskRetryLooper as well.",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5384c8f0_8a1a129a",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "Just log it as an ERROR message, rather than throwing exception back to mdsal datastore.",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f542ba5_515ec592",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "append cache \"...from linkToDate cache\"",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c6f9133_b69cb722",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "You don\u0027t have to make this method public, just keep it protected.",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72911f48_5314a57d",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:29:00Z",
+      "side": 1,
+      "message": "move these public methods after publi methods above. Keep the ordering as --\u003e public, protected, private",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
