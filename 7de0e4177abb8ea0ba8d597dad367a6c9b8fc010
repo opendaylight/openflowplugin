@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ec1cf910_7d6d7579",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/DeviceContext.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:39:31Z",
+      "side": 1,
+      "message": "i think you don\u0027t have to explictly define this method here, you can extend DeviceInitializationContext.java\t here as well? Just like ContextChain?",
+      "revId": "7de0e4177abb8ea0ba8d597dad367a6c9b8fc010",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "162e5776_e234ecef",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsContext.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-05-13T23:39:31Z",
+      "side": 1,
+      "message": "Here also you can directly extend DeviceInitializationContext.java?",
+      "revId": "7de0e4177abb8ea0ba8d597dad367a6c9b8fc010",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
