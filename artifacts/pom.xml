@@ -202,6 +202,21 @@
                 <artifactId>device-ownership-status-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>reconciliation-framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>arbitratorreconciliation-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
+                <artifactId>arbitratorreconciliation-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- config files -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
