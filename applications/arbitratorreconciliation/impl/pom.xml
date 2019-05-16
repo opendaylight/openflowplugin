@@ -18,7 +18,6 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>arbitratorreconciliation-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.serviceutils</groupId>

@@ -26,7 +26,6 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>reconciliation-framework</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
