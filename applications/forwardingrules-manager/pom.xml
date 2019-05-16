@@ -58,7 +58,6 @@
     <dependency>
       <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>reconciliation-framework</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.infrautils</groupId>
@@ -86,9 +85,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    <groupId>org.opendaylight.openflowplugin.applications</groupId>
+      <groupId>org.opendaylight.openflowplugin.applications</groupId>
       <artifactId>arbitratorreconciliation-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.aries.blueprint</groupId>
