@@ -32,7 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
@@ -107,7 +107,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private final Map<BigInteger, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
 
     @Inject
-    public ArbitratorReconciliationManagerImpl(@Reference RpcProviderRegistry rpcRegistry,
+    public ArbitratorReconciliationManagerImpl(@Reference RpcConsumerRegistry rpcRegistry,
             @Reference ReconciliationManager reconciliationManager, @Reference UpgradeState upgradeState) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
         this.reconciliationManager = Preconditions.checkNotNull(reconciliationManager,
