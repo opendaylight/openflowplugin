@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f4837f5f_9350bc14",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPDiscoveryListener.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc8279d1_2b5df645",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "008b90ad_f5589a74",
         "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
         "patchSetId": 29
@@ -30,6 +48,24 @@
       "writtenOn": "2019-05-13T23:29:00Z",
       "side": 1,
       "message": "close this listenerRegistration in the close() method.",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f1b39895_1c86eaee",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "008b90ad_f5589a74",
       "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "b929cffc_d5282ae1",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27392230_b129845a",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5384c8f0_8a1a129a",
         "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
         "patchSetId": 29
@@ -64,6 +118,24 @@
       "writtenOn": "2019-05-13T23:29:00Z",
       "side": 1,
       "message": "Just log it as an ERROR message, rather than throwing exception back to mdsal datastore.",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eefc7be6_15ed81c8",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5384c8f0_8a1a129a",
       "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "0e2d6f89_d5fb3f18",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f542ba5_515ec592",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5c6f9133_b69cb722",
         "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
         "patchSetId": 29
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "0617e249_39c56ea1",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/LLDPLinkAger.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c6f9133_b69cb722",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72911f48_5314a57d",
         "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
         "patchSetId": 29
@@ -115,6 +223,24 @@
       "writtenOn": "2019-05-13T23:29:00Z",
       "side": 1,
       "message": "move these public methods after publi methods above. Keep the ordering as --\u003e public, protected, private",
+      "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c200f00f_2426d059",
+        "filename": "applications/topology-lldp-discovery/src/main/java/org/opendaylight/openflowplugin/applications/topology/lldp/utils/LLDPDiscoveryUtils.java",
+        "patchSetId": 29
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 6328
+      },
+      "writtenOn": "2019-05-19T17:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72911f48_5314a57d",
       "revId": "71ac911d19987ca9322a305be2286d149e734c1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
