@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -49,9 +48,7 @@ final class TopologyManagerUtil {
             return;
         }
 
-        List<Link> linkList =
-                topologyOptional.get().getLink() != null ? topologyOptional.get().getLink() : Collections.emptyList();
-        for (Link link : linkList) {
+        for (Link link : topologyOptional.get().nonnullLink()) {
             if (id.equals(link.getSource().getSourceNode()) || id.equals(link.getDestination().getDestNode())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
@@ -79,9 +76,7 @@ final class TopologyManagerUtil {
             return;
         }
 
-        List<Link> linkList = topologyOptional.get().getLink() != null ? topologyOptional.get()
-                .getLink() : Collections.emptyList();
-        for (Link link : linkList) {
+        for (Link link : topologyOptional.get().nonnullLink()) {
             if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
