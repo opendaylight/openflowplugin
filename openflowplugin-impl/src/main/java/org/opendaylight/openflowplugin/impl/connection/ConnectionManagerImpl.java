@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.connection;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -24,6 +25,8 @@ import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -54,12 +57,19 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
     private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("ConnectionHandler-%d")
+            .setDaemon(false)
+            .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
+            .build();
+    private final ExecutorService executorsService = Executors.newCachedThreadPool(threadFactory);
+
+    private DeviceConnectedHandler deviceConnectedHandler;
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
     private final DataBroker dataBroker;
     private final int deviceConnectionHoldTime;
-    private DeviceConnectedHandler deviceConnectedHandler;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private DeviceConnectionStatusProvider deviceConnectionStatusProvider;
     private final NotificationPublishService notificationPublishService;
@@ -79,6 +89,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
+        connectionAdapter.setExecutorService(executorsService);
         LOG.trace("prepare connection context");
         final ConnectionContext connectionContext = new ConnectionContextImpl(connectionAdapter,
                 deviceConnectionStatusProvider);
@@ -144,6 +155,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
         if (deviceConnectionStatusProvider != null) {
             deviceConnectionStatusProvider.close();
             deviceConnectionStatusProvider = null;
+        }
+        if (executorsService != null) {
+            executorsService.shutdownNow();
         }
     }
 
@@ -220,5 +234,4 @@ public class ConnectionManagerImpl implements ConnectionManager {
             }
         }
     }
-
 }
