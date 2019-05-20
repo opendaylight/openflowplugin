@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import com.google.common.annotations.Beta;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
@@ -122,4 +123,10 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
      * @param datapathId of the dpn
      */
     void setDatapathId(BigInteger datapathId);
+
+    /**
+     * Sets executorService.
+     * @param executorService for all dpns
+     */
+    void setExecutorService(ExecutorService executorService);
 }

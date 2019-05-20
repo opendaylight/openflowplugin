@@ -305,6 +305,7 @@ public class OpenFlowPluginProviderImpl implements
         }
 
         gracefulShutdown(contextChainHolder);
+        gracefulShutdown(connectionManager);
         gracefulShutdown(deviceManager);
         gracefulShutdown(rpcManager);
         gracefulShutdown(statisticsManager);

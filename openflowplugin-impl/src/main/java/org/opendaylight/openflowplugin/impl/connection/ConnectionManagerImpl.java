@@ -7,8 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -34,6 +37,13 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
     private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("ConnectionHandler-%d")
+            .setDaemon(false)
+            .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
+            .build();
+    private final ExecutorService executorsService = Executors.newCachedThreadPool(threadFactory);
+
     private DeviceConnectedHandler deviceConnectedHandler;
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
@@ -48,6 +58,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
+        connectionAdapter.setExecutorService(executorsService);
         LOG.trace("prepare connection context");
         final ConnectionContext connectionContext = new ConnectionContextImpl(connectionAdapter);
         connectionContext.setDeviceDisconnectedHandler(this.deviceDisconnectedHandler);
@@ -100,5 +111,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public void setDeviceDisconnectedHandler(final DeviceDisconnectedHandler deviceDisconnectedHandler) {
         this.deviceDisconnectedHandler = deviceDisconnectedHandler;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (executorsService != null) {
+            executorsService.shutdownNow();
+        }
     }
 }
