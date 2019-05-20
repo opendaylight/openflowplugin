@@ -35,7 +35,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public abstract class FRMTest extends AbstractDataBrokerTest {
 
     public void addFlowCapableNode(NodeKey nodeKey) {
-        Nodes nodes = new NodesBuilder().setNode(Collections.emptyList()).build();
+        Nodes nodes = new NodesBuilder().build();
 
         FlowCapableNodeBuilder fcnBuilder = new FlowCapableNodeBuilder();
         NodeBuilder nodeBuilder = new NodeBuilder();

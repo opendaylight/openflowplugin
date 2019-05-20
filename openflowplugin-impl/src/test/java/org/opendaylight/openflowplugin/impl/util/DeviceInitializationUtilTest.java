@@ -88,7 +88,6 @@ public class DeviceInitializationUtilTest {
         verify(dataBroker).newWriteOnlyTransaction();
         verify(writeTransaction).merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier
                 .create(Nodes.class), new NodesBuilder()
-                .setNode(Collections.emptyList())
                 .build());
         verify(writeTransaction).commit();
     }

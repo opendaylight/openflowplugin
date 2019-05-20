@@ -53,7 +53,6 @@ public final class DeviceInitializationUtil {
 
         try {
             tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder()
-                    .setNode(Collections.emptyList())
                     .build());
             tx.commit().get();
         } catch (ExecutionException | InterruptedException e) {
