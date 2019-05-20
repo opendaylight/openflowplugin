@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,7 +87,6 @@ public class DeviceInitializationUtilTest {
         verify(dataBroker).newWriteOnlyTransaction();
         verify(writeTransaction).merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier
                 .create(Nodes.class), new NodesBuilder()
-                .setNode(Collections.emptyList())
                 .build());
         verify(writeTransaction).commit();
     }

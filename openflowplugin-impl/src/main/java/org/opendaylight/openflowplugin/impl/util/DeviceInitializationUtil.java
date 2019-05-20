@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import java.net.InetSocketAddress;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -53,7 +52,6 @@ public final class DeviceInitializationUtil {
 
         try {
             tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder()
-                    .setNode(Collections.emptyList())
                     .build());
             tx.commit().get();
         } catch (ExecutionException | InterruptedException e) {
