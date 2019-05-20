@@ -13,6 +13,7 @@ import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -54,9 +55,8 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     private AbstractOutboundQueueManager<?, ?> outputManager;
     private OFVersionDetector versionDetector;
     private BigInteger datapathId;
-
+    private ExecutorService executorService;
     private final boolean useBarrier;
-
     /**
      * Default constructor.
      * @param channel the channel to be set - used for communication
@@ -64,6 +64,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
      *                as there is no need to store address over tcp (stable channel))
      * @param useBarrier value is configurable by configSubsytem
      */
+
     public ConnectionAdapterImpl(final Channel channel, final InetSocketAddress address, final boolean useBarrier,
                                  final int channelOutboundQueueSize) {
         super(channel, address, channelOutboundQueueSize);
@@ -187,8 +188,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     public void fireConnectionReadyNotification() {
         versionDetector = (OFVersionDetector) channel.pipeline().get(PipelineHandlers.OF_VERSION_DETECTOR.name());
         Preconditions.checkState(versionDetector != null);
-
-        new Thread(() -> connectionReadyListener.onConnectionReady()).start();
+        executorService.execute(() -> connectionReadyListener.onConnectionReady());
     }
 
     @Override
@@ -236,5 +236,10 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     @Override
     public void setDatapathId(final BigInteger datapathId) {
         this.datapathId = datapathId;
+    }
+
+    @Override
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 }

@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.it.integration;
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.polkorab
  */
+
 public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHandler,
         SystemNotificationsListener, ConnectionReadyListener {
 
@@ -53,10 +55,12 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     protected volatile ConnectionAdapter adapter;
     private final SettableFuture<Void> finishedFuture;
     private int idleCounter = 0;
+    private ExecutorService executorService;
 
-    public MockPlugin() {
+    public MockPlugin(ExecutorService executorService) {
         LOGGER.trace("Creating MockPlugin");
         finishedFuture = SettableFuture.create();
+        this.executorService = executorService;
         LOGGER.debug("mockPlugin: {}", System.identityHashCode(this));
     }
 
@@ -67,6 +71,7 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
         connection.setMessageListener(this);
         connection.setSystemListener(this);
         connection.setConnectionReadyListener(this);
+        connection.setExecutorService(executorService);
     }
 
     @Override
@@ -193,7 +198,7 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     @Override
     public void onSwitchIdleEvent(SwitchIdleEvent notification) {
         LOGGER.debug("MockPlugin.onSwitchIdleEvent() switch status: {}", notification.getInfo());
-        idleCounter ++;
+        idleCounter++;
     }
 
     /**
@@ -212,8 +217,8 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
      * Initiates connection to device.
      *
      * @param switchConnectionProvider the SwitchConnectionProviderImpl
-     * @param host - host IP
-     * @param port - port number
+     * @param host                     - host IP
+     * @param port                     - port number
      */
     public void initiateConnection(SwitchConnectionProviderImpl switchConnectionProvider, String host, int port) {
         LOGGER.trace("MockPlugin().initiateConnection()");
