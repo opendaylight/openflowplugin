@@ -13,11 +13,17 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -48,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  * @author timotej.kubas
  */
+@RunWith(MockitoJUnitRunner.class)
 public class IntegrationTest {
 
     private static final Logger LOGGER = LoggerFactory
@@ -62,6 +69,8 @@ public class IntegrationTest {
     private MockPlugin mockPlugin;
     private SwitchConnectionProviderImpl switchConnectionProvider;
     private ConnectionConfigurationImpl connConfig;
+    @Mock
+    private ExecutorService executorService;
 
     private Thread thread;
 
@@ -72,6 +81,11 @@ public class IntegrationTest {
 
     public void setUp(final TransportProtocol protocol) throws Exception {
         LOGGER.debug("\n starting test -------------------------------");
+        MockitoAnnotations.initMocks(this);
+        Mockito.doAnswer(invocation -> {
+            ((Runnable)invocation.getArguments()[0]).run();
+            return null;
+        }).when(executorService).execute(Matchers.<Runnable>any());
 
         final String currentDir = System.getProperty("user.dir");
         LOGGER.debug("Current dir using System: {}", currentDir);
@@ -86,7 +100,7 @@ public class IntegrationTest {
         connConfig = new ConnectionConfigurationImpl(startupAddress, 0, tlsConfiguration,
                 SWITCH_IDLE_TIMEOUT, true, false, CHANNEL_OUTBOUND_QUEUE_SIZE);
         connConfig.setTransferProtocol(protocol);
-        mockPlugin = new MockPlugin();
+        mockPlugin = new MockPlugin(executorService);
 
         switchConnectionProvider = new SwitchConnectionProviderImpl(connConfig,
                 Mockito.mock(OpenflowDiagStatusProvider.class));
