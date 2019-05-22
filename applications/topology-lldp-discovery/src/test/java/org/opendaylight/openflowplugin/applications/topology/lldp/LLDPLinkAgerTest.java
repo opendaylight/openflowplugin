@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.eos.binding.api.Entity;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
@@ -64,11 +65,14 @@ public class LLDPLinkAgerTest {
     @Mock
     private EntityOwnershipService eos;
     @Mock
+    private DataBroker dataBroker;
+    @Mock
     private LinkRemoved linkRemoved;
+
 
     @Before
     public void setUp() {
-        lldpLinkAger = new LLDPLinkAger(getConfig(), notificationService, getConfigurationService(), eos);
+        lldpLinkAger = new LLDPLinkAger(getConfig(), notificationService, getConfigurationService(), eos, dataBroker);
         Mockito.when(link.getDestination()).thenReturn(new NodeConnectorRef(
                 InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1")))));
         Mockito.when(eos.getOwnershipState(any(Entity.class))).thenReturn(
