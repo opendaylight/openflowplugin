@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.libraries.liblldp.LLDP;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV;
 import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,6 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,20 +164,26 @@ public final class LLDPDiscoveryUtils {
         return hashedValue.asBytes();
     }
 
-    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId)
-            throws NoSuchAlgorithmException, BufferException {
-        final LLDPTLV hashLldptlv = lldp.getCustomTLV(LLDPTLV.createSecSubTypeCustomTLVKey());
-        boolean secAuthenticatorOk = false;
-        if (hashLldptlv != null) {
-            byte[] rawTlvValue = hashLldptlv.getValue();
-            byte[] lldpCustomSecurityHash = ArrayUtils.subarray(rawTlvValue, 4, rawTlvValue.length);
-            byte[] calculatedHash = getValueForLLDPPacketIntegrityEnsuring(srcNodeConnectorId);
-            secAuthenticatorOk = Arrays.equals(calculatedHash, lldpCustomSecurityHash);
+    public static boolean isEntityOwned(final EntityOwnershipService eos, final String nodeId) {
+        Preconditions.checkNotNull(eos, "Entity ownership service must not be null");
+        EntityOwnershipState state = null;
+        Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
+        if (status.isPresent()) {
+            state = status.get();
         } else {
-            LOG.debug("Custom security hint wasn't specified via Custom TLV in LLDP packet.");
+            LOG.error("Fetching ownership status failed for node {}", nodeId);
         }
+        return state != null && state.equals(EntityOwnershipState.IS_OWNER);
+    }
 
-        return secAuthenticatorOk;
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819
+            .LinkDiscovered toLLDPLinkDiscovered(Link link) {
+        return new LinkDiscoveredBuilder()
+                .setSource(getNodeConnectorRefFromLink(link.getSource().getSourceTp(),
+                        link.getSource().getSourceNode()))
+                .setDestination(getNodeConnectorRefFromLink(link.getDestination().getDestTp(),
+                        link.getDestination().getDestNode()))
+                .build();
     }
 
     private static boolean isLLDP(final byte[] packet) {
@@ -193,17 +202,20 @@ public final class LLDPDiscoveryUtils {
         return ethernetType == ETHERNET_TYPE_LLDP;
     }
 
-    public static boolean isEntityOwned(final EntityOwnershipService eos, final String nodeId) {
-        Preconditions.checkNotNull(eos, "Entity ownership service must not be null");
-
-        EntityOwnershipState state = null;
-        Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
-        if (status.isPresent()) {
-            state = status.get();
+    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId)
+            throws NoSuchAlgorithmException, BufferException {
+        final LLDPTLV hashLldptlv = lldp.getCustomTLV(LLDPTLV.createSecSubTypeCustomTLVKey());
+        boolean secAuthenticatorOk = false;
+        if (hashLldptlv != null) {
+            byte[] rawTlvValue = hashLldptlv.getValue();
+            byte[] lldpCustomSecurityHash = ArrayUtils.subarray(rawTlvValue, 4, rawTlvValue.length);
+            byte[] calculatedHash = getValueForLLDPPacketIntegrityEnsuring(srcNodeConnectorId);
+            secAuthenticatorOk = Arrays.equals(calculatedHash, lldpCustomSecurityHash);
         } else {
-            LOG.error("Fetching ownership status failed for node {}", nodeId);
+            LOG.debug("Custom security hint wasn't specified via Custom TLV in LLDP packet.");
         }
-        return state != null && state.equals(EntityOwnershipState.IS_OWNER);
+
+        return secAuthenticatorOk;
     }
 
     private static Optional<EntityOwnershipState> getCurrentOwnershipStatus(final EntityOwnershipService eos,
@@ -219,5 +231,21 @@ public final class LLDPDiscoveryUtils {
 
     private static Entity createNodeEntity(final String nodeId) {
         return new Entity(SERVICE_ENTITY_TYPE, nodeId);
+    }
+
+    private static NodeConnectorRef getNodeConnectorRefFromLink(final TpId tpId, final org.opendaylight.yang.gen.v1.urn
+            .tbd.params.xml.ns.yang.network.topology.rev131021.NodeId nodeId) {
+        String nodeConnectorId = tpId.getValue();
+        InstanceIdentifier<NodeConnector> nciid
+                = InstanceIdentifier.builder(Nodes.class)
+                .child(
+                        Node.class,
+                        new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
+                                .NodeId(nodeId)))
+                .child(
+                        NodeConnector.class,
+                        new NodeConnectorKey(new NodeConnectorId(nodeConnectorId)))
+                .build();
+        return new NodeConnectorRef(nciid);
     }
 }

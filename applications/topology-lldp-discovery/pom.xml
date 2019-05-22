@@ -65,6 +65,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+    <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-topology</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <optional>true</optional>
@@ -79,7 +83,10 @@
       <artifactId>blueprint-maven-plugin-annotation</artifactId>
       <optional>true</optional>
     </dependency>
-
+    <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-common</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
