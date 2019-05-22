@@ -13,3 +13,4 @@ Contents:
    reconciliation-cli
    arbitrator-reconciliation
    device-connection-rate-limiter
+   openflowplugin-event-logger
