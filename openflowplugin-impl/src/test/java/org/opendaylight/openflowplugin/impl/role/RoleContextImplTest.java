@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.impl.role;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,8 +39,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoleContextImplTest {
-    // Timeout  after what we will give up on propagating role
-    private static final long SET_ROLE_TIMEOUT = 10000;
     @Mock
     private SalRoleService roleService;
     @Mock
@@ -80,13 +77,13 @@ public class RoleContextImplTest {
                 .setControllerRole(OfpRole.BECOMEMASTER)
                 .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                 .build());
-        verify(contextChainMastershipWatcher, timeout(SET_ROLE_TIMEOUT)).onMasterRoleAcquired(
+        verify(contextChainMastershipWatcher).onMasterRoleAcquired(
                 deviceInfo,
                 ContextChainMastershipState.MASTER_ON_DEVICE);
     }
 
     @Test
-    public void terminateServiceInstance() throws Exception {
+    public void closeServiceInstance() throws Exception {
         when(setRoleFuture.isCancelled()).thenReturn(false);
         when(setRoleFuture.isDone()).thenReturn(false);
         when(roleService.setRole(any())).thenReturn(setRoleFuture);

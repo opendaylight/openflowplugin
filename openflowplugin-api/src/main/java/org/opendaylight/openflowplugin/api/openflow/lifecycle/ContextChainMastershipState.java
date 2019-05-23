@@ -13,9 +13,17 @@ public enum ContextChainMastershipState {
      */
     MASTER_ON_DEVICE,
     /**
+     * Initial statics gathering done ok.
+     */
+    INITIAL_GATHERING,
+    /**
      * Initial submit ok.
      */
     INITIAL_SUBMIT,
+    /**
+     * Initial flow registry fill is done.
+     */
+    INITIAL_FLOW_REGISTRY_FILL,
     /**
      * Registration of RPC services is done.
      */

@@ -18,8 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceRemove
  * Chain of contexts, hold references to the contexts.
  * @since 0.4.0 Carbon
  */
-public interface ContextChain extends ClusterSingletonService, AutoCloseable, ReconciliationFrameworkStep,
-        DeviceInitializationContext {
+public interface ContextChain extends ClusterSingletonService, AutoCloseable, ReconciliationFrameworkStep {
 
     /**
      * Add context to the chain, if reference already exist ignore it.

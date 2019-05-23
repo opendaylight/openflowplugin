@@ -25,9 +25,4 @@ public interface StatisticsContext extends RequestContextStack, OFPContext, Reco
      * Disables statistics gathering.
      */
     void disableGathering();
-
-    /**
-     * Method for initializing device after mastership role acquisition.
-     */
-    void initializeDevice();
 }
