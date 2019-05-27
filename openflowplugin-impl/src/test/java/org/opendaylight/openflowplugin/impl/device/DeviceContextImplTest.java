@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -238,9 +237,6 @@ public class DeviceContextImplTest {
                 PortGrouping.class.getName())))).thenReturn(messageTranslatorFlowCapableNodeConnector);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 FlowRemoved.class.getName())))).thenReturn(messageTranslatorFlowRemoved);
-
-        Mockito.when(abstractDeviceInitializer.initialize(any(), anyBoolean(), anyBoolean(), any(), any()))
-                .thenReturn(Futures.immediateFuture(null));
 
         final java.util.Optional<AbstractDeviceInitializer> deviceInitializer = java.util.Optional
                 .of(this.abstractDeviceInitializer);
