@@ -34,6 +34,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
+import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceInitializationContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
@@ -47,7 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
+class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, DeviceInitializationContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImpl.class);
     private static final String CONNECTION_CLOSED = "Connection closed.";
@@ -150,7 +151,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     }
 
     @Override
-    public void instantiateServiceInstance() {
+    public void instantiateServiceInstance() {}
+
+    @Override
+    public void initializeDevice() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
 
         if (devState.isTableStatisticsAvailable() && config.isIsTableStatisticsPollingOn()) {
@@ -318,9 +322,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext {
     private final class InitialSubmitCallback implements FutureCallback<Boolean> {
         @Override
         public void onSuccess(@Nullable final Boolean result) {
-            contextChainMastershipWatcher
-                    .onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_GATHERING);
-
             if (!isUsingReconciliationFramework) {
                 continueInitializationAfterReconciliation();
             }
