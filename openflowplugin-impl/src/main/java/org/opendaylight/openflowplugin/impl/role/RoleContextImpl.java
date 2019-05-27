@@ -11,15 +11,17 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -49,6 +51,11 @@ public class RoleContextImpl implements RoleContext {
 
     // Timeout  after what we will give up on propagating role
     private static final long SET_ROLE_TIMEOUT = 10000;
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
+            .setNameFormat("role-service-%d")
+            .setDaemon(false)
+            .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
+            .build();
 
     private final DeviceInfo deviceInfo;
     private final HashedWheelTimer timer;
@@ -56,6 +63,7 @@ public class RoleContextImpl implements RoleContext {
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final Timeout slaveTask;
     private final OpenflowProviderConfig config;
+    private final ExecutorService executorService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     private SalRoleService roleService;
 
@@ -66,6 +74,7 @@ public class RoleContextImpl implements RoleContext {
         this.deviceInfo = deviceInfo;
         this.timer = timer;
         this.config = config;
+        this.executorService =  Executors.newSingleThreadExecutor(THREAD_FACTORY);
         slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
 
         LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
@@ -94,13 +103,19 @@ public class RoleContextImpl implements RoleContext {
         requestContexts.forEach(requestContext -> RequestContextUtil
                 .closeRequestContextWithRpcError(requestContext, "Connection closed."));
         requestContexts.clear();
+        executorService.shutdownNow();
+        try {
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.warn("Failed to shutdown role-service executor for device {} gracefully.", getDeviceInfo(), e);
+        }
     }
 
     @Override
     public void instantiateServiceInstance() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
         changeLastRoleFuture(future);
-        Futures.addCallback(future, new MasterRoleCallback(), Executors.newSingleThreadExecutor());
+        Futures.addCallback(future, new MasterRoleCallback(), executorService);
     }
 
     @Override
@@ -142,7 +157,7 @@ public class RoleContextImpl implements RoleContext {
     private ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
         changeLastRoleFuture(future);
-        Futures.addCallback(future, new SlaveRoleCallback(), MoreExecutors.directExecutor());
+        Futures.addCallback(future, new SlaveRoleCallback(), executorService);
         return future;
     }
 
