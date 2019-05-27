@@ -22,6 +22,30 @@
       "revId": "4fdc4b4a2ff680e17749d80c8b971e7e4cb8274d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "511b511e_c2ba24ff",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-05-27T07:09:38Z",
+      "side": 1,
+      "message": "Yes Robert, I could have created executor at the time of creating RoleContextImpl object, and same reference can be used for master/slave role callbacks. The same can be shutdown on close method(on contextChain close at the time of device removed.)",
+      "parentUuid": "66b96062_2bfea53b",
+      "range": {
+        "startLine": 103,
+        "startChar": 62,
+        "endLine": 103,
+        "endChar": 97
+      },
+      "revId": "4fdc4b4a2ff680e17749d80c8b971e7e4cb8274d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
