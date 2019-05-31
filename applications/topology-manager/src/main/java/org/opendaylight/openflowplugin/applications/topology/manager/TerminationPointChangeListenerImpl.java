@@ -50,6 +50,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNodeConnector>> modifications) {
         for (DataTreeModification<FlowCapableNodeConnector> modification : modifications) {
+            LOG.info("CONTROLLER-1895 : FlowCapableNodeConnector data change modifications :{}", modification);
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:
                     processAddedTerminationPoints(modification);
@@ -109,6 +110,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
 
     private void processUpdatedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
         // TODO Auto-generated method stub
+        LOG.warn("Unhandled termination point change {}", modification);
     }
 
     private void processAddedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
