@@ -159,6 +159,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     private final NotificationManager<String, Runnable> queuedNotificationManager;
+    private final boolean isStatisticsPollingOn;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DataBroker dataBroker,
@@ -172,7 +173,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
                       final ContextChainHolder contextChainHolder,
-                      final NotificationManager queuedNotificationManager) {
+                      final NotificationManager queuedNotificationManager,
+                      final boolean isStatisticsPollingOn) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
@@ -182,6 +184,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.contextChainHolder = contextChainHolder;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
@@ -279,6 +282,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public DeviceGroupRegistry getDeviceGroupRegistry() {
         return deviceGroupRegistry;
+    }
+
+    @Override
+    public boolean isStatisticsPollingOn() {
+        return isStatisticsPollingOn;
     }
 
     @Override
