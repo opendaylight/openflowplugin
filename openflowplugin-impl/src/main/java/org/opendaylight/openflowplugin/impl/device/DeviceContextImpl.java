@@ -279,6 +279,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public boolean isStatisticsPollingOn() {
+        return isStatisticsPollingOn;
+    }
+
+    @Override
     public DeviceMeterRegistry getDeviceMeterRegistry() {
         return deviceMeterRegistry;
     }
