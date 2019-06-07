@@ -153,7 +153,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                     });
 
                     // If table features are disabled or returned nothing, at least make empty tables
-                    if (MultipartType.OFPMPTABLEFEATURES.equals(type)) {
+                    if (MultipartType.OFPMPTABLEFEATURES.equals(type) && deviceContext.isStatisticsPollingOn()) {
                         DeviceInitializationUtil.makeEmptyTables(
                             deviceContext,
                             deviceContext.getDeviceInfo(),
