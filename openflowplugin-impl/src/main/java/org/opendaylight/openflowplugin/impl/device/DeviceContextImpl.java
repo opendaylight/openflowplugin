@@ -157,6 +157,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private final boolean isStatisticsPollingOn;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DataBroker dataBroker,
@@ -169,6 +170,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final DeviceInitializerProvider deviceInitializerProvider,
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
+                      final boolean isStatisticsPollingOn,
                       final ContextChainHolder contextChainHolder) {
 
         this.primaryConnectionContext = primaryConnectionContext;
@@ -180,6 +182,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.contextChainHolder = contextChainHolder;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
@@ -276,6 +279,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public DeviceGroupRegistry getDeviceGroupRegistry() {
         return deviceGroupRegistry;
+    }
+
+    @Override
+    public boolean isStatisticsPollingOn() {
+        return isStatisticsPollingOn;
     }
 
     @Override

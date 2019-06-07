@@ -254,6 +254,7 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
+                false,
                 contextChainHolder);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
