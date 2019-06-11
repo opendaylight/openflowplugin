@@ -19,6 +19,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -123,7 +125,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private static final long MAX_ADD_GROUP_TIMEOUT = TimeUnit.SECONDS.toNanos(20);
     private static final String SEPARATOR = ":";
     private static final int THREAD_POOL_SIZE = 4;
-
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
+            .setNameFormat("BundleResync-%d")
+            .setDaemon(false)
+            .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
+            .build();
     private final DataBroker dataBroker;
     private final ForwardingRulesManager provider;
     private final String serviceName;
@@ -210,7 +216,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             if (flowNode.isPresent()) {
                 ReconciliationState reconciliationState = new ReconciliationState(
                         STARTED, LocalDateTime.now());
-                    //put the dpn info into the map
+                //put the dpn info into the map
                 reconciliationStates.put(dpnId.toString(), reconciliationState);
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
@@ -236,12 +242,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Close previously opened bundle on the openflow switch if any */
                 ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
                         = salBundleService.controlBundle(closeBundleInput);
+                ExecutorService service = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
                 /* Open a new bundle on the switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
                         Futures.transformAsync(closeBundle,
                             rpcResult -> salBundleService.controlBundle(openBundleInput),
-                            MoreExecutors.directExecutor());
+                                service);
 
                 /* Push groups and flows via bundle add messages */
                 ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
@@ -250,7 +257,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                 return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
                             }
                             return Futures.immediateFuture(null);
-                        }, MoreExecutors.directExecutor());
+                        }, service);
 
                 /* Push flows and groups via bundle add messages */
                 Optional<FlowCapableNode> finalFlowNode = flowNode;
@@ -262,14 +269,14 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                         nodeIdentity));
                             }
                             return Futures.immediateFuture(null);
-                        }, MoreExecutors.directExecutor());
+                        }, service);
 
                 /* Commit the bundle on the openflow switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
                         addbundlesFuture, rpcResult -> {
                         LOG.debug("Adding bundle messages completed for device {}", dpnId);
                         return salBundleService.controlBundle(commitBundleInput);
-                    }, MoreExecutors.directExecutor());
+                    }, service);
 
                 /* Bundles not supported for meters */
                 List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
@@ -284,7 +291,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             }
                         }
                         return Futures.immediateFuture(null);
-                    }, MoreExecutors.directExecutor());
+                    }, service);
                 try {
                     RpcResult<ControlBundleOutput> bundleFuture = commitBundleFuture.get();
                     if (bundleFuture != null && bundleFuture.isSuccessful()) {
@@ -302,6 +309,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     reconciliationState.setState(FAILED, LocalDateTime.now());
                     LOG.error("commit bundle failed for device {} with error ", dpnId, e);
                     return false;
+                } finally {
+                    service.shutdownNow();
+                    try {
+                        service.awaitTermination(5, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        LOG.warn("Failed to shutdown BundleResync executor for device {} gracefully.", dpnId, e);
+                    }
                 }
             }
             LOG.error("FlowNode not present for Datapath ID {}", dpnId);
