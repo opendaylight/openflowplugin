@@ -70,7 +70,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                        throw new IllegalArgumentException("Unhandled modification type" + mod.getModificationType());
                 }
             } else {
                 if (provider.isStaleMarkingEnabled()) {
