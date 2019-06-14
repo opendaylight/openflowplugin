@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9078013_4fb4e00b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-06-14T06:30:49Z",
+      "side": 1,
+      "message": "Remove this line",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 66
+      },
+      "revId": "21e68fdbd8f26b10ee60112559536fd5121b43f0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "171105bc_47abf1e8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-06-14T06:30:49Z",
+      "side": 1,
+      "message": "Update flow during arbitrator reconciliation should be handled as delete\nbundle message for original flow followed by add bundle message for\nupdated flow.\n\nThis was not followed, so ended up in stale flows on computes after arbitrator reconciliation.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 72
+      },
+      "revId": "21e68fdbd8f26b10ee60112559536fd5121b43f0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
