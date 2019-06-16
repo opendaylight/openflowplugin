@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bd497b41_68631771",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-16T11:50:24Z",
+      "side": 1,
+      "message": "This will prevent clean JVM shutdown AFAICT.",
+      "range": {
+        "startLine": 168,
+        "startChar": 12,
+        "endLine": 168,
+        "endChar": 29
+      },
+      "revId": "c1908c96980cdef82cf574b0bfce928942f65211",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "47009330_ebce1a50",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-16T11:50:24Z",
+      "side": 1,
+      "message": "So we are allocating an executor per device? That is not going to scale, why do we even need that?",
+      "range": {
+        "startLine": 213,
+        "startChar": 28,
+        "endLine": 213,
+        "endChar": 78
+      },
+      "revId": "c1908c96980cdef82cf574b0bfce928942f65211",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
