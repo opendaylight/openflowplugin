@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
+import java.util.concurrent.Executors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,8 @@ public class RoleContextImplTest {
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(roleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
 
-        roleContext = new RoleContextImpl(deviceInfo, new HashedWheelTimer(), 20000, config);
+        roleContext = new RoleContextImpl(deviceInfo, new HashedWheelTimer(), 20000, config,
+                Executors.newSingleThreadExecutor());
         roleContext.registerMastershipWatcher(contextChainMastershipWatcher);
         roleContext.setRoleService(roleService);
     }
