@@ -11,7 +11,7 @@ import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -103,9 +102,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-        final Future<RpcResult<RemoveMeterOutput>> resultFuture =
-                this.provider.getSalMeterService().removeMeter(builder.build());
-        JdkFutures.addErrorLogging(resultFuture, LOG, "removeMeter");
+        LoggingFutures.addErrorLogging(this.provider.getSalMeterService().removeMeter(builder.build()), LOG,
+            "removeMeter");
     }
 
     @Override
@@ -132,9 +130,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
         builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
 
-        final Future<RpcResult<UpdateMeterOutput>> resultFuture =
-                this.provider.getSalMeterService().updateMeter(builder.build());
-        JdkFutures.addErrorLogging(resultFuture, LOG, "updateMeter");
+        LoggingFutures.addErrorLogging(this.provider.getSalMeterService().updateMeter(builder.build()), LOG,
+            "updateMeter");
     }
 
     @Override

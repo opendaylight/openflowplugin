@@ -18,7 +18,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -80,7 +80,7 @@ public class BundleGroupForwarder {
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
             Futures.addCallback(resultFuture, new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
             return resultFuture;
         });
 
@@ -105,7 +105,7 @@ public class BundleGroupForwarder {
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
             Futures.addCallback(resultFuture, new BundleUpdateGroupCallBack(originalGroup.getGroupId().getValue(),
                     nodeId), MoreExecutors.directExecutor());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
             return resultFuture;
         });
     }
