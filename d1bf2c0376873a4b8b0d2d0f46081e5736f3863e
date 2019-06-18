@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "915b25bf_69d14bb0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:06:04Z",
+      "side": 1,
+      "message": "why is the copy here needed?",
+      "range": {
+        "startLine": 292,
+        "startChar": 48,
+        "endLine": 292,
+        "endChar": 63
+      },
+      "revId": "d1bf2c0376873a4b8b0d2d0f46081e5736f3863e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71a951ce_94a2ca3b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:06:04Z",
+      "side": 1,
+      "message": "this should be stored in a local",
+      "range": {
+        "startLine": 292,
+        "startChar": 64,
+        "endLine": 292,
+        "endChar": 88
+      },
+      "revId": "d1bf2c0376873a4b8b0d2d0f46081e5736f3863e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
