@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4596a02c_ac0bb287",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T16:56:53Z",
+      "side": 1,
+      "message": "!.isEmpty()",
+      "range": {
+        "startLine": 235,
+        "startChar": 46,
+        "endLine": 235,
+        "endChar": 57
+      },
+      "revId": "8e7bef82db3e7492494d3f22eaeddc0062c0038e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15b4c788_5ec64432",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T16:56:53Z",
+      "side": 1,
+      "message": "Why do we need to lose NodeId class identity?",
+      "range": {
+        "startLine": 188,
+        "startChar": 103,
+        "endLine": 188,
+        "endChar": 114
+      },
+      "revId": "8e7bef82db3e7492494d3f22eaeddc0062c0038e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
