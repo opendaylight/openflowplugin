@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -36,11 +36,11 @@ public abstract class AbstractDeviceInitializer {
      * @param convertorExecutor convertor executor
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public Future<Void> initialize(@Nonnull final DeviceContext deviceContext,
-                                   final boolean switchFeaturesMandatory,
-                                   final boolean skipTableFeatures,
-                                   @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                   @Nullable final ConvertorExecutor convertorExecutor) {
+    public ListenableFuture<Void> initialize(@Nonnull final DeviceContext deviceContext,
+                                             final boolean switchFeaturesMandatory,
+                                             final boolean skipTableFeatures,
+                                             @Nullable final MultipartWriterProvider multipartWriterProvider,
+                                             @Nullable final ConvertorExecutor convertorExecutor) {
         Preconditions.checkNotNull(deviceContext);
 
         // Write node to datastore
@@ -64,9 +64,8 @@ public abstract class AbstractDeviceInitializer {
                 multipartWriterProvider, convertorExecutor);
     }
 
-    protected abstract Future<Void> initializeNodeInformation(@Nonnull DeviceContext deviceContext,
-                                                              boolean switchFeaturesMandatory,
-                                                              boolean skipTableFeatures,
-                                                              @Nullable MultipartWriterProvider multipartWriterProvider,
-                                                              @Nullable ConvertorExecutor convertorExecutor);
+    protected abstract ListenableFuture<Void> initializeNodeInformation(@Nonnull DeviceContext deviceContext,
+            boolean switchFeaturesMandatory, boolean skipTableFeatures,
+            @Nullable MultipartWriterProvider multipartWriterProvider,
+            @Nullable ConvertorExecutor convertorExecutor);
 }

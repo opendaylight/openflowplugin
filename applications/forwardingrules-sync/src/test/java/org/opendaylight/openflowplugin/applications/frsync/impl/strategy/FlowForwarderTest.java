@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -108,7 +108,8 @@ public class FlowForwarderTest {
                                 .setTransactionId(new TransactionId(BigInteger.ONE))
                                 .build()).buildFuture());
 
-        final Future<RpcResult<AddFlowOutput>> addResult = flowForwarder.add(flowPath, flow, flowCapableNodePath);
+        final ListenableFuture<RpcResult<AddFlowOutput>> addResult = flowForwarder.add(flowPath, flow,
+            flowCapableNodePath);
 
         Mockito.verify(salFlowService).addFlow(ArgumentMatchers.any());
         final AddFlowInput flowInput = addFlowInputCpt.getValue();
@@ -152,7 +153,7 @@ public class FlowForwarderTest {
                 .setMatch(new MatchBuilder().build())
                 .build();
 
-        final Future<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow,
+        final ListenableFuture<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow,
                 flowUpdated, flowCapableNodePath);
 
         Mockito.verify(salFlowService).updateFlow(ArgumentMatchers.any());
@@ -189,7 +190,7 @@ public class FlowForwarderTest {
                                 .build()).buildFuture());
 
         final Flow removeFlow = new FlowBuilder(flow).build();
-        final Future<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath,
+        final ListenableFuture<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath,
                 removeFlow, flowCapableNodePath);
 
         Mockito.verify(salFlowService).removeFlow(ArgumentMatchers.any());

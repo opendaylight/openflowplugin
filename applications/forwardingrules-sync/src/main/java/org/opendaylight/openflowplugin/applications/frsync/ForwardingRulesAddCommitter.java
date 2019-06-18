@@ -1,14 +1,13 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -28,6 +27,7 @@ public interface ForwardingRulesAddCommitter<D extends DataObject, A extends Dat
      * @param nodeIdent  - Node InstanceIdentifier
      * @return RpcResult of action
      */
-    Future<RpcResult<A>> add(InstanceIdentifier<D> identifier, D add, InstanceIdentifier<FlowCapableNode> nodeIdent);
+    ListenableFuture<RpcResult<A>> add(InstanceIdentifier<D> identifier, D add,
+            InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 }

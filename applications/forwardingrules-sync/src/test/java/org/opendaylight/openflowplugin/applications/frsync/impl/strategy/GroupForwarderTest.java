@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
@@ -97,7 +97,7 @@ public class GroupForwarderTest {
                         .buildFuture()
         );
 
-        final Future<RpcResult<RemoveGroupOutput>> addResult =
+        final ListenableFuture<RpcResult<RemoveGroupOutput>> addResult =
                 groupForwarder.remove(groupPath, group, flowCapableNodePath);
 
         Mockito.verify(salGroupService).removeGroup(ArgumentMatchers.any());
@@ -130,7 +130,7 @@ public class GroupForwarderTest {
                 .setGroupName("another-test")
                 .build();
 
-        final Future<RpcResult<UpdateGroupOutput>> addResult =
+        final ListenableFuture<RpcResult<UpdateGroupOutput>> addResult =
                 groupForwarder.update(groupPath, groupOriginal, groupUpdate, flowCapableNodePath);
 
         Mockito.verify(salGroupService).updateGroup(ArgumentMatchers.any());
@@ -161,7 +161,8 @@ public class GroupForwarderTest {
                         .buildFuture()
         );
 
-        final Future<RpcResult<AddGroupOutput>> addResult = groupForwarder.add(groupPath, group, flowCapableNodePath);
+        final ListenableFuture<RpcResult<AddGroupOutput>> addResult = groupForwarder.add(groupPath, group,
+            flowCapableNodePath);
 
         Mockito.verify(salGroupService).addGroup(ArgumentMatchers.any());
 

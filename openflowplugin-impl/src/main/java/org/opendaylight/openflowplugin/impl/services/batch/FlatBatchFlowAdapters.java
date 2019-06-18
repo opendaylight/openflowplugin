@@ -11,12 +11,10 @@ package org.opendaylight.openflowplugin.impl.services.batch;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlow;
@@ -128,17 +126,14 @@ public final class FlatBatchFlowAdapters {
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchFlowResult(final int stepOffset) {
-        return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
-            @Override
-            public RpcResult<ProcessFlatBatchOutput> apply(final RpcResult<T> input) {
-                List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
-                ProcessFlatBatchOutputBuilder outputBuilder =
-                        new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
-                return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
-                                       .withRpcErrors(input.getErrors())
-                                       .withResult(outputBuilder.build())
-                                       .build();
-            }
+        return input -> {
+            List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
+            ProcessFlatBatchOutputBuilder outputBuilder =
+                    new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+            return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
+                                   .withRpcErrors(input.getErrors())
+                                   .withResult(outputBuilder.build())
+                                   .build();
         };
     }
 
@@ -168,9 +163,9 @@ public final class FlatBatchFlowAdapters {
      * @return ListenableFuture with converted result {@link ProcessFlatBatchOutput}
      */
     public static <T extends BatchFlowOutputListGrouping> ListenableFuture<RpcResult<ProcessFlatBatchOutput>>
-        convertFlowBatchFutureForChain(final Future<RpcResult<T>> resultUpdateFlowFuture,
-                                   final int currentOffset) {
-        return Futures.transform(JdkFutureAdapters.listenInPoolThread(resultUpdateFlowFuture),
+        convertFlowBatchFutureForChain(final ListenableFuture<RpcResult<T>> resultUpdateFlowFuture,
+                                       final int currentOffset) {
+        return Futures.transform(resultUpdateFlowFuture,
                 FlatBatchFlowAdapters.convertBatchFlowResult(currentOffset),
                 MoreExecutors.directExecutor());
     }

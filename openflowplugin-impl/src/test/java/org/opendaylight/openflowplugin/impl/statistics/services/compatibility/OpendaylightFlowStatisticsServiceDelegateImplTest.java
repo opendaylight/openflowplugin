@@ -11,9 +11,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
@@ -120,7 +120,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .build()))
                 .build();
 
-        final Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> resultFuture
                 = flowStatisticsServiceDelegate.getAggregateFlowStatisticsFromFlowTableForAllFlows(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -141,7 +141,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         rpcResult = buildFlowStatsReply();
 
-        final Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> resultFuture
                 = flowStatisticsServiceDelegate.getAllFlowStatisticsFromFlowTable(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -204,7 +204,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         rpcResult = buildFlowStatsReply();
 
-        final Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> resultFuture
                 = flowStatisticsServiceDelegate.getAllFlowsStatisticsFromAllFlowTables(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -226,7 +226,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         rpcResult = buildFlowStatsReply();
 
-        final Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
                 = flowStatisticsServiceDelegate.getFlowStatisticsFromFlowTable(input.build());
 
         Assert.assertTrue(resultFuture.isDone());

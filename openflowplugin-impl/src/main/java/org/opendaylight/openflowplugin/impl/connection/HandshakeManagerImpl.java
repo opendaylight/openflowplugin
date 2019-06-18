@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.core.ErrorHandler;
@@ -329,7 +328,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         LOG.debug("sending hello message: version{}, xid={}, version bitmap={}", helloVersion, helloXid,
                   MessageFactory.digVersions(helloInput.getElements()));
 
-        Future<RpcResult<HelloOutput>> helloResult = connectionAdapter.hello(helloInput);
+        ListenableFuture<RpcResult<HelloOutput>> helloResult = connectionAdapter.hello(helloInput);
 
         ListenableFuture<RpcResult<HelloOutput>> rpcResultListenableFuture
                 = JdkFutureAdapters.listenInPoolThread(helloResult);
@@ -382,7 +381,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
         featuresBuilder.setVersion(version).setXid(xid);
         LOG.debug("sending feature request for version={} and xid={}", version, xid);
-        Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter.getFeatures(featuresBuilder.build());
+        ListenableFuture<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter.getFeatures(
+            featuresBuilder.build());
 
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(featuresFuture),
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {

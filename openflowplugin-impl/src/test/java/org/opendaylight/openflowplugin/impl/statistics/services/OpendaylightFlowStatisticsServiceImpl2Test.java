@@ -13,9 +13,9 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -54,6 +54,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack,
@@ -95,7 +96,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                         .setPriority(5)
                         .setTableId((short) 1);
 
-        final Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> resultFuture
                 = flowStatisticsService.getAggregateFlowStatisticsFromFlowTableForGivenMatch(input.build());
 
         Assert.assertTrue(resultFuture.isDone());

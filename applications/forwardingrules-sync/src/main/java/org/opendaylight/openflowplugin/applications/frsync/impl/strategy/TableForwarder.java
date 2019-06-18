@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesUpdateCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -41,9 +41,10 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
     }
 
     @Override
-    public Future<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
-                                                       final TableFeatures original, final TableFeatures update,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
+                                                                 final TableFeatures original,
+                                                                 final TableFeatures update,
+                                                                 final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Forwarding Table Update request [Tbl id, node Id {} {}",
                 identifier, nodeIdent);
 

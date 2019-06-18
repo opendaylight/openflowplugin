@@ -23,7 +23,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -223,8 +222,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier,
+            final Flow addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {

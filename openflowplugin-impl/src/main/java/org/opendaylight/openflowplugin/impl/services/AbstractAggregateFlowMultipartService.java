@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
@@ -28,7 +28,7 @@ public abstract class AbstractAggregateFlowMultipartService<T extends OfHeader>
      * @param input input
      * @return reply
      */
-    public abstract Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
-        GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input);
+    public abstract ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>>
+        handleAndReply(GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input);
 
 }

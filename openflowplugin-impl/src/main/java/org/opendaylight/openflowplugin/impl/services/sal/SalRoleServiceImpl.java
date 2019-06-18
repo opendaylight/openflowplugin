@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -29,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput>
                                       implements SalRoleService  {
@@ -80,7 +78,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
     private ListenableFuture<RpcResult<SetRoleOutput>> tryToChangeRole(final OfpRole role) {
         LOG.info("RoleChangeTask called on device:{} OFPRole:{}", getDeviceInfo().getNodeId().getValue(), role);
 
-        final Future<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
+        final ListenableFuture<BigInteger> generationFuture = roleService.getGenerationIdFromDevice(getVersion());
 
         return Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(generationFuture), generationId -> {
             LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}",
@@ -88,9 +86,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
             final BigInteger nextGenerationId = getNextGenerationId(generationId);
             LOG.debug("nextGenerationId received from device:{} is {}",
                     getDeviceInfo().getNodeId().getValue(), nextGenerationId);
-            final Future<RpcResult<SetRoleOutput>> submitRoleFuture =
-                    roleService.submitRoleChange(role, getVersion(), nextGenerationId);
-            return JdkFutureAdapters.listenInPoolThread(submitRoleFuture);
+            return roleService.submitRoleChange(role, getVersion(), nextGenerationId);
         }, MoreExecutors.directExecutor());
     }
 

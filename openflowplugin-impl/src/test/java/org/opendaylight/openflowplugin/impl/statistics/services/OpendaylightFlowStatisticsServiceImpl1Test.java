@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -34,6 +34,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
 
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService =
@@ -82,7 +83,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 .setNode(createNodeRef("unitProt:123"))
                 .setPriority(5);
 
-        final Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
                 = flowStatisticsService.getFlowStatisticsFromFlowTable(input.build());
     }
 }

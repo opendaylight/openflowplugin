@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -224,7 +223,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         counters = new SyncCrudCounters();
     }
 
-    private <O> Answer<Future<RpcResult<O>>> createSalServiceFutureAnswer() {
+    private static <O> Answer<ListenableFuture<RpcResult<O>>> createSalServiceFutureAnswer() {
         return invocation -> RpcResultBuilder.<O>success().buildFuture();
     }
 

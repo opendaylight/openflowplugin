@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -647,7 +646,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 .lookup(deviceInfo.getVersion());
 
         if (initializer.isPresent()) {
-            final Future<Void> initialize = initializer
+            final ListenableFuture<Void> initialize = initializer
                     .get()
                     .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
 

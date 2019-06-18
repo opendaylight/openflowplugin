@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,11 +9,11 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -77,7 +77,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             builder.setVersion(features.getVersion());
             builder.setXid(ECHO_XID.getValue());
 
-            Future<RpcResult<EchoOutput>> echoReplyFuture =
+            ListenableFuture<RpcResult<EchoOutput>> echoReplyFuture =
                     connectionContext.getConnectionAdapter().echo(builder.build());
 
             try {

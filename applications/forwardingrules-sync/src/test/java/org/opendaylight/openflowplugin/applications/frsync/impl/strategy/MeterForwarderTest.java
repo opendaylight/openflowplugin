@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +20,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -95,7 +95,7 @@ public class MeterForwarderTest {
 
         Meter removeMeter = new MeterBuilder(meter).build();
 
-        final Future<RpcResult<RemoveMeterOutput>> removeResult =
+        final ListenableFuture<RpcResult<RemoveMeterOutput>> removeResult =
                 meterForwarder.remove(meterPath, removeMeter, flowCapableNodePath);
         Mockito.verify(salMeterService).removeMeter(ArgumentMatchers.any());
 
@@ -124,7 +124,7 @@ public class MeterForwarderTest {
                 .setMeterName("another-test")
                 .build();
 
-        final Future<RpcResult<UpdateMeterOutput>> updateResult =
+        final ListenableFuture<RpcResult<UpdateMeterOutput>> updateResult =
                 meterForwarder.update(meterPath, meterOriginal, meterUpdate,
                 flowCapableNodePath);
         Mockito.verify(salMeterService).updateMeter(ArgumentMatchers.any());
@@ -151,7 +151,8 @@ public class MeterForwarderTest {
                         .build()).buildFuture()
         );
 
-        final Future<RpcResult<AddMeterOutput>> addResult = meterForwarder.add(meterPath, meter, flowCapableNodePath);
+        final ListenableFuture<RpcResult<AddMeterOutput>> addResult = meterForwarder.add(meterPath, meter,
+            flowCapableNodePath);
         Mockito.verify(salMeterService).addMeter(ArgumentMatchers.any());
 
         Assert.assertTrue(addResult.isDone());

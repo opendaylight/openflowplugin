@@ -8,8 +8,8 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -119,7 +119,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<TableFeatures> identifier,
+    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<TableFeatures> identifier,
             final TableFeatures addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return Futures.immediateFuture(null);
     }
@@ -131,7 +131,7 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<TableFeatures> identifier,
+    public ListenableFuture<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<TableFeatures> identifier,
             TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return null;
     }

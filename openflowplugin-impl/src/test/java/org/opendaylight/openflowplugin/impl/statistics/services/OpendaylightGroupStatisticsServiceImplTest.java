@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Assert;
@@ -69,6 +69,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
     private OpendaylightGroupStatisticsServiceImpl groupStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
@@ -90,7 +91,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildGroupStatsResponse();
 
-        final Future<RpcResult<GetAllGroupStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> resultFuture
                 = groupStatisticsService.getAllGroupStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -123,7 +124,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
                         .build()
         )).build();
 
-        final Future<RpcResult<GetGroupDescriptionOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetGroupDescriptionOutput>> resultFuture
                 = groupStatisticsService.getGroupDescription(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -153,7 +154,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
                         .build()
         )).build();
 
-        final Future<RpcResult<GetGroupFeaturesOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetGroupFeaturesOutput>> resultFuture
                 = groupStatisticsService.getGroupFeatures(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -170,7 +171,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildGroupStatsResponse();
 
-        final Future<RpcResult<GetGroupStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetGroupStatisticsOutput>> resultFuture
                 = groupStatisticsService.getGroupStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());

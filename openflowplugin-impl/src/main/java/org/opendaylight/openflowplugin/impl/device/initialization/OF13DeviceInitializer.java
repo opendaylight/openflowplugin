@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -16,7 +15,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,11 +43,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(OF13DeviceInitializer.class);
 
     @Override
-    protected Future<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
-                                                     final boolean switchFeaturesMandatory,
-                                                     final boolean skipTableFeatures,
-                                                     @Nullable final MultipartWriterProvider multipartWriterProvider,
-                                                     @Nullable final ConvertorExecutor convertorExecutor) {
+    protected ListenableFuture<Void> initializeNodeInformation(@Nonnull final DeviceContext deviceContext,
+            final boolean switchFeaturesMandatory, final boolean skipTableFeatures,
+            @Nullable final MultipartWriterProvider multipartWriterProvider,
+            @Nullable final ConvertorExecutor convertorExecutor) {
         final ConnectionContext connectionContext =
                 Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
         final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
@@ -81,13 +78,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
                 return Futures.transform(
                     switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures),
-                    new Function<List<RpcResult<List<OfHeader>>>, Void>() {
-                        @Override
-                        public Void apply(final List<RpcResult<List<OfHeader>>> input) {
-                            LOG.info("Static node {} successfully finished collecting",
-                                    deviceContext.getDeviceInfo());
-                            return null;
-                        }
+                    input1 -> {
+                        LOG.info("Static node {} successfully finished collecting",
+                                deviceContext.getDeviceInfo());
+                        return null;
                     }, MoreExecutors.directExecutor());
             }, MoreExecutors.directExecutor());
 

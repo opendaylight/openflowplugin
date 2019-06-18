@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Assert;
@@ -69,6 +69,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
 
     private OpendaylightMeterStatisticsServiceImpl meterStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(rqContextStack, deviceContext,
@@ -111,7 +112,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
                         .build()
         )).build();
 
-        final Future<RpcResult<GetAllMeterConfigStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> resultFuture
                 = meterStatisticsService.getAllMeterConfigStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -127,7 +128,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildMeterStatisticsReply();
 
-        final Future<RpcResult<GetAllMeterStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> resultFuture
                 = meterStatisticsService.getAllMeterStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -173,7 +174,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildMeterStatisticsReply();
 
-        final Future<RpcResult<GetMeterStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetMeterStatisticsOutput>> resultFuture
                 = meterStatisticsService.getMeterStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());

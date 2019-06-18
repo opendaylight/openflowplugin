@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -129,7 +128,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     // TODO: Pull this into ForwardingRulesCommiter and override it here
     @Override
-    public Future<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final Group group = removeDataObj;
@@ -171,7 +170,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
+    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
@@ -205,7 +204,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     }
 
-    private StaleGroup makeStaleGroup(InstanceIdentifier<Group> identifier, Group del,
+    private static StaleGroup makeStaleGroup(InstanceIdentifier<Group> identifier, Group del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleGroupBuilder staleGroupBuilder = new StaleGroupBuilder(del);
         return staleGroupBuilder.setGroupId(del.getGroupId()).build();
@@ -220,7 +219,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         handleStaleGroupResultFuture(submitFuture);
     }
 
-    private void handleStaleGroupResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleGroupResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object result) {
@@ -235,7 +234,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
         .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
             StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));

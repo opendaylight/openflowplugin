@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -41,6 +41,6 @@ public abstract class AbstractExperimenterMultipartService<T extends OfHeader>
      * @param input experimenter input
      * @return experimenter output
      */
-    public abstract Future<RpcResult<SendExperimenterMpRequestOutput>>
+    public abstract ListenableFuture<RpcResult<SendExperimenterMpRequestOutput>>
         handleAndReply(SendExperimenterMpRequestInput input);
 }

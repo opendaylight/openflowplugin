@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -194,7 +193,7 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     @VisibleForTesting
-    public Future<Void> getFullyStarted() {
+    public ListenableFuture<Void> getFullyStarted() {
         return fullyStarted;
     }
 

@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,6 +48,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
 
     private OpendaylightFlowTableStatisticsServiceImpl flowTableStatisticsService;
 
+    @Override
     public void setUp() {
         flowTableStatisticsService = new OpendaylightFlowTableStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -81,7 +82,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
                         .build()
         )).build();
 
-        final Future<RpcResult<GetFlowTablesStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>> resultFuture
                 = flowTableStatisticsService.getFlowTablesStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -103,7 +104,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         Assert.assertEquals(MultipartType.OFPMPTABLE, mpRequest.getType());
         Assert.assertTrue(mpRequest.getMultipartRequestBody() instanceof MultipartRequestTableCase);
         final MultipartRequestTableCase mpRequestBody =
-                (MultipartRequestTableCase) (mpRequest.getMultipartRequestBody());
+                (MultipartRequestTableCase) mpRequest.getMultipartRequestBody();
         Assert.assertNotNull(mpRequestBody.getMultipartRequestTable().getEmpty());
     }
 }

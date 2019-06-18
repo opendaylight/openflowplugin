@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm;
 
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -66,7 +66,7 @@ public interface ForwardingRulesCommiter<D extends DataObject>
      * @return A future associated with RPC task. {@code null} is set to the future
      *         if this method does not invoke RPC.
      */
-    Future<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
+    ListenableFuture<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
 
     /**
@@ -83,7 +83,7 @@ public interface ForwardingRulesCommiter<D extends DataObject>
      */
     void createStaleMarkEntity(InstanceIdentifier<D> identifier, D del, InstanceIdentifier<FlowCapableNode> nodeIdent);
 
-    Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<D> identifier, D del,
+    ListenableFuture<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<D> identifier, D del,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
 
 }

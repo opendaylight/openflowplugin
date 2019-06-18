@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +135,8 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testGetStatisticsWorkMode() throws Exception {
-        final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getStatisticsWorkMode(null);
+        final ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> workMode =
+                statisticsManager.getStatisticsWorkMode(null);
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
         assertNotNull(workMode.get().getResult());

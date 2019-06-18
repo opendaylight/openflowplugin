@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -107,7 +107,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
             final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final RemoveMeterInputBuilder builder = new RemoveMeterInputBuilder(removeDataObj);
@@ -135,8 +135,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
+            final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
         final AddMeterInputBuilder builder = new AddMeterInputBuilder(addDataObj);
 
@@ -154,7 +154,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         persistStaleMeter(staleMeter, nodeIdent);
     }
 
-    private StaleMeter makeStaleMeter(Meter del) {
+    private static StaleMeter makeStaleMeter(Meter del) {
         StaleMeterBuilder staleMeterBuilder = new StaleMeterBuilder(del);
         return staleMeterBuilder.setMeterId(del.getMeterId()).build();
     }
@@ -168,7 +168,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         handleStaleMeterResultFuture(submitFuture);
     }
 
-    private void handleStaleMeterResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleMeterResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object result) {
@@ -182,7 +182,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         }, MoreExecutors.directExecutor());
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819
         .meters.StaleMeter> getStaleMeterInstanceIdentifier(
             StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));

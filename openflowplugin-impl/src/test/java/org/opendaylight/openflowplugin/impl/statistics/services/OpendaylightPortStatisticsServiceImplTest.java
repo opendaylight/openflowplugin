@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Assert;
@@ -48,6 +48,7 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
 
     private OpendaylightPortStatisticsServiceImpl portStatisticsService;
 
+    @Override
     public void setUp() {
         portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -68,7 +69,7 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
 
         rpcResult = buildPortStatisticsReply();
 
-        final Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllNodeConnectorsStatisticsOutput>> resultFuture
                 = portStatisticsService.getAllNodeConnectorsStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -114,7 +115,7 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
 
         rpcResult = buildPortStatisticsReply();
 
-        final Future<RpcResult<GetNodeConnectorStatisticsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>> resultFuture
                 = portStatisticsService.getNodeConnectorStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());

@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Assert;
@@ -51,6 +51,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
     private OpendaylightQueueStatisticsServiceImpl queueStatisticsService;
 
+    @Override
     public void setUp() {
         queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -71,7 +72,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildQueueStatsReply();
 
-        final Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> resultFuture
                 = queueStatisticsService.getAllQueuesStatisticsFromAllPorts(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -112,7 +113,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildQueueStatsReply();
 
-        final Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> resultFuture
                 = queueStatisticsService.getAllQueuesStatisticsFromGivenPort(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
@@ -133,7 +134,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildQueueStatsReply();
 
-        final Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> resultFuture
+        final ListenableFuture<RpcResult<GetQueueStatisticsFromGivenPortOutput>> resultFuture
                 = queueStatisticsService.getQueueStatisticsFromGivenPort(input.build());
 
         Assert.assertTrue(resultFuture.isDone());

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -113,7 +112,7 @@ public class BundleFlowForwarder {
         });
     }
 
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow flow,
+    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow flow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {

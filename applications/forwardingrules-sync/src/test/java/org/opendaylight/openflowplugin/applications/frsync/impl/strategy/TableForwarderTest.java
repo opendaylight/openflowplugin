@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
@@ -94,7 +94,7 @@ public class TableForwarderTest {
         final TableFeatures tableFeaturesUpdate = new TableFeaturesBuilder(tableFeatures)
                 .setName("another-table")
                 .build();
-        final Future<RpcResult<UpdateTableOutput>> updateResult = tableForwarder.update(
+        final ListenableFuture<RpcResult<UpdateTableOutput>> updateResult = tableForwarder.update(
                 tableFeaturesPath, tableFeatures, tableFeaturesUpdate, flowCapableNodePath);
 
         Mockito.verify(salTableService).updateTable(ArgumentMatchers.any());

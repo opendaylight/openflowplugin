@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.services;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
@@ -55,6 +55,6 @@ public abstract class AbstractTableMultipartService<T extends OfHeader>
      * @param input experimenter input
      * @return experimenter output
      */
-    public abstract Future<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input);
+    public abstract ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input);
 
 }

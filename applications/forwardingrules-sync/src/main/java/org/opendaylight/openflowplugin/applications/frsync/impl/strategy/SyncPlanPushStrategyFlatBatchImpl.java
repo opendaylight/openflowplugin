@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -14,14 +13,12 @@ import com.google.common.collect.PeekingIterator;
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
@@ -140,24 +137,23 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     .setBatch(batchBag)
                     .build();
 
-            final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
+            final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
                     flatBatchService.processFlatBatch(flatBatchInput);
 
             if (LOG.isDebugEnabled()) {
-                Futures.addCallback(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
+                Futures.addCallback(rpcResultFuture,
                         createCounterCallback(batchBag, batchOrder, counters), MoreExecutors.directExecutor());
             }
 
-            return Futures.transform(JdkFutureAdapters.listenInPoolThread(rpcResultFuture),
+            return Futures.transform(rpcResultFuture,
                     ReconcileUtil.createRpcResultToVoidFunction("flat-batch"),
                     MoreExecutors.directExecutor());
         }, MoreExecutors.directExecutor());
         return resultVehicle;
     }
 
-    private FutureCallback<RpcResult<ProcessFlatBatchOutput>> createCounterCallback(final List<Batch> inputBatchBag,
-                                                                                    final int failureIndexLimit,
-                                                                                    final SyncCrudCounters counters) {
+    private static FutureCallback<RpcResult<ProcessFlatBatchOutput>> createCounterCallback(
+            final List<Batch> inputBatchBag, final int failureIndexLimit, final SyncCrudCounters counters) {
         return new FutureCallback<RpcResult<ProcessFlatBatchOutput>>() {
             @Override
             public void onSuccess(final RpcResult<ProcessFlatBatchOutput> result) {
