@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bdf9fcce_5a8a209b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:09:28Z",
+      "side": 1,
+      "message": "if anything between here and the try {} block below fails, we do not shut down the factory",
+      "range": {
+        "startLine": 246,
+        "startChar": 32,
+        "endLine": 246,
+        "endChar": 39
+      },
+      "revId": "42fa1b30a16276dad5ed613a3c98d68b1b7980d8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "717faf24_82e70bda",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:09:28Z",
+      "side": 1,
+      "message": "shutdownNow() will drain and return unexecuted tasks, which will be lost -- why?",
+      "range": {
+        "startLine": 317,
+        "startChar": 20,
+        "endLine": 317,
+        "endChar": 42
+      },
+      "revId": "42fa1b30a16276dad5ed613a3c98d68b1b7980d8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
