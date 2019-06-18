@@ -24,7 +24,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -139,9 +139,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 // into remove-flow input so that only a flow entry associated with
                 // a given flow object is removed.
                 builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-                final Future<RpcResult<RemoveFlowOutput>> resultFuture =
-                        provider.getSalFlowService().removeFlow(builder.build());
-                JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
+                LoggingFutures.addErrorLogging(provider.getSalFlowService().removeFlow(builder.build()), LOG,
+                    "removeFlow");
             }
         }
     }
@@ -149,10 +148,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     // TODO: Pull this into ForwardingRulesCommiter and override it here
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
             final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
-        Future<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
+        ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -93,7 +93,7 @@ public class BundleFlowForwarder {
                 .getSalBundleService().addBundleMessages(addBundleMessagesInput);
         LOG.trace("Pushing flow remove message {} to bundle {} for device {}", addBundleMessagesInput,
                 bundleId.getValue(), node);
-        JdkFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
+        LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
     }
 
     public void update(final InstanceIdentifier<Flow> identifier, final Flow originalFlow, final Flow updatedFlow,

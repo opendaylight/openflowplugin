@@ -16,7 +16,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
@@ -123,7 +123,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
         }
     }
 
@@ -161,7 +161,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 UpdateGroupInput updateGroupInput = builder.build();
                 final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture;
                 resultFuture = this.provider.getSalGroupService().updateGroup(updateGroupInput);
-                JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
+                LoggingFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
                 Futures.addCallback(resultFuture,
                         new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
                         MoreExecutors.directExecutor());
