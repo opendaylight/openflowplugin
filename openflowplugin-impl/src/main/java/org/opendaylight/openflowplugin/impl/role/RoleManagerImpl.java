@@ -11,7 +11,11 @@ package org.opendaylight.openflowplugin.impl.role;
 import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
+
+import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -19,19 +23,24 @@ import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RoleManagerImpl implements RoleManager {
     // Timeout after what we will give up on waiting for master role
     private static final long CHECK_ROLE_MASTER_TIMEOUT = 20000;
+    private static final Logger LOG = LoggerFactory.getLogger(RoleManagerImpl.class);
 
     private final ConcurrentMap<DeviceInfo, RoleContext> contexts = new ConcurrentHashMap<>();
     private final HashedWheelTimer timer;
     private final OpenflowProviderConfig config;
+    private final ExecutorService executorService;
 
     public RoleManagerImpl(final HashedWheelTimer timer,
                            final OpenflowProviderConfig config) {
         this.timer = timer;
         this.config = config;
+        this.executorService = Executors.newListeningCachedThreadPool("role-service", LOG);
     }
 
     @Override
@@ -39,7 +48,7 @@ public class RoleManagerImpl implements RoleManager {
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final RoleContextImpl roleContext = new RoleContextImpl(
                 deviceContext.getDeviceInfo(),
-                timer, CHECK_ROLE_MASTER_TIMEOUT, config);
+                timer, CHECK_ROLE_MASTER_TIMEOUT, config, executorService);
 
         roleContext.setRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         contexts.put(deviceInfo, roleContext);
@@ -55,5 +64,11 @@ public class RoleManagerImpl implements RoleManager {
     public void close() {
         contexts.values().forEach(OFPContext::close);
         contexts.clear();
+        executorService.shutdownNow();
+        try {
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.warn("Failed to shutdown role-service executor service gracefully.", e);
+        }
     }
 }
