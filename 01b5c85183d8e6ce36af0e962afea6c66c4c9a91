@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0cfc70d2_da92080a",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "this is not ODL-assigned namespace",
+      "range": {
+        "startLine": 26,
+        "startChar": 15,
+        "endLine": 26,
+        "endChar": 27
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1331fb42_bfc7eefe",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "BEANNAME?",
+      "range": {
+        "startLine": 37,
+        "startChar": 63,
+        "endLine": 37,
+        "endChar": 70
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5f453447_20755f57",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXServiceMBean.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "description of the strings would be nice. Also this really should be Open Types, not plain strings, so that the data is properly structured.",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 23
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a756e79f_0cb0fbd8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "this is overridden in the constructor.",
+      "range": {
+        "startLine": 137,
+        "startChar": 68,
+        "endLine": 137,
+        "endChar": 92
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1feb04af_e17b6b75",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/FlowGroupCacheManager.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "Leaking mutable collection from state. This is an antipattern -- proper operations should be defined instead.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 63
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a6e3718c_ceb1418a",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "this really is begging to be an Open Type",
+      "range": {
+        "startLine": 12,
+        "startChar": 13,
+        "endLine": 12,
+        "endChar": 32
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b6d38b61_76e30235",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "\"failed\" seems like it should have a cause",
+      "range": {
+        "startLine": 16,
+        "startChar": 8,
+        "endLine": 16,
+        "endChar": 14
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aa428edd_1fc0fcfe",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be Instant?",
+      "range": {
+        "startLine": 20,
+        "startChar": 12,
+        "endLine": 20,
+        "endChar": 25
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4cc7cb91_6d36f104",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "can these ever be null?",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 25
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "715553bc_310c0a4f",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-06-18T17:04:57Z",
+      "side": 1,
+      "message": "Mutable state object. How is consistency of status and time guaranteed?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 5
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
