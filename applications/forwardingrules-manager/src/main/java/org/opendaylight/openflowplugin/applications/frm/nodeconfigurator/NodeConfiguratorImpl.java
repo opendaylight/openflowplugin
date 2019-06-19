@@ -64,7 +64,7 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
         final Callable<ListenableFuture<T>> mainWorker = job.getMainWorker();
         if (mainWorker == null) {
             LOG.error("Unexpected no (null) main worker on job: {}", job);
-            job.setResultFuture(null);
+            job.setResult(null);
             return;
         }
 
@@ -73,7 +73,7 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
             future = mainWorker.call();
         } catch (Exception e) {
             LOG.error("Direct Exception (not failed Future) when executing job, won't even retry: {}", job, e);
-            job.setResultFuture(null);
+            job.setResult(null);
             return;
         }
 
@@ -81,12 +81,13 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
             @Override
             public void onSuccess(final T result) {
                 LOG.trace("Job completed successfully: {}", job.getKey());
-                job.setResultFuture(result);
+                job.setResult(result);
             }
 
             @Override
             public void onFailure(final Throwable cause) {
                 LOG.error("Job {} failed", job.getKey(), cause);
+                job.setFailure(cause);
             }
         }, MoreExecutors.directExecutor());
 
