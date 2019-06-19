@@ -12,11 +12,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.errorprone.annotations.Var;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.opendaylight.infrautils.utils.concurrent.LoggingUncaughtThreadDeathContextRunnable;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.util.concurrent.QueuedNotificationManager;
@@ -37,9 +35,9 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
                 .setDaemon(true)
                 .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
                 .build());
-        manager = QueuedNotificationManager.create(syncThreadPool, (key, entries) -> {
+        manager = QueuedNotificationManager.create(syncThreadPool, (key, jobs) -> {
             LOG.trace("Executing jobs with key: {}", key);
-            entries.forEach(jobEntry -> new MainTask<>(jobEntry).run());
+            jobs.forEach(NodeConfiguratorImpl::executeJob);
             LOG.trace("Finished executing jobs with key: {}", key);
         }, 4096, "nc-jobqueue");
     }
@@ -59,50 +57,39 @@ public class NodeConfiguratorImpl implements NodeConfigurator {
         LOG.info("NodeConfigurator now closed for business.");
     }
 
-    private static final class MainTask<T> extends LoggingUncaughtThreadDeathContextRunnable {
-        private final JobEntry<T> jobEntry;
+    @SuppressWarnings("checkstyle:illegalCatch")
+    private static <T> void executeJob(JobEntry<T> job) {
+        LOG.trace("Running job: {}", job);
 
-        MainTask(final JobEntry<T> jobEntry) {
-            super(LOG, jobEntry::toString);
-            this.jobEntry = jobEntry;
+        final Callable<ListenableFuture<T>> mainWorker = job.getMainWorker();
+        if (mainWorker == null) {
+            LOG.error("Unexpected no (null) main worker on job: {}", job);
+            job.setResultFuture(null);
+            return;
         }
 
-        @Override
-        @SuppressWarnings("checkstyle:illegalcatch")
-        public void runWithUncheckedExceptionLogging() {
-            @Var ListenableFuture<T> future = null;
-            LOG.trace("Running job with key: {}", jobEntry.getKey());
-
-            try {
-                Callable<ListenableFuture<T>> mainWorker = jobEntry.getMainWorker();
-                if (mainWorker != null) {
-                    future = mainWorker.call();
-                } else {
-                    LOG.error("Unexpected no (null) main worker on job: {}", jobEntry);
-                }
-
-            } catch (Exception e) {
-                LOG.error("Direct Exception (not failed Future) when executing job, won't even retry: {}", jobEntry, e);
-            }
-
-            if (future != null) {
-                Futures.addCallback(future, new FutureCallback<T>() {
-                    @Override
-                    public void onSuccess(final T result) {
-                        LOG.trace("Job completed successfully: {}", jobEntry.getKey());
-                        jobEntry.setResultFuture(result);
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable cause) {
-                        LOG.error("Job {} failed", jobEntry.getKey(), cause);
-                    }
-                }, MoreExecutors.directExecutor());
-            } else {
-                jobEntry.setResultFuture(null);
-            }
-
-            LOG.trace("Finished running job with key: {}", jobEntry.getKey());
+        final ListenableFuture<T> future;
+        try {
+            future = mainWorker.call();
+        } catch (Exception e) {
+            LOG.error("Direct Exception (not failed Future) when executing job, won't even retry: {}", job, e);
+            job.setResultFuture(null);
+            return;
         }
+
+        Futures.addCallback(future, new FutureCallback<T>() {
+            @Override
+            public void onSuccess(final T result) {
+                LOG.trace("Job completed successfully: {}", job.getKey());
+                job.setResultFuture(result);
+            }
+
+            @Override
+            public void onFailure(final Throwable cause) {
+                LOG.error("Job {} failed", job.getKey(), cause);
+            }
+        }, MoreExecutors.directExecutor());
+
+        LOG.trace("Finished running job: {}", job);
     }
 }
