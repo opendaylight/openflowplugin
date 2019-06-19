@@ -17,35 +17,32 @@ import javax.annotation.Nullable;
  * enqueued to the book-keeping data structure.
  */
 class JobEntry<T> {
-
+    private final SettableFuture<T> resultFuture = SettableFuture.create();
+    private @Nullable final Callable<ListenableFuture<T>> mainWorker;
     private final String key;
-    private volatile @Nullable Callable<ListenableFuture<T>> mainWorker;
-    private volatile SettableFuture<T> resultFuture;
 
     JobEntry(String key, Callable<ListenableFuture<T>> mainWorker) {
         this.key = key;
         this.mainWorker = mainWorker;
-        resultFuture = SettableFuture.create();
     }
 
-    public String getKey() {
+    String getKey() {
         return key;
     }
 
-    @Nullable public Callable<ListenableFuture<T>> getMainWorker() {
+    @Nullable Callable<ListenableFuture<T>> getMainWorker() {
         return mainWorker;
     }
 
-    public void setMainWorker(@Nullable Callable<ListenableFuture<T>> mainWorker) {
-        this.mainWorker = mainWorker;
-    }
-
-    public ListenableFuture<T> getResultFuture() {
+    ListenableFuture<T> getResultFuture() {
         return resultFuture;
     }
 
-    public void setResultFuture(@Nullable T result) {
-        this.resultFuture.set(result);
+    void setResult(@Nullable T result) {
+        resultFuture.set(result);
     }
 
+    void setFailure(Throwable failure) {
+        resultFuture.setException(failure);
+    }
 }
