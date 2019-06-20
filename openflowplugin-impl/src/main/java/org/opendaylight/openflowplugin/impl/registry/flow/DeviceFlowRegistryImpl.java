@@ -130,13 +130,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             public void onSuccess(@Nonnull Optional<FlowCapableNode> result) {
                 result.asSet().stream()
                         .filter(Objects::nonNull)
-                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
+                        .filter(flowCapableNode -> flowCapableNode.getTable() != null)
                         .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
                         .filter(Objects::nonNull)
-                        .filter(table -> Objects.nonNull(table.getFlow()))
+                        .filter(table -> table.getFlow() != null)
                         .flatMap(table -> table.getFlow().stream())
                         .filter(Objects::nonNull)
-                        .filter(flow -> Objects.nonNull(flow.getId()))
+                        .filter(flow -> flow.getId() != null)
                         .forEach(flowConsumer);
 
                 // After we are done with reading from datastore, close the transaction
