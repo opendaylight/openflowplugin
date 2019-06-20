@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.util.HashedWheelTimer;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -729,22 +728,22 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 // Count all flows we read from datastore for debugging purposes.
                 // This number do not always represent how many flows were actually added
                 // to DeviceFlowRegistry, because of possible duplicates.
-                long flowCount = Optional.ofNullable(result)
-                        .map(Collections::singleton)
-                        .orElse(Collections.emptySet())
-                        .stream()
-                        .flatMap(Collection::stream)
-                        .filter(Objects::nonNull)
-                        .flatMap(flowCapableNodeOptional
-                            -> com.google.common.base.Optional.fromJavaUtil(flowCapableNodeOptional).asSet().stream())
-                        .filter(Objects::nonNull)
-                        .filter(flowCapableNode -> flowCapableNode.getTable() != null)
-                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
-                        .filter(Objects::nonNull)
-                        .filter(table -> table.getFlow() != null)
-                        .flatMap(table -> table.getFlow().stream())
-                        .filter(Objects::nonNull)
-                        .count();
+                final long flowCount;
+                if (result != null) {
+                    long tmp = 0;
+                    for (Optional<FlowCapableNode> optNode : result) {
+                        if (optNode.isPresent()) {
+                            tmp += optNode.get().nonnullTable().stream()
+                                    .filter(Objects::nonNull)
+                                    .flatMap(table -> table.nonnullFlow().stream())
+                                    .filter(Objects::nonNull)
+                                    .count();
+                        }
+                    }
+                    flowCount = tmp;
+                } else {
+                    flowCount = 0;
+                }
 
                 LOG.debug("Finished filling flow registry with {} flows for node: {}", flowCount, deviceInfo);
             }
