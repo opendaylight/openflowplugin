@@ -7,14 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.protocol.deserialization;
 
-import java.util.Objects;
-
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 
 public class MessageCodeExperimenterKey extends MessageCodeKey implements ExperimenterDeserializerKey {
 
-    private Long experimenterId;
+    private final Long experimenterId;
 
     /**
      * Constructor.
@@ -35,7 +33,7 @@ public class MessageCodeExperimenterKey extends MessageCodeKey implements Experi
     @Override
     public int hashCode() {
         final int prime = 31;
-        return prime * super.hashCode() + (Objects.isNull(experimenterId) ? 0 : experimenterId.intValue());
+        return prime * super.hashCode() + (experimenterId == null ? 0 : experimenterId.intValue());
     }
 
     @Override
