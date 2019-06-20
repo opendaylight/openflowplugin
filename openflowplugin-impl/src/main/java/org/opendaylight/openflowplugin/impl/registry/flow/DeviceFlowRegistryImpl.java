@@ -31,7 +31,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.ReadFailedException;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
@@ -41,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
-import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -107,22 +105,10 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
     private FluentFuture<Optional<FlowCapableNode>> fillFromDatastore(final LogicalDatastoreType logicalDatastoreType,
                               final InstanceIdentifier<FlowCapableNode> path) {
-        // Create new read-only transaction
-        final ReadTransaction transaction = dataBroker.newReadOnlyTransaction();
-
-        // Bail out early if transaction is null
-        if (transaction == null) {
-            return FluentFutures.immediateFailedFluentFuture(
-                    new ReadFailedException("Read transaction is null"));
-        }
-
         // Prepare read operation from datastore for path
-        final FluentFuture<Optional<FlowCapableNode>> future = transaction.read(logicalDatastoreType, path);
-
-        // Bail out early if future is null
-        if (future == null) {
-            return FluentFutures.immediateFailedFluentFuture(
-                    new ReadFailedException("Future from read transaction is null"));
+        final FluentFuture<Optional<FlowCapableNode>> future;
+        try (ReadTransaction transaction = dataBroker.newReadOnlyTransaction()) {
+            future = transaction.read(logicalDatastoreType, path);
         }
 
         future.addCallback(new FutureCallback<Optional<FlowCapableNode>>() {
@@ -138,15 +124,11 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                         .filter(Objects::nonNull)
                         .filter(flow -> Objects.nonNull(flow.getId()))
                         .forEach(flowConsumer);
-
-                // After we are done with reading from datastore, close the transaction
-                transaction.close();
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                // Even when read operation failed, close the transaction
-                transaction.close();
+                LOG.debug("Failed to read {} path {}", logicalDatastoreType, path, throwable);
             }
         }, MoreExecutors.directExecutor());
 
