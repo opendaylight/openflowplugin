@@ -128,7 +128,7 @@ public class AlarmAgent {
      * @param event reason for alarm invoke/clear
      */
     private String getAlarmText(final Long nodeId, final String event) {
-        return new StringBuffer("OF Switch ").append(nodeId).append(event).toString();
+        return new StringBuilder("OF Switch ").append(nodeId).append(event).toString();
     }
 
     /**
@@ -137,6 +137,6 @@ public class AlarmAgent {
      * @param nodeId Source of the alarm nodeId
      */
     private String getSourceText(final Long nodeId) {
-        return new StringBuffer("Device=").append(nodeId).toString();
+        return new StringBuilder("Device=").append(nodeId).toString();
     }
 }
