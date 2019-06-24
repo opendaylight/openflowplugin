@@ -74,4 +74,12 @@ public interface TxFacade {
      */
     void releaseWriteTransactionLock();
 
+
+    <T extends DataObject> void mergeToTransaction(LogicalDatastoreType store,
+                                                   InstanceIdentifier<T> path,
+                                                   T data);
+
+    <T extends DataObject> void mergeToTransactionWithParentsSlow(LogicalDatastoreType store,
+                                                                  InstanceIdentifier<T> path,
+                                                                  T data);
 }

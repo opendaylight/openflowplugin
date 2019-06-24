@@ -45,7 +45,7 @@ public class TableFeaturesMultipartWriter extends AbstractMultipartWriter<TableF
                     withParents);
 
                 // Write parent for table statistics
-                writeToTransaction(getInstanceIdentifier()
+                mergeToTransaction(getInstanceIdentifier()
                         .augmentation(FlowCapableNode.class)
                         .child(Table.class, new TableKey(stat.getTableId())),
                     new TableBuilder()

@@ -57,7 +57,7 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
                                 port,
                                 OpenflowVersion.get(features.getVersion()));
 
-                writeToTransaction(
+                mergeToTransaction(
                         getInstanceIdentifier()
                                 .child(NodeConnector.class, new NodeConnectorKey(id))
                                 .augmentation(FlowCapableNodeConnector.class)

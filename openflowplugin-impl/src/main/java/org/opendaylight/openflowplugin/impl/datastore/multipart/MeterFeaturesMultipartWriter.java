@@ -28,7 +28,7 @@ public class MeterFeaturesMultipartWriter extends AbstractMultipartWriter<MeterF
 
     @Override
     public void storeStatistics(final MeterFeatures statistics, final boolean withParents) {
-        writeToTransaction(getInstanceIdentifier()
+        mergeToTransaction(getInstanceIdentifier()
                 .augmentation(NodeMeterFeatures.class),
             new NodeMeterFeaturesBuilder()
                 .setMeterFeatures(statistics)

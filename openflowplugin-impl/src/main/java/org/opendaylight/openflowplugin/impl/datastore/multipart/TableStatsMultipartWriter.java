@@ -34,7 +34,7 @@ public class TableStatsMultipartWriter extends AbstractMultipartWriter<FlowTable
     public void storeStatistics(final FlowTableAndStatisticsMap statistics,
                                 final boolean withParents) {
         statistics.getFlowTableAndStatisticsMap()
-            .forEach(stat -> writeToTransaction(
+            .forEach(stat -> mergeToTransaction(
                 getInstanceIdentifier()
                     .augmentation(FlowCapableNode.class)
                     .child(Table.class, new TableKey(stat.getTableId().getValue()))
