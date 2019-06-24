@@ -153,7 +153,6 @@ public final class StatisticsGatheringUtils {
         try {
             statistics.forEach(stat -> statisticsWriterProvider.lookup(type).ifPresent(p -> {
                 final boolean write = p.write(stat, false);
-
                 if (!result.get()) {
                     result.set(write);
                 }
@@ -189,6 +188,7 @@ public final class StatisticsGatheringUtils {
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
                                 .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                            LOG.error("table stats data while deleteAllKnownFlows, data: {}", table);
                         }
                     }
                     return null;
