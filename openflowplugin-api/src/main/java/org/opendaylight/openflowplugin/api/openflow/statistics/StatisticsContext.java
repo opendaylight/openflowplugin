@@ -10,14 +10,12 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
 
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceInitializationContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkStep;
 
 /**
  * Context for statistics.
  */
-public interface StatisticsContext extends RequestContextStack, OFPContext, ReconciliationFrameworkStep,
-        DeviceInitializationContext {
+public interface StatisticsContext extends RequestContextStack, OFPContext, ReconciliationFrameworkStep {
     /**
      * Enables statistics gathering.
      */

@@ -219,7 +219,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     && !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
                 if (contextChain.isMastered(mastershipState, true)) {
                     Futures.addCallback(ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
-                                        reconciliationFrameworkCallback(deviceInfo, contextChain, mastershipState),
+                                        reconciliationFrameworkCallback(deviceInfo, contextChain),
                                         MoreExecutors.directExecutor());
                 }
             } else if (contextChain.isMastered(mastershipState, false)) {
@@ -344,17 +344,13 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull DeviceInfo deviceInfo,
-                                                                        ContextChain contextChain,
-                                                                        ContextChainMastershipState mastershipState) {
+                                                                        ContextChain contextChain) {
         return new FutureCallback<ResultState>() {
             @Override
             public void onSuccess(ResultState result) {
                 if (ResultState.DONOTHING == result) {
                     OF_EVENT_LOG.debug("Device {} connection is enabled by reconciliation framework", deviceInfo);
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
-                    if (mastershipState == ContextChainMastershipState.MASTER_ON_DEVICE) {
-                        contextChain.initializeDevice();
-                    }
                     contextChain.continueInitializationAfterReconciliation();
                 } else {
                     OF_EVENT_LOG.debug("Reconciliation framework failure for device {}", deviceInfo);
