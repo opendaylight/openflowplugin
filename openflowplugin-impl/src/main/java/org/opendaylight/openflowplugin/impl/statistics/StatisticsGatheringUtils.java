@@ -77,7 +77,7 @@ public final class StatisticsGatheringUtils {
                 final boolean rpcResultIsNull = rpcResult == null;
 
                 if (!rpcResultIsNull && rpcResult.isSuccessful()) {
-                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                    LOG.error("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
                         // TODO: in case the result value is null then multipart data probably got processed
                         // TODO: on the fly. This contract should by clearly stated and enforced.
                         // TODO: Now simple true value is returned
@@ -91,10 +91,10 @@ public final class StatisticsGatheringUtils {
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
                                         statisticsWriterProvider);
                     } else {
-                        LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                        LOG.error("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
                     }
                 } else {
-                    LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
+                    LOG.error("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,
                                 rpcResultIsNull ? "" : rpcResult.getErrors());
                 }
                 return false;
@@ -128,11 +128,11 @@ public final class StatisticsGatheringUtils {
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
             txFacade.submitTransaction();
 
-            LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+            LOG.error("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
         }
 
-        LOG.warn("Stats processing of type {} for node {} " + "failed during write-to-tx step", type, deviceInfo);
+        LOG.error("Stats processing of type {} for node {} " + "failed during write-to-tx step", type, deviceInfo);
         return false;
     }
 

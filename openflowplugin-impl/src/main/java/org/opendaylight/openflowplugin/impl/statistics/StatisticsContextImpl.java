@@ -182,6 +182,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
             statListForCollecting.add(MultipartType.OFPMPQUEUE);
         }
 
+        LOG.error("starting statistics gathering for node: {}", deviceInfo.getDatapathId());
         collectingStatType = ImmutableList.copyOf(statListForCollecting);
         Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback(), MoreExecutors.directExecutor());
     }
@@ -210,7 +211,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     private ListenableFuture<Boolean> gatherDynamicData() {
         if (!isStatisticsPollingOn || !schedulingEnabled.get()) {
-            LOG.debug("Statistics for device {} are not enabled.", getDeviceInfo().getNodeId().getValue());
+            LOG.error("Statistics for device {} are not enabled.", getDeviceInfo().getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
         }
 
@@ -249,6 +250,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
                                                       final MultipartType multipartType) {
+        LOG.error("statistics gathering started for node: {} and for type: {}", deviceInfo.getDatapathId(),
+                multipartType);
         if (ConnectionContext.CONNECTION_STATE.RIP
                 .equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String
@@ -260,8 +263,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
         }
 
         return Futures.transformAsync(prevFuture, result -> {
-            LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo, result);
-            LOG.debug("Stats iterating to next type for node {} of type {}", deviceInfo, multipartType);
+            LOG.error("Status of previous stat iteration for node {}: {}", deviceInfo, result);
+            LOG.error("Stats iterating to next type for node {} of type {}", deviceInfo, multipartType);
             final boolean onTheFly = MultipartType.OFPMPFLOW.equals(multipartType);
             final boolean supported = collectingStatType.contains(multipartType);
 
