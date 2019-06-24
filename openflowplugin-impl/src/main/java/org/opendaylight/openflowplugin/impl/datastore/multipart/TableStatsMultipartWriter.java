@@ -18,8 +18,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TableStatsMultipartWriter extends AbstractMultipartWriter<FlowTableAndStatisticsMap> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TableStatsMultipartWriter.class);
 
     public TableStatsMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
         super(txFacade, instanceIdentifier);
@@ -34,14 +38,17 @@ public class TableStatsMultipartWriter extends AbstractMultipartWriter<FlowTable
     public void storeStatistics(final FlowTableAndStatisticsMap statistics,
                                 final boolean withParents) {
         statistics.getFlowTableAndStatisticsMap()
-            .forEach(stat -> writeToTransaction(
-                getInstanceIdentifier()
-                    .augmentation(FlowCapableNode.class)
-                    .child(Table.class, new TableKey(stat.getTableId().getValue()))
-                    .augmentation(FlowTableStatisticsData.class)
-                    .child(FlowTableStatistics.class),
-                new FlowTableStatisticsBuilder(stat).build(),
-                withParents));
+            .forEach(stat -> {
+                writeToTransaction(
+                        getInstanceIdentifier()
+                                .augmentation(FlowCapableNode.class)
+                                .child(Table.class, new TableKey(stat.getTableId().getValue()))
+                                .augmentation(FlowTableStatisticsData.class)
+                                .child(FlowTableStatistics.class),
+                        new FlowTableStatisticsBuilder(stat).build(),
+                        withParents);
+                LOG.error("flow table stats is added to write txn with data {}", stat);
+            });
     }
 
 }

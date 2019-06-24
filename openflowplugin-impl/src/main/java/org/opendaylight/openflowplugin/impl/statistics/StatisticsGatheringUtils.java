@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType.OFPMPTABLE;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -128,7 +130,11 @@ public final class StatisticsGatheringUtils {
             }
 
             if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
-                txFacade.submitTransaction();
+                if (type.equals(OFPMPTABLE)) {
+                    txFacade.syncSubmitTransaction();
+                } else {
+                    txFacade.submitTransaction();
+                }
 
                 LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
                 return true;
@@ -153,7 +159,6 @@ public final class StatisticsGatheringUtils {
         try {
             statistics.forEach(stat -> statisticsWriterProvider.lookup(type).ifPresent(p -> {
                 final boolean write = p.write(stat, false);
-
                 if (!result.get()) {
                     result.set(write);
                 }
@@ -189,6 +194,7 @@ public final class StatisticsGatheringUtils {
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
                                 .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                            LOG.error("table stats data while deleteAllKnownFlows, data: {}", table);
                         }
                     }
                     return null;
