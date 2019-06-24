@@ -262,8 +262,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
         }
 
         return Futures.transformAsync(prevFuture, result -> {
-            LOG.debug("Status of previous stat iteration for node {}: {}", deviceInfo, result);
-            LOG.debug("Stats iterating to next type for node {} of type {}", deviceInfo, multipartType);
+            LOG.info("Status of previous stat iteration for node {}: {}", deviceInfo, result);
+            LOG.info("Stats iterating to next type for node {} of type {}", deviceInfo, multipartType);
             final boolean onTheFly = MultipartType.OFPMPFLOW.equals(multipartType);
             final boolean supported = collectingStatType.contains(multipartType);
 
