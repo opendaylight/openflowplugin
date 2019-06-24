@@ -77,7 +77,7 @@ public final class StatisticsGatheringUtils {
                 final boolean rpcResultIsNull = rpcResult == null;
 
                 if (!rpcResultIsNull && rpcResult.isSuccessful()) {
-                    LOG.debug("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
+                    LOG.info("Stats reply successfully received for node {} of type {}", deviceInfo.getNodeId(), type);
                         // TODO: in case the result value is null then multipart data probably got processed
                         // TODO: on the fly. This contract should by clearly stated and enforced.
                         // TODO: Now simple true value is returned
@@ -128,7 +128,7 @@ public final class StatisticsGatheringUtils {
         if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
             txFacade.submitTransaction();
 
-            LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+            LOG.info("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
             return true;
         }
 

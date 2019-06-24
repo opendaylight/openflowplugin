@@ -188,6 +188,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                             initCommit, doSync, ex);
                     return false;
                 }
+                LOG.info("Transaction for device {} is submitted to the datastore. isInitialiCommit: {}", nodeId,
+                        initCommit);
                 initCommit = false;
                 return true;
             }
@@ -304,6 +306,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             /* !!!IMPORTANT: never set true without transactionChain */
             submitIsEnabled = transactionChain != null;
         }
+        LOG.info("enabled submit transaction for device: {}, submitIsEnabled: {}", nodeId, submitIsEnabled);
     }
 
     public ListenableFuture<?> shuttingDown() {
