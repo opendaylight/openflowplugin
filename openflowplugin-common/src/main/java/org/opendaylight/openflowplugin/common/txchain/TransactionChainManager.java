@@ -188,6 +188,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                             initCommit, doSync, ex);
                     return false;
                 }
+                LOG.error("Transaction for device {} is submitted to the datastore. isInitialiCommit: {}", nodeId,
+                        initCommit);
                 initCommit = false;
                 return true;
             }

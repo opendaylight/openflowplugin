@@ -266,6 +266,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean syncSubmitTransaction() {
+        LOG.error("submitting sync transaction for device: {}, isInitialized: {}", getDeviceInfo().getDatapathId(),
+                initialized.get());
         return initialized.get() && transactionChainManager.submitTransaction(true);
     }
 
