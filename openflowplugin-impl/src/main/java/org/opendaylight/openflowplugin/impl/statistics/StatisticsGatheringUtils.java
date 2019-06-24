@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType.OFPMPTABLE;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -70,7 +72,7 @@ public final class StatisticsGatheringUtils {
             final StatisticsGatherer<T> statisticsGatheringService, final DeviceInfo deviceInfo,
             final MultipartType type, final TxFacade txFacade, final DeviceRegistry registry,
             final ConvertorExecutor convertorExecutor, final MultipartWriterProvider statisticsWriterProvider,
-            final ListeningExecutorService executorService) {
+            final ListeningExecutorService executorService, final boolean isIntitialGathering) {
         return Futures.transformAsync(statisticsGatheringService.getStatisticsOfType(
            new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
             rpcResult -> executorService.submit(() -> {
@@ -89,7 +91,7 @@ public final class StatisticsGatheringUtils {
                                             .collect(Collectors.toList());
 
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
-                                        statisticsWriterProvider);
+                                        statisticsWriterProvider, isIntitialGathering);
                     } else {
                         LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
                     }
@@ -105,7 +107,8 @@ public final class StatisticsGatheringUtils {
     private static boolean processStatistics(final MultipartType type, final List<? extends DataContainer> statistics,
                                              final TxFacade txFacade, final DeviceRegistry deviceRegistry,
                                              final DeviceInfo deviceInfo,
-                                             final MultipartWriterProvider statisticsWriterProvider) {
+                                             final MultipartWriterProvider statisticsWriterProvider,
+                                             final boolean isIntitialGathering) {
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
         try {
@@ -128,7 +131,12 @@ public final class StatisticsGatheringUtils {
             }
 
             if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
-                txFacade.submitTransaction();
+                if (type.equals(OFPMPTABLE) && isIntitialGathering) {
+                    LOG.info("First table stats collection for device {}", deviceInfo.getNodeId());
+                    txFacade.syncSubmitTransaction();
+                } else {
+                    txFacade.submitTransaction();
+                }
 
                 LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
                 return true;
@@ -153,7 +161,6 @@ public final class StatisticsGatheringUtils {
         try {
             statistics.forEach(stat -> statisticsWriterProvider.lookup(type).ifPresent(p -> {
                 final boolean write = p.write(stat, false);
-
                 if (!result.get()) {
                     result.set(write);
                 }
@@ -189,6 +196,7 @@ public final class StatisticsGatheringUtils {
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
                                 .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                            LOG.error("table stats data while deleteAllKnownFlows, data: {}", table);
                         }
                     }
                     return null;

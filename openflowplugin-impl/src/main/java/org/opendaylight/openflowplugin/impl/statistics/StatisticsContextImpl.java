@@ -185,7 +185,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
         }
 
         collectingStatType = ImmutableList.copyOf(statListForCollecting);
-        Futures.addCallback(gatherDynamicData(), new InitialSubmitCallback(), MoreExecutors.directExecutor());
+        Futures.addCallback(gatherDynamicData(true), new InitialSubmitCallback(), MoreExecutors.directExecutor());
     }
 
     @Override
@@ -210,7 +210,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
         }, MoreExecutors.directExecutor());
     }
 
-    private ListenableFuture<Boolean> gatherDynamicData() {
+    private ListenableFuture<Boolean> gatherDynamicData(final boolean isIntitialGathering) {
         if (!isStatisticsPollingOn || !schedulingEnabled.get()) {
             LOG.debug("Statistics for device {} are not enabled.", getDeviceInfo().getNodeId().getValue());
             return Futures.immediateFuture(Boolean.TRUE);
@@ -226,7 +226,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
             // build statistics gathering future
             final ListenableFuture<Boolean> newDataGathering = collectingStatType.stream()
-                    .reduce(lastDataGathering, this::statChainFuture,
+                    .reduce(lastDataGathering, (lastFuture, multipartType)
+                        -> statChainFuture(lastFuture, multipartType, isIntitialGathering),
                         (listenableFuture, asyn) -> Futures.transformAsync(listenableFuture, result -> asyn,
                                 MoreExecutors.directExecutor()));
 
@@ -250,7 +251,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     }
 
     private ListenableFuture<Boolean> statChainFuture(final ListenableFuture<Boolean> prevFuture,
-                                                      final MultipartType multipartType) {
+                                                      final MultipartType multipartType,
+                                                      final boolean isIntitialGathering) {
         if (ConnectionContext.CONNECTION_STATE.RIP
                 .equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
             final String errMsg = String
@@ -271,7 +273,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
             return supported ? StatisticsGatheringUtils
                     .gatherStatistics(onTheFly ? statisticsGatheringOnTheFlyService : statisticsGatheringService,
                                       getDeviceInfo(), multipartType, deviceContext, deviceContext, convertorExecutor,
-                                      statisticsWriterProvider, executorService) : Futures
+                                      statisticsWriterProvider, executorService, isIntitialGathering) : Futures
                     .immediateFuture(Boolean.FALSE);
         }, MoreExecutors.directExecutor());
     }
@@ -286,7 +288,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
                 new StatisticsPollingService(timeCounter,
                                              statisticsPollingInterval,
                                              maximumPollingDelay,
-                                             StatisticsContextImpl.this::gatherDynamicData);
+                    () -> gatherDynamicData(false));
 
         schedulingEnabled.set(true);
         statisticsPollingService.startAsync();
