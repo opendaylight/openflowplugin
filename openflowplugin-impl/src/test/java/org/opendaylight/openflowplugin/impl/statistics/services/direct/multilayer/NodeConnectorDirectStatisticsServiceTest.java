@@ -107,6 +107,6 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         when(output.getNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).get().write(output, true);
-        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(deviceContext).mergeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

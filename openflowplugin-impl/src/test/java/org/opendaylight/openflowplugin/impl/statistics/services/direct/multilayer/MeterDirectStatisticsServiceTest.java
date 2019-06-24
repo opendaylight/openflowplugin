@@ -100,6 +100,6 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(output.getMeterStats()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPMETER).get().write(output, true);
-        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(deviceContext).mergeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

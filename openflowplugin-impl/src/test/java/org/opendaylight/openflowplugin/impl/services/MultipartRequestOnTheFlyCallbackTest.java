@@ -182,7 +182,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         assertEquals(expectedRpcResult.isSuccessful(), actualResult.isSuccessful());
 
         Mockito.verify(mockedDeviceContext, Mockito.never())
-                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                .mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                         ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.any());
         Mockito.verify(mockedDeviceContext).submitTransaction();
     }
@@ -226,7 +226,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
         verify(mockedReadOnlyTx, times(0)).read(LogicalDatastoreType.OPERATIONAL, nodePath);
         verify(mockedReadOnlyTx, times(0)).close();
-        verify(mockedDeviceContext, times(1)).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+        verify(mockedDeviceContext, times(1)).mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 any(), any());
     }
 
@@ -248,7 +248,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         assertFalse(actualResult.getErrors().isEmpty());
         Mockito.verify(mockedFlowRegistry, Mockito.never()).store(any());
         Mockito.verify(mockedDeviceContext, Mockito.never())
-                .writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+                .mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                         ArgumentMatchers.<InstanceIdentifier>any(), ArgumentMatchers.any());
     }
 }

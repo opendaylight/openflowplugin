@@ -180,6 +180,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
                     this.nodeId);
             final FluentFuture<? extends CommitInfo> submitFuture = writeTx.commit();
+            String txn = writeTx.toString();
+            LOG.info("Transaction for device {} is submitted to the datastore. isInitialiCommit: {}, txn: {}", nodeId,
+                    initCommit, txn);
             lastSubmittedFuture = submitFuture;
             writeTx = null;
 
@@ -194,11 +197,16 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 initCommit = false;
                 return true;
             }
+            class CallBack implements FutureCallback<CommitInfo> {
+                String txn;
 
-            submitFuture.addCallback(new FutureCallback<CommitInfo>() {
+                CallBack(String txn) {
+                    this.txn = txn;
+                }
+
                 @Override
                 public void onSuccess(final CommitInfo result) {
-                    //NOOP
+                    LOG.info("Transaction commit successful. txn: {}", txn);
                 }
 
                 @Override
@@ -214,7 +222,9 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                         }
                     }
                 }
-            }, MoreExecutors.directExecutor());
+            }
+
+            submitFuture.addCallback(new CallBack(txn), MoreExecutors.directExecutor());
         }
         return true;
     }
@@ -307,6 +317,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             /* !!!IMPORTANT: never set true without transactionChain */
             submitIsEnabled = transactionChain != null;
         }
+        LOG.info("enabled submit transaction for device: {}, submitIsEnabled: {}", nodeId, submitIsEnabled);
     }
 
     public ListenableFuture<?> shuttingDown() {

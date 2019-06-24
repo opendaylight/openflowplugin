@@ -199,7 +199,7 @@ public class StatisticsGatheringUtilsTest {
 
         provider.lookup(MultipartType.OFPMPFLOW).get().write(prepareFlowStatisticsData().iterator().next(), false);
 
-        Mockito.verify(deviceContext).writeToTransaction(
+        Mockito.verify(deviceContext).mergeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
         Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, dataStoreType.getValue());
         final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
@@ -247,7 +247,7 @@ public class StatisticsGatheringUtilsTest {
                         .opendaylight.group.types.rev131018.GroupId(groupIdValue)))
                 .augmentation(NodeGroupStatistics.class)
                 .child(GroupStatistics.class);
-        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+        verify(deviceContext).mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 eq(groupPath), any(GroupStatistics.class));
     }
 
@@ -280,7 +280,7 @@ public class StatisticsGatheringUtilsTest {
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
                 ArgumentMatchers.<InstanceIdentifier<?>>any());
         verify(deviceGroupRegistry).store(storedGroupId);
-        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+        verify(deviceContext).mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                                                  eq(groupPath), any(Group.class));
     }
 
@@ -315,7 +315,7 @@ public class StatisticsGatheringUtilsTest {
                         .opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
                 .augmentation(NodeMeterStatistics.class)
                 .child(MeterStatistics.class);
-        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+        verify(deviceContext).mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 eq(meterPath), any(MeterStatistics.class));
     }
 
@@ -340,7 +340,7 @@ public class StatisticsGatheringUtilsTest {
                         new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnectorStatisticsData.class)
                 .child(FlowCapableNodeConnectorStatistics.class);
-        verify(deviceContext).writeToTransaction(
+        verify(deviceContext).mergeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL),
                 eq(portPath),
                 any(FlowCapableNodeConnectorStatistics.class));
@@ -370,7 +370,7 @@ public class StatisticsGatheringUtilsTest {
                 .child(Table.class, new TableKey((short) 0))
                 .augmentation(FlowTableStatisticsData.class)
                 .child(FlowTableStatistics.class);
-        verify(deviceContext).writeToTransaction(
+        verify(deviceContext).mergeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL),
                 eq(tablePath),
                 any(FlowTableStatistics.class));
@@ -405,7 +405,7 @@ public class StatisticsGatheringUtilsTest {
                         new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnector.class)
                 .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
-        verify(deviceContext).writeToTransaction(
+        verify(deviceContext).mergeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL),
                 eq(queuePath),
                 any(Queue.class));
@@ -460,7 +460,7 @@ public class StatisticsGatheringUtilsTest {
                 ArgumentMatchers.<InstanceIdentifier<?>>any());
 
         final InOrder inOrder = Mockito.inOrder(deviceContext);
-        inOrder.verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+        inOrder.verify(deviceContext).mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                                                          any(),
                                                          any());
     }
@@ -493,7 +493,7 @@ public class StatisticsGatheringUtilsTest {
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
                 ArgumentMatchers.<InstanceIdentifier<?>>any());
         verify(deviceMeterRegistry).store(meterId);
-        verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
+        verify(deviceContext).mergeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                                                  eq(meterPath), any(Meter.class));
     }
 

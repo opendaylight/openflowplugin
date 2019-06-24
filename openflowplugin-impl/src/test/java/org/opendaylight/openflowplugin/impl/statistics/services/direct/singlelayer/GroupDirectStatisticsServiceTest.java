@@ -98,6 +98,6 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(output.getGroupStats()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).get().write(output, true);
-        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(deviceContext).mergeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

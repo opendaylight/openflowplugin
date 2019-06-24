@@ -29,7 +29,7 @@ public class GroupFeaturesMultipartWriter extends AbstractMultipartWriter<GroupF
 
     @Override
     public void storeStatistics(final GroupFeatures statistics, final boolean withParents) {
-        writeToTransaction(getInstanceIdentifier()
+        mergeToTransaction(getInstanceIdentifier()
                 .augmentation(NodeGroupFeatures.class),
             new NodeGroupFeaturesBuilder()
                 .setGroupFeatures(new GroupFeaturesBuilder(statistics)

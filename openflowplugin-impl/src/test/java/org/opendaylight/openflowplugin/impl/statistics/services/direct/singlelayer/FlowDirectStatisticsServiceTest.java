@@ -112,6 +112,6 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(output.getFlowAndStatisticsMapList()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).get().write(output, true);
-        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(deviceContext).mergeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

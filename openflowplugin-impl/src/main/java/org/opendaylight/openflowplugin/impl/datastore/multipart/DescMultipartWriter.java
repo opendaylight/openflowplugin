@@ -36,7 +36,7 @@ public class DescMultipartWriter extends AbstractMultipartWriter<Desc> {
 
     @Override
     public void storeStatistics(final Desc statistics, final boolean withParents) {
-        writeToTransaction(getInstanceIdentifier()
+        mergeToTransaction(getInstanceIdentifier()
                 .augmentation(FlowCapableNode.class),
             new FlowCapableNodeBuilder(statistics)
                 .setTable(Collections.emptyList())

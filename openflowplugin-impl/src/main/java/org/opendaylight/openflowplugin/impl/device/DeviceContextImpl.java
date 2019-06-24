@@ -213,6 +213,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return false;
         }
 
+        LOG.info("Very initial submit write transaction is initiated for node: {}", deviceInfo.getDatapathId());
         final boolean initialSubmit = transactionChainManager.initialSubmitWriteTransaction();
         isInitialTransactionSubmitted.set(initialSubmit);
         return initialSubmit;
@@ -252,6 +253,24 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     }
 
     @Override
+    public <T extends DataObject> void mergeToTransaction(final LogicalDatastoreType store,
+                                                          final InstanceIdentifier<T> path,
+                                                          final T data) {
+        if (initialized.get()) {
+            transactionChainManager.mergeToTransaction(store, path, data, false);
+        }
+    }
+
+    @Override
+    public <T extends DataObject> void mergeToTransactionWithParentsSlow(final LogicalDatastoreType store,
+                                                                         final InstanceIdentifier<T> path,
+                                                                         final T data) {
+        if (initialized.get()) {
+            transactionChainManager.mergeToTransaction(store, path, data, true);
+        }
+    }
+
+    @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store,
                                                           final InstanceIdentifier<T> path) {
         if (initialized.get()) {
@@ -266,6 +285,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean syncSubmitTransaction() {
+        LOG.info("submitting sync transaction for device: {}, isInitialized: {}", getDeviceInfo().getDatapathId(),
+                initialized.get());
         return initialized.get() && transactionChainManager.submitTransaction(true);
     }
 
@@ -356,7 +377,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 acquireWriteTransactionLock();
                 final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                         .translate(portStatusMessage, getDeviceInfo(), null);
-                OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                LOG.info("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
                         deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
                         portStatusMessage.getReason());
 

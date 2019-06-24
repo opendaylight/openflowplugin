@@ -102,7 +102,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPQUEUE).get().write(output, true);
-        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(deviceContext).mergeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 
     @Override
@@ -116,6 +116,6 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPQUEUE).get().write(output, true);
-        verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(deviceContext).mergeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }
