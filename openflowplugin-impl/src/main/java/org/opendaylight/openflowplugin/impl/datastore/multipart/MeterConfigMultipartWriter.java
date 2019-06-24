@@ -40,7 +40,7 @@ public class MeterConfigMultipartWriter extends AbstractMultipartWriter<MeterCon
     public void storeStatistics(final MeterConfigStatsReply statistics, final boolean withParents) {
         statistics.getMeterConfigStats()
             .forEach(stat -> {
-                writeToTransaction(
+                mergeToTransaction(
                     getInstanceIdentifier()
                         .augmentation(FlowCapableNode.class)
                         .child(Meter.class, new MeterKey(stat.getMeterId())),

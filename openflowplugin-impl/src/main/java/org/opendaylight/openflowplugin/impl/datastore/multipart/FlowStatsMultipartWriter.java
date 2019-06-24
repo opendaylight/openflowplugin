@@ -65,7 +65,7 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                 if (flowDescriptor != null) {
                     final FlowKey key = new FlowKey(flowDescriptor.getFlowId());
 
-                    writeToTransaction(
+                    mergeToTransaction(
                             getInstanceIdentifier()
                                     .augmentation(FlowCapableNode.class)
                                     .child(Table.class, new TableKey(stat.getTableId()))

@@ -53,7 +53,7 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
                         port,
                         OpenflowVersion.get(features.getVersion()));
 
-                writeToTransaction(
+                mergeToTransaction(
                     getInstanceIdentifier()
                         .child(NodeConnector.class, new NodeConnectorKey(id))
                         .augmentation(FlowCapableNodeConnectorStatisticsData.class)

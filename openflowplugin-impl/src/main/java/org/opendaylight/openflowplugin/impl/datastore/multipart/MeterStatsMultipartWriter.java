@@ -33,7 +33,7 @@ public class MeterStatsMultipartWriter extends AbstractMultipartWriter<MeterStat
     @Override
     public void storeStatistics(final MeterStatisticsReply statistics, final boolean withParents) {
         statistics.getMeterStats()
-            .forEach(stat -> writeToTransaction(
+            .forEach(stat -> mergeToTransaction(
                 getInstanceIdentifier()
                     .augmentation(FlowCapableNode.class)
                     .child(Meter.class, new MeterKey(stat.getMeterId()))

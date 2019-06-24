@@ -46,6 +46,23 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
     }
 
     /**
+     * Creates put operation using provided data in underlying transaction chain.
+     *
+     * @param path path
+     * @param data data
+     * @param <O> data type
+     */
+    protected <O extends DataObject> void mergeToTransaction(final InstanceIdentifier<O> path,
+                                                             final O data,
+                                                             final boolean withParents) {
+        if (withParents) {
+            txFacade.mergeToTransactionWithParentsSlow(LogicalDatastoreType.OPERATIONAL, path, data);
+        } else {
+            txFacade.mergeToTransaction(LogicalDatastoreType.OPERATIONAL, path, data);
+        }
+    }
+
+    /**
      * Get instance identifier.
      *
      * @return instance identifier

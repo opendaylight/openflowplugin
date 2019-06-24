@@ -60,7 +60,7 @@ public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartRe
                         features.getDatapathId(), portNumber, stat.getName(),
                         stat.getConfiguration().isPORTDOWN() ? "Down" : "Up");
 
-                writeToTransaction(
+                mergeToTransaction(
                     getInstanceIdentifier()
                         .child(NodeConnector.class, new NodeConnectorKey(id)),
                     new NodeConnectorBuilder()

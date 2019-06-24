@@ -40,7 +40,7 @@ public class GroupDescMultipartWriter extends AbstractMultipartWriter<GroupDescS
     public void storeStatistics(final GroupDescStatsReply statistics, final boolean withParents) {
         statistics.getGroupDescStats()
             .forEach(stat -> {
-                writeToTransaction(
+                mergeToTransaction(
                     getInstanceIdentifier()
                         .augmentation(FlowCapableNode.class)
                         .child(Group.class, new GroupKey(stat.getGroupId())),
