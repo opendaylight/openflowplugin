@@ -243,6 +243,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
+            LOG.info("WriteTx for node {}, for path : {}, Write data : {}", this.nodeId, path, data);
             writeTx.put(store, path, data, createParents);
         }
     }
@@ -258,6 +259,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
+            LOG.info("WriteTx for node {}, for path : {}, merge data : {}", this.nodeId, path, data);
             writeTx.merge(store, path, data, createParents);
         }
     }
