@@ -213,6 +213,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return false;
         }
 
+        LOG.info("Very initial submit write transaction is initiated for node: {}", deviceInfo.getDatapathId());
         final boolean initialSubmit = transactionChainManager.initialSubmitWriteTransaction();
         isInitialTransactionSubmitted.set(initialSubmit);
         return initialSubmit;
@@ -266,6 +267,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean syncSubmitTransaction() {
+        LOG.info("submitting sync transaction for device: {}, isInitialized: {}", getDeviceInfo().getDatapathId(),
+                initialized.get());
         return initialized.get() && transactionChainManager.submitTransaction(true);
     }
 
@@ -355,7 +358,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             try {
                 final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                         .translate(portStatusMessage, getDeviceInfo(), null);
-                OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                LOG.info("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
                         deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
                         portStatusMessage.getReason());
 
