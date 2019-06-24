@@ -121,7 +121,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             }
         } catch (Exception ex) {
             errorHandler.handleException(ex);
-            LOG.trace("ret - shake fail - closing");
+            LOG.trace("ret - shake fail - closing ");
             handshakeListener.onHandshakeFailure();
         }
     }
