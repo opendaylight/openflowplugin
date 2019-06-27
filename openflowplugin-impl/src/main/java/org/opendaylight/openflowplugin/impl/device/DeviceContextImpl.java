@@ -734,10 +734,10 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .filter(Objects::nonNull)
                         .flatMap(flowCapableNodeOptional -> flowCapableNodeOptional.asSet().stream())
                         .filter(Objects::nonNull)
-                        .filter(flowCapableNode -> Objects.nonNull(flowCapableNode.getTable()))
+                        .filter(flowCapableNode -> flowCapableNode.getTable() != null)
                         .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
                         .filter(Objects::nonNull)
-                        .filter(table -> Objects.nonNull(table.getFlow()))
+                        .filter(table -> table.getFlow() != null)
                         .flatMap(table -> table.getFlow().stream())
                         .filter(Objects::nonNull)
                         .count();
