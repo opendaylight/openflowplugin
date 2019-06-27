@@ -8,10 +8,10 @@
 
 package org.opendaylight.openflowplugin.impl.util;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
