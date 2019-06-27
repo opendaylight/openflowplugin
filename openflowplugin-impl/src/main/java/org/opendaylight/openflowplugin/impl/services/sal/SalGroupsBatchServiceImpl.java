@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +78,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
                     .setOriginalGroup(new OriginalGroupBuilder(batchGroup.getOriginalBatchedGroup()).build())
                     .setUpdatedGroup(new UpdatedGroupBuilder(batchGroup.getUpdatedBatchedGroup()).build())
                     .setGroupRef(createGroupRef(input.getNode(), batchGroup)).setNode(input.getNode()).build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.updateGroup(updateGroupInput)));
+            resultsLot.add(salGroupService.updateGroup(updateGroupInput));
         }
 
         final Iterable<Group> groups = batchUpdateGroups.stream()
@@ -108,7 +107,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         for (BatchAddGroups addGroup : input.getBatchAddGroups()) {
             final AddGroupInput addGroupInput = new AddGroupInputBuilder(addGroup)
                     .setGroupRef(createGroupRef(input.getNode(), addGroup)).setNode(input.getNode()).build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.addGroup(addGroupInput)));
+            resultsLot.add(salGroupService.addGroup(addGroupInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
@@ -134,7 +133,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         for (BatchRemoveGroups addGroup : input.getBatchRemoveGroups()) {
             final RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder(addGroup)
                     .setGroupRef(createGroupRef(input.getNode(), addGroup)).setNode(input.getNode()).build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salGroupService.removeGroup(removeGroupInput)));
+            resultsLot.add(salGroupService.removeGroup(removeGroupInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures

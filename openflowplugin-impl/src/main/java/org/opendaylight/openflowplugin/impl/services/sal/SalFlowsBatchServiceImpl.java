@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
@@ -76,7 +75,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salFlowService.removeFlow(removeFlowInput)));
+            resultsLot.add(salFlowService.removeFlow(removeFlowInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
@@ -104,7 +103,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salFlowService.addFlow(addFlowInput)));
+            resultsLot.add(salFlowService.addFlow(addFlowInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
@@ -146,7 +145,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(JdkFutureAdapters.listenInPoolThread(salFlowService.updateFlow(updateFlowInput)));
+            resultsLot.add(salFlowService.updateFlow(updateFlowInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
