@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
@@ -76,9 +75,7 @@ public class SalBundleServiceImpl implements SalBundleService {
             dataBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
             experimenterInputBuilder.setExperimenterMessageOfChoice(
                     bundleAddMessageBuilder.setSalAddMessageData(dataBuilder.build()).build());
-            ListenableFuture<RpcResult<SendExperimenterOutput>> res = JdkFutureAdapters
-                    .listenInPoolThread(experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
-            partialResults.add(res);
+            partialResults.add(experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
         }
         return processResults(partialResults);
     }
