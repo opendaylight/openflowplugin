@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -224,6 +224,6 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
                 .setEgress(egress)
                 .setIngress(ingress)
                 .build();
-        JdkFutures.addErrorLogging(packetProcessingService.transmitPacket(input), LOG, "transmitPacket");
+        LoggingFutures.addErrorLogging(packetProcessingService.transmitPacket(input), LOG, "transmitPacket");
     }
 }

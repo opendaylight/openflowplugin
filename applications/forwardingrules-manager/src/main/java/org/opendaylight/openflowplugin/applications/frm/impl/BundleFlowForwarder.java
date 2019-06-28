@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -94,7 +94,7 @@ public class BundleFlowForwarder {
                 .getSalBundleService().addBundleMessages(addBundleMessagesInput);
         LOG.trace("Pushing flow remove message {} to bundle {} for device {}", addBundleMessagesInput,
                 bundleId.getValue(), node);
-        JdkFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
+        LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
     }
 
     public void update(final InstanceIdentifier<Flow> identifier, final Flow originalFlow, final Flow updatedFlow,

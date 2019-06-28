@@ -19,7 +19,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -122,7 +122,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
-            JdkFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeGroup");
         }
     }
 
@@ -160,7 +160,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 UpdateGroupInput updateGroupInput = builder.build();
                 final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture;
                 resultFuture = this.provider.getSalGroupService().updateGroup(updateGroupInput);
-                JdkFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
+                LoggingFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
                 Futures.addCallback(resultFuture,
                         new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
                         MoreExecutors.directExecutor());

@@ -28,7 +28,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -138,9 +138,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 // into remove-flow input so that only a flow entry associated with
                 // a given flow object is removed.
                 builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-                final Future<RpcResult<RemoveFlowOutput>> resultFuture =
-                        provider.getSalFlowService().removeFlow(builder.build());
-                JdkFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
+                LoggingFutures.addErrorLogging(provider.getSalFlowService().removeFlow(builder.build()), LOG,
+                    "removeFlow");
             }
         }
     }
@@ -148,10 +147,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     // TODO: Pull this into ForwardingRulesCommiter and override it here
 
     @Override
-    public Future<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
             final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
 
-        Future<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
+        ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);

@@ -15,9 +15,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -77,8 +78,9 @@ public class BundleGroupForwarder {
                     bundleId.getValue(), nodeId.getValue());
             final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
-            Futures.addCallback(resultFuture, new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId));
-            JdkFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
+            Futures.addCallback(resultFuture, new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId),
+                    MoreExecutors.directExecutor());
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
             return resultFuture;
         });
 
@@ -102,8 +104,8 @@ public class BundleGroupForwarder {
             final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                     .getSalBundleService().addBundleMessages(addBundleMessagesInput);
             Futures.addCallback(resultFuture, new BundleUpdateGroupCallBack(originalGroup.getGroupId().getValue(),
-                    nodeId));
-            JdkFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
+                    nodeId), MoreExecutors.directExecutor());
+            LoggingFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
             return resultFuture;
         });
     }

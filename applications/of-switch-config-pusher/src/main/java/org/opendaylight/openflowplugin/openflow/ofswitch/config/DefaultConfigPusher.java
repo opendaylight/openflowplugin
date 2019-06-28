@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
 import com.google.common.base.Preconditions;
 import java.util.Collection;
-import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -23,7 +22,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.Mod
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
@@ -33,11 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,9 +95,8 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
                     setConfigInputBuilder.setMissSearchLength(OFConstants.OFPCML_NO_BUFFER);
                     setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath()
                             .getRootIdentifier().firstIdentifierOf(Node.class)));
-                    final Future<RpcResult<SetConfigOutput>> resultFuture =
-                            nodeConfigService.setConfig(setConfigInputBuilder.build());
-                    JdkFutures.addErrorLogging(resultFuture, LOG, "addFlow");
+                    LoggingFutures.addErrorLogging(nodeConfigService.setConfig(setConfigInputBuilder.build()),
+                            LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip setting config", nodeId);
                 }

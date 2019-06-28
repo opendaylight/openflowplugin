@@ -12,7 +12,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.infrautils.utils.concurrent.JdkFutures;
+import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
@@ -101,7 +101,7 @@ public class Test implements TestService {
 
     private void pushFlowViaRpc(AddFlowInput addFlowInput) {
         if (flowService != null) {
-            JdkFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
+            LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
         }
     }
 
