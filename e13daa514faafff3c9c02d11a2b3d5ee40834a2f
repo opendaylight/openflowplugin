@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee185254_0419ffb5",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/alarm/AlarmAgent.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 7788
+      },
+      "writtenOn": "2019-06-28T18:26:09Z",
+      "side": 1,
+      "message": "do you really need thread-safety here? in my opinion not, so in that case StringBuilder is faster than StringBuffer.",
+      "revId": "e13daa514faafff3c9c02d11a2b3d5ee40834a2f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
