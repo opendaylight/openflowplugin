@@ -140,6 +140,30 @@
     },
     {
       "key": {
+        "uuid": "2f3e8cb2_29c0b688",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-06-28T11:33:39Z",
+      "side": 1,
+      "message": "Please elaborate",
+      "parentUuid": "a6e3718c_ceb1418a",
+      "range": {
+        "startLine": 12,
+        "startChar": 13,
+        "endLine": 12,
+        "endChar": 32
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6d38b61_76e30235",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
         "patchSetId": 14
@@ -151,6 +175,30 @@
       "writtenOn": "2019-06-18T17:04:57Z",
       "side": 1,
       "message": "\"failed\" seems like it should have a cause",
+      "range": {
+        "startLine": 16,
+        "startChar": 8,
+        "endLine": 16,
+        "endChar": 14
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32ce61ae_06f4e628",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-06-28T11:33:39Z",
+      "side": 1,
+      "message": "The error causing the failure is being logged.",
+      "parentUuid": "b6d38b61_76e30235",
       "range": {
         "startLine": 16,
         "startChar": 8,
@@ -197,6 +245,30 @@
       "writtenOn": "2019-06-18T17:04:57Z",
       "side": 1,
       "message": "can these ever be null?",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 25
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dc218dd3_ed7c6746",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-06-28T11:33:39Z",
+      "side": 1,
+      "message": "No",
+      "parentUuid": "4cc7cb91_6d36f104",
       "range": {
         "startLine": 23,
         "startChar": 0,
