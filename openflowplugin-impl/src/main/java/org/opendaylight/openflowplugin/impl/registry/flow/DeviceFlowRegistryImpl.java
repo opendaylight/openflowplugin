@@ -18,7 +18,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -114,16 +113,14 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         future.addCallback(new FutureCallback<Optional<FlowCapableNode>>() {
             @Override
             public void onSuccess(Optional<FlowCapableNode> result) {
-                result.map(Collections::singleton).orElse(Collections.emptySet()).stream()
-                        .filter(Objects::nonNull)
-                        .filter(flowCapableNode -> flowCapableNode.getTable() != null)
-                        .flatMap(flowCapableNode -> flowCapableNode.getTable().stream())
-                        .filter(Objects::nonNull)
-                        .filter(table -> table.getFlow() != null)
-                        .flatMap(table -> table.getFlow().stream())
-                        .filter(Objects::nonNull)
-                        .filter(flow -> flow.getId() != null)
-                        .forEach(flowConsumer);
+                result.ifPresent(flowCapableNode -> {
+                    flowCapableNode.nonnullTable().stream()
+                    .filter(Objects::nonNull)
+                    .flatMap(table -> table.nonnullFlow().stream())
+                    .filter(Objects::nonNull)
+                    .filter(flow -> flow.getId() != null)
+                    .forEach(flowConsumer);
+                });
             }
 
             @Override
