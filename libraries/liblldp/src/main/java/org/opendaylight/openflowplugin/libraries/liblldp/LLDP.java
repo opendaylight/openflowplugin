@@ -25,6 +25,10 @@ public class LLDP extends Packet {
     private static final String SYSTEMNAMEID = "SystemNameID";
     private static final String PORTID = "PortId";
     private static final String TTL = "TTL";
+    private static final String SYSTEMDESC = "SystemDesc";
+    private static final String PORTDESC = "PortDesc";
+    private static final String SYSTEMCAPABILITIES = "SystemCapabilities";
+    private static final String MANAGEMENTADDRESS = "ManagementAddress";
     private static final int LLDP_DEFAULT_TLVS = 3;
     private static final LLDPTLV EMPTY_TLV = new LLDPTLV().setLength((short) 0).setType((byte) 0);
     @SuppressFBWarnings("MS_PKGPROTECT")
@@ -71,6 +75,14 @@ public class LLDP extends Packet {
                 return LLDPTLV.TLVType.TTL.getValue();
             case SYSTEMNAMEID:
                 return LLDPTLV.TLVType.SystemName.getValue();
+            case SYSTEMDESC:
+                return LLDPTLV.TLVType.SystemDesc.getValue();
+            case PORTDESC:
+                return LLDPTLV.TLVType.PortDesc.getValue();
+            case SYSTEMCAPABILITIES:
+                return LLDPTLV.TLVType.SystemCapabilities.getValue();
+            case MANAGEMENTADDRESS:
+                return LLDPTLV.TLVType.ManagementAddress.getValue();
             default:
                 return LLDPTLV.TLVType.Unknown.getValue();
         }
@@ -163,6 +175,54 @@ public class LLDP extends Packet {
 
     public LLDP setTtl(final LLDPTLV ttl) {
         setTLV(TTL, ttl);
+        return this;
+    }
+
+    /**
+     * Return the SystemDesc TLV.
+     */
+    public LLDPTLV getSystemDesc() {
+        return getTLV(SYSTEMDESC);
+    }
+
+    public LLDP setSystemDesc(final LLDPTLV systemDesc) {
+        setTLV(SYSTEMDESC, systemDesc);
+        return this;
+    }
+
+    /**
+     * Return the PortDesc TLV.
+     */
+    public LLDPTLV getPortDesc() {
+        return getTLV(PORTDESC);
+    }
+
+    public LLDP setPortDesc(final LLDPTLV portDesc) {
+        setTLV(PORTDESC, portDesc);
+        return this;
+    }
+
+    /**
+     * Return the SystemCapabilities TLV.
+     */
+    public LLDPTLV getSystemCapabilities() {
+        return getTLV(SYSTEMCAPABILITIES);
+    }
+
+    public LLDP setSystemCapabilities(final LLDPTLV systemCapabilities) {
+        setTLV(SYSTEMCAPABILITIES, systemCapabilities);
+        return this;
+    }
+
+    /**
+     * Return the ManagementAddress TLV.
+     */
+    public LLDPTLV getManagementAddress() {
+        return getTLV(MANAGEMENTADDRESS);
+    }
+
+    public LLDP setManagementAddress(final LLDPTLV managementAddress) {
+        setTLV(MANAGEMENTADDRESS, managementAddress);
         return this;
     }
 
@@ -271,3 +331,4 @@ public class LLDP extends Packet {
         return len / NetUtils.NUM_BITS_IN_A_BYTE;
     }
 }
+
