@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b384179a_39c9aecf",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T09:53:31Z",
+      "side": 1,
+      "message": "final InstanceIdentifier\u003cGroup\u003e identifier,\nfinal Group group,\nfinal InstanceIdentifier\u003cFlowCapableNode\u003e nodeIdent,\nfinal BundleId bundleId",
+      "range": {
+        "startLine": 114,
+        "startChar": 68,
+        "endLine": 116,
+        "endChar": 91
+      },
+      "revId": "2a3279c5a88a684b547737476be112bcff89d9b3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
