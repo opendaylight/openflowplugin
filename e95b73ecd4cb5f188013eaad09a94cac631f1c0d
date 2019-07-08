@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3e701d61_c916baa4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T11:01:12Z",
+      "side": 1,
+      "message": "pass identifier to BundleFlowCallBack",
+      "range": {
+        "startLine": 118,
+        "startChar": 12,
+        "endLine": 119,
+        "endChar": 63
+      },
+      "revId": "e95b73ecd4cb5f188013eaad09a94cac631f1c0d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8caa889d_76b63789",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T11:01:12Z",
+      "side": 1,
+      "message": "getFlowId(new FlowRef(identifier));",
+      "range": {
+        "startLine": 210,
+        "startChar": 26,
+        "endLine": 210,
+        "endChar": 32
+      },
+      "revId": "e95b73ecd4cb5f188013eaad09a94cac631f1c0d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "41e580ce_1a0fdff4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleFlowForwarder.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T11:01:12Z",
+      "side": 1,
+      "message": "getTableId(new FlowTableRef(identifier));",
+      "range": {
+        "startLine": 211,
+        "startChar": 27,
+        "endLine": 211,
+        "endChar": 34
+      },
+      "revId": "e95b73ecd4cb5f188013eaad09a94cac631f1c0d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
