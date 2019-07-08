@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "ce8fc3c7_a093b5a2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T06:44:32Z",
+      "side": 1,
+      "message": "remove all these and use ofppool  executor which is per controller instance",
+      "range": {
+        "startLine": 166,
+        "startChar": 4,
+        "endLine": 166,
+        "endChar": 82
+      },
+      "revId": "c1908c96980cdef82cf574b0bfce928942f65211",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bd497b41_68631771",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 1
@@ -41,6 +64,52 @@
         "startChar": 28,
         "endLine": 213,
         "endChar": 78
+      },
+      "revId": "c1908c96980cdef82cf574b0bfce928942f65211",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dca1dc27_5c8478aa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T06:44:32Z",
+      "side": 1,
+      "message": "not neede, use ofppool executor service",
+      "range": {
+        "startLine": 213,
+        "startChar": 8,
+        "endLine": 213,
+        "endChar": 78
+      },
+      "revId": "c1908c96980cdef82cf574b0bfce928942f65211",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11e4dd2a_19f6e7b3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T06:44:32Z",
+      "side": 1,
+      "message": "this is not needed in upstream context",
+      "range": {
+        "startLine": 92,
+        "startChar": 8,
+        "endLine": 92,
+        "endChar": 94
       },
       "revId": "c1908c96980cdef82cf574b0bfce928942f65211",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
