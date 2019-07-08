@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d03e163d_1e4f9a42",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/BundleMessagesCommiter.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T09:53:31Z",
+      "side": 1,
+      "message": "we dont need this",
+      "range": {
+        "startLine": 19,
+        "startChar": 61,
+        "endLine": 19,
+        "endChar": 83
+      },
+      "revId": "4e10dd75464a0efa5236580c1a8ca052f0cf3391",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4c6c2dd4_db0a8f6b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 702,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T09:53:31Z",
+      "side": 1,
+      "message": "final",
+      "range": {
+        "startLine": 702,
+        "startChar": 68,
+        "endLine": 702,
+        "endChar": 72
+      },
+      "revId": "4e10dd75464a0efa5236580c1a8ca052f0cf3391",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a305f82c_09f6d928",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T09:53:31Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "4e10dd75464a0efa5236580c1a8ca052f0cf3391",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "45927287_c7c18593",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/connection/AbstractOutboundQueueManager.java",
+        "patchSetId": 22
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-08T09:53:31Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "4e10dd75464a0efa5236580c1a8ca052f0cf3391",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
