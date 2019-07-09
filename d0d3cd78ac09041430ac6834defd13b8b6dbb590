@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e01fb38b_2c669ac0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-09T05:43:07Z",
+      "side": 1,
+      "message": "not needed",
+      "range": {
+        "startLine": 229,
+        "startChar": 40,
+        "endLine": 229,
+        "endChar": 77
+      },
+      "revId": "d0d3cd78ac09041430ac6834defd13b8b6dbb590",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dfd8776b_6163bcf8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-09T05:43:07Z",
+      "side": 1,
+      "message": "maintain same alignment as previous",
+      "range": {
+        "startLine": 228,
+        "startChar": 16,
+        "endLine": 236,
+        "endChar": 58
+      },
+      "revId": "d0d3cd78ac09041430ac6834defd13b8b6dbb590",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a9ecbfe6_64d69f33",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-09T05:43:07Z",
+      "side": 1,
+      "message": "remove JdkFutureAdapters not needed",
+      "range": {
+        "startLine": 241,
+        "startChar": 31,
+        "endLine": 241,
+        "endChar": 67
+      },
+      "revId": "d0d3cd78ac09041430ac6834defd13b8b6dbb590",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "74467d03_71a11efb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-09T05:43:07Z",
+      "side": 1,
+      "message": "keep the same alignment",
+      "range": {
+        "startLine": 238,
+        "startChar": 16,
+        "endLine": 243,
+        "endChar": 55
+      },
+      "revId": "d0d3cd78ac09041430ac6834defd13b8b6dbb590",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
