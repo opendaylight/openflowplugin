@@ -268,7 +268,7 @@ public class OpenFlowPluginProviderImpl implements
                 convertorManager,
                 executorService);
 
-        roleManager = new RoleManagerImpl(hashedWheelTimer, config);
+        roleManager = new RoleManagerImpl(hashedWheelTimer, config, executorService);
 
         contextChainHolder = new ContextChainHolderImpl(
                 executorService,
