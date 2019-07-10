@@ -259,6 +259,29 @@
     },
     {
       "key": {
+        "uuid": "dd5a7cad_e33adc40",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-10T09:27:52Z",
+      "side": 1,
+      "message": "still i\u0027m seeing JdkFutureAdapters reference",
+      "range": {
+        "startLine": 229,
+        "startChar": 40,
+        "endLine": 229,
+        "endChar": 76
+      },
+      "revId": "f619dff63f1abe5e39767f1c038c946a407d6041",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "807f867a_d005759f",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 14
