@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "847f0434_07d37d7f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 704,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-07-10T09:38:00Z",
+      "side": 1,
+      "message": "is it required to be removed from anywhere else apart from this?",
+      "parentUuid": "b4a2a490_34dc79b5",
+      "range": {
+        "startLine": 704,
+        "startChar": 27,
+        "endLine": 704,
+        "endChar": 63
+      },
+      "revId": "9324f603fa5730f1149c93754bae363accdc93c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "60a2a471_96dc36bd",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 24
