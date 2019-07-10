@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "61fdbb8e_ddc80757",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
+        "patchSetId": 21
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-07-10T16:33:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbe74d7c_8b5bd31b",
+      "range": {
+        "startLine": 166,
+        "startChar": 19,
+        "endLine": 166,
+        "endChar": 31
+      },
+      "revId": "4a5abfeaf26ca4a0981627b82a6c454934755bbf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2341ea8c_550332b1",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
         "patchSetId": 21
@@ -36,6 +60,30 @@
       "writtenOn": "2019-07-10T09:34:28Z",
       "side": 1,
       "message": "same, keep it in the same line",
+      "range": {
+        "startLine": 219,
+        "startChar": 19,
+        "endLine": 219,
+        "endChar": 31
+      },
+      "revId": "4a5abfeaf26ca4a0981627b82a6c454934755bbf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "814f8498_ceb54e81",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/BundleGroupForwarder.java",
+        "patchSetId": 21
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-07-10T16:33:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2341ea8c_550332b1",
       "range": {
         "startLine": 219,
         "startChar": 19,
