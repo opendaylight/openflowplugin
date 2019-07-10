@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b4a2a490_34dc79b5",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 704,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-10T09:27:52Z",
+      "side": 1,
+      "message": "you have not addressed this yet, remove use of JdkFutureAdapters",
+      "range": {
+        "startLine": 704,
+        "startChar": 27,
+        "endLine": 704,
+        "endChar": 63
+      },
+      "revId": "9324f603fa5730f1149c93754bae363accdc93c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "60a2a471_96dc36bd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 709,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-10T09:27:52Z",
+      "side": 1,
+      "message": "nonnullTable",
+      "range": {
+        "startLine": 709,
+        "startChar": 31,
+        "endLine": 709,
+        "endChar": 50
+      },
+      "revId": "9324f603fa5730f1149c93754bae363accdc93c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "584957dd_367f4ebb",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 713,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-10T09:27:52Z",
+      "side": 1,
+      "message": "nonnullFlow",
+      "range": {
+        "startLine": 713,
+        "startChar": 37,
+        "endLine": 713,
+        "endChar": 52
+      },
+      "revId": "9324f603fa5730f1149c93754bae363accdc93c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ce86067_78636e17",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 716,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-10T09:27:52Z",
+      "side": 1,
+      "message": "same comment",
+      "range": {
+        "startLine": 716,
+        "startChar": 39,
+        "endLine": 716,
+        "endChar": 75
+      },
+      "revId": "9324f603fa5730f1149c93754bae363accdc93c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9033bf9a_e6066631",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 721,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-10T09:27:52Z",
+      "side": 1,
+      "message": "add event log to have count of flow/group",
+      "range": {
+        "startLine": 721,
+        "startChar": 7,
+        "endLine": 721,
+        "endChar": 9
+      },
+      "revId": "9324f603fa5730f1149c93754bae363accdc93c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
