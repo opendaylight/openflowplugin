@@ -57,9 +57,15 @@ public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, Serial
         outBuffer.writeInt(message.getOutGroup().intValue());
         outBuffer.writeShort(createFlowModFlagsBitmask(message.getFlags()));
         outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
-        registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
-            .serialize(message.getMatch(), outBuffer);
-        ListSerializer.serializeList(message.getInstruction(), INSTRUCTION_KEY_MAKER, registry, outBuffer);
+        try {
+            registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
+                    .serialize(message.getMatch(), outBuffer);
+            ListSerializer.serializeList(message.getInstruction(), INSTRUCTION_KEY_MAKER, registry, outBuffer);
+
+        } catch (final IllegalStateException e) {
+            outBuffer.clear();
+            return;
+        }
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }
 
