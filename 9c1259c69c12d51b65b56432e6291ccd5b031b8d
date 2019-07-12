@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5183091d_79034b89",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-12T06:54:27Z",
+      "side": 1,
+      "message": "use execute and remove     @SuppressFBWarnings(\"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE\")",
+      "range": {
+        "startLine": 339,
+        "startChar": 24,
+        "endLine": 339,
+        "endChar": 31
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "371c6f3b_83e5553b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-12T06:54:27Z",
+      "side": 1,
+      "message": "space",
+      "range": {
+        "startLine": 366,
+        "startChar": 8,
+        "endLine": 366,
+        "endChar": 10
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a2a4ac7_3afeeb69",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-12T06:54:27Z",
+      "side": 1,
+      "message": "not needed",
+      "range": {
+        "startLine": 134,
+        "startChar": 7,
+        "endLine": 137,
+        "endChar": 9
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
