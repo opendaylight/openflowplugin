@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "9d16132c_be702a58",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-07-12T07:08:13Z",
+      "side": 1,
+      "message": "You can use just ExecutorService",
+      "range": {
+        "startLine": 160,
+        "startChar": 12,
+        "endLine": 160,
+        "endChar": 52
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6a414aa3_2f482ed5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-07-12T07:08:13Z",
+      "side": 1,
+      "message": "You can use just ExecutorService",
+      "range": {
+        "startLine": 174,
+        "startChar": 28,
+        "endLine": 174,
+        "endChar": 52
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5183091d_79034b89",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 2
@@ -41,6 +87,75 @@
         "startChar": 8,
         "endLine": 366,
         "endChar": 10
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a18b0106_80902dc2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-07-12T07:08:13Z",
+      "side": 1,
+      "message": "You can use just ExecutorService",
+      "range": {
+        "startLine": 11,
+        "startChar": 41,
+        "endLine": 11,
+        "endChar": 66
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "626be65b_ce0f7e81",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-07-12T07:08:13Z",
+      "side": 1,
+      "message": "You can use just ExecutorService",
+      "range": {
+        "startLine": 71,
+        "startChar": 12,
+        "endLine": 71,
+        "endChar": 36
+      },
+      "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e38047e_d93af086",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2019-07-12T07:08:13Z",
+      "side": 1,
+      "message": "You can use just ExecutorService",
+      "range": {
+        "startLine": 80,
+        "startChar": 44,
+        "endLine": 80,
+        "endChar": 68
       },
       "revId": "9c1259c69c12d51b65b56432e6291ccd5b031b8d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
