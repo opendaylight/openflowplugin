@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "082dd885_2a2b20d2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-12T05:50:46Z",
+      "side": 1,
+      "message": "if its null, wont it throw NPE?",
+      "range": {
+        "startLine": 291,
+        "startChar": 32,
+        "endLine": 291,
+        "endChar": 57
+      },
+      "revId": "5b08602df2fd2280ee600872d462cbd23ff0e052",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
