@@ -48,8 +48,7 @@ public class RoleManagerImpl implements RoleManager {
 
     @Override
     public void onDeviceRemoved(final DeviceInfo deviceInfo) {
-        RoleContext context = contexts.remove(deviceInfo);
-        context.close();
+        contexts.remove(deviceInfo);
     }
 
     @Override

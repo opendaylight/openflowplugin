@@ -17,7 +17,6 @@ import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -98,7 +97,7 @@ public class RoleContextImpl implements RoleContext {
     public void instantiateServiceInstance() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
         changeLastRoleFuture(future);
-        Futures.addCallback(future, new MasterRoleCallback(), Executors.newSingleThreadExecutor());
+        Futures.addCallback(future, new MasterRoleCallback(), MoreExecutors.directExecutor());
     }
 
     @Override

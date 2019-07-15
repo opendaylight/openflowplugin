@@ -148,7 +148,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         statisticsContext.registerMastershipWatcher(mockedMastershipWatcher);
         statisticsContext.setStatisticsGatheringService(mockedStatisticsGatheringService);
         statisticsContext.setStatisticsGatheringOnTheFlyService(mockedStatisticsOnFlyGatheringService);
-        statisticsContext.initializeDevice();
+        statisticsContext.instantiateServiceInstance();
 
         verify(mockedStatisticsGatheringService, times(7))
                 .getStatisticsOfType(any(EventIdentifier.class), any(MultipartType.class));
