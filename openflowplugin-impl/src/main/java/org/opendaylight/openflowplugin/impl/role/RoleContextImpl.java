@@ -10,13 +10,14 @@ package org.opendaylight.openflowplugin.impl.role;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
@@ -53,19 +54,16 @@ public class RoleContextImpl implements RoleContext {
     private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final Timeout slaveTask;
     private final OpenflowProviderConfig config;
-    private final ExecutorService executorService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     private SalRoleService roleService;
 
     RoleContextImpl(@Nonnull final DeviceInfo deviceInfo,
                     @Nonnull final HashedWheelTimer timer,
                     final long checkRoleMasterTimeout,
-                    final OpenflowProviderConfig config,
-                    final ExecutorService executorService) {
+                    final OpenflowProviderConfig config) {
         this.deviceInfo = deviceInfo;
         this.timer = timer;
         this.config = config;
-        this.executorService = executorService;
         slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
 
         LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
@@ -100,7 +98,7 @@ public class RoleContextImpl implements RoleContext {
     public void instantiateServiceInstance() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMEMASTER);
         changeLastRoleFuture(future);
-        Futures.addCallback(future, new MasterRoleCallback(), executorService);
+        Futures.addCallback(future, new MasterRoleCallback(), Executors.newSingleThreadExecutor());
     }
 
     @Override
@@ -142,7 +140,7 @@ public class RoleContextImpl implements RoleContext {
     private ListenableFuture<RpcResult<SetRoleOutput>> makeDeviceSlave() {
         final ListenableFuture<RpcResult<SetRoleOutput>> future = sendRoleChangeToDevice(OfpRole.BECOMESLAVE);
         changeLastRoleFuture(future);
-        Futures.addCallback(future, new SlaveRoleCallback(), executorService);
+        Futures.addCallback(future, new SlaveRoleCallback(), MoreExecutors.directExecutor());
         return future;
     }
 

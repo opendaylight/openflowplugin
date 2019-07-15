@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.role;
 import io.netty.util.HashedWheelTimer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -28,14 +27,11 @@ public class RoleManagerImpl implements RoleManager {
     private final ConcurrentMap<DeviceInfo, RoleContext> contexts = new ConcurrentHashMap<>();
     private final HashedWheelTimer timer;
     private final OpenflowProviderConfig config;
-    private final ExecutorService executorService;
 
     public RoleManagerImpl(final HashedWheelTimer timer,
-                           final OpenflowProviderConfig config,
-                           final ExecutorService executorService) {
+                           final OpenflowProviderConfig config) {
         this.timer = timer;
         this.config = config;
-        this.executorService = executorService;
     }
 
     @Override
@@ -43,7 +39,7 @@ public class RoleManagerImpl implements RoleManager {
         final DeviceInfo deviceInfo = deviceContext.getDeviceInfo();
         final RoleContextImpl roleContext = new RoleContextImpl(
                 deviceContext.getDeviceInfo(),
-                timer, CHECK_ROLE_MASTER_TIMEOUT, config, executorService);
+                timer, CHECK_ROLE_MASTER_TIMEOUT, config);
 
         roleContext.setRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
         contexts.put(deviceInfo, roleContext);
