@@ -103,6 +103,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         deserializationFactory = new DeserializationFactory(deserializerRegistry);
     }
 
+    
+
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
     private static String createConnectionSuffix(@Nullable ConnectionConfiguration config) {
         if (config != null) {
