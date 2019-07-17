@@ -119,7 +119,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                         LOG.warn("Serializer for match entry {} for version {} not found.",
                                 extension.getExtension().implementedInterface(),
                                 OFConstants.OFP_VERSION_1_3);
-                        return null;
+                        throw new IllegalStateException("serializeExtensionList get Serializer for match entry fail");
                     });
         });
     }
