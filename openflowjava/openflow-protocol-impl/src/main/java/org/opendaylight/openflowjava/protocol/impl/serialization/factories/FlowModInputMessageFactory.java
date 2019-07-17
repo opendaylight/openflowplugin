@@ -24,6 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Translates FlowMod messages. OF protocol versions: 1.3.
@@ -37,6 +39,7 @@ public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, Serial
     private static final TypeKeyMaker<Instruction> INSTRUCTION_KEY_MAKER =
             TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
     private SerializerRegistry registry;
+    private static final Logger LOG = LoggerFactory.getLogger(FlowModInputMessageFactory.class);
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
@@ -57,9 +60,16 @@ public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, Serial
         outBuffer.writeInt(message.getOutGroup().intValue());
         outBuffer.writeShort(createFlowModFlagsBitmask(message.getFlags()));
         outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
-        registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
-            .serialize(message.getMatch(), outBuffer);
-        ListSerializer.serializeList(message.getInstruction(), INSTRUCTION_KEY_MAKER, registry, outBuffer);
+        try {
+            registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
+                    .serialize(message.getMatch(), outBuffer);
+            ListSerializer.serializeList(message.getInstruction(), INSTRUCTION_KEY_MAKER, registry, outBuffer);
+
+        } catch (final IllegalStateException | ClassCastException | NullPointerException e) {
+            LOG.warn("Serializer for FlowModInputMessageFactory failed.");
+            outBuffer.clear();
+            return;
+        }
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }
 
