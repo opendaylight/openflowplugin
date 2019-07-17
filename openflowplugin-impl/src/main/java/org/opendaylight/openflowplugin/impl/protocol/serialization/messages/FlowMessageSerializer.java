@@ -110,24 +110,30 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeFlow(final FlowMessage message, final ByteBuf outBuffer) {
-        final int index = outBuffer.writerIndex();
-        super.serialize(message, outBuffer);
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue()
-                .longValue());
-        outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID));
-        outBuffer.writeByte(message.getCommand().getIntValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT));
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT));
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getPriority(), DEFAULT_PRIORITY));
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
-        outBuffer.writeShort(createFlowModFlagsBitmask(MoreObjects.firstNonNull(message.getFlags(), DEFAULT_FLAGS)));
-        outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
-        writeMatch(message, outBuffer);
-        writeInstructions(message, outBuffer);
-        outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
+        try {
+            final int index = outBuffer.writerIndex();
+            super.serialize(message, outBuffer);
+            outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookie(), DEFAULT_COOKIE).getValue()
+	                .longValue());
+            outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue()
+                    .longValue());
+            outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID));
+            outBuffer.writeByte(message.getCommand().getIntValue());
+            outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT));
+            outBuffer.writeShort(MoreObjects.firstNonNull(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT));
+            outBuffer.writeShort(MoreObjects.firstNonNull(message.getPriority(), DEFAULT_PRIORITY));
+            outBuffer.writeInt(MoreObjects.firstNonNull(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
+            outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
+            outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
+            outBuffer.writeShort(createFlowModFlagsBitmask(MoreObjects.firstNonNull(message.getFlags(),
+	                DEFAULT_FLAGS)));
+            outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
+            writeMatch(message, outBuffer);
+            writeInstructions(message, outBuffer);
+            outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
+        } catch (IllegalStateException e) {
+            outBuffer.clear();
+        }
     }
 
     /**

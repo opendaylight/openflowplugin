@@ -29,7 +29,7 @@ public interface SerializerRegistry {
      * @param msgTypeKey lookup key
      * @return serializer or NullPointerException if no serializer was found
      */
-    <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey);
+    <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey) throws IllegalStateException;
 
     /**
      * Registers a serializer.
