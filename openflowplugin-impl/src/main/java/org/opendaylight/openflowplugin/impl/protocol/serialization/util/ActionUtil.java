@@ -70,7 +70,7 @@ public final class ActionUtil {
                         serializer.serialize(action, outBuffer);
                         return action;
                     });
-        } catch (final IllegalStateException | ClassCastException e) {
+        } catch (ClassCastException e) {
             LOG.warn("Serializer for action {} for version {} not found.", action.implementedInterface(), version);
         }
     }
@@ -110,7 +110,7 @@ public final class ActionUtil {
                         serializer.serializeHeader(action, outBuffer);
                         return action;
                     });
-        } catch (final IllegalStateException | ClassCastException e) {
+        } catch (ClassCastException e) {
             LOG.warn("Header Serializer for action {} for version {} not found.", action.implementedInterface(),
                     version);
         }
