@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Fri, 19 Jul 2019 08:57:13 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/83122
+Project: openflowplugin
+Branch: refs/heads/stable/neon
