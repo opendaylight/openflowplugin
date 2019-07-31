@@ -85,17 +85,20 @@ public final class MdSalRegistrationUtils {
      *        {@link org.opendaylight.openflowplugin.api.openflow.device.DeviceContext} as input parameter
      *
      * @param convertorExecutor convertor executor
+     * @param isStatisticsPollingOn - is statistics polling enabled
      */
     public static void registerServices(@Nonnull final RpcContext rpcContext,
                                         @Nonnull final DeviceContext deviceContext,
                                         final ExtensionConverterProvider extensionConverterProvider,
-                                        final ConvertorExecutor convertorExecutor) {
+                                        final ConvertorExecutor convertorExecutor,
+                                        final boolean isStatisticsPollingOn) {
         // TODO: Use multipart writer provider from device context
         final MultipartWriterProvider multipartWriterProvider = MultipartWriterProviderFactory
             .createDefaultProvider(deviceContext);
 
         // create service instances
-        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext, convertorExecutor,
+                isStatisticsPollingOn);
         final FlowCapableTransactionServiceImpl flowCapableTransactionService =
                 new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
         final SalAsyncConfigServiceImpl salAsyncConfigService =

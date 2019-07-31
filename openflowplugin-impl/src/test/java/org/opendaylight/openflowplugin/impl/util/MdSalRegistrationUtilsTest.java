@@ -78,7 +78,8 @@ public class MdSalRegistrationUtilsTest {
         MdSalRegistrationUtils.registerServices(mockedRpcContext,
                                                 mockedDeviceContext,
                                                 extensionConverterProvider,
-                                                convertorManager);
+                                                convertorManager,
+                                                false);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(), any(RpcService.class));
     }

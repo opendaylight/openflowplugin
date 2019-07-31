@@ -124,6 +124,7 @@ public class DeviceManagerImplTest {
                         .setEnableFlowRemovedNotification(true)
                         .setSkipTableFeatures(false)
                         .setUseSingleLayerSerialization(true)
+                        .setIsStatisticsPollingOn(false)
                         .build(),
                 dataBroker,
                 messageIntelligenceAgency,
