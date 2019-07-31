@@ -58,6 +58,7 @@ class RpcContextImpl implements RpcContext {
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private boolean isStatisticsPollingOn;
 
     RpcContextImpl(@Nonnull final RpcProviderService rpcProviderRegistry,
                    final int maxRequests,
@@ -65,7 +66,8 @@ class RpcContextImpl implements RpcContext {
                    @Nonnull final ExtensionConverterProvider extensionConverterProvider,
                    @Nonnull final ConvertorExecutor convertorExecutor,
                    @Nonnull final NotificationPublishService notificationPublishService,
-                   boolean statisticsRpcEnabled) {
+                   final boolean statisticsRpcEnabled,
+                   final boolean isStatisticsPollingOn) {
         this.deviceContext = deviceContext;
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
@@ -75,6 +77,7 @@ class RpcContextImpl implements RpcContext {
         this.notificationPublishService = notificationPublishService;
         this.convertorExecutor = convertorExecutor;
         this.isStatisticsRpcEnabled = statisticsRpcEnabled;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.tracker = new Semaphore(maxRequests, true);
     }
 
@@ -188,7 +191,8 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
-        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor);
+        MdSalRegistrationUtils.registerServices(this, deviceContext, extensionConverterProvider, convertorExecutor,
+                isStatisticsPollingOn);
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(

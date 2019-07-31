@@ -74,7 +74,8 @@ public class RpcManagerImpl implements RpcManager {
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService,
-                config.isIsStatisticsRpcEnabled());
+                config.isIsStatisticsRpcEnabled(),
+                config.isIsStatisticsPollingOn());
 
         contexts.put(deviceContext.getDeviceInfo(), rpcContext);
         return rpcContext;
