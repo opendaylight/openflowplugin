@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 
 public class SalFlowServiceImpl implements SalFlowService {
     private static final Logger LOG = LoggerFactory.getLogger(SalFlowServiceImpl.class);
+    private static final int FLOWGROUP_CACHE_SIZE = Integer.getInteger("flowgroup.cache.size", 10000);
+
     private final MultiLayerFlowService<UpdateFlowOutput> flowUpdate;
     private final MultiLayerFlowService<AddFlowOutput> flowAdd;
     private final MultiLayerFlowService<RemoveFlowOutput> flowRemove;
@@ -56,11 +58,14 @@ public class SalFlowServiceImpl implements SalFlowService {
     private final SingleLayerFlowService<UpdateFlowOutput> flowUpdateMessage;
     private final SingleLayerFlowService<RemoveFlowOutput> flowRemoveMessage;
     private final DeviceContext deviceContext;
+    private final boolean isStatisticsPollingOn;
 
     public SalFlowServiceImpl(final RequestContextStack requestContextStack,
                               final DeviceContext deviceContext,
-                              final ConvertorExecutor convertorExecutor) {
+                              final ConvertorExecutor convertorExecutor,
+                              final boolean isStatisticsPollingOn) {
         this.deviceContext = deviceContext;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
         flowRemove = new MultiLayerFlowService<>(requestContextStack,
                                                  deviceContext,
                                                  RemoveFlowOutput.class,
@@ -201,19 +206,19 @@ public class SalFlowServiceImpl implements SalFlowService {
         @Override
         public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
-                final FlowDescriptor flowDescriptor;
-
-                if (input.getFlowRef() != null) {
-                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
-                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-                    deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
-                } else {
-                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
-                    flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
-                }
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
+                if (isStatisticsPollingOn) {
+                    final FlowDescriptor flowDescriptor;
+                    if (input.getFlowRef() != null) {
+                        final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
+                        flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
+                        deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
+                    } else {
+                        deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
+                        flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+                    }
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
+                    }
                 }
             } else {
                 if (LOG.isDebugEnabled()) {
@@ -242,10 +247,12 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
-                FlowRegistryKey flowRegistryKey =
-                        FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
-                deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
-            } else {
+                if (isStatisticsPollingOn) {
+                    FlowRegistryKey flowRegistryKey =
+                            FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
+                    deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                }
+            }else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove failed for flow={}, errors={}", input,
                             ErrorUtil.errorsToString(result.getErrors()));
@@ -272,31 +279,32 @@ public class SalFlowServiceImpl implements SalFlowService {
 
             final UpdatedFlow updated = input.getUpdatedFlow();
             final OriginalFlow original = input.getOriginalFlow();
-            final FlowRegistryKey origFlowRegistryKey =
-                    FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), original);
-            final FlowRegistryKey updatedFlowRegistryKey =
-                    FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
-            final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(origFlowRegistryKey);
+            if (isStatisticsPollingOn) {
+                final FlowRegistryKey origFlowRegistryKey =
+                        FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), original);
+                final FlowRegistryKey updatedFlowRegistryKey =
+                        FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), updated);
+                final FlowDescriptor origFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(origFlowRegistryKey);
 
-            final boolean isUpdate = origFlowDescriptor != null;
-            final FlowDescriptor updatedFlowDescriptor;
-
-            if (input.getFlowRef() != null) {
-                updatedFlowDescriptor =
-                        FlowDescriptorFactory.create(updated.getTableId(),
-                                                     input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
-            } else {
-                if (isUpdate) {
-                    updatedFlowDescriptor = origFlowDescriptor;
+                final boolean isUpdate = origFlowDescriptor != null;
+                final FlowDescriptor updatedFlowDescriptor;
+                if (input.getFlowRef() != null) {
+                    updatedFlowDescriptor =
+                            FlowDescriptorFactory.create(updated.getTableId(),
+                                    input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
                 } else {
-                    deviceFlowRegistry.store(updatedFlowRegistryKey);
-                    updatedFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(updatedFlowRegistryKey);
+                    if (isUpdate) {
+                        updatedFlowDescriptor = origFlowDescriptor;
+                    } else {
+                        deviceFlowRegistry.store(updatedFlowRegistryKey);
+                        updatedFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(updatedFlowRegistryKey);
+                    }
                 }
-            }
 
-            if (isUpdate) {
-                deviceFlowRegistry.addMark(origFlowRegistryKey);
-                deviceFlowRegistry.storeDescriptor(updatedFlowRegistryKey, updatedFlowDescriptor);
+                if (isUpdate) {
+                    deviceFlowRegistry.addMark(origFlowRegistryKey);
+                    deviceFlowRegistry.storeDescriptor(updatedFlowRegistryKey, updatedFlowDescriptor);
+                }
             }
         }
 

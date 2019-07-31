@@ -15,6 +15,8 @@ import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,7 +103,6 @@ public class SalFlowServiceImplTest extends TestCase {
     private OutboundQueue outboundQueue;
     @Mock
     private Match match;
-
     @Mock
     private DeviceState mockedDeviceState;
     @Mock
@@ -135,7 +136,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager,false);
     }
 
     @Test
@@ -272,8 +273,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedUpdateFlowInput1.getUpdatedFlow()).thenReturn(mockedUpdateFlow1);
 
         FlowRef mockedFlowRef = mock(FlowRef.class);
-        Mockito.doReturn(TABLE_II.child(Flow.class,
-                         new FlowKey(new FlowId(DUMMY_FLOW_ID)))).when(mockedFlowRef).getValue();
+        Mockito.doReturn(TABLE_II.child(Flow.class)).when(mockedFlowRef).getValue();
         when(mockedUpdateFlowInput.getFlowRef()).thenReturn(mockedFlowRef);
         when(mockedUpdateFlowInput1.getFlowRef()).thenReturn(mockedFlowRef);
 

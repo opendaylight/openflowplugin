@@ -88,7 +88,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true);
+                notificationPublishService, true, false);
 
         when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
                 .thenReturn(routedRpcReg);
@@ -102,7 +102,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)) {
+                notificationPublishService, true, false)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -116,7 +116,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)) {
+                notificationPublishService, true, false)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -130,7 +130,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true)) {
+                notificationPublishService, true, false)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();
