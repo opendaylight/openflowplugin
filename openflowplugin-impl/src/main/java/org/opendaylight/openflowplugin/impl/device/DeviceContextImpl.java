@@ -157,6 +157,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private final boolean isStatisticsPollingOn;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DataBroker dataBroker,
@@ -169,7 +170,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final DeviceInitializerProvider deviceInitializerProvider,
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
-                      final ContextChainHolder contextChainHolder) {
+                      final ContextChainHolder contextChainHolder,
+                      final boolean isStatisticsPollingOn) {
 
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -181,6 +183,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
         this.contextChainHolder = contextChainHolder;
+        this.isStatisticsPollingOn = isStatisticsPollingOn;
 
         this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
@@ -666,11 +669,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     deviceInfo.toString()));
         }
 
-        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill =
-                getDeviceFlowRegistry().fill();
-        Futures.addCallback(deviceFlowRegistryFill,
-                new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher),
-                MoreExecutors.directExecutor());
+        if (isStatisticsPollingOn) {
+            final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill =
+                    getDeviceFlowRegistry().fill();
+            Futures.addCallback(deviceFlowRegistryFill,
+                    new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher),
+                    MoreExecutors.directExecutor());
+        }
     }
 
     @VisibleForTesting

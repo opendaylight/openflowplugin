@@ -254,7 +254,8 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
-                contextChainHolder);
+                contextChainHolder,
+                false);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);

@@ -81,6 +81,7 @@ public class RpcManagerImplTest {
         rpcManager = new RpcManagerImpl(new OpenflowProviderConfigBuilder()
                 .setRpcRequestsQuota(new NonZeroUint16Type(QUOTA_VALUE))
                 .setIsStatisticsRpcEnabled(false)
+                .setIsStatisticsPollingOn(false)
                 .build(),
                 rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
 
