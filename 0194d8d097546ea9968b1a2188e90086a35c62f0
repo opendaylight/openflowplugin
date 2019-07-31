@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aa7f9e6_4f242a81",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-07-31T11:31:26Z",
+      "side": 1,
+      "message": "could you please update this with queuednotification manager?",
+      "range": {
+        "startLine": 339,
+        "startChar": 8,
+        "endLine": 339,
+        "endChar": 39
+      },
+      "revId": "0194d8d097546ea9968b1a2188e90086a35c62f0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
