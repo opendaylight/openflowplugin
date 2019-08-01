@@ -106,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
+import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -174,6 +175,8 @@ public class DeviceContextImplTest {
     private ContextChainHolder contextChainHolder;
     @Mock
     private ContextChain contextChain;
+    @Mock
+    private NotificationManager queuedNotificationManager;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -228,7 +231,7 @@ public class DeviceContextImplTest {
 
         Mockito.when(messageTranslatorPacketReceived.translate(Mockito.any(), Mockito.any(),
                 Mockito.any())).thenReturn(packetReceived);
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.any(),
+        lenient().when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.any(),
                 Mockito.any(),
                 Mockito.any())).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
@@ -254,16 +257,15 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
-                contextChainHolder);
+                contextChainHolder,
+                queuedNotificationManager);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
-
-        Mockito.doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
-
+        lenient().doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
     }
 
     @Test
@@ -414,14 +416,12 @@ public class DeviceContextImplTest {
         final Class dummyClass = Class.class;
         when(mockedPortStatusMessage.implementedInterface()).thenReturn(dummyClass);
 
-
         final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
         lenient().when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
-        when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
-
+        lenient().when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
+        lenient().when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
         verify(messageSpy).spyMessage(any(), any());
     }
