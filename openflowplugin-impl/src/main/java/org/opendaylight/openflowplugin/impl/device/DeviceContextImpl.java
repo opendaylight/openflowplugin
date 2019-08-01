@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.util.HashedWheelTimer;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -98,6 +99,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -157,6 +159,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private final NotificationManager<String, Runnable> queuedNotificationManager;
 
     DeviceContextImpl(@Nonnull final ConnectionContext primaryConnectionContext,
                       @Nonnull final DataBroker dataBroker,
@@ -169,8 +172,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final DeviceInitializerProvider deviceInitializerProvider,
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
-                      final ContextChainHolder contextChainHolder) {
-
+                      final ContextChainHolder contextChainHolder,
+                      final NotificationManager queuedNotificationManager) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
@@ -198,6 +201,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.convertorExecutor = convertorExecutor;
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
+        this.queuedNotificationManager = queuedNotificationManager;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
     }
 
@@ -328,6 +332,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         if (initialized.get()) {
             try {
                 writePortStatusMessage(portStatus);
+                LOG.info("processPortStatusMessage");
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatus.getPortNo(), getDeviceInfo(), e);
@@ -337,32 +342,45 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
-                .translate(portStatusMessage, getDeviceInfo(), null);
-        OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
-                deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
-                portStatusMessage.getReason());
+        String datapathId = deviceInfo.getDatapathId().toString().intern();
+        System.identityHashCode(datapathId);
+        LOG.debug("deviceContextImpl {}", System.identityHashCode(datapathId));
+        queuedNotificationManager.submitNotification(datapathId, () -> {
+            try {
+                LOG.debug("device {}",System.identityHashCode(datapathId.intern()));
+                final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
+                        .translate(portStatusMessage, getDeviceInfo(), null);
+                OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                        deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
+                        portStatusMessage.getReason());
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
-                .getNodeInstanceIdentifier()
-                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
-                        .nodeConnectorIdfromDatapathPortNo(
-                                deviceInfo.getDatapathId(),
-                                portStatusMessage.getPortNo(),
-                                OpenflowVersion.get(deviceInfo.getVersion()))));
+                final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+                        .getNodeInstanceIdentifier()
+                        .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
+                                .nodeConnectorIdfromDatapathPortNo(
+                                        new BigInteger(datapathId),
+                                        portStatusMessage.getPortNo(),
+                                        OpenflowVersion.get(deviceInfo.getVersion()))));
 
-        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                .withKey(iiToNodeConnector.getKey())
-                .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                        FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
-                .build());
-        syncSubmitTransaction();
-        if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
-            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
-            syncSubmitTransaction();
-        }
+                writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                        .withKey(iiToNodeConnector.getKey())
+                        .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
+                                FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                        .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                        .build());
+                syncSubmitTransaction();
+                if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+                    addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+                    syncSubmitTransaction();
+                }
+                LOG.debug("Inside deviceContextImpl");
+            } catch (final Exception e) {
+                LOG.warn("Error processing port status message for port {} on device {}",
+                        portStatusMessage.getPortNo(), datapathId, e);
+            }
+        });
     }
 
     @Override
@@ -630,11 +648,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     @SuppressWarnings({"checkstyle:IllegalCatch"})
     public void initializeDevice() {
-        LOG.debug("Device initialization started for device {}", deviceInfo);
+        LOG.debug("Device initialization started for dthe evice {}", deviceInfo);
         try {
             final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
                     .retrieveAndClearPortStatusMessages();
-
+            LOG.debug("Device initialization started for device");
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {
