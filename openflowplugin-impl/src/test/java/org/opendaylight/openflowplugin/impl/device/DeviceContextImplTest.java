@@ -71,7 +71,6 @@ import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -86,7 +85,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
@@ -106,6 +104,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
+import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -174,6 +173,8 @@ public class DeviceContextImplTest {
     private ContextChainHolder contextChainHolder;
     @Mock
     private ContextChain contextChain;
+    @Mock
+    private NotificationManager queuedNotificationManager;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -228,9 +229,6 @@ public class DeviceContextImplTest {
 
         Mockito.when(messageTranslatorPacketReceived.translate(Mockito.any(), Mockito.any(),
                 Mockito.any())).thenReturn(packetReceived);
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.any(),
-                Mockito.any(),
-                Mockito.any())).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
@@ -254,16 +252,14 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
-                contextChainHolder);
+                contextChainHolder,
+                queuedNotificationManager);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
-
-        Mockito.doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
-
     }
 
     @Test
@@ -282,14 +278,6 @@ public class DeviceContextImplTest {
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
         verify(writeTx).commit();
-    }
-
-    private ConnectionContext prepareConnectionContext() {
-        final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
-        final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
-        when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
-        return mockedConnectionContext;
     }
 
     @Test
@@ -419,9 +407,6 @@ public class DeviceContextImplTest {
         lenient().when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
-        when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
-
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
         verify(messageSpy).spyMessage(any(), any());
     }
