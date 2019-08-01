@@ -12,6 +12,7 @@ import io.netty.util.HashedWheelTimer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -43,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.util.concurrent.QueuedNotificationManager;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private ContextChainHolder contextChainHolder;
+    private QueuedNotificationManager<String, Runnable> queuedNotificationManager;
 
     public DeviceManagerImpl(@Nonnull final OpenflowProviderConfig config,
                              @Nonnull final DataBroker dataBroker,
@@ -74,7 +77,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                              @Nonnull final NotificationPublishService notificationPublishService,
                              @Nonnull final HashedWheelTimer hashedWheelTimer,
                              @Nonnull final ConvertorExecutor convertorExecutor,
-                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider) {
+                             @Nonnull final DeviceInitializerProvider deviceInitializerProvider,
+                             @Nonnull final ExecutorService executorService) {
         this.config = config;
         this.dataBroker = dataBroker;
         this.deviceInitializerProvider = deviceInitializerProvider;
@@ -84,6 +88,9 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
         DeviceInitializationUtil.makeEmptyNodes(dataBroker);
+        this.queuedNotificationManager =  QueuedNotificationManager.create(executorService, (key, entries) -> {
+            entries.forEach(jobEntry -> jobEntry.run());
+        }, 2048, "port-status-queue");
     }
 
     @Override
@@ -163,7 +170,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 deviceInitializerProvider,
                 config.isEnableFlowRemovedNotification(),
                 config.isSwitchFeaturesMandatory(),
-                contextChainHolder);
+                contextChainHolder,
+                queuedNotificationManager);
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(notificationPublishService);
