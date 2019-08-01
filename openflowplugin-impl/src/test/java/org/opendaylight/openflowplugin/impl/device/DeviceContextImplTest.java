@@ -106,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
+import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -174,6 +175,8 @@ public class DeviceContextImplTest {
     private ContextChainHolder contextChainHolder;
     @Mock
     private ContextChain contextChain;
+    @Mock
+    private NotificationManager queuedNotificationManager;
 
     private final AtomicLong atomicLong = new AtomicLong(0);
 
@@ -228,9 +231,6 @@ public class DeviceContextImplTest {
 
         Mockito.when(messageTranslatorPacketReceived.translate(Mockito.any(), Mockito.any(),
                 Mockito.any())).thenReturn(packetReceived);
-        Mockito.when(messageTranslatorFlowCapableNodeConnector.translate(Mockito.any(),
-                Mockito.any(),
-                Mockito.any())).thenReturn(mock(FlowCapableNodeConnector.class));
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
                 PacketIn.class.getName())))).thenReturn(messageTranslatorPacketReceived);
         Mockito.when(translatorLibrary.lookupTranslator(eq(new TranslatorKey(OFConstants.OFP_VERSION_1_3,
@@ -254,16 +254,14 @@ public class DeviceContextImplTest {
                 false, timer, false,
                 deviceInitializerProvider,
                 true, false,
-                contextChainHolder);
+                contextChainHolder,
+                queuedNotificationManager);
 
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
         xid = new Xid(atomicLong.incrementAndGet());
         xidMulti = new Xid(atomicLong.incrementAndGet());
-
-        Mockito.doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
-
     }
 
     @Test
@@ -282,14 +280,6 @@ public class DeviceContextImplTest {
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
         deviceContext.initialSubmitTransaction();
         verify(writeTx).commit();
-    }
-
-    private ConnectionContext prepareConnectionContext() {
-        final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
-        final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);
-        when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
-        return mockedConnectionContext;
     }
 
     @Test
@@ -419,9 +409,6 @@ public class DeviceContextImplTest {
         lenient().when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
-        when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
-
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
         verify(messageSpy).spyMessage(any(), any());
     }

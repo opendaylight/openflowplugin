@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
-
+    private static final String SEPARATOR = ":";
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
@@ -310,6 +311,34 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 LOG.warn("Not able to remove device {} from operational DS. ", entityName, e);
             }
         }
+        if (Objects.nonNull(entityName)) {
+            LOG.debug("Entity {} has no owner", entityName);
+            //TODO:Remove notifications
+            final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
+                    DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName));
+            final String dpnId = getDpnIdFromNodeName(entityName);
+            deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
+            LOG.info("Try to remove device {} from operational DS", dpnId);
+            try {
+                ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier);
+                Futures.addCallback(future, new FutureCallback<Object>() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        OF_EVENT_LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        LOG.error("Could not remove device {} from operational DS", dpnId, throwable);
+                    }
+                },MoreExecutors.directExecutor());
+                future.get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
+                LOG.error("Could not remove device {} from operational DS within 5 second. ", dpnId, e);
+            }
+            OF_EVENT_LOG.debug("Node removed, Node: {}", dpnId);
+            LOG.info("Removing device from operational DS {} was successful", dpnId);
+        }
     }
 
     private void destroyContextChain(final DeviceInfo deviceInfo) {
@@ -371,5 +400,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 destroyContextChain(deviceInfo);
             }
         };
+    }
+
+    private String getDpnIdFromNodeName(String nodeName) {
+        return nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
     }
 }
