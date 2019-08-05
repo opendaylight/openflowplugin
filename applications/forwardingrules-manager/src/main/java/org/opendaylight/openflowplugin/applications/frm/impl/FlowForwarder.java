@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdValueFromNodeIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
@@ -57,7 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -128,8 +127,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (bundleId != null) {
                 provider.getBundleFlowListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
             } else {
-                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId, () -> {
                     final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
                     builder.setFlowRef(new FlowRef(identifier));
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -184,8 +183,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (bundleId != null) {
                 provider.getBundleFlowListener().update(identifier, original, update, nodeIdent, bundleId);
             } else {
-                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId, () -> {
                     final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
                     builder.setFlowRef(new FlowRef(identifier));
@@ -201,10 +200,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     Uint32 groupId = isFlowDependentOnGroup(update);
                     if (groupId != null) {
                         LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                                getFlowId(new FlowRef(identifier)), groupId);
+                                getFlowId(identifier), groupId);
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
-                                    getFlowId(new FlowRef(identifier)));
+                                    getFlowId(identifier));
                             return provider.getSalFlowService().updateFlow(builder.build());
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
@@ -219,7 +218,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     }
 
                     LOG.trace("The flow {} is not dependent on any group. Updating the flow",
-                            getFlowId(new FlowRef(identifier)));
+                            getFlowId(identifier));
                     return provider.getSalFlowService().updateFlow(builder.build());
                 });
             }
@@ -236,8 +235,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (bundleId != null) {
                 return provider.getBundleFlowListener().add(identifier, addDataObj, nodeIdent, bundleId);
             } else {
-                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId, () -> {
                     final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -370,11 +369,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private final class AddFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final AddFlowInput addFlowInput;
-        private final NodeId nodeId;
+        private final String nodeId;
         private final Uint32 groupId;
         private final SettableFuture<RpcResult<AddFlowOutput>> resultFuture;
 
-        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId, Uint32 groupId,
+        private AddFlowCallBack(final AddFlowInput addFlowInput, final String nodeId, Uint32 groupId,
                 SettableFuture<RpcResult<AddFlowOutput>> resultFuture) {
             this.addFlowInput = addFlowInput;
             this.nodeId = nodeId;
@@ -401,10 +400,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     },  MoreExecutors.directExecutor());
 
                 LOG.debug("Flow add with id {} finished without error for node {}",
-                        getFlowId(addFlowInput.getFlowRef()), nodeId.getValue());
+                        getFlowId(addFlowInput.getFlowRef()), nodeId);
             } else {
                 LOG.error("Flow add with id {} failed for node {} with error {}", getFlowId(addFlowInput.getFlowRef()),
-                        nodeId.getValue(), rpcResult.getErrors());
+                        nodeId, rpcResult.getErrors());
                 resultFuture.set(RpcResultBuilder.<AddFlowOutput>failed()
                         .withRpcErrors(rpcResult.getErrors()).build());
             }
@@ -420,11 +419,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private final class UpdateFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final UpdateFlowInput updateFlowInput;
-        private final NodeId nodeId;
+        private final String nodeId;
         private final Uint32 groupId;
         private final SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture;
 
-        private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final NodeId nodeId,
+        private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final String nodeId,
                 SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, Uint32 groupId) {
             this.updateFlowInput = updateFlowInput;
             this.nodeId = nodeId;
