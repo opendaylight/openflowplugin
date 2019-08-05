@@ -118,6 +118,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(
             Executors.newFixedThreadPool(THREAD_POOL_SIZE));
     private final Map<Uint64, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
+    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private final Map<BigInteger, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
+    private NotificationRegistration registration;
 
     @Inject
     public ArbitratorReconciliationManagerImpl(@Reference RpcProviderRegistry rpcRegistry,
@@ -149,20 +152,23 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     }
 
     @Override
-    public ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
-            CommitActiveBundleInput input) {
+    public ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(CommitActiveBundleInput input) {
         Uint64 nodeId = input.getNodeId();
         if (bundleIdMap.containsKey(nodeId)) {
             BundleId bundleId = bundleIdMap.get(nodeId).getBundleId();
             if (bundleId != null) {
                 final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder()
-                        .setNode(input.getNode()).setBundleId(bundleId)
+                        .setNode(input.getNode())
+                        .setBundleId(bundleId)
                         .setFlags(BUNDLE_FLAGS)
-                        .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
+                        .setType(BundleControlType.ONFBCTCOMMITREQUEST)
+                        .build();
                 ListenableFuture<RpcResult<ControlBundleOutput>> rpcResult = salBundleService
                         .controlBundle(commitBundleInput);
                 bundleIdMap.put(nodeId, new BundleDetails(bundleId, rpcResult));
-                Futures.addCallback(rpcResult, new CommitActiveBundleCallback(nodeId),
+
+                Futures.addCallback(rpcResult,
+                        new CommitActiveBundleCallback(nodeId),
                         MoreExecutors.directExecutor());
                 return Futures.transform(
                         rpcResult,
@@ -177,7 +183,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     }
 
     @Override
-    public ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(GetActiveBundleInput input) {
+    public ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(final GetActiveBundleInput input) {
         Uint64 nodeId = input.getNodeId();
         BundleDetails bundleDetails = bundleIdMap.get(nodeId);
         if (bundleDetails != null) {
@@ -186,7 +192,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 // pipeline when the commit bundle is ongoing.
                 bundleDetails.getResult().get();
                 return RpcResultBuilder.success(new GetActiveBundleOutputBuilder()
-                        .setResult(bundleDetails.getBundleId()).build()).buildFuture();
+                        .setResult(bundleDetails.getBundleId())
+                        .build())
+                        .buildFuture();
             } catch (InterruptedException | ExecutionException | NullPointerException e) {
                 return RpcResultBuilder.<GetActiveBundleOutput>failed()
                         .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
@@ -242,8 +250,12 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(DELETE_ALL_FLOW).build());
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(DELETE_ALL_GROUP).build());
+        messages.add(new MessageBuilder().
+                setNode(nodeRef).
+                setBundleInnerMessage(DELETE_ALL_FLOW).build());
+        messages.add(new MessageBuilder()
+                .setNode(nodeRef)
+                .setBundleInnerMessage(DELETE_ALL_GROUP).build());
         LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
         return new MessagesBuilder().setMessage(messages).build();
     }
@@ -264,17 +276,26 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
             final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
-            final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                    .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                    .setType(BundleControlType.ONFBCTCLOSEREQUEST).build();
+            final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder()
+                    .setNode(nodeRef)
+                    .setBundleId(bundleIdValue)
+                    .setFlags(BUNDLE_FLAGS)
+                    .setType(BundleControlType.ONFBCTCLOSEREQUEST)
+                    .build();
 
-            final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                    .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                    .setType(BundleControlType.ONFBCTOPENREQUEST).build();
+            final ControlBundleInput openBundleInput = new ControlBundleInputBuilder()
+                    .setNode(nodeRef)
+                    .setBundleId(bundleIdValue)
+                    .setFlags(BUNDLE_FLAGS)
+                    .setType(BundleControlType.ONFBCTOPENREQUEST)
+                    .build();
 
             final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                    .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                    .setMessages(createMessages(nodeRef)).build();
+                    .setNode(nodeRef)
+                    .setBundleId(bundleIdValue)
+                    .setFlags(BUNDLE_FLAGS)
+                    .setMessages(createMessages(nodeRef))
+                    .build();
 
             ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle = salBundleService
                     .controlBundle(closeBundleInput);
@@ -294,10 +315,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             Uint64 nodeId = getDpnIdFromNodeName(node);
             try {
                 if (addBundleMessagesFuture.get().isSuccessful()) {
-                    bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue,
-                        FluentFutures.immediateNullFluentFuture()));
-                    LOG.debug("Arbitrator reconciliation initial task has been completed for node {} and open up"
-                            + " for application programming.", nodeId);
+                    bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue, Futures.immediateFuture(null)));
+                    LOG.debug("Arbitrator reconciliation initial task has been completed for node {} ", nodeId);
                     return true;
                 } else {
                     LOG.error("Error while performing arbitrator reconciliation for device:{}", nodeId);
@@ -357,8 +376,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     }
 
     private void deregisterRpc(DeviceInfo node) {
-        KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class).child(Node.class,
-                new NodeKey(node.getNodeId()));
+        KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is unregistered : {}", path);
         routedRpcReg.unregisterPath(NodeContext.class, path);
     }
