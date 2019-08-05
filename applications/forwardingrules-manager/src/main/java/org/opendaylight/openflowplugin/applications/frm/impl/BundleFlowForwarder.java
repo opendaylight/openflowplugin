@@ -77,18 +77,26 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                 "NodeConfigurator can not be null!");
     }
 
-    public void remove(final InstanceIdentifier<Flow> identifier, final Flow flow,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+    public void remove(final InstanceIdentifier<Flow> identifier,
+                       final Flow flow,
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                       final BundleId bundleId) {
         final List<Message> messages = new ArrayList<>(1);
         String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
         BundleInnerMessage bundleInnerMessage = new BundleRemoveFlowCaseBuilder()
                 .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flow).build()).build();
-        Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setBundleInnerMessage(bundleInnerMessage).build();
+        Message message = new MessageBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setBundleInnerMessage(bundleInnerMessage)
+                .build();
         messages.add(message);
         AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class))).setBundleId(bundleId)
-                .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(messages).build()).build();
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setBundleId(bundleId)
+                .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder()
+                        .setMessage(messages)
+                        .build())
+                .build();
         final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
                 .getSalBundleService().addBundleMessages(addBundleMessagesInput);
         LOG.trace("Pushing flow remove message {} to bundle {} for device {}", addBundleMessagesInput,
@@ -96,8 +104,11 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
     }
 
-    public void update(final InstanceIdentifier<Flow> identifier, final Flow originalFlow, final Flow updatedFlow,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+    public void update(final InstanceIdentifier<Flow> identifier,
+                       final Flow originalFlow,
+                       final Flow updatedFlow,
+                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                       final BundleId bundleId) {
         remove(identifier, originalFlow, nodeIdent, bundleId);
         add(identifier, updatedFlow, nodeIdent, bundleId);
     }
@@ -105,25 +116,32 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
     @Override
     public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Flow> identifier,
                                                                     final Flow flow,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+                                                                    final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                                    final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
             BundleInnerMessage bundleInnerMessage = new BundleAddFlowCaseBuilder()
-                    .setAddFlowCaseData(new AddFlowCaseDataBuilder(flow).build()).build();
+                    .setAddFlowCaseData(new AddFlowCaseDataBuilder(flow)
+                            .build())
+                    .build();
             Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleInnerMessage(bundleInnerMessage).build();
+                    .setBundleInnerMessage(bundleInnerMessage)
+                    .build();
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent, flow,
                     identifier, bundleId);
             SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = SettableFuture.create();
-            Futures.addCallback(groupFuture, new BundleFlowCallBack(nodeIdent, bundleId, message, identifier,
-                    resultFuture), MoreExecutors.directExecutor());
+            Futures.addCallback(groupFuture,
+                    new BundleFlowCallBack(nodeIdent, bundleId, message, identifier, resultFuture),
+                    MoreExecutors.directExecutor());
             return resultFuture;
         });
     }
 
     private ListenableFuture<RpcResult<AddBundleMessagesOutput>> pushDependentGroup(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, Flow updatedFlow, InstanceIdentifier<Flow> identifier,
-            BundleId bundleId) {
+            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            final Flow updatedFlow,
+            final InstanceIdentifier<Flow> identifier,
+            final BundleId bundleId) {
         //TODO This read to the DS might have a performance impact.
         //if the dependent group is not installed than we should just cache the parent group,
         //till we receive the dependent group DTCN and then push it.
@@ -149,19 +167,25 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         builder.setTransactionUri(new Uri(forwardingRulesManager.getNewTransactionId()));
                         BundleInnerMessage bundleInnerMessage = new BundleAddGroupCaseBuilder()
                                 .setAddGroupCaseData(new AddGroupCaseDataBuilder(group.get()).build()).build();
-                        Message groupMessage = new MessageBuilder().setNode(
+                        Message groupMessage = new MessageBuilder()
+                                .setNode(
                                 new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                                .setBundleInnerMessage(bundleInnerMessage).build();
+                                .setBundleInnerMessage(bundleInnerMessage)
+                                .build();
                         final List<Message> messages = new ArrayList<>(1);
                         messages.add(groupMessage);
                         AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class))).setBundleId(bundleId)
-                                .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(messages).build())
+                                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                                .setBundleId(bundleId)
+                                .setFlags(BUNDLE_FLAGS)
+                                .setMessages(new MessagesBuilder()
+                                        .setMessage(messages).build())
                                 .build();
                         LOG.trace("Pushing flow update message {} to bundle {} for device {}", addBundleMessagesInput,
                                 bundleId.getValue(), getNodeIdFromNodeIdentifier(nodeIdent));
                         resultFuture = forwardingRulesManager
-                                .getSalBundleService().addBundleMessages(addBundleMessagesInput);
+                                .getSalBundleService()
+                                .addBundleMessages(addBundleMessagesInput);
                         Futures.transformAsync(resultFuture, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
                                 forwardingRulesManager.getDevicesGroupRegistry()
@@ -203,16 +227,20 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
             this.resultFuture = resultFuture;
             this.flowId = getFlowId(new FlowRef(identifier));
             this.tableId = getTableId(new FlowTableRef(identifier));
-            nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+            this.nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         }
 
         @Override
         public void onSuccess(RpcResult<AddBundleMessagesOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class))).setBundleId(bundleId)
-                        .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(
-                                Collections.singletonList(messages)).build()).build();
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setBundleId(bundleId)
+                        .setFlags(BUNDLE_FLAGS)
+                        .setMessages(new MessagesBuilder()
+                                .setMessage(
+                                        Collections.singletonList(messages)).build())
+                        .build();
 
                 LOG.trace("Pushing flow add message {} to bundle {} for device {}", addBundleMessagesInput,
                         bundleId.getValue(), nodeId.getValue());
