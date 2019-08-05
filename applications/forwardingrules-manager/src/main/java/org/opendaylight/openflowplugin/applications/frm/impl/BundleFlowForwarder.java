@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getTableId;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdValueFromNodeIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getTableId;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
@@ -34,12 +34,9 @@ import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
@@ -106,8 +103,8 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
     public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Flow> identifier,
                                                                     final Flow flow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
-        final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-        return nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+        final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        return nodeConfigurator.enqueueJob(nodeId, () -> {
             BundleInnerMessage bundleInnerMessage = new BundleAddFlowCaseBuilder()
                     .setAddFlowCaseData(new AddFlowCaseDataBuilder(flow).build()).build();
             Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
@@ -131,10 +128,10 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
         if (groupId != null) {
             LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                    getFlowId(new FlowRef(identifier)), groupId);
+                    getFlowId(identifier), groupId);
             if (isGroupExistsOnDevice(nodeIdent, groupId, forwardingRulesManager)) {
                 LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
-                        getFlowId(new FlowRef(identifier)));
+                        getFlowId(identifier));
                 resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>success().build());
             } else {
                 LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
@@ -159,13 +156,13 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                                 .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder().setMessage(messages).build())
                                 .build();
                         LOG.trace("Pushing flow update message {} to bundle {} for device {}", addBundleMessagesInput,
-                                bundleId.getValue(), getNodeIdFromNodeIdentifier(nodeIdent));
+                                bundleId.getValue(), getNodeIdValueFromNodeIdentifier(nodeIdent));
                         resultFuture = forwardingRulesManager
                                 .getSalBundleService().addBundleMessages(addBundleMessagesInput);
                         Futures.transformAsync(resultFuture, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
                                 forwardingRulesManager.getDevicesGroupRegistry()
-                                        .storeGroup(getNodeIdFromNodeIdentifier(nodeIdent), groupId);
+                                        .storeGroup(getNodeIdValueFromNodeIdentifier(nodeIdent), groupId);
                                 LOG.trace("Group {} stored in cache", groupId);
                             }
                             return Futures.immediateFuture(null);
@@ -190,7 +187,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         private final InstanceIdentifier<FlowCapableNode> nodeIdent;
         private final BundleId bundleId;
         private final Message messages;
-        private final NodeId nodeId;
+        private final String nodeId;
         private final String flowId;
         private final short tableId;
         private final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
@@ -201,9 +198,9 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
             this.bundleId = bundleId;
             this.messages = messages;
             this.resultFuture = resultFuture;
-            this.flowId = getFlowId(new FlowRef(identifier));
-            this.tableId = getTableId(new FlowTableRef(identifier));
-            nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+            this.flowId = getFlowId(identifier);
+            this.tableId = getTableId(identifier);
+            nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         }
 
         @Override
@@ -215,7 +212,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                                 Collections.singletonList(messages)).build()).build();
 
                 LOG.trace("Pushing flow add message {} to bundle {} for device {}", addBundleMessagesInput,
-                        bundleId.getValue(), nodeId.getValue());
+                        bundleId.getValue(), nodeId);
 
                 final ListenableFuture<RpcResult<AddBundleMessagesOutput>> addFuture =
                         forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
@@ -225,7 +222,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         resultFuture.set(result);
                         if (!result.getErrors().isEmpty()) {
                             LOG.error("Flow add with flowId {} and tableId {} failed for node {} with error: {}",
-                                    flowId, tableId, nodeId.getValue(), result.getErrors().toString());
+                                    flowId, tableId, nodeId, result.getErrors().toString());
                         }
 
                     }
@@ -242,7 +239,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Error while pushing flow add bundle {} for device {}", messages, nodeId.getValue());
+            LOG.error("Error while pushing flow add bundle {} for device {}", messages, nodeId);
             resultFuture.setException(throwable);
         }
     }

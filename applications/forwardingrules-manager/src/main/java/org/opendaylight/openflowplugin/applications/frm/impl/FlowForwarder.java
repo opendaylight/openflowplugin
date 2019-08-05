@@ -7,13 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
-
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -69,6 +62,8 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.*;
 
 /**
  * FlowForwarder It implements
@@ -178,8 +173,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (bundleId != null) {
                 provider.getBundleFlowListener().update(identifier, original, update, nodeIdent, bundleId);
             } else {
-                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId, () -> {
                     final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
                     builder.setFlowRef(new FlowRef(identifier));
@@ -195,10 +190,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     Long groupId = isFlowDependentOnGroup(update);
                     if (groupId != null) {
                         LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                                getFlowId(new FlowRef(identifier)), groupId);
+                                getFlowId(identifier), groupId);
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
-                                    getFlowId(new FlowRef(identifier)));
+                                    getFlowId(identifier));
                             return provider.getSalFlowService().updateFlow(builder.build());
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
@@ -213,7 +208,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     }
 
                     LOG.trace("The flow {} is not dependent on any group. Updating the flow",
-                            getFlowId(new FlowRef(identifier)));
+                            getFlowId(identifier));
                     return provider.getSalFlowService().updateFlow(builder.build());
                 });
             }
@@ -230,8 +225,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (bundleId != null) {
                 return provider.getBundleFlowListener().add(identifier, addDataObj, nodeIdent, bundleId);
             } else {
-                final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+                final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+                nodeConfigurator.enqueueJob(nodeId, () -> {
                     final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 
                     builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -364,11 +359,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private final class AddFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final AddFlowInput addFlowInput;
-        private final NodeId nodeId;
+        private final String nodeId;
         private final Long groupId;
         private final SettableFuture<RpcResult<AddFlowOutput>> resultFuture;
 
-        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId, Long groupId,
+        private AddFlowCallBack(final AddFlowInput addFlowInput, final String nodeId, Long groupId,
                 SettableFuture<RpcResult<AddFlowOutput>> resultFuture) {
             this.addFlowInput = addFlowInput;
             this.nodeId = nodeId;
@@ -414,11 +409,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private final class UpdateFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final UpdateFlowInput updateFlowInput;
-        private final NodeId nodeId;
+        private final String nodeId;
         private final Long groupId;
         private final SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture;
 
-        private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final NodeId nodeId,
+        private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final String nodeId,
                 SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, Long groupId) {
             this.updateFlowInput = updateFlowInput;
             this.nodeId = nodeId;
