@@ -69,7 +69,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -159,7 +158,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public ListenableFuture<Boolean> reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
         LOG.info("Triggering reconciliation for device {}", connectedNode.firstKeyOf(Node.class));
         // Clearing the group registry cache for the connected node if exists
-        NodeId nodeId = FrmUtil.getNodeIdFromNodeIdentifier(connectedNode);
+        String nodeId = FrmUtil.getNodeIdValueFromNodeIdentifier(connectedNode);
         provider.getDevicesGroupRegistry().clearNodeGroups(nodeId);
         if (provider.isStaleMarkingEnabled()) {
             LOG.info("Stale-Marking is ENABLED and proceeding with deletion of " + "stale-marked entities on switch {}",
@@ -298,6 +297,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
         InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
+        // Clearing the group registry cache for the connected node if exists
+        provider.getDevicesGroupRegistry().clearNodeGroups(node.toString());
         return futureMap.computeIfAbsent(node, future -> reconcileConfiguration(connectedNode));
     }
 
