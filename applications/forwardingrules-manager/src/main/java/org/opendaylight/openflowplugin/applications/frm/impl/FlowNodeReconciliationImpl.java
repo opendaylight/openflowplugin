@@ -278,7 +278,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
         // Clearing the group registry cache for the connected node if exists
-        provider.getDevicesGroupRegistry().clearNodeGroups(node.getNodeId());
+        provider.getDevicesGroupRegistry().clearNodeGroups(node.toString());
         return futureMap.computeIfAbsent(node, future -> reconcileConfiguration(connectedNode));
     }
 
