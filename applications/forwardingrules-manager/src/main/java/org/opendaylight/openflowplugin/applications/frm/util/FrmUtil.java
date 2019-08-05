@@ -54,12 +54,24 @@ public final class FrmUtil {
         return nodeIdent.firstKeyOf(Node.class).getId();
     }
 
+    public static String getNodeIdValueFromNodeIdentifier(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return getNodeIdFromNodeIdentifier(nodeIdent).getValue();
+    }
+
     public static String getFlowId(final FlowRef flowRef) {
         return flowRef.getValue().firstKeyOf(Flow.class).getId().getValue();
     }
 
+    public static String getFlowId(final InstanceIdentifier<Flow> identifier) {
+        return getFlowId(new FlowRef(identifier));
+    }
+
     public static short getTableId(final FlowTableRef flowTableRef) {
         return flowTableRef.getValue().firstKeyOf(Table.class).getId();
+    }
+
+    public static short getTableId(final InstanceIdentifier<Flow> identifier) {
+        return getTableId(new FlowTableRef(identifier));
     }
 
     public static BigInteger getDpnIdFromNodeName(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
@@ -95,13 +107,15 @@ public final class FrmUtil {
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final Long groupId) {
         NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         InstanceIdentifier<Group> groupInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(new GroupId(groupId))).build();
+                .child(Node.class, new NodeKey(nodeId))
+                .augmentation(FlowCapableNode.class)
+                .child(Group.class, new GroupKey(new GroupId(groupId)))
+                .build();
         return groupInstanceId;
     }
 
     public static BundleId getActiveBundle(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final ForwardingRulesManager provider) {
+                                           final ForwardingRulesManager provider) {
         BigInteger dpId = getDpnIdFromNodeName(nodeIdent);
         final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class));
         GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder().setNodeId(dpId).setNode(nodeRef);
@@ -120,8 +134,9 @@ public final class FrmUtil {
     }
 
     public static boolean isGroupExistsOnDevice(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final Long groupId, final ForwardingRulesManager provider) {
-        NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+                                                final Long groupId,
+                                                final ForwardingRulesManager provider) {
+        String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return provider.getDevicesGroupRegistry().isGroupPresent(nodeId, groupId);
     }
 }
