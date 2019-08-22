@@ -22,6 +22,7 @@ import io.netty.util.HashedWheelTimer;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,6 +101,8 @@ public class DeviceManagerImplTest {
     private NotificationPublishService notificationPublishService;
     @Mock
     private TranslatorLibrary translatorLibrary;
+    @Mock
+    private ExecutorService executorService;
 
     private DeviceManagerImpl deviceManager;
 
@@ -130,7 +133,8 @@ public class DeviceManagerImplTest {
                 notificationPublishService,
                 new HashedWheelTimer(),
                 convertorExecutor,
-                DeviceInitializerProviderFactory.createDefaultProvider());
+                DeviceInitializerProviderFactory.createDefaultProvider(),
+                executorService);
 
         deviceManager.setTranslatorLibrary(translatorLibrary);
         verify(dataBroker).newWriteOnlyTransaction();
