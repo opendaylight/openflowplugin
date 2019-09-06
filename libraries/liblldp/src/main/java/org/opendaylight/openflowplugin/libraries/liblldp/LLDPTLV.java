@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -353,21 +352,16 @@ public class LLDPTLV extends Packet {
      * @return the custom string
      */
     public static String getCustomString(final byte[] customTlvValue, final int customTlvLen) {
-        String customString = "";
         byte[] vendor = new byte[3];
         System.arraycopy(customTlvValue, 0, vendor, 0, vendor.length);
         if (Arrays.equals(vendor, LLDPTLV.OFOUI)) {
             int customArrayLength = customTlvLen - CUSTOM_TLV_OFFSET;
             byte[] customArray = new byte[customArrayLength];
             System.arraycopy(customTlvValue, CUSTOM_TLV_OFFSET, customArray, 0, customArrayLength);
-            try {
-                customString = new String(customArray, "UTF-8");
-            } catch (final UnsupportedEncodingException e) {
-                LOG.warn("Error creating string from the custom TLV value: {}", Arrays.toString(customTlvValue), e);
-            }
+            return new String(customArray, StandardCharsets.UTF_8);
         }
 
-        return customString;
+        return "";
     }
 
     public static int extractCustomOUI(final LLDPTLV lldptlv) {
