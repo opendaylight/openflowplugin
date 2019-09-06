@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKe
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Factory for creating CodeKeyMaker instances.
@@ -28,10 +29,10 @@ public final class CodeKeyMakerFactory {
         //not called
     }
 
-    public static CodeKeyMaker createMatchEntriesKeyMaker(short version) {
+    public static CodeKeyMaker createMatchEntriesKeyMaker(final short version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
-            public MessageCodeKey make(ByteBuf input) {
+            public MessageCodeKey make(final ByteBuf input) {
                 int oxmClass = input.getUnsignedShort(input.readerIndex());
                 int oxmField = input.getUnsignedByte(input.readerIndex()
                         + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
@@ -40,7 +41,7 @@ public final class CodeKeyMakerFactory {
                 if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
                     long expId = input.getUnsignedInt(input.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
                             + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
-                    key.setExperimenterId(expId);
+                    key.setExperimenterId(Uint32.valueOf(expId));
                     return key;
                 }
                 key.setExperimenterId(null);
@@ -49,10 +50,10 @@ public final class CodeKeyMakerFactory {
         };
     }
 
-    public static CodeKeyMaker createActionsKeyMaker(short version) {
+    public static CodeKeyMaker createActionsKeyMaker(final short version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
-            public MessageCodeKey make(ByteBuf input) {
+            public MessageCodeKey make(final ByteBuf input) {
                 int type = input.getUnsignedShort(input.readerIndex());
                 if (type == EncodeConstants.EXPERIMENTER_VALUE) {
                     Long expId = input.getUnsignedInt(input.readerIndex()
@@ -65,10 +66,10 @@ public final class CodeKeyMakerFactory {
         };
     }
 
-    public static CodeKeyMaker createInstructionsKeyMaker(short version) {
+    public static CodeKeyMaker createInstructionsKeyMaker(final short version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
-            public MessageCodeKey make(ByteBuf input) {
+            public MessageCodeKey make(final ByteBuf input) {
                 int type = input.getUnsignedShort(input.readerIndex());
                 if (type == EncodeConstants.EXPERIMENTER_VALUE) {
                     Long expId = input.getUnsignedInt(input.readerIndex()

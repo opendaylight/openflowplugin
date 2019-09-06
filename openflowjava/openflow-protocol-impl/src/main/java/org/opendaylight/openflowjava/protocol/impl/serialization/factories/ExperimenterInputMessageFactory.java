@@ -38,7 +38,7 @@ public class ExperimenterInputMessageFactory implements OFSerializer<Experimente
     public void serialize(ExperimenterOfMessage message, ByteBuf outBuffer) {
         Objects.requireNonNull(registry);
 
-        long expId = message.getExperimenter().getValue();
+        long expId = message.getExperimenter().getValue().toJava();
         final OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createExperimenterMessageSerializerKey(
                         EncodeConstants.OF13_VERSION_ID, expId, message.getExpType().longValue()));

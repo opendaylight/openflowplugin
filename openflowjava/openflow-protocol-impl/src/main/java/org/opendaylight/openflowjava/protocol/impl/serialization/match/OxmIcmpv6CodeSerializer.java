@@ -24,7 +24,7 @@ public class OxmIcmpv6CodeSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         Icmpv6CodeCase entryValue = (Icmpv6CodeCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getIcmpv6Code().getIcmpv6Code());
+        outBuffer.writeByte(entryValue.getIcmpv6Code().getIcmpv6Code().toJava());
     }
 
     @Override

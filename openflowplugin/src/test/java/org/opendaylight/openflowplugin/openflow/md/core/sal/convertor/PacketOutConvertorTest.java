@@ -44,6 +44,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Co
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by Jakub Toth jatoth@cisco.com on 9/23/14.
@@ -98,7 +100,7 @@ public class PacketOutConvertorTest {
 
         Assert.assertEquals(OFConstants.OFP_NO_BUFFER, message.getBufferId());
         Assert.assertEquals(new PortNumber(0xfffffffdL), message.getInPort());
-        Assert.assertEquals(version, message.getVersion());
+        Assert.assertEquals(Uint8.valueOf(version), message.getVersion());
         Assert.assertEquals(xid, message.getXid());
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
@@ -173,9 +175,9 @@ public class PacketOutConvertorTest {
         PacketOutInput message = convert(transmitPacketInput, data);
 
         Assert.assertEquals(transmitPacketInput.getBufferId(), message.getBufferId());
-        Assert.assertEquals(Long.valueOf(inPort), message.getInPort().getValue());
-        Assert.assertEquals(version, message.getVersion());
-        Assert.assertEquals(xid, message.getXid());
+        Assert.assertEquals(Uint32.valueOf(inPort), message.getInPort().getValue());
+        Assert.assertEquals(Uint8.valueOf(version), message.getVersion());
+        Assert.assertEquals(Uint32.valueOf(xid), message.getXid());
 
         ActionConvertorData actionConvertorData = new ActionConvertorData(version);
         actionConvertorData.setDatapathId(datapathId);
@@ -244,7 +246,7 @@ public class PacketOutConvertorTest {
         return new NodeRef(path);
     }
 
-    private PacketOutInput convert(TransmitPacketInput transmitPacketInput, XidConvertorData data) {
+    private PacketOutInput convert(final TransmitPacketInput transmitPacketInput, final XidConvertorData data) {
         Optional<PacketOutInput> messageOptional = convertorManager.convert(transmitPacketInput, data);
         return messageOptional.orElse(PacketOutConvertor.defaultResult(data.getVersion()));
     }

@@ -1,5 +1,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925;
 
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * The purpose of generated class in src/main/java for Union types is to create new instances of unions from a string representation.
@@ -12,11 +13,10 @@ package org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925;
  */
 public class PortNumberUniBuilder {
 
-    public static PortNumberUni getDefaultInstance(java.lang.String defaultValue) {
+    public static PortNumberUni getDefaultInstance(String defaultValue) {
         try {
-            long uint32 = Long.parseLong(defaultValue);
-            return new PortNumberUni(uint32);
-        } catch(NumberFormatException e){
+            return new PortNumberUni(Uint32.valueOf(defaultValue));
+        } catch (IllegalArgumentException e) {
             return new PortNumberUni(defaultValue);
         }
     }

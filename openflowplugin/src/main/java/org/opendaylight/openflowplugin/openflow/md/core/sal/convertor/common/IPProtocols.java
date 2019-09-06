@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import java.util.Arrays;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Enumerates IP protocols.
@@ -18,27 +18,21 @@ import java.util.Map;
  */
 // TODO make a model in YANG for protocols
 public enum IPProtocols {
-    ICMP((short) 1),
-    TCP((short) 6),
-    UDP((short) 17),
-    ICMPV6((short) 58);
+    ICMP(1),
+    TCP(6),
+    UDP(17),
+    ICMPV6(58);
 
-    private short protocol;
+    private Uint8 protocol;
 
-    private static final Map<Short, IPProtocols> VALUE_MAP;
-    static {
-        Builder<Short, IPProtocols> builder = ImmutableMap.builder();
-        for (IPProtocols protocols : IPProtocols.values()) {
-            builder.put(protocols.protocol, protocols);
-        }
-        VALUE_MAP = builder.build();
+    private static final ImmutableMap<Uint8, IPProtocols> VALUE_MAP = Maps.uniqueIndex(Arrays.asList(values()),
+        proto -> proto.protocol);
+
+    IPProtocols(final int value) {
+        this.protocol = Uint8.valueOf(value);
     }
 
-    IPProtocols(short value) {
-        this.protocol = value;
-    }
-
-    public static IPProtocols fromProtocolNum(Short protocolNum) {
+    public static IPProtocols fromProtocolNum(final Uint8 protocolNum) {
         return VALUE_MAP.get(protocolNum);
     }
 }

@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupConvertorTest {
     private ConvertorManager convertorManager;
@@ -150,10 +151,10 @@ public class GroupConvertorTest {
         assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
 
-        assertEquals(10L, (long) outAddGroupInput.getGroupId().getValue());
-        assertEquals(10, (int) outAddGroupInput.getBucketsList().get(0).getWeight());
-        assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
-        assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
+        assertEquals(10L, outAddGroupInput.getGroupId().getValue().toJava());
+        assertEquals(10, outAddGroupInput.getBucketsList().get(0).getWeight().toJava());
+        assertEquals(20L, outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue().toJava());
+        assertEquals(22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup().toJava());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
@@ -166,9 +167,9 @@ public class GroupConvertorTest {
                             .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build())
                     .build()), outActionList);
 
-        assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
-        assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
-        assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
+        assertEquals(50, outAddGroupInput.getBucketsList().get(1).getWeight().toJava());
+        assertEquals(60, outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue().toJava());
+        assertEquals(70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup().toJava());
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
@@ -384,20 +385,20 @@ public class GroupConvertorTest {
         final GroupModInputBuilder outAddGroupInput = convert(input, data);
 
         final List<BucketsList> bucketList = outAddGroupInput.getBucketsList();
-        assertEquals(Long.valueOf(1), bucketList.get(0).getWatchGroup());
-        assertEquals(Long.valueOf(3), bucketList.get(0).getWatchPort().getValue());
+        assertEquals(Uint32.ONE, bucketList.get(0).getWatchGroup());
+        assertEquals(Uint32.valueOf(3), bucketList.get(0).getWatchPort().getValue());
 
-        assertEquals(Long.valueOf(1), bucketList.get(1).getWatchGroup());
-        assertEquals(Long.valueOf(4), bucketList.get(1).getWatchPort().getValue());
+        assertEquals(Uint32.ONE, bucketList.get(1).getWatchGroup());
+        assertEquals(Uint32.valueOf(4), bucketList.get(1).getWatchPort().getValue());
 
-        assertEquals(Long.valueOf(1), bucketList.get(2).getWatchGroup());
-        assertEquals(Long.valueOf(5), bucketList.get(2).getWatchPort().getValue());
+        assertEquals(Uint32.ONE, bucketList.get(2).getWatchGroup());
+        assertEquals(Uint32.valueOf(5), bucketList.get(2).getWatchPort().getValue());
 
-        assertEquals(Long.valueOf(1), bucketList.get(3).getWatchGroup());
-        assertEquals(Long.valueOf(6), bucketList.get(3).getWatchPort().getValue());
+        assertEquals(Uint32.ONE, bucketList.get(3).getWatchGroup());
+        assertEquals(Uint32.valueOf(6), bucketList.get(3).getWatchPort().getValue());
 
-        assertEquals(Long.valueOf(1), bucketList.get(4).getWatchGroup());
-        assertEquals(Long.valueOf(2), bucketList.get(4).getWatchPort().getValue());
+        assertEquals(Uint32.ONE, bucketList.get(4).getWatchGroup());
+        assertEquals(Uint32.valueOf(2), bucketList.get(4).getWatchPort().getValue());
 
     }
 

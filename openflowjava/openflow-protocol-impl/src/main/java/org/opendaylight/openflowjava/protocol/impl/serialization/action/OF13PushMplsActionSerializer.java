@@ -24,7 +24,7 @@ public class OF13PushMplsActionSerializer extends AbstractActionSerializer {
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((PushMplsCase) action.getActionChoice())
-                .getPushMplsAction().getEthertype().getValue());
+                .getPushMplsAction().getEthertype().getValue().toJava());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
 

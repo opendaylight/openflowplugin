@@ -41,7 +41,7 @@ public final class NodeConnectorRefToPortTranslator {
      * @return packet input converted to node connector reference
      */
     @Nullable
-    public static NodeConnectorRef toNodeConnectorRef(@Nonnull PacketIn packetIn, BigInteger dataPathId) {
+    public static NodeConnectorRef toNodeConnectorRef(@Nonnull final PacketIn packetIn, final BigInteger dataPathId) {
         Preconditions.checkNotNull(packetIn);
 
         NodeConnectorRef ref = null;
@@ -64,7 +64,7 @@ public final class NodeConnectorRefToPortTranslator {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static Long fromNodeConnectorRef(@Nonnull NodeConnectorRef nodeConnectorRef, short version) {
+    public static Long fromNodeConnectorRef(@Nonnull final NodeConnectorRef nodeConnectorRef, final short version) {
         Preconditions.checkNotNull(nodeConnectorRef);
 
         Long port = null;
@@ -85,14 +85,14 @@ public final class NodeConnectorRefToPortTranslator {
 
     @VisibleForTesting
     @Nullable
-    static Long getPortNoFromPacketIn(@Nonnull PacketIn packetIn) {
+    static Long getPortNoFromPacketIn(@Nonnull final PacketIn packetIn) {
         Preconditions.checkNotNull(packetIn);
 
         Long port = null;
 
-        if (packetIn.getVersion() == OFConstants.OFP_VERSION_1_0 && packetIn.getInPort() != null) {
+        if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_0 && packetIn.getInPort() != null) {
             port = packetIn.getInPort().longValue();
-        } else if (packetIn.getVersion() == OFConstants.OFP_VERSION_1_3) {
+        } else if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_3) {
             if (packetIn.getMatch() != null && packetIn.getMatch().getMatchEntry() != null) {
                 List<MatchEntry> entries = packetIn.getMatch().getMatchEntry();
 

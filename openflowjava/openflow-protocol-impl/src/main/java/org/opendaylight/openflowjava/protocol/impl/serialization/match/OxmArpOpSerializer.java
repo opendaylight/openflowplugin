@@ -24,7 +24,7 @@ public class OxmArpOpSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         ArpOpCase entryValue = (ArpOpCase) entry.getMatchEntryValue();
-        outBuffer.writeShort(entryValue.getArpOp().getOpCode());
+        outBuffer.writeShort(entryValue.getArpOp().getOpCode().toJava());
     }
 
     @Override

@@ -159,6 +159,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for match response conversions.
@@ -540,7 +541,7 @@ public class MatchResponseConvertor2Test {
 
         Assert.assertEquals("Wrong in port", "openflow:42:1", builtMatch.getInPort().getValue());
         Assert.assertEquals("Wrong in phy port", "openflow:42:2", builtMatch.getInPhyPort().getValue());
-        Assert.assertEquals("Wrong metadata", new BigInteger(1, new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }),
+        Assert.assertEquals("Wrong metadata", Uint64.valueOf("0001020304050607", 16),
                 builtMatch.getMetadata().getMetadata());
         Assert.assertEquals("Wrong packet type", 0x1894f, builtMatch.getPacketTypeMatch().getPacketType().longValue());
         Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:01"),
@@ -573,7 +574,7 @@ public class MatchResponseConvertor2Test {
         Assert.assertEquals("Wrong mpls bos", 1, builtMatch.getProtocolMatchFields().getMplsBos().intValue());
         Assert.assertEquals("Wrong mpls tc", 22, builtMatch.getProtocolMatchFields().getMplsTc().intValue());
         Assert.assertEquals("Wrong pbb isid", 23, builtMatch.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
-        Assert.assertEquals("Wrong tunnel id", new BigInteger(1, new byte[]{1, 2, 3, 4, 5, 6, 7, 8}),
+        Assert.assertEquals("Wrong tunnel id", Uint64.valueOf("0102030405060708", 16),
                 builtMatch.getTunnel().getTunnelId());
     }
 
@@ -700,9 +701,9 @@ public class MatchResponseConvertor2Test {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch =
                 salMatch.build();
 
-        Assert.assertEquals("Wrong metadata", new BigInteger(1, new byte[]{0, 1, 2, 3, 4, 5, 6, 7}),
+        Assert.assertEquals("Wrong metadata", Uint64.valueOf("0001020304050607", 16),
                 builtMatch.getMetadata().getMetadata());
-        Assert.assertEquals("Wrong metadata mask", new BigInteger(1, new byte[]{0, 0, 0, 0, 0, 0, 0, 1}),
+        Assert.assertEquals("Wrong metadata mask", Uint64.valueOf(1),
                 builtMatch.getMetadata().getMetadataMask());
         Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:01"),
                 builtMatch.getEthernetMatch().getEthernetDestination().getAddress());
@@ -719,7 +720,7 @@ public class MatchResponseConvertor2Test {
         Assert.assertEquals("Wrong ipv4 src address", "10.0.0.0/24", ipv4Match.getIpv4Source().getValue());
         Assert.assertEquals("Wrong ipv4 dst address", "10.0.0.0/20", ipv4Match.getIpv4Destination().getValue());
         Assert.assertEquals("Wrong pbb isid", 23, builtMatch.getProtocolMatchFields().getPbb().getPbbIsid().intValue());
-        Assert.assertEquals("Wrong tunnel id", new BigInteger(1, new byte[]{1, 2, 3, 4, 5, 6, 7, 8}),
+        Assert.assertEquals("Wrong tunnel id", Uint64.valueOf("0102030405060708", 16),
                 builtMatch.getTunnel().getTunnelId());
     }
 
@@ -1713,7 +1714,7 @@ public class MatchResponseConvertor2Test {
     }
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-            .MatchBuilder convert(Match match, VersionDatapathIdConvertorData data) {
+            .MatchBuilder convert(final Match match, final VersionDatapathIdConvertorData data) {
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
                 .MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 

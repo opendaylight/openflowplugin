@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.it.integration;
 
 import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -136,9 +134,7 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
             RpcResult<GetFeaturesOutput> rpcResult = adapter.getFeatures(
                     featuresInput).get(2500, TimeUnit.MILLISECONDS);
             if (rpcResult.isSuccessful()) {
-                byte[] byteArray = rpcResult.getResult().getDatapathId()
-                        .toByteArray();
-                LOGGER.debug("DatapathId: {}", Arrays.toString(byteArray));
+                LOGGER.debug("DatapathId: {}", rpcResult.getResult().getDatapathId());
             } else {
                 RpcError rpcError = rpcResult.getErrors().iterator().next();
                 LOGGER.warn("rpcResult failed", rpcError.getCause());
