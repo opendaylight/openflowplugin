@@ -49,16 +49,16 @@ public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, Serial
         outBuffer.writeLong(message.getCookieMask().longValue());
         outBuffer.writeByte(message.getTableId().getValue().byteValue());
         outBuffer.writeByte(message.getCommand().getIntValue());
-        outBuffer.writeShort(message.getIdleTimeout());
-        outBuffer.writeShort(message.getHardTimeout());
-        outBuffer.writeShort(message.getPriority());
+        outBuffer.writeShort(message.getIdleTimeout().toJava());
+        outBuffer.writeShort(message.getHardTimeout().toJava());
+        outBuffer.writeShort(message.getPriority().toJava());
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeInt(message.getOutPort().getValue().intValue());
         outBuffer.writeInt(message.getOutGroup().intValue());
         outBuffer.writeShort(createFlowModFlagsBitmask(message.getFlags()));
         outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
-        registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
-            .serialize(message.getMatch(), outBuffer);
+        registry.<Match, OFSerializer<Match>>getSerializer(
+            new MessageTypeKey<>(message.getVersion().toJava(), Match.class)) .serialize(message.getMatch(), outBuffer);
         ListSerializer.serializeList(message.getInstruction(), INSTRUCTION_KEY_MAKER, registry, outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }
