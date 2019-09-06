@@ -5,11 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
-import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Marker interface identifying flow stored in OFP local flow registry.
@@ -21,7 +20,7 @@ public interface FlowRegistryKey {
 
     int getPriority();
 
-    BigInteger getCookie();
+    Uint64 getCookie();
 
     Match getMatch();
 }

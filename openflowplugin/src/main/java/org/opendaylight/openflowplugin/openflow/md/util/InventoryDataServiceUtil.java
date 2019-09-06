@@ -29,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +66,9 @@ public abstract class InventoryDataServiceUtil {
         return new NodeId(OFConstants.OF_URI_PREFIX + current);
     }
 
-    public static BigInteger dataPathIdFromNodeId(final NodeId nodeId) {
-        String dpids = nodeId.getValue().replace(OFConstants.OF_URI_PREFIX, "");
-        BigInteger dpid = new BigInteger(dpids);
-        return dpid;
+    public static Uint64 dataPathIdFromNodeId(final NodeId nodeId) {
+        return Uint64.valueOf(nodeId.getValue().replace(OFConstants.OF_URI_PREFIX, ""));
     }
-
 
     public static NodeRef nodeRefFromNodeKey(final NodeKey nodeKey) {
         return new NodeRef(nodeKeyToInstanceIdentifier(nodeKey));
@@ -79,12 +78,29 @@ public abstract class InventoryDataServiceUtil {
         return NODES_IDENTIFIER.child(Node.class, nodeKey);
     }
 
+    // TODO: deprecated and migrate
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final BigInteger datapathid, final Long portNo,
                                                                     final OpenflowVersion ofVersion) {
         String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
         return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null
                 ? portNo : logicalName));
     }
+
+    // TODO: deprecated and migrate
+    public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final BigInteger datapathid, final Uint32 portNo,
+            final OpenflowVersion ofVersion) {
+        String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
+        return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null
+                ? portNo : logicalName));
+    }
+
+    public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final Uint64 datapathid, final Uint32 portNo,
+                                                                    final OpenflowVersion ofVersion) {
+        String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
+        return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null
+                ? portNo : logicalName));
+    }
+
 
     @Nullable
     public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final NodeConnectorId ncId) {
@@ -160,7 +176,7 @@ public abstract class InventoryDataServiceUtil {
         return Strings.padStart(dataPathId.toString(16), 16, '0');
     }
 
-    public static BigInteger extractDatapathId(final NodeRef ref) {
+    public static Uint64 extractDatapathId(final NodeRef ref) {
         return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getValue().firstKeyOf(Node.class).getId());
     }
 }

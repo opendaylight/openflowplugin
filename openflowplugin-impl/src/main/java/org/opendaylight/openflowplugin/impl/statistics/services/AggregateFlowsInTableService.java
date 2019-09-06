@@ -43,8 +43,8 @@ public final class AggregateFlowsInTableService extends
     final TranslatorLibrary translatorLibrary;
 
     public static AggregateFlowsInTableService createWithOook(final RequestContextStack requestContextStack,
-                                                                                  final DeviceContext deviceContext,
-                                                                                  AtomicLong compatibilityXidSeed) {
+                                                              final DeviceContext deviceContext,
+                                                              final AtomicLong compatibilityXidSeed) {
         return new AggregateFlowsInTableService(requestContextStack,
                                                 deviceContext,
                                                 compatibilityXidSeed,
@@ -53,8 +53,8 @@ public final class AggregateFlowsInTableService extends
 
     public AggregateFlowsInTableService(final RequestContextStack requestContextStack,
                                         final DeviceContext deviceContext,
-                                        AtomicLong compatibilityXidSeed,
-                                        TranslatorLibrary translatorLibrary) {
+                                        final AtomicLong compatibilityXidSeed,
+                                        final TranslatorLibrary translatorLibrary) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
 
         this.translatorLibrary = translatorLibrary;
@@ -87,20 +87,21 @@ public final class AggregateFlowsInTableService extends
     }
 
     @Override
-    public GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput buildTxCapableResult(
+            final TransactionId emulatedTxId) {
         return new GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutputBuilder().setTransactionId(emulatedTxId)
                 .build();
     }
 
     @Override
-    public AggregateFlowStatisticsUpdate transformToNotification(List<MultipartReply> result,
-                                                                 TransactionId emulatedTxId) {
+    public AggregateFlowStatisticsUpdate transformToNotification(final List<MultipartReply> result,
+                                                                 final TransactionId emulatedTxId) {
         final int mpSize = result.size();
         Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
 
         MultipartReply mpReply = result.get(0);
         final TranslatorKey translatorKey =
-                new TranslatorKey(mpReply.getVersion(), MultipartReplyAggregateCase.class.getName());
+                new TranslatorKey(mpReply.getVersion().toJava(), MultipartReplyAggregateCase.class.getName());
         final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator =
                 translatorLibrary.lookupTranslator(translatorKey);
 

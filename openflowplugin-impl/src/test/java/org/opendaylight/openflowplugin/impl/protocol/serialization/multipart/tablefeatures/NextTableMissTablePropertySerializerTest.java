@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
 import static org.junit.Assert.assertEquals;
@@ -17,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.NextTableMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.NextTableMissBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMissBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NextTableMissTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
 
@@ -25,7 +25,7 @@ public class NextTableMissTablePropertySerializerTest extends AbstractTablePrope
         final short tableId = 42;
         final NextTableMiss property = new NextTableMissBuilder()
                 .setTablesMiss(new TablesMissBuilder()
-                        .setTableIds(Collections.singletonList(tableId))
+                        .setTableIds(Collections.singletonList(Uint8.valueOf(tableId)))
                         .build())
                 .build();
 

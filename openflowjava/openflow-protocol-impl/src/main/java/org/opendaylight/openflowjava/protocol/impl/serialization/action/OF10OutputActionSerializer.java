@@ -26,7 +26,7 @@ public class OF10OutputActionSerializer extends AbstractActionSerializer {
         outBuffer.writeShort(((OutputActionCase) action.getActionChoice())
                 .getOutputAction().getPort().getValue().intValue());
         outBuffer.writeShort(((OutputActionCase) action.getActionChoice())
-                .getOutputAction().getMaxLength());
+                .getOutputAction().getMaxLength().toJava());
     }
 
     @Override

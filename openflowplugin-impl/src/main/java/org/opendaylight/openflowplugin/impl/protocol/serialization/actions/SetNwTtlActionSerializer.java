@@ -15,10 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 
 public class SetNwTtlActionSerializer extends AbstractActionSerializer<SetNwTtlActionCase> {
     @Override
-    public void serialize(SetNwTtlActionCase action, ByteBuf outBuffer) {
+    public void serialize(final SetNwTtlActionCase action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final SetNwTtlAction setNwTtlAction = action.getSetNwTtlAction();
-        outBuffer.writeByte(setNwTtlAction.getNwTtl());
+        outBuffer.writeByte(setNwTtlAction.getNwTtl().toJava());
         outBuffer.writeZero(ActionConstants.SET_NW_TTL_PADDING);
     }
 

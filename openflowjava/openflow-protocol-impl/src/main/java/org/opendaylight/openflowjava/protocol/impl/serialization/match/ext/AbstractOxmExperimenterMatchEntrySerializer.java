@@ -12,6 +12,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Created by Anil Vishnoi (avishnoi@Brocade.com) on 7/25/16.
@@ -19,18 +20,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public abstract class AbstractOxmExperimenterMatchEntrySerializer extends AbstractOxmMatchEntrySerializer {
 
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         serializeHeader(entry, outBuffer);
     }
 
     @Override
-    public void serializeHeader(MatchEntry entry, ByteBuf outBuffer) {
+    public void serializeHeader(final MatchEntry entry, final ByteBuf outBuffer) {
         outBuffer.writeShort(getOxmClassCode());
-        writeOxmFieldAndLength(outBuffer, getOxmFieldCode(), entry.isHasMask(),
-                getValueLength());
+        writeOxmFieldAndLength(outBuffer, getOxmFieldCode(), entry.isHasMask(), getValueLength());
     }
 
-    protected static void writeOxmFieldAndLength(ByteBuf out, int fieldValue, boolean hasMask, int lengthArg) {
+    protected static void writeOxmFieldAndLength(final ByteBuf out, final int fieldValue, final boolean hasMask,
+            final int lengthArg) {
         int fieldAndMask = fieldValue << 1;
         int length = lengthArg;
         if (hasMask) {
@@ -44,7 +45,7 @@ public abstract class AbstractOxmExperimenterMatchEntrySerializer extends Abstra
         out.writeByte(length);
     }
 
-    protected ExperimenterIdCase serializeExperimenterId(MatchEntry matchEntry, ByteBuf out) {
+    protected ExperimenterIdCase serializeExperimenterId(final MatchEntry matchEntry, final ByteBuf out) {
         ExperimenterIdCase expCase = (ExperimenterIdCase) matchEntry.getMatchEntryValue();
         out.writeInt(expCase.getExperimenter().getExperimenter().getValue().intValue());
         return expCase;
@@ -53,5 +54,5 @@ public abstract class AbstractOxmExperimenterMatchEntrySerializer extends Abstra
     /**
      * Returns the Experimenter match entry ID.
      */
-    protected abstract long getExperimenterId();
+    protected abstract Uint32 getExperimenterId();
 }

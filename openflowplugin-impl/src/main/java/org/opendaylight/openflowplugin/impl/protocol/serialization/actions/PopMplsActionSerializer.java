@@ -15,10 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 
 public class PopMplsActionSerializer extends AbstractActionSerializer<PopMplsActionCase> {
     @Override
-    public void serialize(PopMplsActionCase action, ByteBuf outBuffer) {
+    public void serialize(final PopMplsActionCase action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final PopMplsAction popMplsAction = action.getPopMplsAction();
-        outBuffer.writeShort(popMplsAction.getEthernetType());
+        outBuffer.writeShort(popMplsAction.getEthernetType().toJava());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
 

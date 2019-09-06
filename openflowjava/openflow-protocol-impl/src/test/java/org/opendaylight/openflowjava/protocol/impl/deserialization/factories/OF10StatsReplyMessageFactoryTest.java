@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.MultipartReplyPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.MultipartReplyQueue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTable;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for OF10StatsReplyMessageFactory.
@@ -135,14 +135,11 @@ public class OF10StatsReplyMessageFactoryTest {
         Assert.assertEquals("Wrong priority", 4, message.getFlowStats().get(0).getPriority().intValue());
         Assert.assertEquals("Wrong idleTimeOut", 5, message.getFlowStats().get(0).getIdleTimeout().intValue());
         Assert.assertEquals("Wrong hardTimeOut", 6, message.getFlowStats().get(0).getHardTimeout().intValue());
-        Assert.assertEquals("Wrong cookie",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}),
+        Assert.assertEquals("Wrong cookie", Uint64.valueOf("FF01020304050607", 16),
                 message.getFlowStats().get(0).getCookie());
-        Assert.assertEquals("Wrong packetCount",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}),
+        Assert.assertEquals("Wrong packetCount", Uint64.valueOf("FF01020304050607", 16),
                 message.getFlowStats().get(0).getPacketCount());
-        Assert.assertEquals("Wrong byteCount",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20}),
+        Assert.assertEquals("Wrong byteCount", Uint64.valueOf("FF00000000000020", 16),
                 message.getFlowStats().get(0).getByteCount());
         Action action1 = message.getFlowStats().get(0).getAction().get(0);
         Assert.assertTrue("Wrong action type", action1.getActionChoice() instanceof OutputActionCase);
@@ -172,12 +169,8 @@ public class OF10StatsReplyMessageFactoryTest {
         Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE().booleanValue());
         MultipartReplyAggregateCase messageCase = (MultipartReplyAggregateCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyAggregate message = messageCase.getMultipartReplyAggregate();
-        Assert.assertEquals("Wrong packet-count",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}),
-                message.getPacketCount());
-        Assert.assertEquals("Wrong byte-count",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20}),
-                message.getByteCount());
+        Assert.assertEquals("Wrong packet-count", Uint64.valueOf("FF01020304050607", 16), message.getPacketCount());
+        Assert.assertEquals("Wrong byte-count", Uint64.valueOf("FF00000000000020", 16), message.getByteCount());
         Assert.assertEquals("Wrong flow-count", 48, message.getFlowCount().intValue());
         Assert.assertTrue("Unread data", bb.readableBytes() == 0);
     }
@@ -208,11 +201,9 @@ public class OF10StatsReplyMessageFactoryTest {
         Assert.assertEquals("Wrong dst-mask", 32, message.getTableStats().get(0).getNwDstMask().intValue());
         Assert.assertEquals("Wrong max-entries", 48, message.getTableStats().get(0).getMaxEntries().longValue());
         Assert.assertEquals("Wrong activeCount", 16, message.getTableStats().get(0).getActiveCount().longValue());
-        Assert.assertEquals("Wrong lookupCount",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}),
+        Assert.assertEquals("Wrong lookupCount", Uint64.valueOf("FF01010101010101", 16),
                 message.getTableStats().get(0).getLookupCount());
-        Assert.assertEquals("Wrong matchedCount",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00}),
+        Assert.assertEquals("Wrong matchedCount", Uint64.valueOf("FF01010101010100", 16),
                 message.getTableStats().get(0).getMatchedCount());
         Assert.assertTrue("Unread data", bb.readableBytes() == 0);
     }
@@ -239,41 +230,29 @@ public class OF10StatsReplyMessageFactoryTest {
         MultipartReplyPortStatsCase messageCase = (MultipartReplyPortStatsCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortStats message = messageCase.getMultipartReplyPortStats();
         Assert.assertEquals("Wrong portNo", 255, message.getPortStats().get(0).getPortNo().intValue());
-        Assert.assertEquals("Wrong rxPackets",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}),
+        Assert.assertEquals("Wrong rxPackets", Uint64.valueOf("FF01010101010101", 16),
                 message.getPortStats().get(0).getRxPackets());
-        Assert.assertEquals("Wrong txPackets",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02}),
+        Assert.assertEquals("Wrong txPackets", Uint64.valueOf("FF02020202020202", 16),
                 message.getPortStats().get(0).getTxPackets());
-        Assert.assertEquals("Wrong rxBytes",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong rxBytes", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getRxBytes());
-        Assert.assertEquals("Wrong txBytes",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong txBytes", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getTxBytes());
-        Assert.assertEquals("Wrong rxDropped",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong rxDropped", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getRxDropped());
-        Assert.assertEquals("Wrong txDropped",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong txDropped", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getTxDropped());
-        Assert.assertEquals("Wrong rxErrors",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong rxErrors", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getRxErrors());
-        Assert.assertEquals("Wrong txErrors",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong txErrors", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getTxErrors());
-        Assert.assertEquals("Wrong rxFrameErr",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong rxFrameErr", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getRxFrameErr());
-        Assert.assertEquals("Wrong rxOverErr",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong rxOverErr", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getRxOverErr());
-        Assert.assertEquals("Wrong rxCrcErr",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong rxCrcErr", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getRxCrcErr());
-        Assert.assertEquals("Wrong collisions",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong collisions", Uint64.valueOf("FF02030203020302", 16),
                 message.getPortStats().get(0).getCollisions());
         Assert.assertTrue("Unread data", bb.readableBytes() == 0);
     }
@@ -298,16 +277,12 @@ public class OF10StatsReplyMessageFactoryTest {
         MultipartReplyQueue message = messageCase.getMultipartReplyQueue();
         Assert.assertEquals("Wrong portNo", 255, message.getQueueStats().get(0).getPortNo().intValue());
         Assert.assertEquals("Wrong queueId", 16, message.getQueueStats().get(0).getQueueId().intValue());
-        Assert.assertEquals("Wrong txBytes",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong txBytes", Uint64.valueOf("FF02030203020302", 16),
                 message.getQueueStats().get(0).getTxBytes());
-        Assert.assertEquals("Wrong txPackets",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02}),
+        Assert.assertEquals("Wrong txPackets", Uint64.valueOf("FF02020202020202", 16),
                 message.getQueueStats().get(0).getTxPackets());
-        Assert.assertEquals("Wrong txErrors",
-                new BigInteger(1, new byte[]{(byte) 0xFF, 0x02, 0x03, 0x02, 0x03, 0x02, 0x03, 0x02}),
+        Assert.assertEquals("Wrong txErrors", Uint64.valueOf("FF02030203020302", 16),
                 message.getQueueStats().get(0).getTxErrors());
         Assert.assertTrue("Unread data", bb.readableBytes() == 0);
     }
-
 }

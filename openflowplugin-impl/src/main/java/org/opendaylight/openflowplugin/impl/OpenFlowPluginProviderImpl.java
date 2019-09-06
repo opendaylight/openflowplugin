@@ -238,9 +238,9 @@ public class OpenFlowPluginProviderImpl implements
         // constructed threads when they are available.
         // Threads that have not been used for x seconds are terminated and removed from the cache.
         executorService = MoreExecutors.listeningDecorator(new ThreadPoolLoggingExecutor(
-                config.getThreadPoolMinThreads(),
-                config.getThreadPoolMaxThreads().getValue(),
-                config.getThreadPoolTimeout(),
+                config.getThreadPoolMinThreads().toJava(),
+                config.getThreadPoolMaxThreads().getValue().toJava(),
+                config.getThreadPoolTimeout().toJava(),
                 TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME));
 
         deviceManager = new DeviceManagerImpl(

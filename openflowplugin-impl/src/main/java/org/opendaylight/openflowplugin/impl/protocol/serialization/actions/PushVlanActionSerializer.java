@@ -15,10 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 
 public class PushVlanActionSerializer extends AbstractActionSerializer<PushVlanActionCase> {
     @Override
-    public void serialize(PushVlanActionCase action, ByteBuf outBuffer) {
+    public void serialize(final PushVlanActionCase action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final PushVlanAction pushVlanAction = action.getPushVlanAction();
-        outBuffer.writeShort(pushVlanAction.getEthernetType());
+        outBuffer.writeShort(pushVlanAction.getEthernetType().toJava());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
 

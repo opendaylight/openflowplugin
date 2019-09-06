@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import java.math.BigInteger;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Created by Tomas Slusny on 23.3.2016.
@@ -41,7 +41,7 @@ public final class NodeConnectorRefToPortTranslator {
      * @return packet input converted to node connector reference
      */
     @Nullable
-    public static NodeConnectorRef toNodeConnectorRef(@Nonnull PacketIn packetIn, BigInteger dataPathId) {
+    public static NodeConnectorRef toNodeConnectorRef(@Nonnull final PacketIn packetIn, final Uint64 dataPathId) {
         Preconditions.checkNotNull(packetIn);
 
         NodeConnectorRef ref = null;
@@ -50,7 +50,7 @@ public final class NodeConnectorRefToPortTranslator {
         if (port != null) {
             OpenflowVersion version = OpenflowVersion.get(packetIn.getVersion());
 
-            ref = InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dataPathId, port, version);
+            ref = InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dataPathId.toJava(), port, version);
         }
 
         return ref;
@@ -64,7 +64,7 @@ public final class NodeConnectorRefToPortTranslator {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static Long fromNodeConnectorRef(@Nonnull NodeConnectorRef nodeConnectorRef, short version) {
+    public static Long fromNodeConnectorRef(@Nonnull final NodeConnectorRef nodeConnectorRef, final short version) {
         Preconditions.checkNotNull(nodeConnectorRef);
 
         Long port = null;
@@ -85,14 +85,14 @@ public final class NodeConnectorRefToPortTranslator {
 
     @VisibleForTesting
     @Nullable
-    static Long getPortNoFromPacketIn(@Nonnull PacketIn packetIn) {
+    static Long getPortNoFromPacketIn(@Nonnull final PacketIn packetIn) {
         Preconditions.checkNotNull(packetIn);
 
         Long port = null;
 
-        if (packetIn.getVersion() == OFConstants.OFP_VERSION_1_0 && packetIn.getInPort() != null) {
+        if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_0 && packetIn.getInPort() != null) {
             port = packetIn.getInPort().longValue();
-        } else if (packetIn.getVersion() == OFConstants.OFP_VERSION_1_3) {
+        } else if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_3) {
             if (packetIn.getMatch() != null && packetIn.getMatch().getMatchEntry() != null) {
                 List<MatchEntry> entries = packetIn.getMatch().getMatchEntry();
 
@@ -103,7 +103,7 @@ public final class NodeConnectorRefToPortTranslator {
                         InPort inPort = inPortCase.getInPort();
 
                         if (inPort != null) {
-                            port = inPort.getPortNumber().getValue();
+                            port = inPort.getPortNumber().getValue().toJava();
                             break;
                         }
                     }

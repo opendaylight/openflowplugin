@@ -53,11 +53,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.multipart.reply.port.stats.PortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartReplyTranslatorTest {
 
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("21");
-    private static final Long DUMMY_XID = 1L;
+    private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(21);
+    private static final Uint32 DUMMY_XID = Uint32.ONE;
     private static final BigInteger DUMMY_BYTE_COUNT = new BigInteger("31");
     private static final BigInteger DUMMY_PACKET_COUNT = new BigInteger("41");
     private static final Long DUMMY_FLOW_COUNT = 51L;
@@ -290,12 +293,12 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyFlowCaseBuilder.build();
     }
 
-    private MultipartReplyMessage prepareMocks(DeviceContext mockedDeviceContext,
-                                               MultipartReplyBody multipartReplyBody,
+    private MultipartReplyMessage prepareMocks(final DeviceContext mockedDeviceContext,
+                                               final MultipartReplyBody multipartReplyBody,
                                                final MultipartType multipartType) {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(mockedFeaturesReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(mockedFeaturesReply.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         when(mockedFeaturesReply.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         DeviceInfo deviceInfo = mock(DeviceInfo.class);
@@ -314,7 +317,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyMessage;
     }
 
-    private DataContainer validateOutput(DataContainer dataObject) {
+    private DataContainer validateOutput(final DataContainer dataObject) {
         return dataObject;
     }
 }

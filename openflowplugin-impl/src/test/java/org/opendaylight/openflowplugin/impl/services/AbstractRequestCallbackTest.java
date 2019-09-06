@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class AbstractRequestCallbackTest {
 
@@ -31,7 +32,7 @@ public class AbstractRequestCallbackTest {
     private static final EventIdentifier DUMMY_EVENT_IDENTIFIER =
             new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
     private static final String DUMMY_EXCEPTION_DESCRIPTION = "dummy exception description";
-    private static final Long DUMMY_XID = 100L;
+    private static final Uint32 DUMMY_XID = Uint32.valueOf(100L);
     private static final String DUMMY_MESSAGE_ILLEGAL_STATE_EXCEPTION = "dummy illegal state exception";
 
     AbstractRequestContext dummyRequestContext;
@@ -50,7 +51,7 @@ public class AbstractRequestCallbackTest {
                 DUMMY_REQUEST_TYPE, new MessageIntelligenceAgencyImpl(),
                 DUMMY_EVENT_IDENTIFIER) {
             @Override
-            public void onSuccess(Object object) {
+            public void onSuccess(final Object object) {
 
             }
 
@@ -78,7 +79,7 @@ public class AbstractRequestCallbackTest {
         assertEquals(DUMMY_MESSAGE_ILLEGAL_STATE_EXCEPTION, rpcError.getMessage());
     }
 
-    private RpcError provideRpcError(ListenableFuture futureResult) throws InterruptedException,
+    private RpcError provideRpcError(final ListenableFuture futureResult) throws InterruptedException,
                                                                            java.util.concurrent.ExecutionException {
         final Object result = futureResult.get();
         assertTrue(result instanceof RpcResult);

@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.common;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -120,6 +119,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,7 +271,7 @@ public final class MultipartReplyTranslatorUtil {
             .reply.body.MultipartReplyPortStats translatePortStats(
                     final MultipartReply msg,
                     final OpenflowVersion ofVersion,
-                    final BigInteger datapathId) {
+                    final Uint64 datapathId) {
         MultipartReplyPortStatsBuilder message = new MultipartReplyPortStatsBuilder();
         MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) msg.getMultipartReplyBody();
         MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
@@ -494,7 +494,7 @@ public final class MultipartReplyTranslatorUtil {
 
     private static MultipartReplyQueueStats translateQueue(final MultipartReply msg,
                                                            final OpenflowVersion ofVersion,
-                                                           final BigInteger datapathId) {
+                                                           final Uint64 datapathId) {
         MultipartReplyQueueStatsBuilder message = new MultipartReplyQueueStatsBuilder();
         MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) msg.getMultipartReplyBody();
         MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();

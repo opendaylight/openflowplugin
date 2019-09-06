@@ -15,18 +15,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class IpEcnEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIpMatch().getIpEcn());
+        outBuffer.writeByte(match.getIpMatch().getIpEcn().toJava());
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getIpMatch() != null && match.getIpMatch().getIpEcn() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         return false;
     }
 

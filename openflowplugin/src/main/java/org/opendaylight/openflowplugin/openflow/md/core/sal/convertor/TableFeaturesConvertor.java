@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.ImmutableMap;
@@ -148,6 +147,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.miss.TablesMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.wildcards.WildcardSetfield;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -524,10 +524,10 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     private static void setNextTableFeatureProperty(final TableFeaturePropertiesBuilder builder,
-            final TableFeaturesPropType type, final List<Short> tableIds) {
+            final TableFeaturesPropType type, final List<Uint8> tableIds) {
         List<NextTableIds> nextTableIdsList = new ArrayList<>();
 
-        for (Short tableId : tableIds) {
+        for (Uint8 tableId : tableIds) {
             NextTableIdsBuilder nextTableId = new NextTableIdsBuilder();
             nextTableId.setTableId(tableId);
             nextTableIdsList.add(nextTableId.build());
@@ -637,8 +637,8 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     private static void setMatchEntry(final MatchEntryBuilder builder,
-            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> field,
-            final Boolean hasMask) {
+            final Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225
+                    .MatchField> field, final Boolean hasMask) {
         if (field == TcpFlags.class) {
             builder.setOxmClass(ExperimenterClass.class);
         } else {
@@ -655,8 +655,8 @@ public class TableFeaturesConvertor extends Convertor<
 
     @Override
     public List<TableFeatures> convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source,
-            VersionConvertorData data) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures source,
+            final VersionConvertorData data) {
         List<TableFeatures> ofTableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder ofTableFeatures = new TableFeaturesBuilder();
 

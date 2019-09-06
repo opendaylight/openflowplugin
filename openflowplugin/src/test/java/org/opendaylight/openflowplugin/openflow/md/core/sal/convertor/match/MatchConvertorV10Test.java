@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
@@ -41,6 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 8/30/14.
@@ -106,7 +107,6 @@ public class MatchConvertorV10Test {
         Optional<MatchV10> matchV10Optional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
         MatchV10 matchV10 = matchV10Optional.get();
-        final Integer zero = 0;
 
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
@@ -118,8 +118,8 @@ public class MatchConvertorV10Test {
                      matchV10.getNwDst().getValue());
         assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
         assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(zero, matchV10.getTpSrc());
-        assertEquals(zero, matchV10.getTpDst());
+        assertEquals(0, matchV10.getTpSrc().toJava());
+        assertEquals(0, matchV10.getTpDst().toJava());
 
         boolean wcTpSrc = true;
         boolean wcTpDst = true;
@@ -149,13 +149,13 @@ public class MatchConvertorV10Test {
                      matchV10.getNwDst().getValue());
         assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
         assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(icmpType, matchV10.getTpSrc());
-        assertEquals(zero, matchV10.getTpDst());
+        assertEquals(55, matchV10.getTpSrc().toJava());
+        assertEquals(0, matchV10.getTpDst().toJava());
         assertEquals(wc, matchV10.getWildcards());
 
         // Specify ICMP code only.
         Integer icmpCode = 31;
-        icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type(null).setIcmpv4Code(icmpCode.shortValue());
+        icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type((Uint8) null).setIcmpv4Code(icmpCode.shortValue());
         wcTpSrc = true;
         wcTpDst = false;
         wc = new FlowWildcardsV10(
@@ -175,8 +175,8 @@ public class MatchConvertorV10Test {
                      matchV10.getNwDst().getValue());
         assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
         assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(zero, matchV10.getTpSrc());
-        assertEquals(icmpCode, matchV10.getTpDst());
+        assertEquals(0, matchV10.getTpSrc().toJava());
+        assertEquals(Uint16.valueOf(icmpCode), matchV10.getTpDst());
         assertEquals(wc, matchV10.getWildcards());
 
         // Specify both ICMP type and code.
@@ -203,8 +203,8 @@ public class MatchConvertorV10Test {
                      matchV10.getNwDst().getValue());
         assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
         assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(icmpType, matchV10.getTpSrc());
-        assertEquals(icmpCode, matchV10.getTpDst());
+        assertEquals(Uint16.valueOf(icmpType), matchV10.getTpSrc());
+        assertEquals(Uint16.valueOf(icmpCode), matchV10.getTpDst());
         assertEquals(wc, matchV10.getWildcards());
     }
 
