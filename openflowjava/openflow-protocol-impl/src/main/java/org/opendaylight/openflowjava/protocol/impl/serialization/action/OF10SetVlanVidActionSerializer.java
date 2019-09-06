@@ -23,7 +23,7 @@ public class OF10SetVlanVidActionSerializer extends AbstractActionSerializer {
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeShort(((SetVlanVidCase) action.getActionChoice()).getSetVlanVidAction().getVlanVid());
+        outBuffer.writeShort(((SetVlanVidCase) action.getActionChoice()).getSetVlanVidAction().getVlanVid().toJava());
         outBuffer.writeZero(ActionConstants.PADDING_IN_SET_VLAN_VID_ACTION);
     }
 

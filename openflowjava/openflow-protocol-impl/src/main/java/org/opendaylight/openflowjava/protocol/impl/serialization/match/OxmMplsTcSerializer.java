@@ -24,7 +24,7 @@ public class OxmMplsTcSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         MplsTcCase entryValue = (MplsTcCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getMplsTc().getTc());
+        outBuffer.writeByte(entryValue.getMplsTc().getTc().toJava());
     }
 
     @Override

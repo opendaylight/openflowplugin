@@ -42,17 +42,17 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
         final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeLong(message.getCookie().longValue());
-        outBuffer.writeShort(message.getPriority());
+        outBuffer.writeShort(message.getPriority().toJava());
         outBuffer.writeByte(message.getReason().getIntValue());
         outBuffer.writeByte(message.getTableId().getValue().byteValue());
         outBuffer.writeInt(message.getDurationSec().intValue());
         outBuffer.writeInt(message.getDurationNsec().intValue());
-        outBuffer.writeShort(message.getIdleTimeout());
-        outBuffer.writeShort(message.getHardTimeout());
+        outBuffer.writeShort(message.getIdleTimeout().toJava());
+        outBuffer.writeShort(message.getHardTimeout().toJava());
         outBuffer.writeLong(message.getPacketCount().longValue());
         outBuffer.writeLong(message.getByteCount().longValue());
         OFSerializer<Match> matchSerializer = registry.getSerializer(
-                new MessageTypeKey<>(message.getVersion(), Match.class));
+                new MessageTypeKey<>(message.getVersion().toJava(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }

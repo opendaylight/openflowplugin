@@ -39,7 +39,7 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
         outBuffer.writeByte(message.getTableId().getValue().byteValue());
         outBuffer.writeLong(message.getCookie().longValue());
         OFSerializer<Match> matchSerializer = registry.getSerializer(
-                new MessageTypeKey<>(message.getVersion(), Match.class));
+                new MessageTypeKey<>(message.getVersion().toJava(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         outBuffer.writeZero(PADDING);
 

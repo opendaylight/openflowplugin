@@ -164,7 +164,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     private static RpcResponseKey createRpcResponseKey(final OfHeader message) {
-        return new RpcResponseKey(message.getXid(), message.implementedInterface().getName());
+        return new RpcResponseKey(message.getXid().toJava(), message.implementedInterface().getName());
     }
 
     @Override

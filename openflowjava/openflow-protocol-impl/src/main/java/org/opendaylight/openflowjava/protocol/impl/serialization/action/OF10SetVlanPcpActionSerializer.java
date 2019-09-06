@@ -23,7 +23,7 @@ public class OF10SetVlanPcpActionSerializer extends AbstractActionSerializer {
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeByte(((SetVlanPcpCase) action.getActionChoice()).getSetVlanPcpAction().getVlanPcp());
+        outBuffer.writeByte(((SetVlanPcpCase) action.getActionChoice()).getSetVlanPcpAction().getVlanPcp().toJava());
         outBuffer.writeZero(ActionConstants.PADDING_IN_SET_VLAN_PCP_ACTION);
     }
 
