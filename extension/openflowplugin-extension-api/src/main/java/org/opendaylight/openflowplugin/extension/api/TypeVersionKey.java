@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -6,7 +6,6 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowplugin.extension.api;
-
 
 /**
  * Lookup and register key for extension converters, basic case expects this to
