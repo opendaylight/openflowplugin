@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,10 +15,11 @@ import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
  * @author msunal
  */
 public final class NiciraUtil {
-    private NiciraUtil() { }
+    private NiciraUtil() {
+
+    }
 
     public static ActionSerializerKey<?> createOfJavaKeyFrom(NiciraActionSerializerKey key) {
         return new ActionSerializerKey<>(key.getVersion(), key.getSubtype(), NiciraConstants.NX_VENDOR_ID);
     }
-
 }

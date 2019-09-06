@@ -7,6 +7,6 @@
  */
 
 /**
- * Base project package for a module Provider and base notification listener/supplier interface
+ * Base project package for a module Provider and base notification listener/supplier interface.
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier;
