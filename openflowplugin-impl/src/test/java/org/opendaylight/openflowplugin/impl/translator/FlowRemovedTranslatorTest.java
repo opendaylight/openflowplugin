@@ -83,7 +83,7 @@ public class FlowRemovedTranslatorTest {
 
         assertEquals(flowRemovedMessage.getCookie(), flowRemoved.getCookie().getValue());
         assertEquals(flowRemovedMessage.getPriority(), flowRemoved.getPriority());
-        assertEquals((long)flowRemovedMessage.getTableId().getValue(), (long)flowRemoved.getTableId());
+        assertEquals(flowRemovedMessage.getTableId().getValue().toJava(), flowRemoved.getTableId().toJava());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class FlowRemovedTranslatorTest {
     }
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved
-            buildMessage(boolean isV10) {
+            buildMessage(final boolean isV10) {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
                 .setCookie(BigInteger.ONE)
                 .setReason(FlowRemovedReason.OFPRRGROUPDELETE)

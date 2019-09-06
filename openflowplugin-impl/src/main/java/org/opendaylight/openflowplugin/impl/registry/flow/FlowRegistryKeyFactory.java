@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import java.math.BigInteger;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -20,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowRegistryKeyFactory {
 
@@ -30,24 +31,24 @@ public final class FlowRegistryKeyFactory {
     @Nonnull
     public static FlowRegistryKey create(final short version, @Nonnull final Flow flow) {
         //TODO: mandatory flow input values (or default values) should be specified via yang model
-        final short tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
+        final Uint8 tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
         final int priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
-        final BigInteger cookie =
+        final Uint64 cookie =
                 MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
         Match match = MatchNormalizationUtil
                 .normalizeMatch(MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH), version);
-        return new FlowRegistryKeyDto(tableId, priority, cookie, match);
+        return new FlowRegistryKeyDto(tableId.toJava(), priority, cookie, match);
     }
 
     private static final class FlowRegistryKeyDto implements FlowRegistryKey {
         private final short tableId;
         private final int priority;
-        private final BigInteger cookie;
+        private final Uint64 cookie;
         private final Match match;
 
         private FlowRegistryKeyDto(final short tableId,
                                    final int priority,
-                                   @Nonnull final BigInteger cookie,
+                                   @Nonnull final Uint64 cookie,
                                    @Nonnull final Match match) {
             this.tableId = tableId;
             this.priority = priority;
@@ -162,7 +163,7 @@ public final class FlowRegistryKeyFactory {
         }
 
         @Override
-        public BigInteger getCookie() {
+        public Uint64 getCookie() {
             return cookie;
         }
 

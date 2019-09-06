@@ -23,7 +23,7 @@ public class OF13SetNwTtlActionSerializer extends AbstractActionSerializer {
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeByte(((SetNwTtlCase) action.getActionChoice()).getSetNwTtlAction().getNwTtl());
+        outBuffer.writeByte(((SetNwTtlCase) action.getActionChoice()).getSetNwTtlAction().getNwTtl().toJava());
         outBuffer.writeZero(ActionConstants.SET_NW_TTL_PADDING);
     }
 

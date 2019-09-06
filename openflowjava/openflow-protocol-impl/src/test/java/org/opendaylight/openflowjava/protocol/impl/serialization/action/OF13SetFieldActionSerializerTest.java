@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Expe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF13SetFieldActionSerializer.
@@ -62,7 +63,7 @@ public class OF13SetFieldActionSerializerTest {
         ser.injectSerializerRegistry(registry);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
             .ActionBuilder actionBuilder = new ActionBuilder();
-        long experimenterId = 12L;
+        final Uint32 experimenterId = Uint32.valueOf(12L);
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
         expBuilder.setExperimenter(new ExperimenterId(experimenterId));

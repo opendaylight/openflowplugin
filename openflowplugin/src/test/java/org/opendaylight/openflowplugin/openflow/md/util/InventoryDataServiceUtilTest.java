@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InventoryDataServiceUtilTest {
@@ -124,7 +125,7 @@ public class InventoryDataServiceUtilTest {
         long[] expectedDPIDs = new long[] { 1234L, -8236511293788841338L, -1L };
 
         for (int i = 0; i < nodeIds.length; i++) {
-            BigInteger datapathId = InventoryDataServiceUtil.dataPathIdFromNodeId(nodeIds[i]);
+            Uint64 datapathId = InventoryDataServiceUtil.dataPathIdFromNodeId(nodeIds[i]);
             Assert.assertEquals(expectedDPIDs[i], datapathId.longValue());
         }
     }

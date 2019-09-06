@@ -24,7 +24,7 @@ public class OxmIpDscpSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         IpDscpCase entryValue = (IpDscpCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getIpDscp().getDscp().getValue());
+        outBuffer.writeByte(entryValue.getIpDscp().getDscp().getValue().toJava());
     }
 
     @Override

@@ -19,7 +19,7 @@ public class NextTableMissTablePropertySerializer extends AbstractTablePropertyS
         property
             .getTablesMiss()
             .getTableIds()
-            .forEach(byteBuf::writeByte);
+            .forEach(id -> byteBuf.writeByte(id.toJava()));
     }
 
     @Override

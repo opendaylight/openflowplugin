@@ -176,6 +176,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MultipartReplyMessageFactory.
@@ -650,11 +651,11 @@ public class MultipartReplyMessageFactoryTest {
         MultipartReplyGroupFeaturesBuilder feature = new MultipartReplyGroupFeaturesBuilder();
         feature.setTypes(new GroupTypes(true, false, true, false));
         feature.setCapabilities(new GroupCapabilities(true, false, true, true));
-        List<Long> maxGroups = new ArrayList<>();
-        maxGroups.add(1L);
-        maxGroups.add(2L);
-        maxGroups.add(3L);
-        maxGroups.add(4L);
+        List<Uint32> maxGroups = new ArrayList<>();
+        maxGroups.add(Uint32.valueOf(1));
+        maxGroups.add(Uint32.valueOf(2));
+        maxGroups.add(Uint32.valueOf(3));
+        maxGroups.add(Uint32.valueOf(4));
         feature.setMaxGroups(maxGroups);
         feature.setActionsBitmap(createActionType());
         featureCase.setMultipartReplyGroupFeatures(feature.build());

@@ -69,7 +69,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private ExtensionConverterProvider extensionConverterProvider;
     private ScheduledThreadPoolExecutor spyPool;
     private ContextChainHolder contextChainHolder;
-    private QueuedNotificationManager<String, Runnable> queuedNotificationManager;
+    private final QueuedNotificationManager<String, Runnable> queuedNotificationManager;
 
     public DeviceManagerImpl(@Nonnull final OpenflowProviderConfig config,
                              @Nonnull final DataBroker dataBroker,
@@ -153,8 +153,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         final OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration =
                 connectionContext.getConnectionAdapter().registerOutboundQueueHandler(
                         outboundQueueProvider,
-                        config.getBarrierCountLimit().getValue(),
-                        TimeUnit.MILLISECONDS.toNanos(config.getBarrierIntervalTimeoutLimit().getValue()));
+                        config.getBarrierCountLimit().getValue().toJava(),
+                        TimeUnit.MILLISECONDS.toNanos(config.getBarrierIntervalTimeoutLimit().getValue().toJava()));
         connectionContext.setOutboundQueueHandleRegistration(outboundQueueHandlerRegistration);
 
 
@@ -192,7 +192,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         synchronized (updatePacketInRateLimitersLock) {
             final int deviceContextsSize = deviceContexts.size();
             if (deviceContextsSize > 0) {
-                long freshNotificationLimit = config.getGlobalNotificationQuota() / deviceContextsSize;
+                long freshNotificationLimit = config.getGlobalNotificationQuota().toJava() / deviceContextsSize;
                 if (freshNotificationLimit < 100) {
                     freshNotificationLimit = 100;
                 }
@@ -227,7 +227,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void setContextChainHolder(@Nonnull ContextChainHolder contextChainHolder) {
+    public void setContextChainHolder(@Nonnull final ContextChainHolder contextChainHolder) {
         this.contextChainHolder = contextChainHolder;
     }
 

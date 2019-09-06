@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.junit.Assert.assertEquals;
@@ -25,10 +24,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.meter.stats.MeterBandStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.meter.stats.MeterBandStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MeterStatsResponseConvertorTest {
     private static final int PRESET_COUNT = 7;
-
 
     private static List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply
             .multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats> createMeterStatsLit() {
@@ -73,24 +73,24 @@ public class MeterStatsResponseConvertorTest {
         int cnt = 0;
         for (MeterStats meterStats : meterStatsList) {
             assertEquals(new MeterStatsKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918
-                    .MeterId((long) cnt)).getMeterId(), meterStats.key().getMeterId());
-            assertEquals(BigInteger.valueOf(cnt), meterStats.getByteInCount().getValue());
-            assertEquals(new Long(1000 * cnt), meterStats.getDuration().getNanosecond().getValue());
-            assertEquals(new Long(10 * cnt), meterStats.getDuration().getSecond().getValue());
+                    .MeterId(Uint32.valueOf(cnt))).getMeterId(), meterStats.key().getMeterId());
+            assertEquals(Uint64.valueOf(cnt), meterStats.getByteInCount().getValue());
+            assertEquals(Uint32.valueOf(1000 * cnt), meterStats.getDuration().getNanosecond().getValue());
+            assertEquals(Uint32.valueOf(10 * cnt), meterStats.getDuration().getSecond().getValue());
 
-            assertEquals(new Long(cnt), meterStats.getFlowCount().getValue());
-            assertEquals(BigInteger.valueOf(cnt), meterStats.getByteInCount().getValue());
+            assertEquals(Uint32.valueOf(cnt), meterStats.getFlowCount().getValue());
+            assertEquals(Uint64.valueOf(cnt), meterStats.getByteInCount().getValue());
 
             assertEquals(PRESET_COUNT, meterStats.getMeterBandStats().getBandStat().size());
             int bandStatCount = 0;
             for (BandStat bandStat : meterStats.getMeterBandStats().getBandStat()) {
-                assertEquals(BigInteger.valueOf(bandStatCount), bandStat.getByteBandCount().getValue());
-                assertEquals(BigInteger.valueOf(bandStatCount), bandStat.getPacketBandCount().getValue());
+                assertEquals(Uint64.valueOf(bandStatCount), bandStat.getByteBandCount().getValue());
+                assertEquals(Uint64.valueOf(bandStatCount), bandStat.getPacketBandCount().getValue());
                 bandStatCount++;
             }
             assertEquals(new MeterStatsKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918
-                    .MeterId((long) cnt)).getMeterId(), meterStats.getMeterId());
-            assertEquals(BigInteger.valueOf(cnt), meterStats.getPacketInCount().getValue());
+                    .MeterId(Uint32.valueOf(cnt))).getMeterId(), meterStats.getMeterId());
+            assertEquals(Uint64.valueOf(cnt), meterStats.getPacketInCount().getValue());
             cnt++;
         }
     }

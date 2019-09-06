@@ -23,6 +23,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for RoleRequestInputMessageFactory.
@@ -69,6 +70,6 @@ public class RoleRequestInputMessageFactoryTest {
         out.skipBytes(PADDING_IN_ROLE_REQUEST_MESSAGE);
         byte[] genId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         out.readBytes(genId);
-        Assert.assertEquals("Wrong generation ID", message.getGenerationId(), new BigInteger(1, genId));
+        Assert.assertEquals("Wrong generation ID", message.getGenerationId(), Uint64.valueOf(new BigInteger(1, genId)));
     }
 }

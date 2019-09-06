@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroup;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Long GROUP_NO = 1L;
@@ -55,7 +56,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
         final MultipartRequestGroupCase body = (MultipartRequestGroupCase) ((MultipartRequestInput) service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42)), input))
             .getMultipartRequestBody();
 
         final MultipartRequestGroup group = body.getMultipartRequestGroup();

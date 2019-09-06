@@ -15,10 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 
 public class SetMplsTtlActionSerializer extends AbstractActionSerializer<SetMplsTtlActionCase> {
     @Override
-    public void serialize(SetMplsTtlActionCase action, ByteBuf outBuffer) {
+    public void serialize(final SetMplsTtlActionCase action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final SetMplsTtlAction setMplsTtlAction = action.getSetMplsTtlAction();
-        outBuffer.writeByte(setMplsTtlAction.getMplsTtl());
+        outBuffer.writeByte(setMplsTtlAction.getMplsTtl().toJava());
         outBuffer.writeZero(ActionConstants.SET_MPLS_TTL_PADDING);
     }
 

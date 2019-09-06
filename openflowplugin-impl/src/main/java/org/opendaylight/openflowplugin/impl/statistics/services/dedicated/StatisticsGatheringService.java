@@ -46,7 +46,7 @@ public class StatisticsGatheringService<T extends OfHeader>
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) {
-        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(),
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue().toJava(),
                                                                  getVersion(),
                                                                  input,
                                                                  canUseSingleLayerSerialization());

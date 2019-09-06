@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import com.google.common.base.MoreObjects;
@@ -15,11 +14,12 @@ import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class OutputActionSerializer extends AbstractActionSerializer<OutputActionCase> {
 
     @Override
-    public void serialize(OutputActionCase action, ByteBuf outBuffer) {
+    public void serialize(final OutputActionCase action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final OutputAction outputAction = action.getOutputAction();
         Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
@@ -30,7 +30,7 @@ public class OutputActionSerializer extends AbstractActionSerializer<OutputActio
                     + outputAction.getOutputNodeConnector().getValue());
         }
         outBuffer.writeInt(value.intValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), 0));
+        outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), Uint16.ZERO).toJava());
         outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
     }
 

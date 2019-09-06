@@ -40,6 +40,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Provides group util methods.
@@ -129,8 +130,8 @@ public final class GroupUtil {
      * @param actionsSupported - list of supported actions
      * @return
      */
-    public static List<Long> extractGroupActionsSupportBitmap(final List<ActionType> actionsSupported) {
-        List<Long> supportActionByGroups = new ArrayList<>();
+    public static List<Uint32> extractGroupActionsSupportBitmap(final List<ActionType> actionsSupported) {
+        List<Uint32> supportActionByGroups = new ArrayList<>();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions
                 : actionsSupported) {
             long supportActionBitmap = 0;
@@ -150,7 +151,7 @@ public final class GroupUtil {
             supportActionBitmap |= supportedActions.isOFPATSETFIELD() ? 1 << 25 : 0;
             supportActionBitmap |= supportedActions.isOFPATPUSHPBB() ? 1 << 26 : 0;
             supportActionBitmap |= supportedActions.isOFPATPOPPBB() ? 1 << 27 : 0;
-            supportActionByGroups.add(supportActionBitmap);
+            supportActionByGroups.add(Uint32.valueOf(supportActionBitmap));
         }
         return supportActionByGroups;
     }
@@ -212,8 +213,8 @@ public final class GroupUtil {
         private final int sizeOfInputBatch;
 
         CumulatingFunction(
-                Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
-                        inputBatchGroups, int sizeOfInputBatch) {
+                final Iterable<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group>
+                        inputBatchGroups, final int sizeOfInputBatch) {
             this.inputBatchGroups = inputBatchGroups;
             this.sizeOfInputBatch = sizeOfInputBatch;
         }

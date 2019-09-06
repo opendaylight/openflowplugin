@@ -24,7 +24,7 @@ public class OxmIpEcnSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         IpEcnCase entryValue = (IpEcnCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getIpEcn().getEcn());
+        outBuffer.writeByte(entryValue.getIpEcn().getEcn().toJava());
     }
 
     @Override

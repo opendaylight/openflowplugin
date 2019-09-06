@@ -56,7 +56,8 @@ public class HandshakeListenerImpl implements HandshakeListener {
         this.handshakeContext.close();
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);
-        connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
+        connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(
+            featureOutput.getDatapathId().toJava()));
         connectionContext.handshakeSuccessful();
 
         // fire barrier in order to sweep all handshake and posthandshake messages before continue
@@ -65,7 +66,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
     }
 
     private FutureCallback<RpcResult<BarrierOutput>> addBarrierCallback() {
-        return new FutureCallback<RpcResult<BarrierOutput>>() {
+        return new FutureCallback<>() {
             @Override
             @SuppressWarnings("checkstyle:IllegalCatch")
             public void onSuccess(final RpcResult<BarrierOutput> result) {

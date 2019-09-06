@@ -24,7 +24,7 @@ public class OxmIcmpv4TypeSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         Icmpv4TypeCase entryValue = (Icmpv4TypeCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getIcmpv4Type().getIcmpv4Type());
+        outBuffer.writeByte(entryValue.getIcmpv4Type().getIcmpv4Type().toJava());
     }
 
     @Override
