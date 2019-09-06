@@ -8,6 +8,11 @@
 
 package org.opendaylight.openflowplugin.api.openflow.md.util;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import java.util.Arrays;
+import org.opendaylight.yangtools.yang.common.Uint8;
+
 /**
  * List of Openflow versions supported by the plugin.
  * Note: If you add a version here,
@@ -20,11 +25,18 @@ public enum OpenflowVersion {
     OF13((short)0x04),
     UNSUPPORTED((short)0x00);
 
+    private static final ImmutableMap<Uint8, OpenflowVersion> VERSIONS = Maps.uniqueIndex(Arrays.asList(values()),
+        ver -> Uint8.valueOf(ver.version));
 
     private short version;
 
     OpenflowVersion(final short version) {
         this.version = version;
+    }
+
+    public static OpenflowVersion get(final Uint8 version) {
+        final OpenflowVersion ver = VERSIONS.get(version);
+        return ver != null ? ver : UNSUPPORTED;
     }
 
     public static OpenflowVersion get(final Short version) {

@@ -18,10 +18,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class EchoServiceTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID_VALUE = 100L;
+    private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
     private static final byte[] DUMMY_DATA = "DUMMY DATA".getBytes();
     EchoService echoService;
 

@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Remove
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class FlowRemovedTranslator implements MessageTranslator
     private final ConvertorExecutor convertorExecutor;
     private static final Logger LOG = LoggerFactory.getLogger(FlowRemovedTranslator.class);
 
-    public FlowRemovedTranslator(ConvertorExecutor convertorExecutor) {
+    public FlowRemovedTranslator(final ConvertorExecutor convertorExecutor) {
         this.convertorExecutor = convertorExecutor;
     }
 
@@ -39,7 +40,7 @@ public class FlowRemovedTranslator implements MessageTranslator
 
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved
-            translate(FlowRemoved input, DeviceInfo deviceInfo, Object connectionDistinguisher) {
+            translate(final FlowRemoved input, final DeviceInfo deviceInfo, final Object connectionDistinguisher) {
         FlowRemovedBuilder flowRemovedBld = new FlowRemovedBuilder()
                 .setMatch(translateMatch(input, deviceInfo).build())
                 .setCookie(new FlowCookie(input.getCookie()))
@@ -54,7 +55,7 @@ public class FlowRemovedTranslator implements MessageTranslator
         return flowRemovedBld.build();
     }
 
-    protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
+    protected MatchBuilder translateMatch(final FlowRemoved flowRemoved, final DeviceInfo deviceInfo) {
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(deviceInfo.getVersion());
         datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
@@ -72,11 +73,11 @@ public class FlowRemovedTranslator implements MessageTranslator
      * @param flowRemoved  FLOW_REMOVED message.
      * @return  SAL table ID.
      */
-    protected Short translateTableId(FlowRemoved flowRemoved) {
-        return flowRemoved.getTableId().getValue().shortValue();
+    protected Uint8 translateTableId(final FlowRemoved flowRemoved) {
+        return Uint8.valueOf(flowRemoved.getTableId().getValue());
     }
 
-    private RemovedFlowReason translateReason(FlowRemoved removedFlow) {
+    private RemovedFlowReason translateReason(final FlowRemoved removedFlow) {
         LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason: {}", removedFlow.getReason());
         switch (removedFlow.getReason()) {
             case OFPRRIDLETIMEOUT:

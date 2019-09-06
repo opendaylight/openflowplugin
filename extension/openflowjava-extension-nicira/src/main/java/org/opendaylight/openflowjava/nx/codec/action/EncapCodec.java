@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
@@ -47,7 +46,6 @@ public class EncapCodec extends AbstractActionCodec {
         serializeHeader(LENGTH, NXAST_ENCAP_SUBTYPE, outBuffer);
         outBuffer.writeShort(HEADER_SIZE_NOT_SPECIFIED);
         ActionEncap actionEncap = (ActionEncap) input.getActionChoice();
-        Long packetType = actionEncap.getNxActionEncap().getPacketType();
-        outBuffer.writeInt(packetType.intValue());
+        outBuffer.writeInt(actionEncap.getNxActionEncap().getPacketType().intValue());
     }
 }

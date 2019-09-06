@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NsiCodecTest {
 
@@ -61,7 +62,7 @@ public class NsiCodecTest {
 
         NxExpMatchEntryValue value = nsiCodec.deserializeValue(buffer, false);
 
-        assertEquals(NSI_VALUE, ((NsiCaseValue) value).getNsiValues().getNsi());
+        assertEquals(Uint8.valueOf(NSI_VALUE), ((NsiCaseValue) value).getNsiValues().getNsi());
         assertFalse(buffer.isReadable());
     }
 
@@ -71,8 +72,8 @@ public class NsiCodecTest {
 
         NxExpMatchEntryValue value = nsiCodec.deserializeValue(buffer, true);
 
-        assertEquals(NSI_VALUE, ((NsiCaseValue) value).getNsiValues().getNsi());
-        assertEquals(NSI_MASK, ((NsiCaseValue) value).getNsiValues().getMask());
+        assertEquals(Uint8.valueOf(NSI_VALUE), ((NsiCaseValue) value).getNsiValues().getNsi());
+        assertEquals(Uint8.valueOf(NSI_MASK), ((NsiCaseValue) value).getNsiValues().getMask());
         assertFalse(buffer.isReadable());
     }
 

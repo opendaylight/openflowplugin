@@ -38,8 +38,7 @@ public class TunIdCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        BigInteger value = ((TunIdCaseValue) input.getMatchEntryValue()).getTunIdValues().getValue();
-        outBuffer.writeLong(value.longValue());
+        outBuffer.writeLong(((TunIdCaseValue) input.getMatchEntryValue()).getTunIdValues().getValue().longValue());
     }
 
     @Override

@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void testCreateRequestContext() {
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         assertNotNull(requestContext);
-        assertEquals(TEST_XID, requestContext.getXid().getValue());
+        assertEquals(Uint32.valueOf(TEST_XID), requestContext.getXid().getValue());
         Assert.assertFalse(requestContext.getFuture().isDone());
     }
 

@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -49,12 +48,15 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class ServiceMocking {
-    protected static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
-    protected static final Short DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
-    protected static final Long DUMMY_XID_VALUE = 2121L;
+    protected static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(444);
+    protected static final Uint8 DUMMY_VERSION = Uint8.valueOf(OFConstants.OFP_VERSION_1_3);
+    protected static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(2121L);
     protected static final Xid DUMMY_XID = new Xid(DUMMY_XID_VALUE);
     protected static final long DUMMY_EXPERIMENTER_ID = 42L;
 
@@ -118,12 +120,12 @@ public abstract class ServiceMocking {
 
         lenient().when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
+        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION.toJava());
 
         lenient().when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         lenient().when(mockedDeviceContext.getDeviceFlowRegistry())
-                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II));
+                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION.toJava(), dataBroker, DUMMY_NODE_II));
         lenient().when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         lenient().when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
@@ -141,7 +143,7 @@ public abstract class ServiceMocking {
         when(mockedRequestContext.getFuture()).thenReturn(dummySuccessfulFuture);
     }
 
-    protected  <T> void mockSuccessfulFuture(T result) {
+    protected  <T> void mockSuccessfulFuture(final T result) {
         ListenableFuture<RpcResult<T>> dummySuccessfulFuture = Futures.immediateFuture(RpcResultBuilder.success(result)
                 .build());
         when(mockedRequestContext.getFuture()).thenReturn(dummySuccessfulFuture);

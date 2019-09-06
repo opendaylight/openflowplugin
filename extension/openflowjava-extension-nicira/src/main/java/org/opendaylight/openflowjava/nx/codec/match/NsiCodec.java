@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
@@ -21,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NsiCodec extends AbstractExperimenterMatchCodec {
 
@@ -38,17 +38,17 @@ public class NsiCodec extends AbstractExperimenterMatchCodec {
                     NXM_FIELD_CODE);
 
     @Override
-    protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
+    protected void serializeValue(final NxExpMatchEntryValue value, final boolean hasMask, final ByteBuf outBuffer) {
         NsiCaseValue nsiCaseValue = (NsiCaseValue) value;
         NsiValues nsiValues = nsiCaseValue.getNsiValues();
-        outBuffer.writeByte(nsiValues.getNsi());
+        outBuffer.writeByte(nsiValues.getNsi().toJava());
         if (hasMask) {
-            outBuffer.writeByte(nsiValues.getMask());
+            outBuffer.writeByte(nsiValues.getMask().toJava());
         }
     }
 
     @Override
-    protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
+    protected NxExpMatchEntryValue deserializeValue(final ByteBuf message, final boolean hasMask) {
         Short value = message.readUnsignedByte();
         Short mask = hasMask ? message.readUnsignedByte() : null;
         NsiValues nsiValues = new NsiValuesBuilder().setNsi(value).setMask(mask).build();
@@ -61,7 +61,7 @@ public class NsiCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected long getExperimenterId() {
+    protected Uint32 getExperimenterId() {
         return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 

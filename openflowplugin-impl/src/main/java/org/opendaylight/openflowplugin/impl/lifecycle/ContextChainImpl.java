@@ -159,8 +159,8 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean isMastered(@Nonnull ContextChainMastershipState mastershipState,
-                              boolean inReconciliationFrameworkStep) {
+    public boolean isMastered(@Nonnull final ContextChainMastershipState mastershipState,
+                              final boolean inReconciliationFrameworkStep) {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo);
@@ -220,14 +220,14 @@ public class ContextChainImpl implements ContextChain {
     }
 
     @Override
-    public boolean addAuxiliaryConnection(@Nonnull ConnectionContext connectionContext) {
-        return connectionContext.getFeatures().getAuxiliaryId() != 0
+    public boolean addAuxiliaryConnection(@Nonnull final ConnectionContext connectionContext) {
+        return connectionContext.getFeatures().getAuxiliaryId().toJava() != 0
                 && !ConnectionContext.CONNECTION_STATE.RIP.equals(primaryConnection.getConnectionState())
                 && auxiliaryConnections.add(connectionContext);
     }
 
     @Override
-    public boolean auxiliaryConnectionDropped(@Nonnull ConnectionContext connectionContext) {
+    public boolean auxiliaryConnectionDropped(@Nonnull final ConnectionContext connectionContext) {
         return auxiliaryConnections.remove(connectionContext);
     }
 

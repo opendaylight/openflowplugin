@@ -27,10 +27,11 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader>
     }
 
     @Override
-    protected FutureCallback<OfHeader> createCallback(RequestContext<List<T>> context, Class<?> requestType) {
+    protected FutureCallback<OfHeader> createCallback(final RequestContext<List<T>> context,
+            final Class<?> requestType) {
         final FutureCallback<OfHeader> callback = super.createCallback(context, requestType);
 
-        return new FutureCallback<OfHeader>() {
+        return new FutureCallback<>() {
             @Override
             public void onSuccess(final OfHeader result) {
                 callback.onSuccess(result);
@@ -43,7 +44,7 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader>
                     DeviceInitializationUtil.makeEmptyTables(
                         getTxFacade(),
                         getDeviceInfo(),
-                        getDeviceContext().getPrimaryConnectionContext().getFeatures().getTables());
+                        getDeviceContext().getPrimaryConnectionContext().getFeatures().getTables().toJava());
                 }
 
                 callback.onFailure(throwable);
@@ -53,7 +54,7 @@ public abstract class AbstractMultipartCollectorService<T extends OfHeader>
 
     @Override
     protected OfHeader buildRequest(final Xid xid, final MultipartType input) {
-        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue(),
+        return MultipartRequestInputFactory.makeMultipartRequest(xid.getValue().toJava(),
                                                                  getVersion(),
                                                                  input,
                                                                  canUseSingleLayerSerialization());

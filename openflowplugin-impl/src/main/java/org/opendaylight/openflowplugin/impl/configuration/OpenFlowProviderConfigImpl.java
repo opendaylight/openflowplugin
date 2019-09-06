@@ -13,6 +13,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     private final ConfigurationService service;
@@ -36,8 +38,8 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
-    public Long getGlobalNotificationQuota() {
-        return service.getProperty(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString(), Long::valueOf);
+    public Uint32 getGlobalNotificationQuota() {
+        return service.getProperty(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString(), Uint32::valueOf);
     }
 
     @Override
@@ -109,8 +111,8 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
-    public Integer getThreadPoolMinThreads() {
-        return service.getProperty(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString(), Integer::valueOf);
+    public Uint16 getThreadPoolMinThreads() {
+        return service.getProperty(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString(), Uint16::valueOf);
     }
 
     @Override
@@ -123,8 +125,8 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
-    public Long getThreadPoolTimeout() {
-        return service.getProperty(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString(), Long::valueOf);
+    public Uint32 getThreadPoolTimeout() {
+        return service.getProperty(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString(), Uint32::valueOf);
     }
 
     @Override
@@ -168,13 +170,13 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     @Override
     public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang
             .openflow.provider.config.rev160510.OpenflowProviderConfig>> E augmentation(
-                    java.lang.Class<E> augmentationType) {
+                    final java.lang.Class<E> augmentationType) {
         return null;
     }
 
     @Override
-    public Integer getDeviceConnectionRateLimitPerMin() {
+    public Uint16 getDeviceConnectionRateLimitPerMin() {
         return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
-                Integer::valueOf);
+                Uint16::valueOf);
     }
 }

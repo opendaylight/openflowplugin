@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatisticsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnectorStatisticsAndPortNumberMap> {
 
@@ -44,11 +45,10 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
         statistics.getNodeConnectorStatisticsAndPortNumberMap()
             .forEach(stat -> {
                 final OpenflowVersion openflowVersion = OpenflowVersion.get(features.getVersion());
-                final Long port = InventoryDataServiceUtil
-                    .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());
+                final Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(openflowVersion,
+                    stat.getNodeConnectorId());
 
-                final NodeConnectorId id = InventoryDataServiceUtil
-                    .nodeConnectorIdfromDatapathPortNo(
+                final NodeConnectorId id = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
                         features.getDatapathId(),
                         port,
                         OpenflowVersion.get(features.getVersion()));
@@ -60,7 +60,7 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
                         .child(FlowCapableNodeConnectorStatistics.class),
                     new FlowCapableNodeConnectorStatisticsBuilder(stat)
                         .build(),
-                        OFConstants.OFP_VERSION_1_0 == features.getVersion() || withParents);
+                        OFConstants.OFP_VERSION_1_0 == features.getVersion().toJava() || withParents);
             });
     }
 

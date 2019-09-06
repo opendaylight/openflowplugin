@@ -11,6 +11,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSeriali
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Helper for registering serializers.
@@ -28,7 +29,7 @@ public class ActionSerializerRegistryHelper {
      * @param version Openflow wire version
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public ActionSerializerRegistryHelper(short version, SerializerRegistry serializerRegistry) {
+    public ActionSerializerRegistryHelper(final short version, final SerializerRegistry serializerRegistry) {
         this.version = version;
         this.serializerRegistry = serializerRegistry;
     }
@@ -39,9 +40,9 @@ public class ActionSerializerRegistryHelper {
      * @param actionType action type
      * @param serializer serializer instance
      */
-    public <T extends ActionChoice> void registerSerializer(Class<T> actionType,
-            OFGeneralSerializer serializer) {
-        serializerRegistry.registerSerializer(new ActionSerializerKey<>(version,
-                actionType, null), serializer);
+    public <T extends ActionChoice> void registerSerializer(final Class<T> actionType,
+            final OFGeneralSerializer serializer) {
+        serializerRegistry.registerSerializer(new ActionSerializerKey<>(version, actionType, (Uint32) null),
+            serializer);
     }
 }

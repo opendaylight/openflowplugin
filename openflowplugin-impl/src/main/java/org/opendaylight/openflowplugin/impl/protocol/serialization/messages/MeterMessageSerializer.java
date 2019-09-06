@@ -77,7 +77,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                     outBuffer.writeShort(LENGTH_OF_METER_BANDS);
                                     outBuffer.writeInt(band.getDscpRemarkRate().intValue());
                                     outBuffer.writeInt(band.getDscpRemarkBurstSize().intValue());
-                                    outBuffer.writeByte(band.getPrecLevel());
+                                    outBuffer.writeByte(band.getPrecLevel().toJava());
                                     outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
                                 } else if (flags.isOfpmbtExperimenter()) {
                                     final Experimenter band = (Experimenter) type;
@@ -86,7 +86,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                     final ExperimenterIdSerializerKey<Experimenter> key =
                                             new ExperimenterIdSerializerKey<>(
                                                     EncodeConstants.OF13_VERSION_ID,
-                                                    band.getExperimenter(),
+                                                    band.getExperimenter().toJava(),
                                                     (Class<Experimenter>) type.implementedInterface());
 
                                     try {
@@ -101,7 +101,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 

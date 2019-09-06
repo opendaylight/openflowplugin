@@ -8,12 +8,13 @@
 
 package org.opendaylight.openflowplugin.extension.api;
 
-import java.math.BigInteger;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class ExtensionConvertorData extends ConvertorData {
-    private Long xid;
+    private Uint32 xid;
 
-    private BigInteger datapathId;
+    private Uint64 datapathId;
 
 
     /**
@@ -21,7 +22,7 @@ public class ExtensionConvertorData extends ConvertorData {
      *
      * @param version the version
      */
-    public ExtensionConvertorData(short version) {
+    public ExtensionConvertorData(final short version) {
         super(version);
     }
 
@@ -30,7 +31,7 @@ public class ExtensionConvertorData extends ConvertorData {
      *
      * @return the xid
      */
-    public Long getXid() {
+    public Uint32 getXid() {
         return xid;
     }
 
@@ -39,7 +40,7 @@ public class ExtensionConvertorData extends ConvertorData {
      *
      * @param xid the xid
      */
-    public void setXid(Long xid) {
+    public void setXid(final Uint32 xid) {
         this.xid = xid;
     }
 
@@ -48,7 +49,7 @@ public class ExtensionConvertorData extends ConvertorData {
      *
      * @return the datapath id
      */
-    public BigInteger getDatapathId() {
+    public Uint64 getDatapathId() {
         return datapathId;
     }
 
@@ -57,7 +58,7 @@ public class ExtensionConvertorData extends ConvertorData {
      *
      * @param datapathId the datapath id
      */
-    public void setDatapathId(BigInteger datapathId) {
+    public void setDatapathId(final Uint64 datapathId) {
         this.datapathId = datapathId;
     }
 }

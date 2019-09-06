@@ -13,7 +13,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
@@ -53,31 +52,34 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.multipart.reply.port.stats.PortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartReplyTranslatorTest {
 
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("21");
-    private static final Long DUMMY_XID = 1L;
-    private static final BigInteger DUMMY_BYTE_COUNT = new BigInteger("31");
-    private static final BigInteger DUMMY_PACKET_COUNT = new BigInteger("41");
-    private static final Long DUMMY_FLOW_COUNT = 51L;
+    private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(21);
+    private static final Uint32 DUMMY_XID = Uint32.ONE;
+    private static final Uint64 DUMMY_BYTE_COUNT = Uint64.valueOf(31);
+    private static final Uint64 DUMMY_PACKET_COUNT = Uint64.valueOf(41);
+    private static final Uint32 DUMMY_FLOW_COUNT = Uint32.valueOf(51);
     private static final Long DUMMY_PORT_NO = 154L;
-    private static final BigInteger DUMMY_RX_BYTES = new BigInteger("155");
-    private static final BigInteger DUMMY_TX_BYTES = new BigInteger("165");
-    private static final BigInteger DUMMY_RX_PACKETS = new BigInteger("175");
-    private static final BigInteger DUMMY_TX_PACKETS = new BigInteger("185");
-    private static final BigInteger DUMMY_COLLISIONS = new BigInteger("195");
-    private static final BigInteger DUMMY_RX_CRC_ERR = new BigInteger("205");
-    private static final BigInteger DUMMY_RX_DROPPED = new BigInteger("215");
-    private static final BigInteger DUMMY_RX_ERRORS = new BigInteger("225");
-    private static final BigInteger DUMMY_RX_FRAME_ERR = new BigInteger("235");
-    private static final BigInteger DUMMY_OVER_ERR = new BigInteger("245");
-    private static final BigInteger DUMMY_TX_DROPPED = new BigInteger("255");
-    private static final BigInteger DUMMY_TX_ERRORS = new BigInteger("265");
-    private static final Long DUMMY_DURATION_SEC = 3453L;
-    private static final Long DUMMY_DURATION_NSEC = 3343L;
+    private static final Uint64 DUMMY_RX_BYTES = Uint64.valueOf(155);
+    private static final Uint64 DUMMY_TX_BYTES = Uint64.valueOf(165);
+    private static final Uint64 DUMMY_RX_PACKETS = Uint64.valueOf(175);
+    private static final Uint64 DUMMY_TX_PACKETS = Uint64.valueOf(185);
+    private static final Uint64 DUMMY_COLLISIONS = Uint64.valueOf(195);
+    private static final Uint64 DUMMY_RX_CRC_ERR = Uint64.valueOf(205);
+    private static final Uint64 DUMMY_RX_DROPPED = Uint64.valueOf(215);
+    private static final Uint64 DUMMY_RX_ERRORS = Uint64.valueOf(225);
+    private static final Uint64 DUMMY_RX_FRAME_ERR = Uint64.valueOf(235);
+    private static final Uint64 DUMMY_OVER_ERR = Uint64.valueOf(245);
+    private static final Uint64 DUMMY_TX_DROPPED = Uint64.valueOf(255);
+    private static final Uint64 DUMMY_TX_ERRORS = Uint64.valueOf(265);
+    private static final Uint32 DUMMY_DURATION_SEC = Uint32.valueOf(3453);
+    private static final Uint32 DUMMY_DURATION_NSEC = Uint32.valueOf(3343);
     private static final GroupId DUMMY_GROUP_ID = new GroupId(55L);
-    private static final Long DUMMY_REF_COUNT = 1234L;
+    private static final Uint32 DUMMY_REF_COUNT = Uint32.valueOf(1234);
     private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;
     private static final ConvertorManager CONVERTOR_MANAGER = ConvertorManagerFactory.createDefaultManager();
@@ -290,12 +292,12 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyFlowCaseBuilder.build();
     }
 
-    private MultipartReplyMessage prepareMocks(DeviceContext mockedDeviceContext,
-                                               MultipartReplyBody multipartReplyBody,
+    private MultipartReplyMessage prepareMocks(final DeviceContext mockedDeviceContext,
+                                               final MultipartReplyBody multipartReplyBody,
                                                final MultipartType multipartType) {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(mockedFeaturesReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(mockedFeaturesReply.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         when(mockedFeaturesReply.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         DeviceInfo deviceInfo = mock(DeviceInfo.class);
@@ -314,7 +316,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyMessage;
     }
 
-    private DataContainer validateOutput(DataContainer dataObject) {
+    private DataContainer validateOutput(final DataContainer dataObject) {
         return dataObject;
     }
 }

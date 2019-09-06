@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshNpCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshNpCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshNpCodecTest {
 
@@ -50,7 +51,7 @@ public class NshNpCodecTest {
 
         NxExpMatchEntryValue value = nshNpCodec.deserializeValue(buffer, false);
 
-        assertEquals(NP_VALUE, ((NshNpCaseValue) value).getNshNpValues().getValue());
+        assertEquals(Uint8.valueOf(NP_VALUE), ((NshNpCaseValue) value).getNshNpValues().getValue());
         assertFalse(buffer.isReadable());
     }
 
