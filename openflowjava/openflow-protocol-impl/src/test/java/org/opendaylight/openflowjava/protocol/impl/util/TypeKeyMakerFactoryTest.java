@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import org.junit.Assert;
@@ -36,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for TypeKeyMakerFactory.
@@ -59,7 +59,7 @@ public class TypeKeyMakerFactoryTest {
 
         Assert.assertNotNull("Null key", key);
         Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
-                        OutputActionCase.class, null), key);
+                        OutputActionCase.class, (Uint32) null), key);
     }
 
     /**
@@ -167,7 +167,7 @@ public class TypeKeyMakerFactoryTest {
         Assert.assertNotNull("Null key", key);
         MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID,
                 ExperimenterClass.class, OxmMatchFieldClass.class);
-        comparationKey.setExperimenterId(42L);
+        comparationKey.setExperimenterId(Uint32.valueOf(42L));
         Assert.assertEquals("Wrong key", comparationKey, key);
     }
 

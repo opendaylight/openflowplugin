@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionDecapNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.decap.grouping.NxDecap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.decap.grouping.NxDecapBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class DecapConvertor implements
         ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
@@ -36,7 +37,7 @@ public class DecapConvertor implements
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             Action input, ActionPath path) {
         ActionDecap actionDecap = (ActionDecap) input.getActionChoice();
-        Long packetType = actionDecap.getNxActionDecap().getPacketType();
+        Uint32 packetType = actionDecap.getNxActionDecap().getPacketType();
         NxDecap nxDecap = new NxDecapBuilder().setPacketType(packetType).build();
         return resolveAction(nxDecap, path);
     }
@@ -46,7 +47,7 @@ public class DecapConvertor implements
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
         Preconditions.checkArgument(actionCase instanceof NxActionDecapGrouping);
         NxActionDecapGrouping nxActionDecapGrouping = (NxActionDecapGrouping) actionCase;
-        Long packetType = nxActionDecapGrouping.getNxDecap().getPacketType();
+        Uint32 packetType = nxActionDecapGrouping.getNxDecap().getPacketType();
         NxActionDecap nxActionDecap = new NxActionDecapBuilder().setPacketType(packetType).build();
         ActionDecap actionDecap = new ActionDecapBuilder().setNxActionDecap(nxActionDecap).build();
         return ActionUtil.createAction(actionDecap);

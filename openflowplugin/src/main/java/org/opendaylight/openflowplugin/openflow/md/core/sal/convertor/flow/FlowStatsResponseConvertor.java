@@ -37,8 +37,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Converts flow related statistics messages coming from openflow switch to MD-SAL messages.
@@ -66,9 +68,9 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
      * @return OF10 actions as an instructions
      */
     private Instructions wrapOF10ActionsToInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
                 .grouping.Action> actionsList,
-            final short version, final Short ipProtocol) {
+            final short version, final Uint8 ipProtocol) {
         ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(version);
         actionResponseConvertorData.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
         actionResponseConvertorData.setIpProtocol(ipProtocol);
@@ -100,7 +102,8 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
     }
 
     @Override
-    public List<FlowAndStatisticsMapList> convert(List<FlowStats> source, FlowStatsResponseConvertorData data) {
+    public List<FlowAndStatisticsMapList> convert(final List<FlowStats> source,
+            final FlowStatsResponseConvertorData data) {
         final List<FlowAndStatisticsMapList> result = new ArrayList<>();
 
         for (FlowStats flowStats : source) {
@@ -123,18 +126,19 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
             salFlowStatsBuilder.setPriority(flowStats.getPriority());
             salFlowStatsBuilder.setTableId(flowStats.getTableId());
 
-            Short ipProtocol = null;
-
             if (flowStats.getMatchV10() != null) {
                 final Optional<MatchBuilder> matchBuilderOptional = getConvertorExecutor().convert(
                         flowStats.getMatchV10(), data);
+                Uint8 ipProtocol = null;
 
                 if (matchBuilderOptional.isPresent()) {
-                    if (matchBuilderOptional.get().getIpMatch() != null) {
-                        ipProtocol = matchBuilderOptional.get().getIpMatch().getIpProtocol();
+                    final MatchBuilder matchBuilder = matchBuilderOptional.get();
+                    final IpMatch ipMatch = matchBuilder.getIpMatch();
+                    if (ipMatch != null) {
+                        ipProtocol = ipMatch.getIpProtocol();
                     }
 
-                    salFlowStatsBuilder.setMatch(matchBuilderOptional.get().build());
+                    salFlowStatsBuilder.setMatch(matchBuilder.build());
                 }
 
                 if (flowStats.getAction() != null && flowStats.getAction().size() != 0) {

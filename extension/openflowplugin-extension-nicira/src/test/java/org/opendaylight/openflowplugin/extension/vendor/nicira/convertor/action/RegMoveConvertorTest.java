@@ -70,9 +70,9 @@ public class RegMoveConvertorTest {
         final ActionRegMove actionRegMove = Mockito.mock(ActionRegMove.class);
         final NxActionRegMove nxActionRegMove = Mockito.mock(NxActionRegMove.class);
         when(nxActionRegMove.getSrc()).thenReturn(
-                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toBigInteger());
+                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toUint64());
         when(nxActionRegMove.getDst()).thenReturn(
-                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toBigInteger());
+                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toUint64());
 
         when(nxActionRegMove.getNBits()).thenReturn(7);
 

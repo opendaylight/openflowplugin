@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg2.grouping.NxActionOutputReg2Builder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class OutputReg2CodecTest {
 
@@ -35,7 +35,7 @@ public class OutputReg2CodecTest {
     private static final int SRC = 2;
     private static final int MAX_LEN = 2;
     private static final long SRC_EXP = 0xFFFF000000000000L | SRC;
-    private static final BigInteger SRC_EXP_BIGINT = new BigInteger(1, Longs.toByteArray(SRC_EXP));
+    private static final Uint64 SRC_EXP_BIGINT = Uint64.valueOf(new BigInteger(1, Longs.toByteArray(SRC_EXP)));
 
     private OutputReg2Codec outReg2Codec;
     private ByteBuf buffer;
@@ -56,7 +56,7 @@ public class OutputReg2CodecTest {
 
         assertEquals(OFS_N_BITS, result.getNxActionOutputReg2().getNBits().shortValue());
         assertEquals(MAX_LEN, result.getNxActionOutputReg2().getMaxLen().shortValue());
-        assertEquals(BigInteger.valueOf(SRC), result.getNxActionOutputReg2().getSrc());
+        assertEquals(Uint64.valueOf(SRC), result.getNxActionOutputReg2().getSrc());
         assertFalse(buffer.isReadable());
     }
 
@@ -76,7 +76,7 @@ public class OutputReg2CodecTest {
 
     @Test
     public void serializeTest() {
-        Action action = createAction(BigInteger.valueOf(SRC));
+        Action action = createAction(Uint64.valueOf(SRC));
         outReg2Codec.serialize(action, buffer);
 
         //SerializeHeader part
@@ -119,7 +119,7 @@ public class OutputReg2CodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private Action createAction(BigInteger src) {
+    private Action createAction(final Uint64 src) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -136,7 +136,7 @@ public class OutputReg2CodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message, boolean withExpSrc) {
+    private void createBuffer(final ByteBuf message, final boolean withExpSrc) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());

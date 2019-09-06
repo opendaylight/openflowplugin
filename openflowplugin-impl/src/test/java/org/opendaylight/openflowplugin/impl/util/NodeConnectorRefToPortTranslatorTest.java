@@ -26,17 +26,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NodeConnectorRefToPortTranslatorTest extends TestCase {
 
     private static final String PACKET_DATA = "Test_Data";
-    private static final Long PORT_NO = 5L;
-    private static final BigInteger DATA_PATH_ID = BigInteger.TEN;
+    private static final Uint32 PORT_NO = Uint32.valueOf(5L);
+    private static final Uint64 DATA_PATH_ID = Uint64.valueOf(10);
     private static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
     private static final Long TABLE_ID = 42L;
 
-    private static PacketIn createPacketIn(long portNo) {
+    private static PacketIn createPacketIn(final Uint32 portNo) {
         InPortBuilder inPortBuilder = new InPortBuilder()
                 .setPortNumber(new PortNumber(portNo));
 
@@ -66,7 +68,7 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
     @Test
     public void testGetPortNoFromPacketIn() {
         PacketIn packetIn = createPacketIn(PORT_NO);
-        Long portNo = NodeConnectorRefToPortTranslator.getPortNoFromPacketIn(packetIn);
+        Uint32 portNo = NodeConnectorRefToPortTranslator.getPortNoFromPacketIn(packetIn);
         assertEquals(portNo, PORT_NO);
     }
 
@@ -79,7 +81,7 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
         NodeConnectorRef ref = NodeConnectorRefToPortTranslator.toNodeConnectorRef(packetIn, DATA_PATH_ID);
 
         // Get port number from created NodeConnectorRef
-        Long refPort = NodeConnectorRefToPortTranslator.fromNodeConnectorRef(ref, OF_VERSION);
+        Uint32 refPort = NodeConnectorRefToPortTranslator.fromNodeConnectorRef(ref, OF_VERSION);
 
         // Check if we got the correct port number
         assertEquals(PORT_NO, refPort);
@@ -88,6 +90,6 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
         assertEquals(ref, NodeConnectorRefToPortTranslator.toNodeConnectorRef(packetIn, DATA_PATH_ID));
 
         // Check if 2 NodeConnectorRef created from same PacketIn but different datapaths do not have same value
-        assertNotSame(ref, NodeConnectorRefToPortTranslator.toNodeConnectorRef(packetIn, BigInteger.ONE));
+        assertNotSame(ref, NodeConnectorRefToPortTranslator.toNodeConnectorRef(packetIn, Uint64.ONE));
     }
 }

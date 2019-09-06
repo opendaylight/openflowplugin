@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
+import static org.mockito.Mockito.doReturn;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -42,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for ConnectionAdapterImp02l.
@@ -84,6 +87,22 @@ public class ConnectionAdapterImp02lTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mockXid(barrierInput);
+        mockXid(echoInput);
+        mockXid(echoReplyInput);
+        mockXid(getConfigInput);
+        mockXid(getFeaturesInput);
+        mockXid(getQueueConfigInput);
+        mockXid(groupModInput);
+        mockXid(roleRequestInput);
+        mockXid(setConfigInput);
+        mockXid(tableModInput);
+        mockXid(getAsyncInput);
+        mockXid(setAsyncInput);
+    }
+
+    private static void mockXid(final OfHeader message) {
+        doReturn(Uint32.ZERO).when(message).getXid();
     }
 
     /**

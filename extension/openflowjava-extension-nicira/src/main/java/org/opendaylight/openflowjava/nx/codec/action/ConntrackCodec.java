@@ -143,10 +143,10 @@ public class ConntrackCodec extends AbstractActionCodec {
                         }
                     }
                     if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
-                        outBuffer.writeShort(natAction.getPortMin());
+                        outBuffer.writeShort(natAction.getPortMin().toJava());
                     }
                     if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
-                        outBuffer.writeShort(natAction.getPortMax());
+                        outBuffer.writeShort(natAction.getPortMax().toJava());
                     }
                     outBuffer.writeZero(pad);
                 } else if (ctActions.getOfpactActions() instanceof NxActionCtMarkCase) {

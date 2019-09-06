@@ -26,7 +26,7 @@ public class GetConfigReplyMessageFactory implements OFSerializer<GetConfigOutpu
     public void serialize(GetConfigOutput message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getFlags().getIntValue());
-        outBuffer.writeShort(message.getMissSendLen());
+        outBuffer.writeShort(message.getMissSendLen().toJava());
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 

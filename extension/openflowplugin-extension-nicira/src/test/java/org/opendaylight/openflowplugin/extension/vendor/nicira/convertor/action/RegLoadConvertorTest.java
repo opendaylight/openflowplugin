@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class RegLoadConvertorTest {
         when(dst.getStart()).thenReturn(1);
         when(dst.getEnd()).thenReturn(2);
         when(nxRegLoad.getDst()).thenReturn(dst);
-        when(nxRegLoad.getValue()).thenReturn(BigInteger.valueOf(3L));
+        when(nxRegLoad.getValue()).thenReturn(Uint64.valueOf(3));
         when(nxRegLoad.getDst().getDstChoice()).thenReturn(new DstNxTunIdCaseBuilder().build());
         when(actionsCase.getNxRegLoad()).thenReturn(nxRegLoad);
 
@@ -67,7 +68,7 @@ public class RegLoadConvertorTest {
         final NxActionRegLoad nxActionRegLoad = Mockito.mock(NxActionRegLoad.class);
         when(nxActionRegLoad.getDst()).thenReturn(NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask().toLong());
         when(nxActionRegLoad.getOfsNbits()).thenReturn(4);
-        when(nxActionRegLoad.getValue()).thenReturn(BigInteger.ONE);
+        when(nxActionRegLoad.getValue()).thenReturn(Uint64.ONE);
         when(actionRegLoad.getNxActionRegLoad()).thenReturn(nxActionRegLoad);
         when(action.getActionChoice()).thenReturn(actionRegLoad);
 

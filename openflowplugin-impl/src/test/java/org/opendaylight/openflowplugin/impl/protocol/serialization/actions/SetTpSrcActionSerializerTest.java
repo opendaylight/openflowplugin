@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SetTpSrcActionSerializerTest extends AbstractSetFieldActionSerializerTest {
 
@@ -31,7 +32,7 @@ public class SetTpSrcActionSerializerTest extends AbstractSetFieldActionSerializ
                         .build())
                 .build();
 
-        assertAction(action, out -> assertEquals(Integer.valueOf(out.readUnsignedShort()), port.getValue()));
+        assertAction(action, out -> assertEquals(Uint16.valueOf(out.readUnsignedShort()), port.getValue()));
     }
 
     @Override

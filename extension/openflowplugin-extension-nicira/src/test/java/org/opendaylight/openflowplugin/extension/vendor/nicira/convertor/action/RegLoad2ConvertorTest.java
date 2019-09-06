@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(JUnitParamsRunner.class)
 public class RegLoad2ConvertorTest {
@@ -97,7 +98,7 @@ public class RegLoad2ConvertorTest {
         when(dst.getStart()).thenReturn(rangeStart);
         when(dst.getEnd()).thenReturn(rangeEnd);
         NxRegLoad nxRegLoad = mock(NxRegLoad.class);
-        when(nxRegLoad.getValue()).thenReturn(BigInteger.valueOf(rangeValue));
+        when(nxRegLoad.getValue()).thenReturn(Uint64.valueOf(rangeValue));
         when(nxRegLoad.getDst()).thenReturn(dst);
         when(nxRegLoad.getDst().getDstChoice()).thenReturn(mock(DstNxNshFlagsCase.class));
         NxActionRegLoadNodesNodeTableFlowApplyActionsCase actionsCase =

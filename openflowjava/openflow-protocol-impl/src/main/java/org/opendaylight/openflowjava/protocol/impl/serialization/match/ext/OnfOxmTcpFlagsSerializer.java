@@ -14,6 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Created by Anil Vishnoi (avishnoi@Brocade.com) on 7/25/16.
@@ -21,11 +22,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntrySerializer {
 
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         ExperimenterIdCase expCase = serializeExperimenterId(entry, outBuffer);
         TcpFlags tcpFlags = expCase.augmentation(TcpFlagsContainer.class).getTcpFlags();
-        outBuffer.writeShort(tcpFlags.getFlags());
+        outBuffer.writeShort(tcpFlags.getFlags().toJava());
         if (entry.isHasMask()) {
             outBuffer.writeBytes(tcpFlags.getMask());
         }
@@ -35,7 +36,7 @@ public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntryS
      * Returns the Experimenter match entry ID.
      */
     @Override
-    protected long getExperimenterId() {
+    protected Uint32 getExperimenterId() {
         return EncodeConstants.ONF_EXPERIMENTER_ID;
     }
 

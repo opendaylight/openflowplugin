@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -25,11 +26,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec {
 
     protected static <F extends MatchField> MatchEntrySerializerKey<ExperimenterClass, F> createSerializerKey(
-            short version, long expId, Class<F> oxmField) {
+            short version, Uint32 expId, Class<F> oxmField) {
         MatchEntrySerializerKey<ExperimenterClass, F> key = new MatchEntrySerializerKey<>(
                 version, ExperimenterClass.class, oxmField);
         key.setExperimenterId(expId);
@@ -37,7 +39,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     }
 
     protected static MatchEntryDeserializerKey createDeserializerKey(
-            short version, long expId, int fieldCode) {
+            short version, Uint32 expId, int fieldCode) {
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 version, OxmMatchConstants.EXPERIMENTER_CLASS, fieldCode);
         key.setExperimenterId(expId);
@@ -99,7 +101,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
                 getNxmFieldCode(),
                 hasMask,
                 EncodeConstants.SIZE_OF_INT_IN_BYTES + (hasMask ? getValueLength() * 2 : getValueLength()),
-                getExperimenterId());
+                getExperimenterId().longValue());
     }
 
     @Override
@@ -112,6 +114,6 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         return OxmMatchConstants.EXPERIMENTER_CLASS;
     }
 
-    protected abstract long getExperimenterId();
+    protected abstract @NonNull Uint32 getExperimenterId();
 
 }

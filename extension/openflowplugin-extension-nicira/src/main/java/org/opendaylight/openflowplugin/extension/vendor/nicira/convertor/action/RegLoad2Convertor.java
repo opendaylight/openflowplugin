@@ -75,6 +75,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
 import org.opendaylight.yangtools.yang.common.Empty;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Convert between RegLoad SAL action and RegLoad2 nicira action.
@@ -109,41 +113,41 @@ public class RegLoad2Convertor implements
 
     private static MatchEntry resolveMatchEntry(NxRegLoad nxRegLoad) {
         Dst dst = nxRegLoad.getDst();
-        BigInteger value = nxRegLoad.getValue();
-        int start = dst.getStart();
-        int end = dst.getEnd();
-        BigInteger[] valueMask = resolveValueMask(value, start, end);
+        Uint64 value = nxRegLoad.getValue();
+        Uint16 start = dst.getStart();
+        Uint16 end = dst.getEnd();
+        Uint64[] valueMask = resolveValueMask(value, start, end);
         value = valueMask[0];
-        BigInteger mask = valueMask[1];
+        Uint64 mask = valueMask[1];
         DstChoice dstChoice = dst.getDstChoice();
         return resolveMatchEntry(dstChoice, value, mask);
     }
 
-    private static MatchEntry resolveMatchEntry(DstChoice dstChoice, BigInteger value, BigInteger mask) {
+    private static MatchEntry resolveMatchEntry(DstChoice dstChoice, Uint64 value, Uint64 mask) {
         try {
             if (dstChoice instanceof DstNxNshFlagsCase) {
-                return NshFlagsConvertor.buildMatchEntry(value.shortValueExact(), mask.shortValueExact());
+                return NshFlagsConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNspCase) {
-                return NspConvertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return NspConvertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNsiCase) {
-                return NsiConvertor.buildMatchEntry(value.shortValueExact(), mask.shortValueExact());
+                return NsiConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc1Case) {
-                return Nshc1Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc1Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc2Case) {
-                return Nshc2Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc2Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc3Case) {
-                return Nshc3Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc3Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc4Case) {
-                return Nshc4Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc4Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshTtlCase) {
-                return NshTtlConvertor.buildMatchEntry(value.shortValueExact(), mask.shortValueExact());
+                return NshTtlConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
             }
         } catch (ArithmeticException e) {
             throw new IllegalArgumentException("Value or bit range too big for destination choice", e);
@@ -267,7 +271,7 @@ public class RegLoad2Convertor implements
 
     // Convert value/bit range pair of the openfloplugin reg_load action to the
     // value/mask pair of the openflowjava reg_load2 action.
-    private static BigInteger[] resolveValueMask(BigInteger value, int start, int end) {
+    private static Uint64[] resolveValueMask(Uint64 value, Uint16 start, Uint16 end) {
         int bits = end - start + 1;
         if (value.bitLength() > bits) {
             throw new IllegalArgumentException("Value does not fit the bit range");

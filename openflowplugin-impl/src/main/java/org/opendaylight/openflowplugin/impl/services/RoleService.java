@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         return input.build();
     }
 
-    public ListenableFuture<BigInteger> getGenerationIdFromDevice(final Short version) {
+    public ListenableFuture<Uint64> getGenerationIdFromDevice(final Short version) {
         LOG.info("getGenerationIdFromDevice called for device: {}", getDeviceInfo().getNodeId().getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
@@ -61,7 +62,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         roleRequestInputBuilder.setVersion(version);
         roleRequestInputBuilder.setGenerationId(BigInteger.ZERO);
 
-        final SettableFuture<BigInteger> finalFuture = SettableFuture.create();
+        final SettableFuture<Uint64> finalFuture = SettableFuture.create();
         final ListenableFuture<RpcResult<RoleRequestOutput>> genIdListenableFuture =
                 handleServiceCall(roleRequestInputBuilder);
         Futures.addCallback(genIdListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
@@ -97,7 +98,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
 
 
     public ListenableFuture<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Short version,
-                                                             final BigInteger generationId) {
+                                                                       final Uint64 generationId) {
         LOG.info("submitRoleChange called for device:{}, role:{}",
                 getDeviceInfo().getNodeId(), ofpRole);
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
@@ -119,7 +120,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                 if (roleRequestOutput != null) {
                     final SetRoleOutputBuilder setRoleOutputBuilder = new SetRoleOutputBuilder();
                     setRoleOutputBuilder
-                            .setTransactionId(new TransactionId(BigInteger.valueOf(roleRequestOutput.getXid())));
+                            .setTransactionId(new TransactionId(Uint64.valueOf(roleRequestOutput.getXid())));
                     finalFuture.set(RpcResultBuilder.<SetRoleOutput>success()
                             .withResult(setRoleOutputBuilder.build()).build());
 

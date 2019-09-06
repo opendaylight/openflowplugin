@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
@@ -42,8 +41,8 @@ public class UdpSrcCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         UdpSrcCaseValue udpSrcCase = (UdpSrcCaseValue) input.getMatchEntryValue();
-        outBuffer.writeShort(udpSrcCase.getUdpSrcValues().getPort().getValue());
-        outBuffer.writeShort(udpSrcCase.getUdpSrcValues().getMask());
+        outBuffer.writeShort(udpSrcCase.getUdpSrcValues().getPort().getValue().toJava());
+        outBuffer.writeShort(udpSrcCase.getUdpSrcValues().getMask().toJava());
     }
 
     @Override
@@ -85,5 +84,4 @@ public class UdpSrcCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm0Class.class;
     }
-
 }

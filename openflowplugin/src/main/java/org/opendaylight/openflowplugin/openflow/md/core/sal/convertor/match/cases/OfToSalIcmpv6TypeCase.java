@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
@@ -18,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6TypeCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.type._case.Icmpv6Type;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class OfToSalIcmpv6TypeCase extends ConvertorCase<Icmpv6TypeCase, MatchBuilder, MatchResponseConvertorData> {
     public OfToSalIcmpv6TypeCase() {
@@ -25,13 +25,13 @@ public class OfToSalIcmpv6TypeCase extends ConvertorCase<Icmpv6TypeCase, MatchBu
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull Icmpv6TypeCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull final Icmpv6TypeCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Icmpv6MatchBuilder icmpv6MatchBuilder = data.getIcmpv6MatchBuilder();
 
         Icmpv6Type icmpv6Type = source.getIcmpv6Type();
-        Short v6type = icmpv6Type.getIcmpv6Type();
+        Uint8 v6type = icmpv6Type.getIcmpv6Type();
 
         if (v6type != null) {
             icmpv6MatchBuilder.setIcmpv6Type(v6type);

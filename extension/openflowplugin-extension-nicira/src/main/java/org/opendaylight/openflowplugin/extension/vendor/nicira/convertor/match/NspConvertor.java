@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNsp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
@@ -59,12 +60,12 @@ public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Long nspValue = matchGrouping.get().getNxmNxNsp().getValue();
+        Uint32 nspValue = matchGrouping.get().getNxmNxNsp().getValue();
         MatchEntry matchEntry = buildMatchEntry(nspValue, null);
         return matchEntry;
     }
 
-    public static MatchEntry buildMatchEntry(Long nsp, Long mask) {
+    public static MatchEntry buildMatchEntry(Uint32 nsp, Uint32 mask) {
         NspValues nspValues = new NspValuesBuilder().setNsp(nsp).setMask(mask).build();
         NspCaseValue nspCaseValue = new NspCaseValueBuilder().setNspValues(nspValues).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(

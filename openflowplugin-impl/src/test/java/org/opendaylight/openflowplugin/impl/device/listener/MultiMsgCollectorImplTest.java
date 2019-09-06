@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.impl.connection.testutil.MsgGeneratorTest
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * openflowplugin-api
@@ -55,7 +56,7 @@ public class MultiMsgCollectorImplTest {
     ArgumentCaptor<List<MultipartReply>> mmCaptor;
     @Mock
     RequestContext<List<MultipartReply>> requestContext;
-    final Long xid = 1L;
+    final long xid = 1L;
 
 
     private final String hwTestValue = "test-value";
@@ -67,7 +68,7 @@ public class MultiMsgCollectorImplTest {
     public void setUp() {
         collector = new MultiMsgCollectorImpl<>(deviceProcessor, requestContext);
         cleanUpCheck = Runnables.doNothing();
-        Mockito.when(requestContext.getXid()).thenReturn(new Xid(xid));
+        Mockito.when(requestContext.getXid()).thenReturn(new Xid(Uint32.valueOf(xid)));
     }
 
     @After
@@ -89,7 +90,7 @@ public class MultiMsgCollectorImplTest {
                 .makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
-        Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+        Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
 
         final List<MultipartReply> multipartReplyList = mmCaptor.getValue();
         Assert.assertEquals(1, multipartReplyList.size());
@@ -108,7 +109,7 @@ public class MultiMsgCollectorImplTest {
                 .makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
-        Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+        Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
 
         final List<MultipartReply> multipartReplyList = mmCaptor.getValue();
         Assert.assertEquals(2, multipartReplyList.size());
@@ -140,14 +141,14 @@ public class MultiMsgCollectorImplTest {
                 .setType(MultipartType.OFPMPPORTDESC).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
-        Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+        Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
 
         Mockito.reset(deviceProcessor);
 
         cleanUpCheck = () -> {
             Mockito.verify(deviceProcessor, VerificationModeFactory.noMoreInteractions())
                 .processReply(xidCaptor.capture(), mmCaptor.capture());
-            Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+            Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
         };
     }
 
@@ -166,14 +167,14 @@ public class MultiMsgCollectorImplTest {
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
-        Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+        Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
 
         Mockito.reset(deviceProcessor);
 
         cleanUpCheck = () -> {
             Mockito.verify(deviceProcessor, VerificationModeFactory.noMoreInteractions())
                 .processReply(xidCaptor.capture(), mmCaptor.capture());
-            Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+            Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
         };
     }
 
@@ -191,10 +192,10 @@ public class MultiMsgCollectorImplTest {
                 .makeMultipartDescReply(xid, hwTestValue, false).build(), false, null);
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
-        Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+        Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
 
         Mockito.verify(deviceProcessor).processReply(xidCaptor.capture(), mmCaptor.capture());
-        Assert.assertEquals(xid, xidCaptor.getValue().getValue());
+        Assert.assertEquals(xid, xidCaptor.getValue().getValue().toJava());
 
         final List<MultipartReply> multipartReplyList = mmCaptor.getValue();
         Assert.assertEquals(3, multipartReplyList.size());

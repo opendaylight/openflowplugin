@@ -33,13 +33,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link PacketProcessingServiceImpl}.
  */
 public class PacketProcessingServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID_VALUE = 100L;
+    private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
     public static final String ULTIMATE_PAYLOAD = "What do you get when you multiply six by nine?";
 
     private PacketProcessingServiceImpl packetProcessingService;

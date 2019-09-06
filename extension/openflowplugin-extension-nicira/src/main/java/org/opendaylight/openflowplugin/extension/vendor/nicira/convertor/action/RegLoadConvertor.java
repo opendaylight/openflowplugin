@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for NxActionRegLoad action.
@@ -73,14 +74,15 @@ public class RegLoadConvertor implements
         return resolveAction(nxRegLoadBuilder.build(), path);
     }
 
-    private static int resolveStart(final int ofsNBints) {
-        return extractSub(ofsNBints, 10, 6);
+    private static Uint16 resolveStart(final Uint16 ofsNBints) {
+        return Uint16.valueOf(extractSub(ofsNBints.toJava(), 10, 6));
     }
 
-    private static int resolveEnd(final int ofsNBints) {
-        int ofs = extractSub(ofsNBints, 10, 6);
-        int numBits = extractSub(ofsNBints, 6, 0);
-        return ofs + numBits;
+    private static Uint16 resolveEnd(final Uint16 ofsNBints) {
+        final int bits = ofsNBints.toJava();
+        int ofs = extractSub(bits, 10, 6);
+        int numBits = extractSub(bits, 6, 0);
+        return Uint16.valueOf(ofs + numBits);
     }
 
     private static int extractSub(final int value, final int nrBits, final int offset) {
