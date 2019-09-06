@@ -26,7 +26,7 @@ public class TcpFlagsEntryDeserializerTest extends AbstractMatchEntryDeserialize
         final int tcpFlagsMask = 5;
 
         writeHeader(in, false);
-        in.writeInt((int) EncodeConstants.ONF_EXPERIMENTER_ID);
+        in.writeInt(EncodeConstants.ONF_EXPERIMENTER_ID.intValue());
         in.writeShort(tcpFlags);
 
         TcpFlagsMatch match = deserialize(in).getTcpFlagsMatch();
@@ -34,7 +34,7 @@ public class TcpFlagsEntryDeserializerTest extends AbstractMatchEntryDeserialize
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeInt((int) EncodeConstants.ONF_EXPERIMENTER_ID);
+        in.writeInt(EncodeConstants.ONF_EXPERIMENTER_ID.intValue());
         in.writeShort(tcpFlags);
         in.writeShort(tcpFlagsMask);
 

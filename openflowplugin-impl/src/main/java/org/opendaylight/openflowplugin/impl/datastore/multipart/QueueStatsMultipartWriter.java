@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAndStatisticsMap> {
 
@@ -49,7 +49,7 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
 
         statistics.getQueueIdAndStatisticsMap()
             .forEach((stat) -> {
-                final Long port = InventoryDataServiceUtil
+                final Uint32 port = InventoryDataServiceUtil
                         .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());
                 final NodeConnectorId id = InventoryDataServiceUtil
                         .nodeConnectorIdfromDatapathPortNo(

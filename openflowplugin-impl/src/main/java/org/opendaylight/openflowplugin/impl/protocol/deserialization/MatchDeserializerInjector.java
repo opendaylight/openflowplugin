@@ -63,6 +63,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.UdpSo
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.VlanPcpEntryDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.match.VlanVidEntryDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Util class for injecting new match entry deserializers into OpenflowJava.
@@ -90,7 +91,7 @@ public final class MatchDeserializerInjector {
                     deserializer);
 
             // Inject new match entry serializers here using injector created by createInjector method
-            final Function<Integer, Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>>> injector =
+            final Function<Integer, Function<Uint32, Function<Integer, Consumer<MatchEntryDeserializer>>>> injector =
                     createInjector(deserializer, EncodeConstants.OF13_VERSION_ID);
 
             // Wrapped injector that uses OPENFLOW_BASIC_CLASS
@@ -98,7 +99,7 @@ public final class MatchDeserializerInjector {
                     injector.apply(OxmMatchConstants.OPENFLOW_BASIC_CLASS).apply(null);
 
             // Wrapped injector that uses EXPERIMENTER_CLASS
-            final Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>> experInjector =
+            final Function<Uint32, Function<Integer, Consumer<MatchEntryDeserializer>>> experInjector =
                     injector.apply(OxmMatchConstants.EXPERIMENTER_CLASS);
 
             basicInjector.apply(OxmMatchConstants.ARP_OP).accept(new ArpOpEntryDeserializer());
@@ -157,7 +158,7 @@ public final class MatchDeserializerInjector {
      * @return injector
      */
     @VisibleForTesting
-    static Function<Integer, Function<Long, Function<Integer, Consumer<MatchEntryDeserializer>>>> createInjector(
+    static Function<Integer, Function<Uint32, Function<Integer, Consumer<MatchEntryDeserializer>>>> createInjector(
             final MatchEntryDeserializerRegistry registry,
             final short version) {
         return oxmClass -> expId -> oxmField -> deserializer -> {

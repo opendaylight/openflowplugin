@@ -41,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFlowMultipartService<MultipartReply> {
 
@@ -65,7 +67,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder
                 = new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-        final short tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL);
+        final Uint8 tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL);
         mprAggregateRequestBuilder.setTableId(tableId);
         long outputPortValue = MoreObjects.firstNonNull(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
         mprAggregateRequestBuilder.setOutPort(outputPortValue);
@@ -86,7 +88,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
                 mprAggregateRequestBuilder.setCookieMask(
                         MoreObjects.firstNonNull(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
             }
-            long outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY);
+            Uint32 outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY);
             mprAggregateRequestBuilder.setOutGroup(outGroup);
         } else {
             mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);

@@ -23,7 +23,7 @@ public class OF10SetNwTosActionSerializer extends AbstractActionSerializer {
     @Override
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeByte(((SetNwTosCase) action.getActionChoice()).getSetNwTosAction().getNwTos());
+        outBuffer.writeByte(((SetNwTosCase) action.getActionChoice()).getSetNwTosAction().getNwTos().toJava());
         outBuffer.writeZero(ActionConstants.PADDING_IN_SET_NW_TOS_ACTION);
     }
 

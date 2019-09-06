@@ -25,8 +25,8 @@ public class ErrorMessageFactory implements OFSerializer<ErrorMessage> {
     @Override
     public void serialize(ErrorMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
-        outBuffer.writeShort(message.getType());
-        outBuffer.writeShort(message.getCode());
+        outBuffer.writeShort(message.getType().toJava());
+        outBuffer.writeShort(message.getCode().toJava());
         byte[] data = message.getData();
 
         if (data != null) {

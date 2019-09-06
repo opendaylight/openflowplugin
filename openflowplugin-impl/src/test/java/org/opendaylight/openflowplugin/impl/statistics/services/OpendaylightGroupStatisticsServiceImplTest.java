@@ -55,6 +55,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeaturesBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link OpendaylightGroupStatisticsServiceImpl}.
@@ -69,6 +70,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
     private OpendaylightGroupStatisticsServiceImpl groupStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
@@ -147,7 +149,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
                                                 false, false, false, false, false, false)))
                                         .setCapabilities(new GroupCapabilities(true, false, false, false))
                                         .setTypes(new GroupTypes(true, false, false, false))
-                                        .setMaxGroups(Collections.singletonList(5L))
+                                        .setMaxGroups(Collections.singletonList(Uint32.valueOf(5L)))
                                         .build())
                                 .build())
                         .build()

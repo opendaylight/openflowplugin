@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OF10DeviceInitializerTest {
@@ -93,7 +94,7 @@ public class OF10DeviceInitializerTest {
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(translatorLibrary.lookupTranslator(any())).thenReturn(messageTranslator);
         when(deviceContext.oook()).thenReturn(translatorLibrary);
-        when(requestContext.getXid()).thenReturn(new Xid(42L));
+        when(requestContext.getXid()).thenReturn(new Xid(Uint32.valueOf(42L)));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
         when(deviceContext.createRequestContext()).thenReturn(requestContext);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);

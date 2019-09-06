@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for ExperimenterActionSerializerKey.
@@ -35,7 +36,7 @@ public class ExperimenterActionSerializerKeyTest {
         key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF13_VERSION_ID, 42L, TestSubType.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, null, TestSubType.class);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, (Uint32) null, TestSubType.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
         key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, 55L, TestSubType.class);

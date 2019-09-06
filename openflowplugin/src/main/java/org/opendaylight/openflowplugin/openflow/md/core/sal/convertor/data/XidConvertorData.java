@@ -8,18 +8,20 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 
+import org.opendaylight.yangtools.yang.common.Uint32;
+
 /**
  * Convertor data used in containing Openflow version and XID.
  */
 public class XidConvertorData extends VersionDatapathIdConvertorData {
-    private Long xid;
+    private Uint32 xid;
 
     /**
      * Instantiates a new Xid convertor data.
      *
      * @param version the version
      */
-    public XidConvertorData(short version) {
+    public XidConvertorData(final short version) {
         super(version);
     }
 
@@ -28,7 +30,7 @@ public class XidConvertorData extends VersionDatapathIdConvertorData {
      *
      * @return the xid
      */
-    public Long getXid() {
+    public Uint32 getXid() {
         return xid;
     }
 
@@ -37,7 +39,7 @@ public class XidConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param xid the xid
      */
-    public void setXid(Long xid) {
+    public void setXid(final Uint32 xid) {
         this.xid = xid;
     }
 }

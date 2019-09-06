@@ -15,6 +15,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class EthernetTypeEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
@@ -26,7 +27,8 @@ public class EthernetTypeEntryDeserializerTest extends AbstractMatchEntryDeseria
         writeHeader(in, false);
         in.writeShort(ethType);
 
-        assertEquals(Long.valueOf(ethType), deserialize(in).getEthernetMatch().getEthernetType().getType().getValue());
+        assertEquals(Uint32.valueOf(ethType),
+            deserialize(in).getEthernetMatch().getEthernetType().getType().getValue());
         assertEquals(0, in.readableBytes());
     }
 

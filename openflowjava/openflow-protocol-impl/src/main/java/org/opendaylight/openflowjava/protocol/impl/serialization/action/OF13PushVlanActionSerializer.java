@@ -25,7 +25,7 @@ public class OF13PushVlanActionSerializer extends AbstractActionSerializer {
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((PushVlanCase) action.getActionChoice())
-                .getPushVlanAction().getEthertype().getValue());
+                .getPushVlanAction().getEthertype().getValue().toJava());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
 

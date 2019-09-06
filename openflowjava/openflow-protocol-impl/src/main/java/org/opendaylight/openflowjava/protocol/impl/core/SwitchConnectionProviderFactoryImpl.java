@@ -61,7 +61,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
 
         @Override
         public int getPort() {
-            return config.getPort();
+            return config.getPort().toJava();
         }
 
         @Override
@@ -71,7 +71,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
 
         @Override
         public int getChannelOutboundQueueSize() {
-            return config.getChannelOutboundQueueSize();
+            return config.getChannelOutboundQueueSize().toJava();
         }
 
         @Override
@@ -138,7 +138,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
 
         @Override
         public long getSwitchIdleTimeout() {
-            return config.getSwitchIdleTimeout();
+            return config.getSwitchIdleTimeout().toJava();
         }
 
         @Override
@@ -156,12 +156,12 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
             return new ThreadConfiguration() {
                 @Override
                 public int getWorkerThreadCount() {
-                    return threads.getWorkerThreads();
+                    return threads.getWorkerThreads().toJava();
                 }
 
                 @Override
                 public int getBossThreadCount() {
-                    return threads.getBossThreads();
+                    return threads.getBossThreads().toJava();
                 }
             };
         }

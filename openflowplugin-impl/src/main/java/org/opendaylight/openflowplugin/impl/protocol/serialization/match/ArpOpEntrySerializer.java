@@ -16,20 +16,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class ArpOpEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeShort(((ArpMatch) match.getLayer3Match()).getArpOp());
+        outBuffer.writeShort(((ArpMatch) match.getLayer3Match()).getArpOp().toJava());
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getLayer3Match() != null
                 && match.getLayer3Match() instanceof ArpMatch
                 && ((ArpMatch) match.getLayer3Match()).getArpOp() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         return false;
     }
 

@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPh
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MatchEntrySerializerKey.
@@ -54,7 +55,7 @@ public class MatchEntrySerializerKeyTest {
                 null, InPhyPort.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2.setExperimenterId(42L);
+        key2.setExperimenterId(Uint32.valueOf(42L));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
     }
 
@@ -70,13 +71,13 @@ public class MatchEntrySerializerKeyTest {
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
-        Long expId2 = 123456789L;
+        Uint32 expId2 = Uint32.valueOf(123456789L);
 
         key1.setExperimenterId(null);
         key2.setExperimenterId(expId2);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
 
-        Long expId1 = 987654331L;
+        Uint32 expId1 = Uint32.valueOf(987654331L);
         key1.setExperimenterId(expId1);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
         key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, null, InPort.class);

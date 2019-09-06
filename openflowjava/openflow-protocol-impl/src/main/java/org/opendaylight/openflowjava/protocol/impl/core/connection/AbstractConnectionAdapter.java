@@ -276,7 +276,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     protected <I extends OfHeader, O extends OfHeader> ListenableFuture<RpcResult<O>>
             sendToSwitchExpectRpcResultFuture(final I input, final Class<O> responseClazz,
                     final String failureInfo) {
-        final RpcResponseKey key = new RpcResponseKey(input.getXid(), responseClazz.getName());
+        final RpcResponseKey key = new RpcResponseKey(input.getXid().toJava(), responseClazz.getName());
         final ResponseExpectedRpcListener<O> listener = new ResponseExpectedRpcListener<>(input, failureInfo,
                 responseCache, key);
         return enqueueMessage(listener);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.junit.Assert.assertEquals;
@@ -20,13 +19,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link FlowCapableTransactionServiceImpl}.
  */
 public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID_VALUE = 100L;
+    private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
     FlowCapableTransactionServiceImpl flowCapableTransactionService;
 
     @Override
