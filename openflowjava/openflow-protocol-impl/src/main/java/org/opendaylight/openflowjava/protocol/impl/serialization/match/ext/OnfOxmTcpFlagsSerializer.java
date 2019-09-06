@@ -25,7 +25,7 @@ public class OnfOxmTcpFlagsSerializer extends AbstractOxmExperimenterMatchEntryS
         super.serialize(entry, outBuffer);
         ExperimenterIdCase expCase = serializeExperimenterId(entry, outBuffer);
         TcpFlags tcpFlags = expCase.augmentation(TcpFlagsContainer.class).getTcpFlags();
-        outBuffer.writeShort(tcpFlags.getFlags());
+        outBuffer.writeShort(tcpFlags.getFlags().toJava());
         if (entry.isHasMask()) {
             outBuffer.writeBytes(tcpFlags.getMask());
         }

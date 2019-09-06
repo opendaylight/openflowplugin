@@ -49,7 +49,7 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
                 EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
         if (entry.getOxmClass().equals(ExperimenterClass.class)) {
             ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) entry.getMatchEntryValue();
-            key.setExperimenterId(experimenterIdCase.getExperimenter().getExperimenter().getValue());
+            key.setExperimenterId(experimenterIdCase.getExperimenter().getExperimenter().getValue().toJava());
         } else {
             key.setExperimenterId(null);
         }

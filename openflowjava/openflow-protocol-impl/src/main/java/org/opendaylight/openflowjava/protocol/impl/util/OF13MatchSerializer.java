@@ -81,7 +81,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
                     EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
             if (entry.getOxmClass().equals(ExperimenterClass.class)) {
                 ExperimenterIdCase entryValue = (ExperimenterIdCase) entry.getMatchEntryValue();
-                key.setExperimenterId(entryValue.getExperimenter().getExperimenter().getValue());
+                key.setExperimenterId(entryValue.getExperimenter().getExperimenter().getValue().toJava());
             } else {
                 key.setExperimenterId(null);
             }
