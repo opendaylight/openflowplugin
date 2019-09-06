@@ -189,5 +189,7 @@ public class RpcContextImplTest {
     }
 
     //Stub for RpcService class.
-    public class TestRpcService implements RpcService {}
+    public class TestRpcService implements RpcService {
+
+    }
 }

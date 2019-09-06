@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the

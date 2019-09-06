@@ -7,6 +7,6 @@
  */
 
 /**
- * Package contains notification listener/supplier implementations
+ * Package contains notification listener/supplier implementations.
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl;

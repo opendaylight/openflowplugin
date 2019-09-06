@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.junit.Assert.assertEquals;
@@ -21,20 +20,16 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 public class AbstractActionCodecTest {
-
-
-    private ByteBuf buffer;
-    private byte[] bytes = new byte[10];
-
     private final int msgLength = 10;
     private final byte subType = 5;
 
+    private ByteBuf buffer;
+    private byte[] bytes = new byte[10];
 
     @Before
     public void setUp() {
         buffer = ByteBufAllocator.DEFAULT.buffer();
     }
-
 
     @Test
     public void serializeHeaderTest() {
@@ -54,5 +49,4 @@ public class AbstractActionCodecTest {
         assertEquals(NiciraConstants.NX_VENDOR_ID, actionBuilder.getExperimenterId().getValue());
         assertTrue(buffer.readerIndex() - readerIndex == 10);
     }
-
 }
