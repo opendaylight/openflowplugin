@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -548,6 +549,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private BigInteger getDpnIdFromNodeName(String nodeName) {
 
         String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
@@ -698,6 +701,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private List<ListenableFuture<RpcResult<AddBundleMessagesOutput>>> addBundleMessages(final FlowCapableNode flowNode,
                                                          final BundleId bundleIdValue,
                                                          final InstanceIdentifier<FlowCapableNode> nodeIdentity) {
@@ -745,6 +750,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return groupBuilder.build();
     }
 
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder().setNode(nodeRef)
