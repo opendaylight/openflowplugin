@@ -75,7 +75,7 @@ public class SalAsyncConfigServiceImplTest extends ServiceMocking {
         Assert.assertTrue(getAsyncResult.isDone());
         Assert.assertTrue(getAsyncResult.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedOutboundQueue).commitEntry(eq(ServiceMocking.DUMMY_XID_VALUE),
+        verify(mockedOutboundQueue).commitEntry(eq(ServiceMocking.DUMMY_XID_VALUE.toJava()),
                 ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 }

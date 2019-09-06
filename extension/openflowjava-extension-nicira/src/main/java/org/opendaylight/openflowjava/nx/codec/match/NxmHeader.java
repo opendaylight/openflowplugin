@@ -9,10 +9,10 @@ package org.opendaylight.openflowjava.nx.codec.match;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
 import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Nxm header.
@@ -22,7 +22,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 public class NxmHeader {
 
     // Full 4 or 8 byte header as big integer
-    private final BigInteger header;
+    private final Uint64 header;
     // Full 4 or 8 byte header as long
     private final long headerAsLong;
     // 4 byte class, field, length as long
@@ -41,7 +41,7 @@ public class NxmHeader {
      * @param header the header as {@code BigInteger}.
      * @see NxmHeader#NxmHeader(long)
      */
-    public NxmHeader(BigInteger header) {
+    public NxmHeader(Uint64 header) {
         this.headerAsLong = header.longValue();
         if (isExperimenter(header)) {
             this.experimenterId = (int) this.headerAsLong;
@@ -68,7 +68,7 @@ public class NxmHeader {
      * @param header the header as a {@code long}.
      */
     public NxmHeader(long header) {
-        this(new BigInteger(1, Longs.toByteArray(header)));
+        this(Uint64.fromLongBits(header));
     }
 
     /**
@@ -104,10 +104,9 @@ public class NxmHeader {
         this.shortHeader = (long) oxmClass << 16 | nxmField << 9 | (hasMask ? 1 : 0) << 8 | length;
         this.experimenterId = experimenterId;
         if (isExperimenter()) {
-            this.header = BigInteger.valueOf(this.shortHeader)
-                    .shiftLeft(32).add(BigInteger.valueOf(experimenterId));
+            this.header = Uint64.fromLongBits((this.shortHeader << 32) + experimenterId);
         } else {
-            this.header = BigInteger.valueOf(this.shortHeader);
+            this.header = Uint64.valueOf(this.shortHeader);
         }
         this.headerAsLong = this.header.longValue();
     }
@@ -119,12 +118,12 @@ public class NxmHeader {
     }
 
     /**
-     * Returns the {@code BigInteger} representation of the header.
+     * Returns the {@code Uint64} representation of the header.
      *
      * @return the header.
-     * @see NxmHeader#NxmHeader(BigInteger)
+     * @see NxmHeader#NxmHeader(Uint64)
      */
-    public BigInteger toBigInteger() {
+    public Uint64 toUint64() {
         return header;
     }
 
@@ -162,8 +161,8 @@ public class NxmHeader {
         return oxmClass == EncodeConstants.EXPERIMENTER_VALUE;
     }
 
-    public static boolean isExperimenter(BigInteger bigInteger) {
-        return bigInteger.longValue() >>> 48 == EncodeConstants.EXPERIMENTER_VALUE;
+    public static boolean isExperimenter(Uint64 uint) {
+        return uint.longValue() >>> 48 == EncodeConstants.EXPERIMENTER_VALUE;
     }
 
     @Override

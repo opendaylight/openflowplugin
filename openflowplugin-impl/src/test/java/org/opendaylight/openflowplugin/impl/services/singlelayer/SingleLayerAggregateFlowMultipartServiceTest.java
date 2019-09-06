@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import org.junit.Test;
@@ -25,10 +24,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking {
     private static final short TABLE_ID = 42;
-    private static final BigInteger BYTE_COUNT = BigInteger.TEN;
+    private static final Uint64 BYTE_COUNT = Uint64.valueOf(10);
     private SingleLayerAggregateFlowMultipartService service;
 
     @Override

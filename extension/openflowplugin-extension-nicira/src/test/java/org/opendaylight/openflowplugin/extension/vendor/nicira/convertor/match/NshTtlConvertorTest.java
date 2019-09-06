@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.ttl.grouping.NxmNxNshTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.ttl.grouping.NxmNxNshTtlBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NshTtlConvertorTest {
@@ -41,7 +42,7 @@ public class NshTtlConvertorTest {
     private Extension extension;
 
     private NshTtlConvertor convertor;
-    private static final Short TTL_VALUE = (short) 0x13;
+    private static final Uint8 TTL_VALUE = Uint8.valueOf(0x13);
 
     @Before
     public void setUp() {

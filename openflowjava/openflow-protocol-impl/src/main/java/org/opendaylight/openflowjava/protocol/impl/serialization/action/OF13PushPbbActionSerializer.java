@@ -24,7 +24,7 @@ public class OF13PushPbbActionSerializer extends AbstractActionSerializer {
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((PushPbbCase) action.getActionChoice())
-                .getPushPbbAction().getEthertype().getValue());
+                .getPushPbbAction().getEthertype().getValue().toJava());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
 

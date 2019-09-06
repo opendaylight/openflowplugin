@@ -11,6 +11,7 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MatchEntryDeserializerKey.
@@ -38,12 +39,12 @@ public class MatchEntryDeserializerKeyTest {
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 0x8000, 42);
-        key2.setExperimenterId(158L);
+        key2.setExperimenterId(Uint32.valueOf(158L));
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
-        key2.setExperimenterId(158L);
-        key1.setExperimenterId(158L);
+        key2.setExperimenterId(Uint32.valueOf(158L));
+        key1.setExperimenterId(Uint32.valueOf(158L));
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashcode", key1.hashCode() == key2.hashCode());
     }
@@ -60,13 +61,11 @@ public class MatchEntryDeserializerKeyTest {
 
         MatchEntryDeserializerKey key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
 
-        Long expId2 = 654321L;
         key1.setExperimenterId(null);
-        key2.setExperimenterId(expId2);
+        key2.setExperimenterId(Uint32.valueOf(654321L));
         Assert.assertFalse("Wrong equal by experimeterId.", key1.equals(key2));
 
-        Long expId1 = 123456L;
-        key1.setExperimenterId(expId1);
+        key1.setExperimenterId(Uint32.valueOf(123456L));
         Assert.assertFalse("Wrong equal by experimeterId.", key1.equals(key2));
         Assert.assertFalse("Wrong equals with different object class", key1.equals(key2));
     }

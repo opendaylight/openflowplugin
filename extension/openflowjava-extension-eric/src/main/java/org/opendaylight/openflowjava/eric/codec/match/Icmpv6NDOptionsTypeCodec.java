@@ -9,7 +9,6 @@
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.eric.api.EricConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -36,8 +35,8 @@ public class Icmpv6NDOptionsTypeCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        Icmpv6NdOptionsTypeCaseValue caseValue = ((Icmpv6NdOptionsTypeCaseValue) input.getMatchEntryValue());
-        outBuffer.writeByte(caseValue.getIcmpv6NdOptionsTypeValues().getIcmpv6NdOptionsType());
+        Icmpv6NdOptionsTypeCaseValue caseValue = (Icmpv6NdOptionsTypeCaseValue) input.getMatchEntryValue();
+        outBuffer.writeByte(caseValue.getIcmpv6NdOptionsTypeValues().getIcmpv6NdOptionsType().toJava());
     }
 
     @Override

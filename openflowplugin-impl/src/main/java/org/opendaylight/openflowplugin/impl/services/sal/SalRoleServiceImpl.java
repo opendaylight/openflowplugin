@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.math.BigInteger;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
                                       implements SalRoleService  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
-    private static final BigInteger MAX_GENERATION_ID = new BigInteger("ffffffffffffffff", 16);
+    private static final Uint64 MAX_GENERATION_ID = Uint64.valueOf("ffffffffffffffff", 16);
 
     private final DeviceContext deviceContext;
     private final RoleService roleService;
@@ -81,18 +81,18 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         return Futures.transformAsync(roleService.getGenerationIdFromDevice(getVersion()), generationId -> {
             LOG.debug("RoleChangeTask, GenerationIdFromDevice from device {} is {}",
                     getDeviceInfo().getNodeId().getValue(), generationId);
-            final BigInteger nextGenerationId = getNextGenerationId(generationId);
+            final Uint64 nextGenerationId = getNextGenerationId(generationId);
             LOG.debug("nextGenerationId received from device:{} is {}",
                     getDeviceInfo().getNodeId().getValue(), nextGenerationId);
             return roleService.submitRoleChange(role, getVersion(), nextGenerationId);
         }, MoreExecutors.directExecutor());
     }
 
-    private static BigInteger getNextGenerationId(final BigInteger generationId) {
+    private static Uint64 getNextGenerationId(final Uint64 generationId) {
         if (generationId.compareTo(MAX_GENERATION_ID) < 0) {
-            return generationId.add(BigInteger.ONE);
+            return Uint64.valueOf(generationId.longValue() + 1);
         } else {
-            return BigInteger.ZERO;
+            return Uint64.ZERO;
         }
     }
 }

@@ -36,6 +36,8 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenFlowPluginProviderImplTest {
@@ -81,12 +83,12 @@ public class OpenFlowPluginProviderImplTest {
 
     private static final int RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
-    private static final int THREAD_POOL_MIN_THREADS = 1;
+    private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.ONE;
     private static final int THREAD_POOL_MAX_THREADS = 32000;
-    private static final long THREAD_POOL_TIMEOUT = 60;
+    private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
     private static final long BASIC_TIMER_DELAY = 1L;
     private static final boolean USE_SINGLE_LAYER_SERIALIZATION = false;
-    private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
 
     @Before
     public void setUp() {

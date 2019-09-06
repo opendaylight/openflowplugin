@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
+import static org.mockito.Mockito.doReturn;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -27,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for ChannelOutboundQueue02.
@@ -53,6 +57,14 @@ public class ChannelOutboundQueue02Test {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mockXid(echoInput);
+        mockXid(barrierInput);
+        mockXid(echoReplyInput);
+        mockXid(experimenterInput);
+    }
+
+    private static void mockXid(final OfHeader message) {
+        doReturn(Uint32.ZERO).when(message).getXid();
     }
 
     /**

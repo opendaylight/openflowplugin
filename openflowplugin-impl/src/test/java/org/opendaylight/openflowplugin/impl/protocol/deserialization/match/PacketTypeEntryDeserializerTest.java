@@ -16,13 +16,14 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PacketTypeEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
     public void deserializeEntryTest() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
-        final Long packetType = 0x1894fL;
+        final Uint32 packetType = Uint32.valueOf(0x1894fL);
 
         writeHeader(in, false);
         in.writeInt(packetType.intValue());

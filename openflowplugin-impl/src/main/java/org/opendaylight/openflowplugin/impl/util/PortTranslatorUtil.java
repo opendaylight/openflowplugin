@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import java.math.BigInteger;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -28,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,8 +132,8 @@ public abstract class PortTranslatorUtil {
         return npc;
     }
 
-    public static NodeConnectorUpdated translatePort(final Short version, final BigInteger datapathId,
-                                                     final Long portNumber, final PortGrouping port) {
+    public static NodeConnectorUpdated translatePort(final Short version, final Uint64 datapathId,
+                                                     final Uint32 portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         final NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
                 .nodeConnectorUpdatedBuilderFromDatapathIdPortNo(datapathId, port.getPortNo(), ofVersion);
@@ -169,8 +170,8 @@ public abstract class PortTranslatorUtil {
         return builder.build();
     }
 
-    public static NodeConnectorRemoved translatePortRemoved(final Short version, final BigInteger datapathId,
-                                                            final Long portNumber, final PortGrouping port) {
+    public static NodeConnectorRemoved translatePortRemoved(final Short version, final Uint64 datapathId,
+                                                            final Uint32 portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         NodeConnectorRemovedBuilder builder = new NodeConnectorRemovedBuilder();
         builder.setNodeConnectorRef(

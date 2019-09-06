@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.NxOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.nx.output.reg.Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,17 +57,18 @@ public class OutputRegConvertorTest {
         final NxOutputReg nxOutputReg = Mockito.mock(NxOutputReg.class);
         final Src src = Mockito.mock(Src.class);
 
-        when(src.getOfsNbits()).thenReturn(1);
+        when(src.getOfsNbits()).thenReturn(Uint16.valueOf(1));
         when(nxOutputReg.getSrc()).thenReturn(src);
         when(nxOutputReg.getSrc().getSrcChoice()).thenReturn(new SrcNxTunIdCaseBuilder().build());
-        when(nxOutputReg.getMaxLen()).thenReturn(2);
+        when(nxOutputReg.getMaxLen()).thenReturn(Uint16.valueOf(2));
         when(actionsCase.getNxOutputReg()).thenReturn(nxOutputReg);
 
         final ActionOutputReg actionOutputReg = Mockito.mock(ActionOutputReg.class);
         final NxActionOutputReg nxActionOutputReg = Mockito.mock(NxActionOutputReg.class);
-        when(nxActionOutputReg.getSrc()).thenReturn(NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toLong());
-        when(nxActionOutputReg.getMaxLen()).thenReturn(3);
-        when(nxActionOutputReg.getNBits()).thenReturn(4);
+        when(nxActionOutputReg.getSrc()).thenReturn(
+            Uint32.valueOf(NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toLong()));
+        when(nxActionOutputReg.getMaxLen()).thenReturn(Uint16.valueOf(3));
+        when(nxActionOutputReg.getNBits()).thenReturn(Uint16.valueOf(4));
         when(actionOutputReg.getNxActionOutputReg()).thenReturn(nxActionOutputReg);
         when(action.getActionChoice()).thenReturn(actionOutputReg);
 
@@ -76,8 +79,8 @@ public class OutputRegConvertorTest {
     public void testConvert() {
         final ActionOutputReg actionOutputReg =
                 (ActionOutputReg) outputRegConvertor.convert(actionsCase).getActionChoice();
-        Assert.assertEquals(Integer.valueOf(1), actionOutputReg.getNxActionOutputReg().getNBits());
-        Assert.assertEquals(Integer.valueOf(2), actionOutputReg.getNxActionOutputReg().getMaxLen());
+        Assert.assertEquals(Uint16.valueOf(1), actionOutputReg.getNxActionOutputReg().getNBits());
+        Assert.assertEquals(Uint16.valueOf(2), actionOutputReg.getNxActionOutputReg().getMaxLen());
     }
 
     @Test
@@ -95,41 +98,41 @@ public class OutputRegConvertorTest {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
                 = outputRegConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
 
-        Assert.assertEquals(Integer.valueOf(3),
+        Assert.assertEquals(Uint16.valueOf(3),
                 ((NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxOutputReg()
                         .getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxOutputReg().getSrc()
                         .getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3),
+        Assert.assertEquals(Uint16.valueOf(3),
                 ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1)
+        Assert.assertEquals(Uint16.valueOf(4), ((NxActionOutputRegNodesNodeTableFlowWriteActionsCase) actionResult1)
                 .getNxOutputReg().getSrc().getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3),
+        Assert.assertEquals(Uint16.valueOf(3),
                 ((NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxOutputReg()
                         .getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionOutputRegNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxOutputReg().getSrc()
                         .getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3),
+        Assert.assertEquals(Uint16.valueOf(3),
                 ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3).getNxOutputReg().getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4), ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3)
+        Assert.assertEquals(Uint16.valueOf(4), ((NxActionOutputRegNotifGroupDescStatsUpdatedCase) actionResult3)
                 .getNxOutputReg().getSrc().getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3),
+        Assert.assertEquals(Uint16.valueOf(3),
                 ((NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxOutputReg()
                         .getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionOutputRegNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxOutputReg().getSrc()
                         .getOfsNbits());
 
-        Assert.assertEquals(Integer.valueOf(3),
+        Assert.assertEquals(Uint16.valueOf(3),
                 ((NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxOutputReg()
                         .getMaxLen());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionOutputRegNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxOutputReg().getSrc()
                         .getOfsNbits());
     }

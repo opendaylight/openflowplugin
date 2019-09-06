@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsiBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NsiConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     @Override
@@ -58,12 +59,12 @@ public class NsiConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Short nsiValue = matchGrouping.get().getNxmNxNsi().getNsi();
+        Uint8 nsiValue = matchGrouping.get().getNxmNxNsi().getNsi();
         MatchEntry matchEntry = buildMatchEntry(nsiValue, null);
         return matchEntry;
     }
 
-    public static MatchEntry buildMatchEntry(Short nsi, Short mask) {
+    public static MatchEntry buildMatchEntry(Uint8 nsi, Uint8 mask) {
         NsiValues nsiValues = new NsiValuesBuilder().setNsi(nsi).setMask(mask).build();
         NsiCaseValue nsiCaseValue = new NsiCaseValueBuilder().setNsiValues(nsiValues).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(

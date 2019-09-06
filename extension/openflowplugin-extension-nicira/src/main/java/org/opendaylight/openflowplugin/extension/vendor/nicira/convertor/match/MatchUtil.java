@@ -71,6 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcGrouping;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Match utilities.
@@ -178,7 +179,7 @@ public final class MatchUtil {
 
     public static <V extends Augmentation<ExperimenterIdCase>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
             final Class<? extends MatchField> matchField,
-            final long experimenterId,
+            final Uint32 experimenterId,
             final NxExpMatchEntryValue value) {
         ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
         experimenterBuilder.setExperimenter(new ExperimenterId(experimenterId));
@@ -203,7 +204,15 @@ public final class MatchUtil {
         return result;
     }
 
+    public static Ipv4Address longToIpv4Address(final Uint32 value) {
+        return longToIpv4Address(value.toJava());
+    }
+
     public static Ipv4Address longToIpv4Address(final Long value) {
+        return longToIpv4Address(value.longValue());
+    }
+
+    public static Ipv4Address longToIpv4Address(final long value) {
         byte[] bytes = Longs.toByteArray(value);
         String[] strArray = new String[4];
         for (int i = 4; i < bytes.length; i++) {

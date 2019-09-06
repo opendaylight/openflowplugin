@@ -68,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 
 @SuppressWarnings("checkstyle:MethodName")
@@ -245,7 +246,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
     private TableFeaturePropertiesBuilder createNextTblFeatureProp() {
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
-        List<Short> nextTblIds = Arrays.asList(new Short[]{2, 3});
+        List<Uint8> nextTblIds = Arrays.asList(Uint8.valueOf(2), Uint8.valueOf(3));
         NextTableBuilder nextTblBld = new NextTableBuilder();
 
         nextTblBld.setTables(new TablesBuilder().setTableIds(nextTblIds).build());
@@ -260,7 +261,8 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
     private TableFeaturePropertiesBuilder createNextTableMissTblFeatureProp() {
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
-        List<Short> nextTblMissIds = Arrays.asList(new Short[]{23, 24, 25, 27, 28, 29, 30});
+        List<Uint8> nextTblMissIds = Arrays.asList(Uint8.valueOf(23), Uint8.valueOf(24), Uint8.valueOf(25),
+            Uint8.valueOf(27), Uint8.valueOf(28), Uint8.valueOf(29), Uint8.valueOf(30));
         NextTableMissBuilder nextTblMissBld = new NextTableMissBuilder();
 
         nextTblMissBld.setTablesMiss(new TablesMissBuilder().setTableIds(nextTblMissIds).build());

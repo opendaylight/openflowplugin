@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class AbstractNshcCodecTest {
 
@@ -74,7 +75,7 @@ public class AbstractNshcCodecTest {
 
         NxExpMatchEntryValue value = testCodec.deserializeValue(buffer, false);
 
-        assertEquals(NSHC_VALUE, ((NshcCaseValue) value).getNshc());
+        assertEquals(Uint32.valueOf(NSHC_VALUE), ((NshcCaseValue) value).getNshc());
         assertFalse(buffer.isReadable());
     }
 
@@ -84,17 +85,17 @@ public class AbstractNshcCodecTest {
 
         NxExpMatchEntryValue value = testCodec.deserializeValue(buffer, true);
 
-        assertEquals(NSHC_VALUE, ((NshcCaseValue) value).getNshc());
-        assertEquals(NSHC_MASK, ((NshcCaseValue) value).getMask());
+        assertEquals(Uint32.valueOf(NSHC_VALUE), ((NshcCaseValue) value).getNshc());
+        assertEquals(Uint32.valueOf(NSHC_MASK), ((NshcCaseValue) value).getMask());
         assertFalse(buffer.isReadable());
     }
 
 
-    private NxExpMatchEntryValue createMatchEntryValue(Long value, Long mask) {
+    private NxExpMatchEntryValue createMatchEntryValue(final Long value, final Long mask) {
         return new NshcCaseValueBuilder().setNshc(value).setMask(mask).build();
     }
 
-    private void writeBuffer(ByteBuf message, Long value, Long mask) {
+    private void writeBuffer(final ByteBuf message, final Long value, final Long mask) {
         message.writeInt(value.intValue());
         if (mask != null) {
             message.writeInt(mask.intValue());

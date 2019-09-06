@@ -108,20 +108,20 @@ public class FieldChoiceResolverTest {
     public void testResolveChoiceToHeader() {
         if (srcChoiceOut != null) {
             if (header.isExperimenter()) {
-                Assert.assertEquals(header.toBigInteger(), FieldChoiceResolver.resolveSrcHeaderUint64(srcChoiceIn));
+                Assert.assertEquals(header.toUint64(), FieldChoiceResolver.resolveSrcHeaderUint64(srcChoiceIn));
             } else {
                 Assert.assertEquals(header.toLong(),
                         FieldChoiceResolver.resolveSrcHeaderUint32(srcChoiceIn).longValue());
-                Assert.assertEquals(header.toBigInteger(), FieldChoiceResolver.resolveSrcHeaderUint64(srcChoiceIn));
+                Assert.assertEquals(header.toUint64(), FieldChoiceResolver.resolveSrcHeaderUint64(srcChoiceIn));
             }
         }
         if (dstChoiceOut != null) {
             if (header.isExperimenter()) {
-                Assert.assertEquals(header.toBigInteger(), FieldChoiceResolver.resolveDstHeaderUint64(dstChoiceIn));
+                Assert.assertEquals(header.toUint64(), FieldChoiceResolver.resolveDstHeaderUint64(dstChoiceIn));
             } else {
                 Assert.assertEquals(header.toLong(),
                         FieldChoiceResolver.resolveDstHeaderUint32(dstChoiceIn).longValue());
-                Assert.assertEquals(header.toBigInteger(), FieldChoiceResolver.resolveDstHeaderUint64(dstChoiceIn));
+                Assert.assertEquals(header.toUint64(), FieldChoiceResolver.resolveDstHeaderUint64(dstChoiceIn));
             }
         }
     }
@@ -130,11 +130,11 @@ public class FieldChoiceResolverTest {
     public void testResolveHeaderToChoice() {
         if (srcChoiceOut != null) {
             Assert.assertEquals(srcChoiceOut, FieldChoiceResolver.resolveSrcChoice(header.toLong()));
-            Assert.assertEquals(srcChoiceOut, FieldChoiceResolver.resolveSrcChoice(header.toBigInteger()));
+            Assert.assertEquals(srcChoiceOut, FieldChoiceResolver.resolveSrcChoice(header.toUint64()));
         }
         if (dstChoiceOut != null) {
             Assert.assertEquals(dstChoiceOut, FieldChoiceResolver.resolveDstChoice(header.toLong()));
-            Assert.assertEquals(dstChoiceOut, FieldChoiceResolver.resolveDstChoice(header.toBigInteger()));
+            Assert.assertEquals(dstChoiceOut, FieldChoiceResolver.resolveDstChoice(header.toUint64()));
         }
     }
 

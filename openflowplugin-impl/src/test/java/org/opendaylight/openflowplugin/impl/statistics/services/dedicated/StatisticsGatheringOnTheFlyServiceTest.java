@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link StatisticsGatheringOnTheFlyService}.
@@ -53,11 +54,10 @@ public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
 
     @Test
     public void testBuildRequest() {
-        final long xidValue = 21L;
-        Xid xid = new Xid(xidValue);
+        Xid xid = new Xid(Uint32.valueOf(21));
         final OfHeader request = statisticsGatheringService.buildRequest(xid, MultipartType.OFPMPFLOW);
-        Assert.assertEquals(MultipartRequestInput.class, request.implementedInterface());
-        Assert.assertEquals(xidValue, request.getXid().longValue());
         Assert.assertNotNull(request);
+        Assert.assertEquals(MultipartRequestInput.class, request.implementedInterface());
+        Assert.assertEquals(xid.getValue(), request.getXid());
     }
 }

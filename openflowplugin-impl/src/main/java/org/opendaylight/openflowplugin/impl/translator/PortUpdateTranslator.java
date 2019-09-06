@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
         builder.setMaximumSpeed(input.getMaxSpeed());
         builder.setName(input.getName());
 
-        final Long portNo = input.getPortNo();
+        final Uint32 portNo = input.getPortNo();
         if (portNo != null) {
             builder.setPortNumber(new PortNumberUni(portNo));
         }

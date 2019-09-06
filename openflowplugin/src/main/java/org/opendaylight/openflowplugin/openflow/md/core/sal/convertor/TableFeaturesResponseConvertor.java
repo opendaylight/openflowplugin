@@ -165,6 +165,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -499,7 +500,7 @@ public class TableFeaturesResponseConvertor
         return instructionList;
     }
 
-    private static List<Short> setNextTableFeatureProperty(final TableFeatureProperties properties) {
+    private static List<Uint8> setNextTableFeatureProperty(final TableFeatureProperties properties) {
         return properties.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds().stream().map(NextTableIds::getTableId).collect(Collectors.toList());
     }
@@ -557,7 +558,7 @@ public class TableFeaturesResponseConvertor
     }
 
     @Override
-    public List<TableFeatures> convert(MultipartReplyTableFeatures source, VersionConvertorData data) {
+    public List<TableFeatures> convert(final MultipartReplyTableFeatures source, final VersionConvertorData data) {
         if (source == null || source.getTableFeatures() == null) {
             return Collections.emptyList();
         }

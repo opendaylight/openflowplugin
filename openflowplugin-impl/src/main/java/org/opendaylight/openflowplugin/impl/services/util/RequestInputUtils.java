@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.util;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public final class RequestInputUtils {
 
@@ -18,9 +18,9 @@ public final class RequestInputUtils {
         throw new IllegalStateException("This class should not be instantiated.");
     }
 
-    public static MultipartRequestInputBuilder createMultipartHeader(MultipartType multipart,
-                                                                     Long xid,
-                                                                     Short version) {
+    public static MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart,
+                                                                     final Uint32 xid,
+                                                                     final Short version) {
         MultipartRequestInputBuilder mprInput = new MultipartRequestInputBuilder();
         mprInput.setType(multipart);
         mprInput.setVersion(version);

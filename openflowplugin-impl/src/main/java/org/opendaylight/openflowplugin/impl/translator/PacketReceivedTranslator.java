@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.math.BigInteger;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -27,11 +26,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
     private final ConvertorExecutor convertorExecutor;
 
-    public PacketReceivedTranslator(ConvertorExecutor convertorExecutor) {
+    public PacketReceivedTranslator(final ConvertorExecutor convertorExecutor) {
         this.convertorExecutor = convertorExecutor;
     }
 
@@ -40,7 +40,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
                                     final Object connectionDistinguisher) {
 
         PacketReceivedBuilder packetReceivedBuilder = new PacketReceivedBuilder();
-        BigInteger datapathId = deviceInfo.getDatapathId();
+        Uint64 datapathId = deviceInfo.getDatapathId();
 
         // TODO: connection cookie from connection distinguisher
         packetReceivedBuilder.setPayload(input.getData());
@@ -51,7 +51,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         }
 
         // Try to create the NodeConnectorRef
-        BigInteger dataPathId = deviceInfo.getDatapathId();
+        Uint64 dataPathId = deviceInfo.getDatapathId();
         NodeConnectorRef nodeConnectorRef = NodeConnectorRefToPortTranslator.toNodeConnectorRef(input, dataPathId);
 
         // If we was able to create NodeConnectorRef, use it
@@ -76,10 +76,10 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
 
     @VisibleForTesting
     org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match getPacketInMatch(
-            final PacketInMessage input, final BigInteger datapathId) {
+            final PacketInMessage input, final Uint64 datapathId) {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(
-                input.getVersion());
+                input.getVersion().toJava());
         datapathIdConvertorData.setDatapathId(datapathId);
 
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder>

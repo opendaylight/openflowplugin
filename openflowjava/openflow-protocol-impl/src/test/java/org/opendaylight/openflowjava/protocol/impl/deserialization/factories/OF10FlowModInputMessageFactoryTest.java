@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -35,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for OF10FlowModInputMessageFactory.
@@ -61,8 +61,7 @@ public class OF10FlowModInputMessageFactoryTest {
         FlowModInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV10(deserializedMessage);
         Assert.assertEquals("Wrong Match", createMatch(), deserializedMessage.getMatchV10());
-        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01 };
-        Assert.assertEquals("Wrong cookie", new BigInteger(1, cookie), deserializedMessage.getCookie());
+        Assert.assertEquals("Wrong cookie", Uint64.valueOf("FF01040106000701", 16), deserializedMessage.getCookie());
         Assert.assertEquals("Wrong command", FlowModCommand.forValue(0), deserializedMessage.getCommand());
         Assert.assertEquals("Idle Timeout", 12, deserializedMessage.getIdleTimeout().intValue());
         Assert.assertEquals("Wrong Hard Timeout", 16, deserializedMessage.getHardTimeout().intValue());

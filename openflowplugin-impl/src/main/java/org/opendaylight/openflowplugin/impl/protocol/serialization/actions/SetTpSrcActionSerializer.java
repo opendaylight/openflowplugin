@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
     @Override
-    protected SetFieldCase buildAction(Action input) {
+    protected SetFieldCase buildAction(final Action input) {
         final SetTpSrcAction setTpSrcAction = ((SetTpSrcActionCase) input).getSetTpSrcAction();
         final PortNumber port = setTpSrcAction.getPort();
         final SetFieldBuilder builder = new SetFieldBuilder();
@@ -31,13 +31,13 @@ public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
             switch (proto) {
                 case ICMP: {
                     builder.setIcmpv4Match(new Icmpv4MatchBuilder()
-                            .setIcmpv4Type((short) (0xFF & port.getValue()))
+                            .setIcmpv4Type((short) (0xFF & port.getValue().toJava()))
                             .build());
                     break;
                 }
                 case ICMPV6: {
                     builder.setIcmpv6Match(new Icmpv6MatchBuilder()
-                            .setIcmpv6Type((short) (0xFF & port.getValue()))
+                            .setIcmpv6Type((short) (0xFF & port.getValue().toJava()))
                             .build());
                     break;
                 }

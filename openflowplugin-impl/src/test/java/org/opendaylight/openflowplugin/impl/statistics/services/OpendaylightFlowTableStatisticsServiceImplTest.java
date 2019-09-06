@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCase;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link OpendaylightFlowTableStatisticsServiceImpl}.
@@ -48,6 +49,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
 
     private OpendaylightFlowTableStatisticsServiceImpl flowTableStatisticsService;
 
+    @Override
     public void setUp() {
         flowTableStatisticsService = new OpendaylightFlowTableStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -94,7 +96,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
 
     @Test
     public void testBuildRequest() {
-        Xid xid = new Xid(42L);
+        Xid xid = new Xid(Uint32.valueOf(42L));
         GetFlowTablesStatisticsInputBuilder input = new GetFlowTablesStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
         final OfHeader request = flowTableStatisticsService.buildRequest(xid, input.build());
@@ -103,7 +105,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         Assert.assertEquals(MultipartType.OFPMPTABLE, mpRequest.getType());
         Assert.assertTrue(mpRequest.getMultipartRequestBody() instanceof MultipartRequestTableCase);
         final MultipartRequestTableCase mpRequestBody =
-                (MultipartRequestTableCase) (mpRequest.getMultipartRequestBody());
+                (MultipartRequestTableCase) mpRequest.getMultipartRequestBody();
         Assert.assertNotNull(mpRequestBody.getMultipartRequestTable().getEmpty());
     }
 }

@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class RegMoveCodecTest {
     private static final byte SUBTYPE = 6;
@@ -32,9 +33,9 @@ public class RegMoveCodecTest {
     private static final int DST = 5;
     private static final long SRC_EXP = 0xFFFF000000000000L | SRC;
     private static final long DST_EXP = 0xFFFF000000000000L | DST;
-    private static final BigInteger SRC_EXP_BIGINT = new BigInteger(1, Longs.toByteArray(SRC_EXP));
-    private static final BigInteger DST_EXP_BIGINT = new BigInteger(1, Longs.toByteArray(DST_EXP));
+    private static final Uint64 SRC_EXP_BIGINT = Uint64.valueOf(new BigInteger(1, Longs.toByteArray(SRC_EXP)));
 
+    private static final Uint64 DST_EXP_BIGINT = Uint64.valueOf(new BigInteger(1, Longs.toByteArray(DST_EXP)));
     RegMoveCodec regMoveCodec;
     ByteBuf buffer;
     Action action;
@@ -47,7 +48,7 @@ public class RegMoveCodecTest {
 
     @Test
     public void serializeTest() {
-        action = createAction(BigInteger.valueOf(SRC), BigInteger.valueOf(DST));
+        action = createAction(Uint64.valueOf(SRC), Uint64.valueOf(DST));
 
         regMoveCodec.serialize(action, buffer);
 
@@ -67,7 +68,7 @@ public class RegMoveCodecTest {
 
     @Test
     public void serializeWithExperimenterSrcTest() {
-        action = createAction(SRC_EXP_BIGINT, BigInteger.valueOf(DST));
+        action = createAction(SRC_EXP_BIGINT, Uint64.valueOf(DST));
 
         regMoveCodec.serialize(action, buffer);
 
@@ -154,7 +155,7 @@ public class RegMoveCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private Action createAction(BigInteger src, BigInteger dst) {
+    private Action createAction(Uint64 src, Uint64 dst) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);

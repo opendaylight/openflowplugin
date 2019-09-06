@@ -25,6 +25,7 @@ import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActionDeserializerTest {
@@ -46,7 +47,7 @@ public class ActionDeserializerTest {
 
 
     private static final short VERSION = 4;
-    private static final long EXPERIMENT_ID = NiciraConstants.NX_VENDOR_ID;
+    private static final Uint32 EXPERIMENT_ID = NiciraConstants.NX_VENDOR_ID;
     private static final byte SUBTYPE = 10;
 
     @Before
@@ -54,8 +55,6 @@ public class ActionDeserializerTest {
         actionDeserializer = new ActionDeserializer(VERSION);
         buffer = ByteBufAllocator.DEFAULT.buffer();
         providers = new LinkedList<>();
-
-
     }
 
     /**
@@ -93,7 +92,7 @@ public class ActionDeserializerTest {
         //size of length
         message.writeShort(13);
         //experimentId
-        message.writeInt((int)EXPERIMENT_ID);
+        message.writeInt(EXPERIMENT_ID.intValue());
         //subtype
         message.writeShort(SUBTYPE);
     }

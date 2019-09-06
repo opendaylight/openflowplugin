@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +70,11 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param handshakeListener the HandshakeListener
      * @param useVersionBitmap  should use negotiation bit map
      */
-    public HandshakeManagerImpl(ConnectionAdapter connectionAdapter, Short highestVersion, List<Short> versionOrder,
-                                ErrorHandler errorHandler, HandshakeListener handshakeListener,
-                                boolean useVersionBitmap, DeviceConnectionRateLimiter deviceConnectionRateLimiter) {
+    public HandshakeManagerImpl(final ConnectionAdapter connectionAdapter, final Short highestVersion,
+                                final List<Short> versionOrder,
+                                final ErrorHandler errorHandler, final HandshakeListener handshakeListener,
+                                final boolean useVersionBitmap,
+                                final DeviceConnectionRateLimiter deviceConnectionRateLimiter) {
         this.highestVersion = highestVersion;
         this.versionOrder = versionOrder;
         this.connectionAdapter = connectionAdapter;
@@ -82,7 +86,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public synchronized void shake(HelloMessage receivedHello) {
+    public synchronized void shake(final HelloMessage receivedHello) {
 
         if (version != null) {
             // Some switches respond with a second HELLO acknowledging our HELLO
@@ -105,9 +109,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
             }
 
             // process the 2. and later hellos
-            Short remoteVersion = receivedHello.getVersion();
+            Uint8 remoteVersion = receivedHello.getVersion();
             List<Elements> elements = receivedHello.getElements();
-            setActiveXid(receivedHello.getXid());
+            setActiveXid(receivedHello.getXid().toJava());
             List<Boolean> remoteVersionBitmap = MessageFactory.digVersions(elements);
             LOG.debug("Hello message: version={}, xid={}, bitmap={}", remoteVersion, receivedHello.getXid(),
                       remoteVersionBitmap);
@@ -117,7 +121,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 handleVersionBitmapNegotiation(elements);
             } else {
                 // versionBitmap missing at least on one side -> STEP-BY-STEP NEGOTIATION applying
-                handleStepByStepVersionNegotiation(remoteVersion);
+                handleStepByStepVersionNegotiation(remoteVersion.toJava());
             }
         } catch (Exception ex) {
             errorHandler.handleException(ex);
@@ -145,7 +149,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             ListenableFuture<Void> helloResult = sendHelloMessage(lastProposedVersion, nextHelloXid);
             Futures.addCallback(helloResult, new FutureCallback<Void>() {
                 @Override
-                public void onSuccess(Void result) {
+                public void onSuccess(final Void result) {
                     try {
                         stepByStepVersionSubStep(remoteVersion);
                     } catch (Exception e) {
@@ -155,7 +159,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 }
 
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onFailure(final Throwable throwable) {
                     LOG.info("hello sending seriously failed [{}]", nextHelloXid);
                     LOG.trace("detail of hello send problem", throwable);
                 }
@@ -165,7 +169,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         }
     }
 
-    private void stepByStepVersionSubStep(Short remoteVersion) {
+    private void stepByStepVersionSubStep(final Short remoteVersion) {
         if (remoteVersion >= lastProposedVersion) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.trace("ret - OK - switch answered with lastProposedVersion");
@@ -188,7 +192,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param remoteVersion remote version
      * @throws Exception exception
      */
-    private void handleLowerVersionProposal(Short remoteVersion) {
+    private void handleLowerVersionProposal(final Short remoteVersion) {
         Short proposedVersion;
         // find the version from header version field
         proposedVersion = proposeNextVersion(remoteVersion);
@@ -209,7 +213,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param elements version elements
      * @throws Exception exception
      */
-    private void handleVersionBitmapNegotiation(List<Elements> elements) {
+    private void handleVersionBitmapNegotiation(final List<Elements> elements) {
         final Short proposedVersion = proposeCommonBitmapVersion(elements);
         if (lastProposedVersion == null) {
             // first hello has not been sent yet
@@ -217,13 +221,13 @@ public class HandshakeManagerImpl implements HandshakeManager {
             ListenableFuture<Void> helloDone = sendHelloMessage(proposedVersion, nexHelloXid);
             Futures.addCallback(helloDone, new FutureCallback<Void>() {
                 @Override
-                public void onSuccess(Void result) {
+                public void onSuccess(final Void result) {
                     LOG.trace("ret - DONE - versionBitmap");
                     postHandshake(proposedVersion, getNextXid());
                 }
 
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onFailure(final Throwable throwable) {
                     // NOOP
                 }
             }, MoreExecutors.directExecutor());
@@ -239,7 +243,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         return activeXid;
     }
 
-    private void setActiveXid(Long xid) {
+    private void setActiveXid(final Long xid) {
         this.activeXid = xid;
     }
 
@@ -248,7 +252,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      *
      * @param remoteVersion remove version
      */
-    private void checkNegotiationStalling(Short remoteVersion) {
+    private void checkNegotiationStalling(final Short remoteVersion) {
         if (lastReceivedVersion != null && lastReceivedVersion.equals(remoteVersion)) {
             throw new IllegalStateException("version negotiation stalled: version = " + remoteVersion);
         }
@@ -266,7 +270,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param list bitmap list
      * @return proposed bitmap value
      */
-    protected Short proposeCommonBitmapVersion(List<Elements> list) {
+    protected Short proposeCommonBitmapVersion(final List<Elements> list) {
         Short supportedHighestVersion = null;
         if (null != list && 0 != list.size()) {
             for (Elements element : list) {
@@ -296,7 +300,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param remoteVersion openflow version supported by remote entity
      * @return openflow version
      */
-    protected short proposeNextVersion(short remoteVersion) {
+    protected short proposeNextVersion(final short remoteVersion) {
         Short proposal = null;
         for (short offer : versionOrder) {
             if (offer <= remoteVersion) {
@@ -317,7 +321,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param helloVersion initial hello version for openflow connection negotiation
      * @param helloXid     transaction id
      */
-    private ListenableFuture<Void> sendHelloMessage(Short helloVersion, final Long helloXid) {
+    private ListenableFuture<Void> sendHelloMessage(final Short helloVersion, final Long helloXid) {
 
 
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
@@ -329,7 +333,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
         Futures.addCallback(connectionAdapter.hello(helloInput), new FutureCallback<RpcResult<HelloOutput>>() {
             @Override
-            public void onSuccess(RpcResult<HelloOutput> result) {
+            public void onSuccess(final RpcResult<HelloOutput> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("hello successfully sent, xid={}, addr={}", helloXid,
                               connectionAdapter.getRemoteAddress());
@@ -348,7 +352,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.warn("sending of hello failed seriously [{}, addr:{}]: {}", helloXid,
                          connectionAdapter.getRemoteAddress(), throwable.getMessage());
                 LOG.trace("DETAIL of sending of hello failure:", throwable);
@@ -380,11 +384,13 @@ public class HandshakeManagerImpl implements HandshakeManager {
         Futures.addCallback(connectionAdapter.getFeatures(featuresBuilder.build()),
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
-                    public void onSuccess(RpcResult<GetFeaturesOutput> rpcFeatures) {
+                    public void onSuccess(final RpcResult<GetFeaturesOutput> rpcFeatures) {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
-                            connectionAdapter.setDatapathId(featureOutput.getDatapathId());
+
+                            final Uint64 dpId = featureOutput.getDatapathId();
+                            connectionAdapter.setDatapathId(dpId == null ? null : dpId.toJava());
                             if (!deviceConnectionRateLimiter.tryAquire()) {
                                 LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
                                         + " the connection from device {}", featureOutput.getDatapathId());
@@ -414,7 +420,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                     }
 
                     @Override
-                    public void onFailure(Throwable throwable) {
+                    public void onFailure(final Throwable throwable) {
                         LOG.warn("getting feature failed seriously [{}, addr:{}]: {}", xid,
                                  connectionAdapter.getRemoteAddress(), throwable.getMessage());
                         LOG.trace("DETAIL of sending of hello failure:", throwable);
@@ -429,7 +435,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      */
     @VisibleForTesting
     @SuppressFBWarnings("IS2_INCONSISTENT_SYNC") // because shake() is synchronized
-    void setUseVersionBitmap(boolean useVersionBitmap) {
+    void setUseVersionBitmap(final boolean useVersionBitmap) {
         this.useVersionBitmap = useVersionBitmap;
     }
 

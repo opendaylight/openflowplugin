@@ -67,6 +67,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,7 +193,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
                     builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
-                    Long groupId = isFlowDependentOnGroup(update);
+                    Uint32 groupId = isFlowDependentOnGroup(update);
                     if (groupId != null) {
                         LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
                                 getFlowId(new FlowRef(identifier)), groupId);
@@ -238,7 +239,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     builder.setFlowRef(new FlowRef(identifier));
                     builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
                     builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-                    Long groupId = isFlowDependentOnGroup(addDataObj);
+                    Uint32 groupId = isFlowDependentOnGroup(addDataObj);
                     if (groupId != null) {
                         LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
                                 getFlowId(new FlowRef(identifier)), groupId);
@@ -330,7 +331,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private ListenableFuture<RpcResult<AddGroupOutput>> pushDependentGroup(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final Long groupId) {
+            final InstanceIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
 
         //TODO This read to the DS might have a performance impact.
         //if the dependent group is not installed than we should just cache the parent group,
@@ -365,10 +366,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private final class AddFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final AddFlowInput addFlowInput;
         private final NodeId nodeId;
-        private final Long groupId;
+        private final Uint32 groupId;
         private final SettableFuture<RpcResult<AddFlowOutput>> resultFuture;
 
-        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId, Long groupId,
+        private AddFlowCallBack(final AddFlowInput addFlowInput, final NodeId nodeId, Uint32 groupId,
                 SettableFuture<RpcResult<AddFlowOutput>> resultFuture) {
             this.addFlowInput = addFlowInput;
             this.nodeId = nodeId;
@@ -415,11 +416,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private final class UpdateFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final UpdateFlowInput updateFlowInput;
         private final NodeId nodeId;
-        private final Long groupId;
+        private final Uint32 groupId;
         private final SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture;
 
         private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final NodeId nodeId,
-                SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, Long groupId) {
+                SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, Uint32 groupId) {
             this.updateFlowInput = updateFlowInput;
             this.nodeId = nodeId;
             this.groupId = groupId;

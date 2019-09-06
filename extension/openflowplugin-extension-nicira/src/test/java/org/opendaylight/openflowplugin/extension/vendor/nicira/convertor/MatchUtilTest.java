@@ -16,7 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 public class MatchUtilTest {
 
     private static final Ipv4Address IPV4_ADDRESS = new Ipv4Address("1.2.3.4");
-    private static final Long IPV4_LONG = new Long(16909060L);
+    private static final Long IPV4_LONG = 16909060L;
 
     @Test
     public void testIpv4toLong() {

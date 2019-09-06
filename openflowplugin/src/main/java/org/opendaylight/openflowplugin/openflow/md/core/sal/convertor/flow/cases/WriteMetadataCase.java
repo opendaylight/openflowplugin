@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases;
 
 import java.util.Optional;
@@ -31,14 +30,12 @@ public class WriteMetadataCase extends ConvertorCase<org.opendaylight.yang.gen.v
     @Override
     public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
             .rev131026.instruction.instruction.WriteMetadataCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         WriteMetadata writeMetadata = source.getWriteMetadata();
         WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
         WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-        writeMetadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadata(),
-                OFConstants.SIZE_OF_LONG_IN_BYTES));
-        writeMetadataBuilder.setMetadataMask(ByteUtil.convertBigIntegerToNBytes(writeMetadata.getMetadataMask(),
-                OFConstants.SIZE_OF_LONG_IN_BYTES));
+        writeMetadataBuilder.setMetadata(ByteUtil.uint64toBytes(writeMetadata.getMetadata()));
+        writeMetadataBuilder.setMetadataMask(ByteUtil.uint64toBytes(writeMetadata.getMetadataMask()));
         writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         instructionBuilder.setInstructionChoice(writeMetadataCaseBuilder.build());

@@ -29,7 +29,7 @@ public class SetConfigMessageFactory implements OFSerializer<SetConfigInput> {
     public void serialize(SetConfigInput message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getFlags().getIntValue());
-        outBuffer.writeShort(message.getMissSendLen());
+        outBuffer.writeShort(message.getMissSendLen().toJava());
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 }

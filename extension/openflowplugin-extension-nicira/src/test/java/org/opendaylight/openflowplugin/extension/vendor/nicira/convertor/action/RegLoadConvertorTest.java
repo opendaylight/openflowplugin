@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action
 
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +31,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,18 +58,19 @@ public class RegLoadConvertorTest {
         final NxRegLoad nxRegLoad = Mockito.mock(NxRegLoad.class);
         final Dst dst = Mockito.mock(Dst.class);
 
-        when(dst.getStart()).thenReturn(1);
-        when(dst.getEnd()).thenReturn(2);
+        when(dst.getStart()).thenReturn(Uint16.valueOf(1));
+        when(dst.getEnd()).thenReturn(Uint16.valueOf(2));
         when(nxRegLoad.getDst()).thenReturn(dst);
-        when(nxRegLoad.getValue()).thenReturn(BigInteger.valueOf(3L));
+        when(nxRegLoad.getValue()).thenReturn(Uint64.valueOf(3));
         when(nxRegLoad.getDst().getDstChoice()).thenReturn(new DstNxTunIdCaseBuilder().build());
         when(actionsCase.getNxRegLoad()).thenReturn(nxRegLoad);
 
         final ActionRegLoad actionRegLoad = Mockito.mock(ActionRegLoad.class);
         final NxActionRegLoad nxActionRegLoad = Mockito.mock(NxActionRegLoad.class);
-        when(nxActionRegLoad.getDst()).thenReturn(NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask().toLong());
-        when(nxActionRegLoad.getOfsNbits()).thenReturn(4);
-        when(nxActionRegLoad.getValue()).thenReturn(BigInteger.ONE);
+        when(nxActionRegLoad.getDst()).thenReturn(
+            Uint32.valueOf(NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask().toLong()));
+        when(nxActionRegLoad.getOfsNbits()).thenReturn(Uint16.valueOf(4));
+        when(nxActionRegLoad.getValue()).thenReturn(Uint64.ONE);
         when(actionRegLoad.getNxActionRegLoad()).thenReturn(nxActionRegLoad);
         when(action.getActionChoice()).thenReturn(actionRegLoad);
 
@@ -77,8 +80,8 @@ public class RegLoadConvertorTest {
     @Test
     public void testConvert() {
         final ActionRegLoad actionRegLoad = (ActionRegLoad)regLoadConvertor.convert(actionsCase).getActionChoice();
-        Assert.assertEquals(Integer.valueOf(65), actionRegLoad.getNxActionRegLoad().getOfsNbits());
-        Assert.assertEquals(BigInteger.valueOf(3), actionRegLoad.getNxActionRegLoad().getValue());
+        Assert.assertEquals(Uint16.valueOf(65), actionRegLoad.getNxActionRegLoad().getOfsNbits());
+        Assert.assertEquals(Uint64.valueOf(3), actionRegLoad.getNxActionRegLoad().getValue());
     }
 
     @Test
@@ -96,54 +99,54 @@ public class RegLoadConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
                 = regLoadConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getDst().getStart());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getDst().getEnd());
-        Assert.assertEquals(BigInteger.ONE,
+        Assert.assertEquals(Uint64.ONE,
                 ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getValue());
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase) actionResult1).getNxRegLoad().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase) actionResult1).getNxRegLoad().getDst()
                         .getEnd());
-        Assert.assertEquals(BigInteger.ONE,
+        Assert.assertEquals(Uint64.ONE,
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase) actionResult1).getNxRegLoad().getValue());
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegLoad().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegLoad().getDst()
                         .getEnd());
-        Assert.assertEquals(BigInteger.ONE,
+        Assert.assertEquals(Uint64.ONE,
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegLoad().getValue());
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getDst().getStart());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getDst().getEnd());
-        Assert.assertEquals(BigInteger.ONE,
+        Assert.assertEquals(Uint64.ONE,
                 ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getValue());
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getDst()
                         .getEnd());
-        Assert.assertEquals(BigInteger.ONE,
+        Assert.assertEquals(Uint64.ONE,
                 ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getValue());
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(4),
+        Assert.assertEquals(Uint16.valueOf(4),
                 ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getDst()
                         .getEnd());
-        Assert.assertEquals(BigInteger.ONE,
+        Assert.assertEquals(Uint64.ONE,
                 ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getValue());
     }
 }

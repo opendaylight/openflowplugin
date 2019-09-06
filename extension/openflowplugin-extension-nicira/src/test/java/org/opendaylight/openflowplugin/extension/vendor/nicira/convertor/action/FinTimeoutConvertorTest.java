@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.get.flow.statistics.output.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNotifDirectStatisticsUpdateWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionFinTimeoutNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionFinTimeoutNodesNodeTableFlowWriteActionsCase;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link FinTimeoutConvertor}.
@@ -48,13 +49,13 @@ public class FinTimeoutConvertorTest {
                 .opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.fin.timeout.grouping
                     .NxActionFinTimeout.class);
         when(actionsCase.getNxActionFinTimeout()).thenReturn(nxFinTimeout);
-        when(nxFinTimeout.getFinIdleTimeout()).thenReturn(1);
-        when(nxFinTimeout.getFinHardTimeout()).thenReturn(2);
+        when(nxFinTimeout.getFinIdleTimeout()).thenReturn(Uint16.valueOf(1));
+        when(nxFinTimeout.getFinHardTimeout()).thenReturn(Uint16.valueOf(2));
 
         final ActionFinTimeout actionFinTimeout = Mockito.mock(ActionFinTimeout.class);
         final NxActionFinTimeout nxActionFinTimeout = Mockito.mock(NxActionFinTimeout.class);
-        when(nxActionFinTimeout.getFinIdleTimeout()).thenReturn(3);
-        when(nxActionFinTimeout.getFinHardTimeout()).thenReturn(4);
+        when(nxActionFinTimeout.getFinIdleTimeout()).thenReturn(Uint16.valueOf(3));
+        when(nxActionFinTimeout.getFinHardTimeout()).thenReturn(Uint16.valueOf(4));
         when(actionFinTimeout.getNxActionFinTimeout()).thenReturn(nxActionFinTimeout);
         when(action.getActionChoice()).thenReturn(actionFinTimeout);
 

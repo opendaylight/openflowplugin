@@ -24,7 +24,7 @@ public class OxmVlanPcpSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         VlanPcpCase entryValue = (VlanPcpCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getVlanPcp().getVlanPcp());
+        outBuffer.writeByte(entryValue.getVlanPcp().getVlanPcp().toJava());
     }
 
     @Override

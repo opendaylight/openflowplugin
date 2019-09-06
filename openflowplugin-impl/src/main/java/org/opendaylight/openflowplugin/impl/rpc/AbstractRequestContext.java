@@ -12,14 +12,20 @@ import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractRequestContext<T> implements RequestContext<T> {
     private final SettableFuture<RpcResult<T>> rpcResultFuture = SettableFuture.create();
     private final Xid xid;
     private long waitTimeout;
 
-    protected AbstractRequestContext(final Long xid) {
+    protected AbstractRequestContext(final Uint32 xid) {
         this.xid = xid == null ? null : new Xid(xid);
+    }
+
+    @Deprecated
+    protected AbstractRequestContext(final Long xid) {
+        this.xid = xid == null ? null : new Xid(Uint32.valueOf(xid));
     }
 
     @Override

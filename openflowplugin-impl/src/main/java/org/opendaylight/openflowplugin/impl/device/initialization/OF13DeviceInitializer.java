@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -81,13 +80,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
 
                 return Futures.transform(
                     switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures),
-                    new Function<List<RpcResult<List<OfHeader>>>, Void>() {
-                        @Override
-                        public Void apply(final List<RpcResult<List<OfHeader>>> input) {
-                            LOG.info("Static node {} successfully finished collecting",
-                                    deviceContext.getDeviceInfo());
-                            return null;
-                        }
+                    input1 -> {
+                        LOG.info("Static node {} successfully finished collecting",
+                                deviceContext.getDeviceInfo());
+                        return null;
                     }, MoreExecutors.directExecutor());
             }, MoreExecutors.directExecutor());
 
@@ -157,7 +153,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         DeviceInitializationUtil.makeEmptyTables(
                             deviceContext,
                             deviceContext.getDeviceInfo(),
-                            deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
+                            deviceContext.getPrimaryConnectionContext().getFeatures().getTables().toJava());
                     }
                 }
             }
@@ -202,7 +198,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                     && translatedReply instanceof MeterFeatures) {
                                 final MeterFeatures meterFeatures = (MeterFeatures) translatedReply;
 
-                                if (meterFeatures.getMaxMeter().getValue() > 0) {
+                                if (meterFeatures.getMaxMeter().getValue().toJava() > 0) {
                                     deviceContext.getDeviceState().setMeterAvailable(true);
                                 }
                             }

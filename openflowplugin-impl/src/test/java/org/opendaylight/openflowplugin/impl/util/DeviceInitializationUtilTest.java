@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceInitializationUtilTest {
@@ -50,7 +51,7 @@ public class DeviceInitializationUtilTest {
                 .createNodeInstanceIdentifier(new NodeId("openflow:1"));
     private static final int PORT = 2017;
     private static final InetSocketAddress INET_SOCKET_ADDRESS = new InetSocketAddress("192.168.0.1", PORT);
-    private static final short TABLES = 25;
+    private static final Uint8 TABLES = Uint8.valueOf(25);
 
     @Mock
     private DataBroker dataBroker;
@@ -74,7 +75,7 @@ public class DeviceInitializationUtilTest {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(connectionAdapter.getRemoteAddress()).thenReturn(INET_SOCKET_ADDRESS);
         when(featuresReply.getTables()).thenReturn(TABLES);
-        when(featuresReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(featuresReply.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         when(featuresReply.getCapabilities()).thenReturn(new Capabilities(false, false,
                 false, false, false, false, false));
         when(connectionContext.getFeatures()).thenReturn(featuresReply);
@@ -113,7 +114,7 @@ public class DeviceInitializationUtilTest {
     @Test
     public void getSwitchFeatures() {
         final SwitchFeatures switchFeatures = DeviceInitializationUtil.getSwitchFeatures(connectionContext);
-        assertEquals(TABLES, switchFeatures.getMaxTables().shortValue());
+        assertEquals(TABLES, switchFeatures.getMaxTables());
     }
 
 }

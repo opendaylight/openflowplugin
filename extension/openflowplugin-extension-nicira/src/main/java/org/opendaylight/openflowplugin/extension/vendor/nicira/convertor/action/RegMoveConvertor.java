@@ -59,7 +59,7 @@ public class RegMoveConvertor implements
         nxActionRegMove.setDstOfs(dst.getStart());
         nxActionRegMove.setSrc(FieldChoiceResolver.resolveSrcHeaderUint64(src.getSrcChoice()));
         nxActionRegMove.setSrcOfs(src.getStart());
-        nxActionRegMove.setNBits(dst.getEnd() - dst.getStart() + 1);
+        nxActionRegMove.setNBits(dst.getEnd().toJava() - dst.getStart().toJava() + 1);
         actionRegMoveBuilder.setNxActionRegMove(nxActionRegMove.build());
         return ActionUtil.createAction(actionRegMoveBuilder.build());
     }
@@ -71,11 +71,11 @@ public class RegMoveConvertor implements
         DstBuilder dstBuilder = new DstBuilder();
         dstBuilder.setDstChoice(FieldChoiceResolver.resolveDstChoice(actionRegMove.getDst()));
         dstBuilder.setStart(actionRegMove.getDstOfs());
-        dstBuilder.setEnd(actionRegMove.getDstOfs() + actionRegMove.getNBits() - 1);
+        dstBuilder.setEnd(actionRegMove.getDstOfs().toJava() + actionRegMove.getNBits().toJava() - 1);
         SrcBuilder srcBuilder = new SrcBuilder();
         srcBuilder.setSrcChoice(FieldChoiceResolver.resolveSrcChoice(actionRegMove.getSrc()));
         srcBuilder.setStart(actionRegMove.getSrcOfs());
-        srcBuilder.setEnd(actionRegMove.getSrcOfs() + actionRegMove.getNBits() - 1);
+        srcBuilder.setEnd(actionRegMove.getSrcOfs().toJava() + actionRegMove.getNBits().toJava() - 1);
         NxRegMoveBuilder nxRegMoveBuilder = new NxRegMoveBuilder();
         nxRegMoveBuilder.setDst(dstBuilder.build());
         nxRegMoveBuilder.setSrc(srcBuilder.build());
