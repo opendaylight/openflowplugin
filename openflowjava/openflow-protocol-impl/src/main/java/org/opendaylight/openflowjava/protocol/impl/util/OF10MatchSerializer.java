@@ -36,21 +36,21 @@ public class OF10MatchSerializer implements OFSerializer<MatchV10> {
      */
     @Override
     public void serialize(final MatchV10 match, final ByteBuf outBuffer) {
-        outBuffer.writeInt(encodeWildcards(match.getWildcards(), match.getNwSrcMask(), match.getNwDstMask()));
-        outBuffer.writeShort(match.getInPort());
+        outBuffer.writeInt(encodeWildcards(match.getWildcards(), match.getNwSrcMask().toJava(), match.getNwDstMask().toJava()));
+        outBuffer.writeShort(match.getInPort().toJava());
         outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(match.getDlSrc()));
         outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(match.getDlDst()));
-        outBuffer.writeShort(match.getDlVlan());
-        outBuffer.writeByte(match.getDlVlanPcp());
+        outBuffer.writeShort(match.getDlVlan().toJava());
+        outBuffer.writeByte(match.getDlVlanPcp().toJava());
         outBuffer.writeZero(PADDING_IN_MATCH);
-        outBuffer.writeShort(match.getDlType());
-        outBuffer.writeByte(match.getNwTos());
-        outBuffer.writeByte(match.getNwProto());
+        outBuffer.writeShort(match.getDlType().toJava());
+        outBuffer.writeByte(match.getNwTos().toJava());
+        outBuffer.writeByte(match.getNwProto().toJava());
         outBuffer.writeZero(PADDING_IN_MATCH_2);
         outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(match.getNwSrc()));
         outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(match.getNwDst()));
-        outBuffer.writeShort(match.getTpSrc());
-        outBuffer.writeShort(match.getTpDst());
+        outBuffer.writeShort(match.getTpSrc().toJava());
+        outBuffer.writeShort(match.getTpDst().toJava());
     }
 
     private static int encodeWildcards(final FlowWildcardsV10 wildcards, final short srcMask, final short dstMask) {

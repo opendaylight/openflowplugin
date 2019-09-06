@@ -46,7 +46,7 @@ public final class TypeKeyMakerFactory {
                         entry.getOxmMatchField());
                 if (entry.getOxmClass().equals(ExperimenterClass.class)) {
                     ExperimenterIdCase entryValue = (ExperimenterIdCase) entry.getMatchEntryValue();
-                    key.setExperimenterId(entryValue.getExperimenter().getExperimenter().getValue());
+                    key.setExperimenterId(entryValue.getExperimenter().getExperimenter().getValue().toJava());
                     return key;
                 }
                 key.setExperimenterId(null);
@@ -68,7 +68,7 @@ public final class TypeKeyMakerFactory {
                 if (entry.getExperimenterId() != null) {
                     return new ActionSerializerKey<>(getVersion(),
                             (Class<ActionChoice>) entry.getActionChoice().implementedInterface(),
-                            entry.getExperimenterId().getValue());
+                            entry.getExperimenterId().getValue().toJava());
                 }
                 return new ActionSerializerKey<>(getVersion(),
                         (Class<ActionChoice>) entry.getActionChoice().implementedInterface(), null);
@@ -89,7 +89,7 @@ public final class TypeKeyMakerFactory {
                 if (entry.getExperimenterId() != null) {
                     return new InstructionSerializerKey<>(getVersion(),
                             (Class<InstructionChoice>) entry.getInstructionChoice().implementedInterface(),
-                            entry.getExperimenterId().getValue());
+                            entry.getExperimenterId().getValue().toJava());
                 }
                 return new InstructionSerializerKey<>(getVersion(),
                         (Class<InstructionChoice>) entry.getInstructionChoice().implementedInterface(), null);

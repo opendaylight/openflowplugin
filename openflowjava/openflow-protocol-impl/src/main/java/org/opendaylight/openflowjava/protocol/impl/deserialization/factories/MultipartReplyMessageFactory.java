@@ -139,6 +139,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates MultipartReply messages.
@@ -802,9 +803,9 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         MultipartReplyGroupFeaturesBuilder featuresBuilder = new MultipartReplyGroupFeaturesBuilder();
         featuresBuilder.setTypes(createGroupType(rawMessage.readUnsignedInt()));
         featuresBuilder.setCapabilities(createCapabilities(rawMessage.readUnsignedInt()));
-        List<Long> maxGroupsList = new ArrayList<>();
+        List<Uint32> maxGroupsList = new ArrayList<>();
         for (int i = 0; i < GROUP_TYPES; i++) {
-            maxGroupsList.add(rawMessage.readUnsignedInt());
+            maxGroupsList.add(Uint32.valueOf(rawMessage.readUnsignedInt()));
         }
         featuresBuilder.setMaxGroups(maxGroupsList);
         List<ActionType> actionBitmaps = new ArrayList<>();

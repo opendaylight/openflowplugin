@@ -24,7 +24,7 @@ public class OxmIpProtoSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         IpProtoCase entryValue = (IpProtoCase) entry.getMatchEntryValue();
-        outBuffer.writeByte(entryValue.getIpProto().getProtocolNumber());
+        outBuffer.writeByte(entryValue.getIpProto().getProtocolNumber().toJava());
     }
 
     @Override
