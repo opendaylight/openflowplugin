@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.api;
 
 public final class NiciraConstants {
@@ -14,6 +13,7 @@ public final class NiciraConstants {
 
     public static final Long NX_NSH_VENDOR_ID = 0x005AD650L;
 
-    private NiciraConstants() {}
+    private NiciraConstants() {
 
+    }
 }
