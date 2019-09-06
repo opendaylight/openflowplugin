@@ -53,7 +53,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
                                 .getSerializer(ExperimenterSerializerKeyFactory
                                         .createMultipartRequestSerializerKey(
                                                 EncodeConstants.OF13_VERSION_ID,
-                                                converter.getExperimenterId().getValue(),
+                                                converter.getExperimenterId().getValue().toJava(),
                                                 converter.getType()));
 
                         try {

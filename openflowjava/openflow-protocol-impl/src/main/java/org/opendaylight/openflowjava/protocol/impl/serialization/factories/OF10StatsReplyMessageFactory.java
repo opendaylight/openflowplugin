@@ -154,7 +154,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         MultipartReplyTableCase tableCase = (MultipartReplyTableCase) body;
         MultipartReplyTable table = tableCase.getMultipartReplyTable();
         for (TableStats tableStats : table.getTableStats()) {
-            outBuffer.writeByte(tableStats.getTableId());
+            outBuffer.writeByte(tableStats.getTableId().toJava());
             outBuffer.writeZero(TABLE_PADDING);
             write16String(tableStats.getName(), outBuffer);
             writeFlowWildcardsV10(tableStats.getWildcards(), outBuffer);
@@ -199,13 +199,13 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
             flowStatsBuff.writeByte((byte)flowStats.getTableId().longValue());
             flowStatsBuff.writeZero(FLOW_STATS_PADDING_1);
             OFSerializer<MatchV10> matchSerializer = registry
-                    .getSerializer(new MessageTypeKey<>(message.getVersion(), MatchV10.class));
+                    .getSerializer(new MessageTypeKey<>(message.getVersion().toJava(), MatchV10.class));
             matchSerializer.serialize(flowStats.getMatchV10(), flowStatsBuff);
             flowStatsBuff.writeInt(flowStats.getDurationSec().intValue());
             flowStatsBuff.writeInt(flowStats.getDurationNsec().intValue());
-            flowStatsBuff.writeShort(flowStats.getPriority());
-            flowStatsBuff.writeShort(flowStats.getIdleTimeout());
-            flowStatsBuff.writeShort(flowStats.getHardTimeout());
+            flowStatsBuff.writeShort(flowStats.getPriority().toJava());
+            flowStatsBuff.writeShort(flowStats.getIdleTimeout().toJava());
+            flowStatsBuff.writeShort(flowStats.getHardTimeout().toJava());
             flowStatsBuff.writeZero(FLOW_STATS_PADDING_2);
             flowStatsBuff.writeLong(flowStats.getCookie().longValue());
             flowStatsBuff.writeLong(flowStats.getPacketCount().longValue());

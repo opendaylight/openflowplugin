@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
@@ -21,6 +20,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Ord
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Translates GroupMod messages.
@@ -42,12 +42,12 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
 
     private SerializerRegistry registry;
 
-    public GroupMessageSerializer(boolean isGroupAddModEnabled) {
+    public GroupMessageSerializer(final boolean isGroupAddModEnabled) {
         this.isGroupAddModEnabled =  isGroupAddModEnabled;
     }
 
     @Override
-    public void serialize(GroupMessage message, ByteBuf outBuffer) {
+    public void serialize(final GroupMessage message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         if (isGroupAddModEnabled) {
@@ -72,7 +72,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
                 .forEach(bucket -> {
                     final int bucketIndex = outBuffer.writerIndex();
                     outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
-                    outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), 0));
+                    outBuffer.writeShort(MoreObjects.firstNonNull(bucket.getWeight(), Uint16.ZERO).toJava());
                     outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchPort(), OFConstants.OFPG_ANY)
                             .intValue());
                     outBuffer.writeInt(MoreObjects.firstNonNull(bucket.getWatchGroup(), OFConstants.OFPG_ANY)
@@ -99,7 +99,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 }

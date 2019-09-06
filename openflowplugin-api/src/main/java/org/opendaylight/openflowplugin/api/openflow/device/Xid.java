@@ -5,19 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.device;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public final class Xid {
-    private final Long value;
+    private final Uint32 value;
 
-    public Xid(final Long value) {
-        this.value = Preconditions.checkNotNull(value);
+    public Xid(final Uint32 value) {
+        this.value = requireNonNull(value);
     }
 
-    public Long getValue() {
+    public Uint32 getValue() {
         return value;
     }
 

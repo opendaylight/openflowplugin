@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.ArrayList;
@@ -128,6 +127,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Utility class for converting a MD-SAL Flow into the OF flow mod.
@@ -161,7 +163,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
 
     private static void layer3Match(final List<MatchEntry> matchEntryList, final Layer3Match layer3Match,
-                                    ConvertorExecutor converterExecutor,
+                                    final ConvertorExecutor converterExecutor,
                                     final ExtensionConverterProvider extensionConvertorProvider) {
         java.util.Optional<List<MatchEntry>> result = LAYER3_PROCESSOR.process(layer3Match, converterExecutor
         );
@@ -172,7 +174,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     }
 
     private static void layer4Match(final List<MatchEntry> matchEntryList, final Layer4Match layer4Match,
-            ConvertorExecutor converterExecutor, final ExtensionConverterProvider extensionConvertorProvider) {
+            final ConvertorExecutor converterExecutor, final ExtensionConverterProvider extensionConvertorProvider) {
         java.util.Optional<List<MatchEntry>> result = LAYER4_PROCESSOR.process(layer4Match, converterExecutor
         );
 
@@ -181,7 +183,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         }
     }
 
-    private static void inPortMatch(final List<MatchEntry> matchEntryList, NodeConnectorId inPort) {
+    private static void inPortMatch(final List<MatchEntry> matchEntryList, final NodeConnectorId inPort) {
         if (inPort == null) {
             return;
         }
@@ -200,7 +202,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         matchEntryList.add(matchEntryBuilder.build());
     }
 
-    private static void inPhyPortMatch(final List<MatchEntry> matchEntryList, NodeConnectorId inPhyPort) {
+    private static void inPhyPortMatch(final List<MatchEntry> matchEntryList, final NodeConnectorId inPhyPort) {
         if (inPhyPort == null) {
             return;
         }
@@ -233,12 +235,10 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry
             .value.metadata._case.MetadataBuilder metadataBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
                 .openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.metadata._case.MetadataBuilder();
-        metadataBuilder.setMetadata(ByteUtil.convertBigIntegerToNBytes(metadata.getMetadata(),
-                OFConstants.SIZE_OF_LONG_IN_BYTES));
+        metadataBuilder.setMetadata(ByteUtil.uint64toBytes(metadata.getMetadata()));
 
         if (hasmask) {
-            metadataBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(metadata.getMetadataMask(),
-                    OFConstants.SIZE_OF_LONG_IN_BYTES));
+            metadataBuilder.setMask(ByteUtil.uint64toBytes(metadata.getMetadataMask()));
         }
 
         metadataCaseBuilder.setMetadata(metadataBuilder.build());
@@ -275,12 +275,10 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         boolean hasMask = tunnel.getTunnelMask() != null;
 
         if (hasMask) {
-            tunnelIdBuilder.setMask(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelMask(),
-                    OFConstants.SIZE_OF_LONG_IN_BYTES));
+            tunnelIdBuilder.setMask(ByteUtil.uint64toBytes(tunnel.getTunnelMask()));
         }
 
-        tunnelIdBuilder.setTunnelId(ByteUtil.convertBigIntegerToNBytes(tunnel.getTunnelId(),
-                OFConstants.SIZE_OF_LONG_IN_BYTES));
+        tunnelIdBuilder.setTunnelId(ByteUtil.uint64toBytes(tunnel.getTunnelId()));
         tunnelIdCaseBuilder.setTunnelId(tunnelIdBuilder.build());
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
@@ -372,7 +370,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             matchEntryBuilder.setOxmMatchField(VlanVid.class);
             VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
             boolean setCfiBit = false;
-            Integer vidEntryValue = 0;
+            Uint16 vidEntryValue = Uint16.ZERO;
             boolean hasmask = false;
 
             if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
@@ -381,7 +379,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
                     vidEntryValue = vlanId.getVlanId().getValue();
                 }
 
-                hasmask = vidEntryValue == 0;
+                hasmask = vidEntryValue.toJava() == 0;
                 if (hasmask) {
                     vlanVidBuilder.setMask(VLAN_VID_MASK);
                 }
@@ -451,7 +449,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         }
     }
 
-    private static void tcpFlagsMatch(List<MatchEntry> matchEntryList, TcpFlagsMatch tcpFlagsMatch) {
+    private static void tcpFlagsMatch(final List<MatchEntry> matchEntryList, final TcpFlagsMatch tcpFlagsMatch) {
         ExperimenterIdCaseBuilder expIdCaseBuilder = new ExperimenterIdCaseBuilder();
         if (tcpFlagsMatch != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
@@ -498,43 +496,37 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         return matchEntryBuilder.build();
     }
 
-    private static MatchEntry toOfMplsTc(final Short mplsTc) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(MplsTc.class);
-        MplsTcCaseBuilder mplsTcCaseBuilder = new MplsTcCaseBuilder();
-        MplsTcBuilder mplsTcBuilder = new MplsTcBuilder();
-        mplsTcBuilder.setTc(mplsTc);
-        mplsTcCaseBuilder.setMplsTc(mplsTcBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(mplsTcCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfMplsTc(final Uint8 mplsTc) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(MplsTc.class)
+                .setMatchEntryValue(new MplsTcCaseBuilder()
+                    .setMplsTc(new MplsTcBuilder().setTc(mplsTc).build())
+                    .build())
+                .build();
     }
 
-    private static MatchEntry toOfMplsBos(final Short mplsBos) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(MplsBos.class);
-        MplsBosCaseBuilder mplsBosCaseBuilder = new MplsBosCaseBuilder();
-        MplsBosBuilder mplsBosBuilder = new MplsBosBuilder();
-        mplsBosBuilder.setBos(mplsBos != 0);
-        mplsBosCaseBuilder.setMplsBos(mplsBosBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(mplsBosCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfMplsBos(final Uint8 mplsBos) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(MplsBos.class)
+                .setMatchEntryValue(new MplsBosCaseBuilder()
+                    .setMplsBos(new MplsBosBuilder().setBos(mplsBos.toJava() != 0).build())
+                    .build())
+                .build();
     }
 
-    private static MatchEntry toOfMplsLabel(final Long mplsLabel) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(MplsLabel.class);
-        MplsLabelCaseBuilder mplsLabelCaseBuilder = new MplsLabelCaseBuilder();
-        MplsLabelBuilder mplsLabelBuilder = new MplsLabelBuilder();
-        mplsLabelBuilder.setMplsLabel(mplsLabel);
-        mplsLabelCaseBuilder.setMplsLabel(mplsLabelBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(mplsLabelCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfMplsLabel(final Uint32 mplsLabel) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(MplsLabel.class)
+                .setMatchEntryValue(new MplsLabelCaseBuilder()
+                    .setMplsLabel(new MplsLabelBuilder().setMplsLabel(mplsLabel).build())
+                    .build())
+                .build();
     }
 
     private static MatchEntry toOfEthernetType(final EthernetType ethernetType) {
@@ -551,82 +543,67 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         return matchEntryBuilder.build();
     }
 
-    private static MatchEntry toOfIcmpv4Type(final Short icmpv4Type) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(Icmpv4Type.class);
-        Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
-        Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
-        icmpv4TypeBuilder.setIcmpv4Type(icmpv4Type);
-        icmpv4TypeCaseBuilder.setIcmpv4Type(icmpv4TypeBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(icmpv4TypeCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfIcmpv4Type(final Uint8 icmpv4Type) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(Icmpv4Type.class)
+                .setMatchEntryValue(new Icmpv4TypeCaseBuilder()
+                    .setIcmpv4Type(new Icmpv4TypeBuilder().setIcmpv4Type(icmpv4Type).build())
+                    .build())
+                .build();
     }
 
-    private static MatchEntry toOfIcmpv4Code(final Short icmpv4Code) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(Icmpv4Code.class);
-        Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
-        Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
-        icmpv4CodeBuilder.setIcmpv4Code(icmpv4Code);
-        icmpv4CodeCaseBuilder.setIcmpv4Code(icmpv4CodeBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(icmpv4CodeCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfIcmpv4Code(final Uint8 icmpv4Code) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(Icmpv4Code.class)
+                .setMatchEntryValue(new Icmpv4CodeCaseBuilder()
+                    .setIcmpv4Code(new Icmpv4CodeBuilder().setIcmpv4Code(icmpv4Code).build()).build())
+                .build();
     }
 
-    private static MatchEntry toOfIcmpv6Type(final Short icmpv6Type) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(Icmpv6Type.class);
-        Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
-        Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
-        icmpv6TypeBuilder.setIcmpv6Type(icmpv6Type);
-        icmpv6TypeCaseBuilder.setIcmpv6Type(icmpv6TypeBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(icmpv6TypeCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfIcmpv6Type(final Uint8 icmpv6Type) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(Icmpv6Type.class)
+                .setMatchEntryValue(new Icmpv6TypeCaseBuilder()
+                    .setIcmpv6Type(new Icmpv6TypeBuilder().setIcmpv6Type(icmpv6Type).build())
+                    .build())
+                .build();
     }
 
-    private static MatchEntry toOfIcmpv6Code(final Short icmpv6Code) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(Icmpv6Code.class);
-        Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
-        Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
-        icmpv6CodeBuilder.setIcmpv6Code(icmpv6Code);
-        icmpv6CodeCaseBuilder.setIcmpv6Code(icmpv6CodeBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(icmpv6CodeCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfIcmpv6Code(final Uint8 icmpv6Code) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(Icmpv6Code.class)
+                .setMatchEntryValue(new Icmpv6CodeCaseBuilder()
+                    .setIcmpv6Code(new Icmpv6CodeBuilder().setIcmpv6Code(icmpv6Code).build())
+                    .build())
+                .build();
     }
 
-    private static MatchEntry toOfIpProto(final Short ipProtocol) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(IpProto.class);
-        IpProtoCaseBuilder ipProtoCaseBuilder = new IpProtoCaseBuilder();
-        IpProtoBuilder ipProtoBuilder = new IpProtoBuilder();
-        ipProtoBuilder.setProtocolNumber(ipProtocol);
-        ipProtoCaseBuilder.setIpProto(ipProtoBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(ipProtoCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfIpProto(final Uint8 ipProtocol) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(IpProto.class)
+                .setMatchEntryValue(new IpProtoCaseBuilder()
+                    .setIpProto(new IpProtoBuilder().setProtocolNumber(ipProtocol).build())
+                    .build())
+                .build();
     }
 
-    private static MatchEntry toOfIpEcn(final Short ipEcn) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(IpEcn.class);
-        IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
-        IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn(ipEcn);
-        ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
-        return matchEntryBuilder.build();
+    private static MatchEntry toOfIpEcn(final Uint8 ipEcn) {
+        return new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE)
+                .setOxmMatchField(IpEcn.class)
+                .setMatchEntryValue(new IpEcnCaseBuilder().setIpEcn(new IpEcnBuilder().setEcn(ipEcn).build()).build())
+                .build();
     }
 
     /**

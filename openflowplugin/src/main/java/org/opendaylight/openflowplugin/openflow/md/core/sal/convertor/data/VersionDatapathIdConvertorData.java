@@ -8,20 +8,20 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 
-import java.math.BigInteger;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Convertor data implementation containing Openflow version and datapath ID.
  */
 public class VersionDatapathIdConvertorData extends VersionConvertorData {
-    private BigInteger datapathId;
+    private Uint64 datapathId;
 
     /**
      * Instantiates a new version datapath id convertor data.
      *
      * @param version the version
      */
-    public VersionDatapathIdConvertorData(short version) {
+    public VersionDatapathIdConvertorData(final short version) {
         super(version);
     }
 
@@ -30,7 +30,7 @@ public class VersionDatapathIdConvertorData extends VersionConvertorData {
      *
      * @return the datapath id
      */
-    public BigInteger getDatapathId() {
+    public Uint64 getDatapathId() {
         return datapathId;
     }
 
@@ -39,7 +39,7 @@ public class VersionDatapathIdConvertorData extends VersionConvertorData {
      *
      * @param datapathId the datapath id
      */
-    public void setDatapathId(BigInteger datapathId) {
+    public void setDatapathId(final Uint64 datapathId) {
         this.datapathId = datapathId;
     }
 }

@@ -126,17 +126,14 @@ public final class FlatBatchFlowAdapters {
     @VisibleForTesting
     static <T extends BatchFlowOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchFlowResult(final int stepOffset) {
-        return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
-            @Override
-            public RpcResult<ProcessFlatBatchOutput> apply(final RpcResult<T> input) {
-                List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
-                ProcessFlatBatchOutputBuilder outputBuilder =
-                        new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
-                return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
-                                       .withRpcErrors(input.getErrors())
-                                       .withResult(outputBuilder.build())
-                                       .build();
-            }
+        return input -> {
+            List<BatchFailure> batchFailures = wrapBatchFlowFailuresForFlat(input, stepOffset);
+            ProcessFlatBatchOutputBuilder outputBuilder =
+                    new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+            return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
+                                   .withRpcErrors(input.getErrors())
+                                   .withResult(outputBuilder.build())
+                                   .build();
         };
     }
 
@@ -146,7 +143,7 @@ public final class FlatBatchFlowAdapters {
         if (input.getResult().getBatchFailedFlowsOutput() != null) {
             for (BatchFailedFlowsOutput stepOutput : input.getResult().getBatchFailedFlowsOutput()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
-                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder())
+                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
                         .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
                                 .setFlowId(stepOutput.getFlowId())
                                 .build())

@@ -37,7 +37,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         if (match == null) {
             LOG.debug("Match is null");
             return;
@@ -56,7 +56,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
         }
     }
 
-    private static void serializeType(Match match, ByteBuf out) {
+    private static void serializeType(final Match match, final ByteBuf out) {
         if (match.getType().isAssignableFrom(StandardMatchType.class)) {
             out.writeShort(STANDARD_MATCH_TYPE_CODE);
         } else if (match.getType().isAssignableFrom(OxmMatchType.class)) {
@@ -70,7 +70,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
      * @param matchEntries list of match entries (oxm_fields)
      * @param out output ByteBuf
      */
-    public void serializeMatchEntries(List<MatchEntry> matchEntries, ByteBuf out) {
+    public void serializeMatchEntries(final List<MatchEntry> matchEntries, final ByteBuf out) {
         if (matchEntries == null) {
             LOG.debug("Match entries are null");
             return;
@@ -91,7 +91,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
 }

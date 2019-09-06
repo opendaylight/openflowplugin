@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.NextTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.NextTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.next.table.TablesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NextTableTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
 
@@ -25,7 +26,7 @@ public class NextTableTablePropertySerializerTest extends AbstractTablePropertyS
         final short tableId = 42;
         final NextTable property = new NextTableBuilder()
                 .setTables(new TablesBuilder()
-                        .setTableIds(Collections.singletonList(tableId))
+                        .setTableIds(Collections.singletonList(Uint8.valueOf(tableId)))
                         .build())
                 .build();
 

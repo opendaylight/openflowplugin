@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,6 +71,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * test for {@link ActionConvertor}.
@@ -97,7 +99,7 @@ public class ActionConvertorTest {
         dropActionData();
 
         ActionConvertorData data = new ActionConvertorData((short) 0X4);
-        data.setDatapathId(BigInteger.ONE);
+        data.setDatapathId(Uint64.ONE);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
@@ -199,11 +201,9 @@ public class ActionConvertorTest {
                 action : ofActionsList) {
             if (action.getActionChoice() instanceof OutputActionCase) {
                 OutputActionCase outputActionCase = (OutputActionCase) action.getActionChoice();
-                Assert.assertEquals((Integer) 10, outputActionCase.getOutputAction().getMaxLength());
-                long port = 4294967293L;
-                Assert.assertEquals(port, (long) outputActionCase.getOutputAction().getPort().getValue());
-
-
+                Assert.assertEquals(Uint16.valueOf(10), outputActionCase.getOutputAction().getMaxLength());
+                Assert.assertEquals(Uint32.valueOf(4294967293L),
+                    outputActionCase.getOutputAction().getPort().getValue());
             }
             if (action.getActionChoice() instanceof CopyTtlInCase) {
                 Assert.assertEquals(action.getActionChoice().implementedInterface().getName(),
@@ -230,13 +230,13 @@ public class ActionConvertorTest {
                 EtherType etherType = pushMplsCase.getPushMplsAction().getEthertype();
 
                 if (etherType != null) {
-                    Assert.assertEquals((Integer) 10, etherType.getValue());
+                    Assert.assertEquals(10, etherType.getValue().toJava());
                 }
             }
 
             if (action.getActionChoice() instanceof PopMplsCase) {
                 PopMplsCase popMplsCase = (PopMplsCase) action.getActionChoice();
-                Assert.assertEquals((Integer) 10, popMplsCase.getPopMplsAction().getEthertype().getValue());
+                Assert.assertEquals(10, popMplsCase.getPopMplsAction().getEthertype().getValue().toJava());
             }
 
             if (action.getActionChoice() instanceof SetQueueCase) {
@@ -246,7 +246,7 @@ public class ActionConvertorTest {
 
             if (action.getActionChoice() instanceof GroupCase) {
                 GroupCase groupCase = (GroupCase) action.getActionChoice();
-                Assert.assertEquals(98, (long) groupCase.getGroupAction().getGroupId());
+                Assert.assertEquals(Uint32.valueOf(98), groupCase.getGroupAction().getGroupId());
             }
 
             if (action.getActionChoice() instanceof PushVlanCase) {
@@ -270,7 +270,7 @@ public class ActionConvertorTest {
             if (action.getActionChoice() instanceof PushPbbCase) {
                 PushPbbCase pushPbbCase = (PushPbbCase) action.getActionChoice();
                 if (pushPbbCase.getPushPbbAction().getEthertype() != null) {
-                    Assert.assertEquals((Integer) 10, pushPbbCase.getPushPbbAction().getEthertype().getValue());
+                    Assert.assertEquals(10, pushPbbCase.getPushPbbAction().getEthertype().getValue().toJava());
                 }
             }
 

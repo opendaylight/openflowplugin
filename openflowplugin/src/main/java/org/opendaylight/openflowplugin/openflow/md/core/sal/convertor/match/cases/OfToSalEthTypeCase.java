@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
@@ -17,9 +16,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthTypeCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.type._case.EthType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OfToSalEthTypeCase extends ConvertorCase<EthTypeCase, MatchBuilder, MatchResponseConvertorData> {
     public OfToSalEthTypeCase() {
@@ -27,18 +26,16 @@ public class OfToSalEthTypeCase extends ConvertorCase<EthTypeCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull EthTypeCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull final EthTypeCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
-        final EthernetMatchBuilder ethMatchBuilder = data.getEthernetMatchBuilder();
-
         final EthType ethTypeCase = source.getEthType();
-
         if (ethTypeCase != null) {
-            EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-            ethTypeBuilder.setType(new EtherType((long) ethTypeCase.getEthType().getValue()));
-            ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
-            matchBuilder.setEthernetMatch(ethMatchBuilder.build());
+            matchBuilder.setEthernetMatch(data.getEthernetMatchBuilder()
+                .setEthernetType(new EthernetTypeBuilder()
+                    .setType(new EtherType(Uint32.valueOf(ethTypeCase.getEthType().getValue())))
+                    .build())
+                .build());
         }
 
         return Optional.of(matchBuilder);

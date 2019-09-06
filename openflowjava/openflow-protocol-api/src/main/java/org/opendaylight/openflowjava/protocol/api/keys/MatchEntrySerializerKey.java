@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Key for a match entry serializer.
@@ -24,7 +24,8 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
 
     private final Class<C> oxmClass;
     private final Class<F> oxmField;
-    private Long experimenterId;
+
+    private Uint32 experimenterId;
 
     /**
      * Constructor.
@@ -33,8 +34,7 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
      * @param oxmClass oxm_class (see specification)
      * @param oxmField oxm_field (see specification)
      */
-    public MatchEntrySerializerKey(short msgVersion, Class<C> oxmClass,
-            Class<F> oxmField) {
+    public MatchEntrySerializerKey(final short msgVersion, final Class<C> oxmClass, final Class<F> oxmField) {
         super(msgVersion, MatchEntry.class);
         this.oxmClass = oxmClass;
         this.oxmField = oxmField;
@@ -45,7 +45,7 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
      *
      * @param experimenterId experimenter / vendor ID
      */
-    public void setExperimenterId(Long experimenterId) {
+    public void setExperimenterId(final Uint32 experimenterId) {
         this.experimenterId = experimenterId;
     }
 
@@ -60,7 +60,7 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

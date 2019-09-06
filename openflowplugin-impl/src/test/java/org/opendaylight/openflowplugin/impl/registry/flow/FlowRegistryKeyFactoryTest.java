@@ -36,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.f
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +93,7 @@ public class FlowRegistryKeyFactoryTest {
 
         // different priority
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
-        flowStatisticsMapListBld2.setPriority(flowStatisticsMapListBld2.getPriority() + 1);
+        flowStatisticsMapListBld2.setPriority(flowStatisticsMapListBld2.getPriority().toJava() + 1);
         key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
         Assert.assertFalse(key1.equals(key2));
 
@@ -103,7 +105,7 @@ public class FlowRegistryKeyFactoryTest {
 
         // different tableId
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
-        flowStatisticsMapListBld2.setTableId((short) (flowStatisticsMapListBld2.getTableId() + 1));
+        flowStatisticsMapListBld2.setTableId((short) (flowStatisticsMapListBld2.getTableId().toJava() + 1));
         key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
         Assert.assertFalse(key1.equals(key2));
 
@@ -147,7 +149,7 @@ public class FlowRegistryKeyFactoryTest {
                 .setTableId((short) 0);
 
         FlowBuilder fb1 = new FlowBuilder(flow1Builder.build());
-        fb1.setTableId(null);
+        fb1.setTableId((Uint8) null);
         try {
             FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb1.build());
             Assert.fail("hash creation should have failed because of NPE");
@@ -157,7 +159,7 @@ public class FlowRegistryKeyFactoryTest {
         }
 
         FlowBuilder fb2 = new FlowBuilder(flow1Builder.build());
-        fb2.setPriority(null);
+        fb2.setPriority((Uint16) null);
         try {
             FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb2.build());
         } catch (NullPointerException e) {

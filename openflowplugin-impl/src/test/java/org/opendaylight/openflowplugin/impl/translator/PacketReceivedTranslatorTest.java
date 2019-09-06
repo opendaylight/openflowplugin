@@ -49,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PacketReceivedTranslatorTest {
@@ -82,7 +83,7 @@ public class PacketReceivedTranslatorTest {
         final List<PhyPort> phyPorts = Collections.singletonList(phyPort);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
 
-        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
     }
 
     @Test
@@ -131,16 +132,14 @@ public class PacketReceivedTranslatorTest {
         PacketInMessageBuilder inputBld = new PacketInMessageBuilder()
                 .setMatch(packetInMatchBld.build())
                 .setVersion(OFConstants.OFP_VERSION_1_3);
-        BigInteger dpid = BigInteger.TEN;
-
         final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
-        final Match packetInMatch = packetReceivedTranslator.getPacketInMatch(inputBld.build(), dpid);
+        final Match packetInMatch = packetReceivedTranslator.getPacketInMatch(inputBld.build(), Uint64.valueOf(10));
 
         Assert.assertNotNull(packetInMatch.getInPort());
         Assert.assertEquals("openflow:10:" + PORT_NUM_VALUE, packetInMatch.getInPort().getValue());
     }
 
-    private static MatchEntryBuilder assembleMatchEntryBld(long portNumValue) {
+    private static MatchEntryBuilder assembleMatchEntryBld(final long portNumValue) {
         MatchEntryBuilder matchEntryBuilder = prepareHeader(InPort.class, false);
         InPortBuilder inPortBld = new InPortBuilder().setPortNumber(new PortNumber(portNumValue));
         InPortCaseBuilder caseBuilder = new InPortCaseBuilder();
@@ -149,7 +148,8 @@ public class PacketReceivedTranslatorTest {
         return matchEntryBuilder;
     }
 
-    private static MatchEntryBuilder prepareHeader(Class<? extends MatchField> oxmMatchField, boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final Class<? extends MatchField> oxmMatchField,
+            final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setOxmMatchField(oxmMatchField);

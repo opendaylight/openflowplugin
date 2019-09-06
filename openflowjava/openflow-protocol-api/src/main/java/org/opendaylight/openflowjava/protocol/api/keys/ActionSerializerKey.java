@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Key for an action serializer.
@@ -21,7 +21,7 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
         implements ExperimenterSerializerKey {
 
     private final Class<T> actionType;
-    private final Long experimenterId;
+    private final Uint32 experimenterId;
 
     /**
      * Constructor.
@@ -30,11 +30,22 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
      * @param actionType type of action
      * @param experimenterId experimenter / vendor ID
      */
-    public ActionSerializerKey(short msgVersion, Class<T> actionType,
-            Long experimenterId) {
+    public ActionSerializerKey(final short msgVersion, final Class<T> actionType, final Uint32 experimenterId) {
         super(msgVersion, Action.class);
         this.actionType = actionType;
         this.experimenterId = experimenterId;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param msgVersion protocol wire version
+     * @param actionType type of action
+     * @param experimenterId experimenter / vendor ID
+     */
+    @Deprecated(forRemoval = true)
+    public ActionSerializerKey(final short msgVersion, final Class<T> actionType, final Long experimenterId) {
+        this(msgVersion, actionType, experimenterId == null ? (Uint32) null : Uint32.valueOf(experimenterId));
     }
 
     @Override
@@ -47,7 +58,7 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

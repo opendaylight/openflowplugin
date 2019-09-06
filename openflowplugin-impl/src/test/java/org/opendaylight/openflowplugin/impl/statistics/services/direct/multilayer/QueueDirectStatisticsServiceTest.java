@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
@@ -36,9 +35,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Long QUEUE_NO = 1L;
+    static final Uint32 QUEUE_NO = Uint32.ONE;
     private QueueDirectStatisticsService service;
 
     @Override
@@ -58,7 +59,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getNodeConnectorId()).thenReturn(new NodeConnectorId(NODE_ID + ":" + PORT_NO));
 
         final MultipartRequestQueueCase body = (MultipartRequestQueueCase) ((MultipartRequestInput) service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42)), input))
             .getMultipartRequestBody();
 
         final MultipartRequestQueue queue = body.getMultipartRequestQueue();
@@ -82,9 +83,9 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
         when(queueStat.getPortNo()).thenReturn(PORT_NO);
         when(queueStat.getQueueId()).thenReturn(QUEUE_NO);
-        when(queueStat.getTxBytes()).thenReturn(BigInteger.ONE);
-        when(queueStat.getTxErrors()).thenReturn(BigInteger.ONE);
-        when(queueStat.getTxPackets()).thenReturn(BigInteger.ONE);
+        when(queueStat.getTxBytes()).thenReturn(Uint64.ONE);
+        when(queueStat.getTxErrors()).thenReturn(Uint64.ONE);
+        when(queueStat.getTxPackets()).thenReturn(Uint64.ONE);
 
         final GetQueueStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getQueueIdAndStatisticsMap().size() > 0);

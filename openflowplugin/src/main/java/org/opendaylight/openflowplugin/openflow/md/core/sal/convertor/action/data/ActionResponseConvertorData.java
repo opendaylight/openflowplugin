@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.da
 
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Convertor data used in
@@ -18,14 +19,14 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
  */
 public class ActionResponseConvertorData extends ConvertorData {
     private ActionPath actionPath;
-    private Short ipProtocol;
+    private Uint8 ipProtocol;
 
     /**
      * Instantiates a new Action response convertor data.
      *
      * @param version the version
      */
-    public ActionResponseConvertorData(short version) {
+    public ActionResponseConvertorData(final short version) {
         super(version);
     }
 
@@ -43,7 +44,7 @@ public class ActionResponseConvertorData extends ConvertorData {
      *
      * @param actionPath the action path
      */
-    public void setActionPath(ActionPath actionPath) {
+    public void setActionPath(final ActionPath actionPath) {
         this.actionPath = actionPath;
     }
 
@@ -52,7 +53,7 @@ public class ActionResponseConvertorData extends ConvertorData {
      *
      * @return the ip protocol
      */
-    public Short getIpProtocol() {
+    public Uint8 getIpProtocol() {
         return ipProtocol;
     }
 
@@ -61,7 +62,7 @@ public class ActionResponseConvertorData extends ConvertorData {
      *
      * @param ipProtocol the ip protocol
      */
-    public void setIpProtocol(final Short ipProtocol) {
+    public void setIpProtocol(final Uint8 ipProtocol) {
         this.ipProtocol = ipProtocol;
     }
 }

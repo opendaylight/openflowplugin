@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OpenflowPortsUtil.
@@ -192,7 +193,7 @@ public class OpenflowPortsUtilTest {
     public void testPortNumberToString() {
         PortNumberUni portNumber;
 
-        portNumber = new PortNumberUni(42L);
+        portNumber = new PortNumberUni(Uint32.valueOf(42L));
         Assert.assertEquals("42", OpenflowPortsUtil.portNumberToString(portNumber));
 
         portNumber = new PortNumberUni(OutputPortValues.FLOOD.toString());
