@@ -361,7 +361,7 @@ public class LLDPTLV extends Packet {
             byte[] customArray = new byte[customArrayLength];
             System.arraycopy(customTlvValue, CUSTOM_TLV_OFFSET, customArray, 0, customArrayLength);
             try {
-                customString = new String(customArray, "UTF-8");
+                customString = new String(customArray, StandardCharsets.UTF_8);
             } catch (final UnsupportedEncodingException e) {
                 LOG.warn("Error creating string from the custom TLV value: {}", Arrays.toString(customTlvValue), e);
             }
