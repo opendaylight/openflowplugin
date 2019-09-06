@@ -78,7 +78,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                     DeviceInitializationUtil.makeEmptyTables(
                         deviceContext,
                         deviceInfo,
-                        deviceContext.getPrimaryConnectionContext().getFeatures().getTables());
+                        deviceContext.getPrimaryConnectionContext().getFeatures().getTables().toJava());
                 }
             }
 

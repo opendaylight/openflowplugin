@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PortConvertorTest {
 
@@ -61,7 +62,7 @@ public class PortConvertorTest {
         PortBuilder portBld = new PortBuilder();
         portBld.setAdvertisedFeatures(features);
         portBld.setConfiguration(config);
-        portBld.setPortNumber(new PortNumberUni(42L));
+        portBld.setPortNumber(new PortNumberUni(Uint32.valueOf(42L)));
         portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
 
         VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
@@ -103,12 +104,12 @@ public class PortConvertorTest {
         flowCapableNodeConnectorBuilder.setAdvertisedFeatures(features);
         flowCapableNodeConnectorBuilder.setConfiguration(config);
         flowCapableNodeConnectorBuilder.setCurrentFeature(features);
-        flowCapableNodeConnectorBuilder.setCurrentSpeed(null);
+        flowCapableNodeConnectorBuilder.setCurrentSpeed((Uint32) null);
         flowCapableNodeConnectorBuilder.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
-        flowCapableNodeConnectorBuilder.setMaximumSpeed(null);
+        flowCapableNodeConnectorBuilder.setMaximumSpeed((Uint32) null);
         flowCapableNodeConnectorBuilder.setName("foo");
         flowCapableNodeConnectorBuilder.setPeerFeatures(features);
-        flowCapableNodeConnectorBuilder.setPortNumber(new PortNumberUni(42L));
+        flowCapableNodeConnectorBuilder.setPortNumber(new PortNumberUni(Uint32.valueOf(42L)));
         flowCapableNodeConnectorBuilder.setState(state);
         flowCapableNodeConnectorBuilder.setSupported(features);
 
@@ -120,9 +121,9 @@ public class PortConvertorTest {
         portsB.setAdvertisedFeatures(portf31);
         portsB.setConfig(config31);
         portsB.setCurrentFeatures(portf31);
-        portsB.setCurrSpeed(null);
+        portsB.setCurrSpeed((Uint32) null);
         portsB.setHwAddr(new MacAddress(DEFAULT_MAC_ADDRESS));
-        portsB.setMaxSpeed(null);
+        portsB.setMaxSpeed((Uint32) null);
         portsB.setName("foo");
         portsB.setPeerFeatures(portf31);
         portsB.setPortNo(42L);

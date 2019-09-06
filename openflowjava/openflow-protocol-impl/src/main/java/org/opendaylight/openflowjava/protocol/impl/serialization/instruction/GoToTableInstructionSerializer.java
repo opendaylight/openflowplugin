@@ -25,7 +25,7 @@ public class GoToTableInstructionSerializer extends AbstractInstructionSerialize
         outBuffer.writeShort(getType());
         outBuffer.writeShort(InstructionConstants.STANDARD_INSTRUCTION_LENGTH);
         outBuffer.writeByte(((GotoTableCase) instruction.getInstructionChoice())
-                .getGotoTable().getTableId());
+                .getGotoTable().getTableId().toJava());
         outBuffer.writeZero(InstructionConstants.PADDING_IN_GOTO_TABLE);
     }
 

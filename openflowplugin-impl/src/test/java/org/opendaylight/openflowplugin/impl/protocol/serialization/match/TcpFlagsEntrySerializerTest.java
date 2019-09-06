@@ -67,6 +67,6 @@ public class TcpFlagsEntrySerializerTest extends AbstractExperimenterMatchEntryS
 
     @Override
     protected long getExperimenterId() {
-        return EncodeConstants.ONF_EXPERIMENTER_ID;
+        return EncodeConstants.ONF_EXPERIMENTER_ID.toJava();
     }
 }

@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.request.multipart.request.body.MultipartRequestPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     private PortDirectStatisticsService service;
@@ -51,7 +52,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         when(input.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
         final MultipartRequestPortStats body = (MultipartRequestPortStats) ((MultipartRequest)service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
             .getMultipartRequestBody();
 
         assertEquals(nodeConnectorId, body.getNodeConnectorId());

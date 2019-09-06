@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.google.common.cache.Cache;
@@ -47,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
@@ -58,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test counters in ConnectionAdapter (at least DS_ENTERED_OFJAVA, DS_FLOW_MODS_ENTERED and US_MESSAGE_PASS counters
@@ -109,8 +112,25 @@ public class ConnectionAdapterImplStatisticsTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mockXid(barrierInput);
+        mockXid(echoInput);
+        mockXid(echoReplyInput);
+        mockXid(getConfigInput);
+        mockXid(getFeaturesInput);
+        mockXid(getQueueConfigInput);
+        mockXid(groupModInput);
+        mockXid(roleRequestInput);
+        mockXid(setConfigInput);
+        mockXid(tableModInput);
+        mockXid(getAsyncInput);
+        mockXid(setAsyncInput);
+
         statCounters = StatisticsCounters.getInstance();
         statCounters.startCounting(false, 0);
+    }
+
+    private static void mockXid(final OfHeader message) {
+        doReturn(Uint32.ZERO).when(message).getXid();
     }
 
     /**

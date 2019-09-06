@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartRe
     public void storeStatistics(final MultipartReplyPortDesc statistics, final boolean withParents) {
         statistics.getPorts()
             .forEach(stat -> {
-                long portNumber = OpenflowPortsUtil.getProtocolPortNumber(
+                Uint32 portNumber = OpenflowPortsUtil.getProtocolPortNumber(
                         OpenflowVersion.get(features.getVersion()),
                         stat.getPortNumber());
                 final NodeConnectorId id = InventoryDataServiceUtil

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
@@ -18,6 +17,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper class for buffers.
@@ -26,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  */
 public abstract class BufferHelper {
 
-    public static final Long DEFAULT_XID = 0x01020304L;
+    public static final Uint32 DEFAULT_XID = Uint32.valueOf(0x01020304L);
     private static final byte[] XID = new byte[] { 0x01, 0x02, 0x03, 0x04 };
 
     /**
@@ -36,7 +37,7 @@ public abstract class BufferHelper {
      * @return ByteBuf filled with OpenFlow protocol message without first 4
      *         bytes
      */
-    public static ByteBuf buildBuffer(byte[] payload) {
+    public static ByteBuf buildBuffer(final byte[] payload) {
         ByteBuf bb = UnpooledByteBufAllocator.DEFAULT.buffer();
         bb.writeBytes(XID);
         bb.writeBytes(payload);
@@ -50,7 +51,7 @@ public abstract class BufferHelper {
      * @return ByteBuf filled with OpenFlow protocol message without first 4
      *         bytes
      */
-    public static ByteBuf buildBuffer(String payload) {
+    public static ByteBuf buildBuffer(final String payload) {
         return buildBuffer(ByteBufUtils.hexStringToBytes(payload));
     }
 
@@ -74,7 +75,7 @@ public abstract class BufferHelper {
      * @param msgType type of received message
      * @param length expected length of message in header
      */
-    public static void checkHeaderV13(ByteBuf input, byte msgType, int length) {
+    public static void checkHeaderV13(final ByteBuf input, final byte msgType, final int length) {
         checkHeader(input, msgType, length, (short) EncodeConstants.OF13_VERSION_ID);
     }
 
@@ -83,8 +84,8 @@ public abstract class BufferHelper {
      *
      * @param ofHeader OpenFlow protocol header
      */
-    public static void checkHeaderV13(OfHeader ofHeader) {
-        checkHeader(ofHeader, (short) EncodeConstants.OF13_VERSION_ID);
+    public static void checkHeaderV13(final OfHeader ofHeader) {
+        checkHeader(ofHeader, Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
     }
 
     /**
@@ -94,7 +95,7 @@ public abstract class BufferHelper {
      * @param msgType type of received message
      * @param length expected length of message in header
      */
-    public static void checkHeaderV10(ByteBuf input, byte msgType, int length) {
+    public static void checkHeaderV10(final ByteBuf input, final byte msgType, final int length) {
         checkHeader(input, msgType, length, (short) EncodeConstants.OF10_VERSION_ID);
     }
 
@@ -103,15 +104,15 @@ public abstract class BufferHelper {
      *
      * @param ofHeader OpenFlow protocol header
      */
-    public static void checkHeaderV10(OfHeader ofHeader) {
-        checkHeader(ofHeader, (short) EncodeConstants.OF10_VERSION_ID);
+    public static void checkHeaderV10(final OfHeader ofHeader) {
+        checkHeader(ofHeader, Uint8.valueOf(EncodeConstants.OF10_VERSION_ID));
     }
 
-    private static void checkHeader(ByteBuf input, byte msgType, int length, Short version) {
+    private static void checkHeader(final ByteBuf input, final byte msgType, final int length, final Short version) {
         Assert.assertEquals("Wrong version", version, Short.valueOf(input.readByte()));
         Assert.assertEquals("Wrong type", msgType, input.readByte());
         Assert.assertEquals("Wrong length", length, input.readUnsignedShort());
-        Assert.assertEquals("Wrong Xid", DEFAULT_XID, Long.valueOf(input.readUnsignedInt()));
+        Assert.assertEquals("Wrong Xid", DEFAULT_XID, Uint32.valueOf(input.readUnsignedInt()));
     }
 
     /**
@@ -120,7 +121,7 @@ public abstract class BufferHelper {
      * @param ofHeader OpenFlow protocol header
      * @param version OpenFlow protocol version
      */
-    public static void checkHeader(OfHeader ofHeader, Short version) {
+    public static void checkHeader(final OfHeader ofHeader, final Uint8 version) {
         Assert.assertEquals("Wrong version", version, ofHeader.getVersion());
         Assert.assertEquals("Wrong Xid", DEFAULT_XID, ofHeader.getXid());
     }
@@ -131,11 +132,11 @@ public abstract class BufferHelper {
      * @param builder builder
      * @param version wire protocol number used
      */
-    public static void setupHeader(Object builder, int version) throws NoSuchMethodException, SecurityException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static void setupHeader(final Object builder, final int version) throws NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException {
         Method method = builder.getClass().getMethod("setVersion", Short.class);
         method.invoke(builder, (short) version);
-        Method m2 = builder.getClass().getMethod("setXid", Long.class);
+        Method m2 = builder.getClass().getMethod("setXid", Uint32.class);
         m2.invoke(builder, BufferHelper.DEFAULT_XID);
     }
 
@@ -146,7 +147,7 @@ public abstract class BufferHelper {
      * @param bb data input buffer
      * @return message decoded pojo
      */
-    public static <E extends DataContainer> E deserialize(OFDeserializer<E> decoder, ByteBuf bb) {
+    public static <E extends DataContainer> E deserialize(final OFDeserializer<E> decoder, final ByteBuf bb) {
         return decoder.deserialize(bb);
     }
 

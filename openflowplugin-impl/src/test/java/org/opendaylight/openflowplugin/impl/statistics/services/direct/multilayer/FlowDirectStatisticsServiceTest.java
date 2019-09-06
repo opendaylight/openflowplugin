@@ -39,9 +39,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Short TABLE_NO = 1;
+    static final Uint8 TABLE_NO = Uint8.ONE;
     private FlowDirectStatisticsService service;
 
     @Override
@@ -62,7 +64,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(input.getTableId()).thenReturn(TABLE_NO);
 
         final MultipartRequestFlowCase body = (MultipartRequestFlowCase) ((MultipartRequestInput) service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
             .getMultipartRequestBody();
 
         final MultipartRequestFlow flow = body.getMultipartRequestFlow();

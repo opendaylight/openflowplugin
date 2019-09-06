@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -57,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     private DeserializerRegistry registry;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyTableFeaturesBuilder builder = new MultipartReplyTableFeaturesBuilder();
         final List<TableFeatures> items = new ArrayList<>();
 
@@ -107,14 +107,14 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 .build();
     }
 
-    private TableConfig readTableConfig(ByteBuf message) {
+    private TableConfig readTableConfig(final ByteBuf message) {
         final long input = message.readUnsignedInt();
         final boolean deprecated = (input & 3) != 0;
 
         return new TableConfig(deprecated);
     }
 
-    private TableProperties readTableProperties(ByteBuf message, int length) {
+    private TableProperties readTableProperties(final ByteBuf message, final int length) {
         final List<TableFeatureProperties> items = new ArrayList<>();
         int tableFeaturesLength = length;
         int order = 0;
@@ -278,7 +278,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             .build();
     }
 
-    private List<SetFieldMatch> readMatchFields(ByteBuf message, int length) {
+    private List<SetFieldMatch> readMatchFields(final ByteBuf message, final int length) {
         final List<SetFieldMatch> matchFields = new ArrayList<>();
 
         final int startIndex = message.readerIndex();
@@ -296,12 +296,12 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         return matchFields;
     }
 
-    private List<Short> readNextTableIds(ByteBuf message, int length) {
-        final List<Short> tableIds = new ArrayList<>();
+    private static List<Uint8> readNextTableIds(final ByteBuf message, final int length) {
+        final List<Uint8> tableIds = new ArrayList<>();
         int nextTableLength = length;
 
         while (nextTableLength > 0) {
-            tableIds.add(message.readUnsignedByte());
+            tableIds.add(Uint8.valueOf(message.readUnsignedByte()));
             nextTableLength -= 1;
         }
 
@@ -309,7 +309,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     }
 
     private List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-            .Instruction> readInstructions(ByteBuf message, int length) {
+            .Instruction> readInstructions(final ByteBuf message, final int length) {
 
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
                 .Instruction> instructions = new ArrayList<>();
@@ -335,7 +335,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     }
 
     @SuppressWarnings("checkstyle:LineLength")
-    private List<Action> readActions(ByteBuf message, int length) {
+    private List<Action> readActions(final ByteBuf message, final int length) {
         final List<Action> actions = new ArrayList<>();
         final int startIndex = message.readerIndex();
         int offset = 0;
@@ -359,7 +359,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 

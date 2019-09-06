@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Creates KeyMakers.
@@ -37,10 +38,10 @@ public final class TypeKeyMakerFactory {
      * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
-    public static TypeKeyMaker<MatchEntry> createMatchEntriesKeyMaker(short version) {
-        return new AbstractTypeKeyMaker<MatchEntry>(version) {
+    public static TypeKeyMaker<MatchEntry> createMatchEntriesKeyMaker(final short version) {
+        return new AbstractTypeKeyMaker<>(version) {
             @Override
-            public MatchEntrySerializerKey<?, ?> make(MatchEntry entry) {
+            public MatchEntrySerializerKey<?, ?> make(final MatchEntry entry) {
                 MatchEntrySerializerKey<?, ?> key;
                 key = new MatchEntrySerializerKey<>(getVersion(), entry.getOxmClass(),
                         entry.getOxmMatchField());
@@ -61,17 +62,17 @@ public final class TypeKeyMakerFactory {
      * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
-    public static TypeKeyMaker<Action> createActionKeyMaker(short version) {
-        return new AbstractTypeKeyMaker<Action>(version) {
+    public static TypeKeyMaker<Action> createActionKeyMaker(final short version) {
+        return new AbstractTypeKeyMaker<>(version) {
             @Override
-            public MessageTypeKey<?> make(Action entry) {
+            public MessageTypeKey<?> make(final Action entry) {
                 if (entry.getExperimenterId() != null) {
                     return new ActionSerializerKey<>(getVersion(),
                             (Class<ActionChoice>) entry.getActionChoice().implementedInterface(),
                             entry.getExperimenterId().getValue());
                 }
                 return new ActionSerializerKey<>(getVersion(),
-                        (Class<ActionChoice>) entry.getActionChoice().implementedInterface(), null);
+                        (Class<ActionChoice>) entry.getActionChoice().implementedInterface(), (Uint32) null);
             }
         };
     }
@@ -82,14 +83,14 @@ public final class TypeKeyMakerFactory {
      * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
-    public static TypeKeyMaker<Instruction> createInstructionKeyMaker(short version) {
-        return new AbstractTypeKeyMaker<Instruction>(version) {
+    public static TypeKeyMaker<Instruction> createInstructionKeyMaker(final short version) {
+        return new AbstractTypeKeyMaker<>(version) {
             @Override
-            public MessageTypeKey<?> make(Instruction entry) {
+            public MessageTypeKey<?> make(final Instruction entry) {
                 if (entry.getExperimenterId() != null) {
                     return new InstructionSerializerKey<>(getVersion(),
                             (Class<InstructionChoice>) entry.getInstructionChoice().implementedInterface(),
-                            entry.getExperimenterId().getValue());
+                            entry.getExperimenterId().getValue().toJava());
                 }
                 return new InstructionSerializerKey<>(getVersion(),
                         (Class<InstructionChoice>) entry.getInstructionChoice().implementedInterface(), null);

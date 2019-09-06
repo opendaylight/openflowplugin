@@ -44,12 +44,11 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
         statistics.getNodeConnectorStatisticsAndPortNumberMap()
             .forEach(stat -> {
                 final OpenflowVersion openflowVersion = OpenflowVersion.get(features.getVersion());
-                final Long port = InventoryDataServiceUtil
-                    .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());
+                final Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(openflowVersion,
+                    stat.getNodeConnectorId());
 
-                final NodeConnectorId id = InventoryDataServiceUtil
-                    .nodeConnectorIdfromDatapathPortNo(
-                        features.getDatapathId(),
+                final NodeConnectorId id = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
+                        features.getDatapathId().toJava(),
                         port,
                         OpenflowVersion.get(features.getVersion()));
 
@@ -60,7 +59,7 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
                         .child(FlowCapableNodeConnectorStatistics.class),
                     new FlowCapableNodeConnectorStatisticsBuilder(stat)
                         .build(),
-                        OFConstants.OFP_VERSION_1_0 == features.getVersion() || withParents);
+                        OFConstants.OFP_VERSION_1_0 == features.getVersion().toJava() || withParents);
             });
     }
 

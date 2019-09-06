@@ -34,7 +34,7 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
         Tunnel match = deserialize(in).getTunnel();
         assertArrayEquals(
                 ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-                ByteUtil.convertBigIntegerToNBytes(match.getTunnelId(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.uint64toBytes(match.getTunnelId()));
 
         assertEquals(0, in.readableBytes());
 
@@ -45,10 +45,10 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
         match = deserialize(in).getTunnel();
         assertArrayEquals(
                 ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-                ByteUtil.convertBigIntegerToNBytes(match.getTunnelId(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.uint64toBytes(match.getTunnelId()));
         assertArrayEquals(
                 ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-                ByteUtil.convertBigIntegerToNBytes(match.getTunnelMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.uint64toBytes(match.getTunnelMask()));
         assertEquals(0, in.readableBytes());
     }
 

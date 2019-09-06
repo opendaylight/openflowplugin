@@ -29,12 +29,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPortBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SalPortServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID = 55L;
-    private static final Long DUMMY_PORT_NUMBER = 66L;
+    private static final Uint32 DUMMY_XID = Uint32.valueOf(55L);
+    private static final Uint32 DUMMY_PORT_NUMBER = Uint32.valueOf(66L);
     private static final String DUMMY_MAC_ADDRESS = "AA:BB:CC:DD:EE:FF";
     SalPortServiceImpl salPortService;
 

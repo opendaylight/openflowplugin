@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.MatchExtension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     }
 
     @Override
-    public Match deserialize(ByteBuf inBuffer) {
+    public Match deserialize(final ByteBuf inBuffer) {
         if (inBuffer.readableBytes() <= 0) {
             return null;
         }
@@ -67,14 +68,14 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     }
 
     @Override
-    public Match deserializeHeader(ByteBuf inBuffer) {
+    public Match deserializeHeader(final ByteBuf inBuffer) {
         final MatchBuilder builder = new MatchBuilder();
         deserializeEntry(inBuffer, builder);
         return builder.build();
     }
 
     @Override
-    public void deserializeEntry(ByteBuf inBuffer, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf inBuffer, final MatchBuilder builder) {
         if (inBuffer.readableBytes() <= 0) {
             return;
         }
@@ -90,7 +91,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
                     + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
                     + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
 
-            key.setExperimenterId(expId);
+            key.setExperimenterId(Uint32.valueOf(expId));
         }
 
         final MatchEntryDeserializer entryDeserializer = entryRegistry.get(key);
@@ -105,7 +106,8 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     }
 
     @Override
-    public void registerEntryDeserializer(MatchEntryDeserializerKey key, MatchEntryDeserializer deserializer) {
+    public void registerEntryDeserializer(final MatchEntryDeserializerKey key,
+            final MatchEntryDeserializer deserializer) {
         if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MatchEntryDeserializerKey or Deserializer is null");
         }
@@ -119,7 +121,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     }
 
     @Override
-    public boolean unregisterEntryDeserializer(MatchEntryDeserializerKey key) {
+    public boolean unregisterEntryDeserializer(final MatchEntryDeserializerKey key) {
         if (key == null) {
             throw new IllegalArgumentException("MatchEntryDeserializerKey is null");
         }
@@ -128,7 +130,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 }

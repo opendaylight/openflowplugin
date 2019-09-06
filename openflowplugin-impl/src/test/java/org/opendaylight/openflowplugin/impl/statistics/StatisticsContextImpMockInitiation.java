@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.statistics;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import org.junit.Before;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -32,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class StatisticsContextImpMockInitiation {
     Boolean isTable = false;
@@ -76,7 +76,7 @@ public class StatisticsContextImpMockInitiation {
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_ID);
-        when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);

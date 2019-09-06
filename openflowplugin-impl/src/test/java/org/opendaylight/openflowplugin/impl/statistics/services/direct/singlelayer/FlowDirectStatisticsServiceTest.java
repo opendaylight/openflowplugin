@@ -40,9 +40,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Short TABLE_NO = 1;
+    static final Uint8 TABLE_NO = Uint8.ONE;
     private FlowDirectStatisticsService service;
 
     @Override
@@ -63,7 +65,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(input.getTableId()).thenReturn(TABLE_NO);
 
         final MultipartRequestFlowStats body = (MultipartRequestFlowStats) ((MultipartRequest) service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
             .getMultipartRequestBody();
 
         assertEquals(TABLE_NO, body.getFlowStats().getTableId());

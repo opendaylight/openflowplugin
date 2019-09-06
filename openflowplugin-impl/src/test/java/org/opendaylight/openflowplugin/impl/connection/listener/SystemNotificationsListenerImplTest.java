@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEventBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Testing basic bahavior of {@link SystemNotificationsListenerImpl}.
@@ -73,7 +74,7 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionAdapter.getRemoteAddress()).thenReturn(
                 InetSocketAddress.createUnresolved("unit-odl.example.org", 4242));
 
-        Mockito.when(features.getAuxiliaryId()).thenReturn((short) 0);
+        Mockito.when(features.getAuxiliaryId()).thenReturn(Uint8.ZERO);
 
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
         Mockito.when(connectionContext.getFeatures()).thenReturn(features);

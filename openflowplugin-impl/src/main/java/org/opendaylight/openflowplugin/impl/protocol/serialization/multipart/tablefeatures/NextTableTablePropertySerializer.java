@@ -19,7 +19,7 @@ public class NextTableTablePropertySerializer extends AbstractTablePropertySeria
         property
             .getTables()
             .getTableIds()
-            .forEach(byteBuf::writeByte);
+            .forEach(id -> byteBuf.writeByte(id.toJava()));
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test of {@link PortStatsService}.
@@ -25,6 +26,7 @@ public class PortStatsServiceTest extends AbstractStatsServiceTest {
 
     private PortStatsService portStatsService;
 
+    @Override
     public void setUp() {
         portStatsService = new PortStatsService(rqContextStack, deviceContext,
                 new AtomicLong());
@@ -32,7 +34,7 @@ public class PortStatsServiceTest extends AbstractStatsServiceTest {
 
     @Test
     public void testBuildRequest() {
-        Xid xid = new Xid(42L);
+        Xid xid = new Xid(Uint32.valueOf(42L));
         GetNodeConnectorStatisticsInputBuilder input = new GetNodeConnectorStatisticsInputBuilder()
                 .setNodeConnectorId(new NodeConnectorId("junitProto:11:12"))
                 .setNode(createNodeRef("junitProto:11"));

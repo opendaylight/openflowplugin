@@ -132,6 +132,8 @@ import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGatheringUtilsTest {
@@ -180,10 +182,10 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);
         when(deviceContext.isTransactionsEnabled()).thenReturn(Boolean.TRUE);
         when(connectionAdapter.getFeatures()).thenReturn(features);
-        when(features.getDatapathId()).thenReturn(BigInteger.ONE);
-        when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        when(features.getDatapathId()).thenReturn(Uint64.ONE);
+        when(features.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
+        when(deviceInfo.getDatapathId()).thenReturn(Uint64.ONE);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodePath);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
         provider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);

@@ -142,7 +142,7 @@ public final class FlatBatchGroupAdapters {
         if (input.getResult().getBatchFailedGroupsOutput() != null) {
             for (BatchFailedGroupsOutput stepOutput : input.getResult().getBatchFailedGroupsOutput()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
-                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder())
+                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
                         .setBatchItemIdChoice(new FlatBatchFailureGroupIdCaseBuilder()
                                 .setGroupId(stepOutput.getGroupId())
                                 .build())

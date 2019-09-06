@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.junit.Assert.assertNotNull;
@@ -15,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractRequestContextTest {
@@ -22,7 +22,7 @@ public class AbstractRequestContextTest {
 
     @Before
     public void setup() {
-        requestContext = new AbstractRequestContext<Object>(1L) {
+        requestContext = new AbstractRequestContext<>(Uint32.ONE) {
             @Override
             public void close() {
                 // No-op
