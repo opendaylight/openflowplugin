@@ -34,9 +34,11 @@ public interface SerializerRegistry {
     /**
      * Registers a serializer.
      *
+     * <p>
      * Throws IllegalStateException when there is
      * a serializer already registered under given key.
      *
+     * <p>
      * If the serializer implements {@link SerializerRegistryInjector} interface,
      * the serializer is injected with SerializerRegistry instance.
      *
@@ -53,7 +55,7 @@ public interface SerializerRegistry {
      * @param <K> serializer key type
      * @param key used for serializer lookup
      * @return true if serializer was removed,
-     *  false if no serializer was found under specified key
+     *         false if no serializer was found under specified key
      */
     <K> boolean unregisterSerializer(MessageTypeKey<K> key);
 

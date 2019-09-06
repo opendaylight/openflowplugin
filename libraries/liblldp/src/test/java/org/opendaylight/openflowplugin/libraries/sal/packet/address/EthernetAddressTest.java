@@ -7,11 +7,10 @@
  */
 
 /**
+ * Unit Tests for EthernetAddress class.
+ *
  * @file   EthernetAddressTest.java
- *
  * @brief  Unit Tests for EthernetAddress class
- *
- * Unit Tests for EthernetAddress class
  */
 package org.opendaylight.openflowplugin.libraries.sal.packet.address;
 
