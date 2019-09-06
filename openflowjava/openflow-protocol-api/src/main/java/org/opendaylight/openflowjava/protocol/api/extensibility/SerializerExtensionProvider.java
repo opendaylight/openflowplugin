@@ -39,9 +39,11 @@ public interface SerializerExtensionProvider {
     /**
      * Registers a custom serializer.
      *
+     * <p>
      * Throws IllegalStateException when there is
      * a serializer already registered under given key.
      *
+     * <p>
      * If the serializer implements {@link SerializerRegistryInjector} interface,
      * the serializer is injected with SerializerRegistry instance.
      *

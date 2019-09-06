@@ -151,7 +151,9 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     }
 
     @Override
-    public void instantiateServiceInstance() {}
+    public void instantiateServiceInstance() {
+
+    }
 
     @Override
     public void initializeDevice() {
