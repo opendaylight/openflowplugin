@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -9,9 +9,9 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 /**
  * Message translator.
+ *
  * @param <I> input message
  * @param <O> output message
- *
  */
 public interface MessageTranslator<I, O> {
 
@@ -23,5 +23,4 @@ public interface MessageTranslator<I, O> {
      * @return message of output type
      */
     O translate(I input, DeviceInfo deviceInfo, Object connectionDistinguisher);
-
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolListener {
-
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerInitialImpl.class);
 
     private final ConnectionContext connectionContext;
