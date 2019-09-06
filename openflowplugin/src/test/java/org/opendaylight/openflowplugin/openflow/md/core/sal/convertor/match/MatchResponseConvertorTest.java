@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,12 +54,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit test for {@link MatchConvertorImpl}.
  */
 public class MatchResponseConvertorTest {
-    private static final BigInteger DPID = BigInteger.TEN;
+    private static final Uint64 DPID = Uint64.valueOf(10);
     private static final Long IN_PORT = 6L;
     private static final String URI_IN_PORT =
             "openflow:" + DPID + ":" + IN_PORT;
@@ -336,15 +335,15 @@ public class MatchResponseConvertorTest {
         }
     }
 
-    private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
+    private MatchBuilder convert(final MatchV10 match, final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());
     }
 
     private MatchBuilder convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match,
-            VersionDatapathIdConvertorData data) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match match,
+            final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());

@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshTtlCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshTtlCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshTtlCodecTest {
 
@@ -62,7 +63,7 @@ public class NshTtlCodecTest {
 
         NxExpMatchEntryValue value = nshTtlCodec.deserializeValue(buffer, false);
 
-        assertEquals(TTL_VALUE, ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
+        assertEquals(Uint8.valueOf(TTL_VALUE), ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
         assertFalse(buffer.isReadable());
     }
 
@@ -72,18 +73,18 @@ public class NshTtlCodecTest {
 
         NxExpMatchEntryValue value = nshTtlCodec.deserializeValue(buffer, true);
 
-        assertEquals(TTL_VALUE, ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
-        assertEquals(TTL_MASK, ((NshTtlCaseValue) value).getNshTtlValues().getMask());
+        assertEquals(Uint8.valueOf(TTL_VALUE), ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
+        assertEquals(Uint8.valueOf(TTL_MASK), ((NshTtlCaseValue) value).getNshTtlValues().getMask());
         assertFalse(buffer.isReadable());
     }
 
 
-    private NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
+    private NxExpMatchEntryValue createMatchEntryValue(final Short value, final Short mask) {
         NshTtlValues nshTtlValues = new NshTtlValuesBuilder().setNshTtl(value).setMask(mask).build();
         return new NshTtlCaseValueBuilder().setNshTtlValues(nshTtlValues).build();
     }
 
-    private void writeBuffer(ByteBuf message, Short value, Short mask) {
+    private void writeBuffer(final ByteBuf message, final Short value, final Short mask) {
         message.writeByte(value.intValue());
         if (mask != null) {
             message.writeByte(mask.intValue());

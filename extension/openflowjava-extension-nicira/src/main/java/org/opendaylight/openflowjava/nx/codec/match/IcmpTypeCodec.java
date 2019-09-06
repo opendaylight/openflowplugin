@@ -50,7 +50,7 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         IcmpTypeCaseValue icmpTypeValue = (IcmpTypeCaseValue) input.getMatchEntryValue();
-        outBuffer.writeByte(icmpTypeValue.getIcmpTypeValues().getValue());
+        outBuffer.writeByte(icmpTypeValue.getIcmpTypeValues().getValue().toJava());
     }
 
     @Override

@@ -26,9 +26,9 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
     private static final Logger LOG = LoggerFactory.getLogger(ActionDeserializer.class);
 
     public static final ExperimenterActionDeserializerKey OF13_DESERIALIZER_KEY = new ExperimenterActionDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, NiciraConstants.NX_VENDOR_ID);
+            EncodeConstants.OF13_VERSION_ID, NiciraConstants.NX_VENDOR_ID.toJava());
     public static final ExperimenterActionDeserializerKey OF10_DESERIALIZER_KEY = new ExperimenterActionDeserializerKey(
-            EncodeConstants.OF10_VERSION_ID, NiciraConstants.NX_VENDOR_ID);
+            EncodeConstants.OF10_VERSION_ID, NiciraConstants.NX_VENDOR_ID.toJava());
 
     private final short version;
     private DeserializerRegistry deserializerRegistry;
@@ -50,7 +50,7 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
         // size of length
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         long experimenterId = message.readUnsignedInt();
-        if (NiciraConstants.NX_VENDOR_ID != experimenterId) {
+        if (NiciraConstants.NX_VENDOR_ID.toJava() != experimenterId) {
             throw new IllegalStateException("Experimenter ID is not Nicira vendor id but is " + experimenterId);
         }
         int subtype = message.readUnsignedShort();

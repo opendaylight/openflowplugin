@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshFlagsCodecTest {
 
@@ -62,7 +63,7 @@ public class NshFlagsCodecTest {
 
         NxExpMatchEntryValue value = nshFlagsCodec.deserializeValue(buffer, false);
 
-        assertEquals(FLAGS_VALUE, ((NshFlagsCaseValue) value).getNshFlagsValues().getNshFlags());
+        assertEquals(Uint8.valueOf(FLAGS_VALUE), ((NshFlagsCaseValue) value).getNshFlagsValues().getNshFlags());
         assertFalse(buffer.isReadable());
     }
 
@@ -72,8 +73,8 @@ public class NshFlagsCodecTest {
 
         NxExpMatchEntryValue value = nshFlagsCodec.deserializeValue(buffer, true);
 
-        assertEquals(FLAGS_VALUE, ((NshFlagsCaseValue) value).getNshFlagsValues().getNshFlags());
-        assertEquals(FLAGS_MASK, ((NshFlagsCaseValue) value).getNshFlagsValues().getMask());
+        assertEquals(Uint8.valueOf(FLAGS_VALUE), ((NshFlagsCaseValue) value).getNshFlagsValues().getNshFlags());
+        assertEquals(Uint8.valueOf(FLAGS_MASK), ((NshFlagsCaseValue) value).getNshFlagsValues().getMask());
         assertFalse(buffer.isReadable());
     }
 

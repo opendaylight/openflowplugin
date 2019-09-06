@@ -37,7 +37,7 @@ public class OFDatagramPacketEncoder extends MessageToMessageEncoder<UdpMessageL
         LOG.trace("Encoding");
         try {
             ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
-            serializationFactory.messageToBuffer(wrapper.getMsg().getVersion(), buffer, wrapper.getMsg());
+            serializationFactory.messageToBuffer(wrapper.getMsg().getVersion().toJava(), buffer, wrapper.getMsg());
             out.add(new DatagramPacket(buffer, wrapper.getAddress()));
         } catch (RuntimeException e) {
             LOG.warn("Message serialization failed: {}", e.getMessage());

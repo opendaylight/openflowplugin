@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxTunIdCaseBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,20 +62,22 @@ public class RegMoveConvertorTest {
         when(actionsCase.getNxRegMove()).thenReturn(nxRegMove);
         when(nxRegMove.getSrc()).thenReturn(src);
         when(nxRegMove.getDst()).thenReturn(dst);
-        when(nxRegMove.getSrc().getStart()).thenReturn(1);
-        when(nxRegMove.getDst().getStart()).thenReturn(3);
-        when(nxRegMove.getDst().getEnd()).thenReturn(4);
+        when(nxRegMove.getSrc().getStart()).thenReturn(Uint16.valueOf(1));
+        when(nxRegMove.getDst().getStart()).thenReturn(Uint16.valueOf(3));
+        when(nxRegMove.getDst().getEnd()).thenReturn(Uint16.valueOf(4));
         when(nxRegMove.getDst().getDstChoice()).thenReturn(new DstNxTunIdCaseBuilder().build());
         when(nxRegMove.getSrc().getSrcChoice()).thenReturn(new SrcNxTunIdCaseBuilder().build());
 
         final ActionRegMove actionRegMove = Mockito.mock(ActionRegMove.class);
         final NxActionRegMove nxActionRegMove = Mockito.mock(NxActionRegMove.class);
         when(nxActionRegMove.getSrc()).thenReturn(
-                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toBigInteger());
+                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toUint64());
         when(nxActionRegMove.getDst()).thenReturn(
-                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toBigInteger());
+                NiciraMatchCodecs.TUN_ID_CODEC.getHeaderWithoutHasMask().toUint64());
 
-        when(nxActionRegMove.getNBits()).thenReturn(7);
+        when(nxActionRegMove.getDstOfs()).thenReturn(Uint16.ZERO);
+        when(nxActionRegMove.getSrcOfs()).thenReturn(Uint16.ZERO);
+        when(nxActionRegMove.getNBits()).thenReturn(Uint16.valueOf(7));
 
         when(actionRegMove.getNxActionRegMove()).thenReturn(nxActionRegMove);
         when(action.getActionChoice()).thenReturn(actionRegMove);
@@ -86,9 +89,9 @@ public class RegMoveConvertorTest {
     @Test
     public void testConvert() {
         final ActionRegMove actionRegMove = (ActionRegMove) regMoveConvertor.convert(actionsCase).getActionChoice();
-        Assert.assertEquals(Integer.valueOf(3) ,actionRegMove.getNxActionRegMove().getDstOfs());
-        Assert.assertEquals(Integer.valueOf(2) ,actionRegMove.getNxActionRegMove().getNBits());
-        Assert.assertEquals(Integer.valueOf(1) ,actionRegMove.getNxActionRegMove().getSrcOfs());
+        Assert.assertEquals(Uint16.valueOf(3), actionRegMove.getNxActionRegMove().getDstOfs());
+        Assert.assertEquals(Uint16.valueOf(2), actionRegMove.getNxActionRegMove().getNBits());
+        Assert.assertEquals(Uint16.valueOf(1), actionRegMove.getNxActionRegMove().getSrcOfs());
     }
 
     @Test
@@ -106,36 +109,36 @@ public class RegMoveConvertorTest {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult5
                 = regMoveConvertor.convert(action, ActionPath.FLOWS_STATISTICS_RPC_WRITE_ACTIONS);
 
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
+        Assert.assertEquals(Uint16.valueOf(6),
                 ((NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase) actionResult).getNxRegMove().getDst()
                         .getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegMoveNodesNodeTableFlowWriteActionsCase) actionResult1).getNxRegMove().getDst().getStart());
-        Assert.assertEquals(Integer.valueOf(6),
+        Assert.assertEquals(Uint16.valueOf(6),
                 ((NxActionRegMoveNodesNodeTableFlowWriteActionsCase) actionResult1).getNxRegMove().getDst().getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
+        Assert.assertEquals(Uint16.valueOf(6),
                 ((NxActionRegMoveNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegMove().getDst()
                         .getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getStart());
-        Assert.assertEquals(Integer.valueOf(6),
+        Assert.assertEquals(Uint16.valueOf(6),
                 ((NxActionRegMoveNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegMove().getDst().getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
+        Assert.assertEquals(Uint16.valueOf(6),
                 ((NxActionRegMoveNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegMove().getDst()
                         .getEnd());
-        Assert.assertEquals(Integer.valueOf(0),
+        Assert.assertEquals(Uint16.ZERO,
                 ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst()
                         .getStart());
-        Assert.assertEquals(Integer.valueOf(6),
+        Assert.assertEquals(Uint16.valueOf(6),
                 ((NxActionRegMoveNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegMove().getDst()
                         .getEnd());
     }

@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Base class for an action codec.
@@ -71,7 +72,7 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         outBuffer.setShort(startIndex + EncodeConstants.SIZE_OF_SHORT_IN_BYTES, outBuffer.writerIndex() - startIndex);
     }
 
-    protected static void writeNxmHeader(final BigInteger value, final ByteBuf outBuffer) {
+    protected static void writeNxmHeader(final Uint64 value, final ByteBuf outBuffer) {
         if (NxmHeader.isExperimenter(value)) {
             outBuffer.writeLong(value.longValue());
         } else {

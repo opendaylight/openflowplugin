@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
 
@@ -61,7 +62,7 @@ public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected long getExperimenterId() {
+    protected Uint32 getExperimenterId() {
         return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 
@@ -69,9 +70,9 @@ public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
     protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
         NshFlagsCaseValue nshFlagsCaseValue = (NshFlagsCaseValue) value;
         NshFlagsValues nshFlagsValues = nshFlagsCaseValue.getNshFlagsValues();
-        outBuffer.writeByte(nshFlagsValues.getNshFlags());
+        outBuffer.writeByte(nshFlagsValues.getNshFlags().toJava());
         if (hasMask) {
-            outBuffer.writeByte(nshFlagsValues.getMask());
+            outBuffer.writeByte(nshFlagsValues.getMask().toJava());
         }
     }
 }

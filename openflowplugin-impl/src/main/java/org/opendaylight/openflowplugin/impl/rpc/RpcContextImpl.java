@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
@@ -38,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ class RpcContextImpl implements RpcContext {
                    @Nonnull final ExtensionConverterProvider extensionConverterProvider,
                    @Nonnull final ConvertorExecutor convertorExecutor,
                    @Nonnull final NotificationPublishService notificationPublishService,
-                   boolean statisticsRpcEnabled) {
+                   final boolean statisticsRpcEnabled) {
         this.deviceContext = deviceContext;
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
@@ -137,12 +137,11 @@ class RpcContextImpl implements RpcContext {
             return null;
         }
 
-        return new AbstractRequestContext<T>(xid) {
+        return new AbstractRequestContext<>(Uint32.valueOf(xid)) {
             @Override
             public void close() {
                 tracker.release();
-                final long xid = getXid().getValue();
-                LOG.trace("Removed request context with xid {}", xid);
+                LOG.trace("Removed request context with xid {}", getXid().getValue());
                 messageSpy.spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);
             }
         };
@@ -177,12 +176,9 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public ListenableFuture<Void> closeServiceInstance() {
-        return Futures.transform(Futures.immediateFuture(null), new Function<Void, Void>() {
-            @Override
-            public Void apply(final Void input) {
-                unregisterRPCs();
-                return null;
-            }
+        return Futures.transform(Futures.immediateFuture(null), input -> {
+            unregisterRPCs();
+            return null;
         }, MoreExecutors.directExecutor());
     }
 

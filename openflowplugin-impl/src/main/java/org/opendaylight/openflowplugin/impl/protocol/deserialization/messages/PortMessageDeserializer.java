@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
 
@@ -25,11 +26,11 @@ public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_3 = 4;
 
     @Override
-    public PortMessage deserialize(ByteBuf message) {
+    public PortMessage deserialize(final ByteBuf message) {
         final PortMessageBuilder builder = new PortMessageBuilder()
                 .setVersion((short) EncodeConstants.OF13_VERSION_ID)
                 .setXid(message.readUnsignedInt())
-                .setPortNumber(new PortNumberUni(message.readUnsignedInt()));
+                .setPortNumber(new PortNumberUni(Uint32.valueOf(message.readUnsignedInt())));
 
         message.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_1);
         builder.setHardwareAddress(ByteBufUtils.readIetfMacAddress(message));
@@ -41,33 +42,33 @@ public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
         return builder.build();
     }
 
-    private static PortConfig readPortConfig(ByteBuf message) {
+    private static PortConfig readPortConfig(final ByteBuf message) {
         final long input = message.readUnsignedInt();
-        final Boolean pcPortDown = ((input) & (1)) != 0;
-        final Boolean pcNRecv = ((input) & (1 << 2)) != 0;
-        final Boolean pcNFwd = ((input) & (1 << 5)) != 0;
-        final Boolean pcNPacketIn = ((input) & (1 << 6)) != 0;
+        final Boolean pcPortDown = (input & 1) != 0;
+        final Boolean pcNRecv = (input & 1 << 2) != 0;
+        final Boolean pcNFwd = (input & 1 << 5) != 0;
+        final Boolean pcNPacketIn = (input & 1 << 6) != 0;
         return new PortConfig(pcNFwd, pcNPacketIn, pcNRecv, pcPortDown);
     }
 
-    private static PortFeatures readPortFeatures(ByteBuf message) {
+    private static PortFeatures readPortFeatures(final ByteBuf message) {
         final long input = message.readUnsignedInt();
-        final Boolean pf10mbHd = ((input) & (1)) != 0;
-        final Boolean pf10mbFd = ((input) & (1 << 1)) != 0;
-        final Boolean pf100mbHd = ((input) & (1 << 2)) != 0;
-        final Boolean pf100mbFd = ((input) & (1 << 3)) != 0;
-        final Boolean pf1gbHd = ((input) & (1 << 4)) != 0;
-        final Boolean pf1gbFd = ((input) & (1 << 5)) != 0;
-        final Boolean pf10gbFd = ((input) & (1 << 6)) != 0;
-        final Boolean pf40gbFd = ((input) & (1 << 7)) != 0;
-        final Boolean pf100gbFd = ((input) & (1 << 8)) != 0;
-        final Boolean pf1tbFd = ((input) & (1 << 9)) != 0;
-        final Boolean pfOther = ((input) & (1 << 10)) != 0;
-        final Boolean pfCopper = ((input) & (1 << 11)) != 0;
-        final Boolean pfFiber = ((input) & (1 << 12)) != 0;
-        final Boolean pfAutoneg = ((input) & (1 << 13)) != 0;
-        final Boolean pfPause = ((input) & (1 << 14)) != 0;
-        final Boolean pfPauseAsym = ((input) & (1 << 15)) != 0;
+        final Boolean pf10mbHd = (input & 1) != 0;
+        final Boolean pf10mbFd = (input & 1 << 1) != 0;
+        final Boolean pf100mbHd = (input & 1 << 2) != 0;
+        final Boolean pf100mbFd = (input & 1 << 3) != 0;
+        final Boolean pf1gbHd = (input & 1 << 4) != 0;
+        final Boolean pf1gbFd = (input & 1 << 5) != 0;
+        final Boolean pf10gbFd = (input & 1 << 6) != 0;
+        final Boolean pf40gbFd = (input & 1 << 7) != 0;
+        final Boolean pf100gbFd = (input & 1 << 8) != 0;
+        final Boolean pf1tbFd = (input & 1 << 9) != 0;
+        final Boolean pfOther = (input & 1 << 10) != 0;
+        final Boolean pfCopper = (input & 1 << 11) != 0;
+        final Boolean pfFiber = (input & 1 << 12) != 0;
+        final Boolean pfAutoneg = (input & 1 << 13) != 0;
+        final Boolean pfPause = (input & 1 << 14) != 0;
+        final Boolean pfPauseAsym = (input & 1 << 15) != 0;
 
         return new PortFeatures(
                 pfAutoneg, pfCopper, pfFiber,

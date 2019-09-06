@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.udp.src.grouping.NxmOfUdpSrcBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link UdpSrcConvertor}.
@@ -66,7 +67,7 @@ public class UdpSrcConvertorTest {
     @Test
     public void testConvert() {
         final MatchEntry converted = udpSrcConvertor.convert(extension);
-        Assert.assertEquals(Integer.valueOf(1),
+        Assert.assertEquals(Uint16.valueOf(1),
                 ((UdpSrcCaseValue) converted.getMatchEntryValue()).getUdpSrcValues().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((UdpSrcCaseValue) converted.getMatchEntryValue()).getUdpSrcValues().getPort());
@@ -86,7 +87,7 @@ public class UdpSrcConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = udpSrcConvertor.convert(matchEntry,
                 MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
+        Assert.assertEquals(Uint16.valueOf(2),
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpSrc().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpSrc().getPort());
@@ -94,7 +95,7 @@ public class UdpSrcConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = udpSrcConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
+        Assert.assertEquals(Uint16.valueOf(2),
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmOfUdpSrc()
                         .getMask());
         Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
@@ -103,7 +104,7 @@ public class UdpSrcConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpSrcConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
+        Assert.assertEquals(Uint16.valueOf(2),
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpSrc().getPort());
@@ -111,7 +112,7 @@ public class UdpSrcConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpSrcConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(Integer.valueOf(2),
+        Assert.assertEquals(Uint16.valueOf(2),
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpSrc().getPort());

@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                 "NodeConfigurator can not be null!");
     }
 
+    @Override
     public void remove(final InstanceIdentifier<Group> identifier, final Group group,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
@@ -87,6 +89,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
 
     }
 
+    @Override
     public void update(final InstanceIdentifier<Group> identifier, final Group originalGroup, final Group updatedGroup,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
@@ -115,7 +118,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Group> identifier,
                     final Group group, final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-        final Long groupId = group.getGroupId().getValue();
+        final Uint32 groupId = group.getGroupId().getValue();
         return nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
             if (isGroupExistsOnDevice(nodeIdent, groupId, forwardingRulesManager)) {
                 LOG.debug("Group {} already exists in the device. Ignoring the add DTCN", groupId);
@@ -141,10 +144,10 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     }
 
     private final class BundleAddGroupCallBack implements FutureCallback<RpcResult<AddBundleMessagesOutput>> {
-        private final Long groupId;
+        private final Uint32 groupId;
         private final NodeId nodeId;
 
-        private BundleAddGroupCallBack(final Long groupId, final NodeId nodeId) {
+        private BundleAddGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
@@ -167,10 +170,10 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     }
 
     private final class BundleUpdateGroupCallBack implements FutureCallback<RpcResult<AddBundleMessagesOutput>> {
-        private final Long groupId;
+        private final Uint32 groupId;
         private final NodeId nodeId;
 
-        private BundleUpdateGroupCallBack(final Long groupId, final NodeId nodeId) {
+        private BundleUpdateGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
@@ -193,10 +196,10 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     }
 
     private final class BundleRemoveGroupCallBack implements FutureCallback<RpcResult<AddBundleMessagesOutput>> {
-        private final Long groupId;
+        private final Uint32 groupId;
         private final NodeId nodeId;
 
-        private BundleRemoveGroupCallBack(final Long groupId, final NodeId nodeId) {
+        private BundleRemoveGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }

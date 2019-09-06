@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.mdtype.grouping.NxmNxNshMdtype;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.mdtype.grouping.NxmNxNshMdtypeBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NshMdtypeConvertorTest {
@@ -42,7 +43,7 @@ public class NshMdtypeConvertorTest {
 
     private NshMdtypeConvertor convertor;
 
-    private static final Short MDTYPE_VALUE = (short) 0x7B;
+    private static final Uint8 MDTYPE_VALUE = Uint8.valueOf(0x7B);
 
     @Before
     public void setUp() {

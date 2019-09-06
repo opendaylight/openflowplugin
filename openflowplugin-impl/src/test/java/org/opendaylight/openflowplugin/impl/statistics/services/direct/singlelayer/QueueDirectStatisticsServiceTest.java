@@ -36,9 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Long QUEUE_NO = 1L;
+    static final Uint32 QUEUE_NO = Uint32.ONE;
     private QueueDirectStatisticsService service;
 
     @Override
@@ -58,7 +59,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
         final MultipartRequestQueueStats body = (MultipartRequestQueueStats) ((MultipartRequest) service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
             .getMultipartRequestBody();
 
         assertEquals(nodeConnectorId, body.getNodeConnectorId());

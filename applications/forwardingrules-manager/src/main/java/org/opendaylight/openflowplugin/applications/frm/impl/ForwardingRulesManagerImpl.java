@@ -119,7 +119,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         disableReconciliation = config.isDisableReconciliation();
         staleMarkingEnabled = config.isStaleMarkingEnabled();
-        reconciliationRetryCount = config.getReconciliationRetryCount();
+        reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
         isBundleBasedReconciliationEnabled = config.isBundleBasedReconciliationEnabled();
         this.configurationServiceRegistration = configurationService.registerListener(this);
         this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");

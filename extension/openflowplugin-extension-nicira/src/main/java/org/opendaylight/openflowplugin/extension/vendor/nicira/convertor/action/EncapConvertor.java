@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionEncapNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.encap.grouping.NxEncap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.encap.grouping.NxEncapBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class EncapConvertor implements
         ConvertorActionToOFJava<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
@@ -36,7 +37,7 @@ public class EncapConvertor implements
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             Action input, ActionPath path) {
         ActionEncap actionEncap = (ActionEncap) input.getActionChoice();
-        Long packetType = actionEncap.getNxActionEncap().getPacketType();
+        Uint32 packetType = actionEncap.getNxActionEncap().getPacketType();
         NxEncap nxEncap = new NxEncapBuilder().setPacketType(packetType).build();
         return resolveAction(nxEncap, path);
     }
@@ -46,7 +47,7 @@ public class EncapConvertor implements
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
         Preconditions.checkArgument(actionCase instanceof NxActionEncapGrouping);
         NxActionEncapGrouping nxActionEncapGrouping = (NxActionEncapGrouping) actionCase;
-        Long packetType = nxActionEncapGrouping.getNxEncap().getPacketType();
+        Uint32 packetType = nxActionEncapGrouping.getNxEncap().getPacketType();
         NxActionEncap nxActionEncap = new NxActionEncapBuilder().setPacketType(packetType).build();
         ActionEncap actionEncap = new ActionEncapBuilder().setNxActionEncap(nxActionEncap).build();
         return ActionUtil.createAction(actionEncap);

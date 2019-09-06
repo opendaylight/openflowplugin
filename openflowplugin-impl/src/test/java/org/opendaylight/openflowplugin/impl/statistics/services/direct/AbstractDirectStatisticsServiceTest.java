@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,12 +46,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractDirectStatisticsServiceTest {
-    protected static final Long PORT_NO = 1L;
-    protected static final BigInteger DATAPATH_ID = BigInteger.TEN;
-    protected static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
+    protected static final Uint32 PORT_NO = Uint32.ONE;
+    protected static final Uint64 DATAPATH_ID = Uint64.valueOf(10);
+    protected static final Uint8 OF_VERSION = Uint8.valueOf(OFConstants.OFP_VERSION_1_3);
     protected static final String NODE_ID = "openflow:10";
 
     @Mock
@@ -89,7 +91,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
     protected ConvertorManager convertorManager;
     protected MultipartWriterProvider multipartWriterProvider;
 
-    protected static NodeRef createNodeRef(String nodeIdValue) {
+    protected static NodeRef createNodeRef(final String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
 
@@ -117,7 +119,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         lenient().when(deviceInfo.getNodeId()).thenReturn(new NodeId(NODE_ID));
-        when(deviceInfo.getVersion()).thenReturn(OF_VERSION);
+        when(deviceInfo.getVersion()).thenReturn(OF_VERSION.toJava());
         when(deviceInfo.getDatapathId()).thenReturn(DATAPATH_ID);
         lenient().when(getFeaturesOutput.getVersion()).thenReturn(OF_VERSION);
         lenient().when(getFeaturesOutput.getDatapathId()).thenReturn(DATAPATH_ID);

@@ -297,6 +297,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -733,7 +734,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
         ConvertorActionFromOFJava<
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action,
                 ActionPath> actionConvertor) {
-        ActionSerializerKey<?> key = new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, actionCaseType, null);
+        ActionSerializerKey<?> key = new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, actionCaseType,
+                (Uint32) null);
         registrations.add(extensionConverterRegistrator.registerActionConvertor(key, actionConvertor));
     }
 }

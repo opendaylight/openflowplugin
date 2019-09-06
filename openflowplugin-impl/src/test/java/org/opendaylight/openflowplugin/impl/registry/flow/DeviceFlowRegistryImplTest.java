@@ -52,6 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link DeviceFlowRegistryImpl}.
@@ -60,7 +61,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 public class DeviceFlowRegistryImplTest {
     private static final String NODE_ID = "openflow:1";
     private static final Pattern INDEX_PATTERN = Pattern.compile("^#UF\\$TABLE\\*1-([0-9]+)$");
-    private static final Short DUMMY_TABLE_ID = 1;
+    private static final Uint8 DUMMY_TABLE_ID = Uint8.ONE;
 
     private DeviceFlowRegistryImpl deviceFlowRegistry;
     private FlowRegistryKey key;
@@ -80,7 +81,7 @@ public class DeviceFlowRegistryImplTest {
                 new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
-        descriptor = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:1"));
+        descriptor = FlowDescriptorFactory.create(Uint8.valueOf(key.getTableId()), new FlowId("ut:1"));
 
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
         deviceFlowRegistry.storeDescriptor(key, descriptor);
@@ -176,7 +177,8 @@ public class DeviceFlowRegistryImplTest {
     @Test
     public void testStore() {
         //store the same key with different value
-        final FlowDescriptor descriptor2 = FlowDescriptorFactory.create(key.getTableId(), new FlowId("ut:2"));
+        final FlowDescriptor descriptor2 = FlowDescriptorFactory.create(Uint8.valueOf(key.getTableId()),
+            new FlowId("ut:2"));
         deviceFlowRegistry.storeDescriptor(key, descriptor2);
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
         Assert.assertEquals("ut:2", deviceFlowRegistry.retrieveDescriptor(key).getFlowId().getValue());
@@ -244,7 +246,7 @@ public class DeviceFlowRegistryImplTest {
         Assert.assertEquals(1, counter.get());
     }
 
-    private static Integer parseIndex(String alienFlowIdValue) {
+    private static Integer parseIndex(final String alienFlowIdValue) {
         final Matcher mach = INDEX_PATTERN.matcher(alienFlowIdValue);
 
         if (mach.find()) {

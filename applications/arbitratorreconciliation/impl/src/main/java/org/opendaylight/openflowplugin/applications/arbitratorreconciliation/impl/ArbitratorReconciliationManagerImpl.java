@@ -15,7 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.math.BigInteger;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,6 +82,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +105,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private final UpgradeState upgradeState;
     private NotificationRegistration registration;
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-    private final Map<BigInteger, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
+    private final Map<Uint64, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
 
     @Inject
     public ArbitratorReconciliationManagerImpl(@Reference RpcProviderRegistry rpcRegistry,
@@ -138,7 +139,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     @Override
     public ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
             CommitActiveBundleInput input) {
-        BigInteger nodeId = input.getNodeId();
+        Uint64 nodeId = input.getNodeId();
         if (bundleIdMap.containsKey(nodeId)) {
             BundleId bundleId = bundleIdMap.get(nodeId).getBundleId();
             if (bundleId != null) {
@@ -165,7 +166,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @Override
     public ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(GetActiveBundleInput input) {
-        BigInteger nodeId = input.getNodeId();
+        Uint64 nodeId = input.getNodeId();
         BundleDetails bundleDetails = bundleIdMap.get(nodeId);
         if (bundleDetails != null) {
             try {
@@ -197,7 +198,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @Override
     public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
-        BigInteger datapathId = node.getDatapathId();
+        Uint64 datapathId = node.getDatapathId();
         LOG.trace("Stopping arbitrator reconciliation for node {}", datapathId);
         bundleIdMap.remove(datapathId);
         deregisterRpc(node);
@@ -225,6 +226,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         return JdkFutureAdapters.listenInPoolThread(executor.submit(upgradeReconTask));
     }
 
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
@@ -296,7 +299,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         }
                         return Futures.immediateFuture(null);
                     }, MoreExecutors.directExecutor());
-            BigInteger nodeId = getDpnIdFromNodeName(node);
+            Uint64 nodeId = getDpnIdFromNodeName(node);
             try {
                 if (addBundleMessagesFuture.get().isSuccessful()) {
                     bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue,
@@ -316,9 +319,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     }
 
     public final class CommitActiveBundleCallback implements FutureCallback<RpcResult<?>> {
-        private final BigInteger nodeId;
+        private final Uint64 nodeId;
 
-        private CommitActiveBundleCallback(final BigInteger nodeId) {
+        private CommitActiveBundleCallback(final Uint64 nodeId) {
             this.nodeId = nodeId;
         }
 
@@ -330,8 +333,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
         @Override
         public void onFailure(Throwable throwable) {
-            LOG.error("Error while performing arbitrator reconciliation for device {}",
-                    nodeId, throwable);
+            LOG.error("Error while performing arbitrator reconciliation for device {}", nodeId, throwable);
         }
     }
 
@@ -387,9 +389,10 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
     }
 
-    private BigInteger getDpnIdFromNodeName(String nodeName) {
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "https://github.com/spotbugs/spotbugs/issues/811")
+    private Uint64 getDpnIdFromNodeName(String nodeName) {
         String dpnId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
-        return new BigInteger(dpnId);
+        return Uint64.valueOf(dpnId);
     }
-
 }

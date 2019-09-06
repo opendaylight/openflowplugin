@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for NxActionRegLoad action.
@@ -53,7 +54,9 @@ public class RegLoadConvertor implements
         // We resolve the destination as a uint32 header, reg load action
         // does not support 8-byte experimenter headers.
         nxActionRegLoadBuilder.setDst(FieldChoiceResolver.resolveDstHeaderUint32(dst.getDstChoice()));
-        nxActionRegLoadBuilder.setOfsNbits(dst.getStart() << 6 | dst.getEnd() - dst.getStart());
+
+        final int start = dst.getStart().toJava();
+        nxActionRegLoadBuilder.setOfsNbits(Uint16.valueOf(start << 6 | dst.getEnd().toJava() - start));
         nxActionRegLoadBuilder.setValue(nxAction.getNxRegLoad().getValue());
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
         return ActionUtil.createAction(actionRegLoadBuilder.build());
@@ -73,14 +76,15 @@ public class RegLoadConvertor implements
         return resolveAction(nxRegLoadBuilder.build(), path);
     }
 
-    private static int resolveStart(final int ofsNBints) {
-        return extractSub(ofsNBints, 10, 6);
+    private static Uint16 resolveStart(final Uint16 ofsNBints) {
+        return Uint16.valueOf(extractSub(ofsNBints.toJava(), 10, 6));
     }
 
-    private static int resolveEnd(final int ofsNBints) {
-        int ofs = extractSub(ofsNBints, 10, 6);
-        int numBits = extractSub(ofsNBints, 6, 0);
-        return ofs + numBits;
+    private static Uint16 resolveEnd(final Uint16 ofsNBints) {
+        final int bits = ofsNBints.toJava();
+        int ofs = extractSub(bits, 10, 6);
+        int numBits = extractSub(bits, 6, 0);
+        return Uint16.valueOf(ofs + numBits);
     }
 
     private static int extractSub(final int value, final int nrBits, final int offset) {

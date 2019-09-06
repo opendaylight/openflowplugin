@@ -13,13 +13,14 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class InPortEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Uint32 value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
                 match.getInPort().getValue());
         if (value == null) {
@@ -29,12 +30,12 @@ public class InPortEntrySerializer extends AbstractMatchEntrySerializer {
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getInPort() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         return false;
     }
 

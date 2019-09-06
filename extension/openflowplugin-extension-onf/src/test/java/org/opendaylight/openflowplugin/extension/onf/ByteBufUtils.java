@@ -9,13 +9,14 @@
 package org.opendaylight.openflowplugin.extension.onf;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.List;
 import org.junit.Assert;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Abstract class for common ByteBuf util methods.
@@ -24,7 +25,7 @@ public abstract class ByteBufUtils {
 
     private static final Splitter HEXSTRING_SPLITTER =  Splitter.onPattern("\\s+").omitEmptyStrings();
     private static final byte[] XID = new byte[] { 0x01, 0x02, 0x03, 0x04 };
-    private static final Long DEFAULT_XID = 0x01020304L;
+    private static final Uint32 DEFAULT_XID = Uint32.valueOf(0x01020304L);
 
     public static ByteBuf hexStringToByteBuf(final String hexSrc) {
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -40,13 +41,12 @@ public abstract class ByteBufUtils {
     }
 
     public static void checkHeaderV13(OfHeader ofHeader) {
-        final Short version = EncodeConstants.OF13_VERSION_ID;
-        Assert.assertEquals("Wrong version", version, ofHeader.getVersion());
+        Assert.assertEquals("Wrong version", Uint8.valueOf(EncodeConstants.OF13_VERSION_ID), ofHeader.getVersion());
         Assert.assertEquals("Wrong Xid", DEFAULT_XID, ofHeader.getXid());
     }
 
     private static byte[] hexStringToBytes(final String hexSrc) {
-        List<String> byteChips = Lists.newArrayList(HEXSTRING_SPLITTER.split(hexSrc));
+        List<String> byteChips = HEXSTRING_SPLITTER.splitToList(hexSrc);
         byte[] result = new byte[byteChips.size()];
         int index = 0;
         for (String chip : byteChips) {

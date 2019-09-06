@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import junitparams.JUnitParamsRunner;
@@ -41,6 +40,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(JUnitParamsRunner.class)
 public class RegLoad2ConvertorTest {
@@ -50,23 +52,23 @@ public class RegLoad2ConvertorTest {
 
     public static Iterable<Object[]> commonData() {
         return Arrays.asList(new Object[][] {
-                {0, 0, 0x01, 0x01, 0x01, null},
-                {0, 7, 0xFF, 0xFF, 0xFF, null},
-                {0, 3, 0x0F, 0x0F, 0x0F, null},
-                {4, 7, 0x0F, 0xF0, 0xF0, null},
-                {3, 5, 0x05, 0x28, 0x38, null}
+                {Uint16.valueOf(0), Uint16.valueOf(0), 0x01, 0x01, 0x01, null},
+                {Uint16.valueOf(0), Uint16.valueOf(7), 0xFF, 0xFF, 0xFF, null},
+                {Uint16.valueOf(0), Uint16.valueOf(3), 0x0F, 0x0F, 0x0F, null},
+                {Uint16.valueOf(4), Uint16.valueOf(7), 0x0F, 0xF0, 0xF0, null},
+                {Uint16.valueOf(3), Uint16.valueOf(5), 0x05, 0x28, 0x38, null}
         });
     }
 
     public static Iterable<Object[]> salToOpenflowData() {
         return Arrays.asList(new Object[][] {
                 // specified values do not fit in the bit range
-                {1, 5, 0xFF, null, null, IllegalArgumentException.class},
-                {3, 5, 0x08, null, null, IllegalArgumentException.class},
+                {Uint16.valueOf(1), Uint16.valueOf(5), 0xFF, null, null, IllegalArgumentException.class},
+                {Uint16.valueOf(3), Uint16.valueOf(5), 0x08, null, null, IllegalArgumentException.class},
                 // out of range value and mask
-                {0, 16, 0x1FFFF, null, null, IllegalArgumentException.class},
+                {Uint16.valueOf(0), Uint16.valueOf(16), 0x1FFFF, null, null, IllegalArgumentException.class},
                 // out of range mask
-                {0, 16, 0x1, null, null, IllegalArgumentException.class}
+                {Uint16.valueOf(0), Uint16.valueOf(16), 0x1, null, null, IllegalArgumentException.class}
         });
     }
 
@@ -75,15 +77,15 @@ public class RegLoad2ConvertorTest {
                 // multiple 1-bit segment in mask
                 {null, null, null, 0x05, 0x05, IllegalArgumentException.class},
                 {null, null, null, 0x28, 0x28, IllegalArgumentException.class},
-                // no mask
-                {0, 7, 0x01, 0x01, null, null}
+                // no maskInteger
+                {Uint16.valueOf(0), Uint16.valueOf(7), 0x01, 0x01, null, null}
         });
     }
 
     @Test
     @Parameters(method = "commonData, salToOpenflowData")
-    public void testConvertSalToOf(Integer rangeStart,
-                                   Integer rangeEnd,
+    public void testConvertSalToOf(Uint16 rangeStart,
+                                   Uint16 rangeEnd,
                                    Integer rangeValue,
                                    Integer value,
                                    Integer mask,
@@ -97,7 +99,7 @@ public class RegLoad2ConvertorTest {
         when(dst.getStart()).thenReturn(rangeStart);
         when(dst.getEnd()).thenReturn(rangeEnd);
         NxRegLoad nxRegLoad = mock(NxRegLoad.class);
-        when(nxRegLoad.getValue()).thenReturn(BigInteger.valueOf(rangeValue));
+        when(nxRegLoad.getValue()).thenReturn(Uint64.valueOf(rangeValue));
         when(nxRegLoad.getDst()).thenReturn(dst);
         when(nxRegLoad.getDst().getDstChoice()).thenReturn(mock(DstNxNshFlagsCase.class));
         NxActionRegLoadNodesNodeTableFlowApplyActionsCase actionsCase =
@@ -119,8 +121,8 @@ public class RegLoad2ConvertorTest {
 
     @Test
     @Parameters(method = "commonData, openflowToSalData")
-    public void testConvertOfToSal(Integer rangeStart,
-                                   Integer rangeEnd,
+    public void testConvertOfToSal(Uint16 rangeStart,
+                                   Uint16 rangeEnd,
                                    Integer rangeValue,
                                    Integer value,
                                    Integer mask,
@@ -132,7 +134,7 @@ public class RegLoad2ConvertorTest {
 
         NxActionRegLoad2 nxActionRegLoad2 = mock(NxActionRegLoad2.class);
         when(nxActionRegLoad2.getMatchEntry()).thenReturn(Collections.singletonList(
-                NshFlagsConvertor.buildMatchEntry(value.shortValue(), mask == null ? null : mask.shortValue())));
+                NshFlagsConvertor.buildMatchEntry(Uint8.valueOf(value), mask == null ? null : Uint8.valueOf(mask))));
         ActionRegLoad2 actionRegLoad2 = mock(ActionRegLoad2.class);
         when(actionRegLoad2.getNxActionRegLoad2()).thenReturn(nxActionRegLoad2);
         Action action = mock(Action.class);
@@ -157,7 +159,7 @@ public class RegLoad2ConvertorTest {
                 ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getDst().getStart());
         assertEquals(rangeEnd,
                 ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getDst().getEnd());
-        assertEquals(BigInteger.valueOf(rangeValue),
+        assertEquals(Uint64.valueOf(rangeValue),
                 ((NxActionRegLoadNodesNodeTableFlowWriteActionsCase) actionResult).getNxRegLoad().getValue());
 
         assertEquals(rangeStart,
@@ -166,7 +168,7 @@ public class RegLoad2ConvertorTest {
         assertEquals(rangeEnd,
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase) actionResult1).getNxRegLoad().getDst()
                         .getEnd());
-        assertEquals(BigInteger.valueOf(rangeValue),
+        assertEquals(Uint64.valueOf(rangeValue),
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase) actionResult1).getNxRegLoad().getValue());
 
         assertEquals(rangeStart,
@@ -175,14 +177,14 @@ public class RegLoad2ConvertorTest {
         assertEquals(rangeEnd,
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegLoad().getDst()
                         .getEnd());
-        assertEquals(BigInteger.valueOf(rangeValue),
+        assertEquals(Uint64.valueOf(rangeValue),
                 ((NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase) actionResult2).getNxRegLoad().getValue());
 
         assertEquals(rangeStart,
                 ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getDst().getStart());
         assertEquals(rangeEnd,
                 ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getDst().getEnd());
-        assertEquals(BigInteger.valueOf(rangeValue),
+        assertEquals(Uint64.valueOf(rangeValue),
                 ((NxActionRegLoadNotifGroupDescStatsUpdatedCase) actionResult3).getNxRegLoad().getValue());
 
         assertEquals(rangeStart,
@@ -191,7 +193,7 @@ public class RegLoad2ConvertorTest {
         assertEquals(rangeEnd,
                 ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getDst()
                         .getEnd());
-        assertEquals(BigInteger.valueOf(rangeValue),
+        assertEquals(Uint64.valueOf(rangeValue),
                 ((NxActionRegLoadNotifDirectStatisticsUpdateApplyActionsCase) actionResult4).getNxRegLoad().getValue());
 
         assertEquals(rangeStart,
@@ -200,7 +202,7 @@ public class RegLoad2ConvertorTest {
         assertEquals(rangeEnd,
                 ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getDst()
                         .getEnd());
-        assertEquals(BigInteger.valueOf(rangeValue),
+        assertEquals(Uint64.valueOf(rangeValue),
                 ((NxActionRegLoadNotifDirectStatisticsUpdateWriteActionsCase) actionResult5).getNxRegLoad().getValue());
     }
 }

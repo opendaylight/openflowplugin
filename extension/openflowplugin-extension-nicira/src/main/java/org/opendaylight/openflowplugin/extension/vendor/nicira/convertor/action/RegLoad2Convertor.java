@@ -9,7 +9,8 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import com.google.common.base.Preconditions;
-import java.math.BigInteger;
+import com.google.common.math.LongMath;
+import java.math.RoundingMode;
 import java.util.Collections;
 import javax.annotation.Nullable;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
@@ -75,6 +76,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
 import org.opendaylight.yangtools.yang.common.Empty;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Convert between RegLoad SAL action and RegLoad2 nicira action.
@@ -109,41 +114,41 @@ public class RegLoad2Convertor implements
 
     private static MatchEntry resolveMatchEntry(NxRegLoad nxRegLoad) {
         Dst dst = nxRegLoad.getDst();
-        BigInteger value = nxRegLoad.getValue();
-        int start = dst.getStart();
-        int end = dst.getEnd();
-        BigInteger[] valueMask = resolveValueMask(value, start, end);
+        Uint64 value = nxRegLoad.getValue();
+        Uint16 start = dst.getStart();
+        Uint16 end = dst.getEnd();
+        Uint64[] valueMask = resolveValueMask(value, start, end);
         value = valueMask[0];
-        BigInteger mask = valueMask[1];
+        Uint64 mask = valueMask[1];
         DstChoice dstChoice = dst.getDstChoice();
         return resolveMatchEntry(dstChoice, value, mask);
     }
 
-    private static MatchEntry resolveMatchEntry(DstChoice dstChoice, BigInteger value, BigInteger mask) {
+    private static MatchEntry resolveMatchEntry(DstChoice dstChoice, Uint64 value, Uint64 mask) {
         try {
             if (dstChoice instanceof DstNxNshFlagsCase) {
-                return NshFlagsConvertor.buildMatchEntry(value.shortValueExact(), mask.shortValueExact());
+                return NshFlagsConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNspCase) {
-                return NspConvertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return NspConvertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNsiCase) {
-                return NsiConvertor.buildMatchEntry(value.shortValueExact(), mask.shortValueExact());
+                return NsiConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc1Case) {
-                return Nshc1Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc1Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc2Case) {
-                return Nshc2Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc2Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc3Case) {
-                return Nshc3Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc3Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshc4Case) {
-                return Nshc4Convertor.buildMatchEntry(value.longValueExact(), mask.longValueExact());
+                return Nshc4Convertor.buildMatchEntry(Uint32.valueOf(value), Uint32.valueOf(mask));
             }
             if (dstChoice instanceof DstNxNshTtlCase) {
-                return NshTtlConvertor.buildMatchEntry(value.shortValueExact(), mask.shortValueExact());
+                return NshTtlConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
             }
         } catch (ArithmeticException e) {
             throw new IllegalArgumentException("Value or bit range too big for destination choice", e);
@@ -187,25 +192,25 @@ public class RegLoad2Convertor implements
         if (NxmNxNshc1.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC1_CODEC.getValueLength();
             dstBuilder.setDstChoice(new DstNxNshc1CaseBuilder().setNxNshc1Dst(Empty.getInstance()).build());
-            NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
+            NshcCaseValue nshcCaseValue = (NshcCaseValue) value;
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc2.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC2_CODEC.getValueLength();
             dstBuilder.setDstChoice(new DstNxNshc2CaseBuilder().setNxNshc2Dst(Empty.getInstance()).build());
-            NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
+            NshcCaseValue nshcCaseValue = (NshcCaseValue) value;
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc3.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC3_CODEC.getValueLength();
             dstBuilder.setDstChoice(new DstNxNshc3CaseBuilder().setNxNshc3Dst(Empty.getInstance()).build());
-            NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
+            NshcCaseValue nshcCaseValue = (NshcCaseValue) value;
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshc4.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSC4_CODEC.getValueLength();
             dstBuilder.setDstChoice(new DstNxNshc4CaseBuilder().setNxNshc4Dst(Empty.getInstance()).build());
-            NshcCaseValue nshcCaseValue = ((NshcCaseValue) value);
+            NshcCaseValue nshcCaseValue = (NshcCaseValue) value;
             return resolveRegLoad(nshcCaseValue.getNshc(), nshcCaseValue.getMask(), valueLength, dstBuilder);
         }
         if (NxmNxNshTtl.class.equals(oxmMatchField)) {
@@ -218,26 +223,27 @@ public class RegLoad2Convertor implements
         throw new CodecPreconditionException("Missing codec for " + value.implementedInterface());
     }
 
-    private static NxRegLoad resolveRegLoad(Short value, @Nullable Short mask, int valueLength, DstBuilder dstBuilder) {
+    private static NxRegLoad resolveRegLoad(Uint8 value, @Nullable Uint8 mask, int valueLength, DstBuilder dstBuilder) {
         return resolveRegLoad(
-                BigInteger.valueOf(value),
-                mask == null ? null : BigInteger.valueOf(mask),
+                Uint64.valueOf(value),
+                mask == null ? null : Uint64.valueOf(mask),
                 valueLength,
                 dstBuilder);
     }
 
-    private static NxRegLoad resolveRegLoad(Long value, @Nullable Long mask, int valueLength, DstBuilder dstBuilder) {
+    private static NxRegLoad resolveRegLoad(Uint32 value, @Nullable Uint32 mask, int valueLength,
+            DstBuilder dstBuilder) {
         return resolveRegLoad(
-                BigInteger.valueOf(value),
-                mask == null ? null : BigInteger.valueOf(mask),
+            Uint64.valueOf(value),
+                mask == null ? null : Uint64.valueOf(mask),
                 valueLength,
                 dstBuilder);
     }
 
     // Convert the value/mask pair of the openflowjava reg_load2 action to the
     // value/bit range pair of the openfloplugin reg_load action.
-    private static NxRegLoad resolveRegLoad(BigInteger value,
-                                            @Nullable BigInteger mask,
+    private static NxRegLoad resolveRegLoad(Uint64 value,
+                                            @Nullable Uint64 mask,
                                             int length,
                                             DstBuilder dstBuilder) {
         final int start;
@@ -246,15 +252,20 @@ public class RegLoad2Convertor implements
             start = 0;
             end = length * 8;
         } else {
-            start = mask.getLowestSetBit();
-            end = start + mask.shiftRight(start).not().getLowestSetBit();
-            value = value.and(mask).shiftRight(start);
+            final long maskBits = mask.longValue();
+            start = lowestSetBit(maskBits);
+            end = start + lowestSetBit(~(maskBits >> start));
 
-            if (value.bitLength() > end - start) {
+            final long valueBits = value.longValue();
+            final long newValueBits = (valueBits & maskBits) >> start;
+            final int bitLength = bitLength(newValueBits);
+            if (bitLength > end - start) {
                 // We cannot map a REG_LOAD2 to a single REG_LOAD if the mask
                 // has multiple 1-bit segments (i.e. 0xFF00FF)
                 throw new IllegalArgumentException("Value does not fit in the first 1-bit segment of the mask");
             }
+
+            value = Uint64.fromLongBits(newValueBits);
         }
 
         dstBuilder.setStart(start);
@@ -265,18 +276,25 @@ public class RegLoad2Convertor implements
         return nxRegLoadBuilder.build();
     }
 
+    private static int lowestSetBit(final long value) {
+        return LongMath.log2(Long.lowestOneBit(value), RoundingMode.UNNECESSARY);
+    }
+
+    private static int bitLength(final long value) {
+        return 64 - Long.numberOfLeadingZeros(value);
+    }
+
     // Convert value/bit range pair of the openfloplugin reg_load action to the
     // value/mask pair of the openflowjava reg_load2 action.
-    private static BigInteger[] resolveValueMask(BigInteger value, int start, int end) {
-        int bits = end - start + 1;
-        if (value.bitLength() > bits) {
+    private static Uint64[] resolveValueMask(Uint64 value, Uint16 start, Uint16 end) {
+        final int startInt = start.toJava();
+        final int bits = end.toJava() - startInt + 1;
+        final long valueBits = value.longValue();
+        if (bitLength(valueBits) > bits) {
             throw new IllegalArgumentException("Value does not fit the bit range");
         }
 
-        BigInteger mask = BigInteger.ONE.shiftLeft(bits).subtract(BigInteger.ONE).shiftLeft(start);
-        value = value.shiftLeft(start);
-
-        return new BigInteger[] {value, mask};
+        final long maskBits = (1L << bits) - 1 << startInt;
+        return new Uint64[] {Uint64.fromLongBits(valueBits << startInt), Uint64.fromLongBits(maskBits)};
     }
-
 }

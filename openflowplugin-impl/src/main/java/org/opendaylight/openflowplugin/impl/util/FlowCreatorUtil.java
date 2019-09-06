@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
-import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
@@ -26,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public final class FlowCreatorUtil {
     /**
@@ -40,7 +39,7 @@ public final class FlowCreatorUtil {
         throw new AssertionError("FlowCreatorUtil is not expected to be instantiated.");
     }
 
-    public static void setWildcardedFlowMatch(short version, MultipartRequestFlowBuilder flowBuilder) {
+    public static void setWildcardedFlowMatch(final short version, final MultipartRequestFlowBuilder flowBuilder) {
         if (version == OFConstants.OFP_VERSION_1_0) {
             flowBuilder.setMatchV10(createWildcardedMatchV10());
         }
@@ -49,7 +48,8 @@ public final class FlowCreatorUtil {
         }
     }
 
-    public static void setWildcardedFlowMatch(short version, MultipartRequestAggregateBuilder aggregateBuilder) {
+    public static void setWildcardedFlowMatch(final short version,
+            final MultipartRequestAggregateBuilder aggregateBuilder) {
         if (version == OFConstants.OFP_VERSION_1_0) {
             aggregateBuilder.setMatchV10(createWildcardedMatchV10());
         }
@@ -95,7 +95,7 @@ public final class FlowCreatorUtil {
      * @param version  Protocol version.
      * @return {@code true} only if a flow entry can be modified.
      */
-    public static boolean canModifyFlow(OriginalFlow original, UpdatedFlow updated, Short version) {
+    public static boolean canModifyFlow(final OriginalFlow original, final UpdatedFlow updated, final Short version) {
         // FLOW_MOD does not change match, priority, idle_timeout, hard_timeout,
         // flags, and cookie.
         if (!Objects.equals(original.getMatch(), updated.getMatch()) || !equalsWithDefault(original.getPriority(),
@@ -113,8 +113,8 @@ public final class FlowCreatorUtil {
                 && version.shortValue() != OFConstants.OFP_VERSION_1_0) {
             FlowCookie cookieMask = updated.getCookieMask();
             if (cookieMask != null) {
-                BigInteger mask = cookieMask.getValue();
-                if (mask != null && !mask.equals(BigInteger.ZERO)) {
+                Uint64 mask = cookieMask.getValue();
+                if (mask != null && mask.longValue() != 0) {
                     // Allow FLOW_MOD with filtering by cookie.
                     return true;
                 }
@@ -123,8 +123,8 @@ public final class FlowCreatorUtil {
 
         FlowCookie oc = original.getCookie();
         FlowCookie uc = updated.getCookie();
-        BigInteger orgCookie;
-        BigInteger updCookie;
+        Uint64 orgCookie;
+        Uint64 updCookie;
         if (oc == null) {
             if (uc == null) {
                 return true;
@@ -134,7 +134,7 @@ public final class FlowCreatorUtil {
             updCookie = uc.getValue();
         } else {
             orgCookie = oc.getValue();
-            updCookie = (uc == null) ? OFConstants.DEFAULT_COOKIE : uc.getValue();
+            updCookie = uc == null ? OFConstants.DEFAULT_COOKIE : uc.getValue();
         }
 
         return equalsWithDefault(orgCookie, updCookie, OFConstants.DEFAULT_COOKIE);
@@ -147,7 +147,7 @@ public final class FlowCreatorUtil {
      * @param flags2 A value to be compared.
      * @return {@code true} only if {@code flags1} and {@code flags2} are identical.
      */
-    public static boolean equalsFlowModFlags(FlowModFlags flags1, FlowModFlags flags2) {
+    public static boolean equalsFlowModFlags(final FlowModFlags flags1, final FlowModFlags flags2) {
         FlowModFlags f1;
         FlowModFlags f2;
         if (flags1 == null) {
@@ -159,7 +159,7 @@ public final class FlowCreatorUtil {
             f2 = flags2;
         } else {
             f1 = flags1;
-            f2 = (flags2 == null) ? DEFAULT_FLOW_MOD_FLAGS : flags2;
+            f2 = flags2 == null ? DEFAULT_FLOW_MOD_FLAGS : flags2;
         }
 
         return equalsWithDefault(f1.isCHECKOVERLAP(), f2.isCHECKOVERLAP(), Boolean.FALSE) && equalsWithDefault(
@@ -180,7 +180,7 @@ public final class FlowCreatorUtil {
      * @param <T>    Type of values.
      * @return {@code true} only if {@code value1} and {@code value2} are identical.
      */
-    public static <T> boolean equalsWithDefault(T value1, T value2, T def) {
+    public static <T> boolean equalsWithDefault(final T value1, final T value2, final T def) {
         if (value1 == null) {
             return value2 == null || value2.equals(def);
         } else if (value2 == null) {

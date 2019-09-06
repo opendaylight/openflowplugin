@@ -70,7 +70,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         connectionAdapter.setMessageListener(ofMessageListener);
 
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(
-                connectionContext, config.getEchoReplyTimeout().getValue(), executorService);
+                connectionContext, config.getEchoReplyTimeout().getValue().toJava(), executorService);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");

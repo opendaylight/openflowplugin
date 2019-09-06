@@ -11,14 +11,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.math.BigInteger;
 import org.junit.Test;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class NxmHeaderTest {
 
-    private static final BigInteger NO_MASK_HEADER = new BigInteger("80000496", 16);
-    private static final BigInteger MASK_HEADER = new BigInteger("80000596", 16);
-    private static final BigInteger EXP_HEADER = new BigInteger("FFFFF4F300F2AB31", 16);
+    private static final Uint64 NO_MASK_HEADER = Uint64.valueOf("80000496", 16);
+    private static final Uint64 MASK_HEADER = Uint64.valueOf("80000596", 16);
+    private static final Uint64 EXP_HEADER = Uint64.valueOf("FFFFF4F300F2AB31", 16);
 
     @Test
     public void nxmHeaderNoMaskTest() {
@@ -37,13 +37,13 @@ public class NxmHeaderTest {
                 nxmHeaderFromBigInt.isHasMask(),
                 nxmHeaderFromBigInt.getLength());
 
-        assertEquals(NO_MASK_HEADER, nxmHeaderFromFields.toBigInteger());
+        assertEquals(NO_MASK_HEADER, nxmHeaderFromFields.toUint64());
         assertEquals(0x80000496L, nxmHeaderFromFields.toLong());
         assertFalse(nxmHeaderFromFields.isExperimenter());
 
         NxmHeader nxmHeaderFromLong = new NxmHeader(NO_MASK_HEADER.longValue());
 
-        assertEquals(NO_MASK_HEADER, nxmHeaderFromLong.toBigInteger());
+        assertEquals(NO_MASK_HEADER, nxmHeaderFromLong.toUint64());
         assertEquals(0x80000496L, nxmHeaderFromLong.toLong());
         assertFalse(nxmHeaderFromLong.isExperimenter());
 
@@ -71,13 +71,13 @@ public class NxmHeaderTest {
                 nxmHeaderFromBigInt.isHasMask(),
                 nxmHeaderFromBigInt.getLength());
 
-        assertEquals(MASK_HEADER, nxmHeaderFromFields.toBigInteger());
+        assertEquals(MASK_HEADER, nxmHeaderFromFields.toUint64());
         assertEquals(0x80000596L, nxmHeaderFromFields.toLong());
         assertFalse(nxmHeaderFromFields.isExperimenter());
 
         NxmHeader nxmHeaderFromLong = new NxmHeader(MASK_HEADER.longValue());
 
-        assertEquals(MASK_HEADER, nxmHeaderFromLong.toBigInteger());
+        assertEquals(MASK_HEADER, nxmHeaderFromLong.toUint64());
         assertEquals(0x80000596L, nxmHeaderFromLong.toLong());
         assertFalse(nxmHeaderFromLong.isExperimenter());
 
@@ -106,14 +106,14 @@ public class NxmHeaderTest {
                 nxmHeaderFromBigInt.getLength(),
                 nxmHeaderFromBigInt.getExperimenterId());
 
-        assertEquals(EXP_HEADER, nxmHeaderFromFields.toBigInteger());
+        assertEquals(EXP_HEADER, nxmHeaderFromFields.toUint64());
         assertEquals(0xFFFFF4F300F2AB31L, nxmHeaderFromFields.toLong());
         assertTrue(nxmHeaderFromFields.isExperimenter());
         assertEquals(0x00F2AB31L, nxmHeaderFromFields.getExperimenterId());
 
         NxmHeader nxmHeaderFromLong = new NxmHeader(EXP_HEADER.longValue());
 
-        assertEquals(EXP_HEADER, nxmHeaderFromLong.toBigInteger());
+        assertEquals(EXP_HEADER, nxmHeaderFromLong.toUint64());
         assertEquals(0xFFFFF4F300F2AB31L, nxmHeaderFromLong.toLong());
         assertTrue(nxmHeaderFromLong.isExperimenter());
         assertEquals(0x00F2AB31L, nxmHeaderFromLong.getExperimenterId());

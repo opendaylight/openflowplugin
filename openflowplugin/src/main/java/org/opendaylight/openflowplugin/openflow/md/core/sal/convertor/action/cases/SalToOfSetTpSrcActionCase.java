@@ -51,7 +51,7 @@ public class SalToOfSetTpSrcActionCase extends ConvertorCase<SetTpSrcActionCase,
     @Nonnull
     @Override
     public Optional<Action> process(@Nonnull final SetTpSrcActionCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         IPProtocols protocol = null;
 
         if (data.getIpProtocol() != null) {
@@ -60,11 +60,11 @@ public class SalToOfSetTpSrcActionCase extends ConvertorCase<SetTpSrcActionCase,
 
         SetTpSrcAction settpsrcaction = source.getSetTpSrcAction();
 
-        MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setHasMask(false);
+        MatchEntryBuilder matchBuilder = new MatchEntryBuilder()
+                .setOxmClass(OpenflowBasicClass.class)
+                .setHasMask(Boolean.FALSE);
 
-        int port = settpsrcaction.getPort().getValue();
+        int port = settpsrcaction.getPort().getValue().toJava();
         int type = 0xff & port;
 
         if (protocol != null) {

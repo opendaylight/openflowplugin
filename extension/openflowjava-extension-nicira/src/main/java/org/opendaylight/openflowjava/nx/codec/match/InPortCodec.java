@@ -39,7 +39,7 @@ public class InPortCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         OfInPortCaseValue value = (OfInPortCaseValue) input.getMatchEntryValue();
-        outBuffer.writeInt(value.getNxmOfInPortValues().getValue());
+        outBuffer.writeInt(value.getNxmOfInPortValues().getValue().toJava());
     }
 
     @Override

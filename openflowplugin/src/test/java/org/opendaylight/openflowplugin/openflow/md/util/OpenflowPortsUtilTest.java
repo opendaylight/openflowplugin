@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OpenflowPortsUtil.
@@ -81,8 +82,8 @@ public class OpenflowPortsUtilTest {
     //helper
     private static void matchGetPortfromLogicalName(final OpenflowVersion version, final String logicalName) {
         Assert.assertEquals("Controller reserve port not matching to logical-name for " + version,
-                mapVersionToPorts.get(version).get(logicalName),
-                OpenflowPortsUtil.getPortFromLogicalName(version, logicalName));
+                mapVersionToPorts.get(version).get(logicalName).longValue(),
+                OpenflowPortsUtil.getPortFromLogicalName(version, logicalName).toJava());
     }
 
     /**
@@ -162,13 +163,12 @@ public class OpenflowPortsUtilTest {
      */
     @Test
     public void testCheckPortValidity10() {
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , -1L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFF00L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFF8L));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFF0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFFFL));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0x1FFFFL));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFF00L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFFF8L)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFFF0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFFFFL)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0x1FFFFL)));
     }
 
     /**
@@ -176,13 +176,11 @@ public class OpenflowPortsUtilTest {
      */
     @Test
     public void testCheckPortValidity13() {
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , -1L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFF00L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFF8L));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFF0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFFFL));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0x1FFFFFFFFL));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFF00L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFFF8L)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFFF0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFFFFL)));
     }
 
     /**
@@ -192,7 +190,7 @@ public class OpenflowPortsUtilTest {
     public void testPortNumberToString() {
         PortNumberUni portNumber;
 
-        portNumber = new PortNumberUni(42L);
+        portNumber = new PortNumberUni(Uint32.valueOf(42L));
         Assert.assertEquals("42", OpenflowPortsUtil.portNumberToString(portNumber));
 
         portNumber = new PortNumberUni(OutputPortValues.FLOOD.toString());

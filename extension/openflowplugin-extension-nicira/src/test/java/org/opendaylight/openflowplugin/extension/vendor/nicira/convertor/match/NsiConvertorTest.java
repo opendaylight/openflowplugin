@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsiBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link NsiConvertor}.
@@ -44,7 +45,7 @@ public class NsiConvertorTest {
 
     private NsiConvertor nsiConvertor;
 
-    private static final Short NSI_VALUE = (short) 255;
+    private static final Uint8 NSI_VALUE = Uint8.MAX_VALUE;
 
     @Before
     public void setUp() {
