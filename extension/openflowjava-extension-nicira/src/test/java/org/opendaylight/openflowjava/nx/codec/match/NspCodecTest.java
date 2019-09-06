@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NspCodecTest {
 
@@ -61,7 +62,7 @@ public class NspCodecTest {
 
         NxExpMatchEntryValue value = nspCodec.deserializeValue(buffer, false);
 
-        assertEquals(NSP_VALUE, ((NspCaseValue) value).getNspValues().getNsp());
+        assertEquals(Uint32.valueOf(NSP_VALUE), ((NspCaseValue) value).getNspValues().getNsp());
         assertFalse(buffer.isReadable());
     }
 
@@ -71,18 +72,18 @@ public class NspCodecTest {
 
         NxExpMatchEntryValue value = nspCodec.deserializeValue(buffer, true);
 
-        assertEquals(NSP_VALUE, ((NspCaseValue) value).getNspValues().getNsp());
-        assertEquals(NSP_MASK, ((NspCaseValue) value).getNspValues().getMask());
+        assertEquals(Uint32.valueOf(NSP_VALUE), ((NspCaseValue) value).getNspValues().getNsp());
+        assertEquals(Uint32.valueOf(NSP_MASK), ((NspCaseValue) value).getNspValues().getMask());
         assertFalse(buffer.isReadable());
     }
 
 
-    private NxExpMatchEntryValue createMatchEntryValue(Long value, Long mask) {
+    private NxExpMatchEntryValue createMatchEntryValue(final Long value, final Long mask) {
         NspValues nspValues = new NspValuesBuilder().setNsp(value).setMask(mask).build();
         return new NspCaseValueBuilder().setNspValues(nspValues).build();
     }
 
-    private void writeBuffer(ByteBuf message, Long value, Long mask) {
+    private void writeBuffer(final ByteBuf message, final Long value, final Long mask) {
         message.writeInt(value.intValue());
         if (mask != null) {
             message.writeInt(mask.intValue());

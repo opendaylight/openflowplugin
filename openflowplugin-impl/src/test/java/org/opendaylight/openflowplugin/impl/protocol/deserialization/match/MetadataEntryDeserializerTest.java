@@ -12,30 +12,30 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MetadataEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
 
     @Test
     public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
-        final BigInteger metadata = BigInteger.valueOf(20);
-        final BigInteger metadataMask = BigInteger.valueOf(30);
+        final Uint64 metadata = Uint64.valueOf(20);
+        final Uint64 metadataMask = Uint64.valueOf(30);
 
         writeHeader(in, false);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, getValueLength()));
+        in.writeBytes(ByteUtil.uint64toBytes(metadata));
 
         assertEquals(metadata, deserialize(in).getMetadata().getMetadata());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, getValueLength()));
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadataMask, getValueLength()));
+        in.writeBytes(ByteUtil.uint64toBytes(metadata));
+        in.writeBytes(ByteUtil.uint64toBytes(metadataMask));
 
         final Metadata desMetadata = deserialize(in).getMetadata();
         assertEquals(metadata, desMetadata.getMetadata());

@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link GroupNotificationSupplierImpl}.
@@ -45,8 +46,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class GroupNotificationSupplierImplTest {
 
     private static final String FLOW_NODE_ID = "openflow:111";
-    private static final Long GROUP_ID = 111L;
-    private static final Long UPDATED_GROUP_ID = 100L;
+    private static final Uint32 GROUP_ID = Uint32.valueOf(111);
+    private static final Uint32 UPDATED_GROUP_ID = Uint32.valueOf(100);
 
     private GroupNotificationSupplierImpl notifSupplierImpl;
     private NotificationPublishService notifProviderService;

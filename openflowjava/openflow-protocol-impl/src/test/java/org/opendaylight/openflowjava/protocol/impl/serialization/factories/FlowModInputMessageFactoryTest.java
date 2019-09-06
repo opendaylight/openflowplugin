@@ -51,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for FlowModInputMessageFactory.
@@ -77,6 +78,7 @@ public class FlowModInputMessageFactoryTest {
     /**
      * Testing of {@link FlowModInputMessageFactory} for correct translation from POJO.
      */
+    @SuppressWarnings("null")
     @Test
     public void testFlowModInputMessageFactory() throws Exception {
         FlowModInputBuilder builder = new FlowModInputBuilder();
@@ -169,10 +171,10 @@ public class FlowModInputMessageFactoryTest {
         BufferHelper.checkHeaderV13(out,(byte) 14, 128);
         cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         out.readBytes(cookie);
-        Assert.assertEquals("Wrong cookie", message.getCookie(), new BigInteger(1, cookie));
+        Assert.assertEquals("Wrong cookie", message.getCookie(), Uint64.valueOf("FF01040106000701", 16));
         cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         out.readBytes(cookieMask);
-        Assert.assertEquals("Wrong cookieMask", message.getCookieMask(), new BigInteger(1,  cookieMask));
+        Assert.assertEquals("Wrong cookieMask", message.getCookieMask(), Uint64.valueOf("FF05000009300030", 16));
         Assert.assertEquals("Wrong tableId", message.getTableId().getValue().intValue(), out.readUnsignedByte());
         Assert.assertEquals("Wrong command", message.getCommand().getIntValue(), out.readUnsignedByte());
         Assert.assertEquals("Wrong idleTimeOut", message.getIdleTimeout().intValue(), out.readShort());
@@ -223,7 +225,7 @@ public class FlowModInputMessageFactoryTest {
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
+    private static FlowModFlags createFlowModFlagsFromBitmap(final int input) {
         final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) > 0;
         final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) > 0;
         final Boolean _oFPFFRESETCOUNTS = (input & 1 << 2) > 0;

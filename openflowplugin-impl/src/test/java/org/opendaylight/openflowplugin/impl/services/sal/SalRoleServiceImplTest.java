@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
@@ -47,6 +46,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetR
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SalRoleServiceImplTest {
 
@@ -80,7 +82,7 @@ public class SalRoleServiceImplTest {
     @Mock
     private OutboundQueue mockOutboundQueue;
 
-    private NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
+    private final NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
 
     private static long testXid = 100L;
 
@@ -95,8 +97,8 @@ public class SalRoleServiceImplTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mockDeviceInfo.getNodeId()).thenReturn(testNodeId);
-        Mockito.when(mockDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
-        short testVersion = 4;
+        Mockito.when(mockDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
+        Uint8 testVersion = Uint8.valueOf(4);
         Mockito.when(mockFeaturesOutput.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getDeviceState()).thenReturn(mockDeviceState);
         Mockito.when(mockDeviceContext.getDeviceInfo()).thenReturn(mockDeviceInfo);
@@ -106,7 +108,7 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockFeaturesReply.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getMessageSpy()).thenReturn(mockMessageSpy);
         Mockito.when(mockRequestContextStack.<RoleRequestOutput>createRequestContext()).thenReturn(mockRequestContext);
-        Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(testXid));
+        Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(Uint32.valueOf(testXid)));
         Mockito.when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(mockOutboundQueue);
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState())
                 .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
@@ -121,8 +123,8 @@ public class SalRoleServiceImplTest {
 
     @Test
     public void testSetRole() throws Exception {
-        RoleRequestOutput roleRequestOutput = (new RoleRequestOutputBuilder())
-                .setXid(testXid).setGenerationId(BigInteger.valueOf(1)).build();
+        RoleRequestOutput roleRequestOutput = new RoleRequestOutputBuilder()
+                .setXid(testXid).setGenerationId(Uint64.ONE).build();
         ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
                 RpcResultBuilder.<RoleRequestOutput>success().withResult(roleRequestOutput).buildFuture();
 
@@ -144,7 +146,7 @@ public class SalRoleServiceImplTest {
 
         SetRoleOutput setRoleOutput = roleOutputRpcResult.getResult();
         assertNotNull(setRoleOutput);
-        assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
+        assertEquals(Uint64.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
     }
 
@@ -152,8 +154,8 @@ public class SalRoleServiceImplTest {
     public void testDuplicateRoles() throws Exception {
         // set role to slave
 
-        RoleRequestOutput roleRequestOutput = (new RoleRequestOutputBuilder())
-                .setXid(testXid).setGenerationId(BigInteger.valueOf(1)).build();
+        RoleRequestOutput roleRequestOutput = new RoleRequestOutputBuilder()
+                .setXid(testXid).setGenerationId(Uint64.ONE).build();
         ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
                 RpcResultBuilder.<RoleRequestOutput>success().withResult(roleRequestOutput).buildFuture();
 
@@ -174,7 +176,7 @@ public class SalRoleServiceImplTest {
 
         SetRoleOutput setRoleOutput = roleOutputRpcResult.getResult();
         assertNotNull(setRoleOutput);
-        assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
+        assertEquals(Uint64.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
         // make another role change with the same role - slave
         Future<RpcResult<SetRoleOutput>> future2 = salRoleService.setRole(setRoleInput);

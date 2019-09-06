@@ -16,20 +16,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class TcpSourcePortEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeShort(((TcpMatch) match.getLayer4Match()).getTcpSourcePort().getValue());
+        outBuffer.writeShort(((TcpMatch) match.getLayer4Match()).getTcpSourcePort().getValue().toJava());
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getLayer4Match() != null
                 && match.getLayer4Match() instanceof TcpMatch
                 && ((TcpMatch) match.getLayer4Match()).getTcpSourcePort() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         return false;
     }
 

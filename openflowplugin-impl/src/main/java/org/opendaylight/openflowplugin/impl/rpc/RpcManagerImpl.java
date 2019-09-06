@@ -59,7 +59,7 @@ public class RpcManagerImpl implements RpcManager {
      * This method is only for testing.
      */
     @VisibleForTesting
-    void addRecordToContexts(DeviceInfo deviceInfo, RpcContext rpcContexts) {
+    void addRecordToContexts(final DeviceInfo deviceInfo, final RpcContext rpcContexts) {
         if (!contexts.containsKey(deviceInfo)) {
             this.contexts.put(deviceInfo, rpcContexts);
         }
@@ -69,7 +69,7 @@ public class RpcManagerImpl implements RpcManager {
     public RpcContext createContext(final @Nonnull DeviceContext deviceContext) {
         final RpcContextImpl rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                config.getRpcRequestsQuota().getValue(),
+                config.getRpcRequestsQuota().getValue().toJava(),
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,

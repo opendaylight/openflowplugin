@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,10 +241,10 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     private final class AddGroupCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
-        private final Long groupId;
+        private final Uint32 groupId;
         private final NodeId nodeId;
 
-        private AddGroupCallBack(final Long groupId, final NodeId nodeId) {
+        private AddGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
@@ -266,10 +267,10 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     private final class UpdateGroupCallBack implements FutureCallback<RpcResult<UpdateGroupOutput>> {
-        private final Long groupId;
+        private final Uint32 groupId;
         private final NodeId nodeId;
 
-        private UpdateGroupCallBack(final Long groupId, final NodeId nodeId) {
+        private UpdateGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
@@ -293,10 +294,10 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     private final class RemoveGroupCallBack implements FutureCallback<RpcResult<RemoveGroupOutput>> {
-        private final Long groupId;
+        private final Uint32 groupId;
         private final NodeId nodeId;
 
-        private RemoveGroupCallBack(final Long groupId, final NodeId nodeId) {
+        private RemoveGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }

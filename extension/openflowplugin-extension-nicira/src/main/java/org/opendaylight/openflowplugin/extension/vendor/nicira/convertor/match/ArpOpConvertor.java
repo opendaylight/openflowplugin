@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.op.grouping.NxmOfArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.op.grouping.NxmOfArpOpBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for ArpOpCase.
@@ -56,7 +57,7 @@ public class ArpOpConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Integer value = matchGrouping.get().getNxmOfArpOp().getValue();
+        Uint16 value = matchGrouping.get().getNxmOfArpOp().getValue();
         ArpOpCaseValueBuilder arpOpCaseValueBuilder = new ArpOpCaseValueBuilder();
         arpOpCaseValueBuilder.setArpOpValues(new ArpOpValuesBuilder()
                 .setValue(value).build());

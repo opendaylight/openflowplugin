@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import static org.mockito.ArgumentMatchers.any;
 
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test for {@link HandshakeListenerImpl}.
@@ -61,7 +61,7 @@ public class HandshakeListenerImplTest {
                 .thenReturn(RpcResultBuilder.success(new BarrierOutputBuilder().build()).buildFuture());
         connectionContextSpy = Mockito.spy(new ConnectionContextImpl(connectionAdapter));
         Mockito.when(connectionContextSpy.getConnectionAdapter()).thenReturn(connectionAdapter);
-        Mockito.when(features.getDatapathId()).thenReturn(BigInteger.TEN);
+        Mockito.when(features.getDatapathId()).thenReturn(Uint64.valueOf(10));
         handshakeListener = new HandshakeListenerImpl(connectionContextSpy, deviceConnectedHandler);
         handshakeListener.setHandshakeContext(handshakeContext);
     }

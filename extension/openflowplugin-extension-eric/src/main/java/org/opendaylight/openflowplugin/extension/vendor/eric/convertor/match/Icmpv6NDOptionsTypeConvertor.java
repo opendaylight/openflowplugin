@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.er
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for Icmpv6NDOptionsTypeCase.
@@ -60,7 +61,7 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        short value = matchGrouping.get().getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType();
+        Uint8 value = matchGrouping.get().getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType();
         Icmpv6NdOptionsTypeCaseValueBuilder icmpv6NdOptionsTypeCaseValueBuilder
                 = new Icmpv6NdOptionsTypeCaseValueBuilder();
         icmpv6NdOptionsTypeCaseValueBuilder.setIcmpv6NdOptionsTypeValues(new Icmpv6NdOptionsTypeValuesBuilder()

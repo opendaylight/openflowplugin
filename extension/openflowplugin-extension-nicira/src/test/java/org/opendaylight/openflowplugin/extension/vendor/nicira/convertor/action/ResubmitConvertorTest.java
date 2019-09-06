@@ -27,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.group.desc.stats.updated.group.desc.stats.buckets.bucket.action.action.NxActionResubmitNotifGroupDescStatsUpdatedCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.resubmit.grouping.NxResubmit;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +52,13 @@ public class ResubmitConvertorTest {
     public void setUp() {
         final NxResubmit nxResubmit = Mockito.mock(NxResubmit.class);
         when(actionsCase.getNxResubmit()).thenReturn(nxResubmit);
-        when(nxResubmit.getInPort()).thenReturn(1);
-        when(nxResubmit.getTable()).thenReturn((short) 2);
+        when(nxResubmit.getInPort()).thenReturn(Uint16.ONE);
+        when(nxResubmit.getTable()).thenReturn(Uint8.valueOf(2));
 
         final ActionResubmit actionResubmit = Mockito.mock(ActionResubmit.class);
         final NxActionResubmit nxActionResubmit = Mockito.mock(NxActionResubmit.class);
-        when(nxActionResubmit.getInPort()).thenReturn(3);
-        when(nxActionResubmit.getTable()).thenReturn((short) 4);
+        when(nxActionResubmit.getInPort()).thenReturn(Uint16.valueOf(3));
+        when(nxActionResubmit.getTable()).thenReturn(Uint8.valueOf(4));
         when(actionResubmit.getNxActionResubmit()).thenReturn(nxActionResubmit);
         when(action.getActionChoice()).thenReturn(actionResubmit);
 

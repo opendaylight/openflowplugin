@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.math.BigInteger;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -36,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.id.grouping.NxmNxTunId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.id.grouping.NxmNxTunIdBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for TunIdCase.
@@ -56,7 +56,7 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        BigInteger value = matchGrouping.get().getNxmNxTunId().getValue();
+        Uint64 value = matchGrouping.get().getNxmNxTunId().getValue();
 
         TunIdCaseValueBuilder tunnelIdCaseBuilder = new TunIdCaseValueBuilder();
 

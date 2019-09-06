@@ -41,13 +41,14 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
 import org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainHolderImplTest {
 
     private static final String ENTITY_TEST = "EntityTest";
     private static final String OPENFLOW_TEST = "openflow:test";
-    private static final Short AUXILIARY_ID = 0;
+    private static final Uint8 AUXILIARY_ID = Uint8.ZERO;
     @Mock
     private StatisticsManager statisticsManager;
     @Mock
@@ -197,8 +198,7 @@ public class ContextChainHolderImplTest {
         registration.close();
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
                 == ConnectionStatus.MAY_CONTINUE);
-        Short auxiliaryId1 = 1;
-        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(auxiliaryId1);
+        Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(Uint8.ONE);
         Assert.assertTrue(contextChainHolder.deviceConnected(connectionContext)
                 == ConnectionStatus.MAY_CONTINUE);
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);

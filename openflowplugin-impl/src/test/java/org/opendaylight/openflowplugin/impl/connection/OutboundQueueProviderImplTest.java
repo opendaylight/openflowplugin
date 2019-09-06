@@ -15,11 +15,12 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OutboundQueueProviderImplTest extends TestCase {
 
     private static final Long DUMMY_ENTRY_NUMBER = 44L;
-    private static final Long DUMMY_XID = 55L;
+    private static final Uint32 DUMMY_XID = Uint32.valueOf(55L);
 
     private final OutboundQueueProviderImpl outboundQueueProvider =
             new OutboundQueueProviderImpl(OFConstants.OFP_VERSION_1_3);
@@ -40,9 +41,9 @@ public class OutboundQueueProviderImplTest extends TestCase {
 
     @Test
     public void testCreateBarrierRequest() {
-        final BarrierInput barrierRequest = outboundQueueProvider.createBarrierRequest(DUMMY_XID);
+        final BarrierInput barrierRequest = outboundQueueProvider.createBarrierRequest(DUMMY_XID.toJava());
         assertNotNull(barrierRequest);
-        assertEquals(OFConstants.OFP_VERSION_1_3, (short)barrierRequest.getVersion());
+        assertEquals(OFConstants.OFP_VERSION_1_3, barrierRequest.getVersion().toJava());
         assertEquals(DUMMY_XID, barrierRequest.getXid());
     }
 }

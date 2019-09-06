@@ -93,6 +93,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -355,7 +356,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 // new list for suspected groups pointing to ports .. when the ports come up
                 // late
                 List<Group> suspectedGroups = new ArrayList<>();
-                Map<Long, ListenableFuture<?>> groupFutures = new HashMap<>();
+                Map<Uint32, ListenableFuture<?>> groupFutures = new HashMap<>();
 
                 while ((!toBeInstalledGroups.isEmpty() || !suspectedGroups.isEmpty())
                         && counter <= provider.getReconciliationRetryCount()) { // also check if the counter has not
@@ -412,7 +413,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                         .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
                                                 + ".action.types.rev131112.action.action.GroupActionCase")) {
                                     // chained groups
-                                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                                    Uint32 groupId = ((GroupActionCase) action.getAction()).getGroupAction()
+                                            .getGroupId();
                                     ListenableFuture<?> future = groupFutures.get(groupId);
                                     if (future == null) {
                                         okToInstall = false;
@@ -490,9 +492,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
          * @param group
          *            The group to add.
          */
-        private void addGroup(Map<Long, ListenableFuture<?>> map, Group group) {
+        private void addGroup(Map<Uint32, ListenableFuture<?>> map, Group group) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
-            final Long groupId = group.getGroupId().getValue();
+            final Uint32 groupId = group.getGroupId().getValue();
             ListenableFuture<?> future = JdkFutureAdapters
                     .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
 

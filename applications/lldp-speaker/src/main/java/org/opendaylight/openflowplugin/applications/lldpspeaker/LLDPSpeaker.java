@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +163,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
             return;
         }
         MacAddress srcMacAddress = flowConnector.getHardwareAddress();
-        Long outputPortNo = flowConnector.getPortNumber().getUint32();
+        Uint32 outputPortNo = flowConnector.getPortNumber().getUint32();
 
         // No need to send LLDP frames on local ports
         if (outputPortNo == null) {

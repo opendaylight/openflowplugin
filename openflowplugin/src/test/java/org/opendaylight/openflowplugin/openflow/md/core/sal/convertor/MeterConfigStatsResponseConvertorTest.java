@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +83,7 @@ public class MeterConfigStatsResponseConvertorTest {
         assertEquals(PRESET_COUNT, meterConfigs.size());
         int cnt = 0;
         for (MeterConfigStats meterConfigStats: meterConfigs) {
-            assertEquals(new Long(cnt), meterConfigStats.getMeterId().getValue());
+            assertEquals(cnt, meterConfigStats.getMeterId().getValue().toJava());
             assertTrue(meterConfigStats.getFlags().isMeterBurst());
             assertFalse(meterConfigStats.getFlags().isMeterKbps());
             assertTrue(meterConfigStats.getFlags().isMeterPktps());

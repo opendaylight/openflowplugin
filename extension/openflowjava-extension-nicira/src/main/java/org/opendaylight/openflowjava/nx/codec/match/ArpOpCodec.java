@@ -37,7 +37,7 @@ public class ArpOpCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         ArpOpCaseValue arpOpCase = ((ArpOpCaseValue) input.getMatchEntryValue());
-        outBuffer.writeShort(arpOpCase.getArpOpValues().getValue());
+        outBuffer.writeShort(arpOpCase.getArpOpValues().getValue().toJava());
     }
 
     @Override

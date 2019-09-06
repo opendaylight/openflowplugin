@@ -38,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowUtils {
     private FlowUtils() {
@@ -47,7 +49,7 @@ public final class FlowUtils {
     /**
      * Returns a {@link FlowBuilder} forwarding all packets to controller port.
      */
-    public static FlowBuilder createDirectMacToMacFlow(final Short tableId, final int priority, final MacAddress srcMac,
+    public static FlowBuilder createDirectMacToMacFlow(final Uint8 tableId, final int priority, final MacAddress srcMac,
             final MacAddress dstMac, final NodeConnectorRef dstPort) {
         FlowBuilder macToMacFlow = new FlowBuilder()
                 .setTableId(tableId)
@@ -72,7 +74,7 @@ public final class FlowUtils {
                 .setOrder(0)
                 .setAction(new OutputActionCaseBuilder()
                         .setOutputAction(new OutputActionBuilder()
-                                .setMaxLength(Integer.valueOf(0xffff))
+                                .setMaxLength(Uint16.MAX_VALUE)
                                 .setOutputNodeConnector(outputPort)
                                 .build())
                         .build())
@@ -111,11 +113,11 @@ public final class FlowUtils {
     /**
      * Returns a{@link FlowBuilder} forwarding all packets to controller port.
      */
-    public static FlowBuilder createFwdAllToControllerFlow(final Short tableId, final int priority,
+    public static FlowBuilder createFwdAllToControllerFlow(final Uint8 tableId, final int priority,
             final FlowId flowId) {
         // Create output action -> send to controller
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(Integer.valueOf(0xffff));
+        output.setMaxLength(Uint16.MAX_VALUE);
         Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(controllerPort);
 

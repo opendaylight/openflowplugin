@@ -38,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +119,7 @@ public class SyncReactorImpl implements SyncReactor {
             final FlowCapableNode flowCapableNodeConfigured, final FlowCapableNode flowCapableNodeOperational) {
         final List<Group> groupsConfigured = ReconcileUtil.safeGroups(flowCapableNodeConfigured);
         final List<Group> groupsOperational = ReconcileUtil.safeGroups(flowCapableNodeOperational);
-        final Map<Long, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
+        final Map<Uint32, Group> groupOperationalMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsOperational);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.addAll(groupsConfigured);
@@ -145,7 +147,7 @@ public class SyncReactorImpl implements SyncReactor {
         }
 
         final List<Table> tablesOperational = ReconcileUtil.safeTables(flowCapableNodeOperational);
-        final Map<Short, Table> tableOperationalMap = FlowCapableNodeLookups.wrapTablesToMap(tablesOperational);
+        final Map<Uint8, Table> tableOperationalMap = FlowCapableNodeLookups.wrapTablesToMap(tablesOperational);
 
         return ReconcileUtil.resolveFlowDiffsInAllTables(nodeId, tableOperationalMap, tablesConfigured, true);
     }
@@ -159,7 +161,7 @@ public class SyncReactorImpl implements SyncReactor {
         }
 
         final List<Table> tablesConfigured = ReconcileUtil.safeTables(flowCapableNodeConfigured);
-        final Map<Short, Table> tableConfiguredMap = FlowCapableNodeLookups.wrapTablesToMap(tablesConfigured);
+        final Map<Uint8, Table> tableConfiguredMap = FlowCapableNodeLookups.wrapTablesToMap(tablesConfigured);
 
         return ReconcileUtil.resolveFlowDiffsInAllTables(nodeId, tableConfiguredMap, tablesOperational, false);
     }
@@ -181,7 +183,7 @@ public class SyncReactorImpl implements SyncReactor {
                                                                   final FlowCapableNode flowCapableNodeOperational) {
         final List<Group> groupsConfigured = ReconcileUtil.safeGroups(flowCapableNodeConfigured);
         final List<Group> groupsOperational = ReconcileUtil.safeGroups(flowCapableNodeOperational);
-        final Map<Long, Group> groupConfiguredMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsConfigured);
+        final Map<Uint32, Group> groupConfiguredMap = FlowCapableNodeLookups.wrapGroupsToMap(groupsConfigured);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.addAll(groupsOperational);

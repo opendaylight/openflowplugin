@@ -32,9 +32,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Long GROUP_NO = 1L;
+    static final Uint32 GROUP_NO = Uint32.ONE;
     private GroupDirectStatisticsService service;
 
     @Override
@@ -53,7 +54,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
         final MultipartRequestGroupStats body = (MultipartRequestGroupStats) ((MultipartRequest) service
-            .buildRequest(new Xid(42L), input))
+            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
             .getMultipartRequestBody();
 
         assertEquals(GROUP_NO, body.getGroupId().getValue());

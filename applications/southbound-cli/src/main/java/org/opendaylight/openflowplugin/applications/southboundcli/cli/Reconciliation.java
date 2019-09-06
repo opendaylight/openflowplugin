@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -24,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +45,9 @@ public class Reconciliation extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        List<BigInteger> nodes = (nodeIds == null)
+        List<Uint64> nodes = nodeIds == null
                 ? new ArrayList<>()
-                : nodeIds.stream().distinct().map(BigInteger::valueOf).collect(Collectors.toList());
+                : nodeIds.stream().distinct().map(Uint64::valueOf).collect(Collectors.toList());
         LOG.debug("Triggering reconciliation for nodes {}", nodes);
         ReconcileInput rpcInput = new ReconcileInputBuilder().setNodes(nodes)
                 .setReconcileAllNodes(reconcileAllNodes).build();
@@ -67,14 +67,14 @@ public class Reconciliation extends OsgiCommandSupport {
     }
 
     private void printInProgressNodes(ReconcileOutput reconcileOutput) {
-        List<BigInteger> inprogressNodes = reconcileOutput.getInprogressNodes();
+        List<Uint64> inprogressNodes = reconcileOutput.getInprogressNodes();
         if (inprogressNodes.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder();
             final Formatter formatter = new Formatter(stringBuilder);
             session.getConsole().println(getReconcileHeaderOutput());
             session.getConsole().println("----------------------------------------------------");
-            for (BigInteger node : inprogressNodes) {
-                session.getConsole().println(formatter.format("%-15s %n",node).toString());
+            for (Uint64 node : inprogressNodes) {
+                session.getConsole().println(formatter.format("%-15s %n", node).toString());
                 stringBuilder.setLength(0);
             }
         }

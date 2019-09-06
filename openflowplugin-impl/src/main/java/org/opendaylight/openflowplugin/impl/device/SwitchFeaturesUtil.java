@@ -23,7 +23,7 @@ public final class SwitchFeaturesUtil {
     private static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
 
     private static SwitchFeaturesUtil instance = new SwitchFeaturesUtil();
-    private Map<Short, BuildSwitchFeatures> swFeaturesBuilders;
+    private final Map<Short, BuildSwitchFeatures> swFeaturesBuilders;
 
     private SwitchFeaturesUtil() {
         swFeaturesBuilders = new HashMap<>();
@@ -47,11 +47,11 @@ public final class SwitchFeaturesUtil {
      * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
      */
-    public SwitchFeatures buildSwitchFeatures(GetFeaturesOutput features) {
-        if (swFeaturesBuilders.containsKey(features.getVersion())) {
+    public SwitchFeatures buildSwitchFeatures(final GetFeaturesOutput features) {
+        if (swFeaturesBuilders.containsKey(features.getVersion().toJava())) {
             LOG.debug("map contains version {}", features.getVersion());
             try {
-                return swFeaturesBuilders.get(features.getVersion()).build(features);
+                return swFeaturesBuilders.get(features.getVersion().toJava()).build(features);
             } catch (NullPointerException e) {
                 LOG.warn("error while building switch features: {}", e.getMessage());
                 LOG.debug("error while building switch features.. ", e);

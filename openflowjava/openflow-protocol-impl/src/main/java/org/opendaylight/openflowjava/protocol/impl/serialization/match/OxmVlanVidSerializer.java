@@ -25,7 +25,7 @@ public class OxmVlanVidSerializer extends AbstractOxmMatchEntrySerializer {
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         VlanVid vlanVid = ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid();
-        int vlanVidValue = vlanVid.getVlanVid();
+        int vlanVidValue = vlanVid.getVlanVid().toJava();
         if (vlanVid.isCfiBit()) {
             short cfi = 1 << 12; // 13-th bit
             vlanVidValue = vlanVidValue | cfi;

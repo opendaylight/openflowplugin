@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * OF13SetFieldActionDeserializer.
@@ -37,7 +38,7 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public Action deserialize(ByteBuf input) {
+    public Action deserialize(final ByteBuf input) {
         Objects.requireNonNull(registry);
 
         final  org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
@@ -55,7 +56,7 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
             long expId = input.getUnsignedInt(input.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
                     + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
-            key.setExperimenterId(expId);
+            key.setExperimenterId(Uint32.valueOf(expId));
         }
         OFDeserializer<MatchEntry> matchDeserializer = registry.getDeserializer(key);
         List<MatchEntry> entry = new ArrayList<>();
@@ -76,7 +77,7 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         this.registry = deserializerRegistry;
     }
 

@@ -44,13 +44,13 @@ public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput
 
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                message.getVersion(), MatchV10.class));
+                message.getVersion().toJava(), MatchV10.class));
         matchSerializer.serialize(message.getMatchV10(), outBuffer);
         outBuffer.writeLong(message.getCookie().longValue());
         outBuffer.writeShort(message.getCommand().getIntValue());
         outBuffer.writeShort(message.getIdleTimeout().intValue());
         outBuffer.writeShort(message.getHardTimeout().intValue());
-        outBuffer.writeShort(message.getPriority());
+        outBuffer.writeShort(message.getPriority().toJava());
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeShort(message.getOutPort().getValue().intValue());
         outBuffer.writeShort(createFlowModFlagsBitmask(message.getFlagsV10()));

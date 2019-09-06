@@ -59,6 +59,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     @Override
     public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(ReconcileInput input) {
         boolean reconcileAllNodes = input.isReconcileAllNodes();
-        List<BigInteger> inputNodes = input.getNodes();
+        List<Uint64> inputNodes = input.getNodes();
         if (inputNodes == null) {
             inputNodes = new ArrayList<>();
         }
@@ -104,7 +105,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
         List<Long> nodeList = getAllNodes();
         List<Long> nodesToReconcile = reconcileAllNodes ? nodeList :
-                inputNodes.stream().distinct().map(BigInteger::longValue).collect(Collectors.toList());
+                inputNodes.stream().distinct().map(Uint64::longValue).collect(Collectors.toList());
         if (nodesToReconcile.size() > 0) {
             List<Long> unresolvedNodes =
                     nodesToReconcile.stream().filter(node -> !nodeList.contains(node)).collect(Collectors.toList());
@@ -112,11 +113,11 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 return buildErrorResponse("Error executing command reconcile. "
                         + "Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
-            List<BigInteger> inprogressNodes = new ArrayList<>();
+            List<Uint64> inprogressNodes = new ArrayList<>();
             nodesToReconcile.parallelStream().forEach(nodeId -> {
                 Optional<ReconciliationStateList> state = getReconciliationState(nodeId);
                 if (state.isPresent() && state.get().getState().equals(INPROGRESS)) {
-                    inprogressNodes.add(new BigInteger(String.valueOf(nodeId)));
+                    inprogressNodes.add(Uint64.valueOf(nodeId));
                 } else {
                     alarmAgent.raiseNodeReconciliationAlarm(nodeId);
                     LOG.info("Executing reconciliation for node {}", nodeId);
@@ -215,7 +216,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
             if (isSuccess) {
                 if (count.isPresent()) {
-                    Long successCount = count.get().getSuccessCount();
+                    long successCount = count.get().getSuccessCount().toJava();
                     counterBuilder.setSuccessCount(++successCount);
                     LOG.debug("Reconcile success count {} for the node: {} ", successCount, nodeId);
                 } else {
@@ -223,7 +224,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 }
             } else {
                 if (count.isPresent()) {
-                    Long failureCount = count.get().getFailureCount();
+                    long failureCount = count.get().getFailureCount().toJava();
                     counterBuilder.setFailureCount(++failureCount);
                     LOG.debug("Reconcile failure count {} for the node: {} ", failureCount, nodeId);
                 } else {

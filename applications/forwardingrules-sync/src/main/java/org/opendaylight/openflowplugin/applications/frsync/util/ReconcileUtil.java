@@ -45,6 +45,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,7 +155,7 @@ public final class ReconcileUtil {
      * @return list of safe synchronization steps with updates
      */
     public static List<ItemSyncBox<Group>> resolveAndDivideGroupDiffs(final NodeId nodeId,
-                                                                      final Map<Long, Group> installedGroupsArg,
+                                                                      final Map<Uint32, Group> installedGroupsArg,
                                                                       final Collection<Group> pendingGroups) {
         return resolveAndDivideGroupDiffs(nodeId, installedGroupsArg, pendingGroups, true);
     }
@@ -168,16 +170,16 @@ public final class ReconcileUtil {
      * @return list of safe synchronization steps
      */
     public static List<ItemSyncBox<Group>> resolveAndDivideGroupDiffs(final NodeId nodeId,
-                                                                      final Map<Long, Group> installedGroupsArg,
+                                                                      final Map<Uint32, Group> installedGroupsArg,
                                                                       final Collection<Group> pendingGroups,
                                                                       final boolean gatherUpdates) {
-        final Map<Long, Group> installedGroups = new HashMap<>(installedGroupsArg);
+        final Map<Uint32, Group> installedGroups = new HashMap<>(installedGroupsArg);
         final List<ItemSyncBox<Group>> plan = new ArrayList<>();
 
         while (!Iterables.isEmpty(pendingGroups)) {
             final ItemSyncBox<Group> stepPlan = new ItemSyncBox<>();
             final Iterator<Group> iterator = pendingGroups.iterator();
-            final Map<Long, Group> installIncrement = new HashMap<>();
+            final Map<Uint32, Group> installIncrement = new HashMap<>();
 
             while (iterator.hasNext()) {
                 final Group group = iterator.next();
@@ -221,14 +223,14 @@ public final class ReconcileUtil {
         return plan;
     }
 
-    public static boolean checkGroupPrecondition(final Set<Long> installedGroupIds, final Group pendingGroup) {
+    public static boolean checkGroupPrecondition(final Set<Uint32> installedGroupIds, final Group pendingGroup) {
         boolean okToInstall = true;
         // check each bucket in the pending group
         for (Bucket bucket : pendingGroup.getBuckets().getBucket()) {
             for (Action action : bucket.getAction()) {
                 // if the output action is a group
                 if (GroupActionCase.class.equals(action.getAction().implementedInterface())) {
-                    Long groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                    Uint32 groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
                     // see if that output group is installed
                     if (!installedGroupIds.contains(groupId)) {
                         // if not installed, we have missing dependencies and cannot install this pending group
@@ -327,7 +329,7 @@ public final class ReconcileUtil {
      * @return map : key={@link TableKey}, value={@link ItemSyncBox} of safe synchronization steps
      */
     public static Map<TableKey, ItemSyncBox<Flow>> resolveFlowDiffsInAllTables(final NodeId nodeId,
-            final Map<Short, Table> tableOperationalMap, final List<Table> tablesConfigured,
+            final Map<Uint8, Table> tableOperationalMap, final List<Table> tablesConfigured,
             final boolean gatherUpdates) {
         LOG.trace("resolving flows in tables for {}", nodeId.getValue());
         final Map<TableKey, ItemSyncBox<Flow>> tableFlowSyncBoxes = new HashMap<>();

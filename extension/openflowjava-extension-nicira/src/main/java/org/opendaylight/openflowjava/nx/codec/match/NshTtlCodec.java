@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
@@ -21,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshTtlCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshTtlCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NshTtlCodec extends AbstractExperimenterMatchCodec {
 
@@ -41,9 +41,9 @@ public class NshTtlCodec extends AbstractExperimenterMatchCodec {
     protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
         NshTtlCaseValue nshTtlCaseValue = (NshTtlCaseValue) value;
         NshTtlValues nshTtlValues = nshTtlCaseValue.getNshTtlValues();
-        outBuffer.writeByte(nshTtlValues.getNshTtl());
+        outBuffer.writeByte(nshTtlValues.getNshTtl().toJava());
         if (hasMask) {
-            outBuffer.writeByte(nshTtlValues.getMask());
+            outBuffer.writeByte(nshTtlValues.getMask().toJava());
         }
     }
 
@@ -56,7 +56,7 @@ public class NshTtlCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected long getExperimenterId() {
+    protected Uint32 getExperimenterId() {
         return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 

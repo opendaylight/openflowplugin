@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.np.grouping.NxmNxNshNp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.np.grouping.NxmNxNshNpBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NshNpConvertorTest {
@@ -42,7 +43,7 @@ public class NshNpConvertorTest {
 
     private NshNpConvertor convertor;
 
-    private static final Short NP_VALUE = (short) 0x7B;
+    private static final Uint8 NP_VALUE = Uint8.valueOf(0x7B);
 
     @Before
     public void setUp() {

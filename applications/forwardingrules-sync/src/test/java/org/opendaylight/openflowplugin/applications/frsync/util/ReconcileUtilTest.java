@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -54,6 +55,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link ReconcileUtil}.
@@ -96,10 +98,7 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs1() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
-        installedGroups.put(2L, createGroup(2L));
-        installedGroups.put(3L, createGroup(3L));
+        final Map<Uint32, Group> installedGroups = createGroups(1, 2, 3);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroup(2L));
@@ -122,8 +121,7 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs2() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
+        final Map<Uint32, Group> installedGroups = createGroups(1);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroup(2L));
@@ -156,9 +154,9 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs3() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
-        installedGroups.put(2L, createGroupWithPreconditions(2L, 1L));
+        final Map<Uint32, Group> installedGroups = new HashMap<>();
+        installedGroups.put(Uint32.ONE, createGroup(1L));
+        installedGroups.put(Uint32.valueOf(2), createGroupWithPreconditions(2L, 1L));
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroup(1L));
@@ -175,9 +173,7 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs4() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
-        installedGroups.put(2L, createGroup(2L));
+        final Map<Uint32, Group> installedGroups = createGroups(1, 2);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroupWithPreconditions(1L, 2L));
@@ -200,9 +196,7 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs5() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
-        installedGroups.put(2L, createGroup(2L));
+        final Map<Uint32, Group> installedGroups = createGroups(1, 2);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroupWithPreconditions(1L, 2L));
@@ -219,9 +213,7 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs_negative1() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
-        installedGroups.put(2L, createGroup(2L));
+        final Map<Uint32, Group> installedGroups = createGroups(1, 2);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroupWithPreconditions(3L, 4L));
@@ -236,9 +228,7 @@ public class ReconcileUtilTest {
      */
     @Test
     public void testResolveAndDivideGroupDiffs_negative2() {
-        final Map<Long, Group> installedGroups = new HashMap<>();
-        installedGroups.put(1L, createGroup(1L));
-        installedGroups.put(2L, createGroup(2L));
+        final Map<Uint32, Group> installedGroups = createGroups(1, 2);
 
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroupWithPreconditions(1L, 3L));
@@ -250,7 +240,7 @@ public class ReconcileUtilTest {
 
     @Test
     public void testCheckGroupPrecondition() {
-        final Set<Long> installedGroups = new HashSet<>(Arrays.asList(new Long[]{1L, 2L}));
+        final Set<Uint32> installedGroups = new HashSet<>(Arrays.asList(Uint32.ONE, Uint32.valueOf(2)));
 
         final Group pendingGroup1 = createGroupWithPreconditions(3L, 2L, 4L);
         Assert.assertFalse(ReconcileUtil.checkGroupPrecondition(installedGroups, pendingGroup1));
@@ -262,7 +252,7 @@ public class ReconcileUtilTest {
         Assert.assertTrue(ReconcileUtil.checkGroupPrecondition(installedGroups, pendingGroup3));
     }
 
-    private Group createGroupWithPreconditions(final long groupIdValue, final long... requiredId) {
+    private static Group createGroupWithPreconditions(final long groupIdValue, final long... requiredId) {
         final List<Action> actionBag = new ArrayList<>();
         for (long groupIdPrecondition : requiredId) {
             final GroupAction groupAction = new GroupActionBuilder()
@@ -290,7 +280,15 @@ public class ReconcileUtilTest {
                 .build();
     }
 
-    private Group createGroup(final long groupIdValue) {
+    private static Map<Uint32, Group> createGroups(long... groupIds) {
+        final Map<Uint32, Group> ret = Maps.newHashMapWithExpectedSize(groupIds.length);
+        for (long groupId : groupIds) {
+            ret.put(Uint32.valueOf(groupId), createGroup(groupId));
+        }
+        return ret;
+    }
+
+    private static Group createGroup(final long groupIdValue) {
         final Buckets buckets = new BucketsBuilder()
                 .setBucket(Collections.emptyList())
                 .build();

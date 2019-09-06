@@ -61,6 +61,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +80,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                 "NodeConfigurator can not be null!");
     }
 
+    @Override
     public void remove(final InstanceIdentifier<Flow> identifier, final Flow flow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final List<Message> messages = new ArrayList<>(1);
@@ -97,6 +100,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
     }
 
+    @Override
     public void update(final InstanceIdentifier<Flow> identifier, final Flow originalFlow, final Flow updatedFlow,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         remove(identifier, originalFlow, nodeIdent, bundleId);
@@ -128,7 +132,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         //TODO This read to the DS might have a performance impact.
         //if the dependent group is not installed than we should just cache the parent group,
         //till we receive the dependent group DTCN and then push it.
-        Long groupId = isFlowDependentOnGroup(updatedFlow);
+        Uint32 groupId = isFlowDependentOnGroup(updatedFlow);
         ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
         if (groupId != null) {
             LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
@@ -196,7 +200,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         private final Message messages;
         private final NodeId nodeId;
         private final String flowId;
-        private final short tableId;
+        private final Uint8 tableId;
         private final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
 
         BundleFlowCallBack(InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId, Message messages,

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.Iterables;
@@ -34,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOutInput, XidConvertorData> {
     private static final Logger LOG = LoggerFactory.getLogger(PacketOutConvertor.class);
     private static final Set<Class<?>> TYPES = Collections.singleton(TransmitPacketInput.class);
+    private static final PortNumber CONTROLLER_PORT = new PortNumber(Uint32.valueOf(0xfffffffdL).intern());
 
     /**
      * Create default empty meter mot input builder.
@@ -62,7 +63,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
      * @param version Openflow version
      * @return default empty meter mod input builder
      */
-    public static PacketOutInput defaultResult(short version) {
+    public static PacketOutInput defaultResult(final short version) {
         return new PacketOutInputBuilder()
                 .setVersion(version)
                 .build();
@@ -73,7 +74,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         InstanceIdentifier.IdentifiableItem<?, ?> item = Arguments.checkInstanceOf(pathArgument,
                 InstanceIdentifier.IdentifiableItem.class);
         NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
-        Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.get(ofVersion), key.getId());
         return new PortNumber(port);
     }
@@ -84,11 +85,11 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
     }
 
     @Override
-    public PacketOutInput convert(TransmitPacketInput source, XidConvertorData data) {
+    public PacketOutInput convert(final TransmitPacketInput source, final XidConvertorData data) {
         LOG.trace("toPacketOutInput for datapathId:{}, xid:{}", data.getDatapathId(), data.getXid());
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr;
-        Long bufferId = OFConstants.OFP_NO_BUFFER;
+        Uint32 bufferId = OFConstants.OFP_NO_BUFFER;
         Iterable<PathArgument> inArgs = null;
 
         if (source.getIngress() != null) {
@@ -99,7 +100,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
             inPortNr = getPortNumber(Iterables.get(inArgs, 2), data.getVersion());
         } else {
             // The packetOut originated from the controller
-            inPortNr = new PortNumber(0xfffffffdL);
+            inPortNr = CONTROLLER_PORT;
         }
 
         // Build Buffer ID to be NO_OFP_NO_BUFFER

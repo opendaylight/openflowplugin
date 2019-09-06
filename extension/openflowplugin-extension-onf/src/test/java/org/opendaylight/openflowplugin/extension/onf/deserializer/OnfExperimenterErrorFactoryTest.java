@@ -38,7 +38,7 @@ public class OnfExperimenterErrorFactoryTest {
         Assert.assertEquals("Wrong type", EncodeConstants.EXPERIMENTER_VALUE, builtByFactory.getType().intValue());
         Assert.assertEquals("Wrong type string", "EXPERIMENTER", builtByFactory.getTypeString());
         Assert.assertEquals("Wrong experimenter ID", EncodeConstants.ONF_EXPERIMENTER_ID,
-                builtByFactory.augmentation(ExperimenterIdError.class).getExperimenter().getValue().intValue());
+                builtByFactory.augmentation(ExperimenterIdError.class).getExperimenter().getValue());
         Assert.assertNotNull("Data is null", builtByFactory.getData());
     }
 

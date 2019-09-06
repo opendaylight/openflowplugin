@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.flags.grouping.NxmNxNshFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.flags.grouping.NxmNxNshFlagsBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshFlagsConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
@@ -64,12 +65,12 @@ public class NshFlagsConvertor implements ConvertorToOFJava<MatchEntry>, Convert
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Short flags = matchGrouping.get().getNxmNxNshFlags().getNshFlags();
-        Short mask = matchGrouping.get().getNxmNxNshFlags().getMask();
+        Uint8 flags = matchGrouping.get().getNxmNxNshFlags().getNshFlags();
+        Uint8 mask = matchGrouping.get().getNxmNxNshFlags().getMask();
         return buildMatchEntry(flags, mask);
     }
 
-    public static MatchEntry buildMatchEntry(Short flags, Short mask) {
+    public static MatchEntry buildMatchEntry(Uint8 flags, Uint8 mask) {
         NshFlagsValues nshFlagsValues = new NshFlagsValuesBuilder().setNshFlags(flags).setMask(mask).build();
         NxExpMatchEntryValue value = new NshFlagsCaseValueBuilder().setNshFlagsValues(nshFlagsValues).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(

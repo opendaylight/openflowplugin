@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.test;
 
-import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.BadActionErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.BadInstructionErrorNotification;
@@ -26,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev14041
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.SwitchConfigErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.TableFeaturesErrorNotification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.TableModErrorNotification;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +129,7 @@ public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
                 notification.getTransactionId().getValue()));
     }
 
-    private String toStr(ErrorType type, int code, BigInteger xid) {
+    private String toStr(ErrorType type, Uint16 code, Uint64 xid) {
         return "[Type=" + type + ", Code=" + code + ", Xid =" + xid + "]";
     }
 }

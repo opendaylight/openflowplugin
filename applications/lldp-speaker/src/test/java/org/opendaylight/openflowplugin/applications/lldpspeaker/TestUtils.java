@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Helper methods that are used by multiple tests.
@@ -52,7 +53,7 @@ public final class TestUtils {
                                                                           MacAddress mac, long port) {
         return new FlowCapableNodeConnectorBuilder()
                 .setHardwareAddress(mac)
-                .setPortNumber(new PortNumberUni(port))
+                .setPortNumber(new PortNumberUni(Uint32.valueOf(port)))
                 .setState(new StateBuilder().setLinkDown(linkDown).build())
                 .setConfiguration(new PortConfig(false, false, false, adminDown));
     }

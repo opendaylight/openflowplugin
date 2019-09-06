@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfInPortKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.in.port.grouping.OfInPortBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
         ConvertorFromOFJava<MatchEntry, MatchPath> {
@@ -54,7 +55,7 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Integer value = matchGrouping.get().getOfInPort().getValue();
+        Uint16 value = matchGrouping.get().getOfInPort().getValue();
         OfInPortCaseValueBuilder inPortCaseValueBuilder = new OfInPortCaseValueBuilder();
         inPortCaseValueBuilder.setNxmOfInPortValues(
                 new NxmOfInPortValuesBuilder().setValue(value).build());

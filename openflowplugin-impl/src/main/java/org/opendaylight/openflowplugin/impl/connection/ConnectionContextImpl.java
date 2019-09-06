@@ -9,11 +9,9 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -31,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,11 +124,14 @@ public class ConnectionContextImpl implements ConnectionContext {
     private void disconnectDevice(final boolean propagate,
                                   final boolean forced) {
         final String device = nodeId != null ? nodeId.getValue() : getConnectionAdapter().getRemoteAddress().toString();
-        final short auxiliaryId = Optional
-                .ofNullable(getFeatures())
-                .flatMap(features -> Optional
-                        .ofNullable(features.getAuxiliaryId()))
-                .orElse((short) 0);
+
+        final Uint8 auxiliaryId;
+        if (featuresReply != null) {
+            final Uint8 id = featuresReply.getAuxiliaryId();
+            auxiliaryId = id == null ? Uint8.ZERO : id;
+        } else {
+            auxiliaryId = Uint8.ZERO;
+        }
 
         if (connectionState == CONNECTION_STATE.RIP) {
             LOG.debug("Connection for device {} with auxiliary ID {} is already {}, so skipping closing.",
@@ -163,7 +166,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     private void propagateDeviceDisconnectedEvent() {
         if (deviceDisconnectedHandler != null) {
-            final BigInteger datapathId = featuresReply != null ? featuresReply.getDatapathId() : BigInteger.ZERO;
+            final Uint64 datapathId = featuresReply != null ? featuresReply.getDatapathId() : Uint64.ZERO;
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Propagating connection closed event: {}, datapathId:{}.",
                         connectionAdapter.getRemoteAddress(), datapathId);
@@ -184,7 +187,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void setOutboundQueueHandleRegistration(
-            OutboundQueueHandlerRegistration<OutboundQueueProvider> newRegistration) {
+            final OutboundQueueHandlerRegistration<OutboundQueueProvider> newRegistration) {
         this.outboundQueueHandlerRegistration = newRegistration;
     }
 
@@ -249,12 +252,12 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public void setHandshakeContext(HandshakeContext handshakeContext) {
+    public void setHandshakeContext(final HandshakeContext handshakeContext) {
         this.handshakeContext = handshakeContext;
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         if (this == object) {
             return true;
         }
@@ -289,16 +292,16 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         private final NodeId nodeId;
         private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
-        private final Short version;
-        private final BigInteger datapathId;
+        private final Uint8 version;
+        private final Uint64 datapathId;
         private final ServiceGroupIdentifier serviceGroupIdentifier;
         private OutboundQueue outboundQueueProvider;
 
         DeviceInfoImpl(
                 final NodeId nodeId,
                 final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
-                final Short version,
-                final BigInteger datapathId,
+                final Uint8 version,
+                final Uint64 datapathId,
                 final OutboundQueue outboundQueueProvider) {
             this.nodeId = nodeId;
             this.nodeII = nodeII;
@@ -320,11 +323,11 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         @Override
         public short getVersion() {
-            return version;
+            return version.toJava();
         }
 
         @Override
-        public BigInteger getDatapathId() {
+        public Uint64 getDatapathId() {
             return datapathId;
         }
 
@@ -334,7 +337,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public boolean equals(Object object) {
+        public boolean equals(final Object object) {
             if (this == object) {
                 return true;
             }

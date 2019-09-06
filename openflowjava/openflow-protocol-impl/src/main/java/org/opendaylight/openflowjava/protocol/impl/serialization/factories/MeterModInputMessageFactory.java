@@ -80,7 +80,7 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
                     MeterBandDscpRemarkCase dscpRemarkBandCase = (MeterBandDscpRemarkCase) meterBand;
                     MeterBandDscpRemark dscpRemarkBand = dscpRemarkBandCase.getMeterBandDscpRemark();
                     writeBandCommonFields(dscpRemarkBand, outBuffer);
-                    outBuffer.writeByte(dscpRemarkBand.getPrecLevel());
+                    outBuffer.writeByte(dscpRemarkBand.getPrecLevel().toJava());
                     outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
                 } else if (meterBand instanceof MeterBandExperimenterCase) {
                     MeterBandExperimenterCase experimenterBandCase = (MeterBandExperimenterCase) meterBand;
@@ -88,7 +88,7 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
                     ExperimenterIdMeterBand expIdMeterBand =
                             experimenterBand.augmentation(ExperimenterIdMeterBand.class);
                     if (expIdMeterBand != null) {
-                        long expId = expIdMeterBand.getExperimenter().getValue();
+                        long expId = expIdMeterBand.getExperimenter().getValue().toJava();
                         Class<? extends ExperimenterMeterBandSubType> meterBandSubType = expIdMeterBand.getSubType();
                         try {
                             OFSerializer<MeterBandExperimenterCase> serializer = registry.getSerializer(

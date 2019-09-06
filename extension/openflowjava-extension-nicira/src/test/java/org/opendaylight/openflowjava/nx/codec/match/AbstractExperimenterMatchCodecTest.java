@@ -32,12 +32,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class AbstractExperimenterMatchCodecTest {
 
     private static final int VALUE_LENGTH = 4;
     private static final int FIELD_CODE = 16;
-    private static final long EXPERIMENTER_ID = NiciraConstants.NX_NSH_VENDOR_ID;
+    private static final Uint32 EXPERIMENTER_ID = NiciraConstants.NX_NSH_VENDOR_ID;
     private ByteBuf buffer;
     private TestCodec testCodec;
 
@@ -58,7 +59,7 @@ public class AbstractExperimenterMatchCodecTest {
         }
 
         @Override
-        protected long getExperimenterId() {
+        protected Uint32 getExperimenterId() {
             return EXPERIMENTER_ID;
         }
 
@@ -93,7 +94,7 @@ public class AbstractExperimenterMatchCodecTest {
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
         assertEquals(FIELD_CODE << 1, buffer.readUnsignedByte());
         assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES + VALUE_LENGTH, buffer.readUnsignedByte());
-        assertEquals(EXPERIMENTER_ID, buffer.readUnsignedInt());
+        assertEquals(EXPERIMENTER_ID.longValue(), buffer.readUnsignedInt());
         assertFalse(buffer.isReadable());
         verify(testCodec).serializeValue(null, false, buffer);
     }
@@ -107,7 +108,7 @@ public class AbstractExperimenterMatchCodecTest {
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
         assertEquals(FIELD_CODE << 1 | 1, buffer.readUnsignedByte());
         assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES + (VALUE_LENGTH * 2), buffer.readUnsignedByte());
-        assertEquals(EXPERIMENTER_ID, buffer.readUnsignedInt());
+        assertEquals(EXPERIMENTER_ID.longValue(), buffer.readUnsignedInt());
         assertFalse(buffer.isReadable());
         verify(testCodec).serializeValue(null, true, buffer);
     }
@@ -122,7 +123,7 @@ public class AbstractExperimenterMatchCodecTest {
         assertEquals(TestNxmField.class, matchEntry.getOxmMatchField());
         assertEquals(false, matchEntry.isHasMask());
         Experimenter experimenter = ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter();
-        assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue().longValue());
+        assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue());
         assertFalse(buffer.isReadable());
         verify(testCodec).deserializeValue(buffer, false);
     }
@@ -137,7 +138,7 @@ public class AbstractExperimenterMatchCodecTest {
         assertEquals(TestNxmField.class, matchEntry.getOxmMatchField());
         assertEquals(true, matchEntry.isHasMask());
         Experimenter experimenter = ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter();
-        assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue().longValue());
+        assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue());
         assertFalse(buffer.isReadable());
         verify(testCodec).deserializeValue(buffer, true);
     }
@@ -168,6 +169,6 @@ public class AbstractExperimenterMatchCodecTest {
         message.writeShort(OxmMatchConstants.EXPERIMENTER_CLASS);
         message.writeByte(fieldMask);
         message.writeByte(length);
-        message.writeInt((int) EXPERIMENTER_ID);
+        message.writeInt(EXPERIMENTER_ID.intValue());
     }
 }

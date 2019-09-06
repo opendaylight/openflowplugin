@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.flags.grouping.NxmNxNshFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.flags.grouping.NxmNxNshFlagsBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NshFlagsConvertorTest {
@@ -41,8 +42,8 @@ public class NshFlagsConvertorTest {
     private Extension extension;
 
     private NshFlagsConvertor convertor;
-    private static final Short FLAGS_VALUE = (short) 0x7B;
-    private static final Short MASK_VALUE = (short) 0xFF;
+    private static final Uint8 FLAGS_VALUE = Uint8.valueOf(0x7B);
+    private static final Uint8 MASK_VALUE = Uint8.valueOf(0xFF);
 
     @Before
     public void setUp() {

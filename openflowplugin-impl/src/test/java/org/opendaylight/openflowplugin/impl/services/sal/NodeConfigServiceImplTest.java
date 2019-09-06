@@ -19,13 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Set
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NodeConfigServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID_VALUE = 150L;
+    private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(150);
     private static final SwitchConfigFlag DUMMY_FLAG = SwitchConfigFlag.FRAGNORMAL;
     private static final String DUMMY_FLAG_STR = "FRAGNORMAL";
-    private static final Integer DUMMY_MISS_SEARCH_LENGTH = 3000;
+    private static final Uint16 DUMMY_MISS_SEARCH_LENGTH = Uint16.valueOf(3000);
     NodeConfigServiceImpl nodeConfigService;
 
     @Test

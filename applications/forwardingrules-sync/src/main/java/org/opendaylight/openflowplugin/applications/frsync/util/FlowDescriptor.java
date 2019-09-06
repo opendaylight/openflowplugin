@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Identifier of {@link Flow} in datastore using combination of flow-id and table-id from datastore datapath.
@@ -16,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 public class FlowDescriptor {
 
     private final FlowId flowId;
-    private final Short tableId;
+    private final Uint8 tableId;
 
     public FlowDescriptor(Flow flow) {
         this.flowId = flow.getId();
