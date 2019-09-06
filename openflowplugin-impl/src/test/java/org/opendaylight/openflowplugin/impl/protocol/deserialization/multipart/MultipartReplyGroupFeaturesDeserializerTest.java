@@ -26,10 +26,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupSelect;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyGroupFeaturesDeserializerTest extends AbstractMultipartDeserializerTest {
-    private static final List<Long> MAX_GROUPS_LIST = Arrays.asList(1L, 2L, 3L, 4L);
-    private static final List<Long> ACTIONS_LIST = Arrays.asList(5L, 6L, 7L, 8L);
+    private static final List<Uint32> MAX_GROUPS_LIST = Arrays.asList(Uint32.valueOf(1),
+        Uint32.valueOf(2), Uint32.valueOf(3), Uint32.valueOf(4));
+    private static final List<Uint32> ACTIONS_LIST = Arrays.asList(Uint32.valueOf(5), Uint32.valueOf(6),
+        Uint32.valueOf(7), Uint32.valueOf(8));
 
     private static final List<GroupTypes> GROUP_TYPES_SUPPORTED = Arrays.asList(
             GroupTypes.GroupAll,
@@ -60,11 +63,11 @@ public class MultipartReplyGroupFeaturesDeserializerTest extends AbstractMultipa
         buffer.writeInt(bitMaskGroups);
         buffer.writeInt(bitMaskCapabilities);
 
-        for (Long group: MAX_GROUPS_LIST) {
+        for (Uint32 group : MAX_GROUPS_LIST) {
             buffer.writeInt(group.intValue());
         }
 
-        for (Long action: ACTIONS_LIST) {
+        for (Uint32 action: ACTIONS_LIST) {
             buffer.writeInt(action.intValue());
         }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
@@ -31,9 +30,9 @@ public class RegMoveCodec extends AbstractActionCodec {
         ActionRegMove actionRegMove = (ActionRegMove) input.getActionChoice();
         final int startIndex = outBuffer.writerIndex();
         serializeHeader(EncodeConstants.EMPTY_LENGTH, SUBTYPE, outBuffer);
-        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getNBits());
-        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getSrcOfs());
-        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getDstOfs());
+        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getNBits().toJava());
+        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getSrcOfs().toJava());
+        outBuffer.writeShort(actionRegMove.getNxActionRegMove().getDstOfs().toJava());
         writeNxmHeader(actionRegMove.getNxActionRegMove().getSrc(), outBuffer);
         writeNxmHeader(actionRegMove.getNxActionRegMove().getDst(), outBuffer);
         writePaddingAndSetLength(outBuffer, startIndex);
@@ -55,6 +54,4 @@ public class RegMoveCodec extends AbstractActionCodec {
         actionBuilder.setActionChoice(actionRegMoveBuilder.build());
         return actionBuilder.build();
     }
-
-
 }

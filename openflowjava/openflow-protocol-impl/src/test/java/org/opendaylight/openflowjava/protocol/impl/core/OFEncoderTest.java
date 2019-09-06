@@ -28,6 +28,7 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageListen
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OFEncoder.
@@ -63,7 +64,7 @@ public class OFEncoderTest {
     public void testEncodeSuccess() throws Exception {
         when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockMsg);
-        when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
+        when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 
         ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
 
@@ -78,7 +79,7 @@ public class OFEncoderTest {
     public void testEncodeSerializationException() throws Exception {
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getListener()).thenReturn(listener);
-        when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
+        when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
         doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),
                 any(ByteBuf.class), any(DataObject.class));
 
@@ -95,7 +96,7 @@ public class OFEncoderTest {
     public void testEncodeSerializesNoBytes() throws Exception {
         when(mockOut.readableBytes()).thenReturn(0);
         when(wrapper.getMsg()).thenReturn(mockMsg);
-        when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
+        when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 
         ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
 

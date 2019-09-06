@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +72,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanVidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for v1.0 action converters.
@@ -212,7 +212,7 @@ public class ActionConvertorV10Test {
         Flow flow = flowBld.build();
 
         ActionConvertorData data = new ActionConvertorData(OFConstants.OFP_VERSION_1_0);
-        data.setDatapathId(new BigInteger("42"));
+        data.setDatapathId(Uint64.valueOf(42));
         data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping

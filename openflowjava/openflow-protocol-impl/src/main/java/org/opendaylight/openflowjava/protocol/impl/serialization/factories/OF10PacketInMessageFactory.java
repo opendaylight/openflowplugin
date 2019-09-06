@@ -27,7 +27,7 @@ public class OF10PacketInMessageFactory implements OFSerializer<PacketInMessage>
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeShort(message.getTotalLen().intValue());
-        outBuffer.writeShort(message.getInPort());
+        outBuffer.writeShort(message.getInPort().toJava());
         outBuffer.writeByte(message.getReason().getIntValue());
         outBuffer.writeZero(PADDING);
         byte[] data = message.getData();

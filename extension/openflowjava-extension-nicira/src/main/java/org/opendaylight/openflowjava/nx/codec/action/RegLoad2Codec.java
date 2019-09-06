@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2Builder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class RegLoad2Codec
         extends AbstractActionCodec
@@ -63,7 +64,7 @@ public class RegLoad2Codec
             long expId = message.getUnsignedInt(message.readerIndex()
                     + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
                     + EncodeConstants.SIZE_OF_BYTE_IN_BYTES * 2);
-            key.setExperimenterId(expId);
+            key.setExperimenterId(Uint32.valueOf(expId));
         }
         OFDeserializer<MatchEntry> matchDeserializer = deserializerRegistry.getDeserializer(key);
         MatchEntry matchEntry = matchDeserializer.deserialize(message);

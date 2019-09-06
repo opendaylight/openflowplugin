@@ -7,11 +7,13 @@
  */
 package org.opendaylight.openflowjava.nx.api;
 
+import org.opendaylight.yangtools.yang.common.Uint32;
+
 public final class NiciraConstants {
 
-    public static final Long NX_VENDOR_ID = 0x00002320L;
+    public static final Uint32 NX_VENDOR_ID = Uint32.valueOf(0x00002320L).intern();
 
-    public static final Long NX_NSH_VENDOR_ID = 0x005AD650L;
+    public static final Uint32 NX_NSH_VENDOR_ID = Uint32.valueOf(0x005AD650L).intern();
 
     private NiciraConstants() {
 

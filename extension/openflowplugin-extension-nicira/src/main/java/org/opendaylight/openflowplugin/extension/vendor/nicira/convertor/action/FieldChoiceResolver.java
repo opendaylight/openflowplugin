@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import com.google.common.collect.ImmutableMap;
-import java.math.BigInteger;
 import java.util.Map;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowjava.nx.codec.match.NxmHeader;
@@ -83,6 +82,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcOfIpSrcCaseBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Empty;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * A helper class that maps various NXM/OXM header representations to
@@ -255,7 +255,7 @@ public final class FieldChoiceResolver {
         ImmutableMap.Builder<SrcChoice, NxmHeader> regSrcChoiceToHeaderBuilder = ImmutableMap.builder();
         srcChoiceToNxmheader.forEach((srcChoice, header) -> {
             headerToSrcChoiceBuilder.put(header.toLong(), srcChoice);
-            headerToSrcChoiceBuilder.put(header.toBigInteger(), srcChoice);
+            headerToSrcChoiceBuilder.put(header.toUint64(), srcChoice);
             if (srcChoice instanceof SrcNxRegCase) {
                 regSrcChoiceToHeaderBuilder.put(srcChoice, header);
             } else {
@@ -271,7 +271,7 @@ public final class FieldChoiceResolver {
         ImmutableMap.Builder<DstChoice, NxmHeader> regDstChoiceToHeaderBuilder = ImmutableMap.builder();
         dstChoiceToNxmheader.forEach((dstChoice, header) -> {
             dstToHeaderBuilder.put(header.toLong(), dstChoice);
-            dstToHeaderBuilder.put(header.toBigInteger(), dstChoice);
+            dstToHeaderBuilder.put(header.toUint64(), dstChoice);
             if (dstChoice instanceof DstNxRegCase) {
                 regDstChoiceToHeaderBuilder.put(dstChoice, header);
             } else {
@@ -301,7 +301,7 @@ public final class FieldChoiceResolver {
      * @param header the OXM/NXM header.
      * @return the destination choice.
      */
-    static DstChoice resolveDstChoice(BigInteger header) {
+    static DstChoice resolveDstChoice(Uint64 header) {
         return NXMHEADER_TO_DST_CHOICE.get(header);
     }
 
@@ -323,7 +323,7 @@ public final class FieldChoiceResolver {
      * @param header the OXM/NXM header.
      * @return the destination choice.
      */
-    static SrcChoice resolveSrcChoice(BigInteger header) {
+    static SrcChoice resolveSrcChoice(Uint64 header) {
         return NXMHEADER_TO_SRC_CHOICE.get(header);
     }
 
@@ -352,10 +352,10 @@ public final class FieldChoiceResolver {
      * @param dstChoice the destination choice field.
      * @return the OXM/NXM header as uint64 {@code BigInteger}.
      */
-    static BigInteger resolveDstHeaderUint64(DstChoice dstChoice) {
+    static Uint64 resolveDstHeaderUint64(DstChoice dstChoice) {
         return dstChoice instanceof DstNxRegCase
-                ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).toBigInteger()
-                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface()).toBigInteger();
+                ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).toUint64()
+                : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface()).toUint64();
     }
 
     /**
@@ -383,10 +383,10 @@ public final class FieldChoiceResolver {
      * @param srcChoice the destination choice field.
      * @return the OXM/NXM header as uint64 {@code BigInteger}.
      */
-    static BigInteger resolveSrcHeaderUint64(SrcChoice srcChoice) {
+    static Uint64 resolveSrcHeaderUint64(SrcChoice srcChoice) {
         return srcChoice instanceof SrcNxRegCase
-                ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).toBigInteger()
-                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface()).toBigInteger();
+                ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).toUint64()
+                : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface()).toUint64();
     }
 
     /**

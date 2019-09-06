@@ -37,7 +37,7 @@ public class EthTypeCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         EthTypeCaseValue value = (EthTypeCaseValue) input.getMatchEntryValue();
-        outBuffer.writeShort(value.getEthTypeValues().getValue());
+        outBuffer.writeShort(value.getEthTypeValues().getValue().toJava());
     }
 
     @Override

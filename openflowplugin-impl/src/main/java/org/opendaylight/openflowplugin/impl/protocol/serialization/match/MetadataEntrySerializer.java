@@ -16,28 +16,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class MetadataEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeBytes(ByteUtil.convertBigIntegerToNBytes(
-                match.getMetadata().getMetadata(),
-                getValueLength()));
+        // TODO: writeLong() should be faster
+        outBuffer.writeBytes(ByteUtil.uint64toBytes(match.getMetadata().getMetadata()));
 
         if (getHasMask(match)) {
-            writeMask(ByteUtil.convertBigIntegerToNBytes(
-                    match.getMetadata().getMetadataMask(),
-                    getValueLength()),
+            // TODO: writeLong() should be faster
+            writeMask(ByteUtil.uint64toBytes(match.getMetadata().getMetadataMask()),
                     outBuffer,
                     getValueLength());
         }
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getMetadata() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         return match.getMetadata().getMetadataMask() != null;
     }
 

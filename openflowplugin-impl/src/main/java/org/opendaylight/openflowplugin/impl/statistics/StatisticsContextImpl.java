@@ -78,8 +78,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
                           @Nonnull final MultipartWriterProvider statisticsWriterProvider,
                           @Nonnull final ListeningExecutorService executorService,
                           @Nonnull final OpenflowProviderConfig config,
-                          boolean isStatisticsPollingOn,
-                          boolean isUsingReconciliationFramework) {
+                          final boolean isStatisticsPollingOn,
+                          final boolean isUsingReconciliationFramework) {
         this.deviceContext = deviceContext;
         this.devState = Preconditions.checkNotNull(deviceContext.getDeviceState());
         this.executorService = executorService;
@@ -87,8 +87,8 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
         this.config = config;
         this.convertorExecutor = convertorExecutor;
         this.deviceInfo = deviceContext.getDeviceInfo();
-        this.statisticsPollingInterval = config.getBasicTimerDelay().getValue();
-        this.maximumPollingDelay = config.getMaximumTimerDelay().getValue();
+        this.statisticsPollingInterval = config.getBasicTimerDelay().getValue().toJava();
+        this.maximumPollingDelay = config.getMaximumTimerDelay().getValue().toJava();
         this.statisticsWriterProvider = statisticsWriterProvider;
         this.isUsingReconciliationFramework = isUsingReconciliationFramework;
 
@@ -116,7 +116,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     @Override
     public <O> RequestContext<O> createRequestContext() {
-        final AbstractRequestContext<O> ret = new AbstractRequestContext<O>(deviceInfo.reserveXidForDeviceMessage()) {
+        final AbstractRequestContext<O> ret = new AbstractRequestContext<>(deviceInfo.reserveXidForDeviceMessage()) {
             @Override
             public void close() {
                 requestContexts.remove(this);

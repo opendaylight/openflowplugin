@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Key for an experimenter action serializer.
@@ -27,8 +28,22 @@ public final class ExperimenterActionSerializerKey extends ActionSerializerKey<E
      * @param experimenterId experimenter / vendor ID
      * @param actionSubType vendor defined subtype
      */
-    public ExperimenterActionSerializerKey(short msgVersion, Long experimenterId,
-            Class<? extends ExperimenterActionSubType> actionSubType) {
+    public ExperimenterActionSerializerKey(final short msgVersion, final Uint32 experimenterId,
+            final Class<? extends ExperimenterActionSubType> actionSubType) {
+        super(msgVersion, ExperimenterIdCase.class, experimenterId);
+        this.actionSubType = actionSubType;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param msgVersion protocol wire version
+     * @param experimenterId experimenter / vendor ID
+     * @param actionSubType vendor defined subtype
+     */
+    @Deprecated(forRemoval = true)
+    public ExperimenterActionSerializerKey(final short msgVersion, final Long experimenterId,
+            final Class<? extends ExperimenterActionSubType> actionSubType) {
         super(msgVersion, ExperimenterIdCase.class, experimenterId);
         this.actionSubType = actionSubType;
     }
@@ -42,7 +57,7 @@ public final class ExperimenterActionSerializerKey extends ActionSerializerKey<E
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

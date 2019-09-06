@@ -69,6 +69,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for flow conversion.
@@ -105,7 +109,7 @@ public class FlowConvertorTest {
         RemoveFlowInput flow = flowBuilder.build();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
-        data.setDatapathId(new BigInteger("42"));
+        data.setDatapathId(Uint64.valueOf(42));
 
         List<FlowModInputBuilder> flowMod = convert(flow, data);
 
@@ -138,7 +142,7 @@ public class FlowConvertorTest {
         UpdatedFlow flow = flowBuilder.build();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        data.setDatapathId(new BigInteger("42"));
+        data.setDatapathId(Uint64.valueOf(42));
 
         List<FlowModInputBuilder> flowMod = convert(flow, data);
 
@@ -214,7 +218,7 @@ public class FlowConvertorTest {
         AddFlowInput flow = flowBuilder.build();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        data.setDatapathId(new BigInteger("42"));
+        data.setDatapathId(Uint64.valueOf(42));
         List<FlowModInputBuilder> flowMod = convert(flow, data);
 
         Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
@@ -274,7 +278,7 @@ public class FlowConvertorTest {
         mockFlow.setInstructions(toApplyInstruction(Collections.singletonList(action1)));
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
-        data.setDatapathId(BigInteger.ONE);
+        data.setDatapathId(Uint64.ONE);
 
         List<FlowModInputBuilder> flowModInputBuilders = convert(mockFlow, data);
 
@@ -282,7 +286,7 @@ public class FlowConvertorTest {
 
     }
 
-    private List<FlowModInputBuilder> convert(Flow flow, VersionDatapathIdConvertorData data) {
+    private List<FlowModInputBuilder> convert(final Flow flow, final VersionDatapathIdConvertorData data) {
         Optional<List<FlowModInputBuilder>> flowModOptional = convertorManager.convert(flow, data);
         Assert.assertTrue("Flow convertor not found", flowModOptional.isPresent());
         return flowModOptional.get();
@@ -302,7 +306,8 @@ public class FlowConvertorTest {
     }
 
     private static Instructions toApplyInstruction(
-            List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actions) {
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
+                .Action> actions) {
         return new InstructionsBuilder().setInstruction(Collections.singletonList(new InstructionBuilder().setOrder(0)
                 .setInstruction(new ApplyActionsCaseBuilder()
                         .setApplyActions(new ApplyActionsBuilder().setAction(actions).build()).build())
@@ -358,17 +363,17 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public Long getBufferId() {
+        public Uint32 getBufferId() {
             return null;
         }
 
         @Override
-        public BigInteger getOutPort() {
+        public Uint64 getOutPort() {
             return null;
         }
 
         @Override
-        public Long getOutGroup() {
+        public Uint32 getOutGroup() {
             return null;
         }
 
@@ -398,17 +403,17 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public Integer getPriority() {
+        public Uint16 getPriority() {
             return null;
         }
 
         @Override
-        public Integer getIdleTimeout() {
+        public Uint16 getIdleTimeout() {
             return null;
         }
 
         @Override
-        public Integer getHardTimeout() {
+        public Uint16 getHardTimeout() {
             return null;
         }
 
@@ -418,7 +423,7 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public Short getTableId() {
+        public Uint8 getTableId() {
             return null;
         }
 

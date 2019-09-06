@@ -15,9 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class GoToTableInstructionSerializer extends AbstractInstructionSerializer<GoToTableCase> {
 
     @Override
-    public void serialize(GoToTableCase input, ByteBuf outBuffer) {
+    public void serialize(final GoToTableCase input, final ByteBuf outBuffer) {
         super.serialize(input, outBuffer);
-        outBuffer.writeByte(input.getGoToTable().getTableId());
+        outBuffer.writeByte(input.getGoToTable().getTableId().toJava());
         outBuffer.writeZero(InstructionConstants.PADDING_IN_GOTO_TABLE);
     }
 

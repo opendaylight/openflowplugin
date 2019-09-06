@@ -30,13 +30,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl}.
  */
 public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_XID_VALUE = 100L;
+    private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
     private SalExperimenterMessageServiceImpl salExperimenterMessageService;
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;

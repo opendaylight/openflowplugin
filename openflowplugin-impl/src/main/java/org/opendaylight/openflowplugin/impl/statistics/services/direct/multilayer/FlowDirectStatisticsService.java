@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
     }
 
     @Override
-    protected GetFlowStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
+    protected GetFlowStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
         final List<FlowAndStatisticsMapList> statsList = new ArrayList<>();
 
         if (success) {

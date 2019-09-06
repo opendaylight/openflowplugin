@@ -41,7 +41,7 @@ public class CtZoneCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         CtZoneCaseValue ctZoneCase = (CtZoneCaseValue) input.getMatchEntryValue();
-        outBuffer.writeShort(ctZoneCase.getCtZoneValues().getCtZone());
+        outBuffer.writeShort(ctZoneCase.getCtZoneValues().getCtZone().toJava());
     }
 
     @Override

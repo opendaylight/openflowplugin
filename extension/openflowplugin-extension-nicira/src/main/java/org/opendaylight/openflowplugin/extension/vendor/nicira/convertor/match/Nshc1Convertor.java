@@ -36,11 +36,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._1.grouping.NxmNxNshc1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._1.grouping.NxmNxNshc1Builder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class Nshc1Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) input.getMatchEntryValue();
         OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
         NshcCaseValue nshcCaseValue = (NshcCaseValue) ofjAugNxExpMatch.getNxExpMatchEntryValue();
@@ -52,18 +53,18 @@ public class Nshc1Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<NxmNxNshc1Grouping> matchGrouping = MatchUtil.NSC1_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Long value = matchGrouping.get().getNxmNxNshc1().getValue();
-        Long mask = matchGrouping.get().getNxmNxNshc1().getMask();
+        Uint32 value = matchGrouping.get().getNxmNxNshc1().getValue();
+        Uint32 mask = matchGrouping.get().getNxmNxNshc1().getMask();
         MatchEntry matchEntry = buildMatchEntry(value, mask);
         return matchEntry;
     }
 
-    public static MatchEntry buildMatchEntry(Long value, Long mask) {
+    public static MatchEntry buildMatchEntry(final Uint32 value, final Uint32 mask) {
         NshcCaseValue nshcCaseValue = new NshcCaseValueBuilder().setNshc(value).setMask(mask).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshc1.class,
@@ -72,8 +73,8 @@ public class Nshc1Convertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
-            NxmNxNshc1 value,
-            MatchPath path, Class<? extends ExtensionKey> key) {
+            final NxmNxNshc1 value,
+            final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

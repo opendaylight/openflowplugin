@@ -36,7 +36,7 @@ public class CtTpDstCodec extends AbstractMatchCodec {
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         CtTpDstCaseValue ctTpSrcCase = (CtTpDstCaseValue)input.getMatchEntryValue();
-        outBuffer.writeShort(ctTpSrcCase.getCtTpDstValues().getCtTpDst());
+        outBuffer.writeShort(ctTpSrcCase.getCtTpDstValues().getCtTpDst().toJava());
     }
 
     @Override

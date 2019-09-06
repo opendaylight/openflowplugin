@@ -48,7 +48,6 @@ public class DecapCodec extends AbstractActionCodec {
         // add padding
         outBuffer.writeZero(PADDING);
         ActionDecap actionDecap = (ActionDecap) input.getActionChoice();
-        Long packetType = actionDecap.getNxActionDecap().getPacketType();
-        outBuffer.writeInt(packetType.intValue());
+        outBuffer.writeInt(actionDecap.getNxActionDecap().getPacketType().intValue());
     }
 }
