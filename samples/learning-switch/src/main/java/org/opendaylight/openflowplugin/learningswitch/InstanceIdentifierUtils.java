@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class InstanceIdentifierUtils {
 
@@ -76,7 +77,7 @@ public final class InstanceIdentifierUtils {
      *
      * @param tablePath the table path
      */
-    public static Short getTableId(final InstanceIdentifier<Table> tablePath) {
+    public static Uint8 getTableId(final InstanceIdentifier<Table> tablePath) {
         return tablePath.firstKeyOf(Table.class).getId();
     }
 

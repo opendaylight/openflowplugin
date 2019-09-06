@@ -38,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +60,7 @@ public final class FrmUtil {
         return flowRef.getValue().firstKeyOf(Flow.class).getId().getValue();
     }
 
-    public static short getTableId(final FlowTableRef flowTableRef) {
+    public static Uint8 getTableId(final FlowTableRef flowTableRef) {
         return flowTableRef.getValue().firstKeyOf(Table.class).getId();
     }
 
@@ -68,7 +70,7 @@ public final class FrmUtil {
         return new BigInteger(dpId);
     }
 
-    public static Long isFlowDependentOnGroup(final Flow flow) {
+    public static Uint32 isFlowDependentOnGroup(final Flow flow) {
         LOG.debug("Check if flow {} is dependent on group", flow);
         if (flow.getInstructions() != null) {
             List<Instruction> instructions = flow.getInstructions().getInstruction();
@@ -92,7 +94,7 @@ public final class FrmUtil {
     }
 
     public static InstanceIdentifier<Group> buildGroupInstanceIdentifier(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final Long groupId) {
+            final InstanceIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
         NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         InstanceIdentifier<Group> groupInstanceId = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class)
@@ -120,7 +122,7 @@ public final class FrmUtil {
     }
 
     public static boolean isGroupExistsOnDevice(final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final Long groupId, final ForwardingRulesManager provider) {
+            final Uint32 groupId, final ForwardingRulesManager provider) {
         NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
         return provider.getDevicesGroupRegistry().isGroupPresent(nodeId, groupId);
     }

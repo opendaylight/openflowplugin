@@ -35,12 +35,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowUtilTest {
     public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     public static final FlowId DUMMY_FLOW_ID = new FlowId("dummyFlowId");
     public static final FlowId DUMMY_FLOW_ID_2 = new FlowId("dummyFlowId_2");
-    public static final Short DUMMY_TABLE_ID = 1;
+    public static final Uint8 DUMMY_TABLE_ID = Uint8.ONE;
 
     @Test
     public void testBuildFlowPath() {

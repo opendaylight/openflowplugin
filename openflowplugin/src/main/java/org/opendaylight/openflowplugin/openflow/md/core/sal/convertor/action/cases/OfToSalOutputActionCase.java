@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
@@ -23,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputAction;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class OfToSalOutputActionCase extends ConvertorCase<OutputActionCase, Act
 
     @Override
     public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
 
         OutputActionBuilder outputAction = new OutputActionBuilder();
@@ -50,8 +50,7 @@ public class OfToSalOutputActionCase extends ConvertorCase<OutputActionCase, Act
             LOG.error("Provided action is not OF Output action, no associated port found!");
         }
 
-        Integer maxLength = outputActionFromOF.getMaxLength();
-
+        Uint16 maxLength = outputActionFromOF.getMaxLength();
         if (maxLength != null) {
             outputAction.setMaxLength(maxLength);
         } else {

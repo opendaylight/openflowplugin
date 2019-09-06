@@ -17,12 +17,12 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId =
                 match.getVlanMatch().getVlanId().getVlanId();
 
-        int vlanVidValue = vlanId != null ? vlanId.getValue() : 0;
+        int vlanVidValue = vlanId != null ? vlanId.getValue().toJava() : 0;
 
         if (Boolean.TRUE.equals(match.getVlanMatch().getVlanId().isVlanIdPresent())) {
             short cfi = 1 << 12;
@@ -37,15 +37,15 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer {
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getVlanMatch() != null && match.getVlanMatch().getVlanId() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         final VlanId vlanId = match.getVlanMatch().getVlanId();
         return Boolean.TRUE.equals(vlanId.isVlanIdPresent())
-                && (vlanId.getVlanId() == null || vlanId.getVlanId().getValue() == 0);
+                && (vlanId.getVlanId() == null || vlanId.getVlanId().getValue().toJava() == 0);
     }
 
     @Override

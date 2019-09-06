@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Tests for {@link LLDPSpeaker}.
@@ -71,7 +72,7 @@ public class LLDPSpeakerTest {
     @Before
     public void setUp() throws NoSuchAlgorithmException, PacketException {
         byte[] lldpFrame = LLDPUtil.buildLldpFrame(new NodeId("openflow:1"),
-                new NodeConnectorId("openflow:1:1"), MAC_ADDRESS, 1L);
+                new NodeConnectorId("openflow:1:1"), MAC_ADDRESS, Uint32.ONE);
         packetInput = new TransmitPacketInputBuilder().setEgress(new NodeConnectorRef(ID))
                 .setNode(new NodeRef(ID.firstIdentifierOf(Node.class))).setPayload(lldpFrame).build();
 

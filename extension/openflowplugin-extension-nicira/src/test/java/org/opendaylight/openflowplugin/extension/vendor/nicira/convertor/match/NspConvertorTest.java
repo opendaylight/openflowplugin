@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNsp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link NspConvertor}.
@@ -44,7 +45,7 @@ public class NspConvertorTest {
 
     private NspConvertor nspConvertor;
 
-    private static final Long NSP_VALUE = 0xFFL;
+    private static final Uint32 NSP_VALUE = Uint32.valueOf(0xFFL);
 
     @Before
     public void setUp() {

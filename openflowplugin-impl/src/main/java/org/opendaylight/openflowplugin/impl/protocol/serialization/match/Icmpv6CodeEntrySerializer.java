@@ -15,18 +15,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Icmpv6CodeEntrySerializer extends AbstractMatchEntrySerializer {
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         super.serialize(match, outBuffer);
-        outBuffer.writeByte(match.getIcmpv6Match().getIcmpv6Code());
+        outBuffer.writeByte(match.getIcmpv6Match().getIcmpv6Code().toJava());
     }
 
     @Override
-    public boolean matchTypeCheck(Match match) {
+    public boolean matchTypeCheck(final Match match) {
         return match.getIcmpv6Match() != null && match.getIcmpv6Match().getIcmpv6Code() != null;
     }
 
     @Override
-    protected boolean getHasMask(Match match) {
+    protected boolean getHasMask(final Match match) {
         return false;
     }
 

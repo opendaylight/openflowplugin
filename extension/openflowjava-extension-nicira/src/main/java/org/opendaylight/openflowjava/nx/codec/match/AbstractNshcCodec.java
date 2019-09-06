@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
@@ -14,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
 
@@ -36,7 +36,7 @@ public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected long getExperimenterId() {
+    protected Uint32 getExperimenterId() {
         return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 
@@ -44,5 +44,4 @@ public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
     public int getValueLength() {
         return VALUE_LENGTH;
     }
-
 }

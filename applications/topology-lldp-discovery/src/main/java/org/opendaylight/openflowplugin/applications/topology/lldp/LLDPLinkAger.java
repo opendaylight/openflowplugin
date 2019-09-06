@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -75,7 +74,7 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
                         @Reference final ConfigurationService configurationService,
                         @Reference final EntityOwnershipService entityOwnershipService,
                         @Reference final DataBroker dataBroker) {
-        this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue();
+        this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue().toJava();
         this.notificationService = notificationService;
         this.configurationServiceRegistration = configurationService.registerListener(this);
         this.eos = entityOwnershipService;
@@ -89,7 +88,8 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
             LOG.error("DataTreeChangeListeners registration failed:", e);
             throw new IllegalStateException("LLDPLinkAger startup failed!", e);
         }
-        timer.schedule(new LLDPAgingTask(), 0, topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue());
+        timer.schedule(new LLDPAgingTask(), 0,
+            topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue().toJava());
     }
 
     public void put(LinkDiscovered link) {

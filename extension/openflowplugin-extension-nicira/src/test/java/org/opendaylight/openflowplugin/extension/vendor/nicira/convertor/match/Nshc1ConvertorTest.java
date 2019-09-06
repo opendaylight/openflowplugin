@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._1.grouping.NxmNxNshc1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._1.grouping.NxmNxNshc1Builder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link Nshc1Convertor}.
@@ -44,8 +45,8 @@ public class Nshc1ConvertorTest {
 
     private Nshc1Convertor nshc1Convertor;
 
-    private static final Long NSHC1_VALUE = 0xFFFFFFFFL;
-    private static final Long MASK_VALUE = 0xFFFFFFFFL;
+    private static final Uint32 NSHC1_VALUE = Uint32.valueOf(0xFFFFFFFFL).intern();
+    private static final Uint32 MASK_VALUE = Uint32.valueOf(0xFFFFFFFFL).intern();
 
     @Before
     public void setUp() {

@@ -37,18 +37,12 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
         assertEquals(WriteMetadataCase.class, instruction.implementedInterface());
 
         assertArrayEquals(
-                ByteUtil
-                        .convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-                ByteUtil
-                        .convertBigIntegerToNBytes(((WriteMetadataCase) instruction).getWriteMetadata()
-                                .getMetadata(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.uint64toBytes(((WriteMetadataCase) instruction).getWriteMetadata().getMetadata()));
 
         assertArrayEquals(
-                ByteUtil
-                        .convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
-                ByteUtil
-                        .convertBigIntegerToNBytes(((WriteMetadataCase) instruction).getWriteMetadata()
-                                .getMetadataMask(), EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                ByteUtil.convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.uint64toBytes(((WriteMetadataCase) instruction).getWriteMetadata().getMetadataMask()));
 
         assertEquals(0, in.readableBytes());
     }

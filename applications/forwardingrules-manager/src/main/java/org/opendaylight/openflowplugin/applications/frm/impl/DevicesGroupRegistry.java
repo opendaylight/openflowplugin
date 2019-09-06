@@ -13,19 +13,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class DevicesGroupRegistry {
-    private final Map<NodeId, List<Long>> deviceGroupMapping = new ConcurrentHashMap<>();
+    private final Map<NodeId, List<Uint32>> deviceGroupMapping = new ConcurrentHashMap<>();
 
-    public boolean isGroupPresent(NodeId nodeId, Long groupId) {
+    public boolean isGroupPresent(NodeId nodeId, Uint32 groupId) {
         return deviceGroupMapping.get(nodeId) != null ? deviceGroupMapping.get(nodeId).contains(groupId) : false;
     }
 
-    public void storeGroup(NodeId nodeId, Long groupId) {
+    public void storeGroup(NodeId nodeId, Uint32 groupId) {
         deviceGroupMapping.computeIfAbsent(nodeId, groupIdList -> new ArrayList<>()).add(groupId);
     }
 
-    public void removeGroup(NodeId nodeId, Long groupId) {
+    public void removeGroup(NodeId nodeId, Uint32 groupId) {
         deviceGroupMapping.computeIfPresent(nodeId, (node, groupIds) -> groupIds).remove(groupId);
     }
 

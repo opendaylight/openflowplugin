@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public final class LLDPUtil {
 
     @Nonnull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
-            final Long outPortNo, final MacAddress destinationAddress)
+            final Uint32 outPortNo, final MacAddress destinationAddress)
                     throws PacketException {
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
@@ -52,7 +53,7 @@ public final class LLDPUtil {
         discoveryPkt.setChassisId(chassisIdTlv);
 
         // Create LLDP PortID TL
-        String hexString = Long.toHexString(outPortNo);
+        String hexString = Long.toHexString(outPortNo.toJava());
         byte[] pidValue = LLDPTLV.createPortIDTLVValue(hexString);
         LLDPTLV portIdTlv = new LLDPTLV();
         portIdTlv.setType(LLDPTLV.TLVType.PortID.getValue()).setLength((short) pidValue.length).setValue(pidValue);
@@ -103,7 +104,7 @@ public final class LLDPUtil {
 
     @Nonnull
     static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
-            final MacAddress srcMacAddress, final Long outputPortNo) throws PacketException {
+            final MacAddress srcMacAddress, final Uint32 outputPortNo) throws PacketException {
         return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);
     }
 

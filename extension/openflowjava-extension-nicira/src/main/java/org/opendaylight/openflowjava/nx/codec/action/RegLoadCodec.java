@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
@@ -32,7 +31,7 @@ public class RegLoadCodec extends AbstractActionCodec {
     public void serialize(final Action input, final ByteBuf outBuffer) {
         ActionRegLoad actionRegLoad = (ActionRegLoad) input.getActionChoice();
         serializeHeader(LENGTH, SUBTYPE, outBuffer);
-        outBuffer.writeShort(actionRegLoad.getNxActionRegLoad().getOfsNbits());
+        outBuffer.writeShort(actionRegLoad.getNxActionRegLoad().getOfsNbits().toJava());
         outBuffer.writeInt(actionRegLoad.getNxActionRegLoad().getDst().intValue());
         outBuffer.writeLong(actionRegLoad.getNxActionRegLoad().getValue().longValue());
     }

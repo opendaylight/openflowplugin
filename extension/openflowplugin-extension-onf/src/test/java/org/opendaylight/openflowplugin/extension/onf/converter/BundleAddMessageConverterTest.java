@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConvertorData;
+import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.openflowplugin.extension.onf.BundleTestUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
@@ -59,7 +60,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.converter.BundleAddMessageConverter}.
@@ -146,25 +149,26 @@ public class BundleAddMessageConverterTest {
                                         .types.port.rev130925.port.mod.port.PortBuilder()
                                     .setConfiguration(Mockito.mock(PortConfig.class))
                                     .setAdvertisedFeatures(Mockito.mock(PortFeatures.class))
-                                    .setPortNumber(Mockito.mock(PortNumberUni.class))
+                                    .setPortNumber(new PortNumberUni(Uint32.ZERO))
                                     .setHardwareAddress(Mockito.mock(MacAddress.class))
                                     .build()))
                             .build()).build())
                 .build(), BundlePortModCase.class);
     }
 
-    private void testConvert(final BundleInnerMessage message, final Class clazz) throws Exception {
+    private void testConvert(final BundleInnerMessage message, final Class<? extends DataObject> clazz)
+            throws ConversionException {
         testConvert(message, clazz, false);
     }
 
-    private void testConvert(final boolean withProperty) throws Exception {
+    private void testConvert(final boolean withProperty) throws ConversionException {
         final BundleInnerMessage message = new BundleAddFlowCaseBuilder()
                 .setAddFlowCaseData(new AddFlowCaseDataBuilder().build()).build();
         testConvert(message, BundleFlowModCase.class, withProperty);
     }
 
-    private void testConvert(final BundleInnerMessage message, Class clazz, final boolean withProperty)
-            throws Exception {
+    private void testConvert(final BundleInnerMessage message, Class<? extends DataObject> clazz,
+            final boolean withProperty) throws ConversionException {
         final BundleAddMessageSal original = createMessage(withProperty, message);
         final ExtensionConvertorData data = new ExtensionConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(extractDatapathId(NODE_REF));

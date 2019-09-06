@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
@@ -39,15 +38,15 @@ public class TcpDstCodec extends AbstractMatchCodec {
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         TcpDstCaseValue tcpDstCase = (TcpDstCaseValue) input.getMatchEntryValue();
-        outBuffer.writeShort(tcpDstCase.getTcpDstValues().getPort().getValue());
-        outBuffer.writeShort(tcpDstCase.getTcpDstValues().getMask());
+        outBuffer.writeShort(tcpDstCase.getTcpDstValues().getPort().getValue().toJava());
+        outBuffer.writeShort(tcpDstCase.getTcpDstValues().getMask().toJava());
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         matchEntryBuilder.setHasMask(true);
         int portNo = message.readUnsignedShort();
@@ -85,5 +84,4 @@ public class TcpDstCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm0Class.class;
     }
-
 }

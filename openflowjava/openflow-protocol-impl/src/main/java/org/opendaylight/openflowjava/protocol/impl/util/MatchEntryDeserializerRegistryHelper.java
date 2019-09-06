@@ -11,6 +11,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Helper class for registering match entry deserializers.
@@ -30,8 +31,8 @@ public class MatchEntryDeserializerRegistryHelper {
      * @param oxmClass oxm_class that will be used for match entry deserializer registration
      * @param deserializerRegistry registry to be filled with message deserializers
      */
-    public MatchEntryDeserializerRegistryHelper(short version, int oxmClass,
-            DeserializerRegistry deserializerRegistry) {
+    public MatchEntryDeserializerRegistryHelper(final short version, final int oxmClass,
+            final DeserializerRegistry deserializerRegistry) {
         this.version = version;
         this.oxmClass = oxmClass;
         this.registry = deserializerRegistry;
@@ -43,13 +44,13 @@ public class MatchEntryDeserializerRegistryHelper {
      * @param oxmField oxm_field value/code
      * @param deserializer deserializer instance
      */
-    public void register(int oxmField, OFGeneralDeserializer deserializer) {
+    public void register(final int oxmField, final OFGeneralDeserializer deserializer) {
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(version, oxmClass, oxmField);
         key.setExperimenterId(null);
         registry.registerDeserializer(key, deserializer);
     }
 
-    public void registerExperimenter(int oxmField, long expId, OFGeneralDeserializer deserializer) {
+    public void registerExperimenter(final int oxmField, final Uint32 expId, final OFGeneralDeserializer deserializer) {
         MatchEntryDeserializerKey key =
                 new MatchEntryDeserializerKey(version, OxmMatchConstants.EXPERIMENTER_CLASS, oxmField);
         key.setExperimenterId(expId);

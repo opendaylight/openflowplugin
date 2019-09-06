@@ -12,7 +12,6 @@ import com.google.common.base.Verify;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +32,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public abstract class AbstractService<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
 
     private final short version;
-    private final BigInteger datapathId;
+    private final Uint64 datapathId;
     private final RequestContextStack requestContextStack;
     private final DeviceContext deviceContext;
     private final MessageSpy messageSpy;
@@ -72,7 +72,7 @@ public abstract class AbstractService<I, O> {
         return version;
     }
 
-    public BigInteger getDatapathId() {
+    public Uint64 getDatapathId() {
         return datapathId;
     }
 
@@ -156,12 +156,12 @@ public abstract class AbstractService<I, O> {
             final OutboundQueue outboundQueue =
                     getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
+            // FIXME: reconcile uint32 vs. Long overflows
+            final Long queueXid = xid.getValue().toJava();
             if (isComplete != null) {
-                outboundQueue.commitEntry(xid.getValue(),
-                                          request,
-                                          createCallback(requestContext, requestType), isComplete);
+                outboundQueue.commitEntry(queueXid, request, createCallback(requestContext, requestType), isComplete);
             } else {
-                outboundQueue.commitEntry(xid.getValue(), request, createCallback(requestContext, requestType));
+                outboundQueue.commitEntry(queueXid, request, createCallback(requestContext, requestType));
             }
         }
 

@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -105,6 +104,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for table features response conversions.
@@ -165,8 +166,8 @@ public class TableFeaturesResponseConvertorTest {
         TableFeatures feature = list.get(0);
         Assert.assertEquals("Wrong table-id", 5, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Aloha", feature.getName());
-        Assert.assertEquals("Wrong metadata match", new BigInteger(1, metaMatch), feature.getMetadataMatch());
-        Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite), feature.getMetadataWrite());
+        Assert.assertEquals("Wrong metadata match", Uint64.valueOf("0001020304050607", 16), feature.getMetadataMatch());
+        Assert.assertEquals("Wrong metadata write", Uint64.valueOf("08090A0B0C0D0E0F", 16), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 0, feature.getTableProperties().getTableFeatureProperties().size());
@@ -180,10 +181,8 @@ public class TableFeaturesResponseConvertorTest {
         TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
         featuresBuilder.setTableId((short) 5);
         featuresBuilder.setName("Aloha");
-        byte[] metaMatch = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
-        featuresBuilder.setMetadataMatch(metaMatch);
-        byte[] metaWrite = new byte[]{8, 9, 10, 11, 12, 13, 14, 15};
-        featuresBuilder.setMetadataWrite(metaWrite);
+        featuresBuilder.setMetadataMatch(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
+        featuresBuilder.setMetadataWrite(new byte[]{8, 9, 10, 11, 12, 13, 14, 15});
         featuresBuilder.setConfig(new TableConfig(false));
         featuresBuilder.setMaxEntries(42L);
 
@@ -299,10 +298,8 @@ public class TableFeaturesResponseConvertorTest {
         featuresBuilder = new TableFeaturesBuilder();
         featuresBuilder.setTableId((short) 6);
         featuresBuilder.setName("Mahalo");
-        byte[] metaMatch2 = new byte[]{8, 9, 10, 11, 12, 13, 14, 15};
-        featuresBuilder.setMetadataMatch(metaMatch2);
-        byte[] metaWrite2 = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
-        featuresBuilder.setMetadataWrite(metaWrite2);
+        featuresBuilder.setMetadataMatch(new byte[]{8, 9, 10, 11, 12, 13, 14, 15});
+        featuresBuilder.setMetadataWrite(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
         featuresBuilder.setConfig(new TableConfig(false));
         featuresBuilder.setMaxEntries(24L);
 
@@ -554,8 +551,8 @@ public class TableFeaturesResponseConvertorTest {
         TableFeatures feature = list.get(0);
         Assert.assertEquals("Wrong table-id", 5, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Aloha", feature.getName());
-        Assert.assertEquals("Wrong metadata match", new BigInteger(1, metaMatch), feature.getMetadataMatch());
-        Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite), feature.getMetadataWrite());
+        Assert.assertEquals("Wrong metadata match", Uint64.valueOf("0001020304050607", 16), feature.getMetadataMatch());
+        Assert.assertEquals("Wrong metadata write",Uint64.valueOf("08090A0B0C0D0E0F", 16), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 4, feature.getTableProperties().getTableFeatureProperties().size());
@@ -566,7 +563,7 @@ public class TableFeaturesResponseConvertorTest {
             + "rev131026.table.feature.prop.type.table.feature.prop.type.NextTable",
                 property.getTableFeaturePropType().implementedInterface().getName());
         NextTable propType = (NextTable) property.getTableFeaturePropType();
-        List<Short> ids = propType.getTables().getTableIds();
+        List<Uint8> ids = propType.getTables().getTableIds();
         Assert.assertEquals("Wrong next table-id size", 2, ids.size());
         Assert.assertEquals("Wrong next-registry-id", 1, ids.get(0).intValue());
         Assert.assertEquals("Wrong next-registry-id", 2, ids.get(1).intValue());
@@ -619,8 +616,8 @@ public class TableFeaturesResponseConvertorTest {
         feature = list.get(1);
         Assert.assertEquals("Wrong table-id", 6, feature.getTableId().intValue());
         Assert.assertEquals("Wrong name", "Mahalo", feature.getName());
-        Assert.assertEquals("Wrong metadata match", new BigInteger(1, metaMatch2), feature.getMetadataMatch());
-        Assert.assertEquals("Wrong metadata write", new BigInteger(1, metaWrite2), feature.getMetadataWrite());
+        Assert.assertEquals("Wrong metadata match", Uint64.valueOf("08090A0B0C0D0E0F", 16), feature.getMetadataMatch());
+        Assert.assertEquals("Wrong metadata write", Uint64.valueOf("0001020304050607", 16), feature.getMetadataWrite());
         Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 24, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 12, feature.getTableProperties().getTableFeatureProperties().size());
@@ -854,7 +851,7 @@ public class TableFeaturesResponseConvertorTest {
     }
 
 
-    private List<TableFeatures> convert(MultipartReplyTableFeatures features) {
+    private List<TableFeatures> convert(final MultipartReplyTableFeatures features) {
         Optional<List<TableFeatures>> listOptional =
                 convertorManager.convert(features, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         return listOptional.orElse(Collections.emptyList());

@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public final class AddressNormalizationUtil {
             return null;
         }
 
-        Long portValue = InventoryDataServiceUtil
+        Uint32 portValue = InventoryDataServiceUtil
                 .portNumberfromNodeConnectorId(OpenflowVersion.get(protocolVersion), port.getValue());
 
         return portValue == null ? null : OpenflowPortsUtil.getProtocolAgnosticPortUri(protocolVersion, portValue);

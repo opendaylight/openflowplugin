@@ -19,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +36,8 @@ public final class FlowCapableNodeLookups {
     }
 
     @Nonnull
-    public static Map<Short, Table> wrapTablesToMap(@Nullable final List<Table> tables) {
-        final Map<Short, Table> tableMap;
+    public static Map<Uint8, Table> wrapTablesToMap(@Nullable final List<Table> tables) {
+        final Map<Uint8, Table> tableMap;
 
         if (tables == null) {
             tableMap = Collections.emptyMap();
@@ -89,8 +91,8 @@ public final class FlowCapableNodeLookups {
     }
 
     @Nonnull
-    public static Map<Long, Group> wrapGroupsToMap(@Nullable final List<Group> groups) {
-        final Map<Long, Group> groupMap;
+    public static Map<Uint32, Group> wrapGroupsToMap(@Nullable final List<Group> groups) {
+        final Map<Uint32, Group> groupMap;
 
         if (groups == null) {
             groupMap = Collections.emptyMap();

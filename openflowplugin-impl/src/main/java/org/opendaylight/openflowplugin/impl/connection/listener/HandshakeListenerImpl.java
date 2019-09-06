@@ -65,7 +65,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
     }
 
     private FutureCallback<RpcResult<BarrierOutput>> addBarrierCallback() {
-        return new FutureCallback<RpcResult<BarrierOutput>>() {
+        return new FutureCallback<>() {
             @Override
             @SuppressWarnings("checkstyle:IllegalCatch")
             public void onSuccess(final RpcResult<BarrierOutput> result) {

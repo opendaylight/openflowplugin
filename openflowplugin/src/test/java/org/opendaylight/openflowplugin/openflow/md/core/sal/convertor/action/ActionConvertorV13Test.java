@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -114,6 +113,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPortBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for v1.3 action converters.
@@ -509,7 +509,7 @@ public class ActionConvertorV13Test {
         Flow flow = flowBld.build();
 
         ActionConvertorData data = new ActionConvertorData(OFConstants.OFP_VERSION_1_3);
-        data.setDatapathId(new BigInteger("42"));
+        data.setDatapathId(Uint64.valueOf(42));
         data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
         Optional<List<Action>> actionsOptional = convertorManager.convert(salActions, data);
@@ -666,7 +666,8 @@ public class ActionConvertorV13Test {
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
     }
 
-    private static void checkEntryHeader(MatchEntry entry, Class<? extends MatchField> field, boolean hasMask) {
+    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field,
+            final boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
         Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());

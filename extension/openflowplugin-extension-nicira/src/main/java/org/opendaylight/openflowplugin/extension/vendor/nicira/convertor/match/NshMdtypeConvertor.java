@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.mdtype.grouping.NxmNxNshMdtype;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.mdtype.grouping.NxmNxNshMdtypeBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshMdtypeConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
@@ -63,11 +64,11 @@ public class NshMdtypeConvertor implements ConvertorToOFJava<MatchEntry>, Conver
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Short value = matchGrouping.get().getNxmNxNshMdtype().getValue();
+        Uint8 value = matchGrouping.get().getNxmNxNshMdtype().getValue();
         return buildMatchEntry(value, null);
     }
 
-    public static MatchEntry buildMatchEntry(Short value, Short mask) {
+    public static MatchEntry buildMatchEntry(Uint8 value, Uint8 mask) {
         NshMdtypeValues nshMdtypeValues = new NshMdtypeValuesBuilder().setValue(value).build();
         NxExpMatchEntryValue entryValue = new NshMdtypeCaseValueBuilder().setNshMdtypeValues(nshMdtypeValues).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(

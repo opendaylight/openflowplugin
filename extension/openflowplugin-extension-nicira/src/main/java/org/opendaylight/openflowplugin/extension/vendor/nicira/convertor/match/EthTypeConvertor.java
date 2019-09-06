@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.type.grouping.NxmOfEthType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.type.grouping.NxmOfEthTypeBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for EthTypeCase.
@@ -57,7 +58,7 @@ public class EthTypeConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Integer value = matchGrouping.get().getNxmOfEthType().getValue();
+        Uint16 value = matchGrouping.get().getNxmOfEthType().getValue();
         EthTypeCaseValueBuilder ethTypeCaseValueBuilder = new EthTypeCaseValueBuilder();
         ethTypeCaseValueBuilder.setEthTypeValues(new EthTypeValuesBuilder()
                 .setValue(value).build());

@@ -29,6 +29,8 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
@@ -45,12 +47,12 @@ public class ConfigurationServiceFactoryImplTest {
     private static final boolean IS_STATISTICS_RPC_ENABLED = false;
     private static final boolean USE_SINGLE_LAYER_SERIALIZATION = true;
     private static final int RPC_REQUESTS_QUOTA = 2500;
-    private static final long GLOBAL_NOTIFICATION_QUOTA = 9000;
-    private static final int THREAD_POOL_MIN_THREADS = 3;
+    private static final Uint32 GLOBAL_NOTIFICATION_QUOTA = Uint32.valueOf(9000);
+    private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.valueOf(3);
     private static final int THREAD_POOL_MIN_THREADS_UPDATE = 4;
     private static final int THREAD_POOL_MAX_THREADS = 1000;
-    private static final long THREAD_POOL_TIMEOUT = 60;
-    private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
+    private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
 
     @Mock
     private OpenflowProviderConfig config;

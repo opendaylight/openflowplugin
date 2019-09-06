@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for
@@ -48,8 +49,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class FlowNotificationSupplierImplTest {
 
     private static final String FLOW_NODE_ID = "openflow:111";
-    private static final Short FLOW_TABLE_ID = 111;
-    private static final Short UPDATED_FLOW_TABLE_ID = 100;
+    private static final Uint8 FLOW_TABLE_ID = Uint8.valueOf(111);
+    private static final Uint8 UPDATED_FLOW_TABLE_ID = Uint8.valueOf(100);
     private static final String FLOW_ID = "test-flow-111";
     private static final String UPDATED_FLOW_ID = "test-flow-100";
     private FlowNotificationSupplierImpl notifSupplierImpl;

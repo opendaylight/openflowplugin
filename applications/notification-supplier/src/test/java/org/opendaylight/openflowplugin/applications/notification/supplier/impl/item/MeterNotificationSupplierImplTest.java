@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for
@@ -46,8 +47,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class MeterNotificationSupplierImplTest {
 
     private static final String FLOW_NODE_ID = "openfow:111";
-    private static final Long METER_ID = 111L;
-    private static final Long UPDATED_METER_ID = 100L;
+    private static final Uint32 METER_ID = Uint32.valueOf(111);
+    private static final Uint32 UPDATED_METER_ID = Uint32.valueOf(100);
 
     private MeterNotificationSupplierImpl notifSupplierImpl;
     private NotificationPublishService notifProviderService;

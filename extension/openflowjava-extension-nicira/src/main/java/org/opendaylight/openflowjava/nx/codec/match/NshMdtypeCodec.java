@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshMdtypeCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshMdtypeCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NshMdtypeCodec extends AbstractExperimenterMatchCodec {
 
@@ -41,7 +42,7 @@ public class NshMdtypeCodec extends AbstractExperimenterMatchCodec {
     protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
         NshMdtypeCaseValue nshMdtypeCaseValue = (NshMdtypeCaseValue) value;
         NshMdtypeValues nshMdtypeValues = nshMdtypeCaseValue.getNshMdtypeValues();
-        outBuffer.writeByte(nshMdtypeValues.getValue());
+        outBuffer.writeByte(nshMdtypeValues.getValue().toJava());
     }
 
     @Override
@@ -57,7 +58,7 @@ public class NshMdtypeCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected long getExperimenterId() {
+    protected Uint32 getExperimenterId() {
         return NiciraConstants.NX_NSH_VENDOR_ID;
     }
 

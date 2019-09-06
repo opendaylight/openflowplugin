@@ -133,23 +133,23 @@ public final class LearnCodecUtil {
     }
 
     private static void toFlowModSpecHeader(FlowModOutputToPort flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(0,2,(short)(int)flowModSpec.getFlowModNumBits(), outBuffer);
+        serializeFlowModSpecHeader(0,2,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
     }
 
     private static void toFlowModSpecHeader(FlowModCopyValueIntoField flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(1,1,(short)(int)flowModSpec.getFlowModNumBits(), outBuffer);
+        serializeFlowModSpecHeader(1,1,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
     }
 
     private static void toFlowModSpecHeader(FlowModCopyFieldIntoField flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(0,1,(short)(int)flowModSpec.getFlowModNumBits(), outBuffer);
+        serializeFlowModSpecHeader(0,1,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
     }
 
     private static void toFlowModSpecHeader(FlowModAddMatchFromValue flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(1,0,(short)(int)flowModSpec.getFlowModNumBits(), outBuffer);
+        serializeFlowModSpecHeader(1,0,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
     }
 
     private static void toFlowModSpecHeader(FlowModAddMatchFromField flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(0,0,(short)(int)flowModSpec.getFlowModNumBits(), outBuffer);
+        serializeFlowModSpecHeader(0,0,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
     }
 
     private static void serializeFlowModSpecHeader(int src, int dst, short bitNum, ByteBuf outBuffer) {

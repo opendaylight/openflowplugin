@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -26,13 +25,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<MultipartReplyBody> {
 
     private static final int GROUP_TYPES = 4;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyGroupFeaturesBuilder builder = new MultipartReplyGroupFeaturesBuilder();
 
         return builder
@@ -40,23 +40,23 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
             .setGroupCapabilitiesSupported(readGroupCapabilities(message))
             .setMaxGroups(IntStream
                     .range(0, GROUP_TYPES)
-                    .mapToObj(i -> message.readUnsignedInt())
+                    .mapToObj(i -> Uint32.valueOf(message.readUnsignedInt()))
                     .collect(Collectors.toList()))
             .setActions(IntStream
                     .range(0, GROUP_TYPES)
-                    .mapToObj(i -> message.readUnsignedInt())
+                    .mapToObj(i -> Uint32.valueOf(message.readUnsignedInt()))
                     .collect(Collectors.toList()))
             .build();
     }
 
-    private static List<Class<? extends GroupCapability>> readGroupCapabilities(ByteBuf message) {
+    private static List<Class<? extends GroupCapability>> readGroupCapabilities(final ByteBuf message) {
         final List<Class<? extends GroupCapability>> groupCapabilities = new ArrayList<>();
         final long capabilitiesMask = message.readUnsignedInt();
 
-        final boolean gcSelectWeight = ((capabilitiesMask) & (1 << 0)) != 0;
-        final boolean gcSelectLiveness = ((capabilitiesMask) & (1 << 1)) != 0;
-        final boolean gcChaining = ((capabilitiesMask) & (1 << 2)) != 0;
-        final boolean gcChainingChecks = ((capabilitiesMask) & (1 << 3)) != 0;
+        final boolean gcSelectWeight = (capabilitiesMask & 1 << 0) != 0;
+        final boolean gcSelectLiveness = (capabilitiesMask & 1 << 1) != 0;
+        final boolean gcChaining = (capabilitiesMask & 1 << 2) != 0;
+        final boolean gcChainingChecks = (capabilitiesMask & 1 << 3) != 0;
 
         if (gcSelectWeight) {
             groupCapabilities.add(SelectWeight.class);
@@ -74,14 +74,14 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
         return groupCapabilities;
     }
 
-    private static List<Class<? extends GroupType>> readGroupTypes(ByteBuf message) {
+    private static List<Class<? extends GroupType>> readGroupTypes(final ByteBuf message) {
         final List<Class<? extends GroupType>> groupTypes = new ArrayList<>();
         final long typesMask = message.readUnsignedInt();
 
-        final boolean gtAll = ((typesMask) & (1 << 0)) != 0;
-        final boolean gtSelect = ((typesMask) & (1 << 1)) != 0;
-        final boolean gtIndirect = ((typesMask) & (1 << 2)) != 0;
-        final boolean gtFF = ((typesMask) & (1 << 3)) != 0;
+        final boolean gtAll = (typesMask & 1 << 0) != 0;
+        final boolean gtSelect = (typesMask & 1 << 1) != 0;
+        final boolean gtIndirect = (typesMask & 1 << 2) != 0;
+        final boolean gtFF = (typesMask & 1 << 3) != 0;
 
         if (gtAll) {
             groupTypes.add(GroupAll.class);

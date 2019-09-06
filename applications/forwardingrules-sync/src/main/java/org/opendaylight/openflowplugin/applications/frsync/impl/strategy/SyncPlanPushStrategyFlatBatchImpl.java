@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,6 +81,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,7 +162,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             public void onSuccess(final RpcResult<ProcessFlatBatchOutput> result) {
                 if (!result.isSuccessful() && result.getResult() != null
                         && !result.getResult().getBatchFailure().isEmpty()) {
-                    Map<Range<Integer>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
+                    Map<Range<Uint16>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
                     decrementBatchFailuresCounters(result.getResult().getBatchFailure(), batchMap, counters);
                 }
             }
@@ -172,11 +174,13 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         };
     }
 
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private static void decrementBatchFailuresCounters(final List<BatchFailure> batchFailures,
-                                                final Map<Range<Integer>, Batch> batchMap,
+                                                final Map<Range<Uint16>, Batch> batchMap,
                                                 final SyncCrudCounters counters) {
         for (BatchFailure batchFailure : batchFailures) {
-            for (Map.Entry<Range<Integer>, Batch> rangeBatchEntry : batchMap.entrySet()) {
+            for (Map.Entry<Range<Uint16>, Batch> rangeBatchEntry : batchMap.entrySet()) {
                 if (rangeBatchEntry.getKey().contains(batchFailure.getBatchOrder())) {
                     // get type and decrease
                     final BatchChoice batchChoice = rangeBatchEntry.getValue().getBatchChoice();
@@ -209,15 +213,15 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         }
     }
 
-    static Map<Range<Integer>, Batch> mapBatchesToRanges(final List<Batch> inputBatchBag, final int failureIndexLimit) {
-        final Map<Range<Integer>, Batch> batchMap = new LinkedHashMap<>();
+    static Map<Range<Uint16>, Batch> mapBatchesToRanges(final List<Batch> inputBatchBag, final int failureIndexLimit) {
+        final Map<Range<Uint16>, Batch> batchMap = new LinkedHashMap<>();
         final PeekingIterator<Batch> batchPeekingIterator = Iterators.peekingIterator(inputBatchBag.iterator());
         while (batchPeekingIterator.hasNext()) {
             final Batch batch = batchPeekingIterator.next();
             final int nextBatchOrder = batchPeekingIterator.hasNext()
-                    ? batchPeekingIterator.peek().getBatchOrder()
+                    ? batchPeekingIterator.peek().getBatchOrder().toJava()
                     : failureIndexLimit;
-            batchMap.put(Range.closed(batch.getBatchOrder(), nextBatchOrder - 1), batch);
+            batchMap.put(Range.closed(batch.getBatchOrder(), Uint16.valueOf(nextBatchOrder - 1)), batch);
         }
         return batchMap;
     }

@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -57,6 +55,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Translates FlowMod messages.
@@ -66,16 +68,18 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         SerializerRegistryInjector {
     private static final FlowCookie DEFAULT_COOKIE = new FlowCookie(OFConstants.DEFAULT_COOKIE);
     private static final FlowCookie DEFAULT_COOKIE_MASK = new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK);
-    private static final Short DEFAULT_TABLE_ID = (short) 0;
-    private static final Integer DEFAULT_IDLE_TIMEOUT = 0;
-    private static final Integer DEFAULT_HARD_TIMEOUT = 0;
-    private static final Integer DEFAULT_PRIORITY = OFConstants.DEFAULT_FLOW_PRIORITY;
-    private static final Long DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
-    private static final BigInteger DEFAULT_OUT_PORT = BigInteger.valueOf(OFConstants.OFPP_ANY);
-    private static final Long DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
+    private static final Uint8 DEFAULT_TABLE_ID = Uint8.ZERO;
+    private static final Uint16 DEFAULT_IDLE_TIMEOUT = Uint16.ZERO;
+    private static final Uint16 DEFAULT_HARD_TIMEOUT = Uint16.ZERO;
+    private static final Uint16 DEFAULT_PRIORITY = OFConstants.DEFAULT_FLOW_PRIORITY;
+    private static final Uint32 DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
+    private static final Uint64 DEFAULT_OUT_PORT = Uint64.valueOf(OFConstants.OFPP_ANY);
+    private static final Uint32 DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final FlowModFlags DEFAULT_FLAGS = new FlowModFlags(false, false, false, false, false);
-    private static final Integer PUSH_VLAN = 0x8100;
+    private static final Uint16 PUSH_VLAN = Uint16.valueOf(0x8100);
+    private static final Integer PUSH_TAG = PUSH_VLAN.toJava();
+    private static final VlanCfi PUSH_CFI = new VlanCfi(1);
 
     private static final VlanMatch VLAN_MATCH_FALSE = new VlanMatchBuilder()
             .setVlanId(new VlanIdBuilder()
@@ -94,7 +98,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(FlowMessage message, ByteBuf outBuffer) {
+    public void serialize(final FlowMessage message, final ByteBuf outBuffer) {
         if (!isVlanMatchPresent(message) && isSetVlanIdActionCasePresent(message)) {
             writeVlanFlow(message, outBuffer);
         } else {
@@ -115,11 +119,11 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
         outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue()
                 .longValue());
-        outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID));
+        outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID).toJava());
         outBuffer.writeByte(message.getCommand().getIntValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT));
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT));
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getPriority(), DEFAULT_PRIORITY));
+        outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT).toJava());
+        outBuffer.writeShort(MoreObjects.firstNonNull(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT).toJava());
+        outBuffer.writeShort(MoreObjects.firstNonNull(message.getPriority(), DEFAULT_PRIORITY).toJava());
         outBuffer.writeInt(MoreObjects.firstNonNull(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
         outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
         outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
@@ -166,7 +170,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
         Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
-                new MessageTypeKey<>(message.getVersion(), Match.class)).serialize(message.getMatch(), outBuffer);
+                new MessageTypeKey<>(message.getVersion().toJava(), Match.class)).serialize(message.getMatch(),
+                    outBuffer);
 
     }
 
@@ -179,7 +184,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     @SuppressWarnings("unchecked")
     private void writeInstructions(final FlowMessage message, final ByteBuf outBuffer) {
         // Try to get IP protocol from IP match
-        final Optional<Short> protocol = Optional
+        final Optional<Uint8> protocol = Optional
                 .ofNullable(message.getMatch())
                 .flatMap(m -> Optional.ofNullable(m.getIpMatch()))
                 .flatMap(ipm -> Optional.ofNullable(ipm.getIpProtocol()));
@@ -187,8 +192,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         // Update instructions if needed and then serialize all instructions
         Optional.ofNullable(message.getInstructions())
                 .flatMap(is -> Optional.ofNullable(is.getInstruction()))
-                .ifPresent(is -> is
-                        .stream()
+                .ifPresent(is -> is.stream()
                         .filter(Objects::nonNull)
                         .sorted(OrderComparator.build())
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
@@ -206,7 +210,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param protocol    protocol
      * @return updated instruction or empty
      */
-    private static Optional<Instruction> updateInstruction(final Instruction instruction, final Short protocol) {
+    private static Optional<Instruction> updateInstruction(final Instruction instruction, final Uint8 protocol) {
         if (instruction instanceof ApplyActionsCase) {
             return Optional
                     .ofNullable(((ApplyActionsCase) instruction).getApplyActions())
@@ -232,7 +236,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param protocol IP protocol
      * @return updated OpenFlow action
      */
-    private static Action updateSetTpActions(Action action, Short protocol) {
+    private static Action updateSetTpActions(final Action action, final Uint8 protocol) {
         if (action.getAction() instanceof SetTpSrcActionCase) {
             final SetTpSrcActionCase actionCase = (SetTpSrcActionCase) action.getAction();
 
@@ -293,12 +297,12 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                                             actions.add(new ActionBuilder()
                                                     .setAction(new PushVlanActionCaseBuilder()
                                                             .setPushVlanAction(new PushVlanActionBuilder()
-                                                                    .setCfi(new VlanCfi(1))
+                                                                    .setCfi(PUSH_CFI)
                                                                     .setVlanId(((SetVlanIdActionCase) action
                                                                         .getAction()).getSetVlanIdAction()
                                                                             .getVlanId())
                                                                     .setEthernetType(PUSH_VLAN)
-                                                                    .setTag(PUSH_VLAN)
+                                                                    .setTag(PUSH_TAG)
                                                                     .build())
                                                             .build())
                                                     .withKey(action.key())
@@ -371,8 +375,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         return Optional
                 .ofNullable(flow.getInstructions())
                 .flatMap(is -> Optional.ofNullable(is.getInstruction()))
-                .flatMap(is -> is
-                        .stream()
+                .flatMap(is -> is.stream()
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
                                 .rev131026.Instruction::getInstruction)
                         .filter(ApplyActionsCase.class::isInstance)
@@ -393,7 +396,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.translator;
 
 import java.util.Optional;
@@ -14,18 +13,19 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Translate {@link FlowRemoved} message to FlowRemoved notification (omit instructions).
  */
 public class FlowRemovedV10Translator extends FlowRemovedTranslator {
 
-    public FlowRemovedV10Translator(ConvertorExecutor convertorExecutor) {
+    public FlowRemovedV10Translator(final ConvertorExecutor convertorExecutor) {
         super(convertorExecutor);
     }
 
     @Override
-    protected MatchBuilder translateMatch(FlowRemoved flowRemoved, DeviceInfo deviceInfo) {
+    protected MatchBuilder translateMatch(final FlowRemoved flowRemoved, final DeviceInfo deviceInfo) {
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(deviceInfo.getVersion());
         datapathIdConvertorData.setDatapathId(deviceInfo.getDatapathId());
@@ -44,7 +44,7 @@ public class FlowRemovedV10Translator extends FlowRemovedTranslator {
      * @return  Zero.
      */
     @Override
-    protected Short translateTableId(FlowRemoved flowRemoved) {
-        return (short) 0;
+    protected Uint8 translateTableId(final FlowRemoved flowRemoved) {
+        return Uint8.ZERO;
     }
 }

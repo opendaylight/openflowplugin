@@ -54,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,9 +150,9 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
         final FeaturesReply featuresReply = connectionContext.getFeatures();
-        final Short auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : null;
+        final Uint8 auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : null;
 
-        if (auxiliaryId != null && auxiliaryId != 0) {
+        if (auxiliaryId != null && auxiliaryId.toJava() != 0) {
             if (contextChain == null) {
                 LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.",
                          deviceInfo);
@@ -280,7 +281,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
-    public void ownershipChanged(EntityOwnershipChange entityOwnershipChange) {
+    public void ownershipChanged(final EntityOwnershipChange entityOwnershipChange) {
         if (entityOwnershipChange.getState().hasOwner()) {
             return;
         }
@@ -306,13 +307,13 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier);
                 Futures.addCallback(future, new FutureCallback<Object>() {
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onSuccess(final Object result) {
                         LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
                         OF_EVENT_LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
                     }
 
                     @Override
-                    public void onFailure(Throwable throwable) {
+                    public void onFailure(final Throwable throwable) {
                         LOG.error("Could not remove device {} from operational DS", dpnId, throwable);
                     }
                 }, MoreExecutors.directExecutor());
@@ -356,12 +357,11 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         LOG.debug("Context chain removed for node {}", deviceInfo);
     }
 
-    private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull DeviceInfo deviceInfo,
-                                                                        ContextChain contextChain,
-                                                                        ContextChainMastershipState mastershipState) {
-        return new FutureCallback<ResultState>() {
+    private FutureCallback<ResultState> reconciliationFrameworkCallback(@Nonnull final DeviceInfo deviceInfo,
+            final ContextChain contextChain, final ContextChainMastershipState mastershipState) {
+        return new FutureCallback<>() {
             @Override
-            public void onSuccess(ResultState result) {
+            public void onSuccess(final ResultState result) {
                 if (ResultState.DONOTHING == result) {
                     OF_EVENT_LOG.debug("Device {} connection is enabled by reconciliation framework", deviceInfo);
                     LOG.info("Device {} connection is enabled by reconciliation framework.", deviceInfo);
@@ -377,7 +377,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 OF_EVENT_LOG.debug("Reconciliation framework failure for device {} with error {}", deviceInfo,
                         throwable.getMessage());
                 LOG.warn("Reconciliation framework failure.");
@@ -386,7 +386,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         };
     }
 
-    private String getDpnIdFromNodeName(String nodeName) {
+    private String getDpnIdFromNodeName(final String nodeName) {
         return nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
     }
 }

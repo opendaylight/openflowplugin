@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,6 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by mirehak on 7/23/15.
@@ -71,7 +72,7 @@ public abstract class AbstractStatsServiceTest {
     public static final NodeId NODE_ID = new NodeId("unit-test-node:123");
 
     protected final Answer<Void> answerVoidToCallback = invocation -> {
-        final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) (invocation.getArguments()[2]);
+        final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
         callback.onSuccess(null);
         return null;
     };
@@ -87,12 +88,12 @@ public abstract class AbstractStatsServiceTest {
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.lenient().when(deviceInfo.getNodeId()).thenReturn(NODE_ID);
         Mockito.lenient().when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.lenient().when(deviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        Mockito.lenient().when(deviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
         Mockito.lenient().when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.lenient().when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        Mockito.lenient().when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        Mockito.lenient().when(getFeaturesOutput.getDatapathId()).thenReturn(BigInteger.valueOf(123L));
-        Mockito.lenient().when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(features.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        Mockito.lenient().when(getFeaturesOutput.getDatapathId()).thenReturn(Uint64.valueOf(123L));
+        Mockito.lenient().when(getFeaturesOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
 
         setUp();
     }
@@ -101,7 +102,7 @@ public abstract class AbstractStatsServiceTest {
         //NOOP
     }
 
-    protected static NodeRef createNodeRef(String nodeIdValue) {
+    protected static NodeRef createNodeRef(final String nodeIdValue) {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
         return new NodeRef(nodePath);

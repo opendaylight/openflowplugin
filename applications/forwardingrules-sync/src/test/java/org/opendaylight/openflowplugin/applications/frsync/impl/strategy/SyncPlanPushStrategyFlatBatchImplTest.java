@@ -61,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link SyncPlanPushStrategyFlatBatchImpl}.
@@ -289,14 +290,14 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
                 new BatchBuilder().setBatchOrder(9).build(),
                 new BatchBuilder().setBatchOrder(15).build()
         );
-        final Map<Range<Integer>, Batch> rangeBatchMap =
+        final Map<Range<Uint16>, Batch> rangeBatchMap =
                 SyncPlanPushStrategyFlatBatchImpl.mapBatchesToRanges(inputBatchBag, 42);
 
         Assert.assertEquals(4, rangeBatchMap.size());
         int idx = 0;
         final int[] lower = new int[]{0, 5, 9, 15};
         final int[] upper = new int[]{4, 8, 14, 41};
-        for (Map.Entry<Range<Integer>, Batch> rangeBatchEntry : rangeBatchMap.entrySet()) {
+        for (Map.Entry<Range<Uint16>, Batch> rangeBatchEntry : rangeBatchMap.entrySet()) {
             Assert.assertEquals(lower[idx], rangeBatchEntry.getKey().lowerEndpoint().intValue());
             Assert.assertEquals(upper[idx], rangeBatchEntry.getKey().upperEndpoint().intValue());
             Assert.assertSame(inputBatchBag.get(idx), rangeBatchEntry.getValue());

@@ -15,6 +15,7 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
 
     @Override
     public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<Table>> modifications) {
-        Short requiredTableId = 0;
+        Uint8 requiredTableId = Uint8.ZERO;
         // TODO add flow
 
         for (DataTreeModification<Table> modification : modifications) {
