@@ -126,7 +126,7 @@ final class StackedSegment {
 
     OutboundQueueEntry pairRequest(final OfHeader response) {
         // Explicitly 'long' to force unboxing before performing operations
-        final long xid = response.getXid();
+        final long xid = response.getXid().toJava();
         if (!xidInRange(xid)) {
             LOG.debug("Queue {} {}/{} ignoring XID {}", this, baseXid, entries.length, xid);
             return null;

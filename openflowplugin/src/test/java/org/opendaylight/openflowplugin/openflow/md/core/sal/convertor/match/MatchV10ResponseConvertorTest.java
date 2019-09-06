@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for v1.0 match conversion.
@@ -370,7 +371,7 @@ public class MatchV10ResponseConvertorTest {
 
         // Specify ICMPv4 code only.
         Short icmpCode = 33;
-        match = builder.setTpSrc(null).setTpDst(icmpCode.intValue()).build();
+        match = builder.setTpSrc((Uint16) null).setTpDst(icmpCode.intValue()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -566,7 +567,7 @@ public class MatchV10ResponseConvertorTest {
 
         // Specify TCP destination port only.
         Integer dstPort = 6653;
-        match = builder.setTpSrc(null).setTpDst(dstPort).build();
+        match = builder.setTpSrc((Uint16) null).setTpDst(dstPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -764,7 +765,7 @@ public class MatchV10ResponseConvertorTest {
 
         // Specify UDP destination port only.
         Integer dstPort = 6653;
-        match = builder.setTpSrc(null).setTpDst(dstPort).build();
+        match = builder.setTpSrc((Uint16) null).setTpDst(dstPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -820,7 +821,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
     }
 
-    private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
+    private MatchBuilder convert(final MatchV10 match, final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());

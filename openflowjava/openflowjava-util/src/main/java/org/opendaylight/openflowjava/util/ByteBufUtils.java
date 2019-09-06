@@ -131,7 +131,7 @@ public abstract class ByteBufUtils {
      */
     public static <E extends OfHeader> void writeOFHeader(final byte msgType, final E message, final ByteBuf out,
             final int length) {
-        out.writeByte(message.getVersion());
+        out.writeByte(message.getVersion().toJava());
         out.writeByte(msgType);
         out.writeShort(length);
         out.writeInt(message.getXid().intValue());

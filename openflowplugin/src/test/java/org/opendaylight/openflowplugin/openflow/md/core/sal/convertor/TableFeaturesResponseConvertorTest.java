@@ -105,6 +105,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for table features response conversions.
@@ -566,7 +567,7 @@ public class TableFeaturesResponseConvertorTest {
             + "rev131026.table.feature.prop.type.table.feature.prop.type.NextTable",
                 property.getTableFeaturePropType().implementedInterface().getName());
         NextTable propType = (NextTable) property.getTableFeaturePropType();
-        List<Short> ids = propType.getTables().getTableIds();
+        List<Uint8> ids = propType.getTables().getTableIds();
         Assert.assertEquals("Wrong next table-id size", 2, ids.size());
         Assert.assertEquals("Wrong next-registry-id", 1, ids.get(0).intValue());
         Assert.assertEquals("Wrong next-registry-id", 2, ids.get(1).intValue());
@@ -854,7 +855,7 @@ public class TableFeaturesResponseConvertorTest {
     }
 
 
-    private List<TableFeatures> convert(MultipartReplyTableFeatures features) {
+    private List<TableFeatures> convert(final MultipartReplyTableFeatures features) {
         Optional<List<TableFeatures>> listOptional =
                 convertorManager.convert(features, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         return listOptional.orElse(Collections.emptyList());

@@ -13,6 +13,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.util.Arrays;
 import javax.annotation.Nullable;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public final class ByteUtil {
     private ByteUtil() {
@@ -128,6 +130,26 @@ public final class ByteUtil {
      * @return bytes an array of 4 unsigned bytes
      */
     public static byte[] unsignedIntToBytes(final Long unsignedInt) {
+        return unsignedIntToBytes(unsignedInt.longValue());
+    }
+
+    /**
+     * Converts unsigned integer to a 4 byte array of unsigned bytes.
+     *
+     * @param unsignedInt representing the unsigned integer
+     * @return bytes an array of 4 unsigned bytes
+     */
+    public static byte[] unsignedIntToBytes(final Uint32 unsignedInt) {
+        return unsignedIntToBytes(unsignedInt.toJava());
+    }
+
+    /**
+     * Converts unsigned integer to a 4 byte array of unsigned bytes.
+     *
+     * @param unsignedInt representing the unsigned integer
+     * @return bytes an array of 4 unsigned bytes
+     */
+    private static byte[] unsignedIntToBytes(final long unsignedInt) {
         byte[] bytes = new byte[4];
         bytes[3] = (byte) (unsignedInt & 0xFF);
         bytes[2] = (byte) (unsignedInt >> 8 & 0xFF);
@@ -143,6 +165,26 @@ public final class ByteUtil {
      * @return bytes an array of 3 unsigned bytes
      */
     public static byte[] unsignedMediumToBytes(final Long unsignedInt) {
+        return unsignedMediumToBytes(unsignedInt.longValue());
+    }
+
+    /**
+     * Converts unsigned integer to a 3 byte array of unsigned bytes.
+     *
+     * @param unsignedInt representing the unsigned integer
+     * @return bytes an array of 3 unsigned bytes
+     */
+    public static byte[] unsignedMediumToBytes(final Uint32 unsignedInt) {
+        return unsignedMediumToBytes(unsignedInt.toJava());
+    }
+
+    /**
+     * Converts unsigned integer to a 3 byte array of unsigned bytes.
+     *
+     * @param unsignedInt representing the unsigned integer
+     * @return bytes an array of 3 unsigned bytes
+     */
+    private static byte[] unsignedMediumToBytes(final long unsignedInt) {
         byte[] bytes = new byte[3];
         bytes[2] = (byte) (unsignedInt & 0xFF);
         bytes[1] = (byte) (unsignedInt >> 8 & 0xFF);
@@ -157,6 +199,26 @@ public final class ByteUtil {
      * @return bytes an array of 2 unsigned bytes
      */
     public static byte[] unsignedShortToBytes(final Integer unsignedShort) {
+        return unsignedShortToBytes(unsignedShort.intValue());
+    }
+
+    /**
+     * Converts unsigned short to a 2 byte array of unsigned bytes.
+     *
+     * @param unsignedShort representing the unsigned short
+     * @return bytes an array of 2 unsigned bytes
+     */
+    public static byte[] unsignedShortToBytes(final Uint16 unsignedShort) {
+        return unsignedShortToBytes(unsignedShort.toJava());
+    }
+
+    /**
+     * Converts unsigned short to a 2 byte array of unsigned bytes.
+     *
+     * @param unsignedShort representing the unsigned short
+     * @return bytes an array of 2 unsigned bytes
+     */
+    private static byte[] unsignedShortToBytes(final int unsignedShort) {
         byte[] bytes = new byte[2];
         bytes[1] = (byte) (unsignedShort & 0xFF);
         bytes[0] = (byte) (unsignedShort >> 8 & 0xFF);

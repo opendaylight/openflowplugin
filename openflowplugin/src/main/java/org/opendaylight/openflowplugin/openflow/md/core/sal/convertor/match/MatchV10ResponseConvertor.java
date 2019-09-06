@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Converts Openflow 1.0 specific flow match to MD-SAL format flow match.
@@ -60,7 +62,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
     }
 
     @Override
-    public MatchBuilder convert(MatchV10 source, VersionDatapathIdConvertorData datapathIdConvertorData) {
+    public MatchBuilder convert(final MatchV10 source, final VersionDatapathIdConvertorData datapathIdConvertorData) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
@@ -71,7 +73,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
 
         if (!source.getWildcards().isINPORT() && source.getInPort() != null) {
             matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
-                    (long) source.getInPort(), ofVersion));
+                    (long) source.getInPort().toJava(), ofVersion));
         }
 
         if (!source.getWildcards().isDLSRC() && source.getDlSrc() != null) {
@@ -89,13 +91,13 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         if (!source.getWildcards().isDLTYPE() && source.getDlType() != null) {
             EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
             ethTypeBuilder.setType(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType(
-                    (long) source.getDlType()));
+                    Uint32.valueOf(source.getDlType())));
             ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
         if (!source.getWildcards().isDLVLAN() && source.getDlVlan() != null) {
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            int vlanId = source.getDlVlan() == 0xffff ? 0 : source.getDlVlan();
+            int vlanId = source.getDlVlan().toJava() == 0xffff ? 0 : source.getDlVlan().toJava();
             vlanIdBuilder.setVlanId(
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
             vlanIdBuilder.setVlanIdPresent(vlanId != 0);
@@ -110,7 +112,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         if (!source.getWildcards().isDLTYPE() && source.getNwSrc() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwSrcMask() != null) {
-                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwSrc(), source.getNwSrcMask());
+                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwSrc(), source.getNwSrcMask().toJava());
             } else {
                 //Openflow Spec : 1.3.2
                 //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
@@ -126,7 +128,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         if (!source.getWildcards().isDLTYPE() && source.getNwDst() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwDstMask() != null) {
-                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwDst(), source.getNwDstMask());
+                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwDst(), source.getNwDstMask().toJava());
             } else {
                 //Openflow Spec : 1.3.2
                 //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
@@ -140,7 +142,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             }
         }
         if (!source.getWildcards().isNWPROTO() && source.getNwProto() != null) {
-            Short nwProto = source.getNwProto();
+            Uint8 nwProto = source.getNwProto();
             ipMatchBuilder.setIpProtocol(nwProto);
             matchBuilder.setIpMatch(ipMatchBuilder.build());
 
@@ -203,8 +205,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             }
         }
         if (!source.getWildcards().isNWTOS() && source.getNwTos() != null) {
-            Short dscp = ActionUtil.tosToDscp(source.getNwTos());
-            ipMatchBuilder.setIpDscp(new Dscp(dscp));
+            ipMatchBuilder.setIpDscp(new Dscp(ActionUtil.tosToDscp(source.getNwTos())));
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }
 

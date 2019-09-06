@@ -150,10 +150,10 @@ public class GroupConvertorTest {
         assertEquals(GroupModCommand.OFPGCADD, outAddGroupInput.getCommand());
         assertEquals(GroupType.OFPGTALL, outAddGroupInput.getType());
 
-        assertEquals(10L, (long) outAddGroupInput.getGroupId().getValue());
-        assertEquals(10, (int) outAddGroupInput.getBucketsList().get(0).getWeight());
-        assertEquals(20L, (long) outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue());
-        assertEquals((Long) 22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup());
+        assertEquals(10L, outAddGroupInput.getGroupId().getValue().toJava());
+        assertEquals(10, outAddGroupInput.getBucketsList().get(0).getWeight().toJava());
+        assertEquals(20L, outAddGroupInput.getBucketsList().get(0).getWatchPort().getValue().toJava());
+        assertEquals(22L, outAddGroupInput.getBucketsList().get(0).getWatchGroup().toJava());
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
@@ -166,9 +166,9 @@ public class GroupConvertorTest {
                             .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build())
                     .build()), outActionList);
 
-        assertEquals((Integer) 50, outAddGroupInput.getBucketsList().get(1).getWeight());
-        assertEquals((long) 60, (long) outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue());
-        assertEquals((Long) 70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
+        assertEquals(50, outAddGroupInput.getBucketsList().get(1).getWeight());
+        assertEquals(60, outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue().toJava());
+        assertEquals(70L, outAddGroupInput.getBucketsList().get(1).getWatchGroup());
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action

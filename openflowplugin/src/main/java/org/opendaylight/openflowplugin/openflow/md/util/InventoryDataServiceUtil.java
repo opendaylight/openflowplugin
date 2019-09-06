@@ -29,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,12 +81,21 @@ public abstract class InventoryDataServiceUtil {
         return NODES_IDENTIFIER.child(Node.class, nodeKey);
     }
 
+    // TODO: deprecated and migrate
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final BigInteger datapathid, final Long portNo,
                                                                     final OpenflowVersion ofVersion) {
         String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
         return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null
                 ? portNo : logicalName));
     }
+
+    public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final Uint64 datapathid, final Uint32 portNo,
+                                                                    final OpenflowVersion ofVersion) {
+        String logicalName = OpenflowPortsUtil.getPortLogicalName(ofVersion, portNo);
+        return new NodeConnectorId(OFConstants.OF_URI_PREFIX + datapathid + ":" + (logicalName == null
+                ? portNo : logicalName));
+    }
+
 
     @Nullable
     public static Long portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final NodeConnectorId ncId) {

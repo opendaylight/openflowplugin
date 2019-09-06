@@ -32,9 +32,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * The type Match converter v 10.
@@ -65,7 +68,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
      * The value 0xffff (OFP_VLAN_NONE) is used to indicate
      * that no VLAN ID is set for OF Flow.
      */
-    private static final Integer OFP_VLAN_NONE = 0xffff;
+    private static final Uint16 OFP_VLAN_NONE = Uint16.MAX_VALUE;
 
     private static boolean convertL4UdpDstMatch(final MatchV10Builder matchBuilder,
                                                 final UdpMatch udpMatch) {
@@ -106,7 +109,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     private static boolean convertNwTos(final MatchV10Builder matchBuilder,
                                         final IpMatch ipMatch) {
         if (ipMatch.getIpDscp() != null) {
-            matchBuilder.setNwTos(ActionUtil.dscpToTos(ipMatch.getIpDscp().getValue()));
+            matchBuilder.setNwTos(ActionUtil.dscpToTos(ipMatch.getIpDscp().getValue().toJava()));
             return false;
         }
         return true;
@@ -177,9 +180,10 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     }
 
     private static boolean convertDlVlan(final MatchV10Builder matchBuilder, final VlanMatch vlanMatch) {
-        if (vlanMatch.getVlanId() != null) {
-            int vlanId = vlanMatch.getVlanId().getVlanId().getValue();
-            matchBuilder.setDlVlan(vlanId == 0 ? OFP_VLAN_NONE : vlanId);
+        final VlanId id = vlanMatch.getVlanId();
+        if (id != null) {
+            final Uint16 vlanId = id.getVlanId().getValue();
+            matchBuilder.setDlVlan(vlanId.toJava() == 0 ? OFP_VLAN_NONE : vlanId);
             return false;
         }
         return true;
@@ -236,7 +240,22 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
 
     @Override
     public MatchV10 convert(final Match source, final VersionConvertorData data) {
-        MatchV10Builder matchBuilder = new MatchV10Builder();
+        MatchV10Builder matchBuilder = new MatchV10Builder()
+                .setInPort(Uint16.ZERO)
+                .setDlDst(ZERO_MAC)
+                .setDlSrc(ZERO_MAC)
+                .setDlType(Uint16.ZERO)
+                .setDlVlan(OFP_VLAN_NONE)
+                .setDlVlanPcp(Uint8.ZERO)
+                .setNwDst(ZERO_IPV4)
+                .setNwDstMask(Uint8.ZERO)
+                .setNwSrc(ZERO_IPV4)
+                .setNwSrcMask(Uint8.ZERO)
+                .setNwProto(Uint8.ZERO)
+                .setNwTos(Uint8.ZERO)
+                .setTpSrc(Uint16.ZERO)
+                .setTpDst(Uint16.ZERO);
+
         boolean dlDst = true;
         boolean dlSsc = true;
         boolean dlType = true;
@@ -247,21 +266,6 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
         boolean nwTos = true;
         boolean tpDst = true;
         boolean tpSrc = true;
-
-        matchBuilder.setInPort(0);
-        matchBuilder.setDlDst(ZERO_MAC);
-        matchBuilder.setDlSrc(ZERO_MAC);
-        matchBuilder.setDlType(0);
-        matchBuilder.setDlVlan(OFP_VLAN_NONE);
-        matchBuilder.setDlVlanPcp((short) 0);
-        matchBuilder.setNwDst(ZERO_IPV4);
-        matchBuilder.setNwDstMask((short) 0);
-        matchBuilder.setNwSrc(ZERO_IPV4);
-        matchBuilder.setNwSrcMask((short) 0);
-        matchBuilder.setNwProto((short) 0);
-        matchBuilder.setNwTos((short) 0);
-        matchBuilder.setTpSrc(0);
-        matchBuilder.setTpDst(0);
 
         if (source != null) {
             EthernetMatch ethernetMatch = source.getEthernetMatch();
@@ -306,14 +310,14 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
             } else {
                 Icmpv4Match icmpv4Match = source.getIcmpv4Match();
                 if (icmpv4Match != null) {
-                    Short type = icmpv4Match.getIcmpv4Type();
+                    Uint8 type = icmpv4Match.getIcmpv4Type();
                     if (type != null) {
-                        matchBuilder.setTpSrc(type.intValue());
+                        matchBuilder.setTpSrc(Uint16.valueOf(type));
                         tpSrc = false;
                     }
-                    Short code = icmpv4Match.getIcmpv4Code();
+                    Uint8 code = icmpv4Match.getIcmpv4Code();
                     if (code != null) {
-                        matchBuilder.setTpDst(code.intValue());
+                        matchBuilder.setTpDst(Uint16.valueOf(code));
                         tpDst = false;
                     }
                 }
