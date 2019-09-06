@@ -40,17 +40,6 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
                 openflowPluginDiagStatusProvider);
     }
 
-    private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
-        if (address != null) {
-            if (address.getIpv4Address() != null) {
-                return InetAddress.getByName(address.getIpv4Address().getValue());
-            } else if (address.getIpv6Address() != null) {
-                return InetAddress.getByName(address.getIpv6Address().getValue());
-            }
-        }
-        return null;
-    }
-
     private static class ConnectionConfigurationImpl implements ConnectionConfiguration {
         private final SwitchConnectionConfig config;
         private InetAddress address;
@@ -185,6 +174,17 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         @Override
         public boolean isGroupAddModEnabled() {
             return config.isGroupAddModEnabled();
+        }
+
+        private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {
+            if (address != null) {
+                if (address.getIpv4Address() != null) {
+                    return InetAddress.getByName(address.getIpv4Address().getValue());
+                } else if (address.getIpv6Address() != null) {
+                    return InetAddress.getByName(address.getIpv6Address().getValue());
+                }
+            }
+            return null;
         }
     }
 }
