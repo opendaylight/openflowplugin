@@ -8,11 +8,13 @@
 
 package org.opendaylight.openflowplugin.openflow.md.util;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import org.junit.Test;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 6/30/14.
@@ -62,6 +64,12 @@ public class ByteUtilTest {
 
         bigIntAsBytes = ByteUtil.convertBigIntegerToNBytes(BIG_INTEGER, 8);
         assertEquals(8, bigIntAsBytes.length);
+    }
+
+    @Test
+    public void testUint64toBytes() {
+        final Uint64 value = Uint64.valueOf("0102030405060708", 16);
+        assertArrayEquals(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8}, ByteUtil.uint64toBytes(value));
     }
 
     @Test

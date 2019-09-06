@@ -74,7 +74,7 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
     }
 
     private void serializeRateBody(RateQueueProperty body, ByteBuf outBuffer) {
-        outBuffer.writeShort(body.getRate());
+        outBuffer.writeShort(body.getRate().toJava());
         outBuffer.writeZero(PROPERTY_RATE_PADDING);
     }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import java.util.concurrent.Future;
@@ -23,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods (failing).
@@ -34,12 +34,13 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
 
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService =
                 OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
 
-        AbstractRequestContext<Object> rqContext = new AbstractRequestContext<Object>(42L) {
+        AbstractRequestContext<Object> rqContext = new AbstractRequestContext<>(Uint32.valueOf(42)) {
             @Override
             public void close() {
                 //NOOP

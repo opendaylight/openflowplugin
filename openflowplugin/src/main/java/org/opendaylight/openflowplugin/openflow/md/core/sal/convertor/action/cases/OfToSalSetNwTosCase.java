@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
@@ -26,10 +25,10 @@ public class OfToSalSetNwTosCase extends ConvertorCase<SetNwTosCase, Action, Act
 
     @Override
     public Optional<Action> process(@Nonnull final SetNwTosCase source, final ActionResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         return Optional.of(new SetNwTosActionCaseBuilder()
                 .setSetNwTosAction(new SetNwTosActionBuilder()
-                        .setTos((int) source.getSetNwTosAction().getNwTos())
+                        .setTos((int) source.getSetNwTosAction().getNwTos().toJava())
                         .build())
                 .build());
     }

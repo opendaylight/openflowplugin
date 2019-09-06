@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -33,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multi
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +40,9 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleLayerTableMultipartService.class);
 
-    public SingleLayerTableMultipartService(RequestContextStack requestContextStack,
-                                            DeviceContext deviceContext,
-                                            MultipartWriterProvider multipartWriterProvider) {
+    public SingleLayerTableMultipartService(final RequestContextStack requestContextStack,
+                                            final DeviceContext deviceContext,
+                                            final MultipartWriterProvider multipartWriterProvider) {
         super(requestContextStack, deviceContext, multipartWriterProvider);
     }
 
@@ -59,7 +59,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
     }
 
     @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(final UpdateTableInput input) {
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
         Futures.addCallback(handleServiceCall(input), new FutureCallback<RpcResult<List<MultipartReply>>>() {
@@ -76,7 +76,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
                         finalFuture.set(RpcResultBuilder
                             .success(new UpdateTableOutputBuilder()
                                 .setTransactionId(
-                                        new TransactionId(BigInteger.valueOf(multipartReplies.get(0).getXid())))
+                                        new TransactionId(Uint64.valueOf(multipartReplies.get(0).getXid())))
                                 .build())
                             .build());
 
@@ -102,7 +102,7 @@ public class SingleLayerTableMultipartService extends AbstractTableMultipartServ
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("Failure multipart response for table features request", throwable);
                 finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                     .withError(ErrorType.RPC, "Future error", throwable).build());

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import static org.junit.Assert.assertEquals;
@@ -18,15 +17,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.p
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SingleLayerPortServiceTest extends ServiceMocking {
-    private static final long PORT_ID = 42;
+    private static final Uint32 PORT_ID = Uint32.valueOf(42);
     private SingleLayerPortService<UpdatePortOutput> service;
 
     @Override
     protected void setup() {
-        service = new SingleLayerPortService<>(mockedRequestContextStack,
-                mockedDeviceContext, UpdatePortOutput.class);
+        service = new SingleLayerPortService<>(mockedRequestContextStack, mockedDeviceContext, UpdatePortOutput.class);
     }
 
     @Test
@@ -40,6 +39,6 @@ public class SingleLayerPortServiceTest extends ServiceMocking {
 
         final PortMessage result = (PortMessage) ofHeader;
 
-        assertEquals(PORT_ID, result.getPortNumber().getUint32().longValue());
+        assertEquals(PORT_ID, result.getPortNumber().getUint32());
     }
 }

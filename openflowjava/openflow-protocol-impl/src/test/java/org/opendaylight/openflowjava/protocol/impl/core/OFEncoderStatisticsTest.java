@@ -30,6 +30,7 @@ import org.opendaylight.openflowjava.statistics.StatisticsCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test counters for encoding (at least DS_ENCODE_SUCCESS, DS_ENCODE_FAIL and DS_FLOW_MODS_SENT counters have to
@@ -83,7 +84,7 @@ public class OFEncoderStatisticsTest {
 
         when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockMsg);
-        when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
+        when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 
         int count = 4;
         for (int i = 0; i < count; i++) {
@@ -105,7 +106,7 @@ public class OFEncoderStatisticsTest {
         }
         when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockFlowModInput);
-        when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
+        when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 
         int count = 4;
         for (int i = 0; i < count; i++) {
@@ -128,7 +129,7 @@ public class OFEncoderStatisticsTest {
 
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getListener()).thenReturn(listener);
-        when(wrapper.getMsg().getVersion()).thenReturn((short) EncodeConstants.OF13_VERSION_ID);
+        when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
         doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),
                 any(ByteBuf.class), any(DataObject.class));
 

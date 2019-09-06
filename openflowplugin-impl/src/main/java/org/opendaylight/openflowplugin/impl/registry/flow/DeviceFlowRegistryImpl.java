@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +113,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
         future.addCallback(new FutureCallback<Optional<FlowCapableNode>>() {
             @Override
-            public void onSuccess(Optional<FlowCapableNode> result) {
+            public void onSuccess(final Optional<FlowCapableNode> result) {
                 result.ifPresent(flowCapableNode -> {
                     flowCapableNode.nonnullTable().stream()
                     .filter(Objects::nonNull)
@@ -124,7 +125,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.debug("Failed to read {} path {}", logicalDatastoreType, path, throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -181,11 +182,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
 
             // We do not found flow in flow registry, that means it do not have any ID already assigned, so we need
             // to generate new alien flow ID here.
-            storeDescriptor(
-                    flowRegistryKey,
-                    FlowDescriptorFactory.create(
-                            flowRegistryKey.getTableId(),
-                            createAlienFlowId(flowRegistryKey.getTableId())));
+            final Uint8 tableId = Uint8.valueOf(flowRegistryKey.getTableId());
+            storeDescriptor(flowRegistryKey, FlowDescriptorFactory.create(tableId, createAlienFlowId(tableId)));
         }
     }
 
@@ -231,7 +229,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @VisibleForTesting
-    static FlowId createAlienFlowId(final short tableId) {
+    static FlowId createAlienFlowId(final Uint8 tableId) {
         final String alienId = ALIEN_SYSTEM_FLOW_ID + tableId + '-' + UNACCOUNTED_FLOWS_COUNTER.incrementAndGet();
         LOG.debug("Created alien flow id {} for table id {}", alienId, tableId);
         return new FlowId(alienId);

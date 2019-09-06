@@ -59,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanV
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchKey;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class TableFeaturesMatchFieldDeserializer {
 
@@ -235,7 +236,7 @@ public class TableFeaturesMatchFieldDeserializer {
      * @param in input buffer
      * @return SetFieldMatchBuilder with hasMask properly set
      */
-    protected static SetFieldMatchBuilder processHeader(ByteBuf in) {
+    protected static SetFieldMatchBuilder processHeader(final ByteBuf in) {
         in.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // skip oxm_class
         boolean hasMask = (in.readUnsignedByte() & 1) != 0;
         in.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // skip match entry length
@@ -250,15 +251,14 @@ public class TableFeaturesMatchFieldDeserializer {
      * @param message input buffer
      * @return set field match
      */
-    public Optional<SetFieldMatch> deserialize(ByteBuf message) {
+    public Optional<SetFieldMatch> deserialize(final ByteBuf message) {
         int oxmClass = message.getUnsignedShort(message.readerIndex());
-        int oxmField = message.getUnsignedByte(message.readerIndex()
-                + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
-        Long expId = null;
+        int oxmField = message.getUnsignedByte(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        Uint32 expId = null;
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = message.getUnsignedInt(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                    + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            expId = Uint32.valueOf(message.getUnsignedInt(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
+                    + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES));
         }
 
         final MatchEntryDeserializerKey key =

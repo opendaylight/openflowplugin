@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartRequestTableFeaturesSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY = 5;
@@ -40,7 +41,7 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
     private static final BigInteger METADATA_WRITE = BigInteger.TEN;
     private static final long MAX_ENTRIES = 12;
     private static final boolean IS_DEPRECATED_MASK = true;
-    private static final short NEXT_TABLE_ID = 43;
+    private static final Uint8 NEXT_TABLE_ID = Uint8.valueOf(43);
 
     private static final TableFeaturesPropType NEXT_TABLE_TYPE = TableFeaturesPropType.OFPTFPTNEXTTABLES;
     private static final NextTable NEXT_TABLE = new NextTableBuilder()

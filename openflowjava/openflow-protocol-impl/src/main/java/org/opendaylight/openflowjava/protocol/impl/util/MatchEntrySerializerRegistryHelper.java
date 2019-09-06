@@ -13,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Helper class for registering match entry serializers.
@@ -33,8 +34,8 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param generalClass class that will be used for match entry serializer registration
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public MatchEntrySerializerRegistryHelper(short version, Class<C> generalClass,
-            SerializerRegistry serializerRegistry) {
+    public MatchEntrySerializerRegistryHelper(final short version, final Class<C> generalClass,
+            final SerializerRegistry serializerRegistry) {
         this.version = version;
         this.generalClass = generalClass;
         this.serializerRegistry = serializerRegistry;
@@ -47,7 +48,7 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param serializer the serializer instance
      */
     public <F extends MatchField> void registerSerializer(
-            Class<F> specificClass, OFGeneralSerializer serializer) {
+            final Class<F> specificClass, final OFGeneralSerializer serializer) {
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(version, generalClass, specificClass);
         key.setExperimenterId(null);
         serializerRegistry.registerSerializer(key, serializer);
@@ -60,7 +61,7 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param serializer the serializer instance
      */
     public <F extends MatchField> void registerExperimenterSerializer(
-            Class<F> specificClass, long expId, OFGeneralSerializer serializer) {
+            final Class<F> specificClass, final Uint32 expId, final OFGeneralSerializer serializer) {
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
                 version, ExperimenterClass.class, specificClass);
         key.setExperimenterId(expId);

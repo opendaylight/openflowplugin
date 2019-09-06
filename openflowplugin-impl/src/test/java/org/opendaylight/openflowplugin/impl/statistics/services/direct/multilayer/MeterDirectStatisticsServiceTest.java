@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeter;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Long METER_NO = 1L;
@@ -51,7 +52,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(input.getMeterId()).thenReturn(new MeterId(METER_NO));
 
         final MultipartRequestMeterCase body = (MultipartRequestMeterCase) ((MultipartRequestInput) service
-                .buildRequest(new Xid(42L), input)).getMultipartRequestBody();
+                .buildRequest(new Xid(Uint32.valueOf(42L)), input)).getMultipartRequestBody();
 
         final MultipartRequestMeter meter = body.getMultipartRequestMeter();
 

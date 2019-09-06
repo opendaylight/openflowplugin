@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKe
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for CodeKeyMakerFactory.
@@ -57,7 +58,7 @@ public class CodeKeyMakerFactoryTest {
         Assert.assertNotNull("Null key", codeKey);
         MatchEntryDeserializerKey comparationKey =
                 new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 65535, 0);
-        comparationKey.setExperimenterId(1L);
+        comparationKey.setExperimenterId(Uint32.ONE);
         Assert.assertEquals("Wrong key", comparationKey, codeKey);
         Assert.assertEquals("Buffer index modified", 8, buffer.readableBytes());
     }

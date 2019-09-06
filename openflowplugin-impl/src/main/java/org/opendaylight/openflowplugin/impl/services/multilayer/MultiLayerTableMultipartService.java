@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +52,10 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
     private final VersionConvertorData data;
     private final ConvertorExecutor convertorExecutor;
 
-    public MultiLayerTableMultipartService(RequestContextStack requestContextStack,
-                                           DeviceContext deviceContext,
-                                           ConvertorExecutor convertorExecutor,
-                                           MultipartWriterProvider multipartWriterProvider) {
+    public MultiLayerTableMultipartService(final RequestContextStack requestContextStack,
+                                           final DeviceContext deviceContext,
+                                           final ConvertorExecutor convertorExecutor,
+                                           final MultipartWriterProvider multipartWriterProvider) {
         super(requestContextStack, deviceContext, multipartWriterProvider);
         this.convertorExecutor = convertorExecutor;
         data = new VersionConvertorData(getVersion());
@@ -78,7 +79,7 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
     }
 
     @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> handleAndReply(final UpdateTableInput input) {
         final ListenableFuture<RpcResult<List<MultipartReply>>> multipartFuture = handleServiceCall(input);
         final SettableFuture<RpcResult<UpdateTableOutput>> finalFuture = SettableFuture.create();
 
@@ -94,13 +95,13 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
                         finalFuture.set(RpcResultBuilder.<UpdateTableOutput>failed()
                             .withError(ErrorType.RPC, "Multipart reply list is empty.").build());
                     } else {
-                        final Long xid = multipartReplies.get(0).getXid();
+                        final Uint32 xid = multipartReplies.get(0).getXid();
                         LOG.debug(
                             "OnSuccess, rpc result successful,"
                                     + " multipart response for rpc update-table with xid {} obtained.",
                             xid);
                         final UpdateTableOutputBuilder updateTableOutputBuilder = new UpdateTableOutputBuilder();
-                        updateTableOutputBuilder.setTransactionId(new TransactionId(BigInteger.valueOf(xid)));
+                        updateTableOutputBuilder.setTransactionId(new TransactionId(Uint64.valueOf(xid)));
                         finalFuture.set(RpcResultBuilder.success(updateTableOutputBuilder.build()).build());
                         try {
                             storeStatistics(convertToSalTableFeatures(multipartReplies));

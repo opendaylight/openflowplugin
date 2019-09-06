@@ -14,6 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Flow related utils.
@@ -31,7 +34,7 @@ public final class FlowConvertorUtil {
      * @param actionList the action list
      * @return the list
      */
-    public static List<Action> wrapActionList(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types
+    public static List<Action> wrapActionList(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types
             .rev131112.action.Action> actionList) {
         List<Action> actions = new ArrayList<>();
 
@@ -54,13 +57,14 @@ public final class FlowConvertorUtil {
      * @param flow the flow
      * @return the ip protocol from flow
      */
-    public static Short getIpProtocolFromFlow(Flow flow) {
-        Short ipProtocol = null;
-
-        if (flow.getMatch() != null && flow.getMatch().getIpMatch() != null) {
-            ipProtocol = flow.getMatch().getIpMatch().getIpProtocol();
+    public static Uint8 getIpProtocolFromFlow(final Flow flow) {
+        final Match match = flow.getMatch();
+        if (match != null) {
+            final IpMatch ipMatch = match.getIpMatch();
+            if (ipMatch != null) {
+                return ipMatch.getIpProtocol();
+            }
         }
-
-        return ipProtocol;
+        return null;
     }
 }

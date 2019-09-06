@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
-    private static final Xid ECHO_XID = new Xid(0L);
+    private static final Xid ECHO_XID = new Xid(Uint32.ZERO);
 
     private final ConnectionContext connectionContext;
     @VisibleForTesting
@@ -42,7 +43,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     private final ExecutorService executorService;
 
     public SystemNotificationsListenerImpl(@Nonnull final ConnectionContext connectionContext,
-                                           long echoReplyTimeout,
+                                           final long echoReplyTimeout,
                                            @Nonnull final ExecutorService executorService) {
         this.executorService = executorService;
         this.connectionContext = Preconditions.checkNotNull(connectionContext);
@@ -113,7 +114,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         }
     }
 
-    private void logErrors(InetSocketAddress remoteAddress, RpcResult<EchoOutput> echoReplyValue) {
+    private void logErrors(final InetSocketAddress remoteAddress, final RpcResult<EchoOutput> echoReplyValue) {
         for (RpcError replyError : echoReplyValue.getErrors()) {
             Throwable cause = replyError.getCause();
             if (LOG.isWarnEnabled()) {

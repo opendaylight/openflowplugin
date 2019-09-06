@@ -110,18 +110,20 @@ import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceContextImplTest {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(DeviceContextImplTest.class);
-    private static final short DUMMY_AUXILIARY_ID = 33;
-    private static final BigInteger DUMMY_COOKIE = new BigInteger("33");
-    private static final Long DUMMY_XID = 544L;
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImplTest.class);
+    private static final Uint8 DUMMY_AUXILIARY_ID = Uint8.valueOf(33);
+    private static final Uint64 DUMMY_COOKIE = Uint64.valueOf("33");
+    private static final Uint32 DUMMY_XID = Uint32.valueOf(544L);
     private static final Long DUMMY_PORT_NUMBER = 159L;
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("55");
+    private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf("55");
     private Xid xid;
     private Xid xidMulti;
 
@@ -193,7 +195,7 @@ public class DeviceContextImplTest {
                 .thenReturn(txChainFactory);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
-        Mockito.when(deviceInfo.getDatapathId()).thenReturn(BigInteger.ONE);
+        Mockito.when(deviceInfo.getDatapathId()).thenReturn(Uint64.ONE);
         final SettableFuture<RpcResult<GetAsyncReply>> settableFuture = SettableFuture.create();
         final SettableFuture<RpcResult<MultipartReply>> settableFutureMultiReply = SettableFuture.create();
         Mockito.lenient().when(requestContext.getFuture()).thenReturn(settableFuture);
@@ -218,7 +220,7 @@ public class DeviceContextImplTest {
 
         Mockito.lenient().when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.lenient().when(featuresOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         Mockito.when(contextChainHolder.getContextChain(deviceInfo)).thenReturn(contextChain);
         Mockito.when(contextChain.isMastered(ContextChainMastershipState.CHECK, false)).thenReturn(true);
 
@@ -263,8 +265,8 @@ public class DeviceContextImplTest {
         ((DeviceContextImpl) deviceContext).lazyTransactionManagerInitialization();
         deviceContextSpy = Mockito.spy(deviceContext);
 
-        xid = new Xid(atomicLong.incrementAndGet());
-        xidMulti = new Xid(atomicLong.incrementAndGet());
+        xid = new Xid(Uint32.valueOf(atomicLong.incrementAndGet()));
+        xidMulti = new Xid(Uint32.valueOf(atomicLong.incrementAndGet()));
         lenient().doNothing().when(deviceContextSpy).writeToTransaction(any(), any(), any());
     }
 
@@ -419,9 +421,9 @@ public class DeviceContextImplTest {
         final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
         lenient().when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
-        lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         lenient().when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
-        lenient().when(mockedPortStatusMessage.getPortNo()).thenReturn(42L);
+        lenient().when(mockedPortStatusMessage.getPortNo()).thenReturn(Uint32.valueOf(42L));
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);
         verify(messageSpy).spyMessage(any(), any());
     }
@@ -443,7 +445,7 @@ public class DeviceContextImplTest {
         // insert flow+flowId into local registry
         final FlowRegistryKey flowRegKey =
                 FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
-        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create((short) 0, new FlowId("ut-ofp:f456"));
+        final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(Uint8.ZERO, new FlowId("ut-ofp:f456"));
         deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegKey, flowDescriptor);
 
         // prepare empty input message

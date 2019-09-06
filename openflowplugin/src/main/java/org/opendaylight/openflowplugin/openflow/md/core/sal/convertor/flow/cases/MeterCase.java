@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases;
 
 import java.util.Optional;
@@ -14,7 +13,6 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.meter._case.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
@@ -30,15 +28,9 @@ public class MeterCase extends ConvertorCase<org.opendaylight.yang.gen.v1.urn.op
     @Override
     public Optional<Instruction> process(final @Nonnull org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
             .rev131026.instruction.instruction.MeterCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
-        Meter meter = source.getMeter();
-        MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
-        MeterBuilder meterBuilder = new MeterBuilder();
-        Long meterId = meter.getMeterId().getValue();
-        meterBuilder.setMeterId(meterId);
-        meterCaseBuilder.setMeter(meterBuilder.build());
-        InstructionBuilder instructionBuilder = new InstructionBuilder();
-        instructionBuilder.setInstructionChoice(meterCaseBuilder.build());
-        return Optional.of(instructionBuilder.build());
+            final ConvertorExecutor convertorExecutor) {
+        return Optional.of(new InstructionBuilder().setInstructionChoice(new MeterCaseBuilder()
+            .setMeter(new MeterBuilder().setMeterId(source.getMeter().getMeterId().getValue()).build()).build())
+            .build());
     }
 }

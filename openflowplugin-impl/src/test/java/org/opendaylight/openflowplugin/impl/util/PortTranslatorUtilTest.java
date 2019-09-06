@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 7/29/14.
@@ -39,8 +40,8 @@ public class PortTranslatorUtilTest {
     private final boolean[] portCfgBools = {false, false, false, false};
     private final boolean[] portCfgV10bools = {false, false, false, false, false, false, false};
     private final boolean[] portStateBools = {false, false, false, false};
-    private final Long currentSpeed = Long.decode("4294967295");
-    private static final Long MAX_SPEED = Long.decode("4294967295");
+    private final Uint32 currentSpeed = Uint32.valueOf(4294967295L);
+    private static final Uint32 MAX_SPEED = Uint32.valueOf(4294967295L);
 
     /**
      * Test  method for
@@ -133,7 +134,7 @@ public class PortTranslatorUtilTest {
         when(portGrouping.getMaxSpeed()).thenReturn(MAX_SPEED);
         when(portGrouping.getPeerFeatures()).thenReturn(getPortFeatures());
         when(portGrouping.getPeerFeaturesV10()).thenReturn(getPortFeaturesV10());
-        when(portGrouping.getPortNo()).thenReturn(Long.MAX_VALUE);
+        when(portGrouping.getPortNo()).thenReturn(Uint32.valueOf(Long.MAX_VALUE));
         when(portGrouping.getState()).thenReturn(getPortState());
         when(portGrouping.getSupportedFeatures()).thenReturn(getPortFeatures());
         when(portGrouping.getSupportedFeaturesV10()).thenReturn(getPortFeaturesV10());

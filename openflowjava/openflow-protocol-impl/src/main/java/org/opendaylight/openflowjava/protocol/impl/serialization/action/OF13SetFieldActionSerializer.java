@@ -36,7 +36,7 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         Objects.requireNonNull(registry);
 
         final int startIndex = outBuffer.writerIndex();
@@ -63,13 +63,13 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
     }
 
     @Override
-    public void serializeHeader(Action input, ByteBuf outBuffer) {
+    public void serializeHeader(final Action input, final ByteBuf outBuffer) {
         outBuffer.writeShort(ActionConstants.SET_FIELD_CODE);
         outBuffer.writeShort(ActionConstants.ACTION_IDS_LENGTH);
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 

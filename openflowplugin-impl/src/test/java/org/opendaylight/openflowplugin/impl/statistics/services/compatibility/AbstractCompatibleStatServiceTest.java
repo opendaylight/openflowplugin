@@ -52,6 +52,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link AbstractCompatibleStatService}.
@@ -81,7 +83,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
 
     @Override
     public void setUp() {
-        rqContext = new AbstractRequestContext<Object>(42L) {
+        rqContext = new AbstractRequestContext<>(Uint32.valueOf(42)) {
             @Override
             public void close() {
                 //NOOP
@@ -93,7 +95,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
             return null;
         };
 
-        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
+        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
         Mockito.when(rqContextStack.createRequestContext()).thenReturn(rqContext);
         Mockito.lenient().when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);

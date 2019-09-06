@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.api.util;
 
+import org.opendaylight.yangtools.yang.common.Uint32;
+
 /**
  * Stores common constants.
  *
@@ -84,7 +86,7 @@ public interface EncodeConstants {
     // ONF Approved Extensions Constants.
 
     /** Experimenter ID of ONF approved extensions. */
-    long ONF_EXPERIMENTER_ID = 0x4F4E4600;
+    Uint32 ONF_EXPERIMENTER_ID = Uint32.valueOf(0x4F4E4600).intern();
 
     /** ONFOXM_ET_TCP_FLAGS value. */
     int ONFOXM_ET_TCP_FLAGS = 42;

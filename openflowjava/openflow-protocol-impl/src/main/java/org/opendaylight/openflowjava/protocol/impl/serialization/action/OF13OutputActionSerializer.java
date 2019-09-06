@@ -25,7 +25,7 @@ public class OF13OutputActionSerializer extends AbstractActionSerializer {
         super.serialize(action, outBuffer);
         outBuffer.writeInt(((OutputActionCase) action.getActionChoice()).getOutputAction()
                 .getPort().getValue().intValue());
-        outBuffer.writeShort(((OutputActionCase) action.getActionChoice()).getOutputAction().getMaxLength());
+        outBuffer.writeShort(((OutputActionCase) action.getActionChoice()).getOutputAction().getMaxLength().toJava());
         outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
     }
 

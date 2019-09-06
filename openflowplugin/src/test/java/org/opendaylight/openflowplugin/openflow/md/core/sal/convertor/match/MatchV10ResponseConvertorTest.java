@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,6 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for v1.0 match conversion.
@@ -74,7 +77,7 @@ public class MatchV10ResponseConvertorTest {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+        datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
 
@@ -127,7 +130,7 @@ public class MatchV10ResponseConvertorTest {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+        datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
 
@@ -152,7 +155,7 @@ public class MatchV10ResponseConvertorTest {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+        datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
 
@@ -180,7 +183,7 @@ public class MatchV10ResponseConvertorTest {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+        datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
 
@@ -204,7 +207,7 @@ public class MatchV10ResponseConvertorTest {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
-        datapathIdConvertorData.setDatapathId(new BigInteger("42"));
+        datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
         final Match salMatch = convert(match, datapathIdConvertorData).build();
     }
@@ -215,13 +218,13 @@ public class MatchV10ResponseConvertorTest {
     @Test
     public void testIcmpv4Match() {
         // NW_PROTO, TP_SRC, TP_DST are wildcarded.
-        Long dlType = 0x800L;
+        Uint32 dlType = Uint32.valueOf(0x800L);
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, true, true, true, true);
         MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
         MatchV10 match = builder.build();
 
-        BigInteger dpid = BigInteger.valueOf(12345L);
+        Uint64 dpid = Uint64.valueOf(12345L);
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(dpid);
@@ -265,8 +268,8 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify ICMPv4 protocol.
-        Short ipProto = 1;
-        match = builder.setNwProto(ipProto).build();
+        Uint8 ipProto = Uint8.ONE;
+        match = builder.setNwProto(ipProto.shortValue()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         IpMatch ipMatch = salMatch.getIpMatch();
@@ -314,7 +317,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify ICMPv4 type.
-        Short icmpType = 10;
+        Uint8 icmpType = Uint8.valueOf(10);
         match = builder.setTpSrc(icmpType.intValue()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -369,8 +372,8 @@ public class MatchV10ResponseConvertorTest {
                             null, icmpv4Match.getIcmpv4Code());
 
         // Specify ICMPv4 code only.
-        Short icmpCode = 33;
-        match = builder.setTpSrc(null).setTpDst(icmpCode.intValue()).build();
+        Uint8 icmpCode = Uint8.valueOf(33);
+        match = builder.setTpSrc((Uint16) null).setTpDst(icmpCode.intValue()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -396,8 +399,8 @@ public class MatchV10ResponseConvertorTest {
                             icmpCode, icmpv4Match.getIcmpv4Code());
 
         // Specify both ICMPv4 type and code.
-        icmpType = 0;
-        icmpCode = 8;
+        icmpType = Uint8.ZERO;
+        icmpCode = Uint8.valueOf(8);
         match = builder.setTpSrc(icmpType.intValue()).setTpDst(icmpCode.intValue()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -431,13 +434,13 @@ public class MatchV10ResponseConvertorTest {
     public void testTcpMatch() {
         // TP_SRC, TP_DST are wildcarded.
         // NW_PROTO is not wildcarded but null.
-        Long dlType = 0x800L;
+        Uint32 dlType = Uint32.valueOf(0x800L);
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, false, true, true, true);
         MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
         MatchV10 match = builder.build();
 
-        BigInteger dpid = BigInteger.valueOf(12345L);
+        Uint64 dpid = Uint64.valueOf(12345L);
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(dpid);
@@ -459,7 +462,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify TCP protocol.
-        Short ipProto = 6;
+        Uint8 ipProto = Uint8.valueOf(6);
         match = builder.setNwProto(ipProto).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -508,7 +511,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify TCP source port.
-        Integer srcPort = 60000;
+        Uint16 srcPort = Uint16.valueOf(60000);
         match = builder.setTpSrc(srcPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -565,8 +568,8 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify TCP destination port only.
-        Integer dstPort = 6653;
-        match = builder.setTpSrc(null).setTpDst(dstPort).build();
+        Uint16 dstPort = Uint16.valueOf(6653);
+        match = builder.setTpSrc((Uint16) null).setTpDst(dstPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -593,8 +596,8 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify both source and destination port.
-        srcPort = 32767;
-        dstPort = 9999;
+        srcPort = Uint16.valueOf(32767);
+        dstPort = Uint16.valueOf(9999);
         match = builder.setTpSrc(srcPort).setTpDst(dstPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -629,13 +632,13 @@ public class MatchV10ResponseConvertorTest {
     public void testUdpMatch() {
         // TP_SRC, TP_DST are wildcarded.
         // NW_PROTO is not wildcarded but null.
-        Long dlType = 0x800L;
+        Uint32 dlType = Uint32.valueOf(0x800L);
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, false, true, true, true);
         MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
         MatchV10 match = builder.build();
 
-        BigInteger dpid = BigInteger.valueOf(12345L);
+        Uint64 dpid = Uint64.valueOf(12345L);
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(dpid);
@@ -657,7 +660,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify UDP protocol.
-        Short ipProto = 17;
+        Uint8 ipProto = Uint8.valueOf(17);
         match = builder.setNwProto(ipProto).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -706,7 +709,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify UDP source port.
-        Integer srcPort = 60000;
+        Uint16 srcPort = Uint16.valueOf(60000);
         match = builder.setTpSrc(srcPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -763,8 +766,8 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify UDP destination port only.
-        Integer dstPort = 6653;
-        match = builder.setTpSrc(null).setTpDst(dstPort).build();
+        Uint16 dstPort = Uint16.valueOf(6653);
+        match = builder.setTpSrc((Uint16) null).setTpDst(dstPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -791,8 +794,8 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify both source and destination port.
-        srcPort = 32767;
-        dstPort = 9999;
+        srcPort = Uint16.valueOf(32767);
+        dstPort = Uint16.valueOf(9999);
         match = builder.setTpSrc(srcPort).setTpDst(dstPort).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
@@ -820,7 +823,7 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
     }
 
-    private MatchBuilder convert(MatchV10 match, VersionDatapathIdConvertorData data) {
+    private MatchBuilder convert(final MatchV10 match, final VersionDatapathIdConvertorData data) {
         final Optional<MatchBuilder> salMatchOptional = convertorManager.convert(match, data);
 
         return salMatchOptional.orElse(new MatchBuilder());

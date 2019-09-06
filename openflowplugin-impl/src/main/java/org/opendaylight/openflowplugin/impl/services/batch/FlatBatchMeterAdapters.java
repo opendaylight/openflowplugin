@@ -125,17 +125,14 @@ public final class FlatBatchMeterAdapters {
     @VisibleForTesting
     static <T extends BatchMeterOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchMeterResult(final int stepOffset) {
-        return new Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>() {
-            @Override
-            public RpcResult<ProcessFlatBatchOutput> apply(final RpcResult<T> input) {
-                List<BatchFailure> batchFailures = wrapBatchMeterFailuresForFlat(input, stepOffset);
-                ProcessFlatBatchOutputBuilder outputBuilder =
-                        new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
-                return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
-                        .withRpcErrors(input.getErrors())
-                        .withResult(outputBuilder.build())
-                        .build();
-            }
+        return input -> {
+            List<BatchFailure> batchFailures = wrapBatchMeterFailuresForFlat(input, stepOffset);
+            ProcessFlatBatchOutputBuilder outputBuilder =
+                    new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+            return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
+                    .withRpcErrors(input.getErrors())
+                    .withResult(outputBuilder.build())
+                    .build();
         };
     }
 
@@ -145,7 +142,7 @@ public final class FlatBatchMeterAdapters {
         if (input.getResult().getBatchFailedMetersOutput() != null) {
             for (BatchFailedMetersOutput stepOutput : input.getResult().getBatchFailedMetersOutput()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
-                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder())
+                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
                         .setBatchItemIdChoice(new FlatBatchFailureMeterIdCaseBuilder()
                                 .setMeterId(stepOutput.getMeterId())
                                 .build())
