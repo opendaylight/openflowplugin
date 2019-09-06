@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
@@ -16,13 +15,14 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Super class for common stuff of deserialization factories tests.
  */
 public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
 
-    private DeserializerRegistry registry;
+    private final DeserializerRegistry registry;
     protected OFDeserializer<T> factory;
     protected MessageCodeKey messageCodeKey;
 
@@ -44,7 +44,7 @@ public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
             OFDeserializer<T> serializer = registry.getDeserializer(
                     new MessageCodeKey(version, messageCodeKey.getMsgType(), messageCodeKey.getClazz()));
             T builtByFactory = BufferHelper.deserialize(serializer, bb);
-            BufferHelper.checkHeader((OfHeader) builtByFactory, version);
+            BufferHelper.checkHeader((OfHeader) builtByFactory, Uint8.valueOf(version));
         }
     }
 }

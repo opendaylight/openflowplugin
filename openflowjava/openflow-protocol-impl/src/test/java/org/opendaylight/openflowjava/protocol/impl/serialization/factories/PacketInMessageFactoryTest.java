@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for PacketInMessageFactory.
@@ -105,7 +106,7 @@ public class PacketInMessageFactoryTest {
                 serializedBuffer.readUnsignedByte());
         cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         serializedBuffer.readBytes(cookie);
-        Assert.assertEquals("Wrong cookie", message.getCookie(), new BigInteger(1, cookie));
+        Assert.assertEquals("Wrong cookie", message.getCookie(), Uint64.valueOf(new BigInteger(1, cookie)));
         Assert.assertEquals("Wrong match type", 1, serializedBuffer.readUnsignedShort());
         serializedBuffer.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         Assert.assertEquals("Wrong oxm class", 0x8000, serializedBuffer.readUnsignedShort());

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +31,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MdSalRegistrationUtilsTest {
@@ -56,8 +56,6 @@ public class MdSalRegistrationUtilsTest {
     @Mock
     private FeaturesReply mockedFeatures;
     @Mock
-    private BigInteger mockedDataPathId;
-    @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private NotificationPublishService notificationPublishService;
@@ -69,7 +67,7 @@ public class MdSalRegistrationUtilsTest {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
-        when(mockedDeviceInfo.getDatapathId()).thenReturn(mockedDataPathId);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(12345));
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
     }
 

@@ -69,6 +69,8 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartRequestOnTheFlyCallbackTest {
@@ -76,7 +78,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     private static final String DUMMY_NODE_ID = "dummyNodeId";
     private static final String DUMMY_EVENT_NAME = "dummy event name 1";
     private static final String DUMMY_DEVICE_ID = "dummy device id 1";
-    private static final Long DUMMY_XID = 55L;
+    private static final Uint32 DUMMY_XID = Uint32.valueOf(55L);
     private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_PATH = KeyedInstanceIdentifier
             .create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("uf-node:123")));
@@ -116,7 +118,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimaryConnection);
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
         when(mockedDeviceInfo.getNodeId()).thenReturn(mockedNodeId);
-        when(mockedDeviceInfo.getDatapathId()).thenReturn(BigInteger.TEN);
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
         when(mockedDeviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
@@ -129,7 +131,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.emptyList());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
-        dummyRequestContext = new AbstractRequestContext<List<MultipartReply>>(DUMMY_XID) {
+        dummyRequestContext = new AbstractRequestContext<>(DUMMY_XID) {
 
             @Override
             public void close() {

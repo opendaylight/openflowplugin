@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
-import java.math.BigInteger;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -20,6 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPhyPortCase;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class OfToSalInPhyPortCase extends ConvertorCase<InPhyPortCase, MatchBuilder, MatchResponseConvertorData> {
     public OfToSalInPhyPortCase() {
@@ -27,11 +26,11 @@ public class OfToSalInPhyPortCase extends ConvertorCase<InPhyPortCase, MatchBuil
     }
 
     @Override
-    public Optional<MatchBuilder> process(@Nonnull InPhyPortCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@Nonnull final InPhyPortCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
-        final BigInteger datapathId = data.getDatapathId();
+        final Uint64 datapathId = data.getDatapathId();
 
         final PortNumber portNumber = source.getInPhyPort().getPortNumber();
 

@@ -42,6 +42,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowUtil {
 
@@ -177,7 +178,7 @@ public final class FlowUtil {
      * @return instance identifier assembled for given node, table and flow
      */
     public static FlowRef buildFlowPath(final InstanceIdentifier<Node> nodePath,
-                                        final short tableId, final FlowId flowId) {
+                                        final Uint8 tableId, final FlowId flowId) {
         final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = nodePath
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(tableId))
@@ -202,7 +203,7 @@ public final class FlowUtil {
     private static class CumulatingFunction<O> {
         private final List<? extends BatchFlowIdGrouping> inputBatchFlows;
 
-        CumulatingFunction(List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+        CumulatingFunction(final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
             this.inputBatchFlows = inputBatchFlows;
         }
 

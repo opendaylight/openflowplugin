@@ -52,8 +52,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
     }
 
     @Override
-    public Optional<List<MatchEntry>> process(@Nonnull Ipv6Match source, VersionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<List<MatchEntry>> process(@Nonnull final Ipv6Match source, final VersionConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         List<MatchEntry> result = new ArrayList<>();
 
         if (source.getIpv6Source() != null) {
@@ -172,7 +172,7 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
             Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
             Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
 
-            int bitmap = source.getIpv6ExtHeader().getIpv6Exthdr();
+            int bitmap = source.getIpv6ExtHeader().getIpv6Exthdr().toJava();
             ipv6ExthdrBuilder.setPseudoField(makeIpv6ExthdrFlags(bitmap));
 
             if (source.getIpv6ExtHeader().getIpv6ExthdrMask() != null) {
@@ -190,7 +190,7 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private Ipv6ExthdrFlags makeIpv6ExthdrFlags(int bitmap) {
+    private static Ipv6ExthdrFlags makeIpv6ExthdrFlags(final int bitmap) {
         final Boolean NONEXT = (bitmap & 1) != 0;
         final Boolean ESP = (bitmap & 1 << 1) != 0;
         final Boolean AUTH = (bitmap & 1 << 2) != 0;

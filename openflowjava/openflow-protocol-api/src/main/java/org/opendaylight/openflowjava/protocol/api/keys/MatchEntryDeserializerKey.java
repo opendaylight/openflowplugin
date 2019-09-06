@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Key for a match entry deserializer.
@@ -19,7 +19,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
         implements ExperimenterDeserializerKey {
 
     private final int oxmField;
-    private Long experimenterId;
+    private Uint32 experimenterId;
 
     /**
      * Constructor.
@@ -28,8 +28,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
      * @param oxmClass oxm_class (see specification)
      * @param oxmField oxm_field (see specification)
      */
-    public MatchEntryDeserializerKey(short version,
-            int oxmClass, int oxmField) {
+    public MatchEntryDeserializerKey(final short version, final int oxmClass, final int oxmField) {
         super(version, oxmClass, MatchEntry.class);
         this.oxmField = oxmField;
     }
@@ -39,7 +38,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
      *
      * @param experimenterId experimenter / vendor ID
      */
-    public void setExperimenterId(Long experimenterId) {
+    public void setExperimenterId(final Uint32 experimenterId) {
         this.experimenterId = experimenterId;
     }
 
@@ -53,7 +52,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

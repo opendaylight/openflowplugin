@@ -93,8 +93,8 @@ public final class MatchExtensionHelper {
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     @SuppressWarnings("unchecked")
-    public static <E extends Augmentable<E>> AugmentTuple<E> processAllExtensions(Collection<MatchEntry> matchEntries,
-            OpenflowVersion ofVersion, MatchPath matchPath) {
+    public static <E extends Augmentable<E>> AugmentTuple<E> processAllExtensions(
+            final Collection<MatchEntry> matchEntries, final OpenflowVersion ofVersion, final MatchPath matchPath) {
         List<ExtensionList> extensionsList = new ArrayList<>();
 
         for (MatchEntry matchEntry : matchEntries) {
@@ -163,7 +163,8 @@ public final class MatchExtensionHelper {
      * @param matchEntry match entry
      * @return an ExtensionListBuilder
      */
-    private static ExtensionListBuilder processExtension(MatchEntry matchEntry, short ofVersion, MatchPath matchPath) {
+    private static ExtensionListBuilder processExtension(final MatchEntry matchEntry, final short ofVersion,
+            final MatchPath matchPath) {
         ExtensionListBuilder extListBld = null;
 
         // TODO: EXTENSION PROPOSAL (match, OFJava to MD-SAL)
@@ -173,8 +174,7 @@ public final class MatchExtensionHelper {
         // If entry is experimenter, set experimenter ID to key
         if (matchEntry.getOxmClass().equals(ExperimenterClass.class)) {
             ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) matchEntry.getMatchEntryValue();
-            Long experimenterId = experimenterIdCase.getExperimenter().getExperimenter().getValue();
-            key.setExperimenterId(experimenterId);
+            key.setExperimenterId(experimenterIdCase.getExperimenter().getExperimenter().getValue());
         }
 
         if (null != OFSessionUtil.getExtensionConvertorProvider()) {

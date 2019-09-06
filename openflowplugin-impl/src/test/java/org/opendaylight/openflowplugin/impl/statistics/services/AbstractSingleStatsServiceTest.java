@@ -14,6 +14,7 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServiceTest {
 
@@ -27,7 +28,7 @@ public abstract class AbstractSingleStatsServiceTest extends AbstractStatsServic
     @Override
     public void init() throws Exception {
         super.init();
-        rqContext = new AbstractRequestContext<Object>(42L) {
+        rqContext = new AbstractRequestContext<>(Uint32.valueOf(42)) {
             @Override
             public void close() {
                 //NOOP

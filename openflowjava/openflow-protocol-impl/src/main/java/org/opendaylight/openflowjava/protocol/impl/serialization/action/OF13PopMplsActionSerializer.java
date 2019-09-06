@@ -24,7 +24,7 @@ public class OF13PopMplsActionSerializer extends AbstractActionSerializer {
     public void serialize(Action action, ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((PopMplsCase) action.getActionChoice())
-                .getPopMplsAction().getEthertype().getValue());
+                .getPopMplsAction().getEthertype().getValue().toJava());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
 

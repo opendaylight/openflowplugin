@@ -54,7 +54,7 @@ public class FlowRemovedMessageFactoryTest {
         BufferHelper.checkHeaderV13(builtByFactory);
 
         Assert.assertTrue(builtByFactory.getCookie().longValue() == 0x0001020304050607L);
-        Assert.assertTrue(builtByFactory.getPriority() == 0x03);
+        Assert.assertTrue(builtByFactory.getPriority().toJava() == 0x03);
         Assert.assertEquals("Wrong reason", 0x02, builtByFactory.getReason().getIntValue());
         Assert.assertEquals("Wrong tableId", new TableId(4L), builtByFactory.getTableId());
         Assert.assertEquals("Wrong durationSec", 0x02L, builtByFactory.getDurationSec().longValue());

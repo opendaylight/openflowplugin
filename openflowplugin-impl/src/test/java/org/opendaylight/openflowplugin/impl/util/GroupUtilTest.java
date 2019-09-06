@@ -36,6 +36,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link GroupUtil}.
@@ -45,7 +46,7 @@ public class GroupUtilTest {
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     private static final GroupId DUMMY_GROUP_ID = new GroupId(42L);
     private static final GroupId DUMMY_GROUP_ID_2 = new GroupId(43L);
-    private static final Long GROUP_ACTION_BITMAP =
+    private static final long GROUP_ACTION_BITMAP =
             0b00000000000000000000000000000000000001111111111111001100000000001L;
 
     @Test
@@ -218,11 +219,10 @@ public class GroupUtilTest {
     public void testExtractGroupActionsSupportBitmap() {
         ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true);
-        final List<Long> groupActionsSupportBitmap =
+        final List<Uint32> groupActionsSupportBitmap =
                 GroupUtil.extractGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
         assertEquals(1, groupActionsSupportBitmap.size());
-        final Long bitmap = groupActionsSupportBitmap.get(0);
-        assertEquals(GROUP_ACTION_BITMAP, bitmap);
+        assertEquals(GROUP_ACTION_BITMAP,  groupActionsSupportBitmap.get(0).toJava());
     }
 
     private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {

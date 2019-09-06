@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
      * @param version Openflow version
      * @return default empty group mod input builder
      */
-    public static GroupModInputBuilder defaultResult(short version) {
+    public static GroupModInputBuilder defaultResult(final short version) {
         return new GroupModInputBuilder()
                 .setVersion(version);
     }
@@ -81,7 +81,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private List<BucketsList> salToOFBucketList(Buckets buckets, short version, int groupType, BigInteger datapathid) {
+    private List<BucketsList> salToOFBucketList(final Buckets buckets, final short version, final int groupType,
+            final Uint64 datapathid) {
         final List<BucketsList> bucketLists = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
@@ -106,8 +107,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
 
     }
 
-    private static void salToOFBucketListWatchPort(Bucket groupBucket, BucketsListBuilder bucketBuilder,
-            int groupType) {
+    private static void salToOFBucketListWatchPort(final Bucket groupBucket, final BucketsListBuilder bucketBuilder,
+            final int groupType) {
         if (null != groupBucket.getWatchPort()) {
             bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
         } else {
@@ -118,8 +119,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         }
     }
 
-    private static void salToOFBucketListWatchGroup(Bucket groupBucket, BucketsListBuilder bucketBuilder,
-            int groupType) {
+    private static void salToOFBucketListWatchGroup(final Bucket groupBucket, final BucketsListBuilder bucketBuilder,
+            final int groupType) {
         if (null != groupBucket.getWatchGroup()) {
             bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
         } else {
@@ -130,7 +131,8 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         }
     }
 
-    private static void salToOFBucketListWeight(Bucket groupBucket, BucketsListBuilder bucketBuilder, int groupType) {
+    private static void salToOFBucketListWeight(final Bucket groupBucket, final BucketsListBuilder bucketBuilder,
+            final int groupType) {
         if (null != groupBucket.getWeight()) {
             bucketBuilder.setWeight(groupBucket.getWeight());
         } else {
@@ -147,7 +149,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
     }
 
     @Override
-    public GroupModInputBuilder convert(Group source, VersionDatapathIdConvertorData data) {
+    public GroupModInputBuilder convert(final Group source, final VersionDatapathIdConvertorData data) {
         GroupModInputBuilder groupModInputBuilder = new GroupModInputBuilder();
         if (source instanceof AddGroupInput) {
             groupModInputBuilder.setCommand(GroupModCommand.OFPGCADD);

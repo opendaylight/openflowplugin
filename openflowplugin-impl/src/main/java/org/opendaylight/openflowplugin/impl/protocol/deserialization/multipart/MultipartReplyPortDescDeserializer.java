@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.multipart.reply.port.desc.PortsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyPortDescDeserializer implements OFDeserializer<MultipartReplyBody> {
 
@@ -30,13 +31,13 @@ public class MultipartReplyPortDescDeserializer implements OFDeserializer<Multip
     private static final byte PADDING_IN_PORT_DESC_HEADER_02 = 2;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyPortDescBuilder builder = new MultipartReplyPortDescBuilder();
         final List<Ports> items = new ArrayList<>();
 
         while (message.readableBytes() > 0) {
             final PortsBuilder itemBuilder = new PortsBuilder();
-            itemBuilder.setPortNumber(new PortNumberUni(message.readUnsignedInt()));
+            itemBuilder.setPortNumber(new PortNumberUni(Uint32.valueOf(message.readUnsignedInt())));
             message.skipBytes(PADDING_IN_PORT_DESC_HEADER_01);
             itemBuilder.setHardwareAddress(ByteBufUtils.readIetfMacAddress(message));
             message.skipBytes(PADDING_IN_PORT_DESC_HEADER_02);
@@ -62,18 +63,18 @@ public class MultipartReplyPortDescDeserializer implements OFDeserializer<Multip
 
     private static PortConfig readPortConfig(final ByteBuf message) {
         final long input = message.readUnsignedInt();
-        final Boolean pcPortDown = ((input) & (1)) != 0;
-        final Boolean pcNRecv = ((input) & (1 << 2)) != 0;
-        final Boolean pcNFwd = ((input) & (1 << 5)) != 0;
-        final Boolean pcNPacketIn = ((input) & (1 << 6)) != 0;
+        final Boolean pcPortDown = (input & 1) != 0;
+        final Boolean pcNRecv = (input & 1 << 2) != 0;
+        final Boolean pcNFwd = (input & 1 << 5) != 0;
+        final Boolean pcNPacketIn = (input & 1 << 6) != 0;
         return new PortConfig(pcNFwd, pcNPacketIn, pcNRecv, pcPortDown);
     }
 
     private static State readPortState(final ByteBuf message) {
         final long input = message.readUnsignedInt();
-        final Boolean psLinkDown = ((input) & (1)) != 0;
-        final Boolean psBlocked = ((input) & (1 << 1)) != 0;
-        final Boolean psLive = ((input) & (1 << 2)) != 0;
+        final Boolean psLinkDown = (input & 1) != 0;
+        final Boolean psBlocked = (input & 1 << 1) != 0;
+        final Boolean psLive = (input & 1 << 2) != 0;
         return new StateBuilder()
             .setBlocked(psBlocked)
             .setLinkDown(psLinkDown)
@@ -81,24 +82,24 @@ public class MultipartReplyPortDescDeserializer implements OFDeserializer<Multip
             .build();
     }
 
-    private static PortFeatures readPortFeatures(ByteBuf message) {
+    private static PortFeatures readPortFeatures(final ByteBuf message) {
         final long input = message.readUnsignedInt();
-        final Boolean pf10mbHd = ((input) & (1)) != 0;
-        final Boolean pf10mbFd = ((input) & (1 << 1)) != 0;
-        final Boolean pf100mbHd = ((input) & (1 << 2)) != 0;
-        final Boolean pf100mbFd = ((input) & (1 << 3)) != 0;
-        final Boolean pf1gbHd = ((input) & (1 << 4)) != 0;
-        final Boolean pf1gbFd = ((input) & (1 << 5)) != 0;
-        final Boolean pf10gbFd = ((input) & (1 << 6)) != 0;
-        final Boolean pf40gbFd = ((input) & (1 << 7)) != 0;
-        final Boolean pf100gbFd = ((input) & (1 << 8)) != 0;
-        final Boolean pf1tbFd = ((input) & (1 << 9)) != 0;
-        final Boolean pfOther = ((input) & (1 << 10)) != 0;
-        final Boolean pfCopper = ((input) & (1 << 11)) != 0;
-        final Boolean pfFiber = ((input) & (1 << 12)) != 0;
-        final Boolean pfAutoneg = ((input) & (1 << 13)) != 0;
-        final Boolean pfPause = ((input) & (1 << 14)) != 0;
-        final Boolean pfPauseAsym = ((input) & (1 << 15)) != 0;
+        final Boolean pf10mbHd = (input & 1) != 0;
+        final Boolean pf10mbFd = (input & 1 << 1) != 0;
+        final Boolean pf100mbHd = (input & 1 << 2) != 0;
+        final Boolean pf100mbFd = (input & 1 << 3) != 0;
+        final Boolean pf1gbHd = (input & 1 << 4) != 0;
+        final Boolean pf1gbFd = (input & 1 << 5) != 0;
+        final Boolean pf10gbFd = (input & 1 << 6) != 0;
+        final Boolean pf40gbFd = (input & 1 << 7) != 0;
+        final Boolean pf100gbFd = (input & 1 << 8) != 0;
+        final Boolean pf1tbFd = (input & 1 << 9) != 0;
+        final Boolean pfOther = (input & 1 << 10) != 0;
+        final Boolean pfCopper = (input & 1 << 11) != 0;
+        final Boolean pfFiber = (input & 1 << 12) != 0;
+        final Boolean pfAutoneg = (input & 1 << 13) != 0;
+        final Boolean pfPause = (input & 1 << 14) != 0;
+        final Boolean pfPauseAsym = (input & 1 << 15) != 0;
         return new PortFeatures(pfAutoneg, pfCopper, pfFiber, pf40gbFd,
             pf100gbFd, pf100mbFd, pf100mbHd, pf1gbFd, pf1gbHd, pf1tbFd,
             pfOther, pfPause, pfPauseAsym, pf10gbFd, pf10mbFd, pf10mbHd);

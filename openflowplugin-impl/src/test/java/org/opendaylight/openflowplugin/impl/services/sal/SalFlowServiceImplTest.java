@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import junit.framework.TestCase;
@@ -68,11 +67,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SalFlowServiceImplTest extends TestCase {
 
-    private static final BigInteger DUMMY_DATAPATH_ID = new BigInteger("444");
+    private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(444);
     private static final String DUMMY_NODE_ID = "dummyNodeID";
     private static final String DUMMY_FLOW_ID = "dummyFlowID";
     private static final Short DUMMY_TABLE_ID = (short) 0;
@@ -120,7 +122,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         when(mockedDeviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
 
-        when(requestContext.getXid()).thenReturn(new Xid(84L));
+        when(requestContext.getXid()).thenReturn(new Xid(Uint32.valueOf(84L)));
         when(requestContext.getFuture()).thenReturn(RpcResultBuilder.success().buildFuture());
         when(mockedRequestContextStack.createRequestContext()).thenReturn(requestContext);
 
@@ -130,8 +132,9 @@ public class SalFlowServiceImplTest extends TestCase {
     }
 
     private SalFlowServiceImpl mockSalFlowService(final short version) {
-        when(mockedFeatures.getVersion()).thenReturn(version);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(version);
+        Uint8 ver = Uint8.valueOf(version);
+        when(mockedFeatures.getVersion()).thenReturn(ver);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(ver);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
@@ -154,7 +157,7 @@ public class SalFlowServiceImplTest extends TestCase {
         addFlowFailCallback(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlowFailCallback(short version) throws InterruptedException, ExecutionException {
+    private void addFlowFailCallback(final short version) throws InterruptedException, ExecutionException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -183,7 +186,7 @@ public class SalFlowServiceImplTest extends TestCase {
         removeFlowFailCallback(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlowFailCallback(short version) throws InterruptedException, ExecutionException {
+    private void removeFlowFailCallback(final short version) throws InterruptedException, ExecutionException {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setTableId((short)1)
                 .setMatch(match)
@@ -207,8 +210,7 @@ public class SalFlowServiceImplTest extends TestCase {
         addFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlow(short version) throws ExecutionException,
-                                                                                                  InterruptedException {
+    private void addFlow(final short version) throws ExecutionException, InterruptedException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -231,7 +233,7 @@ public class SalFlowServiceImplTest extends TestCase {
         removeFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlow(short version) throws Exception {
+    private void removeFlow(final short version) throws Exception {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
@@ -253,7 +255,7 @@ public class SalFlowServiceImplTest extends TestCase {
         updateFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void updateFlow(short version) throws Exception {
+    private void updateFlow(final short version) throws Exception {
         UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
         UpdateFlowInput mockedUpdateFlowInput1 = mock(UpdateFlowInput.class);
 
@@ -306,8 +308,8 @@ public class SalFlowServiceImplTest extends TestCase {
                 .retrieveDescriptor(any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
     }
 
-    private <T extends DataObject> void verifyOutput(Future<RpcResult<T>> rpcResultFuture) throws ExecutionException,
-                                                                                                  InterruptedException {
+    private static <T extends DataObject> void verifyOutput(final Future<RpcResult<T>> rpcResultFuture)
+            throws ExecutionException, InterruptedException {
         assertNotNull(rpcResultFuture);
         final RpcResult<?> addFlowOutputRpcResult = rpcResultFuture.get();
         assertNotNull(addFlowOutputRpcResult);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -53,7 +52,7 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
                         .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());
                 final NodeConnectorId id = InventoryDataServiceUtil
                         .nodeConnectorIdfromDatapathPortNo(
-                                features.getDatapathId(),
+                                features.getDatapathId().toJava(),
                                 port,
                                 OpenflowVersion.get(features.getVersion()));
 

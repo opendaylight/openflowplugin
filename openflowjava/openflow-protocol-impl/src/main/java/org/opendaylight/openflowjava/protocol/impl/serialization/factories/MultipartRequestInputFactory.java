@@ -262,7 +262,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
                 for (TableFeatures currTableFeature : tableFeatures.getTableFeatures()) {
                     final int tableFeatureLengthIndex = output.writerIndex();
                     output.writeShort(EncodeConstants.EMPTY_LENGTH);
-                    output.writeByte(currTableFeature.getTableId());
+                    output.writeByte(currTableFeature.getTableId().toJava());
                     output.writeZero(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
                     final byte[] nameBytes = currTableFeature.getName().getBytes(StandardCharsets.UTF_8);
                     output.writeBytes(nameBytes);
@@ -347,7 +347,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
                 NextTableRelatedTableFeatureProperty.class).getNextTableIds();
         if (nextTableIds != null) {
             for (NextTableIds next : nextTableIds) {
-                output.writeByte(next.getTableId());
+                output.writeByte(next.getTableId().toJava());
             }
         }
         int length = output.writerIndex() - startIndex;
@@ -400,7 +400,8 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
 
     private void writeExperimenterRelatedTableProperty(final ByteBuf output,
             final TableFeatureProperties property) {
-        long expId = property.augmentation(ExperimenterIdTableFeatureProperty.class).getExperimenter().getValue();
+        long expId = property.augmentation(ExperimenterIdTableFeatureProperty.class).getExperimenter().getValue()
+            .toJava();
         OFSerializer<TableFeatureProperties> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createMultipartRequestTFSerializerKey(
                         EncodeConstants.OF13_VERSION_ID, expId));
