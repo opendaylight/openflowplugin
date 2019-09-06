@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -12,12 +12,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public interface HandshakeManager {
 
     /**
-     * return negotiated version.
+     * Return negotiated version.
+     *
+     * @return negotiated version.
      */
     Short getVersion();
 
     /**
-     * process current handshake step.
+     * Process current handshake step.
+     *
      * @param receivedHello message from device we need to act upon
      */
     void shake(HelloMessage receivedHello);
