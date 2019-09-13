@@ -147,6 +147,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private final boolean switchFeaturesMandatory;
     private final boolean isFlowRemovedNotificationOn;
     private final boolean useSingleLayerSerialization;
+    private final boolean tableStatsEnabled;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicBoolean hasState = new AtomicBoolean(false);
     private final AtomicBoolean isInitialTransactionSubmitted = new AtomicBoolean(false);
@@ -172,7 +173,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
                       final ContextChainHolder contextChainHolder,
-                      final NotificationManager queuedNotificationManager) {
+                      final NotificationManager queuedNotificationManager,
+                      final boolean tableStatsEnabled) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
@@ -201,6 +203,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.skipTableFeatures = skipTableFeatures;
         this.useSingleLayerSerialization = useSingleLayerSerialization;
         this.queuedNotificationManager = queuedNotificationManager;
+        this.tableStatsEnabled = tableStatsEnabled;
         writerProvider = MultipartWriterProviderFactory.createDefaultProvider(this);
     }
 
@@ -528,6 +531,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public void setNotificationPublishService(final NotificationPublishService notificationPublishService) {
         this.notificationPublishService = notificationPublishService;
+    }
+
+    @Override
+    public boolean isTableStatsEnabled() {
+        return this.tableStatsEnabled;
     }
 
     @Override

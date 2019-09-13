@@ -171,7 +171,8 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 config.isEnableFlowRemovedNotification(),
                 config.isSwitchFeaturesMandatory(),
                 contextChainHolder,
-                queuedNotificationManager);
+                queuedNotificationManager,
+                config.isIsStatisticsPollingOn() && config.isIsTableStatisticsPollingOn());
 
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(notificationPublishService);

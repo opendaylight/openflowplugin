@@ -106,5 +106,11 @@ public interface DeviceContext extends
      * Method for initial submit transaction after successful initial gathering.
      */
     boolean initialSubmitTransaction();
+
+    /**
+     * Checks if table stats polling is enabled.
+     * @return true if table stats polling is enabled
+     */
+    boolean isTableStatsEnabled();
 }
 

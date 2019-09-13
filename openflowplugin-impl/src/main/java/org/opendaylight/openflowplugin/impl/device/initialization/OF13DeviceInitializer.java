@@ -78,6 +78,10 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                         skipTableFeatures, multipartWriterProvider, convertorExecutor));
                 futures.add(requestAndProcessMultipart(MultipartType.OFPMPPORTDESC, deviceContext, skipTableFeatures,
                         multipartWriterProvider, convertorExecutor));
+                if (deviceContext.isTableStatsEnabled()) {
+                    futures.add(requestAndProcessMultipart(MultipartType.OFPMPTABLE, deviceContext, skipTableFeatures,
+                            multipartWriterProvider, convertorExecutor));
+                }
 
                 return Futures.transform(
                     switchFeaturesMandatory ? Futures.allAsList(futures) : Futures.successfulAsList(futures),

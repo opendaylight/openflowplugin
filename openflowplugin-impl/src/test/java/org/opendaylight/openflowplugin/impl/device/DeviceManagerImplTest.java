@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
-import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -52,8 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
@@ -80,8 +77,6 @@ public class DeviceManagerImplTest {
     @Mock
     private ConnectionAdapter mockedConnectionAdapter;
     @Mock
-    private DeviceContextImpl mockedDeviceContext;
-    @Mock
     private MessageIntelligenceAgency messageIntelligenceAgency;
     @Mock
     private DeviceInfo deviceInfo;
@@ -91,12 +86,6 @@ public class DeviceManagerImplTest {
     private DataBroker dataBroker;
     @Mock
     private WriteTransaction writeTransaction;
-    @Mock
-    private TransactionChain transactionChain;
-    @Mock
-    private Capabilities capabilities;
-    @Mock
-    private CapabilitiesV10 capabilitiesV10;
     @Mock
     private NotificationPublishService notificationPublishService;
     @Mock
@@ -127,6 +116,8 @@ public class DeviceManagerImplTest {
                         .setEnableFlowRemovedNotification(true)
                         .setSkipTableFeatures(false)
                         .setUseSingleLayerSerialization(true)
+                        .setIsStatisticsPollingOn(false)
+                        .setIsTableStatisticsPollingOn(false)
                         .build(),
                 dataBroker,
                 messageIntelligenceAgency,
