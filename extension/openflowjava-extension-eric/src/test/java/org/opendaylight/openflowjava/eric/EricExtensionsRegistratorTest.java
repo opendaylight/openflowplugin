@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.eric.api.EricConstants;
 import org.opendaylight.openflowjava.eric.api.EricExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.eric.codec.match.Icmpv6NDOptionsTypeCodec;
