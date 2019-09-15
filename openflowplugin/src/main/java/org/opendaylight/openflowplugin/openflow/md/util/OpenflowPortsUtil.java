@@ -119,8 +119,9 @@ public final class OpenflowPortsUtil {
                 port = Long.decode(logicalNameOrPort);
             } catch (final NumberFormatException ne) {
                 //ignore, sent null back.
-                if (logicalNameOrPort.contains(":")) {
-                    port = Long.parseLong(logicalNameOrPort.substring(logicalNameOrPort.lastIndexOf(":") + 1));
+                final int lastColon = logicalNameOrPort.lastIndexOf(':');
+                if (lastColon != -1) {
+                    port = Long.parseLong(logicalNameOrPort.substring(lastColon + 1));
                 }
             }
         }
