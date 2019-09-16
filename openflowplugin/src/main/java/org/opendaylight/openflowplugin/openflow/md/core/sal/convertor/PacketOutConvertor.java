@@ -74,7 +74,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         InstanceIdentifier.IdentifiableItem<?, ?> item = Arguments.checkInstanceOf(pathArgument,
                 InstanceIdentifier.IdentifiableItem.class);
         NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
-        Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.get(ofVersion), key.getId());
         return new PortNumber(port);
     }
