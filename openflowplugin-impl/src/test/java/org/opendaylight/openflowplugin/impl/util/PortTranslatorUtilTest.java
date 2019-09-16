@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -24,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 7/29/14.
@@ -102,8 +102,8 @@ public class PortTranslatorUtilTest {
 
         Short version = OpenflowVersion.OF10.getVersion();
 
-        BigInteger dataPathId = BigInteger.ONE;
-        Long portNumber = 4294967295L;
+        Uint64 dataPathId = Uint64.ONE;
+        Uint32 portNumber = Uint32.valueOf(4294967295L);
         PortGrouping portGrouping = mockPortGrouping();
 
         NodeConnectorUpdated nodeConnectorUpdated = PortTranslatorUtil

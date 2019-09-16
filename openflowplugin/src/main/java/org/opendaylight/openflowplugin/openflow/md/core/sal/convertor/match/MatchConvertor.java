@@ -189,7 +189,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         }
 
         //TODO: currently this matchconverter is mapped to OF1.3 in MatchInjector. Will need to revisit during 1.4+
-        final long portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, inPort);
+        final Uint32 portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, inPort);
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntryBuilder.setHasMask(false);
@@ -208,7 +208,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         }
 
         //TODO: currently this matchconverter is mapped to OF1.3 in MatchInjector. Will need to revisit during 1.4+
-        final long portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, inPhyPort);
+        final Uint32 portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13,
+            inPhyPort);
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
         matchEntryBuilder.setHasMask(false);
