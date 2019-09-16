@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
@@ -125,7 +124,7 @@ public class SalRoleServiceImplTest {
     @Test
     public void testSetRole() throws Exception {
         RoleRequestOutput roleRequestOutput = new RoleRequestOutputBuilder()
-                .setXid(testXid).setGenerationId(BigInteger.valueOf(1)).build();
+                .setXid(testXid).setGenerationId(Uint64.ONE).build();
         ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
                 RpcResultBuilder.<RoleRequestOutput>success().withResult(roleRequestOutput).buildFuture();
 
@@ -147,7 +146,7 @@ public class SalRoleServiceImplTest {
 
         SetRoleOutput setRoleOutput = roleOutputRpcResult.getResult();
         assertNotNull(setRoleOutput);
-        assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
+        assertEquals(Uint64.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
     }
 
@@ -156,7 +155,7 @@ public class SalRoleServiceImplTest {
         // set role to slave
 
         RoleRequestOutput roleRequestOutput = new RoleRequestOutputBuilder()
-                .setXid(testXid).setGenerationId(BigInteger.valueOf(1)).build();
+                .setXid(testXid).setGenerationId(Uint64.ONE).build();
         ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
                 RpcResultBuilder.<RoleRequestOutput>success().withResult(roleRequestOutput).buildFuture();
 
@@ -177,7 +176,7 @@ public class SalRoleServiceImplTest {
 
         SetRoleOutput setRoleOutput = roleOutputRpcResult.getResult();
         assertNotNull(setRoleOutput);
-        assertEquals(BigInteger.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
+        assertEquals(Uint64.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
 
         // make another role change with the same role - slave
         Future<RpcResult<SetRoleOutput>> future2 = salRoleService.setRole(setRoleInput);

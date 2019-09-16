@@ -111,7 +111,7 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        final AbstractRequestContext<T> ret = new AbstractRequestContext<T>(deviceInfo.reserveXidForDeviceMessage()) {
+        final AbstractRequestContext<T> ret = new AbstractRequestContext<>(deviceInfo.reserveXidForDeviceMessage()) {
             @Override
             public void close() {
                 requestContexts.remove(this);
@@ -181,7 +181,7 @@ public class RoleContextImpl implements RoleContext {
 
     private final class MasterRoleCallback implements FutureCallback<RpcResult<SetRoleOutput>> {
         @Override
-        public void onSuccess(RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
+        public void onSuccess(final RpcResult<SetRoleOutput> setRoleOutputRpcResult) {
             contextChainMastershipWatcher.onMasterRoleAcquired(
                     deviceInfo,
                     ContextChainMastershipState.MASTER_ON_DEVICE);

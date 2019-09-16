@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -387,7 +388,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
                         LOG.trace("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
-                            connectionAdapter.setDatapathId(featureOutput.getDatapathId().toJava());
+
+                            final Uint64 dpId = featureOutput.getDatapathId();
+                            connectionAdapter.setDatapathId(dpId == null ? null : dpId.toJava());
                             if (!deviceConnectionRateLimiter.tryAquire()) {
                                 LOG.warn("Openflowplugin hit the device connection rate limit threshold. Denying"
                                         + " the connection from device {}", featureOutput.getDatapathId());

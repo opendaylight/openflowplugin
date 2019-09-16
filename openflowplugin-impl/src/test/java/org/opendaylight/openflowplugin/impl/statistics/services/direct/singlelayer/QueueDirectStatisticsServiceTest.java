@@ -39,7 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Long QUEUE_NO = 1L;
+    static final Uint32 QUEUE_NO = Uint32.ONE;
     private QueueDirectStatisticsService service;
 
     @Override
