@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.util;
 
 import com.google.common.collect.ImmutableBiMap;
@@ -35,8 +34,7 @@ public final class OpenflowPortsUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPortsUtil.class);
 
-    // TODO: deprecate these
-    private static final ImmutableBiMap<Short, ImmutableBiMap<String, Long>> VERSION_PORT_MAP;
+    // TODO: deprecate this
     private static final ImmutableBiMap<Short, ImmutableBiMap<Long, String>> VERSION_INVERSE_PORT_MAP;
 
     private static final ImmutableBiMap<Short, ImmutableBiMap<String, Uint32>> VERSION_PORT_MAP_UINT;
@@ -84,11 +82,6 @@ public final class OpenflowPortsUtil {
                         BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())) // 0xffffffff
                 .build();
 
-        VERSION_PORT_MAP = new ImmutableBiMap.Builder<Short, ImmutableBiMap<String, Long>>()
-                .put(OFConstants.OFP_VERSION_1_0, ofv10ports)
-                .put(OFConstants.OFP_VERSION_1_3, ofv13ports)
-                .build();
-
         VERSION_INVERSE_PORT_MAP = new ImmutableBiMap.Builder<Short, ImmutableBiMap<Long, String>>()
                 .put(OFConstants.OFP_VERSION_1_0, ofv10ports.inverse())
                 .put(OFConstants.OFP_VERSION_1_3, ofv13ports.inverse())
@@ -133,29 +126,29 @@ public final class OpenflowPortsUtil {
     }
 
     @Nullable
-    static Long getPortFromLogicalName(final OpenflowVersion ofVersion, final String logicalNameOrPort) {
+    static Uint32 getPortFromLogicalName(final OpenflowVersion ofVersion, final String logicalNameOrPort) {
 
         //The correct keyword defined in openflow specification in IN_PORT so we need to allow to use it
         //for legacy reasons we can't just simply drop the misspelled INPORT
         //TODO: Consider to remove 'INPORT' keyword
-        Long port;
+        Uint32 port;
         if (Objects.equals(logicalNameOrPort, "INPORT")) {
             if (!inportWarnignAlreadyFired) {
                 LOG.warn("Using '{}' in port field is not recommended use 'IN_PORT' instead", logicalNameOrPort);
                 inportWarnignAlreadyFired = true;
             }
-            port = VERSION_PORT_MAP.get(ofVersion.getVersion()).get(OutputPortValues.INPORT.getName());
+            port = VERSION_PORT_MAP_UINT.get(ofVersion.getVersion()).get(OutputPortValues.INPORT.getName());
         } else {
-            port = VERSION_PORT_MAP.get(ofVersion.getVersion()).get(logicalNameOrPort);
+            port = VERSION_PORT_MAP_UINT.get(ofVersion.getVersion()).get(logicalNameOrPort);
         }
         if (port == null) {
             try {
-                port = Long.decode(logicalNameOrPort);
-            } catch (final NumberFormatException ne) {
+                port = Uint32.valueOf(logicalNameOrPort);
+            } catch (final IllegalArgumentException ne) {
                 //ignore, sent null back.
                 final int lastColon = logicalNameOrPort.lastIndexOf(':');
                 if (lastColon != -1) {
-                    port = Long.parseLong(logicalNameOrPort.substring(lastColon + 1));
+                    port = Uint32.valueOf(logicalNameOrPort.substring(lastColon + 1));
                 }
             }
         }
@@ -188,13 +181,8 @@ public final class OpenflowPortsUtil {
                 : port.getUint32();
     }
 
-    public static Long getMaxPortForVersion(final OpenflowVersion ofVersion) {
+    public static Uint32 getMaxPortForVersion(final OpenflowVersion ofVersion) {
         return getPortFromLogicalName(ofVersion, OutputPortValues.MAX.getName());
-    }
-
-    // TODO: deprecate and migrate
-    public static boolean isPortReserved(final OpenflowVersion ofVersion, final Long portNumber) {
-        return VERSION_INVERSE_PORT_MAP.get(ofVersion.getVersion()).containsKey(portNumber);
     }
 
     public static boolean isPortReserved(final OpenflowVersion ofVersion, final Uint32 portNumber) {
@@ -208,13 +196,11 @@ public final class OpenflowPortsUtil {
      * @param portNumber port number
      * @return true if port number is valid for given protocol version
      */
-    public static boolean checkPortValidity(final OpenflowVersion ofVersion, final Long portNumber) {
+    public static boolean checkPortValidity(final OpenflowVersion ofVersion, final Uint32 portNumber) {
         boolean portIsValid = true;
         if (portNumber == null) {
             portIsValid = false;
-        } else if (portNumber < 0) {
-            portIsValid = false;
-        } else if (portNumber > getMaxPortForVersion(ofVersion)) {
+        } else if (portNumber.compareTo(getMaxPortForVersion(ofVersion)) > 0) {
             if (!isPortReserved(ofVersion, portNumber)) {
                 portIsValid = false;
             }

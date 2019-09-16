@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
@@ -45,12 +46,12 @@ public final class NodeConnectorRefToPortTranslator {
         Preconditions.checkNotNull(packetIn);
 
         NodeConnectorRef ref = null;
-        Long port = getPortNoFromPacketIn(packetIn);
+        Uint32 port = getPortNoFromPacketIn(packetIn);
 
         if (port != null) {
             OpenflowVersion version = OpenflowVersion.get(packetIn.getVersion());
 
-            ref = InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dataPathId.toJava(), port, version);
+            ref = InventoryDataServiceUtil.nodeConnectorRefFromDatapathIdPortno(dataPathId, port, version);
         }
 
         return ref;
@@ -64,10 +65,10 @@ public final class NodeConnectorRefToPortTranslator {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static Long fromNodeConnectorRef(@Nonnull final NodeConnectorRef nodeConnectorRef, final short version) {
+    public static Uint32 fromNodeConnectorRef(@Nonnull final NodeConnectorRef nodeConnectorRef, final short version) {
         Preconditions.checkNotNull(nodeConnectorRef);
 
-        Long port = null;
+        Uint32 port = null;
 
         final InstanceIdentifier<?> value = nodeConnectorRef.getValue();
         if (value instanceof KeyedInstanceIdentifier) {
@@ -85,13 +86,13 @@ public final class NodeConnectorRefToPortTranslator {
 
     @VisibleForTesting
     @Nullable
-    static Long getPortNoFromPacketIn(@Nonnull final PacketIn packetIn) {
+    static Uint32 getPortNoFromPacketIn(@Nonnull final PacketIn packetIn) {
         Preconditions.checkNotNull(packetIn);
 
-        Long port = null;
+        Uint32 port = null;
 
         if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_0 && packetIn.getInPort() != null) {
-            port = packetIn.getInPort().longValue();
+            port = Uint32.valueOf(packetIn.getInPort());
         } else if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_3) {
             if (packetIn.getMatch() != null && packetIn.getMatch().getMatchEntry() != null) {
                 List<MatchEntry> entries = packetIn.getMatch().getMatchEntry();
@@ -103,7 +104,7 @@ public final class NodeConnectorRefToPortTranslator {
                         InPort inPort = inPortCase.getInPort();
 
                         if (inPort != null) {
-                            port = inPort.getPortNumber().getValue().toJava();
+                            port = inPort.getPortNumber().getValue();
                             break;
                         }
                     }

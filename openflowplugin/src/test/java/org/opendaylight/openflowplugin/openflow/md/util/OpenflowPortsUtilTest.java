@@ -163,13 +163,12 @@ public class OpenflowPortsUtilTest {
      */
     @Test
     public void testCheckPortValidity10() {
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , -1L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFF00L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFF8L));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFF0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0xFFFFL));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , 0x1FFFFL));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFF00L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFFF8L)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFFF0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0xFFFFL)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF10 , Uint32.valueOf(0x1FFFFL)));
     }
 
     /**
@@ -177,13 +176,12 @@ public class OpenflowPortsUtilTest {
      */
     @Test
     public void testCheckPortValidity13() {
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , -1L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFF00L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFF8L));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFF0L));
-        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0xFFFFFFFFL));
-        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , 0x1FFFFFFFFL));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFF00L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFFF8L)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFFF0L)));
+        Assert.assertTrue(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0xFFFFFFFFL)));
+        Assert.assertFalse(OpenflowPortsUtil.checkPortValidity(OpenflowVersion.OF13 , Uint32.valueOf(0x1FFFFFFFFL)));
     }
 
     /**
