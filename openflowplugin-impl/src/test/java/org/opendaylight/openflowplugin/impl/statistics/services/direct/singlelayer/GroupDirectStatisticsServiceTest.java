@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Long GROUP_NO = 1L;
+    static final Uint32 GROUP_NO = Uint32.ONE;
     private GroupDirectStatisticsService service;
 
     @Override

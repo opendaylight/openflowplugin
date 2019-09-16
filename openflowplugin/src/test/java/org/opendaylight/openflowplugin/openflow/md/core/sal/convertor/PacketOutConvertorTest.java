@@ -217,7 +217,7 @@ public class PacketOutConvertorTest {
     }
 
     private static PortNumber getPortNumber(final NodeConnectorKey nodeConKey, final Short ofVersion) {
-        Long port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
+        Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
                 nodeConKey.getId());
         return new PortNumber(port);
     }

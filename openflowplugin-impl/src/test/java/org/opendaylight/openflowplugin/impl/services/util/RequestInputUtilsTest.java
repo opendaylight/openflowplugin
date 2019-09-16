@@ -20,7 +20,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 public class RequestInputUtilsTest {
     @Test
     public void createMultipartHeader() {
-        final Short version = OFConstants.OFP_VERSION_1_3;
+        final short version = OFConstants.OFP_VERSION_1_3;
         final Uint32 xid = Uint32.valueOf(42L);
         final MultipartType type = MultipartType.OFPMPDESC;
 
@@ -28,7 +28,7 @@ public class RequestInputUtilsTest {
                 .createMultipartHeader(type, xid, version)
                 .build();
 
-        assertEquals(version, input.getVersion());
+        assertEquals(version, input.getVersion().toJava());
         assertEquals(xid, input.getXid());
         assertEquals(type, input.getType());
         assertFalse(input.getFlags().isOFPMPFREQMORE());

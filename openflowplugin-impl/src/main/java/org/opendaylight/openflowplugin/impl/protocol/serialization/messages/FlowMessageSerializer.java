@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -59,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -72,13 +71,15 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private static final Uint8 DEFAULT_TABLE_ID = Uint8.ZERO;
     private static final Uint16 DEFAULT_IDLE_TIMEOUT = Uint16.ZERO;
     private static final Uint16 DEFAULT_HARD_TIMEOUT = Uint16.ZERO;
-    private static final Uint16 DEFAULT_PRIORITY = Uint16.valueOf(OFConstants.DEFAULT_FLOW_PRIORITY).intern();
+    private static final Uint16 DEFAULT_PRIORITY = OFConstants.DEFAULT_FLOW_PRIORITY;
     private static final Uint32 DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
-    private static final BigInteger DEFAULT_OUT_PORT = BigInteger.valueOf(OFConstants.OFPP_ANY);
-    private static final Long DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
+    private static final Uint64 DEFAULT_OUT_PORT = Uint64.valueOf(OFConstants.OFPP_ANY);
+    private static final Uint32 DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final FlowModFlags DEFAULT_FLAGS = new FlowModFlags(false, false, false, false, false);
-    private static final Integer PUSH_VLAN = 0x8100;
+    private static final Uint16 PUSH_VLAN = Uint16.valueOf(0x8100);
+    private static final Integer PUSH_TAG = PUSH_VLAN.toJava();
+    private static final VlanCfi PUSH_CFI = new VlanCfi(1);
 
     private static final VlanMatch VLAN_MATCH_FALSE = new VlanMatchBuilder()
             .setVlanId(new VlanIdBuilder()
@@ -296,12 +297,12 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                                             actions.add(new ActionBuilder()
                                                     .setAction(new PushVlanActionCaseBuilder()
                                                             .setPushVlanAction(new PushVlanActionBuilder()
-                                                                    .setCfi(new VlanCfi(1))
+                                                                    .setCfi(PUSH_CFI)
                                                                     .setVlanId(((SetVlanIdActionCase) action
                                                                         .getAction()).getSetVlanIdAction()
                                                                             .getVlanId())
                                                                     .setEthernetType(PUSH_VLAN)
-                                                                    .setTag(PUSH_VLAN)
+                                                                    .setTag(PUSH_TAG)
                                                                     .build())
                                                             .build())
                                                     .withKey(action.key())

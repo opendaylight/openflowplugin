@@ -95,7 +95,7 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
         assertEquals(NEXT_TABLE_TYPE.getIntValue(), out.readUnsignedShort());
         final int propLength = out.readUnsignedShort();
         final int paddingRemainder = propLength % EncodeConstants.PADDING;
-        assertEquals(NEXT_TABLE_ID, out.readUnsignedByte());
+        assertEquals(NEXT_TABLE_ID.toJava(), out.readUnsignedByte());
 
         if (paddingRemainder != 0) {
             out.skipBytes(EncodeConstants.PADDING - paddingRemainder);

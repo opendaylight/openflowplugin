@@ -86,6 +86,8 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(queueStat.getTxBytes()).thenReturn(Uint64.ONE);
         when(queueStat.getTxErrors()).thenReturn(Uint64.ONE);
         when(queueStat.getTxPackets()).thenReturn(Uint64.ONE);
+        when(queueStat.getDurationSec()).thenReturn(Uint32.ZERO);
+        when(queueStat.getDurationNsec()).thenReturn(Uint32.ZERO);
 
         final GetQueueStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getQueueIdAndStatisticsMap().size() > 0);

@@ -114,7 +114,7 @@ public class DeviceInitializationUtilTest {
     @Test
     public void getSwitchFeatures() {
         final SwitchFeatures switchFeatures = DeviceInitializationUtil.getSwitchFeatures(connectionContext);
-        assertEquals(TABLES, switchFeatures.getMaxTables().shortValue());
+        assertEquals(TABLES, switchFeatures.getMaxTables());
     }
 
 }

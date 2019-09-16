@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
@@ -85,17 +86,17 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     /**
      * Default idle timeout.
      */
-    public static final Integer DEFAULT_IDLE_TIMEOUT = 0;
+    public static final Uint16 DEFAULT_IDLE_TIMEOUT = Uint16.ZERO;
 
     /**
      * Default hard timeout.
      */
-    public static final Integer DEFAULT_HARD_TIMEOUT = 0;
+    public static final Uint16 DEFAULT_HARD_TIMEOUT = Uint16.ZERO;
 
     /**
      * Default priority.
      */
-    public static final Integer DEFAULT_PRIORITY = Integer.parseInt("8000", 16);
+    public static final Uint16 DEFAULT_PRIORITY = Uint16.valueOf(0x8000);
 
     /**
      * flow flag: remove.
@@ -138,13 +139,15 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     public static final List<MatchEntry> DEFAULT_MATCH_ENTRIES = ImmutableList.of();
 
     // Default values for when things are null
-    private static final TableId DEFAULT_TABLE_ID = new TableId(0L);
+    private static final TableId DEFAULT_TABLE_ID = new TableId(Uint32.ZERO);
     private static final Uint32 DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
-    private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_OUT_PORT = OFPP_ANY;
-    private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_OUT_GROUP = OFPG_ANY;
-    private static final Integer PUSH_VLAN = 0x8100;
+    private static final Uint32 OFPP_ANY = Uint32.MAX_VALUE;
+    private static final Uint32 DEFAULT_OUT_PORT = OFPP_ANY;
+    private static final Uint32 OFPG_ANY = Uint32.MAX_VALUE;
+    private static final Uint32 DEFAULT_OUT_GROUP = OFPG_ANY;
+    private static final Uint16 PUSH_VLAN = Uint16.valueOf(0x8100);
+    private static final Integer PUSH_TAG = PUSH_VLAN.toJava();
+    private static final VlanCfi PUSH_CFI = new VlanCfi(1);
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
         .list.Instruction> INSTRUCTION_ORDERING = Ordering.from(OrderComparator.build());
     private static final VlanMatch VLAN_MATCH_FALSE;
@@ -164,7 +167,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             RemoveFlowInput.class, UpdatedFlow.class);
 
     static {
-        final VlanId zeroVlan = new VlanId(0);
+        final VlanId zeroVlan = new VlanId(Uint16.ZERO);
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
         vlanIdBuilder.setVlanIdPresent(false);
@@ -504,10 +507,10 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
                         PushVlanActionCaseBuilder pushVlanActionCaseBuilder = new PushVlanActionCaseBuilder();
                         PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
 
-                        pushVlanActionBuilder.setCfi(new VlanCfi(1))
+                        pushVlanActionBuilder.setCfi(PUSH_CFI)
                                 .setVlanId(setVlanIdActionCase.getSetVlanIdAction().getVlanId())
                                 .setEthernetType(PUSH_VLAN)
-                                .setTag(PUSH_VLAN);
+                                .setTag(PUSH_TAG);
                         pushVlanActionCaseBuilder.setPushVlanAction(pushVlanActionBuilder.build());
                         PushVlanActionCase injectedAction = pushVlanActionCaseBuilder.build();
 

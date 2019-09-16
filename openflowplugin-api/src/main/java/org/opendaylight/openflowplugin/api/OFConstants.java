@@ -12,8 +12,10 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * OFP related constants.
@@ -39,25 +41,25 @@ public final class OFConstants {
     public static final String OF_URI_PREFIX = "openflow:";
 
     /** enum ofp_table: Table numbering, wildcard table used for table config, flow stats and flow deletes. */
-    public static final Short OFPTT_ALL = 0xff;
-    public static final Long ANY = 0xffffffffL;
+    public static final Uint8 OFPTT_ALL = Uint8.MAX_VALUE;
+    public static final Uint32 ANY = Uint32.MAX_VALUE;
     /** Wildcard port used only for flow mod (delete) and flow stats requests. Selects
      *  all flows regardless of output port (including flows with no output port).*/
-    public static final Long OFPP_ANY = ANY;
+    public static final Uint32 OFPP_ANY = ANY;
     /** enum ofp_group: For OFPFC_DELETE* commands, require matching entries to include this as an
      *  output group. A value of OFPG_ANY indicates no restriction. */
-    public static final Long OFPG_ANY = ANY;
+    public static final Uint32 OFPG_ANY = ANY;
     /** enum ofp_group: Represents all groups for group delete commands. */
-    public static final Long OFPG_ALL = 0xfffffffcL;
+    public static final Uint32 OFPG_ALL = Uint32.valueOf(0xfffffffcL).intern();
     /** Refers to all queues conﬁgured at the speciﬁed port. */
-    public static final Long OFPQ_ALL = ANY;
+    public static final Uint32 OFPQ_ALL = ANY;
     /** Represents all meters for stat requests commands. */
-    public static final Long OFPM_ALL = ANY;
+    public static final Uint32 OFPM_ALL = ANY;
     /** Default cookie. */
     public static final Uint64 DEFAULT_COOKIE = Uint64.ZERO;
     public static final Uint64 DEFAULT_COOKIE_MASK = Uint64.ZERO;
     public static final FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
-    public static final Integer DEFAULT_FLOW_PRIORITY = 0x8000;
+    public static final Uint16 DEFAULT_FLOW_PRIORITY = Uint16.valueOf(0x8000).intern();
     /** Empty flow match. */
     public static final Match EMPTY_MATCH = new MatchBuilder().build();
 
