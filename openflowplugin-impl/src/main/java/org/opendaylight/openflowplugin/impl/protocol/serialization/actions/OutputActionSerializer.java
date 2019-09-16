@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OutputActionSerializer extends AbstractActionSerializer<OutputActionCase> {
 
@@ -22,7 +23,7 @@ public class OutputActionSerializer extends AbstractActionSerializer<OutputActio
     public void serialize(final OutputActionCase action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         final OutputAction outputAction = action.getOutputAction();
-        Long value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+        Uint32 value = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.OF13,
                 outputAction.getOutputNodeConnector().getValue());
         if (value == null) {

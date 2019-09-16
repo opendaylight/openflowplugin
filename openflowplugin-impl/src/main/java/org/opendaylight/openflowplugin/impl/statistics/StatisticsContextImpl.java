@@ -116,7 +116,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     @Override
     public <O> RequestContext<O> createRequestContext() {
-        final AbstractRequestContext<O> ret = new AbstractRequestContext<O>(deviceInfo.reserveXidForDeviceMessage()) {
+        final AbstractRequestContext<O> ret = new AbstractRequestContext<>(deviceInfo.reserveXidForDeviceMessage()) {
             @Override
             public void close() {
                 requestContexts.remove(this);

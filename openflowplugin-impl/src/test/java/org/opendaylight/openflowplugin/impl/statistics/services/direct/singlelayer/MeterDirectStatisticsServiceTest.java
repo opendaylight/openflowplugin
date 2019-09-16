@@ -40,7 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Long METER_NO = 1L;
+    static final Uint32 METER_NO = Uint32.ONE;
     private MeterDirectStatisticsService service;
 
     @Override

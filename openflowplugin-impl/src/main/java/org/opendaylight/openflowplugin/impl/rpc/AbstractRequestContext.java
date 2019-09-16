@@ -23,6 +23,11 @@ public abstract class AbstractRequestContext<T> implements RequestContext<T> {
         this.xid = xid == null ? null : new Xid(xid);
     }
 
+    @Deprecated
+    protected AbstractRequestContext(final Long xid) {
+        this.xid = xid == null ? null : new Xid(Uint32.valueOf(xid));
+    }
+
     @Override
     public final ListenableFuture<RpcResult<T>> getFuture() {
         return rpcResultFuture;

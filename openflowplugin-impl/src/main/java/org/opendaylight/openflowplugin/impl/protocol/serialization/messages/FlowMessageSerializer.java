@@ -72,10 +72,10 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private static final Uint8 DEFAULT_TABLE_ID = Uint8.ZERO;
     private static final Uint16 DEFAULT_IDLE_TIMEOUT = Uint16.ZERO;
     private static final Uint16 DEFAULT_HARD_TIMEOUT = Uint16.ZERO;
-    private static final Uint16 DEFAULT_PRIORITY = Uint16.valueOf(OFConstants.DEFAULT_FLOW_PRIORITY).intern();
+    private static final Uint16 DEFAULT_PRIORITY = OFConstants.DEFAULT_FLOW_PRIORITY;
     private static final Uint32 DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
     private static final BigInteger DEFAULT_OUT_PORT = BigInteger.valueOf(OFConstants.OFPP_ANY);
-    private static final Long DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
+    private static final Uint32 DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final FlowModFlags DEFAULT_FLAGS = new FlowModFlags(false, false, false, false, false);
     private static final Integer PUSH_VLAN = 0x8100;

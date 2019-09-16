@@ -58,6 +58,6 @@ public class StatisticsGatheringOnTheFlyServiceTest extends ServiceMocking {
         final OfHeader request = statisticsGatheringService.buildRequest(xid, MultipartType.OFPMPFLOW);
         Assert.assertNotNull(request);
         Assert.assertEquals(MultipartRequestInput.class, request.implementedInterface());
-        Assert.assertEquals(xid, request.getXid());
+        Assert.assertEquals(xid.getValue(), request.getXid());
     }
 }
