@@ -23,14 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InventoryDataServiceUtilTest {
-
-
-    private static final long PORT_NO = PortNumberValuesV10.CONTROLLER.getIntValue();
-    private static final BigInteger PATH_ID = BigInteger.TEN;
+    private static final Uint32 PORT_NO = Uint32.valueOf(PortNumberValuesV10.CONTROLLER.getIntValue());
+    private static final Uint64 PATH_ID = Uint64.valueOf(10);
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeUpdatedBuilderFromDataPathId(BigInteger datapathId)}.
@@ -86,7 +85,7 @@ public class InventoryDataServiceUtilTest {
     @Test
     public void testNodeConnectorInstanceIdentifierFromDatapathIdPortno() {
         InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifier = InventoryDataServiceUtil
-                .nodeConnectorInstanceIdentifierFromDatapathIdPortno(BigInteger.ONE, PORT_NO, OpenflowVersion.OF10);
+                .nodeConnectorInstanceIdentifierFromDatapathIdPortno(Uint64.ONE, PORT_NO, OpenflowVersion.OF10);
         assertNotNull(nodeConnectorInstanceIdentifier);
     }
 

@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public class SalToOfOutputActionCase extends ConvertorCase<OutputActionCase, Act
     @Nonnull
     @Override
     public Optional<Action> process(@Nonnull final OutputActionCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         final OutputAction outputAction = source.getOutputAction();
         final OutputActionBuilder outputBuilder = new OutputActionBuilder();
 
@@ -49,7 +50,7 @@ public class SalToOfOutputActionCase extends ConvertorCase<OutputActionCase, Act
 
         final OpenflowVersion version = OpenflowVersion.get(data.getVersion());
         final String nodeConnectorId = outputAction.getOutputNodeConnector().getValue();
-        final Long portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(version, nodeConnectorId);
+        final Uint32 portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(version, nodeConnectorId);
 
         if (OpenflowPortsUtil.checkPortValidity(version, portNumber)) {
             outputBuilder.setPort(new PortNumber(portNumber));
