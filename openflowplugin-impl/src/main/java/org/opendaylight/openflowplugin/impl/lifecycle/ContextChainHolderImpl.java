@@ -295,7 +295,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .firstKeyOf(Entity.class)
                 .getName();
 
-        if (entityName != null) {
+        if (entityName != null && entityName.startsWith("openflow:")) {
             LOG.debug("Entity {} has no owner", entityName);
             final String dpnId = getDpnIdFromNodeName(entityName);
             try {
