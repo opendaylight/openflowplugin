@@ -293,7 +293,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .firstKeyOf(Entity.class)
                 .getName();
 
-        if (Objects.nonNull(entityName)) {
+        if (Objects.nonNull(entityName) && entityName.contains("openflow:")) {
             LOG.debug("Entity {} has no owner", entityName);
             try {
                 //TODO:Remove notifications
