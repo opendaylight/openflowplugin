@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import com.google.common.base.Function;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
@@ -358,26 +356,14 @@ public final class ReconcileUtil {
     }
 
     public static List<Group> safeGroups(FlowCapableNode node) {
-        if (node == null) {
-            return Collections.emptyList();
-        }
-
-        return MoreObjects.firstNonNull(node.getGroup(), ImmutableList.of());
+        return node == null ? Collections.emptyList() : node.nonnullGroup();
     }
 
     public static List<Table> safeTables(FlowCapableNode node) {
-        if (node == null) {
-            return Collections.emptyList();
-        }
-
-        return MoreObjects.firstNonNull(node.getTable(), ImmutableList.of());
+        return node == null ? Collections.emptyList() : node.nonnullTable();
     }
 
     public static List<Meter> safeMeters(FlowCapableNode node) {
-        if (node == null) {
-            return Collections.emptyList();
-        }
-
-        return MoreObjects.firstNonNull(node.getMeter(), ImmutableList.of());
+        return node == null ? Collections.emptyList() : node.nonnullMeter();
     }
 }
