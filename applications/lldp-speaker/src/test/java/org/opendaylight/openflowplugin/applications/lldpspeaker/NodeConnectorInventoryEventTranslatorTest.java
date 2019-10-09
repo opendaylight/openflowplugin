@@ -63,7 +63,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
      * for each FlowCapableNodeConnector item added in
-     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
+     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorCreation() {
@@ -98,7 +98,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
      * for each FlowCapableNodeConnector item that have link down state removed in
-     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
+     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorUpdateToLinkDown() {
@@ -112,7 +112,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
      * for each FlowCapableNodeConnector item with administrative down state removed in
-     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
+     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
      */
     @Test
     public void testNodeConnectorUpdateToAdminDown() {
@@ -126,7 +126,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
      * for each FlowCapableNodeConnector item with administrative up and link up state added in
-     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification}.
+     * {@link org.opendaylight.md}.
      */
     @Test
     public void testNodeConnectorUpdateToUp() {
@@ -140,7 +140,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     /**
      * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
      * for each FlowCapableNodeConnector path that
-     * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeModification} return.
+     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification} return.
      */
     @Test
     public void testNodeConnectorRemoval() {
