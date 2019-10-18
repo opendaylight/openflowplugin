@@ -75,7 +75,7 @@ public class ContextChainImpl implements ContextChain {
             contexts.forEach(OFPContext::instantiateServiceInstance);
             LOG.info("Started clustering services for node {}", deviceInfo);
         } catch (final Exception ex) {
-            LOG.warn("Not able to start clustering services for node {}", deviceInfo);
+            LOG.error("Not able to start clustering services for node {}", deviceInfo);
             executorService.execute(() -> contextChainMastershipWatcher
                     .onNotAbleToStartMastershipMandatory(deviceInfo, ex.toString()));
         }
