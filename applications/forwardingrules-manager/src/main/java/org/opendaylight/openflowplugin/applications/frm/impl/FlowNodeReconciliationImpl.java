@@ -270,7 +270,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
-                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId);
+                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId, e);
                     return false;
                 }
             }

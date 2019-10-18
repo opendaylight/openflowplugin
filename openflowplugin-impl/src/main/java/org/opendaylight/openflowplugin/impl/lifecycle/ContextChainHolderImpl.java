@@ -18,11 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
@@ -61,9 +57,8 @@ import org.slf4j.LoggerFactory;
 public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
-
-    private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
+    private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
     private static final String SEPARATOR = ":";
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
@@ -200,7 +195,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     @Override
     public void onNotAbleToStartMastership(@Nonnull final DeviceInfo deviceInfo, @Nonnull final String reason,
                                            final boolean mandatory) {
-        LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
+        LOG.error("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
 
         if (!mandatory) {
             return;
@@ -241,7 +236,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo, final String reason) {
-        LOG.warn("Not able to set SLAVE role on device {}, reason: {}", deviceInfo, reason);
+        LOG.error("Not able to set SLAVE role on device {}, reason: {}", deviceInfo, reason);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> destroyContextChain(deviceInfo));
     }
 
@@ -275,6 +270,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         copyOfChains.keySet().forEach(this::destroyContextChain);
         copyOfChains.clear();
         contextChainMap.clear();
+        OF_EVENT_LOG.debug("EOS registration closed for all devices");
         eosListenerRegistration.close();
         OF_EVENT_LOG.debug("EOS registration closed for all devices");
     }
@@ -371,16 +367,16 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     contextChain.continueInitializationAfterReconciliation();
                 } else {
                     OF_EVENT_LOG.debug("Reconciliation framework failure for device {}", deviceInfo);
-                    LOG.warn("Reconciliation framework failure for device {}", deviceInfo);
+                    LOG.warn("Reconciliation framework failure for device {} with resultState {}", deviceInfo, result);
                     destroyContextChain(deviceInfo);
                 }
             }
 
             @Override
-            public void onFailure(final Throwable throwable) {
+            public void onFailure(@Nonnull Throwable throwable) {
                 OF_EVENT_LOG.debug("Reconciliation framework failure for device {} with error {}", deviceInfo,
                         throwable.getMessage());
-                LOG.warn("Reconciliation framework failure.");
+                LOG.warn("Reconciliation framework failure for device {}", deviceInfo, throwable);
                 destroyContextChain(deviceInfo);
             }
         };

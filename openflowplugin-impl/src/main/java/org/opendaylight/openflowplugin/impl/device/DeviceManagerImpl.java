@@ -12,9 +12,11 @@ import io.netty.util.HashedWheelTimer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -36,6 +38,7 @@ import org.opendaylight.openflowplugin.impl.connection.OutboundQueueProviderImpl
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.OpenflowProtocolListenerFullImpl;
 import org.opendaylight.openflowplugin.impl.util.DeviceInitializationUtil;
+import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -52,7 +55,9 @@ import org.slf4j.LoggerFactory;
 public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
+    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
     private static final int SPY_RATE = 10;
+    private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
 
     private final OpenflowProviderConfig config;
     private final DataBroker dataBroker;
@@ -212,7 +217,16 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         if (LOG.isDebugEnabled()) {
             LOG.debug("Device context removed for node {}", deviceInfo);
         }
-
+        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
+                DeviceStateUtil.createNodeInstanceIdentifier(deviceInfo.getNodeId());
+        try {
+            this.removeDeviceFromOperationalDS(nodeInstanceIdentifier)
+                    .get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
+            LOG.error("Not able to remove device {} from operational DS. ", deviceInfo.getDatapathId(), e);
+        }
+        OF_EVENT_LOG.debug("Node removed from Oper DS, Node: {}",
+                nodeInstanceIdentifier.firstKeyOf(Node.class).getId().getValue());
         this.updatePacketInRateLimiters();
     }
 

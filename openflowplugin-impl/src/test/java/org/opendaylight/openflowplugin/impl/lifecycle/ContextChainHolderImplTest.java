@@ -258,7 +258,6 @@ public class ContextChainHolderImplTest {
                 EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NO_OWNER
         );
         contextChainHolder.ownershipChanged(ownershipChange);
-        Mockito.verify(deviceManager).removeDeviceFromOperationalDS(Mockito.any());
     }
 
     @Test
