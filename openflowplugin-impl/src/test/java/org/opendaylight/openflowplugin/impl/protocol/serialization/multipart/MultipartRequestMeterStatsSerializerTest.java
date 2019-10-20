@@ -24,7 +24,7 @@ public class MultipartRequestMeterStatsSerializerTest extends AbstractSerializer
     private static final byte PADDING_IN_MULTIPART_REQUEST_METER_BODY = 4;
     private static final long METER_ID = 42;
     private static final MultipartRequestMeterStats BODY = new MultipartRequestMeterStatsBuilder()
-            .setMeterId(new MeterId(METER_ID))
+            .setStatMeterId(new MeterId(METER_ID))
             .build();
 
     private MultipartRequestMeterStatsSerializer serializer;
