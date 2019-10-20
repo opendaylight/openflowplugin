@@ -54,7 +54,7 @@ public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsS
             .setVersion(getVersion())
             .setRequestMore(false)
             .setMultipartRequestBody(new MultipartRequestMeterStatsBuilder()
-                .setMeterId(input.getMeterId())
+                .setStatMeterId(input.getMeterId())
                 .build())
             .build();
     }
