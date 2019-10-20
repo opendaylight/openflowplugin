@@ -62,7 +62,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
             .buildRequest(new Xid(Uint32.valueOf(42L)), input))
             .getMultipartRequestBody();
 
-        assertEquals(METER_NO, body.getMeterId().getValue());
+        assertEquals(METER_NO, body.getStatMeterId().getValue());
     }
 
     @Override
