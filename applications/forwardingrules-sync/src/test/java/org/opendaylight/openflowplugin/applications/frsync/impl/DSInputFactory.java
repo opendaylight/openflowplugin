@@ -44,7 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 
 /**
  * Provides create methods for dataObjects involved in
- * {@link org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener} by inventory.
+ * {@link org.opendaylight.mdsal.binding.api.DataTreeChangeListener} by inventory.
  */
 public final class DSInputFactory {
     private DSInputFactory() {
