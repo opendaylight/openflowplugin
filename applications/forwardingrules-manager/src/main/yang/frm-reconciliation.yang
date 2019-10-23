@@ -3,7 +3,6 @@ module frm-reconciliation {
     namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:frm-reconciliation:service";
     prefix frm-reconciliation;
 
-    import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
     import opendaylight-inventory {prefix inv; revision-date "2013-08-19";}
 
     revision "2018-02-27" {

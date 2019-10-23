@@ -5,11 +5,6 @@ module node-error {
     import sal-flow {prefix flow; revision-date "2013-08-19";}
     import flow-errors {prefix error; revision-date "2013-11-16";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
-    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
-    import opendaylight-flow-types {prefix types;revision-date "2013-10-26";}
-    import opendaylight-group-types {prefix group-type;revision-date "2013-10-18";}
-    import opendaylight-meter-types {prefix meter-type;revision-date "2013-09-18";}
 
     description "Openflow error messages notifications - depricated in lithium. 
       Error messages wont be published as standalone entities but rather packed into 

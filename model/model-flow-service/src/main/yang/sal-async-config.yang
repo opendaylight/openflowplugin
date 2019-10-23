@@ -3,10 +3,7 @@ module sal-async-config {
     prefix async-config;
 
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
-    import opendaylight-port-types {prefix port-type;revision-date "2013-09-25";}
-    import opendaylight-flow-types  { prefix flow-types;  revision-date "2013-10-26"; }
     import openflow-protocol { prefix ofproto; revision-date "2013-07-31"; }
-    import packet-processing  { prefix packet-processing;  revision-date "2013-07-09"; }
 
     description "Asynchronous configuration message.";
 
