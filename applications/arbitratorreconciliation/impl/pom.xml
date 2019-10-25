@@ -20,7 +20,6 @@
         <dependency>
             <groupId>org.opendaylight.serviceutils</groupId>
             <artifactId>upgrade</artifactId>
-            <version>${serviceutils.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
