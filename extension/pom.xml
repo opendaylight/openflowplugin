@@ -3,21 +3,29 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-parent</artifactId>
-        <version>0.10.0-SNAPSHOT</version>
-        <relativePath>../parent</relativePath>
+        <groupId>org.opendaylight.odlparent</groupId>
+        <artifactId>odlparent-lite</artifactId>
+        <version>6.0.0</version>
+        <relativePath/>
     </parent>
 
-    <artifactId>openflowplugin-extension-parent</artifactId>
+    <groupId>org.opendaylight.openflowplugin</groupId>
+    <artifactId>openflowplugin-extension-aggregator</artifactId>
+    <version>0.10.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.install.skip>true</maven.install.skip>
+    </properties>
+
     <modules>
         <module>openflowjava-extension-nicira-api</module>
         <module>openflowjava-extension-nicira</module>
+        <module>openflowjava-extension-eric</module>
         <module>openflowplugin-extension-api</module>
         <module>openflowplugin-extension-nicira</module>
         <module>openflowplugin-extension-onf</module>
-        <module>openflowjava-extension-eric</module>
         <module>openflowplugin-extension-eric</module>
         <module>test-extension</module>
         <module>features-extension-aggregator</module>

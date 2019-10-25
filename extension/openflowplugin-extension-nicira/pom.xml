@@ -4,22 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-extension-parent</artifactId>
+        <artifactId>openflowplugin-parent</artifactId>
         <version>0.10.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../../parent</relativePath>
     </parent>
 
     <artifactId>openflowplugin-extension-nicira</artifactId>
     <packaging>bundle</packaging>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>

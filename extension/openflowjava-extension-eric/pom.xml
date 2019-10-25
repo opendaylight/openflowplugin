@@ -4,23 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <artifactId>openflowplugin-extension-parent</artifactId>
+        <artifactId>openflowplugin-parent</artifactId>
         <version>0.10.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../../parent</relativePath>
     </parent>
     <artifactId>openflowjava-extension-eric</artifactId>
     <packaging>bundle</packaging>
 
-    <build>
-    <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-            </plugin>
-    </plugins>
-    </build>
-
-     <dependencies>
+    <dependencies>
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
@@ -42,19 +33,9 @@
             <artifactId>netty-buffer</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-     </dependencies>
+    </dependencies>
 </project>
