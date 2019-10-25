@@ -25,7 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.gro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
@@ -182,10 +184,14 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         if (groupModInputBuilder.getCommand() != GroupModCommand.OFPGCDELETE) {
             if (source.getBuckets() != null && source.getBuckets().getBucket().size() != 0) {
 
-                Collections.sort(source.getBuckets().getBucket(), COMPARATOR);
+                List<Bucket> bucketList = new ArrayList<>(source.getBuckets().getBucket());
+                Group group = new GroupBuilder(source)
+                        .setBuckets(new BucketsBuilder().setBucket(bucketList).build())
+                        .build();
+                Collections.sort(group.getBuckets().getBucket(), COMPARATOR);
 
-                List<BucketsList> bucketLists = salToOFBucketList(source.getBuckets(), data.getVersion(),
-                        source.getGroupType().getIntValue(), data.getDatapathId());
+                List<BucketsList> bucketLists = salToOFBucketList(group.getBuckets(), data.getVersion(),
+                        group.getGroupType().getIntValue(), data.getDatapathId());
                 groupModInputBuilder.setBucketsList(bucketLists);
             }
         }
