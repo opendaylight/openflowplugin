@@ -58,7 +58,6 @@
         <dependency>
             <groupId>org.opendaylight.infrautils</groupId>
             <artifactId>infrautils-util</artifactId>
-            <version>${infrautils.version}</version>
         </dependency>
 
         <!-- OpenFlowJava-API models -->
