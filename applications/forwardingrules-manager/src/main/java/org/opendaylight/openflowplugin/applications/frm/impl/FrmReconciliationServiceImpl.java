@@ -55,7 +55,7 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
 
     @Override
     public ListenableFuture<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
-        LOG.debug("Triggering reconciliation for node: {}", input.getNodeId().toString());
+        LOG.debug("Triggering reconciliation for node: {}", input.getNodeId());
         Node nodeDpn = buildNode(input.getNodeId().longValue());
         InstanceIdentifier<FlowCapableNode> connectedNode = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeDpn.key()).augmentation(FlowCapableNode.class).build();
@@ -64,7 +64,7 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
                 .getNodeListener().reconcileConfiguration(connectedNode);
         Futures.addCallback(futureResult, new ResultCallBack(futureResult, rpcResult),
                 MoreExecutors.directExecutor());
-        LOG.debug("Completing reconciliation for node: {}", input.getNodeId().toString());
+        LOG.debug("Completing reconciliation for node: {}", input.getNodeId());
         return rpcResult;
     }
 

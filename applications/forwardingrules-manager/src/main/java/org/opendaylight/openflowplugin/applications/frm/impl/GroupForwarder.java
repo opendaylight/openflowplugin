@@ -198,7 +198,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     @Override
     public void createStaleMarkEntity(InstanceIdentifier<Group> identifier, Group del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent.toString(), del.toString());
+        LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent, del);
         StaleGroup staleGroup = makeStaleGroup(identifier, del, nodeIdent);
         persistStaleGroup(staleGroup, nodeIdent);
 

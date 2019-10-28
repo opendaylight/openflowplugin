@@ -270,7 +270,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     @Override
     public void createStaleMarkEntity(InstanceIdentifier<Flow> identifier, Flow del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent.toString(), del.toString());
+        LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent, del);
         StaleFlow staleFlow = makeStaleFlow(identifier, del, nodeIdent);
         persistStaleFlow(staleFlow, nodeIdent);
     }
@@ -399,7 +399,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         getFlowId(addFlowInput.getFlowRef()), nodeId);
             } else {
                 LOG.error("Flow add with id {} failed for node {} with error {}", getFlowId(addFlowInput.getFlowRef()),
-                        nodeId, rpcResult.getErrors().toString());
+                        nodeId, rpcResult.getErrors());
                 resultFuture.set(RpcResultBuilder.<AddFlowOutput>failed()
                         .withRpcErrors(rpcResult.getErrors()).build());
             }
@@ -449,7 +449,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         getFlowId(updateFlowInput.getFlowRef()), nodeId);
             } else {
                 LOG.error("Flow update with id {} failed for node {} with error {}",
-                        getFlowId(updateFlowInput.getFlowRef()), nodeId, rpcResult.getErrors().toString());
+                        getFlowId(updateFlowInput.getFlowRef()), nodeId, rpcResult.getErrors());
                 resultFuture.set(RpcResultBuilder.<UpdateFlowOutput>failed()
                         .withRpcErrors(rpcResult.getErrors()).build());
             }

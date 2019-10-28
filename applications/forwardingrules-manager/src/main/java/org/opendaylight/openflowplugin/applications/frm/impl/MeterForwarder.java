@@ -149,7 +149,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     @Override
     public void createStaleMarkEntity(InstanceIdentifier<Meter> identifier, Meter del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent.toString(), del.toString());
+        LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent, del);
         StaleMeter staleMeter = makeStaleMeter(del);
         persistStaleMeter(staleMeter, nodeIdent);
     }
