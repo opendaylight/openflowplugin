@@ -132,7 +132,7 @@ public class FlowWriterDirectOFRpc {
 
                 AddFlowInput addFlowInput = builder.build();
 
-                LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId, addFlowInput.toString());
+                LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId, addFlowInput);
                 LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
 
                 if (i % batchSize == 0) {
