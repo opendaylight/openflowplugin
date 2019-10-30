@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
@@ -101,7 +101,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
 
     AbstractConnectionAdapter(@NonNull final Channel channel, @Nullable final InetSocketAddress address,
                               @Nullable final int channelOutboundQueueSize) {
-        this.channel = Preconditions.checkNotNull(channel);
+        this.channel = requireNonNull(channel);
         this.address = address;
 
         responseCache = CacheBuilder.newBuilder().concurrencyLevel(1)

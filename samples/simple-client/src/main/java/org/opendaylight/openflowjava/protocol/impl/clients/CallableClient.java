@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -15,7 +16,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetAddress;
 import java.util.concurrent.Callable;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Callable client class, inspired by SimpleClient class.
@@ -46,16 +46,13 @@ public class CallableClient implements Callable<Boolean>, OFClient {
             final ScenarioHandler scenarioHandler,
             final Bootstrap bootstrap,
             final EventLoopGroup eventExecutors) {
-
-        Preconditions.checkNotNull(ipAddress, "IP address cannot be null");
-        Preconditions.checkNotNull(scenarioHandler, "Scenario handler cannot be null");
         this.port = port;
         this.securedClient = securedClient;
-        this.ipAddress = ipAddress;
+        this.ipAddress = requireNonNull(ipAddress, "IP address cannot be null");
         this.workerGroup = eventExecutors;
         this.bootstrap = bootstrap;
         this.name = name;
-        this.scenarioHandler = scenarioHandler;
+        this.scenarioHandler = requireNonNull(scenarioHandler, "Scenario handler cannot be null");
     }
 
     @Override
@@ -82,8 +79,8 @@ public class CallableClient implements Callable<Boolean>, OFClient {
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public Boolean call() throws Exception {
-        Preconditions.checkNotNull(bootstrap);
-        Preconditions.checkNotNull(workerGroup);
+        requireNonNull(bootstrap);
+        requireNonNull(workerGroup);
         LOG.info("Switch {} trying connect to controller", this.name);
         SimpleClientInitializer clientInitializer = new SimpleClientInitializer(isOnlineFuture, securedClient);
         clientInitializer.setScenario(scenarioHandler);

@@ -5,10 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -92,7 +94,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
     private final InetSocketAddress address;
 
     ChannelOutboundQueue(final Channel channel, final int queueDepth, final InetSocketAddress address) {
-        Preconditions.checkArgument(queueDepth > 0, "Queue depth has to be positive");
+        checkArgument(queueDepth > 0, "Queue depth has to be positive");
 
         /*
          * This looks like a good trade-off for throughput. Alternative is
@@ -101,7 +103,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
          * to less throughput.
          */
         this.queue = new LinkedBlockingQueue<>(queueDepth);
-        this.channel = Preconditions.checkNotNull(channel);
+        this.channel = requireNonNull(channel);
         this.maxWorkTime = TimeUnit.MICROSECONDS.toNanos(DEFAULT_WORKTIME_MICROS);
         this.address = address;
     }
@@ -153,8 +155,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
     }
 
     private void conditionalFlush(final ChannelHandlerContext ctx) {
-        Preconditions.checkState(ctx.channel().equals(channel),
-                "Inconsistent channel %s with context %s", channel, ctx);
+        checkState(ctx.channel().equals(channel), "Inconsistent channel %s with context %s", channel, ctx);
         conditionalFlush();
     }
 
