@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.cache.Cache;
 import java.util.concurrent.TimeoutException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -22,8 +23,8 @@ final class ResponseExpectedRpcListener<T extends OfHeader> extends AbstractRpcL
     ResponseExpectedRpcListener(final Object message, final String failureInfo,
             final Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache, final RpcResponseKey key) {
         super(message, failureInfo);
-        this.cache = Preconditions.checkNotNull(cache);
-        this.key = Preconditions.checkNotNull(key);
+        this.cache = requireNonNull(cache);
+        this.key = requireNonNull(key);
     }
 
     public void discard() {

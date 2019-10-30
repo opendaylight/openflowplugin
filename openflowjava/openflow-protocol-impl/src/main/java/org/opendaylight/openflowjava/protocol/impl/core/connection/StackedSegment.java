@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
+import static com.google.common.base.Verify.verify;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.FinalizableReferenceQueue;
 import com.google.common.base.FinalizableSoftReference;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 import java.lang.ref.Reference;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
@@ -53,7 +54,7 @@ final class StackedSegment {
     StackedSegment(final long baseXid, final OutboundQueueEntry[] entries) {
         this.baseXid = baseXid;
         this.endXid = baseXid + SEGMENT_SIZE;
-        this.entries = Preconditions.checkNotNull(entries);
+        this.entries = requireNonNull(entries);
     }
 
     static StackedSegment create(final long baseXid) {
@@ -151,7 +152,7 @@ final class StackedSegment {
             lastBarrierOffset = offset;
 
             final boolean success = completeEntry(entry, response);
-            Verify.verify(success, "Barrier request failed to complete");
+            verify(success, "Barrier request failed to complete");
             completeCount++;
         } else if (completeEntry(entry, response)) {
             completeCount++;

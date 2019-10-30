@@ -5,11 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Verify.verify;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import io.netty.channel.Channel;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
     protected final AbstractOutboundQueueManager<?, ?> manager;
 
     AbstractStackedOutboundQueue(final AbstractOutboundQueueManager<?, ?> manager) {
-        this.manager = Preconditions.checkNotNull(manager);
+        this.manager = requireNonNull(manager);
         firstSegment = StackedSegment.create(0L);
         uncompletedSegments.add(firstSegment);
         unflushedSegments.add(firstSegment);
@@ -101,7 +102,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
                     // Ensure we have the appropriate segment for the specified XID
                     final StackedSegment slowSegment = firstSegment;
                     final int slowOffset = (int) (xid - slowSegment.getBaseXid());
-                    Verify.verify(slowOffset >= 0);
+                    verify(slowOffset >= 0);
 
                     // Now, we let's see if we need to allocate a new segment
                     ensureSegment(slowSegment, slowOffset);
@@ -300,10 +301,10 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
     protected OutboundQueueEntry getEntry(final Long xid) {
         final StackedSegment fastSegment = firstSegment;
         final long calcOffset = xid - fastSegment.getBaseXid();
-        Preconditions.checkArgument(calcOffset >= 0, "Commit of XID %s does not match up with base XID %s",
+        checkArgument(calcOffset >= 0, "Commit of XID %s does not match up with base XID %s",
                 xid, fastSegment.getBaseXid());
 
-        Verify.verify(calcOffset <= Integer.MAX_VALUE);
+        verify(calcOffset <= Integer.MAX_VALUE);
         final int fastOffset = (int) calcOffset;
 
         if (fastOffset >= StackedSegment.SEGMENT_SIZE) {
@@ -314,7 +315,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
             synchronized (unflushedSegments) {
                 final StackedSegment slowSegment = firstSegment;
                 final long slowCalcOffset = xid - slowSegment.getBaseXid();
-                Verify.verify(slowCalcOffset >= 0 && slowCalcOffset <= Integer.MAX_VALUE);
+                verify(slowCalcOffset >= 0 && slowCalcOffset <= Integer.MAX_VALUE);
                 slowOffset = (int) slowCalcOffset;
 
                 LOG.debug("Queue {} recalculated offset of XID {} to {}", this, xid, slowOffset);
