@@ -42,6 +42,9 @@ public final class ActionExtensionHelper {
         if (extensionConvertorProvider == null) {
             return null;
         }
+        if (action == null) {
+            return null;
+        }
 
         if (action.getActionChoice() instanceof ExperimenterIdCase) {
             ExperimenterIdCase actionCase = (ExperimenterIdCase) action.getActionChoice();
