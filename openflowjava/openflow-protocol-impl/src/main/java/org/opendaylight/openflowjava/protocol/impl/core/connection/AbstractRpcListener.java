@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.concurrent.Future;
@@ -46,8 +48,8 @@ abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Vo
     }
 
     AbstractRpcListener(final Object message, final String failureInfo) {
-        this.failureInfo = Preconditions.checkNotNull(failureInfo);
-        this.message = Preconditions.checkNotNull(message);
+        this.failureInfo = requireNonNull(failureInfo);
+        this.message = requireNonNull(message);
     }
 
     public final ListenableFuture<RpcResult<T>> getResult() {
@@ -68,7 +70,7 @@ abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Vo
     @Override
     public final Object takeMessage() {
         final Object ret = message;
-        Preconditions.checkState(ret != null, "Message has already been taken");
+        checkState(ret != null, "Message has already been taken");
         message = null;
         return ret;
     }

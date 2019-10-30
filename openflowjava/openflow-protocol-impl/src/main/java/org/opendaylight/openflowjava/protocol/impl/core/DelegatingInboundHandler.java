@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterImpl;
@@ -35,7 +35,7 @@ public class DelegatingInboundHandler extends ChannelInboundHandlerAdapter {
      */
     public DelegatingInboundHandler(final MessageConsumer connectionAdapter) {
         LOG.trace("Creating DelegatingInboundHandler");
-        consumer = Preconditions.checkNotNull(connectionAdapter);
+        consumer = requireNonNull(connectionAdapter);
     }
 
     @Override

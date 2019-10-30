@@ -5,10 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Future;
@@ -83,8 +84,8 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     protected final Runnable flushRunnable = this::flush;
 
     AbstractOutboundQueueManager(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler) {
-        this.parent = Preconditions.checkNotNull(parent);
-        this.handler = Preconditions.checkNotNull(handler);
+        this.parent = requireNonNull(parent);
+        this.handler = requireNonNull(handler);
         this.address = address;
         /* Note: don't wish to use reflection here */
         currentQueue = initializeStackedOutboudnqueue();
@@ -261,8 +262,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * selected by communication pipeline.
      */
     protected Object makeMessageListenerWrapper(@Nonnull final OfHeader msg) {
-        Preconditions.checkArgument(msg != null);
-
+        checkArgument(msg != null);
         if (address == null) {
             return new MessageListenerWrapper(msg, LOG_ENCODER_LISTENER);
         }

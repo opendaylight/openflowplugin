@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.api.connection;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import javax.annotation.Nonnull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 
@@ -21,12 +22,12 @@ public class DeviceRequestFailedException extends OutboundQueueException {
 
     public DeviceRequestFailedException(final String message, @Nonnull final Error error) {
         super(message);
-        this.error = Preconditions.checkNotNull(error);
+        this.error = requireNonNull(error);
     }
 
     public DeviceRequestFailedException(final String message, @Nonnull final Error error, final Throwable cause) {
         super(message, cause);
-        this.error = Preconditions.checkNotNull(error);
+        this.error = requireNonNull(error);
     }
 
     @Nonnull public Error getError() {
