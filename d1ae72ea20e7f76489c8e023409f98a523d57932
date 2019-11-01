@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_283b68d2",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/NiciraMatchCodecs.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-17T07:03:48Z",
+      "side": 1,
+      "message": "This is not nicira standard may be better to rename to OXM_OF_MPLS_LABEL",
+      "range": {
+        "startLine": 75,
+        "startChar": 34,
+        "endLine": 75,
+        "endChar": 57
+      },
+      "revId": "d1ae72ea20e7f76489c8e023409f98a523d57932",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_483064e8",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/MplsCodec.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-17T07:03:48Z",
+      "side": 1,
+      "message": "Its MPLS Label specific codec, Better to rename the class to refer specific field",
+      "range": {
+        "startLine": 26,
+        "startChar": 13,
+        "endLine": 26,
+        "endChar": 22
+      },
+      "revId": "d1ae72ea20e7f76489c8e023409f98a523d57932",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_a84e586d",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-17T07:03:48Z",
+      "side": 1,
+      "message": "Rename to oxm instead of nxm",
+      "range": {
+        "startLine": 147,
+        "startChar": 13,
+        "endLine": 147,
+        "endChar": 16
+      },
+      "revId": "d1ae72ea20e7f76489c8e023409f98a523d57932",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_8851dc10",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-17T07:03:48Z",
+      "side": 1,
+      "message": "Please rename to  oxm instead of nxm",
+      "range": {
+        "startLine": 159,
+        "startChar": 17,
+        "endLine": 159,
+        "endChar": 20
+      },
+      "revId": "d1ae72ea20e7f76489c8e023409f98a523d57932",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_e8585034",
+        "filename": "extension/openflowjava-extension-nicira/src/main/yang/nicira-match.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-17T07:03:48Z",
+      "side": 1,
+      "message": "rename to of-mpls-label-case-value",
+      "range": {
+        "startLine": 450,
+        "startChar": 13,
+        "endLine": 450,
+        "endChar": 31
+      },
+      "revId": "d1ae72ea20e7f76489c8e023409f98a523d57932",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_c85bd42c",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/yang/openflowplugin-extension-nicira-action.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-17T07:03:48Z",
+      "side": 1,
+      "message": "rename nxm-of-mpls-label-grouping to oxm-of-mpls-label-grouping",
+      "range": {
+        "startLine": 56,
+        "startChar": 13,
+        "endLine": 56,
+        "endChar": 16
+      },
+      "revId": "d1ae72ea20e7f76489c8e023409f98a523d57932",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
