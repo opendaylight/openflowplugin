@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_d1771501",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/MplsCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-10T15:22:14Z",
+      "side": 1,
+      "message": "Change the class to OxmClassBase",
+      "range": {
+        "startLine": 24,
+        "startChar": 46,
+        "endLine": 24,
+        "endChar": 55
+      },
+      "revId": "25f098a8ef4872dde2d5dabe598660ea8493ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7123a105",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/MplsCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-10T15:22:14Z",
+      "side": 1,
+      "message": "Change the class to OxmClassBase",
+      "range": {
+        "startLine": 25,
+        "startChar": 39,
+        "endLine": 25,
+        "endChar": 48
+      },
+      "revId": "25f098a8ef4872dde2d5dabe598660ea8493ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f17e91e3",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/MplsCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-10T15:22:14Z",
+      "side": 1,
+      "message": "Change the constant to OPENFLOW_BASIC_CLASS",
+      "range": {
+        "startLine": 29,
+        "startChar": 39,
+        "endLine": 29,
+        "endChar": 56
+      },
+      "revId": "25f098a8ef4872dde2d5dabe598660ea8493ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_515b0587",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/MplsCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-10T15:22:14Z",
+      "side": 1,
+      "message": "Use OPENFLOW_BASIC_CLASS constant",
+      "range": {
+        "startLine": 57,
+        "startChar": 29,
+        "endLine": 57,
+        "endChar": 40
+      },
+      "revId": "25f098a8ef4872dde2d5dabe598660ea8493ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_91547d55",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/match/MplsCodec.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6550
+      },
+      "writtenOn": "2016-11-10T15:22:14Z",
+      "side": 1,
+      "message": "Use OxmClassBase base class",
+      "range": {
+        "startLine": 72,
+        "startChar": 11,
+        "endLine": 72,
+        "endChar": 20
+      },
+      "revId": "25f098a8ef4872dde2d5dabe598660ea8493ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
