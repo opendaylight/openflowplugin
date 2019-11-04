@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_47a4b856",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "If i need to trigger a node-removed event , i need a notification enqueuer to publish it. But since the node along with the switch has gone down the session context  is null. So could you advise me as to what to do?\n\nAlso i see that in OFEntityManager the ownership changed will not be triggered on the remaining two nodes unless they (the remaining 2 nodes) register for it(line s95 and 96) ; and the only way that happens is if it has a switch connected to it. This seems a little strange since without switches connected to it they will in no way receive the event.",
+      "range": {
+        "startLine": 240,
+        "startChar": 51,
+        "endLine": 240,
+        "endChar": 52
+      },
+      "revId": "b27913cfe643abf4ea6e17f065643ff8095fc9d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
