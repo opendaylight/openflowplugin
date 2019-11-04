@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_b839d9da",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "if the flow does not exist in OperDS and can be modified , we will still be removing and adding it, which does not seem correct.",
+      "range": {
+        "startLine": 353,
+        "startChar": 21,
+        "endLine": 353,
+        "endChar": 46
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_cc74a1ff",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
         "patchSetId": 3
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "ba51214e_58251daa",
+      "range": {
+        "startLine": 424,
+        "startChar": 68,
+        "endLine": 424,
+        "endChar": 71
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_58251daa",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "can we have a future callback rather than a checkedGet() ?",
       "range": {
         "startLine": 424,
         "startChar": 68,
@@ -74,6 +120,29 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_384dc973",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 431,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "an exception wull be an error",
+      "range": {
+        "startLine": 431,
+        "startChar": 24,
+        "endLine": 431,
+        "endChar": 29
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_0c669951",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
         "patchSetId": 3
@@ -86,6 +155,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "ba51214e_983695e6",
+      "range": {
+        "startLine": 445,
+        "startChar": 16,
+        "endLine": 445,
+        "endChar": 17
+      },
+      "revId": "c1c6e73a743a30240803121e212b42f115e1d6be",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_983695e6",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OFRpcTaskFactory.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please log in the else part",
       "range": {
         "startLine": 445,
         "startChar": 16,
