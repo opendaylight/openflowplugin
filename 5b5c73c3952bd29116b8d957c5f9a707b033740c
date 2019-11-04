@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_914ac581",
+        "filename": "applications/topology-lldp-discovery/src/main/yang/topology-lldp-discovery-config.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-10T05:32:09Z",
+      "side": 1,
+      "message": "alignment",
+      "range": {
+        "startLine": 25,
+        "startChar": 4,
+        "endLine": 37,
+        "endChar": 5
+      },
+      "revId": "5b5c73c3952bd29116b8d957c5f9a707b033740c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_51816d8e",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2017-10-10T05:32:09Z",
+      "side": 1,
+      "message": "provide a space before this line",
+      "range": {
+        "startLine": 134,
+        "startChar": 0,
+        "endLine": 134,
+        "endChar": 77
+      },
+      "revId": "5b5c73c3952bd29116b8d957c5f9a707b033740c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
