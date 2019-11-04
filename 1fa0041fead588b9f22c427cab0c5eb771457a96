@@ -61,6 +61,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_7f728ae6",
+        "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please have the constant values named",
+      "range": {
+        "startLine": 169,
+        "startChar": 39,
+        "endLine": 169,
+        "endChar": 43
+      },
+      "revId": "1fa0041fead588b9f22c427cab0c5eb771457a96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_6474c39c",
         "filename": "extension/openflowjava-extension-nicira/src/main/java/org/opendaylight/openflowjava/nx/codec/action/ConntrackCodec.java",
         "patchSetId": 3
