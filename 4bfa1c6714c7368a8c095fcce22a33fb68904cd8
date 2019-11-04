@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_9d73d44c",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T21:42:28Z",
+      "side": 1,
+      "message": "please return DEFAULT_TABLE_COUNT",
+      "range": {
+        "startLine": 156,
+        "startChar": 14,
+        "endLine": 156,
+        "endChar": 16
+      },
+      "revId": "4bfa1c6714c7368a8c095fcce22a33fb68904cd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_9dc11431",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T21:42:28Z",
+      "side": 1,
+      "message": "please define these as a constants.",
+      "range": {
+        "startLine": 68,
+        "startChar": 33,
+        "endLine": 68,
+        "endChar": 52
+      },
+      "revId": "4bfa1c6714c7368a8c095fcce22a33fb68904cd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
