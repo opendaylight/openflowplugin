@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_f070e241",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/translator/FlowRemovedTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "probably returning the IDLETIMOUT in both the cases doesn\u0027t make sense. we need to code it as a reason and return it and log in case of a default error, in any case the def would be Flow removed",
+      "range": {
+        "startLine": 89,
+        "startChar": 26,
+        "endLine": 92,
+        "endChar": 33
+      },
+      "revId": "f64739c20c9ad1855db31c3b4a1e9c679f7a449d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_70b332e9",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FlowRemovedTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Please put in the alphabetical order",
+      "revId": "f64739c20c9ad1855db31c3b4a1e9c679f7a449d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f099027a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/translator/FlowRemovedTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "why will code ever come here ?",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 236,
+        "endChar": 32
+      },
+      "revId": "f64739c20c9ad1855db31c3b4a1e9c679f7a449d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
