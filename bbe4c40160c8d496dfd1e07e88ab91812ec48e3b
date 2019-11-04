@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_6aaf56e4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2015-10-03T22:31:01Z",
+      "side": 1,
+      "message": "can you please remove this commented log.",
+      "revId": "bbe4c40160c8d496dfd1e07e88ab91812ec48e3b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
