@@ -23,6 +23,29 @@
       "revId": "bda7515953813c86b46e856583d0aba8dd89eeff",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_28a4c506",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtilsTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Can we please remove these",
+      "range": {
+        "startLine": 180,
+        "startChar": 82,
+        "endLine": 180,
+        "endChar": 85
+      },
+      "revId": "bda7515953813c86b46e856583d0aba8dd89eeff",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
