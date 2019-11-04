@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7af0899e_4388a422",
+        "filename": "extension/openflowplugin-extension-api/src/main/yang/openflowplugin-extension-general.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 7775
+      },
+      "writtenOn": "2019-11-04T22:37:47Z",
+      "side": 1,
+      "message": "Thanks Tomas\nAt the beginning, openflowplugin-extension-general.yang contained the augmentation for group-stats buckets, the SPTN project did not need this augment at present, so I commented this augment in Patch Set1:\n\n//augment \"/odl-group-stats:group-desc-stats-updated/odl-group-stats:group-desc-stats/odl-group-stats:buckets/odl-group-stats:bucket/odl-group-stats:action/odl-group-stats:action/odl-group-stats:set-field-case/odl-group-stats:set-field\" {\n//    ext:augment-identifier \"general-aug-match-notif-group-desc-stats-updated-set-field\";\n//    uses general-extension-list-grouping;\n//}\n\nTo make the code clean, I delete the commented code in Patch Set3, if you think this augment is needed, I will add it back.",
+      "parentUuid": "7af0899e_433704b1",
+      "revId": "33f98f0bbb23bade0cbe25010215f05fa3a2ec3b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
