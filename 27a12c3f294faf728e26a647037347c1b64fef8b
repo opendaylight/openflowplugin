@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_2a14fc42",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please retain the existing format, since it exceeda the 120 char boundary",
+      "range": {
+        "startLine": 56,
+        "startChar": 8,
+        "endLine": 56,
+        "endChar": 17
+      },
+      "revId": "27a12c3f294faf728e26a647037347c1b64fef8b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_cc3ac5cc",
         "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/NodeConnectorInventoryEventTranslator.java",
         "patchSetId": 1
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "7a6b29fe_ea2164a0",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 8
+      },
+      "revId": "27a12c3f294faf728e26a647037347c1b64fef8b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ea2164a0",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/NodeConnectorInventoryEventTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please register with a retry loop",
       "range": {
         "startLine": 71,
         "startChar": 0,
