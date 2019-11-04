@@ -70,6 +70,54 @@
       "revId": "241b6b98eef24712f55253f3221bd64513625fc6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ff049e7f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "in case we have more than 20 switches requesting connection, i thought this to be a limiting  point, as  by default we have Integer.MAX_VALUE as the limit for the unbounded case.\n\nOr do you think it would be better to keep the limit as 20 and make it configurable?",
+      "parentUuid": "fa57193c_5fc14a7f",
+      "range": {
+        "startLine": 96,
+        "startChar": 41,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "241b6b98eef24712f55253f3221bd64513625fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f05e8be8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "I will then put back the fixed size of 20 , should that be fine ? But in a scaled out scenario of supporting switches \u003e\u003e 20, should we make it configurable ?",
+      "parentUuid": "fa57193c_9503c10e",
+      "range": {
+        "startLine": 96,
+        "startChar": 41,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "241b6b98eef24712f55253f3221bd64513625fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
