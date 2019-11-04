@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "ba51214e_eda9cd7c",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 527
+      },
+      "writtenOn": "2016-06-14T01:58:40Z",
+      "side": 1,
+      "message": "It is better to close listener registration when FlowCapableInventoryProvider.close() is called.",
+      "range": {
+        "startLine": 79,
+        "startChar": 35,
+        "endLine": 79,
+        "endChar": 51
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_21bbd4c5",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 527
+      },
+      "writtenOn": "2016-06-13T12:27:00Z",
+      "side": 1,
+      "message": "I am worried that this will cause the issue described in bug 5974. onNoedRemoved() will be called twice for the same switch if OF plugin publishes node-removed notification.\n\nI think it is better to ignore node-removed notification published by OF plugin.",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_cdc32989",
         "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
         "patchSetId": 6
