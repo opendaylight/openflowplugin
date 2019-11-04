@@ -141,6 +141,30 @@
       "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_c1af782a",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Hi Shigeru,\n\nThis is a very specific scenario, in which the openflow switch is removed only if isOwner and hasOwner is false.\nThe scenario can occur if the controller node that is connected to the switch goes down(in a non-OFHA scenario) thereby causing the switch to remain in the oper-DS.",
+      "parentUuid": "ba51214e_21bbd4c5",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
