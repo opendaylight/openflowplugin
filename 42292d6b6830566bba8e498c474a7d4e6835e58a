@@ -23,6 +23,53 @@
       "revId": "42292d6b6830566bba8e498c474a7d4e6835e58a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_329f52b6",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "can we not include this in the imports ?",
+      "range": {
+        "startLine": 223,
+        "startChar": 80,
+        "endLine": 223,
+        "endChar": 82
+      },
+      "revId": "42292d6b6830566bba8e498c474a7d4e6835e58a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e02a208f",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "oki. Initially i thought one of them could be removed, but going through code it doesnot seem so. Hence its good",
+      "parentUuid": "7a6b29fe_522dae45",
+      "range": {
+        "startLine": 223,
+        "startChar": 80,
+        "endLine": 223,
+        "endChar": 82
+      },
+      "revId": "42292d6b6830566bba8e498c474a7d4e6835e58a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
