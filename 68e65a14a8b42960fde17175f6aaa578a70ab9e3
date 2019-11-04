@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_69b418d1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2015-09-09T11:25:21Z",
+      "side": 1,
+      "message": "can we add this login in the above if condition, so we break as soon as we see that group-id is not installed on the switch. So we can avoid further iteration through actions and buckets for that specific flow? make sense?",
+      "revId": "68e65a14a8b42960fde17175f6aaa578a70ab9e3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
