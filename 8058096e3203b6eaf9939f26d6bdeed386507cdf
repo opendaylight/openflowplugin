@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_5c60dda4",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "You are capturing the essence from a OF switch perspective, we would need to capture it from the controller aspect: \nthe essence of using an ADD or UPDATE is to prevent traffic drop during a restart. Had it not been the scenario, we could still have the code in such a way that we can trigger an ADD and if that fails, have an error handler to push an UPDATE\n\nPerformance implications might also be valid here since the reading from DS is costly, and enabling stats also a worry.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_4dd7894b",
         "filename": "docs/specs/group-add-mod.rst",
         "patchSetId": 1
@@ -38,6 +61,53 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "9a245df4_3c6529b5",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 1
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_3c6529b5",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove unwanted tabs and spaces",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 1
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_4bbe4c66",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_4dd7894b",
       "range": {
         "startLine": 92,
         "startChar": 0,
@@ -74,6 +144,53 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_fc66f1b9",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "have we done any tests, if not, its better to state as unknown.",
+      "range": {
+        "startLine": 129,
+        "startChar": 0,
+        "endLine": 129,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_eb8d80d4",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_47892a74",
+      "range": {
+        "startLine": 129,
+        "startChar": 0,
+        "endLine": 129,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_85f5d058",
         "filename": "docs/specs/group-add-mod.rst",
         "patchSetId": 1
@@ -86,6 +203,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "9a245df4_9c56d5cc",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_9c56d5cc",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "example of an usage",
       "range": {
         "startLine": 141,
         "startChar": 0,
@@ -122,6 +262,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_dc732d7e",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "group add/update TCs.\nBrown Field scenarios, configure using ADD/MOD, and then try a reprov using GROUP-ADD-OR MOD",
+      "range": {
+        "startLine": 172,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 10
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_0501e037",
         "filename": "docs/specs/group-add-mod.rst",
         "patchSetId": 1
@@ -146,6 +309,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_bc70f972",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "state that post 2.6 we would have OFPGC_ADD_OR_MOD being sent over the wire",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 185,
+        "endChar": 4
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_8dcd01ba",
         "filename": "docs/specs/group-add-mod.rst",
         "patchSetId": 1
@@ -158,6 +344,53 @@
       "side": 1,
       "message": "Not required, below reference covers the same",
       "parentUuid": "9a245df4_1c6ae580",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 10
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_1c6ae580",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "https://mail.openvswitch.org/pipermail/ovs-dev/2016-May/314962.html",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 10
+      },
+      "revId": "8058096e3203b6eaf9939f26d6bdeed386507cdf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_0b91f4f0",
+        "filename": "docs/specs/group-add-mod.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a245df4_8dcd01ba",
       "range": {
         "startLine": 187,
         "startChar": 0,
