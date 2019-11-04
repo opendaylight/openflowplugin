@@ -20,6 +20,42 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_015f3a73",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_ca1e0463",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e6617c3a",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_f513e8b5",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_95454cb5",
         "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
         "patchSetId": 4
@@ -37,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_c664384b",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_95454cb5",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_f57ac8ef",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
         "patchSetId": 4
@@ -48,6 +102,30 @@
       "writtenOn": "2016-05-24T05:19:30Z",
       "side": 1,
       "message": "this table features is enabled globally, rather than per entity, so please change the language to something like \"Send table feature request for entity {}\".",
+      "range": {
+        "startLine": 260,
+        "startChar": 39,
+        "endLine": 260,
+        "endChar": 81
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_c6c0b8e2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_f57ac8ef",
       "range": {
         "startLine": 260,
         "startChar": 39,
@@ -83,6 +161,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_665f2c42",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginConfig.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "done..still carrying the Hungarian notation :)",
+      "parentUuid": "fa57193c_15113cac",
+      "range": {
+        "startLine": 16,
+        "startChar": 26,
+        "endLine": 16,
+        "endChar": 48
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_951c2cc3",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginConfig.java",
         "patchSetId": 4
@@ -106,6 +208,30 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_010e1a34",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginConfig.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "a couple more parameters to be added , hence this class",
+      "parentUuid": "fa57193c_951c2cc3",
+      "range": {
+        "startLine": 30,
+        "startChar": 24,
+        "endLine": 30,
+        "endChar": 51
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_b52170fd",
         "filename": "openflowplugin/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/common/config/impl/rev140326/ConfigurableOpenFlowProviderModule.java",
         "patchSetId": 4
@@ -117,6 +243,30 @@
       "writtenOn": "2016-05-24T05:19:30Z",
       "side": 1,
       "message": "are we using this config anywhere? if we need it, it should be final.",
+      "range": {
+        "startLine": 29,
+        "startChar": 33,
+        "endLine": 29,
+        "endChar": 55
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_86a6c051",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/common/config/impl/rev140326/ConfigurableOpenFlowProviderModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa57193c_b52170fd",
       "range": {
         "startLine": 29,
         "startChar": 33,
@@ -164,6 +314,30 @@
       "side": 1,
       "message": "but that we can do without containers as well right ? Just add another leaf.",
       "parentUuid": "fa57193c_467308e7",
+      "range": {
+        "startLine": 111,
+        "startChar": 22,
+        "endLine": 111,
+        "endChar": 46
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_467308e7",
+        "filename": "openflowplugin/src/main/yang/openflow-plugin-cfg-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "yes, there are a couple more tunable parameters that i plan to add . modified the name to ofplugin-config-settings",
+      "parentUuid": "fa57193c_55229401",
       "range": {
         "startLine": 111,
         "startChar": 22,
