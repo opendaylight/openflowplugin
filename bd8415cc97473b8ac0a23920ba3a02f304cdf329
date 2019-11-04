@@ -1,0 +1,74 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_15113cac",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginConfig.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "i believe java best practices don\u0027t recommend variable names with _, m_, g_ etc. So if you can change it to isTableFeaturesEnabled that would be great.",
+      "range": {
+        "startLine": 16,
+        "startChar": 26,
+        "endLine": 16,
+        "endChar": 48
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_55229401",
+        "filename": "openflowplugin/src/main/yang/openflow-plugin-cfg-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "is there any specific reason we are using container rather then leaf?",
+      "range": {
+        "startLine": 111,
+        "startChar": 22,
+        "endLine": 111,
+        "endChar": 46
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_d8453018",
+        "filename": "openflowplugin/src/main/yang/openflow-plugin-cfg-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-25T20:15:24Z",
+      "side": 1,
+      "message": "but that we can do without containers as well right ? Just add another leaf.",
+      "parentUuid": "fa57193c_467308e7",
+      "range": {
+        "startLine": 111,
+        "startChar": 22,
+        "endLine": 111,
+        "endChar": 46
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
