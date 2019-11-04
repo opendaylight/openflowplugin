@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_4d1279b5",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T07:55:29Z",
+      "side": 1,
+      "message": "please log only key, rather then the whole patch, that will generate very verbose log.",
+      "range": {
+        "startLine": 191,
+        "startChar": 40,
+        "endLine": 191,
+        "endChar": 60
+      },
+      "revId": "ea14b5f2814c6a7f27978093187161ff9d6b6cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_ed454db4",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T07:55:29Z",
+      "side": 1,
+      "message": "please log the iid (only key, rather than whole iid path)",
+      "range": {
+        "startLine": 204,
+        "startChar": 22,
+        "endLine": 204,
+        "endChar": 33
+      },
+      "revId": "ea14b5f2814c6a7f27978093187161ff9d6b6cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
