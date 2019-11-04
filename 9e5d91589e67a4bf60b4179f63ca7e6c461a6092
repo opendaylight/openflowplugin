@@ -22,6 +22,30 @@
       "revId": "9e5d91589e67a4bf60b4179f63ca7e6c461a6092",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_49e547a7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Ouch!!! my bad !!! sorry addressed!!!",
+      "parentUuid": "3a65312a_c98317cb",
+      "range": {
+        "startLine": 102,
+        "startChar": 24,
+        "endLine": 102,
+        "endChar": 25
+      },
+      "revId": "9e5d91589e67a4bf60b4179f63ca7e6c461a6092",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
