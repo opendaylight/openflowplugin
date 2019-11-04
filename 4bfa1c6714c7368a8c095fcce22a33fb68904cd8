@@ -25,6 +25,98 @@
     },
     {
       "key": {
+        "uuid": "da01753e_fd8f8021",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrent.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T21:42:28Z",
+      "side": 1,
+      "message": "return DEFAULT_TABLE_COUNT ?",
+      "range": {
+        "startLine": 93,
+        "startChar": 15,
+        "endLine": 93,
+        "endChar": 16
+      },
+      "revId": "4bfa1c6714c7368a8c095fcce22a33fb68904cd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_bdadf88a",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T21:42:28Z",
+      "side": 1,
+      "message": "please fix your id, so that it can import in alphabetic order.\n\nhttps://wiki.opendaylight.org/view/GettingStarted:_Eclipse_Setup#Import_ordering\n\nPlease take care of this in all the modified files.",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 46
+      },
+      "revId": "4bfa1c6714c7368a8c095fcce22a33fb68904cd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_9daab46e",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T21:42:28Z",
+      "side": 1,
+      "message": "please mark these final, also please mark all the input parameter to final,if method is not modifying the state of the object.",
+      "range": {
+        "startLine": 40,
+        "startChar": 23,
+        "endLine": 40,
+        "endChar": 73
+      },
+      "revId": "4bfa1c6714c7368a8c095fcce22a33fb68904cd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_5dc7ac45",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T21:42:28Z",
+      "side": 1,
+      "message": "if this code is copied from some other project, then please change the year to 2016, 2017, otherwise please change the organization name as well.",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 35
+      },
+      "revId": "4bfa1c6714c7368a8c095fcce22a33fb68904cd8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_9dc11431",
         "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
         "patchSetId": 3
