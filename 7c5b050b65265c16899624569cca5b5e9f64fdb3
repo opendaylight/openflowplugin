@@ -54,6 +54,42 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_8a2c6d4c",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-03T18:03:31Z",
+      "side": 1,
+      "message": "yes but I\u0027m confused. You have an openflow-provider-config yang that I assume is used for clustered-app-config. If so, why do you need a cfg file as well with the same setting? It seems you\u0027re defining the same setting in 2 different ways. Are both injected into code and, if so, which one wins?",
+      "parentUuid": "7a6b29fe_875e26e8",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d36e2096",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-04T06:11:50Z",
+      "side": 1,
+      "message": "The CSS xml files are still there but deprecated with the conversion to blueprint. They remain for backwards compatibility. But I\u0027m not referring to that. In openflowplugin.xml, it uses the clustered-app-config extension to retrieve the openflow-provider-config yang instance and injects it into the openflowPluginProvider. It also uses the cm:managed-properties to inject cfg properties. This was added sometime after I had converted it to blueprint. My question is why was the cfg added, especially since the properties are also in the openflow-provider-config yang. Now there\u0027s 2 ways for a user to change the properties and they can stomp on one another. The cfg file should be removed.",
+      "parentUuid": "7a6b29fe_ea224100",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_f36cfc38",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 1
