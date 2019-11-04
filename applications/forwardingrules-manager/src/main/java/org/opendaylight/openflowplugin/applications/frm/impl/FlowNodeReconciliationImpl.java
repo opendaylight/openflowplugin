@@ -151,7 +151,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public ListenableFuture<Boolean> reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
         LOG.info("Triggering reconciliation for device {}", connectedNode.firstKeyOf(Node.class));
         if (provider.isStaleMarkingEnabled()) {
-            LOG.info("Stale-Marking is ENABLED and proceeding with deletion of " + "stale-marked entities on switch {}",
+            LOG.info("Stale-Marking is ENABLED and proceeding with deletion of stale-marked entities on switch {}",
                     connectedNode.toString());
             reconciliationPreProcess(connectedNode);
         }
@@ -290,8 +290,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
-        futureMap.computeIfPresent(node, (key, future) -> future).cancel(true);
-        futureMap.remove(node);
+        ListenableFuture<Boolean> listenableFuture = futureMap.computeIfPresent(node, (key, future) -> future);
+        if (listenableFuture != null) {
+            listenableFuture.cancel(true);
+            futureMap.remove(node);
+        }
         return Futures.immediateFuture(true);
     }
 
