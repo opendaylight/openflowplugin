@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_f31fdc07",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-04T06:31:05Z",
+      "side": 1,
+      "message": "I think the cfg file was added there to enable users changing the default value without re-building karaf. \n\nBut as I see now, probably the best way is to use clustered DS approach (from the link) along with \"external XML file\" with initial default values (instead of actual cfg file with update method, similar to deprecated xml for CSS). \n\nSo it would be possible for users to change config values before starting karaf and also in runtime.\n\nIs this correct understanding, Tom?",
+      "parentUuid": "7a6b29fe_d36e2096",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_f36cfc38",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 1
@@ -120,6 +138,24 @@
       "side": 1,
       "message": "Totally agree with Shuva, lets make another commit/patch to make ALL configurable parameters into xml",
       "parentUuid": "7a6b29fe_93bb0872",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_1ebb7f0f",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-04T10:19:04Z",
+      "side": 1,
+      "message": "It will not prevent runtime config modifications Shuva - as Tom mentioned, it should be possible to change config params via writing to DS then. But it would ignore initial xml file after such change in DS - that\u0027s pity, however I think this is trade-off (assuming cluster environment and runtime configuration change) between one change in distributed DS and changing xml files on all running karaf instances.\n\nSo +1 from me - let\u0027s replace cfg file and related update method with one external xml file which could be injected in blueprint openflowplugin.xml and deployed via features pom to etc/opendaylight/...",
+      "parentUuid": "7a6b29fe_be09ab2e",
       "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
