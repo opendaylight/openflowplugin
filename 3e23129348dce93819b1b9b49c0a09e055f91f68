@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_b011e0ae",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/convertor/IpConverter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 62
+      },
+      "writtenOn": "2016-06-02T18:21:15Z",
+      "side": 1,
+      "message": "With all these methods being called \u0026 those iterators - are you sure its more efficient? I will +2 it assuming these are a lot more efficient than the String split.",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 16
+      },
+      "revId": "3e23129348dce93819b1b9b49c0a09e055f91f68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
