@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_53d74ebf",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T06:48:14Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 77,
+        "startChar": 75,
+        "endLine": 77,
+        "endChar": 84
+      },
+      "revId": "ab0d89a00695b8fb8bb7df9cdc6ec15b06c08a6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_13d676c5",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T06:48:14Z",
+      "side": 1,
+      "message": "please use EOS agnostic language - \"Node is not owned by any controller instance, cleaning up the inventory data store\".",
+      "range": {
+        "startLine": 239,
+        "startChar": 23,
+        "endLine": 239,
+        "endChar": 113
+      },
+      "revId": "ab0d89a00695b8fb8bb7df9cdc6ec15b06c08a6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_73dc12e5",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T06:48:14Z",
+      "side": 1,
+      "message": "please do similar changes.",
+      "range": {
+        "startLine": 245,
+        "startChar": 23,
+        "endLine": 245,
+        "endChar": 105
+      },
+      "revId": "ab0d89a00695b8fb8bb7df9cdc6ec15b06c08a6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
