@@ -1,0 +1,74 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_b16d6707",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-03T03:49:19Z",
+      "side": 1,
+      "message": "You don\u0027t need to define it here as CSS is no longer used.",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8a058dc4",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-03T18:03:31Z",
+      "side": 1,
+      "message": "Sorry I thought this was CSS yang.",
+      "parentUuid": "7a6b29fe_074b362c",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f176bfd7",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-03T03:49:19Z",
+      "side": 1,
+      "message": "Just want to point out that the downside to using a cfg file is that the setting isn\u0027t clustered, i.e. a user would have to set it on every node.",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6bc8f074",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-04T15:07:52Z",
+      "side": 1,
+      "message": "yes. But the fact that it ignores the initial xml file after changing in DS is no different to how the CSS works. In CSS, the XML file in etc/opendaylight/karaf is the initial module config, same as the external XML file for clustered-app-config. In CSS, if you push a change via restconf, the initial files in etc/opendaylight/karaf are moved to the current.xml which is used from then on. Again this behavior is the same as with clustered-app-config when written to the DS.",
+      "parentUuid": "7a6b29fe_1ebb7f0f",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
