@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_fec1e054",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 396
+      },
+      "writtenOn": "2016-09-01T17:46:22Z",
+      "side": 1,
+      "message": "I think we should put the variable \"e\" at the end.\n\nOtherwise, I think the log message doesn\u0027t print the result of \"getDeviceInfo().getNodeId().toString()\".\n\n(Or, my understanding on the warn() method may be wrong.)",
+      "range": {
+        "startLine": 337,
+        "startChar": 86,
+        "endLine": 337,
+        "endChar": 89
+      },
+      "revId": "d1b02983a4806d754273cb7a37dacd38fc777074",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
