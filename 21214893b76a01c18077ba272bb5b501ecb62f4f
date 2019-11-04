@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_b394eae2",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-07-20T07:18:04Z",
+      "side": 1,
+      "message": "you need to first check if this instance is owner of the device or not. Get the MDSwitchMetaData from entsession, and then you can access isOwner() from ofSwitch of MDswitchMetadata. If this instance was owner of the switch, then only change the role to slave, else you don\u0027t have to send the role request. Also you have to explictly send setslaveRole() and then return at the end of the block, because in this scenario, sessionContext might be non-null, but we don\u0027t want to execute the next if() block.",
+      "range": {
+        "startLine": 252,
+        "startChar": 12,
+        "endLine": 254,
+        "endChar": 65
+      },
+      "revId": "21214893b76a01c18077ba272bb5b501ecb62f4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
