@@ -46,6 +46,54 @@
       "revId": "4a438c1a82821cb324c3fa527a495b48d4708d74",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_bd7d27ea",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "yes actually most of these are passed as constructor params, so we need to do it before the connection establishes",
+      "parentUuid": "7a6b29fe_5aae99e8",
+      "range": {
+        "startLine": 11,
+        "startChar": 1,
+        "endLine": 11,
+        "endChar": 82
+      },
+      "revId": "4a438c1a82821cb324c3fa527a495b48d4708d74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a403470c",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Sure, am pushing another gerrit for the same, need to mention the default values as well",
+      "parentUuid": "7a6b29fe_e171b1e1",
+      "range": {
+        "startLine": 11,
+        "startChar": 1,
+        "endLine": 11,
+        "endChar": 82
+      },
+      "revId": "4a438c1a82821cb324c3fa527a495b48d4708d74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
