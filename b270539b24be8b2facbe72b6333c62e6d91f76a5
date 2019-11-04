@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "5a682502_840c7096",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Can we not treat this as a constant and have a separate variable to track flood_interval ?",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 46
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_d75e1e12",
         "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
         "patchSetId": 1
@@ -19,6 +42,121 @@
     },
     {
       "key": {
+        "uuid": "5a682502_e4ee04b4",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "set-lldp-flood-interval",
+      "range": {
+        "startLine": 42,
+        "startChar": 16,
+        "endLine": 42,
+        "endChar": 20
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_442b78eb",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "interval",
+      "range": {
+        "startLine": 44,
+        "startChar": 18,
+        "endLine": 44,
+        "endChar": 22
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_04f2209a",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tab",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 4
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_2430fc55",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "get-lldp-flood-interval",
+      "range": {
+        "startLine": 51,
+        "startChar": 17,
+        "endLine": 51,
+        "endChar": 21
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_84359048",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "interval",
+      "range": {
+        "startLine": 53,
+        "startChar": 18,
+        "endLine": 53,
+        "endChar": 22
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_d7b57e32",
         "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
         "patchSetId": 1
@@ -30,6 +168,213 @@
       "writtenOn": "2016-10-26T08:31:08Z",
       "side": 1,
       "message": "I feel it may not be a good idea to combine the LLDP and statistics configuration in one review. My opinion would be to split it up as two separate reviews",
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_0476a03e",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please edit it to set-statistics-interval",
+      "range": {
+        "startLine": 45,
+        "startChar": 23,
+        "endLine": 45,
+        "endChar": 27
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_448ff823",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "set-interval",
+      "range": {
+        "startLine": 47,
+        "startChar": 19,
+        "endLine": 47,
+        "endChar": 23
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_24947c36",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "set statistics manager polling interval",
+      "range": {
+        "startLine": 49,
+        "startChar": 27,
+        "endLine": 49,
+        "endChar": 54
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_64879410",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tab",
+      "range": {
+        "startLine": 50,
+        "startChar": 10,
+        "endLine": 50,
+        "endChar": 13
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_a49fec4f",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "get-statistics interval",
+      "range": {
+        "startLine": 54,
+        "startChar": 23,
+        "endLine": 54,
+        "endChar": 27
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_84b0f0de",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "get-interval",
+      "range": {
+        "startLine": 56,
+        "startChar": 19,
+        "endLine": 56,
+        "endChar": 23
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_24091c96",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "get statistics manager polling interval",
+      "range": {
+        "startLine": 58,
+        "startChar": 27,
+        "endLine": 58,
+        "endChar": 54
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_44b6d8dd",
+        "filename": "openflowplugin-api/src/main/yang/statistics-manager-control.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tab",
+      "range": {
+        "startLine": 59,
+        "startChar": 10,
+        "endLine": 59,
+        "endChar": 13
+      },
+      "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a682502_8482b0fe",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 283,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tab",
+      "range": {
+        "startLine": 283,
+        "startChar": 0,
+        "endLine": 283,
+        "endChar": 4
+      },
       "revId": "b270539b24be8b2facbe72b6333c62e6d91f76a5",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
