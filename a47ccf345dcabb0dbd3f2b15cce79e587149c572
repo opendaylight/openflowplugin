@@ -22,6 +22,30 @@
       "revId": "a47ccf345dcabb0dbd3f2b15cce79e587149c572",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_6e839e56",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Yes it would, but is it possible to address this as a part of another gerrit (refactoring), since am  currently working on a few other changes, hence would be difficult to rebase",
+      "parentUuid": "3a65312a_837d3671",
+      "range": {
+        "startLine": 86,
+        "startChar": 13,
+        "endLine": 86,
+        "endChar": 19
+      },
+      "revId": "a47ccf345dcabb0dbd3f2b15cce79e587149c572",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
