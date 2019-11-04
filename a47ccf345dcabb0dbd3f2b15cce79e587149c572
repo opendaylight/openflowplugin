@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_837d3671",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-11-21T11:37:34Z",
+      "side": 1,
+      "message": "wouldnt be better \"enabled\" ?",
+      "range": {
+        "startLine": 86,
+        "startChar": 13,
+        "endLine": 86,
+        "endChar": 19
+      },
+      "revId": "a47ccf345dcabb0dbd3f2b15cce79e587149c572",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
