@@ -213,6 +213,42 @@
       "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ea224100",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "i donot see any xml file for openflowplugin in /etc/opendaylight. Hence its the cfg file that decides.\nAnyways since there are a lot many config-params that have to be taken care of in the xml, will raise a separate patch for it.",
+      "parentUuid": "7a6b29fe_8a2c6d4c",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_93bb0872",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "I see your point. But given that there are many config paramerters that have to be brought into the external-xml way of injecting values, can we go ahead with removing the cfg file(to prevent 2 ways of configuration insertion from stomping each other)with only the config yang approach of specifying the default value? This will however prevent the user from making any runtime modifications.\n\nWe shall have a separate commit to move the configurable parameters into an external xml. Tom, do you have an example that you can point us to of any existing project that is using it, that would be great.",
+      "parentUuid": "7a6b29fe_f36cfc38",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
