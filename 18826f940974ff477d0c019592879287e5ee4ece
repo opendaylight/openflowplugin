@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_2b515836",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please be more succint wrt the problem. \nThe current resynchronization mechanism lacks an ordered execution of tasks  across multiple applications resulting in the fwding plane not correctly reflecting the changes in the control plane. The issue becomes more prominent in case of mult-application scenarios, resulting in errors.\n\nDTCN, FRM are entities are ODL/OFP specific, hence the problem statement should be general enough for all folks to understand , the specifics could include the details.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_6547fcbc",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 7
@@ -74,6 +97,52 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_0b7f34ac",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please refrain from using acronymns",
+      "range": {
+        "startLine": 23,
+        "startChar": 61,
+        "endLine": 23,
+        "endChar": 64
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_4b4c8c9e",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please refrain from using acronymns",
+      "range": {
+        "startLine": 23,
+        "startChar": 93,
+        "endLine": 23,
+        "endChar": 97
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_a51454a0",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 7
@@ -86,6 +155,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "9a245df4_eb7bc0bb",
+      "range": {
+        "startLine": 24,
+        "startChar": 18,
+        "endLine": 24,
+        "endChar": 21
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_eb7bc0bb",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "prefer switch for DPN",
       "range": {
         "startLine": 24,
         "startChar": 18,
@@ -116,6 +208,23 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_8b420466",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Priority based/Ordered  Coordination of Reconciliation across multiple applications",
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_45e0f895",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 7
@@ -128,6 +237,29 @@
       "side": 1,
       "message": "Can you give me exactly what needs to be added? What is the state you are referring to?",
       "parentUuid": "9a245df4_6b47d077",
+      "range": {
+        "startLine": 40,
+        "startChar": 83,
+        "endLine": 41,
+        "endChar": 84
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_6b47d077",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "there seems to be a state m/c designed, please explain the other states as well",
       "range": {
         "startLine": 40,
         "startChar": 83,
@@ -164,6 +296,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_eb52a033",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "state(flows/groups/meters)",
+      "range": {
+        "startLine": 46,
+        "startChar": 43,
+        "endLine": 46,
+        "endChar": 59
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_e5812cc4",
         "filename": "docs/specs/reconciliation-framework.rst",
         "patchSetId": 7
@@ -176,6 +331,29 @@
       "side": 1,
       "message": "Added the existing sequence only, let me know what you want exactly here? All the steps are given as per the order, let me know if anything needs to be changed?",
       "parentUuid": "9a245df4_8b3964f4",
+      "range": {
+        "startLine": 56,
+        "startChar": 2,
+        "endLine": 58,
+        "endChar": 75
+      },
+      "revId": "18826f940974ff477d0c019592879287e5ee4ece",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_8b3964f4",
+        "filename": "docs/specs/reconciliation-framework.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "I guess that is the scenario now and no changes in this portion. Ideally prepare a new sequence of events chart /diag and populate the following points there",
       "range": {
         "startLine": 56,
         "startChar": 2,
