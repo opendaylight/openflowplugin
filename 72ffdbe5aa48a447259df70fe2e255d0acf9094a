@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_7709d830",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-08-10T02:10:05Z",
+      "side": 0,
+      "message": "please don\u0027t remove it, it will then won\u0027t find the FlowKey based on the custom comparator we added. I personally don\u0027t like this code, but i think we need to live with this hack till we find some better solution. So this code, basically first try to get() the key based on the hashcode, so if it does not find the key(which is possible when we have augmentation/extension in the flow), it explicitly compare with all the keys of the map (because it will be using equal method, that actually bring in the custom comparator) to find out if the key really exist.",
+      "revId": "72ffdbe5aa48a447259df70fe2e255d0acf9094a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_620ab422",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-08-10T02:10:05Z",
+      "side": 1,
+      "message": "i believe this sync block is of no user here, because for every flow it\u0027s going to create new FlowRegisteryKey and it will be new object, so there won\u0027t be any contention to acquire this lock. So it\u0027s probably not serving the purpose you want.",
+      "range": {
+        "startLine": 169,
+        "startChar": 8,
+        "endLine": 169,
+        "endChar": 40
+      },
+      "revId": "026e388ba7fdf898e8c0703a98242a8bd33a50d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_821d5012",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-08-10T02:10:05Z",
+      "side": 1,
+      "message": "i would say we should still use the same id format, to have some consistency, else it will be new type of id and user will have no clue about it. Although i don\u0027t have strong opinion on it.",
+      "range": {
+        "startLine": 252,
+        "startChar": 31,
+        "endLine": 252,
+        "endChar": 55
+      },
+      "revId": "026e388ba7fdf898e8c0703a98242a8bd33a50d3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
