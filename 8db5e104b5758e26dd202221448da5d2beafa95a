@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_b697c48f",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 14
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "I\u0027m pretty sure that if we want to turn off table features by default, this should be set to true (other occurrences respectively).",
+      "range": {
+        "startLine": 96,
+        "startChar": 21,
+        "endLine": 96,
+        "endChar": 26
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_36d2945c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "remove whitespace",
+      "range": {
+        "startLine": 182,
+        "startChar": 0,
+        "endLine": 182,
+        "endChar": 4
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f6bf7cf9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "remove indent",
+      "range": {
+        "startLine": 238,
+        "startChar": 2,
+        "endLine": 238,
+        "endChar": 6
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d6ba4009",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "remove indent",
+      "range": {
+        "startLine": 147,
+        "startChar": 6,
+        "endLine": 147,
+        "endChar": 7
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_3660d4a4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "remove line",
+      "range": {
+        "startLine": 97,
+        "startChar": 3,
+        "endLine": 97,
+        "endChar": 8
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_360734cc",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "please use spaces around if/else keywords",
+      "range": {
+        "startLine": 211,
+        "startChar": 24,
+        "endLine": 213,
+        "endChar": 30
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b6fa24bb",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "new line",
+      "range": {
+        "startLine": 237,
+        "startChar": 34,
+        "endLine": 237,
+        "endChar": 39
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_96f568cd",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImplTest.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-18T12:25:51Z",
+      "side": 1,
+      "message": "new line",
+      "range": {
+        "startLine": 160,
+        "startChar": 34,
+        "endLine": 160,
+        "endChar": 37
+      },
+      "revId": "8db5e104b5758e26dd202221448da5d2beafa95a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
