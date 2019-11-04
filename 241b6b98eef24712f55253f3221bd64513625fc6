@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "fa57193c_5fc14a7f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-09T15:00:48Z",
+      "side": 1,
+      "message": "why have you dropped the limit?",
+      "range": {
+        "startLine": 96,
+        "startChar": 41,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "241b6b98eef24712f55253f3221bd64513625fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_9503c10e",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
         "patchSetId": 2
