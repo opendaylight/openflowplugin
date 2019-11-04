@@ -1,0 +1,58 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_0c035a10",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_6c181685",
+      "revId": "2c4f0f763abc55f44a74d718e6caec87817f330f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_67ff9102",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Yes will request Luis to re-run the HA TCs for this patch-set specially",
+      "parentUuid": "da5c1566_cc084230",
+      "revId": "2c4f0f763abc55f44a74d718e6caec87817f330f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_8c176a51",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "hmmm, ideally yes, but the current design also does the same saying its a Oper DS dirty start..so just respecting the current behavior",
+      "parentUuid": "da5c1566_0c2cfaaa",
+      "revId": "2c4f0f763abc55f44a74d718e6caec87817f330f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
