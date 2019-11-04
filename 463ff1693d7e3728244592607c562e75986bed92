@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "3afa9182_cf0f84e0",
+        "filename": "applications/bulk-o-matic/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "not a strong opinion but i feel having it as a warning in the first iteration is better, since we need it for the entire plugin code in a step-by-step approach",
+      "range": {
+        "startLine": 59,
+        "startChar": 7,
+        "endLine": 65,
+        "endChar": 15
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3afa9182_8a9baac8",
         "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/BulkOMaticUtils.java",
         "patchSetId": 3
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "Agree, the automatic formatting sometimes mess things up :).",
       "parentUuid": "3afa9182_af14b8f5",
+      "range": {
+        "startLine": 44,
+        "startChar": 94,
+        "endLine": 49,
+        "endChar": 113
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_af14b8f5",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/BulkOMaticUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "its better that we respect the 120 characters width , the dotted line",
       "range": {
         "startLine": 44,
         "startChar": 94,
@@ -74,6 +120,29 @@
     },
     {
       "key": {
+        "uuid": "3afa9182_4f0394b8",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Could you please explain why we would want a finalised Keyword here",
+      "range": {
+        "startLine": 40,
+        "startChar": 12,
+        "endLine": 41,
+        "endChar": 18
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3afa9182_aaaae6d1",
         "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
         "patchSetId": 3
@@ -98,6 +167,52 @@
     },
     {
       "key": {
+        "uuid": "3afa9182_0ff98cc8",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please reformat within the 120 characters .",
+      "range": {
+        "startLine": 54,
+        "startChar": 37,
+        "endLine": 56,
+        "endChar": 109
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_eff520cc",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the extra space",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 124,
+        "endChar": 1
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3afa9182_0aafbae4",
         "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrent.java",
         "patchSetId": 3
@@ -110,6 +225,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "3afa9182_6f3130a2",
+      "range": {
+        "startLine": 196,
+        "startChar": 1,
+        "endLine": 196,
+        "endChar": 1
+      },
+      "revId": "463ff1693d7e3728244592607c562e75986bed92",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3afa9182_6f3130a2",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrent.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the extra line",
       "range": {
         "startLine": 196,
         "startChar": 1,
