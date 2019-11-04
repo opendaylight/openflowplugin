@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_2d428110",
+        "filename": "applications/lldp-speaker/src/main/java/org/opendaylight/openflowplugin/applications/lldpspeaker/LLDPSpeaker.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "any reason for this being static, since i donot find it being accessed from any other class",
+      "range": {
+        "startLine": 40,
+        "startChar": 12,
+        "endLine": 40,
+        "endChar": 44
+      },
+      "revId": "ef66c138fbc61df482d8f05566918b6327f1be0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_752f1ba2",
         "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
         "patchSetId": 1
@@ -50,6 +73,29 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_ed37e9ae",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "set-lldp-flood-interval",
+      "range": {
+        "startLine": 41,
+        "startChar": 12,
+        "endLine": 41,
+        "endChar": 24
+      },
+      "revId": "ef66c138fbc61df482d8f05566918b6327f1be0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_b5189385",
         "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
         "patchSetId": 1
@@ -62,6 +108,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "3a65312a_cd3cad96",
+      "range": {
+        "startLine": 49,
+        "startChar": 12,
+        "endLine": 49,
+        "endChar": 24
+      },
+      "revId": "ef66c138fbc61df482d8f05566918b6327f1be0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_cd3cad96",
+        "filename": "applications/lldp-speaker/src/main/yang/lldp-speaker.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "get-lldp-flood-interval",
       "range": {
         "startLine": 49,
         "startChar": 12,
