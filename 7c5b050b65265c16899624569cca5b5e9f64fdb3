@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_074b362c",
+        "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-03T16:55:02Z",
+      "side": 1,
+      "message": "I think this yang file is the right one. Older yang for CSS is in openflowplugin-impl/src/main/yang/openflow-plugin-impl.yang",
+      "parentUuid": "7a6b29fe_b16d6707",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_8a058dc4",
         "filename": "openflowplugin-api/src/main/yang/openflow-provider-config.yang",
         "patchSetId": 1
@@ -48,6 +66,24 @@
       "writtenOn": "2016-08-03T03:49:19Z",
       "side": 1,
       "message": "Just want to point out that the downside to using a cfg file is that the setting isn\u0027t clustered, i.e. a user would have to set it on every node.",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_875e26e8",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-03T16:55:02Z",
+      "side": 1,
+      "message": "Probably better would be using this approach -\u003e https://wiki.opendaylight.org/view/Using_Blueprint#Using_the_Datastore",
+      "parentUuid": "7a6b29fe_f176bfd7",
       "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
