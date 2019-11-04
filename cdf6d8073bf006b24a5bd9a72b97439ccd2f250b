@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_fb504e60",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-06-17T08:19:02Z",
+      "side": 1,
+      "message": "I think to address Shigeru\u0027s comment, we should call onNodeRemove, when following condition is true deletedNodeCache.getIfPresent(node.getNodeRef()) \u003d\u003d null\n\nif plugins OnNodeRemoved is received first, above condition will avoid another call on ownership change, but if plugin\u0027s onNodeRemove call received after entityOnwershipChange notification, it will result in two calls, but second call will be ignored because of the following condition\n\nif (deletedNodeCache.getIfPresent(node.getNodeRef()) \u003d\u003d null) {\n            deletedNodeCache.put(node.getNodeRef(), Boolean.TRUE);\n        } else {\n            //its been noted that creating an operation for already removed node, fails\n            // the entire transaction chain, there by failing deserving removals\n            LOG.debug(\"Already received notification to remove node, {} - Ignored\",\n                    node.getNodeRef().getValue());\n            return;\n        }\n\nthoughts?",
+      "parentUuid": "ba51214e_62d30739",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
