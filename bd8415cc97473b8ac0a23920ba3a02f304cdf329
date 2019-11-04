@@ -2,6 +2,24 @@
   "comments": [
     {
       "key": {
+        "uuid": "fa57193c_f513e8b5",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "fa57193c_ca1e0463",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_95454cb5",
         "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
         "patchSetId": 4
@@ -13,6 +31,29 @@
       "writtenOn": "2016-05-24T05:19:30Z",
       "side": 1,
       "message": "please remove tab.",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f57ac8ef",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "this table features is enabled globally, rather than per entity, so please change the language to something like \"Send table feature request for entity {}\".",
+      "range": {
+        "startLine": 260,
+        "startChar": 39,
+        "endLine": 260,
+        "endChar": 81
+      },
       "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -35,6 +76,29 @@
         "startChar": 26,
         "endLine": 16,
         "endChar": 48
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_951c2cc3",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginConfig.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "do we really need builder pattern here, why not just a simple pojo class?",
+      "range": {
+        "startLine": 30,
+        "startChar": 24,
+        "endLine": 30,
+        "endChar": 51
       },
       "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
