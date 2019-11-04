@@ -50,6 +50,53 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_4ff86a49",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorGuardDecorator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "shouldnot this be LOg.warn ?",
+      "range": {
+        "startLine": 93,
+        "startChar": 24,
+        "endLine": 93,
+        "endChar": 28
+      },
+      "revId": "11c5bae58c65de3a47ae8b6b5923e9af6ee8789f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8aed5028",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/impl/SyncReactorGuardDecorator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "my bad, you are correct. Shouldnot it be Log.error? IN that case you can do away with the LOG.isDebugEnabled check , or else put the one corresponding to error .",
+      "parentUuid": "7a6b29fe_6a6394dc",
+      "range": {
+        "startLine": 93,
+        "startChar": 24,
+        "endLine": 93,
+        "endChar": 28
+      },
+      "revId": "11c5bae58c65de3a47ae8b6b5923e9af6ee8789f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_4c907543",
         "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/ModificationUtil.java",
         "patchSetId": 3
@@ -62,6 +109,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "7a6b29fe_8f99e221",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 0
+      },
+      "revId": "11c5bae58c65de3a47ae8b6b5923e9af6ee8789f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8f99e221",
+        "filename": "applications/forwardingrules-sync/src/main/java/org/opendaylight/openflowplugin/applications/frsync/util/ModificationUtil.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the extra line",
       "range": {
         "startLine": 59,
         "startChar": 0,
