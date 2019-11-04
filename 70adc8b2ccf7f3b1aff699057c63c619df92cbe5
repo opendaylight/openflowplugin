@@ -1,0 +1,325 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_c122c500",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "you can have default method implementation in FlowCounterMBean.java that returns BulkOMaticUtils.DEFAULT_TABLE_COUNT, so you don\u0027t have to implement it in all the derived classes.",
+      "range": {
+        "startLine": 152,
+        "startChar": 0,
+        "endLine": 156,
+        "endChar": 5
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_011dedbd",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowWriterConcurrent.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "please see my comment on previous class.",
+      "range": {
+        "startLine": 90,
+        "startChar": 4,
+        "endLine": 93,
+        "endChar": 5
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_21775104",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "please make it final.",
+      "range": {
+        "startLine": 289,
+        "startChar": 45,
+        "endLine": 289,
+        "endChar": 65
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_0174cdfb",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "make it final.",
+      "range": {
+        "startLine": 290,
+        "startChar": 8,
+        "endLine": 290,
+        "endChar": 26
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_61603936",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "remove this blank line.",
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_a15a2181",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "minor: you don\u0027t need to specify 0 explictly, it\u0027s by default set to 0.",
+      "range": {
+        "startLine": 34,
+        "startChar": 69,
+        "endLine": 34,
+        "endChar": 70
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_815f1d72",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "please remove blank line.",
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_e153896a",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "make all the parameters final.",
+      "range": {
+        "startLine": 45,
+        "startChar": 26,
+        "endLine": 45,
+        "endChar": 76
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_014b2db1",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriter.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "suggestion: It\u0027s better to have a default method in interface, so you don\u0027t have to implement it in the derived classes if these methods return the default values.",
+      "range": {
+        "startLine": 57,
+        "startChar": 2,
+        "endLine": 65,
+        "endChar": 5
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_61c79913",
+        "filename": "applications/bulk-o-matic/src/main/yang/sal-bulk-flow.yang",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "please replace tabs with spaces.",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 1
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_81ed5d8e",
+        "filename": "applications/bulk-o-matic/src/main/yang/sal-bulk-flow.yang",
+        "patchSetId": 7
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "this rpc is very confusing. add \u003d false means delete, this is not very clear. I would suggest to define a leaf \n\nleaf operation {\n type enumeration {\n    enum add;\n    enum delete\n}\n}\n\nor if dpn-count, start-table-id and end-table-id all are just related to table-add test then use this rpc for just add test and create another rpc for the delete test.",
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_e101c93a",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "remove this class, given that the file is created in 2017.",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 22
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_c1fe4538",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "please change it to your company, until and unless this code is borrowed from any existing code.",
+      "range": {
+        "startLine": 2,
+        "startChar": 28,
+        "endLine": 2,
+        "endChar": 41
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_21fc713e",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "remove this blank line.",
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_01f96d4d",
+        "filename": "applications/bulk-o-matic/src/test/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/TableWriterTest.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-04T06:19:54Z",
+      "side": 1,
+      "message": "insert blank line before this line.",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 23
+      },
+      "revId": "70adc8b2ccf7f3b1aff699057c63c619df92cbe5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
