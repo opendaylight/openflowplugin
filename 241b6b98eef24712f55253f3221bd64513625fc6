@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_9503c10e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-05-10T11:15:40Z",
+      "side": 1,
+      "message": "I strongly believe this shall be limited in order to prevent DOS attack. \nThe only reason for having this pool is to provide simultaneous hello message (to and from device). And that message has to be delivered into netty\u0027s pipeline by a non-netty thread. So for every incoming connection there is just one task. There is one thread and 20 task slots. The thing is that if we are too slow then device will send the first hello and this pool will then be skipped for that connection.\n\nOn the other hand if we have 20 tasks pending then next connection will be actively closed. But it also means that controller is under heavy load and it makes no sense to accept another device. In my opinion - as soon as we have stress tests proving that this limit causes connection flaps and system is not overloaded than it is time to pull this constant to parameter.",
+      "parentUuid": "fa57193c_ff049e7f",
+      "range": {
+        "startLine": 96,
+        "startChar": 41,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "241b6b98eef24712f55253f3221bd64513625fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
