@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_1626b716",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatAbstractListenCommit.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Ouchhhh......addressed :)",
+      "parentUuid": "ba51214e_3b7e46af",
+      "range": {
+        "startLine": 70,
+        "startChar": 12,
+        "endLine": 70,
+        "endChar": 69
+      },
+      "revId": "a2647691b48fb119b0f8061e184246f2a0245317",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_7b68bef5",
         "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatAbstractListenCommit.java",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2016-06-17T08:35:02Z",
       "side": 1,
       "message": "any specific reason we are using SimpleTaskRetryLooper here? Just want to understand the issue you faced with simple registration.",
+      "range": {
+        "startLine": 81,
+        "startChar": 8,
+        "endLine": 92,
+        "endChar": 9
+      },
+      "revId": "a2647691b48fb119b0f8061e184246f2a0245317",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_f6222300",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatAbstractListenCommit.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "hmm...just as a precaution, since the simple registration might fail while recovering saying DataStoreUnavailable Exception while either the shard is not initialized or the  leader isnot elected",
+      "parentUuid": "ba51214e_7b68bef5",
       "range": {
         "startLine": 81,
         "startChar": 8,
