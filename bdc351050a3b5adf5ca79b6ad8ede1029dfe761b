@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_b6aef6e5",
+        "filename": "applications/topology-lldp-discovery/src/main/yang/topology-lldp-discovery-config.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-02T23:58:15Z",
+      "side": 1,
+      "message": "please fix the indentation.",
+      "range": {
+        "startLine": 14,
+        "startChar": 1,
+        "endLine": 18,
+        "endChar": 9
+      },
+      "revId": "bdc351050a3b5adf5ca79b6ad8ede1029dfe761b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_96abf2d5",
+        "filename": "applications/topology-lldp-discovery/src/main/yang/topology-lldp-discovery-config.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-02T23:58:15Z",
+      "side": 1,
+      "message": "please add description for both the leaf.",
+      "range": {
+        "startLine": 27,
+        "startChar": 7,
+        "endLine": 35,
+        "endChar": 8
+      },
+      "revId": "bdc351050a3b5adf5ca79b6ad8ede1029dfe761b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_f6b86e2c",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-02T23:58:15Z",
+      "side": 1,
+      "message": "please replace it with \"Discovery\"",
+      "range": {
+        "startLine": 119,
+        "startChar": 27,
+        "endLine": 119,
+        "endChar": 39
+      },
+      "revId": "bdc351050a3b5adf5ca79b6ad8ede1029dfe761b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_d6b56a32",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-02T23:58:15Z",
+      "side": 1,
+      "message": "Please rephrase to \"Periodic interval for sending LLDP packet for link discovery.\"",
+      "range": {
+        "startLine": 123,
+        "startChar": 28,
+        "endLine": 123,
+        "endChar": 32
+      },
+      "revId": "bdc351050a3b5adf5ca79b6ad8ede1029dfe761b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_16870263",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-10-02T23:58:15Z",
+      "side": 1,
+      "message": "please rephrase it to \"Timeout duration for LLDP response message\"",
+      "range": {
+        "startLine": 126,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 38
+      },
+      "revId": "bdc351050a3b5adf5ca79b6ad8ede1029dfe761b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
