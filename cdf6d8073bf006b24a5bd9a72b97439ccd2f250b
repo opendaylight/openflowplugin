@@ -2,6 +2,54 @@
   "comments": [
     {
       "key": {
+        "uuid": "ba51214e_cdc32989",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 527
+      },
+      "writtenOn": "2016-06-14T00:48:42Z",
+      "side": 1,
+      "message": "In my understanding, OF plugin obtains entity ownership for OF session irrespective of cluster configuration. So I think ownershipChanged() will be called when a OF session is disconnected even if OF-HA is not configured. Is this correct?\nIf correct, when OF session is disconnected and OF-HA is not configured for that session, onNodeRemoved() will be called twice for that session (one is a call from here, and another is node-removed notification). That is why I think we can simply ignore node-removed notification published by OF plugin because ownershipChanged() will remove node from operational DS when OF session is destroyed, even in case where OF-HA is not configured.",
+      "parentUuid": "ba51214e_a1ac0437",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_4d9559e3",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 527
+      },
+      "writtenOn": "2016-06-14T02:45:01Z",
+      "side": 1,
+      "message": "I understand what you intend. But this code will be executed when a switch goes down. If a switch is connected (without OF-HA) to a single node clustered controller, and that switch goes down, then ownershipChanged() will be called on that controller with an EntityOwnershipChange(wasOwner\u003dtrue, isOwner\u003dfalse, hasOwner\u003dfalse).",
+      "parentUuid": "ba51214e_c1af782a",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_fb504e60",
         "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
         "patchSetId": 6
@@ -14,6 +62,30 @@
       "side": 1,
       "message": "I think to address Shigeru\u0027s comment, we should call onNodeRemove, when following condition is true deletedNodeCache.getIfPresent(node.getNodeRef()) \u003d\u003d null\n\nif plugins OnNodeRemoved is received first, above condition will avoid another call on ownership change, but if plugin\u0027s onNodeRemove call received after entityOnwershipChange notification, it will result in two calls, but second call will be ignored because of the following condition\n\nif (deletedNodeCache.getIfPresent(node.getNodeRef()) \u003d\u003d null) {\n            deletedNodeCache.put(node.getNodeRef(), Boolean.TRUE);\n        } else {\n            //its been noted that creating an operation for already removed node, fails\n            // the entire transaction chain, there by failing deserving removals\n            LOG.debug(\"Already received notification to remove node, {} - Ignored\",\n                    node.getNodeRef().getValue());\n            return;\n        }\n\nthoughts?",
       "parentUuid": "ba51214e_62d30739",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_7e20a2f7",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 527
+      },
+      "writtenOn": "2016-06-21T11:05:19Z",
+      "side": 1,
+      "message": "It seems to work fine if single node cluster.\nIf 3-node cluster, onNodeRemoved() will be called on all the controllers in the cluster. For example, OF switch connected to 3-node clustered controller goes down, entity ownership change will be notified to all the controllers in the cluster. So all the controllers will try to delete the same node from oper DS almost simultaneously. Would not this cause any problem?",
+      "parentUuid": "ba51214e_fb504e60",
       "range": {
         "startLine": 242,
         "startChar": 25,
