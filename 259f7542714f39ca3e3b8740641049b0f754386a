@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_ad3d15be",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T06:38:00Z",
+      "side": 1,
+      "message": "remove tab",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 81,
+        "endChar": 4
+      },
+      "revId": "259f7542714f39ca3e3b8740641049b0f754386a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_0d4b615a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T06:38:00Z",
+      "side": 1,
+      "message": "this method don\u0027t register listener for EntityOwnership service, it registers listener to listen on the entity ownership change, so i think registerEntityOwnershipChangeListener().",
+      "range": {
+        "startLine": 84,
+        "startChar": 16,
+        "endLine": 84,
+        "endChar": 35
+      },
+      "revId": "259f7542714f39ca3e3b8740641049b0f754386a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_ed470d4a",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T06:38:00Z",
+      "side": 1,
+      "message": "remove tabs",
+      "revId": "259f7542714f39ca3e3b8740641049b0f754386a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_4d74399c",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T06:38:00Z",
+      "side": 1,
+      "message": "please fix the log. \"registerEntityOwnershipChangeListener: Registering entity ownership change listener for entitier of type {}\"",
+      "range": {
+        "startLine": 87,
+        "startChar": 20,
+        "endLine": 87,
+        "endChar": 60
+      },
+      "revId": "259f7542714f39ca3e3b8740641049b0f754386a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_6d5c9d26",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T06:38:00Z",
+      "side": 1,
+      "message": "listener registration task is EntityManagers job, so we should not explicitly call it from initialization. We have two options: (1) create public init method for entManager and call that from Initialization() and in init() method we should call .registerEOSListener(). (2) we should call .registerEOSListener directly from the constructor of OfEntityManager.",
+      "range": {
+        "startLine": 70,
+        "startChar": 8,
+        "endLine": 70,
+        "endChar": 41
+      },
+      "revId": "259f7542714f39ca3e3b8740641049b0f754386a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_cd404938",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T06:38:00Z",
+      "side": 1,
+      "message": "remove tab",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 1
+      },
+      "revId": "259f7542714f39ca3e3b8740641049b0f754386a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
