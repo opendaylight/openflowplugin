@@ -23,6 +23,52 @@
       "revId": "767b03eadaa49d5487bfa389b69bcc7d2a683ac0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a2681788",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/handlers/ClusterInitializationPhaseHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "any specific reason of explicitly calling it out, since its package-private in any case?",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 11
+      },
+      "revId": "767b03eadaa49d5487bfa389b69bcc7d2a683ac0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_022e2b43",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 576,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the white space",
+      "range": {
+        "startLine": 576,
+        "startChar": 13,
+        "endLine": 576,
+        "endChar": 14
+      },
+      "revId": "767b03eadaa49d5487bfa389b69bcc7d2a683ac0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
