@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "da5c1566_ad1cf514",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 5972
+      },
+      "writtenOn": "2016-05-31T07:15:43Z",
+      "side": 1,
+      "message": "if entityOwnershipService is null when initialization, OpenflowPlugin can not listen any entity role change message.",
+      "revId": "99b4d1362765c8ae2ce6f82fffa5ea3aae2548ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_ade35504",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
         "patchSetId": 6
@@ -14,6 +31,24 @@
       "side": 1,
       "message": "EOS is part of the clustering, and openflowplugin won\u0027t get initialize till EOS service instance is available.",
       "parentUuid": "da5c1566_ad1cf514",
+      "revId": "99b4d1362765c8ae2ce6f82fffa5ea3aae2548ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_edd70dec",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 5972
+      },
+      "writtenOn": "2016-05-31T07:48:22Z",
+      "side": 1,
+      "message": "in entManager.init() function, there is a if null branch about entityOwnershipService",
+      "parentUuid": "da5c1566_ade35504",
       "revId": "99b4d1362765c8ae2ce6f82fffa5ea3aae2548ba",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
