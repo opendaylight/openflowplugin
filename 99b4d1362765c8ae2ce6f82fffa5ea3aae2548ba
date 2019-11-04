@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_ade35504",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginProvider.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-31T07:23:37Z",
+      "side": 1,
+      "message": "EOS is part of the clustering, and openflowplugin won\u0027t get initialize till EOS service instance is available.",
+      "parentUuid": "da5c1566_ad1cf514",
+      "revId": "99b4d1362765c8ae2ce6f82fffa5ea3aae2548ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
