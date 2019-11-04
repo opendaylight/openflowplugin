@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_86abd488",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatAbstractListenCommit.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-06-27T22:49:30Z",
+      "side": 1,
+      "message": "failed (and remove ..).",
+      "range": {
+        "startLine": 90,
+        "startChar": 82,
+        "endLine": 90,
+        "endChar": 89
+      },
+      "revId": "67cb4238a01b0ff76e724094274eb6e12e3d69c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_c694ac46",
+        "filename": "applications/statistics-manager/src/main/java/org/opendaylight/openflowplugin/applications/statistics/manager/impl/StatAbstractListenCommit.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-06-27T22:49:30Z",
+      "side": 1,
+      "message": "must not be null.",
+      "range": {
+        "startLine": 105,
+        "startChar": 52,
+        "endLine": 105,
+        "endChar": 56
+      },
+      "revId": "67cb4238a01b0ff76e724094274eb6e12e3d69c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
