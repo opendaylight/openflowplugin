@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_615bd354",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-09T08:22:58Z",
+      "side": 1,
+      "message": "please explicitly check for the hasOwner\u003dfalse condition here, because you can reach this condition when sessionContext \u003d\u003d null \u0026\u0026 ownershipChange.hasOwner()\u003d\u003dtrue, but in this case you don\u0027t want to remove the node data. Apart from that OfEntityManager and for that matter plugin should not delete any data from the data store. Plugin should just notify the applications about the state and then application will take action on that. In this case you should just send the nodeRemoved notification up to the application and let them take care of the clean up of the data store. Refer here to figure out how you can throw nodeRemoved yang notification\nhttps://github.com/opendaylight/openflowplugin/blob/master/openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/SalRegistrationManager.java#L139",
+      "revId": "83cbaa2617e39aa7462fdf1f744e0647fd93384e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_0132d70f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-09T08:22:58Z",
+      "side": 1,
+      "message": "this will change the existing behavior of the table features. I would say, just negate this operation and skip sending the request if table features is disabled. Ideally we should do this using config subsystem, rather than through system property. Is it possible to take this change out of this patch and open a enhancement and we will enable it when we move to blue print ?",
+      "revId": "83cbaa2617e39aa7462fdf1f744e0647fd93384e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
