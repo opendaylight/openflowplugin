@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_791291b5",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-15T23:43:10Z",
+      "side": 1,
+      "message": "sp. \"do not\"",
+      "revId": "b442d30af2fb122f563ecca596ca5d1b2cd8f889",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_1946f5bf",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 5444
+      },
+      "writtenOn": "2016-06-15T23:43:10Z",
+      "side": 1,
+      "message": "since the update() method method is not doing anything, why not just remove the call here completely? And remove the update() method itself if it is not used anywhere else.",
+      "revId": "b442d30af2fb122f563ecca596ca5d1b2cd8f889",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
