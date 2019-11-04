@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_0a694025",
+        "filename": "applications/topology-manager/src/main/java/org/opendaylight/openflowplugin/applications/topology/manager/NodeChangeListenerImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-08-15T10:22:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_cf391a43",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 8
+      },
+      "revId": "f589f39c6cd4e3cabfbf77f2cd3e6d8395a016bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
