@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_72251c08",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Do subsequent enhancements include the making the ofp dependent on services like the datastore/mdsal getting ready?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 22
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_4f25d807",
         "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
         "patchSetId": 10
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "9a245df4_3101f038",
+      "range": {
+        "startLine": 57,
+        "startChar": 20,
+        "endLine": 57,
+        "endChar": 36
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_3101f038",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "can we not use a variable for the version, rather than a hardcoded value",
       "range": {
         "startLine": 57,
         "startChar": 20,
@@ -74,6 +120,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_d197b4ea",
+        "filename": "openflowplugin-api/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "could you try using a variable/inheriting the version from the parent in the worst case",
+      "range": {
+        "startLine": 96,
+        "startChar": 21,
+        "endLine": 96,
+        "endChar": 35
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_cf80a8c2",
         "filename": "openflowplugin-impl/pom.xml",
         "patchSetId": 10
@@ -98,6 +167,29 @@
     },
     {
       "key": {
+        "uuid": "9a245df4_b19cc010",
+        "filename": "openflowplugin-impl/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "same here , please edit",
+      "range": {
+        "startLine": 59,
+        "startChar": 21,
+        "endLine": 59,
+        "endChar": 35
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a245df4_6f289ce2",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 10
@@ -110,6 +202,53 @@
       "side": 1,
       "message": "This value is used only here. So is it worth defining a constant?",
       "parentUuid": "9a245df4_119e6c07",
+      "range": {
+        "startLine": 286,
+        "startChar": 76,
+        "endLine": 286,
+        "endChar": 99
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_119e6c07",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Could we use standard strings for these error messages? Define them as constants and use them?",
+      "range": {
+        "startLine": 286,
+        "startChar": 76,
+        "endLine": 286,
+        "endChar": 99
+      },
+      "revId": "c7915bdae0159ddb8c56ad461cf2c0798c32675a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_922890e3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "okii. Its fine, i thought that the SnD framework would have standardised strings for us to make use of hence,",
+      "parentUuid": "9a245df4_6f289ce2",
       "range": {
         "startLine": 286,
         "startChar": 76,
