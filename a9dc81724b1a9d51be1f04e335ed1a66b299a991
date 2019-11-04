@@ -2,6 +2,98 @@
   "comments": [
     {
       "key": {
+        "uuid": "da5c1566_b3ac5837",
+        "filename": "model/model-flow-service/src/main/yang/of-version.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tabs",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 1
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_13aa6419",
+        "filename": "model/model-flow-service/src/main/yang/of-version.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Do we really require a second yang model , since of-version is also of-message specific, can we have it in the previous yang model ?",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 4
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_73bbe072",
+        "filename": "openflowplugin-impl/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tabs",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 11
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_d3af4c2a",
+        "filename": "openflowplugin-impl/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the tabs",
+      "range": {
+        "startLine": 178,
+        "startChar": 0,
+        "endLine": 178,
+        "endChar": 11
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_d80be429",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/TranslatorLibraryUtil.java",
         "patchSetId": 2
@@ -19,6 +111,92 @@
         "startChar": 0,
         "endLine": 61,
         "endChar": 16
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_93b67489",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/TranslatorLibraryUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please explain the changes:\nwe already have a packetInTranslator registered, FlowRemoved also.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 16
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_33c168e5",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/rpc/RpcManagerImplTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove this",
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_53bcdc6c",
+        "filename": "openflowplugin/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please clean up",
+      "range": {
+        "startLine": 160,
+        "startChar": 8,
+        "endLine": 160,
+        "endChar": 9
+      },
+      "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_139384fb",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/MDController.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please clean up . we donot need this",
+      "range": {
+        "startLine": 85,
+        "startChar": 82,
+        "endLine": 85,
+        "endChar": 99
       },
       "revId": "a9dc81724b1a9d51be1f04e335ed1a66b299a991",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
