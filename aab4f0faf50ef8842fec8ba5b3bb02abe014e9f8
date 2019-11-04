@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0f5192c5_9a9982be",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllNodesCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-11-04T08:32:17Z",
+      "side": 1,
+      "message": "why this needed?",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 56
+      },
+      "revId": "aab4f0faf50ef8842fec8ba5b3bb02abe014e9f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d5b76d63_ac43a8c6",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetAllNodesCommandProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-11-04T08:32:17Z",
+      "side": 1,
+      "message": "why this method throws exception?",
+      "range": {
+        "startLine": 39,
+        "startChar": 32,
+        "endLine": 39,
+        "endChar": 51
+      },
+      "revId": "aab4f0faf50ef8842fec8ba5b3bb02abe014e9f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
