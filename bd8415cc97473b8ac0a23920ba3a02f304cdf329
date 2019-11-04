@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "fa57193c_95454cb5",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "please remove tab.",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_15113cac",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/OpenflowPluginConfig.java",
         "patchSetId": 4
@@ -18,6 +35,29 @@
         "startChar": 26,
         "endLine": 16,
         "endChar": 48
+      },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b52170fd",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/openflow/common/config/impl/rev140326/ConfigurableOpenFlowProviderModule.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2016-05-24T05:19:30Z",
+      "side": 1,
+      "message": "are we using this config anywhere? if we need it, it should be final.",
+      "range": {
+        "startLine": 29,
+        "startChar": 33,
+        "endLine": 29,
+        "endChar": 55
       },
       "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
