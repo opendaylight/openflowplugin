@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_f36cfc38",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-08-04T08:08:56Z",
+      "side": 1,
+      "message": "yes - I have recently added support in clustered-app-config to read the initial/default values from an external XML file on startup. To change it at runtime, you write to the data store, although after that the external XML file is no longer used. This is similar to CSS in that if you push a change via the restconf controller loopback mount, the config moves to the current.xml and etc/opendaylight/karaf is no longer used.",
+      "parentUuid": "7a6b29fe_f31fdc07",
+      "revId": "7c5b050b65265c16899624569cca5b5e9f64fdb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_6bc8f074",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 1
