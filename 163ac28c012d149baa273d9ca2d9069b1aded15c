@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_659b0dca",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/NodeConnectorNotificationSupplierImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "We dont use \u0027*\u0027",
+      "range": {
+        "startLine": 17,
+        "startChar": 16,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_45a089f4",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/NodeNotificationSupplierImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "we dont use \u0027*\u0027",
+      "range": {
+        "startLine": 17,
+        "startChar": 17,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_a5a52506",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/helper/TestChangeEventBuildHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "check https://wiki.opendaylight.org/view/File:Imports.png",
+      "range": {
+        "startLine": 13,
+        "startChar": 17,
+        "endLine": 13,
+        "endChar": 19
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_85aaa1d2",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/helper/TestData.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "https://wiki.opendaylight.org/view/File:Imports.png",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 28
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_a5f36509",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/helper/TestSupplierVerifyHelper.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "Plz dont use comments, we got all in git history :)",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 69
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_85f8e1e6",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/item/FlowNotificationSupplierImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "https://wiki.opendaylight.org/view/File:Imports.png",
+      "range": {
+        "startLine": 17,
+        "startChar": 16,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_e5dc3d77",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/item/GroupNotificationSupplierImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "https://wiki.opendaylight.org/view/File:Imports.png",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_c5d93985",
+        "filename": "applications/notification-supplier/src/test/java/org/opendaylight/openflowplugin/applications/notification/supplier/impl/item/MeterNotificationSupplierImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-29T08:58:30Z",
+      "side": 1,
+      "message": "https://wiki.opendaylight.org/view/File:Imports.png",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "163ac28c012d149baa273d9ca2d9069b1aded15c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
