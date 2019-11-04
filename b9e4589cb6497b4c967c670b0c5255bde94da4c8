@@ -1,0 +1,68 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_86baacdf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-10-31T07:09:51Z",
+      "side": 1,
+      "message": "http://chris.beams.io/posts/git-commit/",
+      "revId": "b9e4589cb6497b4c967c670b0c5255bde94da4c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_46f1b4cc",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-10-31T07:09:14Z",
+      "side": 1,
+      "message": "why are you passing inverted value here?",
+      "range": {
+        "startLine": 102,
+        "startChar": 24,
+        "endLine": 102,
+        "endChar": 46
+      },
+      "revId": "b9e4589cb6497b4c967c670b0c5255bde94da4c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_c682e4ff",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-10-31T07:51:34Z",
+      "side": 1,
+      "message": "seeing StatCtxImpl, shuttingDownStatisticsPolling is just not right name for the field since this variable has the same meaning as the former - isStatisticsPolling on/off - therefore I think better would be to align StatCtx with these changes",
+      "parentUuid": "3a65312a_c6b4a4f4",
+      "range": {
+        "startLine": 102,
+        "startChar": 24,
+        "endLine": 102,
+        "endChar": 46
+      },
+      "revId": "b9e4589cb6497b4c967c670b0c5255bde94da4c8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
