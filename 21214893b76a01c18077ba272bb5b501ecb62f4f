@@ -22,6 +22,30 @@
       "revId": "21214893b76a01c18077ba272bb5b501ecb62f4f",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_add9f5f4",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_b394eae2",
+      "range": {
+        "startLine": 252,
+        "startChar": 12,
+        "endLine": 254,
+        "endChar": 65
+      },
+      "revId": "21214893b76a01c18077ba272bb5b501ecb62f4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
