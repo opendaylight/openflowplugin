@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_242c4947",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Will definitely take care of it. Thanks for the comments",
+      "parentUuid": "fa57193c_615bd354",
+      "revId": "83cbaa2617e39aa7462fdf1f744e0647fd93384e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_0132d70f",
         "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2016-05-09T08:22:58Z",
       "side": 1,
       "message": "this will change the existing behavior of the table features. I would say, just negate this operation and skip sending the request if table features is disabled. Ideally we should do this using config subsystem, rather than through system property. Is it possible to take this change out of this patch and open a enhancement and we will enable it when we move to blue print ?",
+      "revId": "83cbaa2617e39aa7462fdf1f744e0647fd93384e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_4427bd64",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/role/OfEntityManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "my bad!! this fix wasnt even targeted for this patch. I will definitely take care of this. It would be great if you could point me to any patch that makes use of config sub-system based configurable parameter. I am still trying to figure out which all places to stitch",
+      "parentUuid": "fa57193c_0132d70f",
       "revId": "83cbaa2617e39aa7462fdf1f744e0647fd93384e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
