@@ -73,6 +73,29 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_045417fd",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/MultipleLearningSwitchHandlerFacadeImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the unwanted tabs",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 8
+      },
+      "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_bfa4504b",
         "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/PacketInDispatcherImpl.java",
         "patchSetId": 1
@@ -85,6 +108,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "7a6b29fe_2451530f",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 4
+      },
+      "revId": "0b012e3284d7ca1dc472d1dac2e0f8d0a8342311",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2451530f",
+        "filename": "samples/learning-switch/src/main/java/org/opendaylight/openflowplugin/learningswitch/multi/PacketInDispatcherImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "please remove the unwanted tabs",
       "range": {
         "startLine": 22,
         "startChar": 0,
