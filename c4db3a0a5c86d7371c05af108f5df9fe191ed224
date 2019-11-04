@@ -55,6 +55,47 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_a0680388",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Also can we link the spec to the gerrit as well, so that we can view the design and the implementation together",
+      "parentUuid": "da2a55be_4a84c60b",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a0ff63a9",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Either use it or remove it, please maintain the consistency of usage",
+      "range": {
+        "startLine": 101,
+        "startChar": 7,
+        "endLine": 101,
+        "endChar": 14
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_4f9fb850",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesProperty.java",
         "patchSetId": 5
@@ -184,6 +225,29 @@
       "side": 1,
       "message": "I think info is better, as this is the only log that you should dump when you do reconciliation, rest all log for reconciliation should be debug.",
       "parentUuid": "da2a55be_a0eda3f1",
+      "range": {
+        "startLine": 148,
+        "startChar": 16,
+        "endLine": 148,
+        "endChar": 20
+      },
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a0eda3f1",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Shouldnot debug be a better option than info, take a scaleout scenario of around 1000 dpns, this could be a possible culprit for flows switches reconciling slowly",
       "range": {
         "startLine": 148,
         "startChar": 16,
@@ -394,6 +458,24 @@
       "writtenOn": "2017-12-20T19:40:31Z",
       "side": 1,
       "message": "Done",
+      "parentUuid": "da2a55be_6fcb9c53",
+      "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a0c4835f",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "\"Error occurred while reading the configuration data store for node {}: {}\", nodeIdentity,e)",
       "parentUuid": "da2a55be_6fcb9c53",
       "revId": "c4db3a0a5c86d7371c05af108f5df9fe191ed224",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
