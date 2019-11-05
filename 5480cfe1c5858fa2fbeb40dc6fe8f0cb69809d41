@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "65f797ec_3b75b311",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2019-11-05T07:08:41Z",
+      "side": 1,
+      "message": "@GuardedBy on methods should be replaced by @Holding -- otherwise the annotations says the returned object should be accessed while holding a particular lock.",
+      "range": {
+        "startLine": 11,
+        "startChar": 23,
+        "endLine": 11,
+        "endChar": 33
+      },
+      "revId": "5480cfe1c5858fa2fbeb40dc6fe8f0cb69809d41",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
