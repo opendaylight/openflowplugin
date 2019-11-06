@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ff6b4b6_727fe9a7",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/GroupConvertor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-11-06T08:55:18Z",
+      "side": 1,
+      "message": "Group group \u003d new GroupBuilder(source)\n                        .setBuckets(new BucketsBuilder().setBucket(source.getBuckets().getBucket()).build())\n                        .build();",
+      "range": {
+        "startLine": 187,
+        "startChar": 11,
+        "endLine": 189,
+        "endChar": 33
+      },
+      "revId": "ad57c0edc2e2509657cbf24a359dbf1c380f4443",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
