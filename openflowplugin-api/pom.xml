@@ -49,7 +49,6 @@
         <dependency>
             <groupId>org.opendaylight.infrautils</groupId>
             <artifactId>diagstatus-api</artifactId>
-            <version>${infrautils.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
