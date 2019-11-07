@@ -1,0 +1,49 @@
+module node-ssl-connection-error {
+    namespace "urn:opendaylight:node-ssl-connection-error:service";
+    prefix node-ssl-connection-error;
+
+    import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+
+    description "Openflow node connection ";
+
+    revision "2019-07-23" {
+        description "Initial revision of node ssl connection errors.";
+    }
+
+    typedef ssl-error-type {
+        description "Openflow node connection error types.";
+        type enumeration {
+            enum ssl-con-failed;
+        }
+    }
+
+    grouping error-message {
+        description "Error message structure.";
+        leaf type {
+            type ssl-error-type;
+        }
+
+        leaf code {
+            type uint16;
+            description "Error code";
+        }
+
+        leaf node-ip-address {
+        	type inet:ip-address;
+        	description "Connecting Node IP address.";
+        }
+
+        leaf data {
+            type string;
+            description "Node SSL error cause";
+        }
+    }
+
+    notification ssl-error {
+        description "Model for Node SSL Error Messages";
+
+        uses error-message;
+    }
+
+}
+
