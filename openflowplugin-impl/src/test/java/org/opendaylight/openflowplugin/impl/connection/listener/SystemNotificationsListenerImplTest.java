@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
@@ -53,6 +54,9 @@ public class SystemNotificationsListenerImplTest {
     private ConnectionAdapter connectionAdapter;
     @Mock
     private FeaturesReply features;
+    @Mock
+    NotificationPublishService notificationPublishService;
+
 
     private ConnectionContext connectionContext;
     private ConnectionContextImpl connectionContextGolem;
@@ -77,8 +81,8 @@ public class SystemNotificationsListenerImplTest {
 
         Mockito.when(features.getAuxiliaryId()).thenReturn(Uint8.ZERO);
 
-        systemNotificationsListener =
-                new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT, threadPool);
+        systemNotificationsListener = new SystemNotificationsListenerImpl(connectionContext, ECHO_REPLY_TIMEOUT,
+                threadPool, notificationPublishService);
     }
 
     @After
