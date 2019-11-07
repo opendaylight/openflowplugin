@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -108,6 +109,8 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
                 disconnectOccured = true;
             } else if (message instanceof SwitchIdleEvent) {
                 systemListener.onSwitchIdleEvent((SwitchIdleEvent) message);
+            } else if (message instanceof SslConnectionError) {
+                systemListener.onSslConnectionError((SslConnectionError) message);
             // OpenFlow messages
             } else if (message instanceof EchoRequestMessage) {
                 if (outputManager != null) {

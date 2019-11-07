@@ -9,6 +9,8 @@ package org.opendaylight.openflowplugin.impl.connection;
 
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
+import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -39,11 +41,15 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private final ExecutorService executorService;
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
+    private final NotificationPublishService notificationPublishService;
 
-    public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService) {
+    public ConnectionManagerImpl(final OpenflowProviderConfig config,
+            final ExecutorService executorService,
+            @NonNull final NotificationPublishService notificationPublishService) {
         this.config = config;
         this.executorService = executorService;
         this.deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
@@ -69,8 +75,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(
-                connectionContext, config.getEchoReplyTimeout().getValue().toJava(), executorService);
+        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext,
+                config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");
