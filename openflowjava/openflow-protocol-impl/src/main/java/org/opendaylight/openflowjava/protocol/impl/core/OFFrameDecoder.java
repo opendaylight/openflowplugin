@@ -15,6 +15,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionFacade;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionErrorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
     private static final Logger LOG = LoggerFactory.getLogger(OFFrameDecoder.class);
     private final ConnectionFacade connectionFacade;
     private boolean firstTlsPass = false;
+    private boolean tlsPresent = false;
 
     /**
      * Constructor of class.
@@ -43,6 +45,7 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
         if (tlsPresent) {
             firstTlsPass = true;
         }
+        this.tlsPresent = tlsPresent;
         this.connectionFacade = connectionFacade;
     }
 
@@ -55,6 +58,22 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
         }
         LOG.warn("Closing connection.");
         ctx.close();
+        if (tlsPresent) {
+            String errorCause = getSslErrorCause(cause);
+            LOG.trace("SSL Error info {}", errorCause);
+            SslConnectionErrorBuilder sslConnectionErrorBuilder = new SslConnectionErrorBuilder();
+            sslConnectionErrorBuilder.setInfo(errorCause);
+            this.connectionFacade.consume(sslConnectionErrorBuilder.build());
+        }
+    }
+
+    private String getSslErrorCause(Throwable cause) {
+        String sslError = null;
+        while (cause.getCause() != null) {
+            sslError = cause.getCause().getMessage();
+            cause = cause.getCause();
+        }
+        return sslError;
     }
 
     @Override

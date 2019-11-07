@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -218,5 +219,11 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     public void initiateConnection(SwitchConnectionProviderImpl switchConnectionProvider, String host, int port) {
         LOGGER.trace("MockPlugin().initiateConnection()");
         switchConnectionProvider.initiateConnection(host, port);
+    }
+
+    @Override
+    public void onSslConnectionError(SslConnectionError notification) {
+        LOGGER.debug("Ssl error occured: {}", notification.getInfo());
+
     }
 }

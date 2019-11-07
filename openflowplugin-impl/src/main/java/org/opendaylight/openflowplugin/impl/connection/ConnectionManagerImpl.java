@@ -22,6 +22,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
@@ -61,9 +62,11 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private DeviceConnectedHandler deviceConnectedHandler;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private DeviceConnectionStatusProvider deviceConnectionStatusProvider;
+    private final NotificationPublishService notificationPublishService;
 
     public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService,
-                                 final DataBroker dataBroker) {
+                                 final DataBroker dataBroker,
+                                 @NonNull final NotificationPublishService notificationPublishService) {
         this.config = config;
         this.executorService = executorService;
         this.deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
@@ -71,6 +74,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         this.deviceConnectionHoldTime = config.getDeviceConnectionHoldTimeInSeconds().toJava();
         deviceConnectionStatusProvider = new DeviceConnectionStatusProviderImpl();
         deviceConnectionStatusProvider.init();
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
@@ -97,8 +101,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
         connectionAdapter.setMessageListener(ofMessageListener);
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(
-                connectionContext, config.getEchoReplyTimeout().getValue().toJava(), executorService);
+        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext,
+                config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService);
         connectionAdapter.setSystemListener(systemListener);
 
         LOG.trace("connection ballet finished");

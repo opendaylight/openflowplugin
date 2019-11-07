@@ -28,4 +28,12 @@
         }
     }
 
+    notification ssl-connection-error {
+        description "Switch ssl connection error notification";
+        leaf info {
+            type string;
+        }
+    }
+
+
 }

@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -59,6 +60,8 @@ public class ConnectionManagerImplTest {
     private ConnectionAdapter connection;
     @Mock
     private DeviceConnectedHandler deviceConnectedHandler;
+    @Mock
+    private NotificationPublishService notificationPublishService;
     @Captor
     private ArgumentCaptor<ConnectionReadyListener> connectionReadyListenerAC;
     @Captor
@@ -80,7 +83,7 @@ public class ConnectionManagerImplTest {
                 .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
                 .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
                 .setDeviceConnectionHoldTimeInSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS)
-                .build(), threadPool, dataBroker);
+                .build(), threadPool, dataBroker, notificationPublishService);
 
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);
         final InetSocketAddress deviceAddress = InetSocketAddress.createUnresolved("yahoo", 42);
