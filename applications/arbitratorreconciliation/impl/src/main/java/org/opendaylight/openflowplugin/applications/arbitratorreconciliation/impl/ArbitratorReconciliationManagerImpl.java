@@ -12,8 +12,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
@@ -40,11 +39,9 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 import org.opendaylight.serviceutils.upgrade.UpgradeState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -62,7 +59,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.flow._case.RemoveFlowCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.group._case.RemoveGroupCaseDataBuilder;
@@ -77,6 +76,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -99,12 +99,24 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private static final String SERVICE_NAME = "ArbitratorReconciliationManager";
     private static final String SEPARATOR = ":";
 
+    private static final BundleRemoveFlowCase DELETE_ALL_FLOW = new BundleRemoveFlowCaseBuilder()
+            .setRemoveFlowCaseData(
+                new RemoveFlowCaseDataBuilder(new FlowBuilder().setTableId(OFConstants.OFPTT_ALL).build()).build())
+            .build();
+    private static final BundleRemoveGroupCase DELETE_ALL_GROUP = new BundleRemoveGroupCaseBuilder()
+            .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(new GroupBuilder()
+                .setGroupType(GroupTypes.GroupAll)
+                .setGroupId(new GroupId(OFConstants.OFPG_ALL))
+                .build()).build())
+            .build();
+
     private final SalBundleService salBundleService;
     private final ReconciliationManager reconciliationManager;
     private final RoutedRpcRegistration routedRpcReg;
     private final UpgradeState upgradeState;
     private NotificationRegistration registration;
-    private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(
+            Executors.newFixedThreadPool(THREAD_POOL_SIZE));
     private final Map<Uint64, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
 
     @Inject
@@ -193,7 +205,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             return reconcileConfiguration(node);
         }
         LOG.trace("arbitrator reconciliation is disabled");
-        return Futures.immediateFuture(true);
+        return FluentFutures.immediateTrueFluentFuture();
     }
 
     @Override
@@ -202,7 +214,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         LOG.trace("Stopping arbitrator reconciliation for node {}", datapathId);
         bundleIdMap.remove(datapathId);
         deregisterRpc(node);
-        return Futures.immediateFuture(true);
+        return FluentFutures.immediateTrueFluentFuture();
     }
 
     @Override
@@ -223,37 +235,17 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private ListenableFuture<Boolean> reconcileConfiguration(DeviceInfo node) {
         LOG.info("Triggering arbitrator reconciliation for device {}", node.getDatapathId());
         ArbitratorReconciliationTask upgradeReconTask = new ArbitratorReconciliationTask(node);
-        return JdkFutureAdapters.listenInPoolThread(executor.submit(upgradeReconTask));
+        return executor.submit(upgradeReconTask);
     }
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
-                new BundleRemoveFlowCaseBuilder()
-                .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(getDeleteAllFlow()).build())
-                .build()).build());
-
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(
-                new BundleRemoveGroupCaseBuilder()
-                .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(getDeleteAllGroup()).build())
-                .build()).build());
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(DELETE_ALL_FLOW).build());
+        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(DELETE_ALL_GROUP).build());
         LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
         return new MessagesBuilder().setMessage(messages).build();
-    }
-
-    private Flow getDeleteAllFlow() {
-        final FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.setTableId(OFConstants.OFPTT_ALL);
-        return flowBuilder.build();
-    }
-
-    private Group getDeleteAllGroup() {
-        final GroupBuilder groupBuilder = new GroupBuilder();
-        groupBuilder.setGroupType(GroupTypes.GroupAll);
-        groupBuilder.setGroupId(new GroupId(OFConstants.OFPG_ALL));
-        return groupBuilder.build();
     }
 
     private class ArbitratorReconciliationTask implements Callable<Boolean> {
@@ -297,13 +289,13 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                             return salBundleService
                                     .addBundleMessages(addBundleMessagesInput);
                         }
-                        return Futures.immediateFuture(null);
+                        return FluentFutures.immediateNullFluentFuture();
                     }, MoreExecutors.directExecutor());
             Uint64 nodeId = getDpnIdFromNodeName(node);
             try {
                 if (addBundleMessagesFuture.get().isSuccessful()) {
                     bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue,
-                            Futures.immediateFuture(null)));
+                        FluentFutures.immediateNullFluentFuture()));
                     LOG.debug("Arbitrator reconciliation initial task has been completed for node {} and open up"
                             + " for application programming.", nodeId);
                     return true;
