@@ -22,7 +22,7 @@ public class MultipartRequestMeterStatsSerializer implements OFSerializer<Multip
     @Override
     public void serialize(final MultipartRequestMeterStats multipartRequestMeterStats, final ByteBuf byteBuf) {
         byteBuf.writeInt(MoreObjects
-            .firstNonNull(multipartRequestMeterStats.getMeterId(), new MeterId(OFConstants.OFPM_ALL))
+            .firstNonNull(multipartRequestMeterStats.getStatMeterId(), new MeterId(OFConstants.OFPM_ALL))
                 .getValue().intValue());
         byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_METER_BODY);
     }

@@ -148,7 +148,7 @@ module opendaylight-meter-statistics {
             // Empty request case
         }
         case multipart-request-meter-stats {
-            leaf meter-id {
+            leaf stat-meter-id {
                 type meter-types:meter-id;
             }
         }
