@@ -157,7 +157,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         provider.getDevicesGroupRegistry().clearNodeGroups(nodeId);
         if (provider.isStaleMarkingEnabled()) {
             LOG.info("Stale-Marking is ENABLED and proceeding with deletion of " + "stale-marked entities on switch {}",
-                    connectedNode.toString());
+                    connectedNode);
             reconciliationPreProcess(connectedNode);
         }
         if (provider.isBundleBasedReconciliationEnabled()) {
@@ -293,8 +293,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
-        futureMap.computeIfPresent(node, (key, future) -> future).cancel(true);
-        futureMap.remove(node);
+        ListenableFuture<Boolean> listenableFuture = futureMap.computeIfPresent(node, (key, future) -> future);
+        if (listenableFuture != null) {
+            listenableFuture.cancel(true);
+            futureMap.remove(node);
+        }
         return Futures.immediateFuture(true);
     }
 
@@ -367,7 +370,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                     if (toBeInstalledGroups.isEmpty() && !suspectedGroups.isEmpty()) {
                         LOG.debug("These Groups are pointing to node-connectors that are not up yet {}",
-                                suspectedGroups.toString());
+                                suspectedGroups);
                         toBeInstalledGroups.addAll(suspectedGroups);
                         break;
                     }
@@ -409,7 +412,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                         LOG.debug(
                                                 "Not yet received the node-connector updated for {} "
                                                         + "for the group with id {}",
-                                                nodeConnectorUri, group.getGroupId().toString());
+                                                nodeConnectorUri, group.getGroupId());
                                         break;
                                     }
                                 } else if (action.getAction().implementedInterface().getName()
@@ -449,7 +452,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         LOG.debug(
                                 "Installing the group {} finally although "
                                         + "the port is not up after checking for {} times ",
-                                group.getGroupId().toString(), provider.getReconciliationRetryCount());
+                                group.getGroupId(), provider.getReconciliationRetryCount());
                         addGroup(groupFutures, group);
                     }
                 }
@@ -578,7 +581,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         if (flowNode.isPresent()) {
 
             LOG.debug("Proceeding with deletion of stale-marked Flows on switch {} using Openflow interface",
-                    nodeIdent.toString());
+                    nodeIdent);
             /* Stale-Flows - Stale-marked Flows have to be removed first for safety */
             List<Table> tables = flowNode.get().getTable() != null ? flowNode.get().getTable()
                     : Collections.<Table>emptyList();
@@ -602,7 +605,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             LOG.debug("Proceeding with deletion of stale-marked Groups for switch {} using Openflow interface",
-                    nodeIdent.toString());
+                    nodeIdent);
 
             // TODO: Should we collate the futures of RPC-calls to be sure that groups are
             // Flows are fully deleted
@@ -625,7 +628,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             LOG.debug("Proceeding with deletion of stale-marked Meters for switch {} using Openflow interface",
-                    nodeIdent.toString());
+                    nodeIdent);
             /* Stale-marked Meters - can be deleted anytime - so least priority */
             List<StaleMeter> staleMeters = flowNode.get().getStaleMeter() != null ? flowNode.get().getStaleMeter()
                     : Collections.<StaleMeter>emptyList();
@@ -646,7 +649,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
 
         LOG.debug("Deleting all stale-marked flows/groups/meters of for switch {} in Configuration DS",
-                nodeIdent.toString());
+                nodeIdent);
         // Now, do the bulk deletions
         deleteDSStaleFlows(staleFlowsToBeBulkDeleted);
         deleteDSStaleGroups(staleGroupsToBeBulkDeleted);
