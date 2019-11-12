@@ -165,6 +165,54 @@
       "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_a1ac0437",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 7865
+      },
+      "writtenOn": "2019-11-12T23:22:49Z",
+      "side": 1,
+      "message": "You mean that we leave the switch data to be present in OPer DS ? In cases where OF-HA is not being used AND the cluster-node where switch is connected is rebooted, Oper DS will still contain switch info. Now, when switch reconnects to the same cluster-node or different cluster-node, even if we try to update Oper DS, DataTreeChange notification would not be fired (because we are updating same switch infor again) and hence reconciliation would not trigger. \nDo you agree with the above issue ?",
+      "parentUuid": "ba51214e_21bbd4c5",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_62d30739",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 7865
+      },
+      "writtenOn": "2019-11-12T23:22:49Z",
+      "side": 1,
+      "message": "I agree with your point. We are having a brief design discussion to see if its possible to address this disparate issues in a more elegant manner. I guess, for now, we can hold back this patch",
+      "parentUuid": "ba51214e_4d9559e3",
+      "range": {
+        "startLine": 242,
+        "startChar": 25,
+        "endLine": 242,
+        "endChar": 26
+      },
+      "revId": "cdf6d8073bf006b24a5bd9a72b97439ccd2f250b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
