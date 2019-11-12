@@ -20,6 +20,23 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_83b9d930",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 7865
+      },
+      "writtenOn": "2019-11-12T23:22:49Z",
+      "side": 1,
+      "message": "If hasOwner is false, would this still fall through to enqueue ?",
+      "revId": "fb495a8837d266799c0419ce4cef3cc94f4da13e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_a3ee9d20",
         "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
         "patchSetId": 5
@@ -32,6 +49,23 @@
       "side": 1,
       "message": "will add one",
       "parentUuid": "da5c1566_682c62ac",
+      "revId": "fb495a8837d266799c0419ce4cef3cc94f4da13e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_682c62ac",
+        "filename": "applications/inventory-manager/src/main/java/org/opendaylight/openflowplugin/applications/inventory/manager/NodeChangeCommiter.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 7865
+      },
+      "writtenOn": "2019-11-12T23:22:49Z",
+      "side": 1,
+      "message": "Would be useful to have a debug log since we might hit this in odd conditions and would be easy to troubleshoot with a distinct log statement",
       "revId": "fb495a8837d266799c0419ce4cef3cc94f4da13e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
