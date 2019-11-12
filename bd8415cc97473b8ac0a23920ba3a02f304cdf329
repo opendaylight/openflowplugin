@@ -56,6 +56,23 @@
     },
     {
       "key": {
+        "uuid": "fa57193c_ca1e0463",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 7865
+      },
+      "writtenOn": "2019-11-12T23:22:49Z",
+      "side": 1,
+      "message": "Please make the name of the setting same as that of Lithium plugin for uniformity",
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa57193c_95454cb5",
         "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin.xml",
         "patchSetId": 4
@@ -344,6 +361,23 @@
         "endLine": 111,
         "endChar": 46
       },
+      "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_6a0ff82e",
+        "filename": "openflowplugin/src/main/yang/openflow-plugin-cfg-impl.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 7865
+      },
+      "writtenOn": "2019-11-12T23:22:49Z",
+      "side": 1,
+      "message": "Please make the name of the setting same as that of Lithium plugin for uniformity",
       "revId": "bd8415cc97473b8ac0a23920ba3a02f304cdf329",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
