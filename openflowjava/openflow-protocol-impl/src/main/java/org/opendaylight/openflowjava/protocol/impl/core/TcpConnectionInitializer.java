@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
@@ -41,8 +41,7 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
      * @param workerGroup - shared worker group
      */
     public TcpConnectionInitializer(EventLoopGroup workerGroup, boolean isEpollEnabled) {
-        Preconditions.checkNotNull(workerGroup, "WorkerGroup can't be null");
-        this.workerGroup = workerGroup;
+        this.workerGroup = requireNonNull(workerGroup, "WorkerGroup can't be null");
         this.isEpollEnabled = isEpollEnabled;
     }
 
