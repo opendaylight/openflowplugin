@@ -43,6 +43,7 @@ public class OpenFlowProviderConfigImplTest {
     private static final int THREAD_POOL_MAX_THREADS = 1000;
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
+    private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
 
     @Mock
     private ConfigurationService configurationService;
@@ -84,6 +85,9 @@ public class OpenFlowProviderConfigImplTest {
                 .thenReturn(THREAD_POOL_TIMEOUT);
         when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString()),
                 any())).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
+        when(configurationService.getProperty(
+                eq(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString()),
+                any())).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
         openflowProviderConfig = new OpenFlowProviderConfigImpl(configurationService);
     }
 
@@ -176,6 +180,12 @@ public class OpenFlowProviderConfigImplTest {
     @Test
     public void getDeviceConnectionRateLimitPerMin() {
         assertEquals(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN, openflowProviderConfig.getDeviceConnectionRateLimitPerMin());
+    }
+
+    @Test
+    public void getDeviceConnectionHoldTimeInSeconds() {
+        assertEquals(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS,
+                openflowProviderConfig.getDeviceConnectionHoldTimeInSeconds());
     }
 
 }
