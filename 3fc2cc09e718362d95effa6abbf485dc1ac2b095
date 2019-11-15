@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_e89afd6c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeRegistration.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-19T07:20:48Z",
+      "side": 1,
+      "message": "It was changed in another patch, it is already been merged here to this patch.",
+      "parentUuid": "da2a55be_b4b196e3",
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_94b452d2",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
         "patchSetId": 10
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_68860d15",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-19T07:20:48Z",
+      "side": 1,
+      "message": "These event are different from cluster singleton service. Cluster singleton service providing event where the controller try to be a master of the switch. This service provide event when all setting are done. Initial gathering statistics from device, initial submit to the DS, set master role on device, started all RPC\u0027s and optional all flows ID\u0027s are added to flow registry. After cluster singleton service you cannot be certain about mastership unless plugin does all thing mentioned here. This service grands this event only if everything is ok.",
+      "parentUuid": "da2a55be_94b452d2",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 24,
+        "endChar": 7
+      },
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_f4caee4d",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
         "patchSetId": 10
@@ -53,6 +95,24 @@
       "writtenOn": "2017-07-13T20:38:42Z",
       "side": 1,
       "message": "Few questions here:\nwhat happens when this specific instance don\u0027t get ownership of the device? \ndo you call onLoseOwnership? What happens if the plugin is loading up and before application register for the membership service, some device connect to the controller? Implementation of this API will replay the events ? \nIs it guaranteed that application will definitely receive these callbacks when in any event?\n\nIf it guarantee the above, how it\u0027s different then EOS? where application can check the flag (isOwner) and figure out whether this instance is owner or not?",
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a877653a",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-19T07:20:48Z",
+      "side": 1,
+      "message": "- yes it will replays the event on all registrations where came after device was mastered\n- about EOS check the answer above. This is NOT singleton nor EOS wrapper. About mastered devices should take care any application itself, this just provide event. Can be changed to provide about devices mastered if there will be a need of this.",
+      "parentUuid": "da2a55be_f4caee4d",
       "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
