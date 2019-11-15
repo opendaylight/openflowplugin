@@ -49,6 +49,54 @@
     },
     {
       "key": {
+        "uuid": "da01753e_7ebd3d68",
+        "filename": "features-aggregator/features-openflowplugin/src/main/features/features.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "Okay then I will put the default .cfg file back.",
+      "parentUuid": "da01753e_3e78d5f1",
+      "range": {
+        "startLine": 51,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_b83cdde3",
+        "filename": "features-aggregator/features-openflowplugin/src/main/features/features.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "But if this file will be present, plugin will be ignoring any default value that is set in Yang file (because all default configuration from Yang file will be just replaced by default configuration in .cfg file), but if it is okay then I can put it back.",
+      "parentUuid": "da01753e_dd77133a",
+      "range": {
+        "startLine": 51,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_1d723b49",
         "filename": "features-aggregator/odl-openflowplugin-southbound/src/main/features/features.xml",
         "patchSetId": 11
@@ -188,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_581cd177",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderFactoryImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "Each update* method is now logging what was configured, so this log is not needed anymore that is why I removed it.",
+      "parentUuid": "da01753e_bd368f50",
+      "range": {
+        "startLine": 72,
+        "startChar": 8,
+        "endLine": 72,
+        "endChar": 16
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_3d78dff1",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
         "patchSetId": 11
@@ -199,6 +271,30 @@
       "writtenOn": "2017-04-14T00:40:16Z",
       "side": 0,
       "message": "i think it\u0027s good to pass the default value in the constructor, because if connection comes before it set the value for echo reply timeout, it will use 0 as a timeout value.",
+      "range": {
+        "startLine": 46,
+        "startChar": 33,
+        "endLine": 47,
+        "endChar": 47
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_7aa6df11",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "So I will just set default value to echoReplyTimeout field then",
+      "parentUuid": "da01753e_3d78dff1",
       "range": {
         "startLine": 46,
         "startChar": 33,

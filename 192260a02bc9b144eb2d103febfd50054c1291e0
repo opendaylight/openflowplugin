@@ -49,6 +49,54 @@
     },
     {
       "key": {
+        "uuid": "da01753e_983f59d6",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/OFConstants.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "No, because this is more like config file ID than name (I think with property-placeholder it would be called persistent ID) so I cannot put .cfg extension there. But I can rename this constant to CONFIG_FILE_ID then, that would be less misleading.",
+      "parentUuid": "da01753e_7d90a743",
+      "range": {
+        "startLine": 78,
+        "startChar": 68,
+        "endLine": 78,
+        "endChar": 82
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_3e9455e1",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/OFConstants.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Yes, it is used to read from bundle context. So I will rename it to CONFIG_FILE_ID then.",
+      "parentUuid": "da01753e_5e64b948",
+      "range": {
+        "startLine": 78,
+        "startChar": 68,
+        "endLine": 78,
+        "endChar": 82
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_5d93234f",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
         "patchSetId": 11
@@ -84,6 +132,78 @@
       "side": 1,
       "message": "what is the other possible way of configuration? We don\u0027t have to say it\u0027s .cfg file, we just says config file, it can be .cfg, .xml or .yang",
       "parentUuid": "da01753e_dc59ccff",
+      "range": {
+        "startLine": 19,
+        "startChar": 7,
+        "endLine": 19,
+        "endChar": 60
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_46b862e5",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da01753e_0bd78324",
+      "range": {
+        "startLine": 19,
+        "startChar": 7,
+        "endLine": 19,
+        "endChar": 60
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_dc59ccff",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "But this can be possibly used also without configuration file, just using Map\u003cString, Object\u003e so let\u0027s not refer to openflowplugin.cfg file here at all.",
+      "parentUuid": "da01753e_5d93234f",
+      "range": {
+        "startLine": 19,
+        "startChar": 7,
+        "endLine": 19,
+        "endChar": 60
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_cb729b10",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Currently none, because I removed exposing this interface as service in blueprint, so okay I can mention config file here.",
+      "parentUuid": "da01753e_0bd78324",
       "range": {
         "startLine": 19,
         "startChar": 7,
@@ -142,6 +262,54 @@
     },
     {
       "key": {
+        "uuid": "da01753e_86c9aa7b",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da01753e_6bde0f41",
+      "range": {
+        "startLine": 27,
+        "startChar": 21,
+        "endLine": 27,
+        "endChar": 22
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_dc10ac03",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Same as my previous comment, this class can possibly be used without openflowplugin.cfg file, so let\u0027s not refer it here at all.",
+      "parentUuid": "da01753e_9d9d8b5c",
+      "range": {
+        "startLine": 27,
+        "startChar": 7,
+        "endLine": 27,
+        "endChar": 102
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_fda3f79b",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
         "patchSetId": 11
@@ -189,6 +357,102 @@
     },
     {
       "key": {
+        "uuid": "da01753e_c6c3b255",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da01753e_4be18bfd",
+      "range": {
+        "startLine": 34,
+        "startChar": 7,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_dc426c0f",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Hmm after thinking about this again, this is not setter method, because it also have side effects. So I will keep it as Update *",
+      "parentUuid": "da01753e_431ea264",
+      "range": {
+        "startLine": 34,
+        "startChar": 7,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_6b5baf87",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "In latest patch I replaced all these methods in this interface with updateProperty method and enum, from what I am also getting property key to parse from .cfg file, so I was able to stop using raw strings for key comparison, so this comment is not relevant anymore I think.",
+      "parentUuid": "da01753e_4be18bfd",
+      "range": {
+        "startLine": 34,
+        "startChar": 7,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_431ea264",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay.",
+      "parentUuid": "da01753e_fda3f79b",
+      "range": {
+        "startLine": 34,
+        "startChar": 7,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_dd9ef353",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginProvider.java",
         "patchSetId": 11
@@ -223,6 +487,30 @@
       "writtenOn": "2017-04-14T00:40:16Z",
       "side": 1,
       "message": "i think we should not expose this interface as a service interface for openflow plugin provider, because we don\u0027t want any applications to set these config values. These values must be set by user manually through .cfg file change or restconf.",
+      "range": {
+        "startLine": 49,
+        "startChar": 64,
+        "endLine": 49,
+        "endChar": 98
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_182b6995",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/org/opendaylight/blueprint/openflowplugin.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay.",
+      "parentUuid": "da01753e_9d02ab6d",
       "range": {
         "startLine": 49,
         "startChar": 64,
@@ -304,6 +592,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_f80ca544",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay.",
+      "parentUuid": "da01753e_5d7de3e6",
+      "range": {
+        "startLine": 160,
+        "startChar": 19,
+        "endLine": 161,
+        "endChar": 12
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_bd84cfd4",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 11
@@ -327,6 +639,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_d807211c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay.",
+      "parentUuid": "da01753e_bd84cfd4",
+      "range": {
+        "startLine": 164,
+        "startChar": 43,
+        "endLine": 164,
+        "endChar": 49
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_9d874bd7",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 11
@@ -338,6 +674,30 @@
       "writtenOn": "2017-04-14T00:40:16Z",
       "side": 1,
       "message": "\"not allowed after controller start\".",
+      "range": {
+        "startLine": 355,
+        "startChar": 67,
+        "endLine": 355,
+        "endChar": 91
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_1802490b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay.",
+      "parentUuid": "da01753e_9d874bd7",
       "range": {
         "startLine": 355,
         "startChar": 67,
@@ -407,6 +767,30 @@
       "writtenOn": "2017-04-14T00:40:16Z",
       "side": 1,
       "message": "please change it to 2015, 2017. Please make these changes on all the file that you updated in this patch.",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_03149a42",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay.",
+      "parentUuid": "da01753e_1d735b16",
       "range": {
         "startLine": 2,
         "startChar": 17,
