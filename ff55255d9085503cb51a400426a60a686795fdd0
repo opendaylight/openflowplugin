@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_1db6e13d",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/XidSequencer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-04-25T07:48:31Z",
+      "side": 1,
+      "message": "rename plz: reserve not reserved",
+      "range": {
+        "startLine": 21,
+        "startChar": 9,
+        "endLine": 21,
+        "endChar": 39
+      },
+      "revId": "ff55255d9085503cb51a400426a60a686795fdd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_9d81514d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/RpcContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-04-25T07:48:31Z",
+      "side": 1,
+      "message": "do not extend constructor, use only device context",
+      "range": {
+        "startLine": 48,
+        "startChar": 102,
+        "endLine": 49,
+        "endChar": 60
+      },
+      "revId": "ff55255d9085503cb51a400426a60a686795fdd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_fd95ed88",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/RpcManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-04-25T07:48:31Z",
+      "side": 1,
+      "message": "the same twice, why ?",
+      "range": {
+        "startLine": 57,
+        "startChar": 16,
+        "endLine": 57,
+        "endChar": 61
+      },
+      "revId": "ff55255d9085503cb51a400426a60a686795fdd0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
