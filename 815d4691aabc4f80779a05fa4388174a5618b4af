@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_66dd8f70",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/MatchNormalizationUtil.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Remove this",
+      "range": {
+        "startLine": 101,
+        "startChar": 8,
+        "endLine": 102,
+        "endChar": 63
+      },
+      "revId": "815d4691aabc4f80779a05fa4388174a5618b4af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
