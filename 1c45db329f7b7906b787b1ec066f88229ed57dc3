@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_b45a5e81",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-04T07:32:59Z",
+      "side": 1,
+      "message": "why we are putting exception log in debug? it should be warn or error.",
+      "range": {
+        "startLine": 359,
+        "startChar": 1,
+        "endLine": 363,
+        "endChar": 41
+      },
+      "revId": "1c45db329f7b7906b787b1ec066f88229ed57dc3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
