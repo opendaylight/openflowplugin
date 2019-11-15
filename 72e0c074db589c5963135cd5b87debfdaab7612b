@@ -1,0 +1,74 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_7f3705e4",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsContext.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T09:36:10Z",
+      "side": 1,
+      "message": "do we really need this API. I assume if reconciliation framework is enabled then plugin will first do the reconciliation and then it will enable the statistics, so once enableStatistics() is done, it will gather the first set of statistics anyways. So wondering why we need explicit API for that.",
+      "range": {
+        "startLine": 36,
+        "startChar": 12,
+        "endLine": 36,
+        "endChar": 47
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_71af31e4",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsManager.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-12T05:52:27Z",
+      "side": 1,
+      "message": "yeah, flag is more appropriate here. thanks!",
+      "parentUuid": "ba1f61a0_8add5973",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 100
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7c86f3ba",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T09:36:10Z",
+      "side": 1,
+      "message": "i think rather then exponentially increasing it, we should set it to averageStatisticsGatheringTime. Because there is still possibility that currentTimerDelay*2 will be less then averageStatisticsGatheringTime.",
+      "range": {
+        "startLine": 57,
+        "startChar": 12,
+        "endLine": 57,
+        "endChar": 35
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
