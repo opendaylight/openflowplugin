@@ -280,6 +280,30 @@
       "revId": "363e4d2f7e4c01e6a2e31aeaf81e8d2657a750f4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_813937a6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SetAsyncConfigService.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Yes, as it was already made, and this transformation is really really simple and nothing that can impact performance, no need to reivent the wheel and remade it in OFP.",
+      "parentUuid": "ba1f61a0_c1726448",
+      "range": {
+        "startLine": 38,
+        "startChar": 23,
+        "endLine": 38,
+        "endChar": 110
+      },
+      "revId": "363e4d2f7e4c01e6a2e31aeaf81e8d2657a750f4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
