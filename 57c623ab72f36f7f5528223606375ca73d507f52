@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_b27e9a68",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/queue/QueueKeeperHarvester.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 7786
+      },
+      "writtenOn": "2019-11-15T23:09:16Z",
+      "side": 1,
+      "message": "this.harvestLock.wait() should help with test\u0027s fix",
+      "revId": "57c623ab72f36f7f5528223606375ca73d507f52",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
