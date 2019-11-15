@@ -73,6 +73,78 @@
     },
     {
       "key": {
+        "uuid": "fa2559ec_30d05053",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Added ability to register listeners to configuration service in latest patch, and also used this listener-based approach in FRM.",
+      "parentUuid": "1af78d9a_6769498b",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_9b52d211",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "You don\u0027t, you don\u0027t need to. When we will create new context, we will just use updated configuration in config class. But we was not changing these configurations before this change in contexts during runtime too. I you would want to updated configuration for devices, you just need to recconect them.\nAlso, setters should be just setters, and do not act as notification for anything in my opinion.",
+      "parentUuid": "1af78d9a_18926857",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_e746d922",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "That is true, but then if we will need it we can extend current implementation to include something like listeners for configuration changes. And setters, at least from my understanding, should not contain any logic other than actually updating the variable to what is setter associated, so strictly following this standard, we should not propagate change what happened in setter in manager to all underlying contexts (what we would need to do there if we would want to update configurations related to contexts without requiring context reload, so reconnect of device). And currently, statistics polling interval if I am not wrong is managed in manager, and not in contexts, so with this change, every time next statistics is polled, we would have updated configuration of poll interval, so next poll will be scheduled with this new delay.",
+      "parentUuid": "1af78d9a_47c40d92",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1af78d9a_789f2c60",
         "filename": "/COMMIT_MSG",
         "patchSetId": 3
@@ -108,6 +180,78 @@
       "side": 1,
       "message": "what do you mean by \"runtime it doesn\u0027t work\"",
       "parentUuid": "1af78d9a_3b411e3a",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_2748e12c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "When plugin is initialized, so after feature installation (after initialize method in OpenFlowPluginProvider is called), whenever you will try to change property in openflowplugin.cfg, you will get message in your karaf log, and update method in OpenFlowPluginProvider will not be called. I will reply here exact message tomorrow, as currently I am not in work.",
+      "parentUuid": "1af78d9a_27c10181",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_3b411e3a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Yes, message is that config file is not accessible to FRM. During initialization it works, but during runtime this change is not propagated because of that error I mentioned.",
+      "parentUuid": "1af78d9a_789f2c60",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa2559ec_f00238b3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Here is exact error message from Karaf on latest master when you try to modify openflowplugin.cfg after plugin is already initialized:\n\n2017-06-21 12:49:51,351 | ERROR | .openflowplugin) | configadmin                      | 7 - org.apache.felix.configadmin - 1.8.14 | Cannot use configuration org.opendaylight.openflowplugin for [org.osgi.service.cm.ManagedService, id\u003d303, bundle\u003d277/mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/0.5.0-SNAPSHOT]: No visibility to configuration bound to mvn:org.opendaylight.openflowplugin.applications/forwardingrules-manager/0.5.0-SNAPSHOT",
+      "parentUuid": "1af78d9a_2748e12c",
       "range": {
         "startLine": 11,
         "startChar": 2,
