@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_49e00cfa",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/data/FlowStatsResponseConvertorData.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Can you replace this directly with MatchPath, will be better if in future we would need more augmentation types.",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 17,
+        "endChar": 29
+      },
+      "revId": "550378dfe327cccc247967df8aa5e172acddd590",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_c9eb7cda",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/data/FlowStatsResponseConvertorData.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "This do not needs to be here, as it is inherited from VersionDatapathIdConvertorData",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 5
+      },
+      "revId": "550378dfe327cccc247967df8aa5e172acddd590",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
