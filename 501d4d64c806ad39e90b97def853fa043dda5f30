@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_5f197078",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-21T01:18:11Z",
+      "side": 1,
+      "message": "why are we keeping this cache, when nobody is really calling hasMark() on it ? Similarly for meter registry as well?",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 88
+      },
+      "revId": "501d4d64c806ad39e90b97def853fa043dda5f30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
