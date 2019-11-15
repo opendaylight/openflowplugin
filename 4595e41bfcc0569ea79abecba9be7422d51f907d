@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_ef634418",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-05-16T15:42:54Z",
+      "side": 1,
+      "message": "Why not \nconnectionContext.getDeviceInfo().getLOGValue() ?",
+      "range": {
+        "startLine": 82,
+        "startChar": 91,
+        "endLine": 82,
+        "endChar": 131
+      },
+      "revId": "4595e41bfcc0569ea79abecba9be7422d51f907d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
