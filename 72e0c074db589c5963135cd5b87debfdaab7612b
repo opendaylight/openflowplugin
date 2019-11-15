@@ -25,6 +25,53 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_11ab55d9",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsContext.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-12T05:52:27Z",
+      "side": 1,
+      "message": "I think my point is that, once you start the periodic statistics it will anyways collect the first set of stats immediately , so why do we need to explictly call it rather then using enableGathering itself?",
+      "parentUuid": "ba1f61a0_2a60ad31",
+      "range": {
+        "startLine": 36,
+        "startChar": 12,
+        "endLine": 36,
+        "endChar": 47
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ff2bf57f",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsManager.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T09:36:10Z",
+      "side": 1,
+      "message": "although this API is not part of this patch, but do you have any idea why statistics manager need to talk to reconciliation framework?",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 100
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_71af31e4",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsManager.java",
         "patchSetId": 20
@@ -42,6 +89,30 @@
         "startChar": 4,
         "endLine": 22,
         "endChar": 100
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_f1820151",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-12T05:52:27Z",
+      "side": 1,
+      "message": "Okay got it. In this case, we should initialize the isStatisticsFullyDisabled with config value in the constructor itself. And then reset the value in the RPC, if user set it to false.",
+      "parentUuid": "ba1f61a0_aa8dbd7d",
+      "range": {
+        "startLine": 73,
+        "startChar": 12,
+        "endLine": 73,
+        "endChar": 37
       },
       "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
