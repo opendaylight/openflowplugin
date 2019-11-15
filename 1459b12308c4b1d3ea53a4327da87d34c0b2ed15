@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_47bad36e",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ContextChainState.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-05T19:25:38Z",
+      "side": 1,
+      "message": "i think we need to add some clarification here about the difference between WORKING, and WORKING_MASTER/WORKING_SLAVE state. Probably we should mark it INITIALIZED or CREATED",
+      "revId": "1459b12308c4b1d3ea53a4327da87d34c0b2ed15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_493e5d8d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-08T07:24:19Z",
+      "side": 1,
+      "message": "so i am trying to understand this code, at line 106, so set the state of the contextChainState to CLOSED, but in the above code block you are checking if the previous state was working, submit it to thread pool, but it\u0027s it that at this point conectChainState is already CLOSE? so why not just run task.run()? or you can offload it to executor to not block the main thread, but we don\u0027t need this condition here.",
+      "range": {
+        "startLine": 120,
+        "startChar": 1,
+        "endLine": 125,
+        "endChar": 9
+      },
+      "revId": "1459b12308c4b1d3ea53a4327da87d34c0b2ed15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

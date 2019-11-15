@@ -1,0 +1,39 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_2734fffa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-05T19:25:38Z",
+      "side": 0,
+      "message": "removing this code won\u0027t cleanup the Device/Statistics/RPC context (like unregistering rpcs). did you move this to somewhere else? I see you added some code in close() to cleanup, but that\u0027s not the same as closeServiceInstance(). We need to do the cleanup whenever ownership changes to slave and not when device disconnect.",
+      "revId": "e86e92b3d949822be64fb98e527589ec825e23db",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_89cdf5b9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-08T07:24:19Z",
+      "side": 0,
+      "message": "i am not sure the code that you removed is the cause of performance regression, because it does not do any heavy activity as such. The only heavy processing that is happening in this method is onSlaveRoleAcquired(), because it tries to set the role etc. \n\nDO you see any other scenario where closeServiceInstance() will be called, except when the node disconnect. I was thinking if it can happen in case of network partition and cluster split  happens, but in that case also it won\u0027t call closeServiceInstance to the controller that is in single node cluster. So if there is no other event when this closeServiceInstance will be called, why are we trying to set the onSlaveRoleAcquired() here? If we see any scenario, where closeServiceInstance() can be called, even when device is connected, then i think as a safe approach, we should check the connect state first and if that\u0027s WORKIGN, then we should call onSlaveRoleAcquired() and do the remaining clean, because that you will require, because close() won\u0027t be called in that case.",
+      "parentUuid": "ba1f61a0_1bb952cc",
+      "revId": "e86e92b3d949822be64fb98e527589ec825e23db",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
