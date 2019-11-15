@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_bf5e8d43",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/TxFacade.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-16T14:20:44Z",
+      "side": 1,
+      "message": "remove plz",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 40
+      },
+      "revId": "2c6019e4325a2fb59beb07ab9d8a5cc409e52e5e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ff580558",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/SinglePurposeMultipartReplyTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-16T14:20:44Z",
+      "side": 1,
+      "message": "make it final",
+      "range": {
+        "startLine": 114,
+        "startChar": 67,
+        "endLine": 114,
+        "endChar": 74
+      },
+      "revId": "2c6019e4325a2fb59beb07ab9d8a5cc409e52e5e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_9f59095e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/SinglePurposeMultipartReplyTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-16T14:20:44Z",
+      "side": 1,
+      "message": "make it final",
+      "range": {
+        "startLine": 114,
+        "startChar": 49,
+        "endLine": 114,
+        "endChar": 59
+      },
+      "revId": "2c6019e4325a2fb59beb07ab9d8a5cc409e52e5e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
