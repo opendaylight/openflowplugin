@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_4fc42640",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 13
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1
+      },
+      "writtenOn": "2017-07-03T16:48:07Z",
+      "side": 1,
+      "message": "I recommend adding a statement that details the originating repository and commit ID (not Gerrit Change ID). This way anyone trying to determine the historical context of something will know where they can go to get the history.",
+      "revId": "ea89e83018da5887b77a32a867fe7e2d16d0878e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
