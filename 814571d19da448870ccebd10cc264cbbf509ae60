@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_64df3a3c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/TransactionChainManager.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "make it final plz",
+      "range": {
+        "startLine": 218,
+        "startChar": 98,
+        "endLine": 218,
+        "endChar": 120
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e4f22ad1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/AbstractDirectStatisticsService.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e4a06aa1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/FlowDirectStatisticsService.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove this plz",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_c4a9e67c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/GroupDirectStatisticsService.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_24b8a2c7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/MeterDirectStatisticsService.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_04bbdec4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/NodeConnectorDirectStatisticsService.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_44b5d6cb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/OpendaylightDirectStatisticsServiceImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_04e2bed4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/OpendaylightDirectStatisticsServiceProvider.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_84cd2e60",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/QueueDirectStatisticsService.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T07:30:16Z",
+      "side": 1,
+      "message": "remove it plz",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 23
+      },
+      "revId": "814571d19da448870ccebd10cc264cbbf509ae60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
