@@ -17,6 +17,23 @@
       "revId": "33f98f0bbb23bade0cbe25010215f05fa3a2ec3b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7af0899e_433704b1",
+        "filename": "extension/openflowplugin-extension-api/src/main/yang/openflowplugin-extension-general.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Isn\u0027t also augmentation for group-stats buckets needed too?",
+      "revId": "33f98f0bbb23bade0cbe25010215f05fa3a2ec3b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
