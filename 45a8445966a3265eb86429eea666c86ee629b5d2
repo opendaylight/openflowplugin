@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_4a7dbcb0",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-23T12:13:52Z",
+      "side": 1,
+      "message": "add copyright comment, please",
+      "revId": "45a8445966a3265eb86429eea666c86ee629b5d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_ea49308f",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-23T12:13:52Z",
+      "side": 1,
+      "message": "why so much effort and message.getData() not checked at all?",
+      "revId": "45a8445966a3265eb86429eea666c86ee629b5d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_0a4fb493",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-23T12:13:52Z",
+      "side": 1,
+      "message": "could you use instanceIdentifier.firstIdentifierOf(Node.class) ?\nit is shorter and cleaner",
+      "revId": "45a8445966a3265eb86429eea666c86ee629b5d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
