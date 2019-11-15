@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_b24a11c3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Error only if instance of ERROR, otherwise should success, right?",
+      "range": {
+        "startLine": 315,
+        "startChar": 8,
+        "endLine": 317,
+        "endChar": 75
+      },
+      "revId": "d0f573f27432030472ca5a55180f09fffb547fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_125f9d73",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 24
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Change this to warning",
+      "range": {
+        "startLine": 137,
+        "startChar": 24,
+        "endLine": 138,
+        "endChar": 51
+      },
+      "revId": "d0f573f27432030472ca5a55180f09fffb547fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
