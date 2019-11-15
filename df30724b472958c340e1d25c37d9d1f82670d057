@@ -189,6 +189,29 @@
       "revId": "df30724b472958c340e1d25c37d9d1f82670d057",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_5a6353b1",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/impl/ReconciliationManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "You can replace this logic with SettableFuture, then Futures.allAsList, then Futures.addCallback. You do not need to create your own executor service nor create your own futures here at all. Just stop calling .get() on futures and use transformations and callbacks, and you will have everything you need. Check this: https://github.com/google/guava/wiki/ListenableFutureExplained",
+      "range": {
+        "startLine": 110,
+        "startChar": 4,
+        "endLine": 183,
+        "endChar": 9
+      },
+      "revId": "df30724b472958c340e1d25c37d9d1f82670d057",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
