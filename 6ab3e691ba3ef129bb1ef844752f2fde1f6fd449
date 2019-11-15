@@ -23,6 +23,52 @@
       "revId": "6ab3e691ba3ef129bb1ef844752f2fde1f6fd449",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_fd72ffe3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Can we make it re-configurable?",
+      "range": {
+        "startLine": 75,
+        "startChar": 53,
+        "endLine": 75,
+        "endChar": 54
+      },
+      "revId": "6ab3e691ba3ef129bb1ef844752f2fde1f6fd449",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_1d453370",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 8051
+      },
+      "writtenOn": "2019-11-04T22:11:05Z",
+      "side": 1,
+      "message": "Can we log at least the cases in cases its not an TransactionCommitFailedException ?\n\nAlso in case it is a TransactionCommitFailedException, do we retry only for AskTimeoutException ?why not retry other cases as well?",
+      "range": {
+        "startLine": 339,
+        "startChar": 16,
+        "endLine": 358,
+        "endChar": 17
+      },
+      "revId": "6ab3e691ba3ef129bb1ef844752f2fde1f6fd449",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
