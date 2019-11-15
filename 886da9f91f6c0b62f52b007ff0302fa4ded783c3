@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_f2e36603",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-24T17:10:12Z",
+      "side": 1,
+      "message": "make it to javadoc link, please",
+      "revId": "886da9f91f6c0b62f52b007ff0302fa4ded783c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_92f0daca",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-24T17:10:12Z",
+      "side": 1,
+      "message": "this looks like payload already, is there any change in the following loops",
+      "revId": "886da9f91f6c0b62f52b007ff0302fa4ded783c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d2e66216",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2014-09-24T17:10:12Z",
+      "side": 1,
+      "message": "change order af args, please",
+      "revId": "886da9f91f6c0b62f52b007ff0302fa4ded783c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
