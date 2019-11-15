@@ -22,6 +22,30 @@
       "revId": "57c8aa6fd705c4416918f2f42306ed823d9c63ea",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_54067f21",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/messages/PacketInMessageDeserializer.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "I can change it to that, but I would rather use EncodeConstants that are used in all OpenFlowJava and OpenFlowPlugin serializers and deserializers. These can be replaced with Long.BYTES, Integer.BYTES etc maybe in another patch?",
+      "parentUuid": "da2a55be_14f9a7c8",
+      "range": {
+        "startLine": 58,
+        "startChar": 39,
+        "endLine": 58,
+        "endChar": 76
+      },
+      "revId": "57c8aa6fd705c4416918f2f42306ed823d9c63ea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
