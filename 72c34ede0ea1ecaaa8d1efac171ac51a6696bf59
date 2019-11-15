@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7af0899e_df25840b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-05-25T18:05:44Z",
+      "side": 1,
+      "message": "tomas, looks like bug 8411 is already fixed with other patch. Looks like you are doing some clean-up with this patch, so can you please open another bug and put details in there.",
+      "range": {
+        "startLine": 15,
+        "startChar": 10,
+        "endLine": 15,
+        "endChar": 18
+      },
+      "revId": "72c34ede0ea1ecaaa8d1efac171ac51a6696bf59",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
