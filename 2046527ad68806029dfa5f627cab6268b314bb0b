@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_ce41023b",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "This is very confusing name imo. Can this be renamed to for example BundleMessageDataInjector or something like that? See for example SerializerRegistryInjector and DeserializerRegistryInjector in openflowjava.",
+      "range": {
+        "startLine": 16,
+        "startChar": 17,
+        "endLine": 16,
+        "endChar": 34
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_a43c9dc0",
         "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
         "patchSetId": 3
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "fafc7978_ce3aa2cc",
+      "range": {
+        "startLine": 17,
+        "startChar": 4,
+        "endLine": 20,
+        "endChar": 7
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_ce3aa2cc",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Do not add unfinished documentation, it is producing warnings. Either do not add JavaDoc comments here, or at least describe the @param and method. And, as it is in API, it would be better, if you would do the second option.",
       "range": {
         "startLine": 17,
         "startChar": 4,
@@ -74,6 +120,29 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_ae359edc",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/BundleMessageData.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Same as in previous comment",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 7
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_e446a54e",
         "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverter.java",
         "patchSetId": 3
@@ -86,6 +155,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "fafc7978_6e2456af",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 89,
+        "endChar": 9
+      },
+      "revId": "2046527ad68806029dfa5f627cab6268b314bb0b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6e2456af",
+        "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Can you use .getImplementedInterface() and .class comparison instead of instanceof checks? It will be faster, and these Bundle* cases do not have anything that additionally extend them, so you are not risking anything when directly comparing .getImplementedInterface()",
       "range": {
         "startLine": 77,
         "startChar": 8,
