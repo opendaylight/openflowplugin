@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_2d93b9a4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/initialization/OF10DeviceInitializer.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-08T08:55:20Z",
+      "side": 1,
+      "message": "use deviceInfo only without getLOGValue",
+      "range": {
+        "startLine": 99,
+        "startChar": 81,
+        "endLine": 99,
+        "endChar": 92
+      },
+      "revId": "2b36983da3eb529c7f13c95e3e6d5a28dadd7254",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ad3cc994",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryImplTest.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-08T08:55:20Z",
+      "side": 1,
+      "message": "define all constants on one place",
+      "range": {
+        "startLine": 113,
+        "startChar": 8,
+        "endLine": 113,
+        "endChar": 41
+      },
+      "revId": "2b36983da3eb529c7f13c95e3e6d5a28dadd7254",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4d4b8d2b",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryImplTest.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-08T08:55:20Z",
+      "side": 1,
+      "message": "use defined const",
+      "range": {
+        "startLine": 117,
+        "startChar": 94,
+        "endLine": 117,
+        "endChar": 95
+      },
+      "revId": "2b36983da3eb529c7f13c95e3e6d5a28dadd7254",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8d5585c8",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryImplTest.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-08T08:55:20Z",
+      "side": 1,
+      "message": "const ?",
+      "range": {
+        "startLine": 138,
+        "startChar": 44,
+        "endLine": 138,
+        "endChar": 46
+      },
+      "revId": "2b36983da3eb529c7f13c95e3e6d5a28dadd7254",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
