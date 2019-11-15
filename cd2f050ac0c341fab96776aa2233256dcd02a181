@@ -23,6 +23,29 @@
       "revId": "cd2f050ac0c341fab96776aa2233256dcd02a181",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_dce72b3f",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/multipart/MultipartReplyGroupFeaturesDeserializerTest.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Use Class-based comparison here, not class name string comparison if possible, because class name comparison do not covers different packages (e.g a.b.c.d.GroupAll would be equal to b.c.d.e.GroupAll in your assert).",
+      "range": {
+        "startLine": 70,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 101
+      },
+      "revId": "cd2f050ac0c341fab96776aa2233256dcd02a181",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
