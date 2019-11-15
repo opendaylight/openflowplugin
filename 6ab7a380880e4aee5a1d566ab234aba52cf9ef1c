@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_baed328e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T11:38:01Z",
+      "side": 1,
+      "message": "Instead of adding new parameter to retrievedIfForFlow() create constructor with instanceIdentifier. This registri is  created per device/node.",
+      "revId": "6ab7a380880e4aee5a1d566ab234aba52cf9ef1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_5a2056f7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T11:38:01Z",
+      "side": 1,
+      "message": "Use rather:\n\nret \u003d flowRegistry.get(flowRegistryKey);\nif (ret !\u003d null) {\n   return ret; \n}",
+      "revId": "6ab7a380880e4aee5a1d566ab234aba52cf9ef1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1a6d3e33",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T11:38:01Z",
+      "side": 1,
+      "message": "Please, wrap this hash to some static utility that it can be reused in two place (here for reading, and somewhere else for writing).",
+      "revId": "6ab7a380880e4aee5a1d566ab234aba52cf9ef1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_babb7271",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T11:38:01Z",
+      "side": 1,
+      "message": "Lookup from CONFIG store. (Config might be empty if RPC are beeing used instead of inventory CONFIG).\n\nWhen it is not in CONFIG store then the hash is sufficient. See next comment in storeIfNecessary() method.",
+      "revId": "6ab7a380880e4aee5a1d566ab234aba52cf9ef1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_ba7252e3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T11:38:01Z",
+      "side": 1,
+      "message": "Method storeIfNecessary is important to chagne also. \n\nSee FlowId generation in: \na/ org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils.writeFlowStatistics(Iterable\u003cFlowsStatisticsUpdate\u003e, DeviceState, DeviceFlowRegistry, TxFacade)\n\nb/ org.opendaylight.openflowplugin.impl.statistics.services.direct.FlowDirectStatisticsService.generateFlowId(FlowAndStatisticsMapList)\n\nI suggest read all Inventory config flow ids when FlowId is missing (normally it should not be missing). If it is missing config is probable empty or it is rare corner case (hence performance decrease should be minimal).",
+      "revId": "6ab7a380880e4aee5a1d566ab234aba52cf9ef1c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
