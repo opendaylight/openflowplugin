@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_fa682ff7",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ConvertorManager.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-07T13:12:51Z",
+      "side": 1,
+      "message": "make it concurrent, pls",
+      "range": {
+        "startLine": 43,
+        "startChar": 4,
+        "endLine": 44,
+        "endChar": 90
+      },
+      "revId": "b8ca0d43ce0ed831a5abca9ec2167005c70a3855",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_3a60e731",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/common/ConvertorProcessor.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-07T13:12:51Z",
+      "side": 1,
+      "message": "use DataContainer.getImplementedInterface()",
+      "range": {
+        "startLine": 77,
+        "startChar": 7,
+        "endLine": 82,
+        "endChar": 9
+      },
+      "revId": "b8ca0d43ce0ed831a5abca9ec2167005c70a3855",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_9a549355",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/common/ConvertorProcessor.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-07T13:12:51Z",
+      "side": 1,
+      "message": "avoid double lookup, please",
+      "range": {
+        "startLine": 87,
+        "startChar": 7,
+        "endLine": 89,
+        "endChar": 9
+      },
+      "revId": "b8ca0d43ce0ed831a5abca9ec2167005c70a3855",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_da4e0bc1",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/common/ConvertorProcessor.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-07T13:12:51Z",
+      "side": 1,
+      "message": "use warning or info - this is recoverable",
+      "range": {
+        "startLine": 95,
+        "startChar": 20,
+        "endLine": 95,
+        "endChar": 25
+      },
+      "revId": "b8ca0d43ce0ed831a5abca9ec2167005c70a3855",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
