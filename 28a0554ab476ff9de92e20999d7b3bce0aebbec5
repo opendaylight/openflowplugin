@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_040abed1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T06:55:15Z",
+      "side": 1,
+      "message": "make it thread safe \"volatile\"",
+      "range": {
+        "startLine": 67,
+        "startChar": 3,
+        "endLine": 67,
+        "endChar": 38
+      },
+      "revId": "28a0554ab476ff9de92e20999d7b3bce0aebbec5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_240702cc",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T06:55:15Z",
+      "side": 1,
+      "message": "make it final plz",
+      "range": {
+        "startLine": 194,
+        "startChar": 37,
+        "endLine": 194,
+        "endChar": 62
+      },
+      "revId": "28a0554ab476ff9de92e20999d7b3bce0aebbec5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_84f52ecd",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T06:55:15Z",
+      "side": 1,
+      "message": "make it final",
+      "range": {
+        "startLine": 264,
+        "startChar": 32,
+        "endLine": 264,
+        "endChar": 45
+      },
+      "revId": "28a0554ab476ff9de92e20999d7b3bce0aebbec5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_242ee243",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-19T06:55:15Z",
+      "side": 1,
+      "message": "make it final",
+      "range": {
+        "startLine": 295,
+        "startChar": 31,
+        "endLine": 295,
+        "endChar": 44
+      },
+      "revId": "28a0554ab476ff9de92e20999d7b3bce0aebbec5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
