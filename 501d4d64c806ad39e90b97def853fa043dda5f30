@@ -46,6 +46,30 @@
       "revId": "501d4d64c806ad39e90b97def853fa043dda5f30",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_1fca486e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "To not remove GroupIDs and MeterIDs from registry immediately so when statistics arrives, we can delete them all from operational data store based on contents of registry and then remove all marked GroupIDs and MeterIDs from registry (see methods CommonRegistry#processMarks and CommonRegistry#forEach)",
+      "parentUuid": "fafc7978_5f197078",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 88
+      },
+      "revId": "501d4d64c806ad39e90b97def853fa043dda5f30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
