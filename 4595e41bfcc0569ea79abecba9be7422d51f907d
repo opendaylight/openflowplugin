@@ -22,6 +22,54 @@
       "revId": "4595e41bfcc0569ea79abecba9be7422d51f907d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_ee8983cb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba068154_ef634418",
+      "range": {
+        "startLine": 82,
+        "startChar": 91,
+        "endLine": 82,
+        "endChar": 131
+      },
+      "revId": "4595e41bfcc0569ea79abecba9be7422d51f907d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_08d79fee",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Because of previous debug messagei (few lines above), just used same value as it was using, but I can change both to DeviceInfo#getLOGValue then",
+      "parentUuid": "ba068154_ef634418",
+      "range": {
+        "startLine": 82,
+        "startChar": 91,
+        "endLine": 82,
+        "endChar": 131
+      },
+      "revId": "4595e41bfcc0569ea79abecba9be7422d51f907d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
