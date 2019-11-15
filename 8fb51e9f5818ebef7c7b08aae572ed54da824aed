@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_779587e3",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/util/NodeConnectorRefToPortTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T11:08:27Z",
+      "side": 1,
+      "message": "One more test, what we get, when another deviceState object is send together with NodeConnectorRef ...",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 39
+      },
+      "revId": "8fb51e9f5818ebef7c7b08aae572ed54da824aed",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
