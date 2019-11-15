@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_34c5a63c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/MastershipChangeListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:53:19Z",
+      "side": 1,
+      "message": "what\u0027s the difference between this listener and the  MastershipChangeService interface? Both of these are kind of defining similar API\u0027s. can you please document the behavior of these API\u0027s that application can understand when they use it?",
+      "revId": "197accb90503bf5074f80a0098ed469a41c681b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_b4e876b5",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/MastershipChangeListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:53:19Z",
+      "side": 1,
+      "message": "how to application will determine if it\u0027s slave now or device is disconnected? Application might want to take different action based on these two states.",
+      "revId": "197accb90503bf5074f80a0098ed469a41c681b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_14c06229",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeServiceProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:53:19Z",
+      "side": 1,
+      "message": "why do we want MastershipChangeServiceProvider to extends MastershipChangeListener? Isn\u0027t it that this provider is the one that actually should call the listeners? Just wondering what is the scenario where provider need to listen for the events",
+      "revId": "197accb90503bf5074f80a0098ed469a41c681b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f4d14efc",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeServiceProvider.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:53:19Z",
+      "side": 1,
+      "message": "is this the registration where application register for listening the ownership change notification? Then we should change the name of this interface, because applications are not really providing a service, they are listener of this service.",
+      "revId": "197accb90503bf5074f80a0098ed469a41c681b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_74defe12",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipServiceDelegate.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:53:19Z",
+      "side": 1,
+      "message": "given that Registration itself is autocloseable, why you need a delegate to wrap around these calls ?",
+      "revId": "197accb90503bf5074f80a0098ed469a41c681b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_54e13acf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipServiceProviderImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:53:19Z",
+      "side": 1,
+      "message": "why you want to return MastershipServiceDelegate when user can just do it close the registration, why not just return the registration. I think you should maintain the hash of MastershipChangeService --\u003e MastershipChangeRegistration and once user close the registration, it should remove itself from the hash.",
+      "revId": "197accb90503bf5074f80a0098ed469a41c681b9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
