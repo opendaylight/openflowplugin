@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_75260118",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractMultipartRequestOnTheFlyCallback.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-12T21:43:24Z",
+      "side": 1,
+      "message": "make it final?",
+      "range": {
+        "startLine": 43,
+        "startChar": 12,
+        "endLine": 43,
+        "endChar": 29
+      },
+      "revId": "2629a084f7a62d21d12d4465b28c6e377120bc3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_5523fd04",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractMultipartRequestOnTheFlyCallback.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-12T21:43:24Z",
+      "side": 1,
+      "message": "it\u0027s good to mention a bit more context about response. Something that can help understand this warning when user see this in karaf.log.",
+      "range": {
+        "startLine": 63,
+        "startChar": 22,
+        "endLine": 63,
+        "endChar": 30
+      },
+      "revId": "2629a084f7a62d21d12d4465b28c6e377120bc3f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
