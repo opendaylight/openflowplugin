@@ -84,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_8147ce1c",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-25T06:36:05Z",
+      "side": 1,
+      "message": "Okay, so why not write the node in the data store once all these things are done. Also you can use  OnNodeAdded yang notification to push the notification to upper layerin case  any application don\u0027t want to listen for data store ?",
+      "parentUuid": "da2a55be_68860d15",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 24,
+        "endChar": 7
+      },
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_f4caee4d",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
         "patchSetId": 10
@@ -113,6 +137,24 @@
       "side": 1,
       "message": "- yes it will replays the event on all registrations where came after device was mastered\n- about EOS check the answer above. This is NOT singleton nor EOS wrapper. About mastered devices should take care any application itself, this just provide event. Can be changed to provide about devices mastered if there will be a need of this.",
       "parentUuid": "da2a55be_f4caee4d",
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_c151c6d9",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-25T06:36:05Z",
+      "side": 1,
+      "message": "okay, then the same question again, why do we need a new interface and not do what i mentioned in the above comment.",
+      "parentUuid": "da2a55be_a877653a",
       "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
