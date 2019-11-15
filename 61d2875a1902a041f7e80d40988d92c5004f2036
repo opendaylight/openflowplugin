@@ -26,6 +26,53 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_f8bb17c2",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ExperimenterIdMeterBandKey.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why are you creating new class for this meter band experimenters, when there is already org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdSerializerKey what is almost exactly same?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 1
+      },
+      "revId": "61d2875a1902a041f7e80d40988d92c5004f2036",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b5f9a54f",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/ExperimenterIdMeterBandKey.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Oh, it makes sense, now I get it.",
+      "parentUuid": "1a622d24_d5c42142",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 1
+      },
+      "revId": "61d2875a1902a041f7e80d40988d92c5004f2036",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_95262915",
         "filename": "model/model-flow-base/src/main/yang/opendaylight-meter-types.yang",
         "patchSetId": 3
@@ -62,6 +109,53 @@
       "side": 1,
       "message": "1.Things you think about, exactly what I was thinking of. But this function involves both openflowplugin and openflowjava, and they need to maintain consistency, so the sub-type can only be defined using a unified base type to add constraint so that no error occure.",
       "parentUuid": "1a622d24_55a01143",
+      "range": {
+        "startLine": 119,
+        "startChar": 16,
+        "endLine": 123,
+        "endChar": 17
+      },
+      "revId": "61d2875a1902a041f7e80d40988d92c5004f2036",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_18909342",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-meter-types.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why are you mixing OpenflowJava models with OpenflowPlugin models here? Common practice (as seen in other OpenflowPlugin models) is to use \"choice\" here, what will be augmented by vendors, and then use .getImplementedInterface() for determining what subtype of experimenter it is.",
+      "range": {
+        "startLine": 119,
+        "startChar": 16,
+        "endLine": 123,
+        "endChar": 17
+      },
+      "revId": "61d2875a1902a041f7e80d40988d92c5004f2036",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_55a01143",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-meter-types.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "1. But can we avoid using openflowjava models here, and thus avoid adding dependency to it? For example, you can use type meter-band-type, so something like this:\n\nleaf sub-type {\n  type meter-band-type;\n}\n\nIt is better to avoid using openflowjava models directly in openflowplugin, because everywhere else we have these two models separated, and this will be currently the only exception.\n\n2. Makes sense.",
+      "parentUuid": "1a622d24_95262915",
       "range": {
         "startLine": 119,
         "startChar": 16,
