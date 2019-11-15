@@ -73,6 +73,78 @@
     },
     {
       "key": {
+        "uuid": "da01753e_bd1a1815",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Yes, you are right. There was no normal way to prevent slaves from filling port status registry when it actually should not to. So I decided then to go with your original suggestion, and now as you can see in latest patch I am sending request for PORT_DESC. I let this request to be run in async (so do not called .get on future) and it should not cause any problems after that. But I cannot tell for sure until I will have results from test-openflowplugin-core, what is not working right now due to branch cut.",
+      "parentUuid": "da01753e_5d932ca3",
+      "range": {
+        "startLine": 227,
+        "startChar": 47,
+        "endLine": 229,
+        "endChar": 12
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_ea6859f7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "You are right, I will rewrite this to send port_desc request and act based on it then.",
+      "parentUuid": "da01753e_2fd713c3",
+      "range": {
+        "startLine": 227,
+        "startChar": 47,
+        "endLine": 229,
+        "endChar": 12
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_95c45293",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "I changed my mind. I will just add synchronized block, so race condition will not happen, and in cluster scenario, transaction chain manager is not activated for slaves anyway, so port status message even in current implementation without my changes should not write anything to datastore when on slave.",
+      "parentUuid": "da01753e_ea6859f7",
+      "range": {
+        "startLine": 227,
+        "startChar": 47,
+        "endLine": 229,
+        "endChar": 12
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_8f26ff14",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 9
@@ -96,6 +168,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_4a6ec502",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "As I am going to rewrite this to port_desc request-reply approach, this not not relevant any more.",
+      "parentUuid": "da01753e_8f26ff14",
+      "range": {
+        "startLine": 233,
+        "startChar": 19,
+        "endLine": 233,
+        "endChar": 113
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_cf2007fa",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 9
@@ -107,6 +203,30 @@
       "writtenOn": "2017-04-12T01:16:03Z",
       "side": 1,
       "message": "please rephrase it to \"Error occurred while processing {} port status message received from device {}\". Last {} is not required.",
+      "range": {
+        "startLine": 242,
+        "startChar": 30,
+        "endLine": 242,
+        "endChar": 89
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_2a7381ea",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Sure, I just copied previous message what was already in code and just pasted it here.",
+      "parentUuid": "da01753e_cf2007fa",
       "range": {
         "startLine": 242,
         "startChar": 30,
@@ -166,6 +286,54 @@
     },
     {
       "key": {
+        "uuid": "da01753e_fdd30036",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "True. Anyway, registry is gone now, so this problem is solved.",
+      "parentUuid": "da01753e_7d96f095",
+      "range": {
+        "startLine": 246,
+        "startChar": 16,
+        "endLine": 246,
+        "endChar": 56
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_aa7e51ac",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Same as my comment on your comment on my comment (..). And also, manually nullyfying values is not needed to do anymore unless they are static fields, garbage collector will take care of it.",
+      "parentUuid": "da01753e_8f6d5f35",
+      "range": {
+        "startLine": 246,
+        "startChar": 16,
+        "endLine": 246,
+        "endChar": 56
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_0f7a0ff1",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 9
@@ -177,6 +345,30 @@
       "writtenOn": "2017-04-12T01:16:03Z",
       "side": 1,
       "message": "i think you don\u0027t need else block, just return false.",
+      "range": {
+        "startLine": 250,
+        "startChar": 10,
+        "endLine": 250,
+        "endChar": 16
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_ea4fb990",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "True",
+      "parentUuid": "da01753e_0f7a0ff1",
       "range": {
         "startLine": 250,
         "startChar": 10,
@@ -212,6 +404,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_4a45256f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay",
+      "parentUuid": "da01753e_4f8417d4",
+      "range": {
+        "startLine": 400,
+        "startChar": 26,
+        "endLine": 400,
+        "endChar": 92
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_0f616f39",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/portstatus/DevicePortStatusRegistry.java",
         "patchSetId": 9
@@ -223,6 +439,30 @@
       "writtenOn": "2017-04-12T01:16:03Z",
       "side": 1,
       "message": "why do you need two SynchronizedList? Why not write  PortStatus wrapper (e.g PortStatusWrapper \u003d\u003d PortStatus + isMarked). This will reduce the unnecessary default size array list.",
+      "range": {
+        "startLine": 20,
+        "startChar": 4,
+        "endLine": 20,
+        "endChar": 91
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_35476621",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/portstatus/DevicePortStatusRegistry.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "I will just remove marks then",
+      "parentUuid": "da01753e_0f616f39",
       "range": {
         "startLine": 20,
         "startChar": 4,
