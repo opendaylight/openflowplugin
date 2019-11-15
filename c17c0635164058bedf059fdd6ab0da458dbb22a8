@@ -23,6 +23,29 @@
       "revId": "c17c0635164058bedf059fdd6ab0da458dbb22a8",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_748d847b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why they are static in first place? Better make them instance variables if they are changed every time for all statistics managers whenever instance of statistic manager is created.",
+      "range": {
+        "startLine": 95,
+        "startChar": 8,
+        "endLine": 97,
+        "endChar": 68
+      },
+      "revId": "c17c0635164058bedf059fdd6ab0da458dbb22a8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
