@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_d5f37971",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-10T10:56:55Z",
+      "side": 1,
+      "message": "check idea setting on wiki, don\u0027t use *",
+      "range": {
+        "startLine": 19,
+        "startChar": 58,
+        "endLine": 19,
+        "endChar": 61
+      },
+      "revId": "b4fa29ec9807a85b9b48a4411ea7aed1702b4877",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_95f90150",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-10T10:56:55Z",
+      "side": 1,
+      "message": "check this",
+      "range": {
+        "startLine": 16,
+        "startChar": 34,
+        "endLine": 16,
+        "endChar": 35
+      },
+      "revId": "b4fa29ec9807a85b9b48a4411ea7aed1702b4877",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_d59a5913",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImplTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-10T10:56:55Z",
+      "side": 1,
+      "message": "set your idea plz :)",
+      "range": {
+        "startLine": 52,
+        "startChar": 81,
+        "endLine": 52,
+        "endChar": 83
+      },
+      "revId": "b4fa29ec9807a85b9b48a4411ea7aed1702b4877",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
