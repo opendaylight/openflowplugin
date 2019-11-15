@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_8079c831",
+        "filename": "applications/topology-manager/src/test/java/org/opendaylight/openflowplugin/applications/topology/manager/OperationProcessorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Since Java 8, the type argument will get inferred by the compiler, so using Matchers.any() is enough, passing type there is redundant.",
+      "range": {
+        "startLine": 35,
+        "startChar": 67,
+        "endLine": 35,
+        "endChar": 93
+      },
+      "revId": "ecca6f5dc8b762e7c319a1f4dcb098fc3ff4f254",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_e076c43d",
+        "filename": "applications/topology-manager/src/test/java/org/opendaylight/openflowplugin/applications/topology/manager/OperationProcessorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Since Java 8, the type argument will get inferred by the compiler, so using Matchers.any() is enough, passing type there is redundant.",
+      "range": {
+        "startLine": 46,
+        "startChar": 80,
+        "endLine": 46,
+        "endChar": 106
+      },
+      "revId": "ecca6f5dc8b762e7c319a1f4dcb098fc3ff4f254",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
