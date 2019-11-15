@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_be0a2dd0",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryImplTest.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-08T16:32:11Z",
+      "side": 1,
+      "message": "why we need another final field ?",
+      "range": {
+        "startLine": 115,
+        "startChar": 8,
+        "endLine": 115,
+        "endChar": 70
+      },
+      "revId": "44e68948fe6cdace6ab89767e52319d1b34be1ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3e1d9d10",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/configuration/ConfigurationServiceFactoryImplTest.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-08-08T16:32:11Z",
+      "side": 1,
+      "message": "it can be use with THREAD_POOL_MIN_THREADS_UPDATE",
+      "range": {
+        "startLine": 126,
+        "startChar": 38,
+        "endLine": 126,
+        "endChar": 56
+      },
+      "revId": "44e68948fe6cdace6ab89767e52319d1b34be1ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
