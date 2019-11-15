@@ -23,6 +23,29 @@
       "revId": "0ccf6d37521dfdc019000a7fd4b48b5568f093ed",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_e6aae76f",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ConvertorExecutor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "This definitely can\u0027t be done liek this. You need to create new ConvertorData implementation for FlowStatsResponseConvertor in package *.convertor.flow.data (based on other convertor data implementations, it should be name FlowStatsResponseConvertorData and extend VersionDatapathIdConvertorData).",
+      "range": {
+        "startLine": 41,
+        "startChar": 134,
+        "endLine": 41,
+        "endChar": 158
+      },
+      "revId": "0ccf6d37521dfdc019000a7fd4b48b5568f093ed",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
