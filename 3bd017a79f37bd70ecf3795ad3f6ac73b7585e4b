@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_1f9f9c51",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-24T22:38:28Z",
+      "side": 0,
+      "message": "i think when user disable statistics, it does not mean that plugin can\u0027t sent the stats request for it\u0027s functioning. Stats collection disable means plugin won\u0027t fetch periodic statistics.",
+      "range": {
+        "startLine": 284,
+        "startChar": 12,
+        "endLine": 304,
+        "endChar": 23
+      },
+      "revId": "3bd017a79f37bd70ecf3795ad3f6ac73b7585e4b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
