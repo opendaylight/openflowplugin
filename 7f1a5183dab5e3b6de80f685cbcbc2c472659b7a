@@ -1,0 +1,74 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_2fd713c3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": "looks like there is a race condition here. For example, once isInitialTransactionSubmitted is set to true and immediately you receive new port status message, processPortStatusMessage() method will write it to the data store because isInitialTransactionSubmitted is true, but then you will process all messages from portStatusRegistry and that will overwrite the latest port status. There is a good possibility that it end up in conflicting modification exception as well. I would suggest that the better option is, keep ignoring the port status message till ownership is received and then send the port_desc multipart reply to the switch to get the latest status of the port. That will keep the ordering of writing the node before node connector.\n\nAnother question is, what will happen in case of clustering environment? If switch connects to all the three controller, and one of them will be master of the device, so it will process the port status messages, but other nodes might not process their port status messages because they are slave and end up creating garbage of portStatusRegistry objects. As i mentioned above, simple and less complex option is send the port_desc request from the master controller down to the switch and get the latest information and write it to data store. On a side note, fetching Port_Desc is something we should do whenever ownership changes for any device.",
+      "range": {
+        "startLine": 227,
+        "startChar": 47,
+        "endLine": 229,
+        "endChar": 12
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_1de36408",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T20:54:20Z",
+      "side": 1,
+      "message": "cool, lets wait for the test-openflowplugin-core, also we can ask netvirt folks if they want to test it in their environment.",
+      "parentUuid": "da01753e_bd1a1815",
+      "range": {
+        "startLine": 227,
+        "startChar": 47,
+        "endLine": 229,
+        "endChar": 12
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_4f8417d4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": "please have a look at previous comment.",
+      "range": {
+        "startLine": 400,
+        "startChar": 26,
+        "endLine": 400,
+        "endChar": 92
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
