@@ -49,6 +49,29 @@
     },
     {
       "key": {
+        "uuid": "da01753e_5d93234f",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 1,
+      "message": "Parses key-value property pair from the openflowplugin config file and updates them.",
+      "range": {
+        "startLine": 19,
+        "startChar": 7,
+        "endLine": 19,
+        "endChar": 60
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_0bd78324",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
         "patchSetId": 11

@@ -118,6 +118,29 @@
     },
     {
       "key": {
+        "uuid": "da01753e_9d5e2b75",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
+        "patchSetId": 11
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 0,
+      "message": "this .cfg file don\u0027t have all the config parameter that we have in yang file, so we should add the remaining config parameters to this file as well.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 34
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_bd368f50",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderFactoryImpl.java",
         "patchSetId": 11
