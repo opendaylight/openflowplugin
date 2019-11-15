@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_11304255",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Maybe add space here before bracket, to keep coding style consistent",
+      "range": {
+        "startLine": 198,
+        "startChar": 41,
+        "endLine": 198,
+        "endChar": 42
+      },
+      "revId": "d13ef8719bdd2825c12a476a974603870cf0dc09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_7137f64e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Maybe add space here after comma, to keep coding style consistent",
+      "range": {
+        "startLine": 199,
+        "startChar": 52,
+        "endLine": 199,
+        "endChar": 53
+      },
+      "revId": "d13ef8719bdd2825c12a476a974603870cf0dc09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b1406ea6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why 2 empty lines here?",
+      "range": {
+        "startLine": 201,
+        "startChar": 5,
+        "endLine": 203,
+        "endChar": 0
+      },
+      "revId": "d13ef8719bdd2825c12a476a974603870cf0dc09",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
