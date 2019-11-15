@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_bb36e8e5",
+        "filename": "openflowplugin/src/test/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/action/ActionConvertorV10Test.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 5478
+      },
+      "writtenOn": "2016-10-27T13:07:00Z",
+      "side": 1,
+      "message": "please remove whitespace",
+      "range": {
+        "startLine": 299,
+        "startChar": 0,
+        "endLine": 299,
+        "endChar": 8
+      },
+      "revId": "d97b87c833eedd4d588f57303e151f090ee5d8a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
