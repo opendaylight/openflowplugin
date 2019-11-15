@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "3a4c51b2_1cad4a89",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "First sentence should be only Bug - number and short description, rest of the text should be in short sentences, short paragraph.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 60
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_3ce2c6d5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractMultipartOnTheFlyService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "Are you sure we wont send deviceContext twice ?",
+      "range": {
+        "startLine": 26,
+        "startChar": 74,
+        "endLine": 26,
+        "endChar": 134
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a4c51b2_1cc42a3f",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/MultipartRequestOnTheFlyCallback.java",
         "patchSetId": 1
@@ -25,6 +71,29 @@
     },
     {
       "key": {
+        "uuid": "3a4c51b2_9ce79ae4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/MultipartRequestOnTheFlyCallback.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "Redesing constructor",
+      "range": {
+        "startLine": 44,
+        "startChar": 44,
+        "endLine": 48,
+        "endChar": 68
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a4c51b2_dcd002fa",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalTableServiceImpl.java",
         "patchSetId": 1
@@ -41,6 +110,52 @@
         "startChar": 27,
         "endLine": 58,
         "endChar": 35
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_7cec4ec8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalTableServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "DeviceContext twice ?",
+      "range": {
+        "startLine": 61,
+        "startChar": 3,
+        "endLine": 62,
+        "endChar": 76
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_dc3e4229",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/MdSalRegistrationUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "Twice deviceContext",
+      "range": {
+        "startLine": 87,
+        "startChar": 8,
+        "endLine": 88,
+        "endChar": 89
       },
       "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
