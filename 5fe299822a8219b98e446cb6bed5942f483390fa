@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_79ff0168",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Please pass this configuration parameter to statistics context in construct, like f.e isStatisticsPollingOn is done so you do not need to add new getter to StatisticsManager and so this configuration parameter for context will be updated only when context is recreated like it is with other contexts. Also this will prevent referencing parent (manager) from children (context).",
+      "range": {
+        "startLine": 367,
+        "startChar": 19,
+        "endLine": 367,
+        "endChar": 64
+      },
+      "revId": "5fe299822a8219b98e446cb6bed5942f483390fa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
