@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_5bc7d412",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "So this means, that for every SLAVE it is 150ms of unnecessary slow down, right? I do not think that this is good solution, and also, then if it is for every SLAVE, it will also affect Lithium design, not only Helium.",
+      "range": {
+        "startLine": 247,
+        "startChar": 12,
+        "endLine": 258,
+        "endChar": 13
+      },
+      "revId": "46fc95885b2fce227efb21b8c748ee0a2e487069",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
