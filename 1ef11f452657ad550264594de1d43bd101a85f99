@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_dad6ecc2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-17T13:07:16Z",
+      "side": 1,
+      "message": "If not exist any context just write a warning a return from method, we don\u0027t need to throw an error ...",
+      "range": {
+        "startLine": 280,
+        "startChar": 8,
+        "endLine": 280,
+        "endChar": 101
+      },
+      "revId": "1ef11f452657ad550264594de1d43bd101a85f99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_3ae608b5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-17T13:07:16Z",
+      "side": 1,
+      "message": "If not exist any context just write a warning a return from method, we don\u0027t need to throw an error ...",
+      "range": {
+        "startLine": 288,
+        "startChar": 0,
+        "endLine": 288,
+        "endChar": 107
+      },
+      "revId": "1ef11f452657ad550264594de1d43bd101a85f99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_1ae1849a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-17T13:07:16Z",
+      "side": 1,
+      "message": "If not exist any context just write a warning a return from method, we don\u0027t need to throw an error ...",
+      "range": {
+        "startLine": 296,
+        "startChar": 8,
+        "endLine": 296,
+        "endChar": 101
+      },
+      "revId": "1ef11f452657ad550264594de1d43bd101a85f99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
