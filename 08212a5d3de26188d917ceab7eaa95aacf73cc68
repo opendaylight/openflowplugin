@@ -203,6 +203,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b0ceefb2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-10-17T06:49:54Z",
+      "side": 1,
+      "message": "nice catch :)",
+      "parentUuid": "7a6b29fe_04220901",
+      "range": {
+        "startLine": 66,
+        "startChar": 13,
+        "endLine": 66,
+        "endChar": 18
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_a4c6b514",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
         "patchSetId": 16
