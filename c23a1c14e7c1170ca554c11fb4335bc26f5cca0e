@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1af78d9a_cebbfa70",
+        "filename": "extension/openflowjava-extension-nicira-api/src/main/resources/org/opendaylight/blueprint/openflowjava-extension-nicira-api.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-06-20T12:57:06Z",
+      "side": 1,
+      "message": "you could have used annotation based instead of XML Blueprint here, see https://wiki.opendaylight.org/view/BestPractices/DI_Guidelines .. but I\u0027d rather that we get this merged ASAP, and if you\u0027re interested perhaps you could switch to that in a follow-up change.",
+      "revId": "c23a1c14e7c1170ca554c11fb4335bc26f5cca0e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_0ead0232",
+        "filename": "extension/openflowjava-extension-nicira/src/main/resources/org/opendaylight/blueprint/openflowjava-extension-nicira.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-06-20T12:57:06Z",
+      "side": 1,
+      "message": "as for the other one, a future change could perhaps use annotations as per https://wiki.opendaylight.org/view/BestPractices/DI_Guidelines here",
+      "revId": "c23a1c14e7c1170ca554c11fb4335bc26f5cca0e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_ae630e19",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-06-20T12:57:06Z",
+      "side": 1,
+      "message": "final? (now that you\u0027re setting it in the constructor)",
+      "revId": "c23a1c14e7c1170ca554c11fb4335bc26f5cca0e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_8e68d2f6",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-06-20T12:57:06Z",
+      "side": 1,
+      "message": "final?",
+      "revId": "c23a1c14e7c1170ca554c11fb4335bc26f5cca0e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_ee6d1606",
+        "filename": "extension/openflowplugin-extension-nicira/src/main/resources/org/opendaylight/blueprint/openflowplugin-extension-nicira.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-06-20T12:57:06Z",
+      "side": 1,
+      "message": "as for the 2 other ones",
+      "revId": "c23a1c14e7c1170ca554c11fb4335bc26f5cca0e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_ce72dae4",
+        "filename": "extension/openflowplugin-extension-nicira/src/test/java/org/opendaylight/openflowplugin/extension/vendor/nicira/NiciraExtensionProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-06-20T12:57:06Z",
+      "side": 1,
+      "message": "\\n",
+      "revId": "c23a1c14e7c1170ca554c11fb4335bc26f5cca0e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
