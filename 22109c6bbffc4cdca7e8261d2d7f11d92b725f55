@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_e1ef59e7",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "Please change settings for your ID to use empty space instead tab. It could help for all reviewers :-)",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_61b3490a",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "Please use new way for building InstanceIdentifier. It is more understandable for human read.\n\n InstanceIdentifier\u003cNode\u003e nodeRef \u003d InstanceIdentifier\n                    .create(Nodes.class).child(Node.class, nodeKey);",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_c1c01552",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "possible NPE (NullPointerException) so please add some validation with a good msg. Target: to know what is happening inside from outside\n\ne.g.\nOptional\u003cNode\u003e readNode \u003d readOnlyTransaction\n                        .read(LogicalDatastoreType.OPERATIONAL, nodeRef).get();\n                node \u003d Preconditions.checkNotNull(readNode.get(), \"Node {} not found!\", nodeRef);\n\nor\n\nOptional\u003cNode\u003e readNode \u003d readOnlyTransaction\n                    .read(LogicalDatastoreType.OPERATIONAL, nodeRef).get();\n            if ( ! readNode.isPresent()) {\n                LOG.warn(\"Node {} is not exist in DS/Operational\", nodeRef);\n                return;\n            } else {\n                node \u003d readNode.get();\n            }\n\nor make your best way :-)",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_a1bdd1d9",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "Please join both Exception and add log msg.\ne.g.\ncatch (InterruptedException | ExecutionException e) {\n    LOG.error(\"Read Node {} fail!\", nodeRef, e);\n    return;\n}",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_01eb5ddc",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "possible NPE without msg. So please add validation with some usable msg.\n\ne.g.\nList\u003cNodeConnector\u003e ports \u003d Preconditions.checkNotNull(node.getNodeConnector(), \"Node {} has any NodeConnector!\", nodeRef);",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_21d1c122",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "please follow previous instruction for all occurrences.",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_41cc0589",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "again NPE ... so please follow previous instruction for all occurrences.",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_81b68df7",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "ou.. please follow previous instruction for all occurrences.",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_41e5e506",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 670,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "? what is it ? (help method or probably bad name ? )",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_21ea21db",
+        "filename": "test-provider/src/main/java/org/opendaylight/openflowplugin/test/OpenflowpluginStatsTestCommandProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 709,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2019-11-15T19:18:24Z",
+      "side": 1,
+      "message": "Please add some help description for the methods.",
+      "revId": "22109c6bbffc4cdca7e8261d2d7f11d92b725f55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
