@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "da01753e_f935abf7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "This log should probably be trace, otherwise it will flood debug logs during initialization. We are not loggin anything in other write* methods anyway.",
+      "range": {
+        "startLine": 406,
+        "startChar": 12,
+        "endLine": 407,
+        "endChar": 77
+      },
+      "revId": "fb6c45d6c87fb147172e38efd7a5550e8efec5dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_bfde500f",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
         "patchSetId": 1
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "I will look into it.",
       "parentUuid": "da01753e_19eb4f14",
+      "range": {
+        "startLine": 408,
+        "startChar": 12,
+        "endLine": 408,
+        "endChar": 90
+      },
+      "revId": "fb6c45d6c87fb147172e38efd7a5550e8efec5dc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_19eb4f14",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Don\u0027t you need to also update DeviceGroupRegistry here, as you are writing new groups to operational/DS?",
       "range": {
         "startLine": 408,
         "startChar": 12,
