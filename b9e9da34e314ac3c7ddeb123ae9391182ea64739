@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_be24d8af",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-12T10:54:20Z",
+      "side": 1,
+      "message": "flatmap would suit better",
+      "range": {
+        "startLine": 187,
+        "startChar": 32,
+        "endLine": 187,
+        "endChar": 39
+      },
+      "revId": "b9e9da34e314ac3c7ddeb123ae9391182ea64739",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_5ebadc23",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/LifecycleConductorImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-12T10:54:20Z",
+      "side": 1,
+      "message": "this is the worse way on how to detect cancellation, please remove it",
+      "range": {
+        "startLine": 199,
+        "startChar": 24,
+        "endLine": 199,
+        "endChar": 58
+      },
+      "revId": "b9e9da34e314ac3c7ddeb123ae9391182ea64739",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_9e9c74c2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-07-12T10:54:20Z",
+      "side": 1,
+      "message": "perfect condition for java8 - tables.stream..",
+      "range": {
+        "startLine": 107,
+        "startChar": 14,
+        "endLine": 136,
+        "endChar": 17
+      },
+      "revId": "b9e9da34e314ac3c7ddeb123ae9391182ea64739",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
