@@ -37,6 +37,42 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_69dfe10d",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ContextChainState.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "So this is really similar to my original naming then, what was INITIALIZED, WORKING, WORKING_MASTER, WORKING_SLAVE. The working status was when CSS called instantiateServiceInstance, or closeServiceInstance but the logic in them was not processed yet",
+      "parentUuid": "ba1f61a0_49f01dfe",
+      "revId": "1459b12308c4b1d3ea53a4327da87d34c0b2ed15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7ba20e9a",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ContextChainState.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay, I will rename it to PREPARING, as context chain is preparing to become SLAVE or MASTER when in this state.",
+      "parentUuid": "ba1f61a0_47bad36e",
+      "revId": "1459b12308c4b1d3ea53a4327da87d34c0b2ed15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_493e5d8d",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
         "patchSetId": 8
@@ -48,6 +84,30 @@
       "writtenOn": "2017-09-08T07:24:19Z",
       "side": 1,
       "message": "so i am trying to understand this code, at line 106, so set the state of the contextChainState to CLOSED, but in the above code block you are checking if the previous state was working, submit it to thread pool, but it\u0027s it that at this point conectChainState is already CLOSE? so why not just run task.run()? or you can offload it to executor to not block the main thread, but we don\u0027t need this condition here.",
+      "range": {
+        "startLine": 120,
+        "startChar": 1,
+        "endLine": 125,
+        "endChar": 9
+      },
+      "revId": "1459b12308c4b1d3ea53a4327da87d34c0b2ed15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_89ea15aa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "It is to avoid locking, as I stated in comment. We do not need to run it in separate thread in case we was not in WORKING state (because working state means that we are in instantiate or close CSS method, and that means if we do not run this in new thread, CSS will be locked).",
+      "parentUuid": "ba1f61a0_493e5d8d",
       "range": {
         "startLine": 120,
         "startChar": 1,
