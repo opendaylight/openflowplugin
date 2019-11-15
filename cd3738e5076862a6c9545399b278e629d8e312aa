@@ -16,6 +16,24 @@
       "revId": "cd3738e5076862a6c9545399b278e629d8e312aa",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_aa1ee409",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "No, because this is only for unsupported case of statistics deletion, what happens all the time, because deletion is implemented only for FLOW, METER and GROUP, not for anything else, because for anything else it is not needed, so this will spam the logs.",
+      "parentUuid": "ba1f61a0_89eb3577",
+      "revId": "cd3738e5076862a6c9545399b278e629d8e312aa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
