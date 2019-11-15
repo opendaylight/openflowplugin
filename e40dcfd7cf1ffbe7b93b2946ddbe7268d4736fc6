@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_66965596",
+        "filename": "openflowplugin-blueprint-config/src/main/resources/org/opendaylight/blueprint/openflowplugin.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "As this do not depends on anything in openflowPluginProvider, can this be made as separate service? See configurationService for example. Also, if making this separate service, make MastershipServiceManager separate service, so there won\u0027t be pointless getter.",
+      "range": {
+        "startLine": 63,
+        "startChar": 12,
+        "endLine": 63,
+        "endChar": 116
+      },
+      "revId": "e40dcfd7cf1ffbe7b93b2946ddbe7268d4736fc6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
