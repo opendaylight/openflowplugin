@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_5d932ca3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T20:22:41Z",
+      "side": 1,
+      "message": "Two comments:\n(1) There is a possibility of transaction failure if we are writing the transaction in aync manner. Because once initialSubmitTransaction() submit transaction and other thread gets the lock and ask for transaction before committing the transaction submitted by initialSubmitTransaction(), this can cause exception (i believe modification exception or something).\n\n(2) In case of slave, we will still store the port status messages right?, when whenever the ownership will change, it will process those port status messages (most probably stale)  right? Because i don\u0027t see where we clean the port status message registry for slave controller.",
+      "parentUuid": "da01753e_95c45293",
+      "range": {
+        "startLine": 227,
+        "startChar": 47,
+        "endLine": 229,
+        "endChar": 12
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_1de36408",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 9
@@ -49,6 +73,122 @@
     },
     {
       "key": {
+        "uuid": "da01753e_8f26ff14",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": "please rephrase it to \"Write all port status messages that is received while plugin was acquiring mastership of the device to operational data store, before activating transaction chain manager\"",
+      "range": {
+        "startLine": 233,
+        "startChar": 19,
+        "endLine": 233,
+        "endChar": 113
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_cf2007fa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": "please rephrase it to \"Error occurred while processing {} port status message received from device {}\". Last {} is not required.",
+      "range": {
+        "startLine": 242,
+        "startChar": 30,
+        "endLine": 242,
+        "endChar": 89
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_8f6d5f35",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": ".close() devicePortStatusRegistry here as well and nullify the devicePortStatusRegistry, otherwise the two clean arrays initialized in devicePortStatusRegistry will be hanging around till connection closes, so no point in keeping the garbage.",
+      "range": {
+        "startLine": 246,
+        "startChar": 16,
+        "endLine": 246,
+        "endChar": 56
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_7d96f095",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T20:22:41Z",
+      "side": 1,
+      "message": "i think that is in the case when object is really unused, but here this registry will be referenced from DeviceConectImpl (which will live till connection is up), so GC can\u0027t clean this registry object + array list and clean it up.",
+      "parentUuid": "da01753e_aa7e51ac",
+      "range": {
+        "startLine": 246,
+        "startChar": 16,
+        "endLine": 246,
+        "endChar": 56
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_0f7a0ff1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": "i think you don\u0027t need else block, just return false.",
+      "range": {
+        "startLine": 250,
+        "startChar": 10,
+        "endLine": 250,
+        "endChar": 16
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_4f8417d4",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
         "patchSetId": 9
@@ -65,6 +205,29 @@
         "startChar": 26,
         "endLine": 400,
         "endChar": 92
+      },
+      "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_0f616f39",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/portstatus/DevicePortStatusRegistry.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-12T01:16:03Z",
+      "side": 1,
+      "message": "why do you need two SynchronizedList? Why not write  PortStatus wrapper (e.g PortStatusWrapper \u003d\u003d PortStatus + isMarked). This will reduce the unnecessary default size array list.",
+      "range": {
+        "startLine": 20,
+        "startChar": 4,
+        "endLine": 20,
+        "endChar": 91
       },
       "revId": "7f1a5183dab5e3b6de80f685cbcbc2c472659b7a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
