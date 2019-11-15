@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_1cc42a3f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/MultipartRequestOnTheFlyCallback.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "Better name",
+      "range": {
+        "startLine": 41,
+        "startChar": 27,
+        "endLine": 41,
+        "endChar": 36
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_dcd002fa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalTableServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "better name",
+      "range": {
+        "startLine": 58,
+        "startChar": 27,
+        "endLine": 58,
+        "endChar": 35
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_bc3b7637",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/MultipartRequestOnTheFlyCallbackTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "twice deviceContext",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 179
+      },
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_fc45feb3",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/SalTableServiceImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-03-31T06:40:30Z",
+      "side": 1,
+      "message": "twice deviceContext",
+      "revId": "e33bb29745eecc3bc47e1b70e0789d8fc157517c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
