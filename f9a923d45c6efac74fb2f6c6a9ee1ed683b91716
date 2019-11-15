@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "da5c1566_da358647",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-06T11:05:46Z",
+      "side": 1,
+      "message": "Nice to have: configurable min/max threads + timeout.\n\nAt lease put there non zere value for min threads.",
+      "revId": "f9a923d45c6efac74fb2f6c6a9ee1ed683b91716",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_4d9f0f60",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 1
