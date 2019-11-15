@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a6b29fe_e399a320",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Totally forgot to mention this in previous reply, when your change directly resolves mentioned bug, you should use \"Resolves\" instead of \"See also\", and I believe that your change resolves mentioned bug. ex.:\nResolves: bug 6917",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 18
+      },
+      "revId": "2cdb42fae0546f4ba9b90eb7e844d26f53d816fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_debefdff",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalFlowServiceImpl.java",
         "patchSetId": 1
@@ -41,6 +64,29 @@
         "startChar": 32,
         "endLine": 299,
         "endChar": 37
+      },
+      "revId": "2cdb42fae0546f4ba9b90eb7e844d26f53d816fc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_63691325",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsGatheringUtilsTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 462,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why not create flowPath from tablePath? ex.: flowPath \u003d tablePath.child(Flow.class, new FlowKey(flowId));",
+      "range": {
+        "startLine": 460,
+        "startChar": 8,
+        "endLine": 462,
+        "endChar": 56
       },
       "revId": "2cdb42fae0546f4ba9b90eb7e844d26f53d816fc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
