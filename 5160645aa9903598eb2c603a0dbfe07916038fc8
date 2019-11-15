@@ -73,6 +73,29 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_fc601e37",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/IReconciliationManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Please use 4 spaces to indent your code (see rest of OpenFlowPlugin code and Java code style guides).",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 8
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_82f9beca",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/IReconciliationTaskFactory.java",
         "patchSetId": 4
@@ -238,6 +261,29 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_dc655a46",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Order your declarations, static variables should be first, then instance variables.",
+      "range": {
+        "startLine": 25,
+        "startChar": 8,
+        "endLine": 27,
+        "endChar": 60
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_1fd0844f",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
         "patchSetId": 4
@@ -262,6 +308,29 @@
     },
     {
       "key": {
+        "uuid": "da2a55be_3c5bd688",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Annotations should be in new line (or atleast that\u0027s how rest of OpenFlowPlugin code is styled).",
+      "range": {
+        "startLine": 33,
+        "startChar": 8,
+        "endLine": 33,
+        "endChar": 17
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da2a55be_1f1524f1",
         "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
         "patchSetId": 4
@@ -274,6 +343,29 @@
       "side": 1,
       "message": "Hi Tomas. if I maintain the registered services as a single list sorted by priority there would be issue (in clarity) in ensuring all the services with a higher priority have completed reconciliation before proceeding with the lower priority ones(which is expected).",
       "parentUuid": "da2a55be_1c609231",
+      "range": {
+        "startLine": 35,
+        "startChar": 16,
+        "endLine": 42,
+        "endChar": 17
+      },
+      "revId": "5160645aa9903598eb2c603a0dbfe07916038fc8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_1c609231",
+        "filename": "applications/reconciliation-framework/src/main/java/org/opendaylight/openflowplugin/applications/reconciliation/cli/GetRegisteredServices.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "You can avoid double loop by simply using one list of registered services and sorting it by .getPriority.",
       "range": {
         "startLine": 35,
         "startChar": 16,
