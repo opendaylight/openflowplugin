@@ -34,6 +34,42 @@
       "revId": "f1cc4de7dee9e22c231a90cf517b03bc5071ad35",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_a5a93a7d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "No, consumer will always update the value if it\u0027s called, even with initialized false ,but it checks for initialized to determine if it should also propagate this change to managers (like DeviceManager, StatisticsManager etc). So if successCallback.accept will be moved to if block that checks if initialized is true, then for example initial settings (loaded from yang and from initial .cfg file) will be never loaded.",
+      "parentUuid": "da01753e_2f352af7",
+      "revId": "f1cc4de7dee9e22c231a90cf517b03bc5071ad35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_45b20ee7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "If I understand correctly. And also, logging config parameter is updated is correct everytime when successCallback.accept was called, because it will everytime update value, but sometimes it will not propagate (if not initialized, because then it is not needed to propagate anything), if you meant this. So in both cases, successCallback.accept and that LOG.info under it cannot be put into any if blocks.",
+      "parentUuid": "da01753e_a5a93a7d",
+      "revId": "f1cc4de7dee9e22c231a90cf517b03bc5071ad35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
