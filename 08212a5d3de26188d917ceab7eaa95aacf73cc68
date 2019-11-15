@@ -1,0 +1,251 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_441c01c2",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OFPContext.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "default implementation in interface with NOOP is probably not a good idea.",
+      "range": {
+        "startLine": 21,
+        "startChar": 36,
+        "endLine": 21,
+        "endChar": 49
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a47875f9",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OFPContext.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "be careful with similar implementation",
+      "range": {
+        "startLine": 68,
+        "startChar": 17,
+        "endLine": 68,
+        "endChar": 22
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_641f7db8",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OFPManager.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "Information compresion has to be documented.",
+      "range": {
+        "startLine": 19,
+        "startChar": 17,
+        "endLine": 19,
+        "endChar": 27
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_847d79ea",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/handlers/DeviceDisconnectedHandler.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "! important for order - it needs to be documented",
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e4826dc7",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/device/handlers/DeviceInitializationPhaseHandler.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "could be null ?",
+      "range": {
+        "startLine": 34,
+        "startChar": 81,
+        "endLine": 34,
+        "endChar": 97
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c48771d6",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/LifecycleService.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "could be null ?",
+      "range": {
+        "startLine": 36,
+        "startChar": 44,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_64765d08",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "could someone change State from outside ?",
+      "range": {
+        "startLine": 537,
+        "startChar": 4,
+        "endLine": 537,
+        "endChar": 10
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2425850a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "could be deviceInfo obj. null ?",
+      "range": {
+        "startLine": 65,
+        "startChar": 26,
+        "endLine": 65,
+        "endChar": 36
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_04220901",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "state is working now ... why do you want to set it again to INIT in last method row ?",
+      "range": {
+        "startLine": 66,
+        "startChar": 13,
+        "endLine": 66,
+        "endChar": 18
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a4c6b514",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "change order for close and remove from ListOfCtx. Good practice is \"remove ctx before close\".",
+      "range": {
+        "startLine": 100,
+        "startChar": 12,
+        "endLine": 100,
+        "endChar": 23
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_84cbb91d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/rpc/RpcContextImpl.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 994
+      },
+      "writtenOn": "2016-10-11T11:26:06Z",
+      "side": 1,
+      "message": "it could be set by property definition.",
+      "range": {
+        "startLine": 78,
+        "startChar": 8,
+        "endLine": 78,
+        "endChar": 16
+      },
+      "revId": "08212a5d3de26188d917ceab7eaa95aacf73cc68",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
