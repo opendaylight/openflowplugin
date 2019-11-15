@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3afa9182_14e7df13",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-05T21:46:00Z",
+      "side": 1,
+      "message": "were",
+      "range": {
+        "startLine": 180,
+        "startChar": 56,
+        "endLine": 180,
+        "endChar": 59
+      },
+      "revId": "06fb39998233ffeadc0f81a5c944a8a2e9907f15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
