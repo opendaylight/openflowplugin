@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_2a60ad31",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsContext.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "we need to call initial submit after reconciliation with this method, and also start periodic statistics gathering and create polling service. But I agree that this method is a bit confusing, so I will try to do something about it.",
+      "parentUuid": "ba1f61a0_7f3705e4",
+      "range": {
+        "startLine": 36,
+        "startChar": 12,
+        "endLine": 36,
+        "endChar": 47
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_ff2bf57f",
         "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsManager.java",
         "patchSetId": 20
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "yeah, flag is more appropriate here. thanks!",
       "parentUuid": "ba1f61a0_8add5973",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 100
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8add5973",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/statistics/StatisticsManager.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "It needs to know if reconciliation framework is registered because based on it, statistics context will not perform initial submit. But i agree that setter is not needed here, I will just send boolean parameter to createContext",
+      "parentUuid": "ba1f61a0_ff2bf57f",
       "range": {
         "startLine": 22,
         "startChar": 4,
@@ -143,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_aa8dbd7d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "This is not same variable as one read from openflowplugin.cfg. The logic to determine if statistics will be enabled is:\n\n!isStatisticsFullyDisabled \u0026\u0026 config.isIsStatisticsPollingOn()\n\nisStatisticsFullyDisabled - RPC\nconfig.isStatisticsPollingOn() - cfg file",
+      "parentUuid": "ba1f61a0_bca7cb4e",
+      "range": {
+        "startLine": 73,
+        "startChar": 12,
+        "endLine": 73,
+        "endChar": 37
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_3cbc7b69",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
         "patchSetId": 20
@@ -166,6 +238,30 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_0aea090f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay",
+      "parentUuid": "ba1f61a0_3cbc7b69",
+      "range": {
+        "startLine": 92,
+        "startChar": 60,
+        "endLine": 92,
+        "endChar": 91
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_7c86f3ba",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
         "patchSetId": 20
@@ -177,6 +273,30 @@
       "writtenOn": "2017-08-10T09:36:10Z",
       "side": 1,
       "message": "i think rather then exponentially increasing it, we should set it to averageStatisticsGatheringTime. Because there is still possibility that currentTimerDelay*2 will be less then averageStatisticsGatheringTime.",
+      "range": {
+        "startLine": 57,
+        "startChar": 12,
+        "endLine": 57,
+        "endChar": 35
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_eaee9521",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Okay",
+      "parentUuid": "ba1f61a0_7c86f3ba",
       "range": {
         "startLine": 57,
         "startChar": 12,
