@@ -1,0 +1,252 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_a9e84b7d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "If connection is present, in what scenario do you think switch from Master to Slave happen? Lets assume there is a scenario where it goes from Master-\u003eSlave, why do you have to send the SLAVE role, because when switch is connected to controller it will either have master or slave, the moment anyone else become master, the old master will be moved to slave.",
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_29fc5b3e",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/role/RoleContext.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "please add some documentation on what this interface is all about.",
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_09f9974d",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/role/RoleManager.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "Looking at the exposed API it doesn\u0027t give any clue about pushing the roles. That\u0027s probably what implementation will do. So i think we should add a documentation saying that this provider of this interface should create RoleContext and return. What implementation does is out of this interface scope.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 28
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c985bfae",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "why not initialize it in constructor?",
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_bf469dbd",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T10:29:50Z",
+      "side": 1,
+      "message": "yeah, but RoleManagerImpl don\u0027t have any dependency on other managers/context and there is no explicit initialization for RoleManagerImpl, so we can avoid lazy initialization. But no big deal as such.",
+      "parentUuid": "ba1f61a0_5417a2a3",
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_097eb7ae",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "you don\u0027t have to explicitly mention directExecutor(), i think it by default uses directExecutor if you don\u0027t specify.",
+      "range": {
+        "startLine": 90,
+        "startChar": 62,
+        "endLine": 90,
+        "endChar": 92
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9f8919cd",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T10:29:50Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "ba1f61a0_b40c1e96",
+      "range": {
+        "startLine": 90,
+        "startChar": 62,
+        "endLine": 90,
+        "endChar": 92
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8949078e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "same here.",
+      "range": {
+        "startLine": 95,
+        "startChar": 70,
+        "endLine": 95,
+        "endChar": 100
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a93b2bea",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleContextImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "we should log that SLAVE role is set on the device. Similarly log the failure as well.",
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8940e757",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/role/RoleManagerImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "RoleContext?",
+      "range": {
+        "startLine": 53,
+        "startChar": 34,
+        "endLine": 53,
+        "endChar": 44
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_542b2282",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalRoleServiceImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "good to change this log message more meaningful e.g Role {} successfully set on device {}.",
+      "range": {
+        "startLine": 82,
+        "startChar": 31,
+        "endLine": 82,
+        "endChar": 84
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_94259aad",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalRoleServiceImpl.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-03T23:26:46Z",
+      "side": 1,
+      "message": "same here.",
+      "range": {
+        "startLine": 84,
+        "startChar": 30,
+        "endLine": 84,
+        "endChar": 58
+      },
+      "revId": "28424a982b4419e67854f92c0a2de4966323a1af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
