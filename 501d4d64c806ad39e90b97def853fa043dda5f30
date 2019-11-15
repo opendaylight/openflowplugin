@@ -22,6 +22,30 @@
       "revId": "501d4d64c806ad39e90b97def853fa043dda5f30",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_67e8027d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-03-28T01:32:54Z",
+      "side": 1,
+      "message": "But i do not see where do we call hasMark() for groupId and meterID? That\u0027s the reason i am wondering why we are caching them at first place. Can you please point me to the code where we are calling hasMark() for meterId and groupId?",
+      "parentUuid": "fafc7978_1fca486e",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 88
+      },
+      "revId": "501d4d64c806ad39e90b97def853fa043dda5f30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
