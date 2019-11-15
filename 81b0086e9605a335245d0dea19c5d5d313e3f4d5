@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_1f79cf93",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/TranslatorLibraryUtil.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-08-01T13:30:07Z",
+      "side": 1,
+      "message": "change name please (this is not a setter)",
+      "range": {
+        "startLine": 40,
+        "startChar": 23,
+        "endLine": 40,
+        "endChar": 48
+      },
+      "revId": "81b0086e9605a335245d0dea19c5d5d313e3f4d5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_9fc03f7e",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ConvertorManagerFactory.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-08-01T13:30:07Z",
+      "side": 1,
+      "message": "looks suspicious",
+      "range": {
+        "startLine": 62,
+        "startChar": 17,
+        "endLine": 62,
+        "endChar": 86
+      },
+      "revId": "81b0086e9605a335245d0dea19c5d5d313e3f4d5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_5fcfc7b0",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/ConvertorManagerFactory.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 556
+      },
+      "writtenOn": "2016-08-01T13:30:07Z",
+      "side": 1,
+      "message": "looks suspicious",
+      "range": {
+        "startLine": 65,
+        "startChar": 16,
+        "endLine": 65,
+        "endChar": 90
+      },
+      "revId": "81b0086e9605a335245d0dea19c5d5d313e3f4d5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
