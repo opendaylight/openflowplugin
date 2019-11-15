@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_77fe3a6d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipChangeServiceManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why cast and surrounding with if?",
+      "range": {
+        "startLine": 68,
+        "startChar": 8,
+        "endLine": 71,
+        "endChar": 9
+      },
+      "revId": "bb0c16ea76fe6e38b935edb666b51e6b32f25874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_17309e55",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/MastershipServiceDelegate.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "same as in my other comment",
+      "range": {
+        "startLine": 40,
+        "startChar": 8,
+        "endLine": 40,
+        "endChar": 71
+      },
+      "revId": "bb0c16ea76fe6e38b935edb666b51e6b32f25874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_d7ee06b4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/mastership/ReconciliationFrameworkServiceDelegate.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "If only thing why manager is here is to call unregisterReconciliationFramework, why not send to constructor this method call wrapped in f.e AutoCloseable what will be called instead of casting it to Impl and then calling package-private method?",
+      "range": {
+        "startLine": 30,
+        "startChar": 8,
+        "endLine": 30,
+        "endChar": 95
+      },
+      "revId": "bb0c16ea76fe6e38b935edb666b51e6b32f25874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
