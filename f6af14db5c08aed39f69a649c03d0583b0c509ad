@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_f52b11e9",
+        "filename": "openflowjava/openflow-protocol-api/src/main/java/org/opendaylight/openflowjava/protocol/api/extensibility/AlienMessageListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-12T21:14:58Z",
+      "side": 1,
+      "message": "what is the definition of alien message here ?",
+      "range": {
+        "startLine": 19,
+        "startChar": 12,
+        "endLine": 19,
+        "endChar": 26
+      },
+      "revId": "f6af14db5c08aed39f69a649c03d0583b0c509ad",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
