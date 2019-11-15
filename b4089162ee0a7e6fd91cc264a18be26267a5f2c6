@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_4dc8af74",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/connection/listener/SystemNotificationsListenerImplTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-21T09:05:41Z",
+      "side": 1,
+      "message": "did you mean ofppool ?",
+      "range": {
+        "startLine": 75,
+        "startChar": 43,
+        "endLine": 75,
+        "endChar": 50
+      },
+      "revId": "b4089162ee0a7e6fd91cc264a18be26267a5f2c6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
