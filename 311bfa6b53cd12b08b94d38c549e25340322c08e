@@ -22,6 +22,54 @@
       "revId": "311bfa6b53cd12b08b94d38c549e25340322c08e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_9216e3a5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "okay",
+      "parentUuid": "da01753e_7f77c83a",
+      "range": {
+        "startLine": 236,
+        "startChar": 71,
+        "endLine": 236,
+        "endChar": 75
+      },
+      "revId": "311bfa6b53cd12b08b94d38c549e25340322c08e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_756d2998",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da01753e_9216e3a5",
+      "range": {
+        "startLine": 236,
+        "startChar": 71,
+        "endLine": 236,
+        "endChar": 75
+      },
+      "revId": "311bfa6b53cd12b08b94d38c549e25340322c08e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

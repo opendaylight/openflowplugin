@@ -22,6 +22,30 @@
       "revId": "3bd017a79f37bd70ecf3795ad3f6ac73b7585e4b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_521c7bc1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsContextImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "Yes, but problem is probably also with using PORTDESC, because it will not work for OF 1.0 (atleast I do not found it anywhere in OF 1.0 spec, I found only port stats there) and OF 1.0 is anyway getting ports from FEATURES_REPLY. Also, with PORT_DESC approach, after looking at tests it seems that some links are missing, but I am not sure if it is related to missed port status messages, but after I ran test-openflowplugin-core on this patch with registry, tests was blue again, so it is highly possible.",
+      "parentUuid": "da01753e_1f9f9c51",
+      "range": {
+        "startLine": 284,
+        "startChar": 12,
+        "endLine": 304,
+        "endChar": 23
+      },
+      "revId": "3bd017a79f37bd70ecf3795ad3f6ac73b7585e4b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
