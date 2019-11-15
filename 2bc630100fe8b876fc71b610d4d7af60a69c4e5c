@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_412aaa90",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/registry/CommonDeviceRegistry.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-03-01T15:30:51Z",
+      "side": 1,
+      "message": "check checkstyle :) \"period on first sentence\"",
+      "revId": "2bc630100fe8b876fc71b610d4d7af60a69c4e5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_934fc96a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-03-01T15:30:51Z",
+      "side": 1,
+      "message": "make synchronized",
+      "range": {
+        "startLine": 262,
+        "startChar": 8,
+        "endLine": 262,
+        "endChar": 22
+      },
+      "revId": "2bc630100fe8b876fc71b610d4d7af60a69c4e5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_f33f35b2",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-03-01T15:30:51Z",
+      "side": 1,
+      "message": "synchronized ?",
+      "range": {
+        "startLine": 30,
+        "startChar": 8,
+        "endLine": 30,
+        "endChar": 27
+      },
+      "revId": "2bc630100fe8b876fc71b610d4d7af60a69c4e5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_3346dd4f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/group/DeviceGroupRegistryImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-03-01T15:30:51Z",
+      "side": 1,
+      "message": "synchronized",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 53,
+        "endChar": 38
+      },
+      "revId": "2bc630100fe8b876fc71b610d4d7af60a69c4e5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
