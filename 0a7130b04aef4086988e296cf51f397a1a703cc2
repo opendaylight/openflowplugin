@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_1f4b75b1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-16T09:13:56Z",
+      "side": 1,
+      "message": "Dont break the imports. Set the imports in your IDEA like this:  https://wiki.opendaylight.org/view/File:Imports.png",
+      "range": {
+        "startLine": 15,
+        "startChar": 58,
+        "endLine": 62,
+        "endChar": 37
+      },
+      "revId": "0a7130b04aef4086988e296cf51f397a1a703cc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_5fcccd35",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-16T09:13:56Z",
+      "side": 1,
+      "message": "whats opf ? did you mean ofp ?",
+      "range": {
+        "startLine": 111,
+        "startChar": 43,
+        "endLine": 111,
+        "endChar": 50
+      },
+      "revId": "0a7130b04aef4086988e296cf51f397a1a703cc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_bfd1a9cf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-16T09:13:56Z",
+      "side": 1,
+      "message": "Dont break the imports",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 47
+      },
+      "revId": "0a7130b04aef4086988e296cf51f397a1a703cc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_1fe2559f",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImplTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-06-16T09:13:56Z",
+      "side": 1,
+      "message": "ofp ?",
+      "range": {
+        "startLine": 71,
+        "startChar": 43,
+        "endLine": 71,
+        "endChar": 50
+      },
+      "revId": "0a7130b04aef4086988e296cf51f397a1a703cc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
