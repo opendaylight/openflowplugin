@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_b4b196e3",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeRegistration.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:38:42Z",
+      "side": 1,
+      "message": "This interface should provide the close() method so that application can close the registration when needed.",
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_94b452d2",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:38:42Z",
+      "side": 1,
+      "message": "how both of these events are different from ClusterSingletonService::instantiateServiceInstance \u0026\u0026 ClusterSingletonService::closeServiceInstance ?",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 24,
+        "endChar": 7
+      },
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_f4caee4d",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/mastership/MastershipChangeService.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-07-13T20:38:42Z",
+      "side": 1,
+      "message": "Few questions here:\nwhat happens when this specific instance don\u0027t get ownership of the device? \ndo you call onLoseOwnership? What happens if the plugin is loading up and before application register for the membership service, some device connect to the controller? Implementation of this API will replay the events ? \nIs it guaranteed that application will definitely receive these callbacks when in any event?\n\nIf it guarantee the above, how it\u0027s different then EOS? where application can check the flag (isOwner) and figure out whether this instance is owner or not?",
+      "revId": "3fc2cc09e718362d95effa6abbf485dc1ac2b095",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
