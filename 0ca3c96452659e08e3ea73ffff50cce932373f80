@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba068154_2f6eec01",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/connection/ConnectionContext.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-05-16T15:50:14Z",
+      "side": 1,
+      "message": "not final ?",
+      "range": {
+        "startLine": 163,
+        "startChar": 33,
+        "endLine": 163,
+        "endChar": 68
+      },
+      "revId": "0ca3c96452659e08e3ea73ffff50cce932373f80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
