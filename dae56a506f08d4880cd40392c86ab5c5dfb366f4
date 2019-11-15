@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_aecc7e62",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-meter-types.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 5743
+      },
+      "writtenOn": "2017-02-10T00:55:43Z",
+      "side": 1,
+      "message": "I think it is wrong to use meter-band-type here, because it is actually only a sub type of ofpmbt-experimenter which belongs to meter-band-type, not a parallel relationship.\nI have done the relevant change by https://git.opendaylight.org/gerrit/#/c/47766/4.",
+      "revId": "dae56a506f08d4880cd40392c86ab5c5dfb366f4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
