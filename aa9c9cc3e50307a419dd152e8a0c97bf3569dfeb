@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_89f47988",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/configuration/ConfigurationService.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "checkstyle violation :)",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_e9f1b596",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/configuration/ConfigurationService.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "checkstyle violation :)",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_292bcdec",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "ordering",
+      "range": {
+        "startLine": 147,
+        "startChar": 0,
+        "endLine": 173,
+        "endChar": 50
+      },
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a93e9d27",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtil.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "missing period",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_493a8137",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtil.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "missing period",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_6935c545",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtil.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "missing period",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_09308955",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtil.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "missing period",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_893bd937",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/DeviceInitializationUtil.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-06-26T10:30:49Z",
+      "side": 1,
+      "message": "missing period",
+      "revId": "aa9c9cc3e50307a419dd152e8a0c97bf3569dfeb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
