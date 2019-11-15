@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_e5e53ca9",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/common/ParametrizedConvertor.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-07-06T06:54:02Z",
+      "side": 1,
+      "message": "extends ConvertorData",
+      "range": {
+        "startLine": 18,
+        "startChar": 49,
+        "endLine": 18,
+        "endChar": 53
+      },
+      "revId": "a98a86c7c8014bf6bffe16b1f4d0fefbd0afcfe7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
