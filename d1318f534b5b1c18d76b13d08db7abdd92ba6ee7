@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_3878dec3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/RoleService.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-13T06:39:10Z",
+      "side": 1,
+      "message": "why local copy ?",
+      "range": {
+        "startLine": 57,
+        "startChar": 8,
+        "endLine": 57,
+        "endChar": 27
+      },
+      "revId": "d1318f534b5b1c18d76b13d08db7abdd92ba6ee7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_18735ae8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/SalTableServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-13T06:39:10Z",
+      "side": 1,
+      "message": "Local copy of nodeId not needed",
+      "range": {
+        "startLine": 117,
+        "startChar": 20,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "d1318f534b5b1c18d76b13d08db7abdd92ba6ee7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f845c670",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/services/SalRoleServiceImplTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-13T06:39:10Z",
+      "side": 1,
+      "message": "Don\u0027t use *",
+      "revId": "d1318f534b5b1c18d76b13d08db7abdd92ba6ee7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
