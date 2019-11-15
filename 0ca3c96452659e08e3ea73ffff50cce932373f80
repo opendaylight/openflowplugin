@@ -22,6 +22,30 @@
       "revId": "0ca3c96452659e08e3ea73ffff50cce932373f80",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba068154_a8ff7366",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/connection/ConnectionContext.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Final in interface method parameters do not have any effect anyway, only serves for documentation purposes, and as other method parameters in this class do not have final modifier used, I could either change them all to final or this one will stand out, so I just do not used final at all here.",
+      "parentUuid": "ba068154_2f6eec01",
+      "range": {
+        "startLine": 163,
+        "startChar": 33,
+        "endLine": 163,
+        "endChar": 68
+      },
+      "revId": "0ca3c96452659e08e3ea73ffff50cce932373f80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
