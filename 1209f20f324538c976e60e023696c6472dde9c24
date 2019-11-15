@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_64f641d9",
+        "filename": "openflowplugin-controller-config/src/main/resources/initial/42-openflowplugin-new.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-09T10:12:06Z",
+      "side": 1,
+      "message": "set to true, plz",
+      "range": {
+        "startLine": 96,
+        "startChar": 41,
+        "endLine": 96,
+        "endChar": 46
+      },
+      "revId": "1209f20f324538c976e60e023696c6472dde9c24",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_c403cdb6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2016-05-09T10:12:06Z",
+      "side": 1,
+      "message": "set to true, plz",
+      "range": {
+        "startLine": 86,
+        "startChar": 40,
+        "endLine": 86,
+        "endChar": 45
+      },
+      "revId": "1209f20f324538c976e60e023696c6472dde9c24",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
