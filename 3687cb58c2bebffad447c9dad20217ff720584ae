@@ -52,6 +52,24 @@
       "revId": "3687cb58c2bebffad447c9dad20217ff720584ae",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_d4de686c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 0,
+      "message": "it do not matters that result of future transformation is not used, but the logic still runs after commitBundleFuture is completed in async. Either put this back and remove meterFuture declaration, or replace commitBundleFuture.get() with meterFuture.get()",
+      "parentUuid": "ba1f61a0_40af5994",
+      "revId": "3687cb58c2bebffad447c9dad20217ff720584ae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
