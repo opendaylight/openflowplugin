@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa2559ec_053181ec",
+        "filename": "artifacts/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "This was renamed to features-openflowplugin in this patch, so this should be removed too, if I am not wrong.",
+      "range": {
+        "startLine": 222,
+        "startChar": 12,
+        "endLine": 228,
+        "endChar": 25
+      },
+      "revId": "836a64a2272d3d8012e385c2a61835787914e904",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
