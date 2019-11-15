@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_49f01dfe",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/lifecycle/ContextChainState.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-09-08T07:24:19Z",
+      "side": 1,
+      "message": "PREPARING is not really a state, it\u0027s verb (Action). So state should be (like INITIALIZED, CREATED, ACTIVE, ACTIVE_AS_MASTER, ACTIVE_AS_SLAVE etc).",
+      "parentUuid": "ba1f61a0_7ba20e9a",
+      "revId": "1459b12308c4b1d3ea53a4327da87d34c0b2ed15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_493e5d8d",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImpl.java",
         "patchSetId": 8
