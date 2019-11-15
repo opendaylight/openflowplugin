@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_7c0d2a37",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 18
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "Fix the message plz",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 7
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_012be794",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "mark this as deprecated",
+      "range": {
+        "startLine": 372,
+        "startChar": 53,
+        "endLine": 372,
+        "endChar": 64
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_411cbf77",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 670,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "toString ?",
+      "range": {
+        "startLine": 670,
+        "startChar": 35,
+        "endLine": 670,
+        "endChar": 46
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_61190388",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 675,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "use toString :P",
+      "range": {
+        "startLine": 675,
+        "startChar": 35,
+        "endLine": 675,
+        "endChar": 46
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_a113fb64",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 681,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "toString",
+      "range": {
+        "startLine": 681,
+        "startChar": 31,
+        "endLine": 681,
+        "endChar": 42
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_8116b753",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 705,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "volatile or Atomic",
+      "range": {
+        "startLine": 705,
+        "startChar": 13,
+        "endLine": 705,
+        "endChar": 24
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da2a55be_9c0a9e1f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 18
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 5280
+      },
+      "writtenOn": "2017-07-21T07:55:35Z",
+      "side": 1,
+      "message": "no needed anymore",
+      "range": {
+        "startLine": 122,
+        "startChar": 39,
+        "endLine": 122,
+        "endChar": 50
+      },
+      "revId": "96d879a8ce377e956800a20edbe3627972107bc2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
