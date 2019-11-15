@@ -22,6 +22,30 @@
       "revId": "9f3504b3871156c791855c75eb77e05182359a36",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_e30de638",
+        "filename": "extension/openflowplugin-extension-api/src/main/java/org/opendaylight/openflowplugin/extension/api/GroupingLooseResolver.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_9d78bdf3",
+      "range": {
+        "startLine": 64,
+        "startChar": 23,
+        "endLine": 64,
+        "endChar": 33
+      },
+      "revId": "9f3504b3871156c791855c75eb77e05182359a36",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
