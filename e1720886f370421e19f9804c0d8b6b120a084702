@@ -1,0 +1,122 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1af78d9a_18926857",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-19T22:34:33Z",
+      "side": 1,
+      "message": "Setter methods help if the config value changes at the run time and these can act as a notification. If you bundle all the configuration in one java object, how you will notify the dependent module to check for the new value?",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_47c40d92",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-20T20:10:31Z",
+      "side": 1,
+      "message": "We were not changing the configuration run time, doesn\u0027t mean we won\u0027t do it in future. Simple example is, if somebody want to change the statistics time interval run time, that\u0027s something plugin can definitely implement, and reconnecting all the devices for that is too much of a ask. There is very much possible scenario where user wants to do it.\n\nWhen anybody changes openflowplugin.cfg, it can call the update method in the plugin and that update method can call these setter method, so yes, these methods can be used as a notification to any service that is using it.",
+      "parentUuid": "1af78d9a_9b52d211",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_6769498b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-20T21:17:19Z",
+      "side": 1,
+      "message": "these setters are executed when we see any change in the file, so they basically notify that value is changed, so probably renaming it to notificationXXXChanged will help workaround the standard :). Anyways doesn\u0027t matter which way we use, we need some way that context / other module can get notified whenever anything changes in the config file. We don\u0027t want to implement an approach now, that we will have to change again in future because it doesn\u0027t provide notification. Can you please add a listener to the existing config interface you created, so that these intereface will be available for users to consume whenever they need this functionality.",
+      "parentUuid": "1af78d9a_e746d922",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 10,
+        "endChar": 53
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_789f2c60",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-19T22:34:33Z",
+      "side": 1,
+      "message": "openflowplugin.cfg goes to /etc directory, which is accessible to any module. I tested with this patch and i didn\u0027t see any issue while reading data from openflowpligin.cfg. Can you please provide the error message that you are getting ?",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_27c10181",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-06-20T20:10:31Z",
+      "side": 1,
+      "message": "what do you mean by \"runtime it doesn\u0027t work\"",
+      "parentUuid": "1af78d9a_3b411e3a",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "e1720886f370421e19f9804c0d8b6b120a084702",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
