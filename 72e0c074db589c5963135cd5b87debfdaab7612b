@@ -96,6 +96,29 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_bca7cb4e",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T09:36:10Z",
+      "side": 1,
+      "message": "in case user change this value in openflowplugin.cfg file, how does it get set? I think this set is for RPC call, if i am not wrong.",
+      "range": {
+        "startLine": 73,
+        "startChar": 12,
+        "endLine": 73,
+        "endChar": 37
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_f1820151",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
         "patchSetId": 20
@@ -113,6 +136,29 @@
         "startChar": 12,
         "endLine": 73,
         "endChar": 37
+      },
+      "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3cbc7b69",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsManagerImpl.java",
+        "patchSetId": 20
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-08-10T09:36:10Z",
+      "side": 1,
+      "message": "please rephrase it to --\u003e Statistics work mode change is already in progress.",
+      "range": {
+        "startLine": 92,
+        "startChar": 60,
+        "endLine": 92,
+        "endChar": 91
       },
       "revId": "72e0c074db589c5963135cd5b87debfdaab7612b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
