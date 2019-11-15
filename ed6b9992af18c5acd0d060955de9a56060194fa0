@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_331dd8be",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 5426
+      },
+      "writtenOn": "2016-06-15T15:19:37Z",
+      "side": 1,
+      "message": "Add precondition for: threadPoolMinThreads,threadPoolMaxThreads,threadPoolTimeout",
+      "revId": "ed6b9992af18c5acd0d060955de9a56060194fa0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
