@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_9473e04c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3618
+      },
+      "writtenOn": "2016-08-08T08:52:42Z",
+      "side": 1,
+      "message": "Might be handy to give a comment highlighting the reason for Alien Flow ID, in this context.",
+      "revId": "65b98f980f2dca46161536bbf5bc73eea8a2fe1d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
