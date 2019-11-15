@@ -1,0 +1,143 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_0bd78324",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-19T02:32:39Z",
+      "side": 1,
+      "message": "what is the other possible way of configuration? We don\u0027t have to say it\u0027s .cfg file, we just says config file, it can be .cfg, .xml or .yang",
+      "parentUuid": "da01753e_dc59ccff",
+      "range": {
+        "startLine": 19,
+        "startChar": 7,
+        "endLine": 19,
+        "endChar": 60
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_fda3f79b",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/OpenFlowPluginConfigurationService.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 1,
+      "message": "please rephrase it to \"Setter method for config options \"is-statistics-polling-on\". Also it\u0027s good to write similar description for other methods as well.",
+      "range": {
+        "startLine": 34,
+        "startChar": 7,
+        "endLine": 34,
+        "endChar": 39
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_5d7de3e6",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 1,
+      "message": "it\u0027s good to put debug log saying \"isStatisticsPollingOn is already set to {}, isStatisticsPollingOn\". We should do this for rest of the configuration as well.",
+      "range": {
+        "startLine": 160,
+        "startChar": 19,
+        "endLine": 161,
+        "endChar": 12
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_9d874bd7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 1,
+      "message": "\"not allowed after controller start\".",
+      "range": {
+        "startLine": 355,
+        "startChar": 67,
+        "endLine": 355,
+        "endChar": 91
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_fd6db733",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 1,
+      "message": "same as above.",
+      "range": {
+        "startLine": 370,
+        "startChar": 64,
+        "endLine": 370,
+        "endChar": 92
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_dd68b323",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 1,
+      "message": "same as above.",
+      "range": {
+        "startLine": 385,
+        "startChar": 60,
+        "endLine": 385,
+        "endChar": 87
+      },
+      "revId": "192260a02bc9b144eb2d103febfd50054c1291e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

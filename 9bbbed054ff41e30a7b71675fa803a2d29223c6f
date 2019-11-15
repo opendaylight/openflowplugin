@@ -1,0 +1,121 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_dd77133a",
+        "filename": "features-aggregator/features-openflowplugin/src/main/features/features.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 0,
+      "message": "i think we should not remove this default configuration file. This configuration file has text that will help user to understand  the config option and also they don\u0027t have to look in the yang file to find out which option they can set. It\u0027s good to create this file bydefault.",
+      "range": {
+        "startLine": 51,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_3e78d5f1",
+        "filename": "features-aggregator/features-openflowplugin/src/main/features/features.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T18:20:26Z",
+      "side": 0,
+      "message": "Yes, i think that should be the correct behavior. Any configuration present in the config file should take precedence over any other configuration.",
+      "parentUuid": "da01753e_b83cdde3",
+      "range": {
+        "startLine": 51,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_1d723b49",
+        "filename": "features-aggregator/odl-openflowplugin-southbound/src/main/features/features.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 0,
+      "message": "please see my comment in previous file ( we should not remove this file)",
+      "range": {
+        "startLine": 4,
+        "startChar": 8,
+        "endLine": 4,
+        "endChar": 29
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_9e5e2175",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderFactoryImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T18:20:26Z",
+      "side": 0,
+      "message": "cool, make sense.",
+      "parentUuid": "da01753e_581cd177",
+      "range": {
+        "startLine": 72,
+        "startChar": 8,
+        "endLine": 72,
+        "endChar": 16
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_3d78dff1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/ConnectionManagerImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 0,
+      "message": "i think it\u0027s good to pass the default value in the constructor, because if connection comes before it set the value for echo reply timeout, it will use 0 as a timeout value.",
+      "range": {
+        "startLine": 46,
+        "startChar": 33,
+        "endLine": 47,
+        "endChar": 47
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
