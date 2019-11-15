@@ -23,6 +23,29 @@
       "revId": "9284d435d47562f2f1a90ea1b9ce2f5184c71737",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7e991c78",
+        "filename": "applications/topology-manager/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 7941
+      },
+      "writtenOn": "2019-11-15T19:11:55Z",
+      "side": 1,
+      "message": "Why not error?",
+      "range": {
+        "startLine": 92,
+        "startChar": 58,
+        "endLine": 92,
+        "endChar": 65
+      },
+      "revId": "9284d435d47562f2f1a90ea1b9ce2f5184c71737",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
