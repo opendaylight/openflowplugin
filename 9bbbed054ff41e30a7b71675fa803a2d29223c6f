@@ -72,6 +72,29 @@
     },
     {
       "key": {
+        "uuid": "da01753e_7ddee712",
+        "filename": "openflowplugin-blueprint-config/pom.xml",
+        "patchSetId": 11
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 65
+      },
+      "writtenOn": "2017-04-14T00:40:16Z",
+      "side": 0,
+      "message": "given that we should not remove .cfg file, we will need this.",
+      "range": {
+        "startLine": 29,
+        "startChar": 7,
+        "endLine": 50,
+        "endChar": 16
+      },
+      "revId": "9bbbed054ff41e30a7b71675fa803a2d29223c6f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_bde84fb5",
         "filename": "openflowplugin-blueprint-config/src/main/resources/initial/openflowplugin.cfg",
         "patchSetId": 11
