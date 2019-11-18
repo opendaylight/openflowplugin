@@ -353,6 +353,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         String datapathId = deviceInfo.getDatapathId().toString().intern();
         queuedNotificationManager.submitNotification(datapathId, () -> {
             try {
+                acquireWriteTransactionLock();
                 final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
                         .translate(portStatusMessage, getDeviceInfo(), null);
                 OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
@@ -381,6 +382,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatusMessage.getPortNo(), datapathId, e);
+            } finally {
+                releaseWriteTransactionLock();
             }
         });
     }
@@ -604,6 +607,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public void acquireWriteTransactionLock() {
+        transactionChainManager.acquireWriteTransactionLock();
+    }
+
+    @Override
+    public void releaseWriteTransactionLock() {
+        transactionChainManager.releaseWriteTransactionLock();
     }
 
     @Override
