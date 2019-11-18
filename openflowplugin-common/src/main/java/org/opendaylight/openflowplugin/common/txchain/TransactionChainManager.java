@@ -17,6 +17,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.checkerframework.checker.lock.qual.GuardedBy;
 import org.checkerframework.checker.lock.qual.Holding;
 import org.eclipse.jdt.annotation.NonNull;
@@ -64,6 +66,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+    private ReadWriteLock readWriteTransactionLock = new ReentrantReadWriteLock();
 
     public TransactionChainManager(@NonNull final DataBroker dataBroker,
                                    @NonNull final String deviceIdentifier) {
@@ -369,4 +372,13 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
          */
         SHUTTING_DOWN
     }
+
+    public void acquireWriteTransactionLock() {
+        readWriteTransactionLock.writeLock().lock();
+    }
+
+    public void releaseWriteTransactionLock() {
+        readWriteTransactionLock.writeLock().unlock();
+    }
+
 }

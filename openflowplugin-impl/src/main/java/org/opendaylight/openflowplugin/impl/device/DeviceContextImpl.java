@@ -367,6 +367,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                                         portStatusMessage.getPortNo(),
                                         OpenflowVersion.get(deviceInfo.getVersion()))));
 
+                acquireWriteTransactionLock();
                 writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
                         .withKey(iiToNodeConnector.getKey())
                         .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
@@ -381,6 +382,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             } catch (final Exception e) {
                 LOG.warn("Error processing port status message for port {} on device {}",
                         portStatusMessage.getPortNo(), datapathId, e);
+            } finally {
+                releaseWriteTransactionLock();
             }
         });
     }
@@ -604,6 +607,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public void acquireWriteTransactionLock() {
+        transactionChainManager.acquireWriteTransactionLock();
+    }
+
+    @Override
+    public void releaseWriteTransactionLock() {
+        transactionChainManager.releaseWriteTransactionLock();
     }
 
     @Override
