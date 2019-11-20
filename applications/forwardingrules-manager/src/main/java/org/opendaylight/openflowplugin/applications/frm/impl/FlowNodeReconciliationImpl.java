@@ -190,7 +190,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             if (flowNode.isPresent()) {
-                LOG.debug("FlowNode present for Datapath ID {}", dpnId);
+                LOG.error("FlowNode present for Datapath ID {}", dpnId);
                 OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
                 final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
@@ -235,7 +235,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture
                         = Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
-                                LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
+                                LOG.error("Adding delete all flow/group message is successful for device {}", dpnId);
                                 return Futures.allAsList(addBundleMessages(finalFlowNode.get(), bundleIdValue,
                                         nodeIdentity));
                             }
@@ -245,7 +245,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Commit the bundle on the openflow switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
                         addbundlesFuture, rpcResult -> {
-                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
+                        LOG.error("Adding bundle messages completed for device {}", dpnId);
                         return salBundleService.controlBundle(commitBundleInput);
                     }, MoreExecutors.directExecutor());
 
@@ -261,12 +261,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                                 provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
                             }
                         }
+                        LOG.error("meter rpc failed{}", dpnId);
                         return Futures.immediateFuture(null);
                     }, MoreExecutors.directExecutor());
                 try {
                     RpcResult<ControlBundleOutput> bundleFuture = commitBundleFuture.get();
                     if (bundleFuture != null && bundleFuture.isSuccessful()) {
-                        LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
+                        LOG.error("Completing bundle based reconciliation for device ID:{}", dpnId);
                         OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
                         return true;
                     } else {
