@@ -91,7 +91,7 @@ public final class StatisticsGatheringUtils {
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
                                         statisticsWriterProvider);
                     } else {
-                        LOG.debug("Stats reply was empty for node {} of type {}", deviceInfo.getNodeId(), type);
+                        LOG.debug("Stats reply  was empty for node {} of type {}", deviceInfo.getNodeId(), type);
                     }
                 } else {
                     LOG.warn("Stats reply FAILED for node {} of type {}: {}", deviceInfo.getNodeId(), type,

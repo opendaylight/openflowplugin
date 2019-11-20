@@ -204,7 +204,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             LOG.trace("Starting arbitrator reconciliation for node {}", node.getDatapathId());
             return reconcileConfiguration(node);
         }
-        LOG.trace("arbitrator reconciliation is disabled");
+        LOG.info("arbitrator reconciliation is disabled");
         return FluentFutures.immediateTrueFluentFuture();
     }
 
