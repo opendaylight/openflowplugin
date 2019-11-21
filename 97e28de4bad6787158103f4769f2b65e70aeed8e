@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58d6b805_7c1d2ee7",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:46:21Z",
+      "side": 1,
+      "message": "Seems incomplete",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c7d7a1f_ee96bb44",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:46:21Z",
+      "side": 1,
+      "message": "replace tab with spaces in above 2 lines",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3ee5ad4_bd40bfc7",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:46:21Z",
+      "side": 1,
+      "message": "Full stop at end of description string (same comment for few other places in file)",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3fbb9fd_7b1e82a3",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:46:21Z",
+      "side": 1,
+      "message": "remove empty line",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d31a41d2_92094ca1",
+        "filename": "openflowjava/openflow-protocol-api/src/main/yang/system-notifications.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:46:21Z",
+      "side": 1,
+      "message": "Full stop at end of description string",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c75a4e04_7d63a4f8",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFFrameDecoder.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:46:21Z",
+      "side": 1,
+      "message": "use \"new SslConnectionErrorBuilder().setInfo(errorCause).build()\" directly?",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
