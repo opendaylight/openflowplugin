@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fb105fef_ea7d1144",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 7569
+      },
+      "writtenOn": "2019-11-21T21:37:41Z",
+      "side": 1,
+      "message": "Move this to be first statement in try block?",
+      "revId": "d0306b8896d6136ae96487d02aeae995a0ccb8a2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
