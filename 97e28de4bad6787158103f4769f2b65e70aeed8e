@@ -101,6 +101,47 @@
       "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8513e2db_5a3cbb9d",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFFrameDecoder.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-11-22T06:29:37Z",
+      "side": 1,
+      "message": "yes.. use like \n        SslConnectionError sslconnectionError \u003d new SslConnectionErrorBuilder()\n                .setInfo(errorCause)\n                .build();\n        this.connectionFacade.consume(sslconnectionError);",
+      "parentUuid": "c75a4e04_7d63a4f8",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01f302c2_87efc344",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFFrameDecoder.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2019-11-22T06:29:37Z",
+      "side": 1,
+      "message": "why there is a while loop needed till !\u003d null? can\u0027t it be like this\n\nif (cause.getCause() !\u003d null) {\n return cause.getCause().getMessage()\n}\nreturn null;",
+      "range": {
+        "startLine": 71,
+        "startChar": 7,
+        "endLine": 76,
+        "endChar": 24
+      },
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
