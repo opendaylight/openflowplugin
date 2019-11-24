@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f35e37f5_a83cfc84",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-11-24T12:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0cfc70d2_da92080a",
+      "range": {
+        "startLine": 26,
+        "startChar": 15,
+        "endLine": 26,
+        "endChar": 27
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1331fb42_bfc7eefe",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
         "patchSetId": 14
@@ -36,6 +60,30 @@
       "writtenOn": "2019-06-18T17:04:57Z",
       "side": 1,
       "message": "BEANNAME?",
+      "range": {
+        "startLine": 37,
+        "startChar": 63,
+        "endLine": 37,
+        "endChar": 70
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4d2dc3ea_2a77e060",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-11-24T12:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1331fb42_bfc7eefe",
       "range": {
         "startLine": 37,
         "startChar": 63,
@@ -82,6 +130,30 @@
       "writtenOn": "2019-06-18T17:04:57Z",
       "side": 1,
       "message": "this is overridden in the constructor.",
+      "range": {
+        "startLine": 137,
+        "startChar": 68,
+        "endLine": 137,
+        "endChar": 92
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "345d58a3_087990cd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-11-24T12:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a756e79f_0cb0fbd8",
       "range": {
         "startLine": 137,
         "startChar": 68,
@@ -292,6 +364,30 @@
       "writtenOn": "2019-06-18T17:04:57Z",
       "side": 1,
       "message": "Mutable state object. How is consistency of status and time guaranteed?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 5
+      },
+      "revId": "01b5c85183d8e6ce36af0e962afea6c66c4c9a91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ece246c_7b5121a2",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/ReconciliationState.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2019-11-24T12:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "715553bc_310c0a4f",
       "range": {
         "startLine": 31,
         "startChar": 0,
