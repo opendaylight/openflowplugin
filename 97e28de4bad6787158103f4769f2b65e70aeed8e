@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0e7b6ea4_0a6bbbee",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2019-11-25T10:36:11Z",
+      "side": 1,
+      "message": "Completed the description",
+      "parentUuid": "58d6b805_7c1d2ee7",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4c7d7a1f_ee96bb44",
         "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
         "patchSetId": 8
@@ -33,6 +51,24 @@
       "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5d54dae_d0736745",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2019-11-25T10:36:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c7d7a1f_ee96bb44",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "ce17bc25_48ff0b46",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2019-11-25T10:36:11Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f3ee5ad4_bd40bfc7",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a3fbb9fd_7b1e82a3",
         "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
         "patchSetId": 8
@@ -67,6 +121,24 @@
       "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a56b478f_8557dc33",
+        "filename": "model/model-flow-service/src/main/yang/node-ssl-connection-errors.yang",
+        "patchSetId": 8
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2019-11-25T10:36:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3fbb9fd_7b1e82a3",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "f1e77855_ed0b62fd",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFFrameDecoder.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2019-11-25T10:36:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8513e2db_5a3cbb9d",
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "01f302c2_87efc344",
         "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFFrameDecoder.java",
         "patchSetId": 8
@@ -133,6 +223,30 @@
       "writtenOn": "2019-11-22T06:29:37Z",
       "side": 1,
       "message": "why there is a while loop needed till !\u003d null? can\u0027t it be like this\n\nif (cause.getCause() !\u003d null) {\n return cause.getCause().getMessage()\n}\nreturn null;",
+      "range": {
+        "startLine": 71,
+        "startChar": 7,
+        "endLine": 76,
+        "endChar": 24
+      },
+      "revId": "97e28de4bad6787158103f4769f2b65e70aeed8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0bcd494_fc1feb27",
+        "filename": "openflowjava/openflow-protocol-impl/src/main/java/org/opendaylight/openflowjava/protocol/impl/core/OFFrameDecoder.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2019-11-25T10:36:11Z",
+      "side": 1,
+      "message": "The top most cause will be some wrapped up exceptions, which is of any use to know the actual SSL Cause.\nHad verified the above logic will get the actual ssl error.\nEX: 1. No trusted certificate found\n    2. not an SSL/TLS record: 040000100000022d0001000800000010",
+      "parentUuid": "01f302c2_87efc344",
       "range": {
         "startLine": 71,
         "startChar": 7,
