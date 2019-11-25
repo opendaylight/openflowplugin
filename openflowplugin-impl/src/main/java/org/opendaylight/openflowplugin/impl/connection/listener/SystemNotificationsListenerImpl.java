@@ -16,12 +16,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.SslErrorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.SslErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -41,13 +47,16 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
     private final long echoReplyTimeout;
     private final ExecutorService executorService;
+    private final NotificationPublishService notificationPublishService;
 
     public SystemNotificationsListenerImpl(@NonNull final ConnectionContext connectionContext,
                                            final long echoReplyTimeout,
-                                           @NonNull final ExecutorService executorService) {
+                                           @NonNull final ExecutorService executorService,
+                                           @NonNull final NotificationPublishService notificationPublishService) {
         this.executorService = executorService;
         this.connectionContext = Preconditions.checkNotNull(connectionContext);
         this.echoReplyTimeout = echoReplyTimeout;
+        this.notificationPublishService = notificationPublishService;
     }
 
     @Override
@@ -126,5 +135,23 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                 LOG.trace("Received EchoReply from [{}] in TIMEOUTING state", remoteAddress, cause);
             }
         }
+    }
+
+    @Override
+    public void onSslConnectionError(SslConnectionError notification) {
+        IpAddress ip = null;
+        if ((connectionContext.getConnectionAdapter() != null)
+                && (connectionContext.getConnectionAdapter().getRemoteAddress() != null)
+                && (connectionContext.getConnectionAdapter().getRemoteAddress().getAddress() != null)) {
+            ip = IpAddressBuilder.getDefaultInstance(
+                    connectionContext.getConnectionAdapter().getRemoteAddress().getAddress().getHostAddress());
+        }
+        notificationPublishService
+                .offerNotification(
+                        new SslErrorBuilder().setType(SslErrorType.SslConFailed)
+                                .setCode(SslErrorType.SslConFailed.getIntValue())
+                                .setNodeIpAddress(ip)
+                                .setData(notification.getInfo())
+                                .build());
     }
 }
