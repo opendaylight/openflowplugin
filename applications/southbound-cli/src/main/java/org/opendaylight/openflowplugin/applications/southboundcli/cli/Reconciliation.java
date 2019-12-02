@@ -43,6 +43,7 @@ public class Reconciliation extends OsgiCommandSupport {
     @Option(name = "-all", description = "Reconcile all operative NODEs")
     boolean reconcileAllNodes;
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
     protected Object doExecute() throws Exception {
         List<Uint64> nodes = nodeIds == null
@@ -55,10 +56,10 @@ public class Reconciliation extends OsgiCommandSupport {
         try {
             RpcResult<ReconcileOutput> rpcResult = rpcOutput.get();
             if (rpcResult.isSuccessful()) {
-                session.getConsole().println("Reconciliation triggered for the node(s)");
+                System.out.println("Reconciliation triggered for the node(s)");
                 printInProgressNodes(rpcResult.getResult());
             } else {
-                session.getConsole().println(rpcResult.getErrors().stream().findFirst().get().getMessage());
+                System.out.println(rpcResult.getErrors().stream().findFirst().get().getMessage());
             }
         } catch (ExecutionException e) {
             LOG.error("Error occurred while invoking reconcile RPC for node {}", nodes, e);
@@ -66,15 +67,16 @@ public class Reconciliation extends OsgiCommandSupport {
         return null;
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private void printInProgressNodes(ReconcileOutput reconcileOutput) {
         List<Uint64> inprogressNodes = reconcileOutput.getInprogressNodes();
         if (inprogressNodes.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder();
             final Formatter formatter = new Formatter(stringBuilder);
-            session.getConsole().println(getReconcileHeaderOutput());
-            session.getConsole().println("----------------------------------------------------");
+            System.out.println(getReconcileHeaderOutput());
+            System.out.println("----------------------------------------------------");
             for (Uint64 node : inprogressNodes) {
-                session.getConsole().println(formatter.format("%-15s %n", node).toString());
+                System.out.println(formatter.format("%-15s %n",node).toString());
                 stringBuilder.setLength(0);
             }
         }

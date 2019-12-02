@@ -31,10 +31,11 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
         this.dataBroker = dataBroker;
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
     protected Object doExecute() {
         if (nodeId == null) {
-            session.getConsole().println("NodeID not specified");
+            System.out.println("NodeID not specified");
             return null;
         }
         OFNode node = ShellUtil.getNode(Long.parseLong(nodeId), dataBroker);
@@ -43,20 +44,22 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
             printHeaderSeparator();
             printNodeOutput(node);
         } else {
-            session.getConsole().println("No node available for this NodeID");
+            System.out.println("No node available for this NodeID");
         }
         return null;
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private void printNodeHeaderOutput() {
         Formatter formatter = new Formatter();
         String header = formatter.format(OUTPUT_FORMAT, "NodeId", "Name", "Ports").toString();
         formatter.close();
-        session.getConsole().println(header);
+        System.out.println(header);
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private void printHeaderSeparator() {
-        session.getConsole().println(HEADER_SEPARATOR);
+        System.out.println(HEADER_SEPARATOR);
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
