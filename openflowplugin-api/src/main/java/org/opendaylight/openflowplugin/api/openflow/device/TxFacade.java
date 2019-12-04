@@ -64,4 +64,15 @@ public interface TxFacade {
      * @return is transaction chain manager enabled
      */
     boolean isTransactionsEnabled();
+
+    /**
+     * Method to acquire a write transaction lock to perform atomic transactions to MD-SAL.
+     */
+    void acquireWriteTransactionLock();
+
+    /**
+     * Method to release the acquired write transaction lock.
+     */
+    void releaseWriteTransactionLock();
+
 }
