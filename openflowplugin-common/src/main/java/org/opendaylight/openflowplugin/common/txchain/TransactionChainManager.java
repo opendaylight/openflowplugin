@@ -17,6 +17,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -63,6 +65,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+    private ReadWriteLock readWriteTransactionLock = new ReentrantReadWriteLock();
 
     public TransactionChainManager(@Nonnull final DataBroker dataBroker,
                                    @Nonnull final String deviceIdentifier) {
@@ -368,4 +371,13 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
          */
         SHUTTING_DOWN
     }
+
+    public void acquireWriteTransactionLock() {
+        readWriteTransactionLock.writeLock().lock();
+    }
+
+    public void releaseWriteTransactionLock() {
+        readWriteTransactionLock.writeLock().unlock();
+    }
+
 }
