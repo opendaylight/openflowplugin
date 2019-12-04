@@ -340,31 +340,40 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private void writePortStatusMessage(final PortStatus portStatusMessage) {
-        final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
-                .translate(portStatusMessage, getDeviceInfo(), null);
-        OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
-                deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
-                portStatusMessage.getReason());
+        try {
+            acquireWriteTransactionLock();
+            final FlowCapableNodeConnector flowCapableNodeConnector = portStatusTranslator
+                    .translate(portStatusMessage, getDeviceInfo(), null);
+            OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Reason: {}",
+                    deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
+                    portStatusMessage.getReason());
 
-        final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
-                .getNodeInstanceIdentifier()
-                .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
-                        .nodeConnectorIdfromDatapathPortNo(
-                                deviceInfo.getDatapathId(),
-                                portStatusMessage.getPortNo(),
-                                OpenflowVersion.get(deviceInfo.getVersion()))));
+            final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
+                    .getNodeInstanceIdentifier()
+                    .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
+                            .nodeConnectorIdfromDatapathPortNo(
+                                    deviceInfo.getDatapathId(),
+                                    portStatusMessage.getPortNo(),
+                                    OpenflowVersion.get(deviceInfo.getVersion()))));
 
-        writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                .withKey(iiToNodeConnector.getKey())
-                .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                        FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
-                .build());
-        syncSubmitTransaction();
-        if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
-            addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+            writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
+                    .withKey(iiToNodeConnector.getKey())
+                    .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
+                            FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                    .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                    .build());
             syncSubmitTransaction();
+            if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
+                addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector);
+                syncSubmitTransaction();
+            }
+        } catch (final Exception e) {
+            LOG.warn("Error processing port status message for port {} on device {}",
+                    portStatusMessage.getPortNo(), deviceInfo.getDatapathId(), e);
+        } finally {
+            releaseWriteTransactionLock();
         }
     }
 
@@ -591,6 +600,16 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
+    }
+
+    @Override
+    public void acquireWriteTransactionLock() {
+        transactionChainManager.acquireWriteTransactionLock();
+    }
+
+    @Override
+    public void releaseWriteTransactionLock() {
+        transactionChainManager.releaseWriteTransactionLock();
     }
 
     @Override
