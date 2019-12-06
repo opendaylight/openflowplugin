@@ -102,35 +102,43 @@ public final class StatisticsGatheringUtils {
             }), MoreExecutors.directExecutor());
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private static boolean processStatistics(final MultipartType type, final List<? extends DataContainer> statistics,
                                              final TxFacade txFacade, final DeviceRegistry deviceRegistry,
                                              final DeviceInfo deviceInfo,
                                              final MultipartWriterProvider statisticsWriterProvider) {
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
+        try {
+            txFacade.acquireWriteTransactionLock();
+            switch (type) {
+                case OFPMPFLOW:
+                    deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
+                    deviceRegistry.getDeviceFlowRegistry().processMarks();
+                    break;
+                case OFPMPMETERCONFIG:
+                    deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
+                    deviceRegistry.getDeviceMeterRegistry().processMarks();
+                    break;
+                case OFPMPGROUPDESC:
+                    deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
+                    deviceRegistry.getDeviceGroupRegistry().processMarks();
+                    break;
+                default:
+                    // no operation
+            }
 
-        switch (type) {
-            case OFPMPFLOW:
-                deleteAllKnownFlows(txFacade, instanceIdentifier, deviceRegistry.getDeviceFlowRegistry());
-                deviceRegistry.getDeviceFlowRegistry().processMarks();
-                break;
-            case OFPMPMETERCONFIG:
-                deleteAllKnownMeters(txFacade, instanceIdentifier, deviceRegistry.getDeviceMeterRegistry());
-                deviceRegistry.getDeviceMeterRegistry().processMarks();
-                break;
-            case OFPMPGROUPDESC:
-                deleteAllKnownGroups(txFacade, instanceIdentifier, deviceRegistry.getDeviceGroupRegistry());
-                deviceRegistry.getDeviceGroupRegistry().processMarks();
-                break;
-            default:
-                // no operation
-        }
+            if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
+                txFacade.submitTransaction();
 
-        if (writeStatistics(type, statistics, deviceInfo, statisticsWriterProvider)) {
-            txFacade.submitTransaction();
-
-            LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
-            return true;
+                LOG.debug("Stats reply added to transaction for node {} of type {}", deviceInfo.getNodeId(), type);
+                return true;
+            }
+        } catch (Exception e) {
+            LOG.error("Exception while writing statistics to operational inventory for the device {}",
+                    deviceInfo.getLOGValue(), e);
+        } finally {
+            txFacade.releaseWriteTransactionLock();
         }
 
         LOG.warn("Stats processing of type {} for node {} " + "failed during write-to-tx step", type, deviceInfo);
