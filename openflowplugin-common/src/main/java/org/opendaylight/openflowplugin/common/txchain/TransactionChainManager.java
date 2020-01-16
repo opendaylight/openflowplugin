@@ -77,14 +77,17 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @Holding("txLock")
     private void createTxChain() {
+        LOG.info("createTXChain ");
         TransactionChain txChainFactoryTemp = transactionChain;
         transactionChain = dataBroker.createTransactionChain(TransactionChainManager.this);
+        LOG.info("TXChain {} ",transactionChain.toString());
         if (txChainFactoryTemp != null) {
             txChainFactoryTemp.close();
         }
     }
 
     public boolean initialSubmitWriteTransaction() {
+        LOG.info("initialSubmitWriteTransaction");
         enableSubmit();
         return submitTransaction();
     }
@@ -162,6 +165,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     public boolean submitTransaction() {
+        LOG.info("inside submit transaction");
         return submitTransaction(false);
     }
 
@@ -170,22 +174,26 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             if (!submitIsEnabled) {
                 LOG.trace("transaction not committed - submit block issued");
+                LOG.info("submit not enabled");
                 return false;
             }
             if (writeTx == null) {
                 LOG.trace("nothing to commit - submit returns true");
+                LOG.info("writeTx not enabled");
                 return true;
             }
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
                     this.nodeId);
             final FluentFuture<? extends CommitInfo> submitFuture = writeTx.commit();
+            LOG.info("submitfuture {} and writex {}",submitFuture,writeTx);
             lastSubmittedFuture = submitFuture;
             writeTx = null;
-
+            LOG.info("after writex");
             if (initCommit || doSync) {
                 try {
                     submitFuture.get(5L, TimeUnit.SECONDS);
+                    LOG.info("commit successful");
                 } catch (InterruptedException | ExecutionException | TimeoutException ex) {
                     LOG.error("Exception during INITIAL({}) || doSync({}) transaction submitting. ",
                             initCommit, doSync, ex);
@@ -198,6 +206,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             submitFuture.addCallback(new FutureCallback<CommitInfo>() {
                 @Override
                 public void onSuccess(final CommitInfo result) {
+                    LOG.info("commit is successful for dpnid {}",nodeId);
                     //NOOP
                 }
 
