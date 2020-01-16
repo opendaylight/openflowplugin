@@ -24,6 +24,7 @@
     grouping instructions-grouping {
         list instruction {
             config false;
+	    key "experimenter-id";
             uses instruction-grouping;
             leaf experimenter-id {
                 type oft:experimenter-id;
