@@ -217,8 +217,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     public void onMasterRoleAcquired(@NonNull final DeviceInfo deviceInfo,
                                      @NonNull final ContextChainMastershipState mastershipState) {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
-            if (ownershipChangeListener.isReconciliationFrameworkRegistered()
-                    && !ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
+            if (!ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
                 if (contextChain.isMastered(mastershipState, true)) {
                     Futures.addCallback(ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
                                         reconciliationFrameworkCallback(deviceInfo, contextChain, mastershipState),
