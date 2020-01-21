@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.mastership;
 import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErrorLogging;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -85,7 +86,7 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
 
     @Override
     public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@Nonnull DeviceInfo deviceInfo) {
-        return rfService == null ? null : rfService.onDevicePrepared(deviceInfo);
+        return rfService == null ? Futures.immediateFuture(ResultState.DONOTHING) : rfService.onDevicePrepared(deviceInfo);
     }
 
     @Override
