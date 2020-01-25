@@ -9,7 +9,9 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -48,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +65,11 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
     private ListenerRegistration<GroupForwarder> listenerRegistration;
+    private final ForwardingRulesManager forwardingRulesManager;
 
     public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db) {
         super(manager, db);
+        this.forwardingRulesManager = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
     }
 
     @SuppressWarnings("IllegalCatch")
@@ -178,6 +183,12 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
             return nodeConfigurator
                     .enqueueJob(nodeId.getValue(), () -> {
+                        if (isGroupExistsOnDevice(nodeIdent, addDataObj.getGroupId().getValue(),
+                                forwardingRulesManager)) {
+                            LOG.debug("Group {} already exists in the device. Ignoring the add DTCN",
+                                    addDataObj.getGroupId());
+                            return Futures.immediateFuture(RpcResultBuilder.<AddGroupOutput>success().build());
+                        }
                         final Group group = addDataObj;
                         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
                         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
