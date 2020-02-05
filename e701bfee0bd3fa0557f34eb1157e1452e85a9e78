@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9744ad4e_1c14743b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-02-05T06:34:03Z",
+      "side": 1,
+      "message": "why @NonNull ?",
+      "range": {
+        "startLine": 379,
+        "startChar": 32,
+        "endLine": 379,
+        "endChar": 44
+      },
+      "revId": "e701bfee0bd3fa0557f34eb1157e1452e85a9e78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
