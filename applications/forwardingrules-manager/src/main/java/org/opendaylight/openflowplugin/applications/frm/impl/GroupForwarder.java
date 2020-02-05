@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
-import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdFromNodeIdentifier;
+import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdValueFromNodeIdentifier;
 
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
@@ -40,7 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -98,7 +98,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     @Override
     protected InstanceIdentifier<Group> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
+        return InstanceIdentifier.create(Nodes.class)
+                .child(Node.class)
+                .augmentation(FlowCapableNode.class)
                 .child(Group.class);
     }
 
@@ -109,16 +111,18 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         if (bundleId != null) {
             provider.getBundleGroupListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
         } else {
-            final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-            nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+            final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+            nodeConfigurator.enqueueJob(nodeId, () -> {
                 final Group group = removeDataObj;
-                final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
-                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                builder.setGroupRef(new GroupRef(identifier));
-                builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+                final RemoveGroupInput removeGroup = new RemoveGroupInputBuilder(group)
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setGroupRef(new GroupRef(identifier))
+                        .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                        .build();
 
                 final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
-                    this.provider.getSalGroupService().removeGroup(builder.build());
+                    this.provider.getSalGroupService()
+                            .removeGroup(removeGroup);
                 Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
@@ -149,8 +153,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         if (bundleId != null) {
             provider.getBundleGroupListener().update(identifier, original, update, nodeIdent, bundleId);
         } else {
-            final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-            nodeConfigurator.enqueueJob(nodeId.getValue(), () -> {
+            final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+            nodeConfigurator.enqueueJob(nodeId, () -> {
                 final Group originalGroup = original;
                 final Group updatedGroup = update;
                 final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
@@ -160,8 +164,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
                 builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
                 UpdateGroupInput updateGroupInput = builder.build();
-                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture;
-                resultFuture = this.provider.getSalGroupService().updateGroup(updateGroupInput);
+                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = this.provider.getSalGroupService()
+                        .updateGroup(updateGroupInput);
                 LoggingFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
                 Futures.addCallback(resultFuture,
                         new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
@@ -178,9 +182,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         if (bundleId != null) {
             return provider.getBundleGroupListener().add(identifier, addDataObj, nodeIdent, bundleId);
         } else {
-            final NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
+            final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
             return nodeConfigurator
-                    .enqueueJob(nodeId.getValue(), () -> {
+                    .enqueueJob(nodeId, () -> {
                         final Group group = addDataObj;
                         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
                         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
@@ -244,9 +248,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private final class AddGroupCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
         private final Uint32 groupId;
-        private final NodeId nodeId;
+        private final String nodeId;
 
-        private AddGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
+        private AddGroupCallBack(final Uint32 groupId, final String nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
@@ -270,9 +274,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private final class UpdateGroupCallBack implements FutureCallback<RpcResult<UpdateGroupOutput>> {
         private final Uint32 groupId;
-        private final NodeId nodeId;
+        private final String nodeId;
 
-        private UpdateGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
+        private UpdateGroupCallBack(final Uint32 groupId, final String nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
@@ -297,9 +301,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private final class RemoveGroupCallBack implements FutureCallback<RpcResult<RemoveGroupOutput>> {
         private final Uint32 groupId;
-        private final NodeId nodeId;
+        private final String nodeId;
 
-        private RemoveGroupCallBack(final Uint32 groupId, final NodeId nodeId) {
+        private RemoveGroupCallBack(final Uint32 groupId, final String nodeId) {
             this.groupId = groupId;
             this.nodeId = nodeId;
         }
