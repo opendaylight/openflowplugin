@@ -5,8 +5,6 @@ module nicira-match {
     prefix "nicira-match";
 
     import openflow-extensible-match {prefix ofoxm;}
-    import openflow-types {prefix oft;}
-    import openflow-augments {prefix aug;}
     import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
     import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
