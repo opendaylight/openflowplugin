@@ -11,9 +11,6 @@
     prefix "aug";
 
     import yang-ext {prefix ext;}
-    import ietf-inet-types {prefix inet;}
-    import ietf-yang-types {prefix yang;}
-
     import openflow-types {prefix oft;}
     import openflow-protocol {prefix ofproto;}
     import openflow-action {prefix ofaction;}
