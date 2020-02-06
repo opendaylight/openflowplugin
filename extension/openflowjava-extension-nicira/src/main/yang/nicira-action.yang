@@ -303,6 +303,8 @@ module nicira-action {
                 type oft:experimenter-id;
             }
             list ct-actions{
+                key "id";
+                leaf id {type uint32;}
                 uses ofpact-actions;
             }
         }
@@ -487,6 +489,8 @@ module nicira-action {
             }
 
             list flow-mods{
+                key "id";
+                leaf id {type uint32;}
                 uses flow-mod-spec;
             }
         }

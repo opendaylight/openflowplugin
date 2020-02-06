@@ -44,15 +44,6 @@ module sal-flow {
         uses types:flow;
     }
 
-    grouping base-node-error-notification {
-        description "Openflow error message general structure.";
-        status deprecated;
-        leaf node {
-            ext:context-reference "inv:node-context";
-                type inv:node-ref;
-        }
-    }
-
     grouping node-error-reference {
         description "Error message binding - to which source type the error belongs.";
         choice object-reference {
@@ -168,16 +159,6 @@ module sal-flow {
         status deprecated;
 
         uses node-flow-removed;
-    }
-
-    notification node-error-notification {
-        status deprecated;
-
-        uses error:error-message;
-        uses tr:transaction-aware;
-        uses tr:transaction-metadata;
-        uses node-error-reference;
-        uses base-node-error-notification;
     }
 
     notification node-experimenter-error-notification {
