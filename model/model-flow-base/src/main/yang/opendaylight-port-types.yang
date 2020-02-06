@@ -193,6 +193,8 @@ module opendaylight-port-types {
     augment "/multipart:multipart-reply/multipart:multipart-reply-body" {
         case multipart-reply-port-desc {
             list ports {
+                key "id";
+                leaf id {type uint32;}
                 uses flow-capable-port;
             }
         }
