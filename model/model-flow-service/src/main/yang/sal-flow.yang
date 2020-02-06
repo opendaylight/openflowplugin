@@ -46,7 +46,6 @@ module sal-flow {
 
     grouping base-node-error-notification {
         description "Openflow error message general structure.";
-        status deprecated;
         leaf node {
             ext:context-reference "inv:node-context";
                 type inv:node-ref;
@@ -171,13 +170,13 @@ module sal-flow {
     }
 
     notification node-error-notification {
-        status deprecated;
+            status deprecated;
 
-        uses error:error-message;
-        uses tr:transaction-aware;
-        uses tr:transaction-metadata;
-        uses node-error-reference;
-        uses base-node-error-notification;
+            uses error:error-message;
+            uses tr:transaction-aware;
+            uses tr:transaction-metadata;
+            uses node-error-reference;
+            uses base-node-error-notification;
     }
 
     notification node-experimenter-error-notification {
