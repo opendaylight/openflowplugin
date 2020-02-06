@@ -22,24 +22,23 @@ module flow-capable-transaction {
         }
     }
 
-    grouping transaction-aware {
-        status deprecated;
+     grouping transaction-aware {
 
         leaf transaction-id {
             type transaction-id;
         }
-    }
+     }
 
-    grouping multipart-transaction-aware {
-        status deprecated;
+     grouping multipart-transaction-aware {
+         status deprecated;
 
-        uses transaction-aware;
+         uses transaction-aware;
 
-        leaf moreReplies {
+         leaf moreReplies {
             type boolean;
             default false;
-        }
-    }
+         }
+     }
 
     rpc send-barrier {
         description "barrier request";
