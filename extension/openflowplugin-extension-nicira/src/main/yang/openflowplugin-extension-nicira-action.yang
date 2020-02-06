@@ -3,7 +3,6 @@ module openflowplugin-extension-nicira-action {
 
     namespace "urn:opendaylight:openflowplugin:extension:nicira:action";
     prefix "openflowplugin-nicira-action";
-
     import yang-ext {prefix ext; revision-date "2013-07-09";}
     import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
@@ -14,7 +13,6 @@ module openflowplugin-extension-nicira-action {
     import opendaylight-group-statistics {prefix odl-group-stats;revision-date "2013-11-11";}
     import nicira-match {prefix nicira-match;revision-date "2014-04-21";}
     import openflowplugin-extension-general {prefix ext-gen;revision-date "2014-07-14";}
-    import openflow-action {prefix ofaction;revision-date "2015-02-03";}
     import nicira-action {prefix nicira-action;revision-date "2014-04-21";}
     import opendaylight-direct-statistics {prefix directstat;revision-date "2016-05-11";}
     import ietf-inet-types { prefix "inet"; revision-date "2013-07-15"; }
@@ -489,6 +487,8 @@ bits specified from the register.";
                 type uint8;
             }
             list ct-actions{
+                key "id";
+                leaf id {type uint32;}
                 uses ofpact-actions;
             }
         }
@@ -672,6 +672,8 @@ bits specified from the register.";
             }
 
             list flow-mods{
+                key "id";
+                leaf id {type uint32;}
                 uses flow-mod-spec;
             }
         }
