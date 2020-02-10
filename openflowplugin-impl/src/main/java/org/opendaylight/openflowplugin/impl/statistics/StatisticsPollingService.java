@@ -14,14 +14,18 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.SettableFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.ConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StatisticsPollingService extends AbstractScheduledService {
+    private static final Logger LOG = LoggerFactory.getLogger(StatisticsPollingService.class);
     private static final long DEFAULT_STATS_TIMEOUT = 50000;
 
     private final TimeCounter counter;
@@ -51,6 +55,9 @@ public class StatisticsPollingService extends AbstractScheduledService {
         counter.markStart();
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION",
+            justification = "WaitFuture wait exception should not result in the statistics executor getting killed.")
     @Override
     protected void runOneIteration() throws Exception {
         final long averageTime = counter.getAverageTimeBetweenMarks();
@@ -71,6 +78,8 @@ public class StatisticsPollingService extends AbstractScheduledService {
 
         try {
             waitFuture.get(statsTimeout, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            LOG.error("Exception occured while waiting for the stats collection.", e);
         } finally {
             counter.addTimeMark();
         }
