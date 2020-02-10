@@ -16,12 +16,17 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.opendaylight.openflowplugin.api.ConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StatisticsPollingService extends AbstractScheduledService {
+    private static final Logger LOG = LoggerFactory.getLogger(StatisticsPollingService.class);
     private static final long DEFAULT_STATS_TIMEOUT = 50000;
 
     private final TimeCounter counter;
@@ -71,6 +76,8 @@ public class StatisticsPollingService extends AbstractScheduledService {
 
         try {
             waitFuture.get(statsTimeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error("Exception occured while waiting for the stats collection.", e);
         } finally {
             counter.addTimeMark();
         }
