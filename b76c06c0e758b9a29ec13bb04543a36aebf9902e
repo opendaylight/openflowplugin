@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ece9fcc1_f09c736a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-02-11T06:42:28Z",
+      "side": 1,
+      "message": "InterruptedException | ExecutionException | TimeoutException",
+      "range": {
+        "startLine": 81,
+        "startChar": 17,
+        "endLine": 81,
+        "endChar": 26
+      },
+      "revId": "b76c06c0e758b9a29ec13bb04543a36aebf9902e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
