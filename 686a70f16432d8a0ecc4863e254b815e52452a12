@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8b7df7e3_56d86763",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-02-11T11:50:59Z",
+      "side": 1,
+      "message": "REC_CATCH_EXCEPTION - do you still need findbugs suppression?",
+      "range": {
+        "startLine": 60,
+        "startChar": 3,
+        "endLine": 61,
+        "endChar": 117
+      },
+      "revId": "686a70f16432d8a0ecc4863e254b815e52452a12",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
