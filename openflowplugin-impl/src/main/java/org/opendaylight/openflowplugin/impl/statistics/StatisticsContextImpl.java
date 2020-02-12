@@ -158,10 +158,6 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     public void initializeDevice() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
 
-        if (devState.isTableStatisticsAvailable() && config.isIsTableStatisticsPollingOn()) {
-            statListForCollecting.add(MultipartType.OFPMPTABLE);
-        }
-
         if (devState.isGroupAvailable() && config.isIsGroupStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
             statListForCollecting.add(MultipartType.OFPMPGROUP);
@@ -174,6 +170,10 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
         if (devState.isFlowStatisticsAvailable() && config.isIsFlowStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPFLOW);
+        }
+
+        if (devState.isTableStatisticsAvailable() && config.isIsTableStatisticsPollingOn()) {
+            statListForCollecting.add(MultipartType.OFPMPTABLE);
         }
 
         if (devState.isPortStatisticsAvailable() && config.isIsPortStatisticsPollingOn()) {
