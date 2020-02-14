@@ -23,6 +23,4 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public interface FlowNodeReconciliation extends ReconciliationNotificationListener, AutoCloseable {
     ListenableFuture<Boolean> reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode);
-
-    void flowNodeDisconnected(InstanceIdentifier<FlowCapableNode> disconnectedNode);
 }

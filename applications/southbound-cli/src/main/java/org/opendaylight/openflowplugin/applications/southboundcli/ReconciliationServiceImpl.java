@@ -9,31 +9,27 @@
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import static java.util.Objects.requireNonNull;
-import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.COMPLETED;
-import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.FAILED;
-import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.STARTED;
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.COMPLETED;
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.FAILED;
+import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State.INPROGRESS;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
-import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
@@ -47,14 +43,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.NodeReconcileState.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.state.ReconciliationStateList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.state.ReconciliationStateListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.state.ReconciliationStateListKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -74,16 +75,13 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final Long startCount = 1L;
     private final int threadPoolSize = 10;
     private final ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
-    private volatile Map<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap();
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
-                                     final AlarmAgent alarmAgent, final NodeListener nodeListener,
-                                     final FlowGroupCacheManager flowGroupCacheManager) {
+                                     final AlarmAgent alarmAgent, final NodeListener nodeListener) {
         this.broker = broker;
         this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
         this.nodeListener = requireNonNull(nodeListener, "NodeListener cannot be null!");
-        reconciliationStates = flowGroupCacheManager.getReconciliationStates();
     }
 
     @Override
@@ -120,12 +118,12 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             }
             List<Uint64> inprogressNodes = new ArrayList<>();
             nodesToReconcile.parallelStream().forEach(nodeId -> {
-                ReconciliationState state = getReconciliationState(nodeId);
-                if (state != null && state.getState().equals(STARTED)) {
+                Optional<ReconciliationStateList> state = getReconciliationState(nodeId);
+                if (state.isPresent() && state.get().getState().equals(INPROGRESS)) {
                     inprogressNodes.add(Uint64.valueOf(nodeId));
                 } else {
                     alarmAgent.raiseNodeReconciliationAlarm(nodeId);
-                    LOG.info("Executing reconciliation for node {} with state ", nodeId);
+                    LOG.info("Executing reconciliation for node {}", nodeId);
                     NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
                     ReconciliationTask reconcileTask = new ReconciliationTask(new BigInteger(String.valueOf(nodeId)),
                             nodeKey);
@@ -143,8 +141,17 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         }
     }
 
-    private ReconciliationState getReconciliationState(final Long nodeId) {
-        return reconciliationStates.get(nodeId.toString());
+    private Optional<ReconciliationStateList> getReconciliationState(final Long nodeId) {
+        InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
+                .builder(ReconciliationState.class).child(ReconciliationStateList.class,
+                        new ReconciliationStateListKey(new BigInteger(String.valueOf(nodeId)))).build();
+        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
+            return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+
+        } catch (InterruptedException  | ExecutionException e) {
+            LOG.error("Exception while reading reconciliation state for {}", nodeId, e);
+        }
+        return Optional.empty();
     }
 
     private ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
@@ -176,7 +183,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             ReconcileNodeInput reconInput = new ReconcileNodeInputBuilder()
                     .setNodeId(nodeId).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class)
                             .child(Node.class, nodeKey).build())).build();
-            updateReconciliationState(STARTED);
+            updateReconciliationState(INPROGRESS);
             Future<RpcResult<ReconcileNodeOutput>> reconOutput = frmReconciliationService
                     .reconcileNode(reconInput);
             try {
@@ -245,10 +252,20 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             return Optional.empty();
         }
 
-
-        private void updateReconciliationState(ReconciliationState.ReconciliationStatus status) {
-            ReconciliationState state = new ReconciliationState(status, LocalDateTime.now());
-            reconciliationStates.put(nodeId.toString(),state);
+        private void updateReconciliationState(State state) {
+            ReadWriteTransaction tx = broker.newReadWriteTransaction();
+            InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
+                    .builder(ReconciliationState.class).child(ReconciliationStateList.class,
+                            new ReconciliationStateListKey(nodeId)).build();
+            ReconciliationStateListBuilder stateBuilder = new ReconciliationStateListBuilder()
+                    .withKey(new ReconciliationStateListKey(nodeId))
+                    .setState(state);
+            try {
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, stateBuilder.build(), true);
+                tx.commit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Exception while updating reconciliation state: {}", nodeId, e);
+            }
         }
     }
 }

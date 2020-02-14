@@ -20,7 +20,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
@@ -65,9 +64,6 @@ public class MeterListenerTest extends FRMTest {
     private ServiceRecoveryRegistry serviceRecoveryRegistry;
     @Mock
     private MastershipChangeServiceManager mastershipChangeServiceManager;
-    @Mock
-    private FlowGroupCacheManager flowGroupCacheManager;
-
 
     @Before
     public void setUp() {
@@ -81,9 +77,7 @@ public class MeterListenerTest extends FRMTest {
                 getConfigurationService(),
                 reconciliationManager,
                 openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry,
-                flowGroupCacheManager
-                );
+                serviceRecoveryRegistry);
 
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)

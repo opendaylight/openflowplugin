@@ -6,24 +6,12 @@
 
     <reference id="dataBroker"
                interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-    <reference id="flowGroupCacheManager" interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
-    <reference id="reconciliationJMXServiceMBean"
-               interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"
-               availability="optional"/>
-    <reference id="clusterMemberInfoProvider"
-               interface="org.opendaylight.infrautils.diagstatus.ClusterMemberInfo"
-               availability="optional"/>
+
     <odl:rpc-service id="frmReconciliationService"
              interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
 
     <bean id="alarmAgent"
           class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
-    </bean>
-    <bean id="nodeListener"
-          class="org.opendaylight.openflowplugin.applications.southboundcli.NodeListener"
-          init-method="start"
-          destroy-method="close">
-        <argument ref="dataBroker"/>
     </bean>
     <bean id="reconciliationService"
           class="org.opendaylight.openflowplugin.applications.southboundcli.ReconciliationServiceImpl"
@@ -32,7 +20,12 @@
         <argument ref="frmReconciliationService"/>
         <argument ref="alarmAgent"/>
         <argument ref="nodeListener"/>
-        <argument ref="flowGroupCacheManager"/>
+    </bean>
+    <bean id="nodeListener"
+          class="org.opendaylight.openflowplugin.applications.southboundcli.NodeListener"
+          init-method="start"
+          destroy-method="close">
+        <argument ref="dataBroker"/>
     </bean>
 
     <odl:rpc-implementation ref="reconciliationService"/>
@@ -58,12 +51,6 @@
         <command name="openflow/getreconciliationcount">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.ReconciliationCount">
                 <property name="dataBroker" ref="dataBroker"/>
-            </action>
-        </command>
-        <command name="openflow/getreconciliationstate">
-            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetReconciliationStateProvider">
-                <argument ref="reconciliationJMXServiceMBean" />
-                <argument ref="clusterMemberInfoProvider" />
             </action>
         </command>
     </command-bundle>
