@@ -10,7 +10,7 @@
 
     <artifactId>openflowplugin-aggregator</artifactId>
     <version>0.10.0-SNAPSHOT</version>
-    <name>openflowplugin</name> <!-- Used by Sonar to set project name -->
+    <name>openflowplugin</name> <!-- Used by sonar to set project name -->
     <packaging>pom</packaging>
 
     <scm>
