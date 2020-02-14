@@ -223,13 +223,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                     /* Open a new bundle on the switch */
                     ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
-                            Futures.transformAsync(closeBundle,
-                                rpcResult -> salBundleService.controlBundle(openBundleInput),
-                                    service);
+                        Futures.transformAsync(closeBundle,
+                            rpcResult -> salBundleService.controlBundle(openBundleInput),
+                                service);
 
                     /* Push groups and flows via bundle add messages */
-                    ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture =
-                            Futures.transformAsync(openBundle, rpcResult -> {
+                    ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
+                            = Futures.transformAsync(openBundle, rpcResult -> {
                                 if (rpcResult.isSuccessful()) {
                                     return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
                                 }
@@ -238,8 +238,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                     /* Push flows and groups via bundle add messages */
                     Optional<FlowCapableNode> finalFlowNode = flowNode;
-                    ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture =
-                            Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
+                    ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture
+                            = Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
                                 if (rpcResult.isSuccessful()) {
                                     LOG.debug("Adding delete all flow/group message is successful for device {}",dpnId);
                                     return Futures.allAsList(addBundleMessages(finalFlowNode.get(), bundleIdValue,
@@ -281,13 +281,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             return false;
                         }
                     } catch (InterruptedException | ExecutionException e) {
-                        LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId, e);
+                        LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId);
                         return false;
                     }
                 }
                 LOG.error("FlowNode not present for Datapath ID {}", dpnId);
                 return false;
-            } finally {
+            }  finally {
                 service.shutdown();
             }
         }
