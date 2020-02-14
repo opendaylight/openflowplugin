@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 public class ConnectionManagerImpl implements ConnectionManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerImpl.class);
-    private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
     private static final boolean BITMAP_NEGOTIATION_ENABLED = true;
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("ConnectionHandler-%d")
@@ -91,7 +90,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
     @Override
     public void onSwitchConnected(final ConnectionAdapter connectionAdapter) {
         connectionAdapter.setExecutorService(executorsService);
-        OF_EVENT_LOG.debug("OnSwitchConnected event received for device {}", connectionAdapter.getRemoteAddress());
         LOG.trace("prepare connection context");
         final ConnectionContext connectionContext = new ConnectionContextImpl(connectionAdapter,
                 deviceConnectionStatusProvider);
