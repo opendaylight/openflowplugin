@@ -127,7 +127,6 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     @VisibleForTesting
     void createContextChain(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-
         final DeviceContext deviceContext = deviceManager.createContext(connectionContext);
         deviceContext.registerMastershipWatcher(this);
         LOG.debug("Device" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
@@ -218,7 +217,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     @Override
     public void onNotAbleToStartMastership(@NonNull final DeviceInfo deviceInfo, @NonNull final String reason,
                                            final boolean mandatory) {
-        LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
+        LOG.error("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
 
         if (!mandatory) {
             return;
@@ -257,7 +256,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo, final String reason) {
-        LOG.warn("Not able to set SLAVE role on device {}, reason: {}", deviceInfo, reason);
+        LOG.error("Not able to set SLAVE role on device {}, reason: {}", deviceInfo, reason);
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> destroyContextChain(deviceInfo));
     }
 
@@ -291,6 +290,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         copyOfChains.keySet().forEach(this::destroyContextChain);
         copyOfChains.clear();
         contextChainMap.clear();
+        OF_EVENT_LOG.debug("EOS registration closed for all devices");
         eosListenerRegistration.close();
         OF_EVENT_LOG.debug("EOS registration closed for all devices");
         nodeCleanerExecutor.shutdownNow();
@@ -407,7 +407,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                     contextChain.continueInitializationAfterReconciliation();
                 } else {
                     OF_EVENT_LOG.debug("Reconciliation framework failure for device {}", deviceInfo);
-                    LOG.warn("Reconciliation framework failure for device {} with result {}", deviceInfo, result);
+                    LOG.warn("Reconciliation framework failure for device {} with resultState {}", deviceInfo, result);
                     destroyContextChain(deviceInfo);
                 }
             }
@@ -416,7 +416,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             public void onFailure(final Throwable throwable) {
                 OF_EVENT_LOG.debug("Reconciliation framework failure for device {} with error {}", deviceInfo,
                         throwable.getMessage());
-                LOG.warn("Reconciliation framework failure.", throwable);
+                LOG.warn("Reconciliation framework failure for device {}", deviceInfo, throwable);
                 destroyContextChain(deviceInfo);
             }
         };
