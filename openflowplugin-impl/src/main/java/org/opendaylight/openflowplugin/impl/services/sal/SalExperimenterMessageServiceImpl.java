@@ -30,10 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<SendExperimenterInput,
         SendExperimenterOutput> implements SalExperimenterMessageService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(SalExperimenterMessageServiceImpl.class);
     private final ExtensionConverterProvider extensionConverterProvider;
 
     public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack,
@@ -51,6 +53,8 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
             ExtensionConvertorData> messageConverter = extensionConverterProvider.getMessageConverter(key);
 
         if (messageConverter == null) {
+            LOG.warn("Unable to find message converter for experimenter xid {} for device {}", xid,
+                    extractDatapathId(input.getNode()));
             throw new ServiceException(new ConverterNotFoundException(key.toString()));
         }
         final ExperimenterInputBuilder experimenterInputBld;
@@ -65,6 +69,8 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
                     .setVersion(getVersion())
                     .setXid(xid.getValue());
         } catch (ConversionException e) {
+            LOG.warn("Error while building experimenter message with id {} and xid {} for device {}",
+                    messageConverter.getExperimenterId(), xid, extractDatapathId(input.getNode()), e);
             throw new ServiceException(e);
         }
 
