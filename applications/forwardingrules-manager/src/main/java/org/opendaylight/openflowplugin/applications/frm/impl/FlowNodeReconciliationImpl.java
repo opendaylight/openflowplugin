@@ -222,15 +222,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             = salBundleService.controlBundle(closeBundleInput);
 
                     /* Open a new bundle on the switch */
-                    ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
-                        Futures.transformAsync(closeBundle,
-                            rpcResult -> salBundleService.controlBundle(openBundleInput),
-                                service);
+                    ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
+                            = Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(closeBundle), rpcResult -> {
+                                if (rpcResult.isSuccessful()) {
+                                    LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
+                                }
+                                return JdkFutureAdapters
+                                                .listenInPoolThread(salBundleService.controlBundle(openBundleInput));
+                            }, service);
 
                     /* Push groups and flows via bundle add messages */
                     ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
                             = Futures.transformAsync(openBundle, rpcResult -> {
                                 if (rpcResult.isSuccessful()) {
+                                    LOG.debug("Open bundle is successful for device {}", dpnId);
                                     return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
                                 }
                                 return Futures.immediateFuture(null);
@@ -281,7 +286,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             return false;
                         }
                     } catch (InterruptedException | ExecutionException e) {
-                        LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId);
+                        LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId, e);
                         return false;
                     }
                 }

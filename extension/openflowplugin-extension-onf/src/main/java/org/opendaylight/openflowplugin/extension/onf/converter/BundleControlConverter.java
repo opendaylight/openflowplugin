@@ -20,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Converter for BundleControl messages (ONF approved extension #230).
@@ -28,8 +30,12 @@ public class BundleControlConverter implements
         ConverterMessageToOFJava<BundleControlSal, BundleControlOnf, ExtensionConvertorData>,
         ConvertorMessageFromOFJava<BundleControlOnf, MessagePath> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BundleControlConverter.class);
+
     @Override
     public BundleControlOnf convert(final BundleControlSal experimenterMessageCase, final ExtensionConvertorData data) {
+        LOG.trace("Converting the bundle control message for device {} with xid {} and type {}",
+                data.getDatapathId(), data.getXid(), experimenterMessageCase.getSalControlData().getType());
         return new BundleControlOnfBuilder().setOnfControlGroupingData(
                 new OnfControlGroupingDataBuilder(experimenterMessageCase.getSalControlData()).build()).build();
     }
