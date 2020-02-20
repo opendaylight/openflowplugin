@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Luis Gomez <ecelgp@gmail.com>
+Code-Review+2: Arunprakash D <d.arunprakash@ericsson.com>
+Submitted-by: Arunprakash D <d.arunprakash@ericsson.com>
+Submitted-at: Thu, 20 Feb 2020 06:46:22 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/87657
+Project: openflowplugin
+Branch: refs/heads/stable/sodium
