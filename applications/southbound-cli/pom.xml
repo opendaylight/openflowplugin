@@ -62,6 +62,10 @@
             <artifactId>forwardingrules-manager</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
+            <artifactId>openflow-protocol-impl</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <optional>true</optional>
@@ -71,6 +75,10 @@
             <artifactId>javax.annotation-api</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>diagstatus-shell</artifactId>
+            <version>${infrautils.version}</version>
+        </dependency>
     </dependencies>
-
 </project>

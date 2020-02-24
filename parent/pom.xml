@@ -28,7 +28,9 @@
         <url>https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Main</url>
         <tag>HEAD</tag>
     </scm>
-
+    <properties>
+        <infrautils.version>1.7.0-SNAPSHOT</infrautils.version>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
