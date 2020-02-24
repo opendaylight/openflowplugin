@@ -54,6 +54,11 @@
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-eos-binding-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.annotation</artifactId>
+            <version>2.2.100</version>
+        </dependency>
     </dependencies>
 
 </project>

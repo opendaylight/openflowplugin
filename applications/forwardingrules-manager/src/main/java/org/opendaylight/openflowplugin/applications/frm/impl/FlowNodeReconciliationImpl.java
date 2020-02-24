@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.COMPLETED;
+import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.FAILED;
+import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.STARTED;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FluentFuture;
@@ -18,6 +22,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +44,8 @@ import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -135,9 +142,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
+    private Map<String, ReconciliationState> reconciliationStates;
 
     public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
-            final String serviceName, final int priority, final ResultState resultState) {
+                                      final String serviceName, final int priority, final ResultState resultState,
+                                      final FlowGroupCacheManager flowGroupCacheManager) {
         this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
         this.serviceName = serviceName;
@@ -145,6 +154,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         this.resultState = resultState;
         salBundleService = Preconditions.checkNotNull(manager.getSalBundleService(),
                 "salBundleService can not be null!");
+        reconciliationStates = flowGroupCacheManager.getReconciliationStates();
     }
 
     @Override
@@ -174,6 +184,14 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }
     }
 
+    @Override
+    public void flowNodeDisconnected(InstanceIdentifier<FlowCapableNode> disconnectedNode) {
+        LOG.error("The node got disconnected");
+        String node = disconnectedNode.firstKeyOf(Node.class).getId().getValue();
+        BigInteger dpnId = getDpnIdFromNodeName(node);
+        reconciliationStates.remove(dpnId.toString());
+    }
+
     private class BundleBasedReconciliationTask implements Callable<Boolean> {
         final InstanceIdentifier<FlowCapableNode> nodeIdentity;
 
@@ -194,107 +212,108 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             } catch (ExecutionException | InterruptedException e) {
                 LOG.error("Error occurred while reading the configuration data store for node {}", nodeIdentity, e);
             }
-            try {
-                if (flowNode.isPresent()) {
-                    LOG.debug("FlowNode present for Datapath ID {}", dpnId);
-                    OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
-                    final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
-                    final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                            .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                            .setType(BundleControlType.ONFBCTCLOSEREQUEST).build();
+            if (flowNode.isPresent()) {
+                ReconciliationState reconciliationState = new ReconciliationState(
+                        STARTED, LocalDateTime.now());
+                //put the dpn info into the map
+                reconciliationStates.put(dpnId.toString(), reconciliationState);
+                LOG.debug("FlowNode present for Datapath ID {}", dpnId);
+                OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
+                final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
-                    final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                            .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                            .setType(BundleControlType.ONFBCTOPENREQUEST).build();
+                final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTCLOSEREQUEST).build();
 
-                    final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
-                            .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                            .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
+                final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTOPENREQUEST).build();
 
-                    final AddBundleMessagesInput deleteAllFlowGroupsInput = new AddBundleMessagesInputBuilder()
-                            .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
-                            .setMessages(createMessages(nodeRef)).build();
+                final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                        .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
 
-                    LOG.debug("Closing openflow bundle for device {}", dpnId);
-                    /* Close previously opened bundle on the openflow switch if any */
-                    ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
-                            = salBundleService.controlBundle(closeBundleInput);
+                final AddBundleMessagesInput deleteAllFlowGroupsInput = new AddBundleMessagesInputBuilder()
+                        .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
+                        .setMessages(createMessages(nodeRef)).build();
 
-                    /* Open a new bundle on the switch */
-                    ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
-                            = Futures.transformAsync(JdkFutureAdapters.listenInPoolThread(closeBundle), rpcResult -> {
-                                if (rpcResult.isSuccessful()) {
-                                    LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
-                                }
-                                return JdkFutureAdapters
-                                                .listenInPoolThread(salBundleService.controlBundle(openBundleInput));
-                            }, service);
+                LOG.debug("Closing openflow bundle for device {}", dpnId);
+                /* Close previously opened bundle on the openflow switch if any */
+                ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
+                        = salBundleService.controlBundle(closeBundleInput);
+
+                /* Open a new bundle on the switch */
+                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
+                        Futures.transformAsync(closeBundle,
+                            rpcResult -> salBundleService.controlBundle(openBundleInput),
+                                service);
 
                     /* Push groups and flows via bundle add messages */
-                    ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
-                            = Futures.transformAsync(openBundle, rpcResult -> {
-                                if (rpcResult.isSuccessful()) {
-                                    LOG.debug("Open bundle is successful for device {}", dpnId);
-                                    return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
-                                }
-                                return Futures.immediateFuture(null);
-                            }, service);
+                ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
+                        = Futures.transformAsync(openBundle, rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
+                            }
+                            return Futures.immediateFuture(null);
+                        }, service);
 
-                    /* Push flows and groups via bundle add messages */
-                    Optional<FlowCapableNode> finalFlowNode = flowNode;
-                    ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture
-                            = Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
-                                if (rpcResult.isSuccessful()) {
-                                    LOG.debug("Adding delete all flow/group message is successful for device {}",dpnId);
-                                    return Futures.allAsList(addBundleMessages(finalFlowNode.get(), bundleIdValue,
-                                            nodeIdentity));
-                                }
-                                return Futures.immediateFuture(null);
-                            }, service);
+                /* Push flows and groups via bundle add messages */
+                Optional<FlowCapableNode> finalFlowNode = flowNode;
+                ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture
+                        = Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
+                                return Futures.allAsList(addBundleMessages(finalFlowNode.get(), bundleIdValue,
+                                        nodeIdentity));
+                            }
+                            return Futures.immediateFuture(null);
+                        }, service);
 
                     /* Commit the bundle on the openflow switch */
-                    ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture = Futures.transformAsync(
-                            addbundlesFuture, rpcResult -> {
+                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture
+                        = Futures.transformAsync(addbundlesFuture, rpcResult -> {
                             LOG.debug("Adding bundle messages completed for device {}", dpnId);
                             return salBundleService.controlBundle(commitBundleInput);
                         }, service);
 
-                    /* Bundles not supported for meters */
-                    List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
-                            : Collections.emptyList();
-                    Futures.transformAsync(commitBundleFuture,
-                        rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                for (Meter meter : meters) {
-                                    final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
-                                            .child(Meter.class, meter.key());
-                                    provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
-                                }
+                /* Bundles not supported for meters */
+                List<Meter> meters = flowNode.get().getMeter() != null ? flowNode.get().getMeter()
+                        : Collections.emptyList();
+                Futures.transformAsync(commitBundleFuture,
+                    rpcResult -> {
+                        if (rpcResult.isSuccessful()) {
+                            for (Meter meter : meters) {
+                                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
+                                        .child(Meter.class, meter.key());
+                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
                             }
-                            return Futures.immediateFuture(null);
-                        }, service);
-                    try {
-                        RpcResult<ControlBundleOutput> bundleFuture = commitBundleFuture.get();
-                        if (bundleFuture != null && bundleFuture.isSuccessful()) {
-                            LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
-                            OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
-                            return true;
-                        } else {
-                            LOG.error("commit bundle failed for device {} with error {}", dpnId,
-                                    commitBundleFuture.get().getErrors());
-                            return false;
                         }
-                    } catch (InterruptedException | ExecutionException e) {
-                        LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId, e);
+                        return Futures.immediateFuture(null);
+                    }, service);
+                try {
+                    RpcResult<ControlBundleOutput> bundleFuture = commitBundleFuture.get();
+                    if (bundleFuture != null && bundleFuture.isSuccessful()) {
+                        reconciliationState.setState(COMPLETED, LocalDateTime.now());
+                        LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
+                        OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
+                        return true;
+                    } else {
+                        reconciliationState.setState(FAILED, LocalDateTime.now());
+                        LOG.error("commit bundle failed for device {} with error {}", dpnId,
+                                commitBundleFuture.get().getErrors());
                         return false;
                     }
+                } catch (InterruptedException | ExecutionException e) {
+                    reconciliationState.setState(FAILED, LocalDateTime.now());
+                    LOG.error("commit bundle failed for device {} with error ", dpnId, e);
+                    return false;
+                } finally {
+                    service.shutdown();
                 }
-                LOG.error("FlowNode not present for Datapath ID {}", dpnId);
-                return false;
-            }  finally {
-                service.shutdown();
             }
+            LOG.error("FlowNode not present for Datapath ID {}", dpnId);
+            return false;
         }
     }
 
@@ -360,6 +379,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Tables - have to be pushed before groups */
                 // CHECK if while pushing the update, updateTableInput can be null to emulate a
                 // table add
+                ReconciliationState reconciliationState = new ReconciliationState(
+                        STARTED, LocalDateTime.now());
+                //put the dpn info into the map
+                reconciliationStates.put(dpnId.toString(), reconciliationState);
+                LOG.debug("Triggering reconciliation for node {} with state: {}", dpnId, STARTED);
                 List<TableFeatures> tableList = flowNode.get().getTableFeatures() != null
                         ? flowNode.get().getTableFeatures()
                         : Collections.<TableFeatures>emptyList();
@@ -500,6 +524,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
+                reconciliationState.setState(COMPLETED, LocalDateTime.now());
                 OF_EVENT_LOG.debug("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
             }
             return true;
