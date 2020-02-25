@@ -84,14 +84,14 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private static final VlanMatch VLAN_MATCH_FALSE = new VlanMatchBuilder()
             .setVlanId(new VlanIdBuilder()
                     .setVlanIdPresent(false)
-                    .setVlanId(new VlanId(0))
+                    .setVlanId(new VlanId(Uint16.ZERO))
                     .build())
             .build();
 
     private static final VlanMatch VLAN_MATCH_TRUE = new VlanMatchBuilder()
             .setVlanId(new VlanIdBuilder()
                     .setVlanIdPresent(true)
-                    .setVlanId(new VlanId(0))
+                    .setVlanId(new VlanId(Uint16.ZERO))
                     .build())
             .build();
 
