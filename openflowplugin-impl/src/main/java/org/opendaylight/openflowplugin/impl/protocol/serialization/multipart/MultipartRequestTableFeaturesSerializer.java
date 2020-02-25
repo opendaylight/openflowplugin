@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -21,7 +20,9 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 
 public class MultipartRequestTableFeaturesSerializer implements OFSerializer<MultipartRequestTableFeatures>,
         SerializerRegistryInjector {
@@ -31,45 +32,47 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
 
     @Override
     public void serialize(final MultipartRequestTableFeatures multipartRequestTableFeatures, final ByteBuf byteBuf) {
-        Optional
-            .ofNullable(multipartRequestTableFeatures.getTableFeatures())
-            .ifPresent(tableFeatures -> tableFeatures
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(tableFeature -> {
+        final List<TableFeatures> tableFeatures = multipartRequestTableFeatures.getTableFeatures();
+        if (tableFeatures != null) {
+            for (TableFeatures tableFeature : tableFeatures) {
+                if (tableFeature != null) {
                     final int featureIndex = byteBuf.writerIndex();
                     byteBuf.writeShort(EncodeConstants.EMPTY_LENGTH);
                     byteBuf.writeByte(tableFeature.getTableId().byteValue());
                     byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
-                    byteBuf.writeBytes(tableFeature.getName().getBytes(StandardCharsets.UTF_8));
-                    byteBuf.writeZero(32 - tableFeature.getName().getBytes(StandardCharsets.UTF_8).length);
+
+                    final byte[] nameBytes = tableFeature.getName().getBytes(StandardCharsets.UTF_8);
+                    byteBuf.writeBytes(nameBytes);
+                    byteBuf.writeZero(32 - nameBytes.length);
                     byteBuf.writeLong(tableFeature.getMetadataMatch().longValue());
                     byteBuf.writeLong(tableFeature.getMetadataWrite().longValue());
                     byteBuf.writeInt(ByteBufUtils.fillBitMask(0, tableFeature.getConfig().isDEPRECATEDMASK()));
                     byteBuf.writeInt(tableFeature.getMaxEntries().intValue());
                     serializeProperties(tableFeature.getTableProperties(), byteBuf);
                     byteBuf.setShort(featureIndex, byteBuf.writerIndex() - featureIndex);
-                }));
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
     private void serializeProperties(final TableProperties tableProperties, final ByteBuf byteBuf) {
-        Optional
-            .ofNullable(tableProperties)
-            .flatMap(properties -> Optional.ofNullable(properties.getTableFeatureProperties()))
-            .ifPresent(properties -> properties
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(property -> {
-                    final Class<? extends TableFeaturePropType> clazz = (Class<? extends TableFeaturePropType>) property
-                        .getTableFeaturePropType()
-                        .implementedInterface();
+        if (tableProperties != null) {
+            final List<TableFeatureProperties> properties = tableProperties.getTableFeatureProperties();
+            if (properties != null) {
+                for (TableFeatureProperties property : properties) {
+                    if (property != null) {
+                        final Class<? extends TableFeaturePropType> clazz = (Class<? extends TableFeaturePropType>)
+                                property.getTableFeaturePropType().implementedInterface();
 
-                    Preconditions.checkNotNull(registry)
-                        .<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
-                            new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
+                        requireNonNull(registry)
+                                .<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
+                                    new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
                                 .serialize(property.getTableFeaturePropType(), byteBuf);
-                }));
+                    }
+                }
+            }
+        }
     }
 
     @Override
