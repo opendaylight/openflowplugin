@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "96ab8e86_6c46727c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-02-26T19:11:34Z",
+      "side": 1,
+      "message": "this should be a warn() -- we are continuing as if nothing has happened",
+      "range": {
+        "startLine": 80,
+        "startChar": 16,
+        "endLine": 80,
+        "endChar": 21
+      },
+      "revId": "53726f9bca2cd130b395ebc39d90a56e37fb9b9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
