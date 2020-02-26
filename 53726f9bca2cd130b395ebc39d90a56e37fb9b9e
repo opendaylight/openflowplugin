@@ -22,6 +22,30 @@
       "revId": "53726f9bca2cd130b395ebc39d90a56e37fb9b9e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82933d69_8c56c07c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/StatisticsPollingService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-02-26T19:14:12Z",
+      "side": 1,
+      "message": "also, if this is something we kinda expect to happen and it\u0027s not really an anomaly, it should be info()",
+      "parentUuid": "96ab8e86_6c46727c",
+      "range": {
+        "startLine": 80,
+        "startChar": 16,
+        "endLine": 80,
+        "endChar": 21
+      },
+      "revId": "53726f9bca2cd130b395ebc39d90a56e37fb9b9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
