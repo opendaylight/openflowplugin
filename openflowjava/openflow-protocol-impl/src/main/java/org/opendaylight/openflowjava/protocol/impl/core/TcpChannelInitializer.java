@@ -108,10 +108,11 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             final OFEncoder ofEncoder = new OFEncoder();
             ofEncoder.setSerializationFactory(getSerializationFactory());
             ch.pipeline().addLast(PipelineHandlers.OF_ENCODER.name(), ofEncoder);
-            ch.pipeline().addLast(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name(),
-                    new DelegatingInboundHandler(connectionFacade));
             ch.pipeline().addLast(PipelineHandlers.IDLE_HANDLER.name(),
                     new IdleHandler(getSwitchIdleTimeout(), TimeUnit.MILLISECONDS));
+            ch.pipeline().addLast(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name(),
+                    new DelegatingInboundHandler(connectionFacade));
+
             if (!tlsPresent) {
                 connectionFacade.fireConnectionReadyNotification();
             }
