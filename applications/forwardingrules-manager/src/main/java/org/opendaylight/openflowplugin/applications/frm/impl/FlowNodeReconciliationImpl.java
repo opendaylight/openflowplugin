@@ -27,6 +27,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -127,7 +128,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private final String serviceName;
     private final int priority;
     private final ResultState resultState;
-    private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new HashMap<>();
+    private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new ConcurrentHashMap<>();
 
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
