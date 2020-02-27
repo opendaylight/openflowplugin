@@ -339,7 +339,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
-            OF_EVENT_LOG.debug("Reconciliation Start, Node: {}", dpnId);
+            LOG.info("Reconciliation Start, Node: {}", dpnId);
 
             Optional<FlowCapableNode> flowNode;
             // initialize the counter
@@ -351,6 +351,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 return false;
             }
 
+            LOG.info("isFlowNodePresent {}", flowNode.isPresent());
             if (flowNode.isPresent()) {
                 /* Tables - have to be pushed before groups */
                 // CHECK if while pushing the update, updateTableInput can be null to emulate a
@@ -495,8 +496,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
-                OF_EVENT_LOG.debug("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
+                LOG.info("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
             }
+            LOG.info("Reconciliation finish, Node: {}", dpnId);
             return true;
         }
 

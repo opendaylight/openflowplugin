@@ -104,7 +104,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
 
     @Override
     public ListenableFuture<ResultState> onDevicePrepared(@NonNull DeviceInfo node) {
-        LOG.debug("Triggering reconciliation for node : {}", node.getNodeId());
+        LOG.info("Triggering reconciliation for node : {}", node.getNodeId());
         return futureMap.computeIfAbsent(node, value -> reconcileNode(node));
     }
 
@@ -118,6 +118,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     }
 
     private ListenableFuture<ResultState> reconcileNode(DeviceInfo node) {
+        LOG.info("Starting reconcileNode for node {}", node.getDatapathId());
         ListenableFuture<ResultState> lastFuture = Futures.immediateFuture(null);
         for (List<ReconciliationNotificationListener> services : registeredServices.values()) {
             lastFuture = reconcileServices(lastFuture, services, node);
@@ -129,6 +130,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
                                                             List<ReconciliationNotificationListener>
                                                                     servicesForPriority,
                                                             DeviceInfo node) {
+        LOG.info("Starting reconcileServices for node {}", node.getDatapathId());
         return Futures.transformAsync(prevFuture, prevResult -> Futures.transform(Futures.allAsList(
                 servicesForPriority.stream().map(service -> service.startReconciliation(node))
                         .collect(Collectors.toList())), results -> decidedResultState.get(),
@@ -137,6 +139,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     }
 
     private ListenableFuture<Void> cancelNodeReconciliation(DeviceInfo node) {
+        LOG.info("Starting cancelNodeReconciliation for node {}", node.getDatapathId());
         ListenableFuture<Void> lastFuture = Futures.immediateFuture(null);
         futureMap.get(node).cancel(true);
         futureMap.remove(node);
@@ -150,6 +153,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
                                                                List<ReconciliationNotificationListener>
                                                                        servicesForPriority,
                                                                DeviceInfo node) {
+        LOG.info("Starting cancelServiceReconciliation for node {}", node.getDatapathId());
         return Futures.transformAsync(prevFuture, prevResult -> Futures.transform(Futures.allAsList(
                 servicesForPriority.stream().map(service -> service.endReconciliation(node))
                         .collect(Collectors.toList())), results -> null, MoreExecutors.directExecutor()),
