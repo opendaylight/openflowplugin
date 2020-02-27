@@ -104,7 +104,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
 
     @Override
     public ListenableFuture<ResultState> onDevicePrepared(@NonNull DeviceInfo node) {
-        LOG.debug("Triggering reconciliation for node : {}", node.getNodeId());
+        LOG.info("Triggering reconciliation for node : {}", node.getNodeId());
         return futureMap.computeIfAbsent(node, value -> reconcileNode(node));
     }
 
