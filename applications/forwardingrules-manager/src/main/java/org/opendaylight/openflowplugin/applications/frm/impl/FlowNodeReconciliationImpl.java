@@ -27,6 +27,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -127,7 +128,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private final String serviceName;
     private final int priority;
     private final ResultState resultState;
-    private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new HashMap<>();
+    private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new ConcurrentHashMap<>();
 
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
@@ -339,7 +340,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BigInteger dpnId = getDpnIdFromNodeName(node);
-            OF_EVENT_LOG.debug("Reconciliation Start, Node: {}", dpnId);
+            LOG.info("Reconciliation Start, Node: {}", dpnId);
 
             Optional<FlowCapableNode> flowNode;
             // initialize the counter
@@ -351,6 +352,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 return false;
             }
 
+            LOG.info("isFlowNodePresent {}", flowNode.isPresent());
             if (flowNode.isPresent()) {
                 /* Tables - have to be pushed before groups */
                 // CHECK if while pushing the update, updateTableInput can be null to emulate a
@@ -495,8 +497,9 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
-                OF_EVENT_LOG.debug("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
+                LOG.info("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
             }
+            LOG.info("Reconciliation finish, Node: {}", dpnId);
             return true;
         }
 

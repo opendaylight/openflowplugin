@@ -207,10 +207,10 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
         registerRpc(node);
         if (upgradeState.isUpgradeInProgress()) {
-            LOG.trace("Starting arbitrator reconciliation for node {}", node.getDatapathId());
+            LOG.info("Starting arbitrator reconciliation for node {}", node.getDatapathId());
             return reconcileConfiguration(node);
         }
-        LOG.trace("arbitrator reconciliation is disabled");
+        LOG.info("arbitrator reconciliation is disabled");
         return FluentFutures.immediateTrueFluentFuture();
     }
 
@@ -271,7 +271,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                     .augmentation(FlowCapableNode.class);
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
-            LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
+            LOG.info("Triggering arbitrator reconciliation for device :{}", node);
             final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
             final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder()
@@ -314,14 +314,14 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             try {
                 if (addBundleMessagesFuture.get().isSuccessful()) {
                     bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue,FluentFutures.immediateNullFluentFuture()));
-                    LOG.debug("Arbitrator reconciliation initial task has been completed for node {} ", nodeId);
+                    LOG.info("Arbitrator reconciliation initial task has been completed for node {} ", nodeId);
                     return true;
                 } else {
-                    LOG.error("Error while performing arbitrator reconciliation for device:{}", nodeId);
+                    LOG.info("Error while performing arbitrator reconciliation for device:{}", nodeId);
                     return false;
                 }
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Error while performing arbitrator reconciliation for device:{}", nodeId, e);
+                LOG.info("Error while performing arbitrator reconciliation for device:{}", nodeId, e);
                 return false;
             }
         }
