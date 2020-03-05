@@ -77,7 +77,7 @@ public class StatisticsPollingService extends AbstractScheduledService {
         try {
             waitFuture.get(statsTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Exception occured while waiting for the stats collection.", e);
+            LOG.warn("Exception occured while waiting for the stats collection.", e);
         } finally {
             counter.addTimeMark();
         }
