@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;

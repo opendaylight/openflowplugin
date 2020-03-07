@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.eric.api.EricConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -25,8 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValueBuilder;
 
 public class Icmpv6NDOptionsTypeCodec extends AbstractMatchCodec {
-
     private static final int VALUE_LENGTH = 1;
+
     public static final MatchEntrySerializerKey SERIALIZER_KEY = new MatchEntrySerializerKey(
             EncodeConstants.OF13_VERSION_ID, EricExpClass.class, Icmpv6NdOptionsType.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 public class TestsCodecStub extends AbstractActionCodec {
@@ -24,5 +23,4 @@ public class TestsCodecStub extends AbstractActionCodec {
         // TODO Auto-generated method stub
         return null;
     }
-
 }

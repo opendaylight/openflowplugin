@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import com.google.common.util.concurrent.ListenableFuture;
-
 import java.util.concurrent.Callable;
 
 public interface NodeConfigurator extends AutoCloseable {
