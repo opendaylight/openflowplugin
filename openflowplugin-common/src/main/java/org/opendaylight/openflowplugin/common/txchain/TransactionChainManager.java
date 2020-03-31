@@ -31,7 +31,6 @@ import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -127,7 +126,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-                future = txChainShuttingDown();
+                future =  txChainShuttingDown();
                 Preconditions.checkState(writeTx == null,
                         "We have some unexpected WriteTransaction.");
                 future.addCallback(new FutureCallback<CommitInfo>() {
@@ -203,7 +202,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    if (throwable instanceof TransactionCommitFailedException) {
+                    if (throwable instanceof InterruptedException || throwable instanceof ExecutionException) {
                         LOG.error("Transaction commit failed. ", throwable);
                     } else {
                         if (throwable instanceof CancellationException) {
@@ -309,7 +308,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
-    public ListenableFuture<?> shuttingDown() {
+    public FluentFuture<?> shuttingDown() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("TxManager is going SHUTTING_DOWN for node {}", this.nodeId);
         }
