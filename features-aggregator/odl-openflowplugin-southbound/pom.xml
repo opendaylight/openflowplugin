@@ -52,12 +52,12 @@
 
     <dependencies>
         <!-- feature dependencies -->
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
+        <!--<dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>odl-mdsal-broker</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.opendaylight.infrautils</groupId>
             <artifactId>odl-infrautils-diagstatus</artifactId>

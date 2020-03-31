@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +38,6 @@ import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -72,7 +73,7 @@ public class DeviceManagerImplTest {
             .createNodeInstanceIdentifier(DUMMY_NODE_ID);
 
     @Mock
-    private FluentFuture<CommitInfo> mockedFuture;
+    private FluentFuture<? extends @NonNull CommitInfo> mockedFuture;
     @Mock
     private FeaturesReply mockFeatures;
     @Mock
@@ -162,8 +163,8 @@ public class DeviceManagerImplTest {
 
     @Test(expected = ExecutionException.class)
     public void removeDeviceFromOperationalDSException() throws Exception {
-        final FluentFuture<CommitInfo> failedFuture = FluentFutures.immediateFailedFluentFuture(
-                        new TransactionCommitFailedException("Test failed transaction"));
+        final FluentFuture<? extends @NonNull CommitInfo> failedFuture = FluentFutures.immediateFailedFluentFuture(
+                        new ExecutionException(new Throwable("Test failed transaction")));
         Mockito.doReturn(failedFuture).when(writeTransaction).commit();
         final ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
         future.get();

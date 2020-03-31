@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -27,9 +28,12 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsOutput;
@@ -108,7 +112,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                     flowBuilder.build(), createParents);
             createParents = createParentsNextTime;
         }
-        ListenableFuture<?> submitFuture = writeTransaction.commit();
+        FluentFuture<? extends @NonNull  CommitInfo> submitFuture = writeTransaction.commit();
         return Futures.transform(handleResultFuture(Futures.allAsList(submitFuture)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
                 return RpcResultBuilder.<AddFlowsDsOutput>success().build();

@@ -8,7 +8,7 @@
 
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;

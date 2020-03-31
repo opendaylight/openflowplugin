@@ -12,9 +12,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.mockito.Mockito;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.binding.dom.adapter.test.AbstractDataBrokerTest;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -53,8 +56,8 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
     // TODO: remove with mdsal-3.0.7 or later
     @SuppressWarnings("unchecked")
-    protected static final void assertCommit(FluentFuture<?> future) {
-        assertCommit((ListenableFuture<Void>) future);
+    protected static final void assertCommit(FluentFuture<? extends @NonNull CommitInfo> future) {
+        assertCommit(future);
     }
 
     public void removeNode(NodeKey nodeKey) throws ExecutionException, InterruptedException {
