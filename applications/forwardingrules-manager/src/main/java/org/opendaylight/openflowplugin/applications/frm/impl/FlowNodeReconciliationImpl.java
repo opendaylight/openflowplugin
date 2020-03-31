@@ -35,9 +35,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -675,7 +678,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
         }
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
+        FluentFuture<? extends @NonNull CommitInfo> submitFuture = writeTransaction.commit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -686,7 +689,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
         }
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
+        FluentFuture<? extends @NonNull  CommitInfo> submitFuture = writeTransaction.commit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
@@ -697,7 +700,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
         }
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
+        FluentFuture<? extends @NonNull CommitInfo> submitFuture = writeTransaction.commit();
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 

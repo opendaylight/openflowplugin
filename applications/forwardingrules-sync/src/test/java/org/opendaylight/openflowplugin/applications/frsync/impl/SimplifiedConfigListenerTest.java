@@ -53,7 +53,7 @@ public class SimplifiedConfigListenerTest {
     @Mock
     private SyncReactor reactor;
     @Mock
-    private ReadTransaction roTx;
+    private ReadTransaction readTransaction;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
@@ -78,7 +78,7 @@ public class SimplifiedConfigListenerTest {
         final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
                 DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, fcNodePath);
 
-        Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
+        Mockito.when(db.newReadOnlyTransaction()).thenReturn(readTransaction);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
     }
@@ -99,7 +99,7 @@ public class SimplifiedConfigListenerTest {
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SimplifiedConfigListenerTest {
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
     @Test
@@ -125,24 +125,24 @@ public class SimplifiedConfigListenerTest {
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
     @Test
     public void testOnDataTreeChangedSkip() {
-        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(roTx)
+        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(readTransaction)
             .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verifyZeroInteractions(reactor);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
     private SyncupEntry loadOperationalDSAndPrepareSyncupEntry(final FlowCapableNode after,
             final LogicalDatastoreType dsTypeAfter, final FlowCapableNode before,
             final LogicalDatastoreType dsTypeBefore) {
-        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(dataBefore))).when(roTx)
+        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(dataBefore))).when(readTransaction)
             .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);
         Mockito.when(reactor.syncup(ArgumentMatchers.any(),

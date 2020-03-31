@@ -16,10 +16,13 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -221,7 +224,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleGroupInstanceIdentifier(staleGroup, nodeIdent),
                 staleGroup, false);
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
+        FluentFuture<? extends @NonNull CommitInfo> submitFuture = writeTransaction.commit();
         handleStaleGroupResultFuture(submitFuture);
     }
 

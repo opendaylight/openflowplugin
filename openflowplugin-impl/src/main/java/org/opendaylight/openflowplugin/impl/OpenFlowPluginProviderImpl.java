@@ -126,6 +126,7 @@ public class OpenFlowPluginProviderImpl implements
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
+    private final SystemReadyMonitor systemReadyMonitor;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
@@ -156,8 +157,7 @@ public class OpenFlowPluginProviderImpl implements
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         this.openflowDiagStatusProvider = openflowDiagStatusProvider;
-        systemReadyMonitor.registerListener(this);
-        LOG.info("registered onSystemBootReady() listener for deferred startSwitchConnections()");
+        this.systemReadyMonitor = systemReadyMonitor;
     }
 
     @Override
@@ -288,6 +288,8 @@ public class OpenFlowPluginProviderImpl implements
 
         deviceManager.setContextChainHolder(contextChainHolder);
         deviceManager.initialize();
+        systemReadyMonitor.registerListener(this);
+        LOG.info("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
 
     @Override
