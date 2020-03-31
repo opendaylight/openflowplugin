@@ -36,7 +36,6 @@ import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -162,8 +161,8 @@ public class DeviceManagerImplTest {
 
     @Test(expected = ExecutionException.class)
     public void removeDeviceFromOperationalDSException() throws Exception {
-        final FluentFuture<CommitInfo> failedFuture = FluentFutures.immediateFailedFluentFuture(
-                        new TransactionCommitFailedException("Test failed transaction"));
+        final FluentFuture<?> failedFuture = FluentFutures.immediateFailedFluentFuture(
+                        new ExecutionException(new Throwable("Test failed transaction")));
         Mockito.doReturn(failedFuture).when(writeTransaction).commit();
         final ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(DUMMY_IDENTIFIER);
         future.get();

@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,6 @@ import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
@@ -118,7 +118,7 @@ public class TransactionChainManagerTest {
 
     @Test
     public void testSubmitTransactionFailed() {
-        Mockito.doReturn(FluentFutures.immediateFailedFluentFuture(new TransactionCommitFailedException("mock")))
+        Mockito.doReturn(FluentFutures.immediateFailedFluentFuture(new ExecutionException(new Throwable("mock"))))
             .when(writeTx).commit();
         final Node data = new NodeBuilder().setId(nodeId).build();
         txChainManager.initialSubmitWriteTransaction();
