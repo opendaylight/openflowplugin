@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -76,6 +76,6 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
                 return Optional.of((G) potential);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }
