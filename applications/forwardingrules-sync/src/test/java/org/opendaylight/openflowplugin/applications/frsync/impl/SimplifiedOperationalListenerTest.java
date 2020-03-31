@@ -63,7 +63,7 @@ public class SimplifiedOperationalListenerTest {
     @Mock
     private SyncReactor reactor;
     @Mock
-    private ReadTransaction roTx;
+    private ReadTransaction readTransaction;
     @Mock
     private DataTreeModification<Node> dataTreeModification;
     @Mock
@@ -104,7 +104,7 @@ public class SimplifiedOperationalListenerTest {
         final DataTreeIdentifier<Node> dataTreeIdentifier =
                 DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, nodePath);
 
-        Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
+        Mockito.when(db.newReadOnlyTransaction()).thenReturn(readTransaction);
         Mockito.when(operationalNode.getId()).thenReturn(NODE_ID);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
@@ -219,7 +219,7 @@ public class SimplifiedOperationalListenerTest {
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
 
@@ -234,7 +234,7 @@ public class SimplifiedOperationalListenerTest {
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
     @Test
@@ -244,14 +244,14 @@ public class SimplifiedOperationalListenerTest {
         operationalUpdate();
         prepareFreshOperational(true);
 
-        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(roTx)
+        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(readTransaction)
             .read(LogicalDatastoreType.CONFIGURATION, fcNodePath);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
         Mockito.verifyZeroInteractions(reactor);
-        Mockito.verify(roTx).close();
+        Mockito.verify(readTransaction).close();
     }
 
     private void prepareFreshOperational(final boolean afterRegistration) throws ParseException {
@@ -287,7 +287,7 @@ public class SimplifiedOperationalListenerTest {
             final LogicalDatastoreType dsTypeAfter, final FlowCapableNode before,
             final LogicalDatastoreType dsTypeBefore) {
 
-        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(configNode))).when(roTx)
+        Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.of(configNode))).when(readTransaction)
             .read(LogicalDatastoreType.CONFIGURATION, fcNodePath);
         final SyncupEntry syncupEntry = new SyncupEntry(after, dsTypeAfter, before, dsTypeBefore);
         Mockito.when(reactor.syncup(ArgumentMatchers.any(),

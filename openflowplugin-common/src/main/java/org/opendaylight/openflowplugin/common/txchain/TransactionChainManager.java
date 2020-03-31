@@ -31,7 +31,6 @@ import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.common.api.TransactionCommitFailedException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -60,7 +59,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     @GuardedBy("txLock")
     private boolean submitIsEnabled;
     @GuardedBy("txLock")
-    private FluentFuture<? extends CommitInfo> lastSubmittedFuture;
+    private FluentFuture<? extends @NonNull CommitInfo> lastSubmittedFuture;
 
     private volatile boolean initCommit;
 
@@ -119,11 +118,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
      * Call this method for SLAVE only.
      * @return Future
      */
-    public FluentFuture<?> deactivateTransactionManager() {
+    public FluentFuture<? extends @NonNull CommitInfo> deactivateTransactionManager() {
         if (LOG.isDebugEnabled()) {
             LOG.debug("deactivateTransactionManager for node {}", this.nodeId);
         }
-        final FluentFuture<? extends CommitInfo> future;
+        final FluentFuture<? extends @NonNull CommitInfo> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
@@ -179,7 +178,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
                     this.nodeId);
-            final FluentFuture<? extends CommitInfo> submitFuture = writeTx.commit();
+            final FluentFuture<? extends @NonNull CommitInfo> submitFuture = writeTx.commit();
             lastSubmittedFuture = submitFuture;
             writeTx = null;
 
@@ -203,7 +202,8 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    if (throwable instanceof TransactionCommitFailedException) {
+                    if (throwable instanceof InterruptedException ||
+                            throwable instanceof ExecutionException) {
                         LOG.error("Transaction commit failed. ", throwable);
                     } else {
                         if (throwable instanceof CancellationException) {
@@ -320,10 +320,10 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     @GuardedBy("txLock")
-    private FluentFuture<? extends CommitInfo> txChainShuttingDown() {
+    private FluentFuture<? extends @NonNull CommitInfo> txChainShuttingDown() {
         boolean wasSubmitEnabled = submitIsEnabled;
         submitIsEnabled = false;
-        FluentFuture<? extends CommitInfo> future;
+        FluentFuture<? extends @NonNull CommitInfo> future;
 
         if (!wasSubmitEnabled || transactionChain == null) {
             // stay with actual thread

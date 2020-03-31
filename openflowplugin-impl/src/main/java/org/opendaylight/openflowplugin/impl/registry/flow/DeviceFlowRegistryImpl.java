@@ -108,8 +108,8 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                               final InstanceIdentifier<FlowCapableNode> path) {
         // Prepare read operation from datastore for path
         final FluentFuture<Optional<FlowCapableNode>> future;
-        try (ReadTransaction transaction = dataBroker.newReadOnlyTransaction()) {
-            future = transaction.read(logicalDatastoreType, path);
+        try (ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction()) {
+            future = readTransaction.read(logicalDatastoreType, path);
         }
 
         future.addCallback(new FutureCallback<Optional<FlowCapableNode>>() {

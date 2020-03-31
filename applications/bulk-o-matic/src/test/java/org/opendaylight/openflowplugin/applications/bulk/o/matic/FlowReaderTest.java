@@ -33,7 +33,7 @@ public class FlowReaderTest {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private ReadTransaction readOnlyTransaction;
+    private ReadTransaction readTransaction;
     @Mock
     private Node node;
 
@@ -41,9 +41,9 @@ public class FlowReaderTest {
 
     @Before
     public void setUp() {
-        doReturn(FluentFutures.immediateFluentFuture(Optional.of(node))).when(readOnlyTransaction)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(node))).when(readTransaction)
             .read(any(LogicalDatastoreType.class), any());
-        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readTransaction);
         flowReader = FlowReader.getNewInstance(mockDataBroker, 2, 5, true, false, (short) 1, (short) 2);
     }
 
