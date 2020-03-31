@@ -75,8 +75,8 @@ public final class ShellUtil {
         InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(NODE_PREFIX + nodeId))).build();
 
-        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
-            Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
+        try (ReadTransaction readTransaction = broker.newReadOnlyTransaction()) {
+            Optional<Node> result = readTransaction.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 Node node = result.get();
                 String name = null;
@@ -116,9 +116,9 @@ public final class ShellUtil {
         InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationCounter.class).build();
         List<ReconcileCounter> output = Collections.emptyList();
-        try (ReadTransaction tx = dataBroker.newReadOnlyTransaction()) {
+        try (ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction()) {
             Optional<ReconciliationCounter> result =
-                    tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+                    readTransaction.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             if (result.isPresent()) {
                 output = result.get().getReconcileCounter();
             }

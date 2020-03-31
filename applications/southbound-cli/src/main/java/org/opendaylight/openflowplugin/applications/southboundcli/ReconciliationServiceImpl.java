@@ -145,8 +145,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         InstanceIdentifier<ReconciliationStateList> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationState.class).child(ReconciliationStateList.class,
                         new ReconciliationStateListKey(new BigInteger(String.valueOf(nodeId)))).build();
-        try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
-            return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+        try (ReadTransaction readTransaction = broker.newReadOnlyTransaction()) {
+            return readTransaction.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
 
         } catch (InterruptedException  | ExecutionException e) {
             LOG.error("Exception while reading reconciliation state for {}", nodeId, e);

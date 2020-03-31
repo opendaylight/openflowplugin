@@ -67,7 +67,7 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
     /**
      * Method returns Read Transaction. It is need for Node reconciliation only.
      *
-     * @return ReadOnlyTransaction
+     * @return ReadTransaction
      */
     ReadTransaction getReadTransaction();
 

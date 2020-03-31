@@ -84,7 +84,7 @@ public class SalBulkFlowServiceImplTest {
     @Mock
     private WriteTransaction writeTransaction;
     @Mock
-    private ReadTransaction readOnlyTransaction;
+    private ReadTransaction readTransaction;
     @Mock
     private Nodes mockNodes;
     @Mock
@@ -97,9 +97,9 @@ public class SalBulkFlowServiceImplTest {
     @Before
     public void setUp() {
         when(mockDataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
-        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readTransaction);
 
-        lenient().doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNode))).when(readOnlyTransaction)
+        lenient().doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNode))).when(readTransaction)
             .read(any(LogicalDatastoreType.class), any());
         salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
     }
@@ -190,7 +190,7 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowRpcAddTest() throws Exception {
-        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readTransaction)
             .read(any(LogicalDatastoreType.class), any());
 
         final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder().setFlowCount(1L)
@@ -241,7 +241,7 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowRpcAddMultiple() throws Exception {
-        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readTransaction)
             .read(any(LogicalDatastoreType.class), any());
 
         final FlowRpcAddMultipleInputBuilder flowRpcAddMultipleInputBuilder = new FlowRpcAddMultipleInputBuilder()
