@@ -51,7 +51,7 @@ public class FlowWriterDirectOFRpcTest {
     @Mock
     private ExecutorService mockFlowPusher;
     @Mock
-    private ReadTransaction readOnlyTransaction;
+    private ReadTransaction readTransaction;
     @Mock
     private Nodes mockNodes;
 
@@ -61,7 +61,7 @@ public class FlowWriterDirectOFRpcTest {
     public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(mockSalFlowService).addFlow(any());
 
-        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readTransaction);
         NodeBuilder nodeBuilder = new NodeBuilder()
                 .setId(new NodeId("1"));
 
@@ -71,7 +71,7 @@ public class FlowWriterDirectOFRpcTest {
 
         when(mockNodes.getNode()).thenReturn(nodes);
 
-        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
+        doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readTransaction)
             .read(any(LogicalDatastoreType.class), any());
 
         Mockito.doAnswer(invocation -> {

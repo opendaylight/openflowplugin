@@ -27,13 +27,13 @@
             </dependency>
 
             <!-- Controller infrastructure -->
-            <dependency>
+           <!-- <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
                 <version>1.11.0</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
+            </dependency> -->
         </dependencies>
     </dependencyManagement>
 
@@ -46,7 +46,7 @@
             <type>xml</type>
         </dependency>
 
-        <dependency>
+       <!-- <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>odl-mdsal-model-inventory</artifactId>
             <classifier>features</classifier>
@@ -58,7 +58,7 @@
             <artifactId>odl-controller-model-topology</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>

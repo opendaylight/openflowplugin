@@ -26,13 +26,13 @@
                 <type>pom</type>
             </dependency>
             <!-- Controller infrastructure -->
-            <dependency>
+            <!--<dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
                 <version>1.11.0</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>org.opendaylight.infrautils</groupId>
                 <artifactId>infrautils-artifacts</artifactId>
@@ -52,12 +52,12 @@
 
     <dependencies>
         <!-- feature dependencies -->
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
+        <!--<dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>odl-mdsal-broker</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.opendaylight.infrautils</groupId>
             <artifactId>odl-infrautils-diagstatus</artifactId>
