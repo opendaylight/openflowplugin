@@ -42,10 +42,10 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
 
     @Override
     public Optional<FlowCapableNode> loadByNodeId(@NonNull NodeId nodeId) {
-        try (ReadTransaction roTx = dataBroker.newReadOnlyTransaction()) {
+        try (ReadTransaction readTransaction = dataBroker.newReadOnlyTransaction()) {
             final InstanceIdentifier<FlowCapableNode> path =
                     NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
-            return roTx.read(logicalDatastoreType, path).get(5000, TimeUnit.MILLISECONDS);
+            return readTransaction.read(logicalDatastoreType, path).get(5000, TimeUnit.MILLISECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             LOG.error("error reading {}", nodeId.getValue(), e);
         }

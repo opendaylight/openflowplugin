@@ -231,8 +231,8 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public boolean checkNodeInOperationalDataStore(final InstanceIdentifier<FlowCapableNode> ident) {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
-        try (ReadTransaction transaction = dataService.newReadOnlyTransaction()) {
-            ListenableFuture<Optional<Node>> future = transaction
+        try (ReadTransaction readTransaction = dataService.newReadOnlyTransaction()) {
+            ListenableFuture<Optional<Node>> future = readTransaction
                 .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
             Optional<Node> optionalDataObject = future.get();
             if (optionalDataObject.isPresent()) {

@@ -27,11 +27,11 @@ public final class TestProviderTransactionUtil {
         throw new AssertionError("TestProviderTransactionUtil was not meant to be instantiated.");
     }
 
-    public static <T extends DataObject> T getDataObject(ReadTransaction readOnlyTransaction,
+    public static <T extends DataObject> T getDataObject(ReadTransaction readTransaction,
             InstanceIdentifier<T> identifier) {
         Optional<T> optionalData = null;
         try {
-            optionalData = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get();
+            optionalData = readTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get();
             if (optionalData.isPresent()) {
                 return optionalData.get();
             }
