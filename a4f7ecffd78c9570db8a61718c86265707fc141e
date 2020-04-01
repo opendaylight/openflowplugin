@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58e4a8de_c2021f64",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-01T06:42:23Z",
+      "side": 1,
+      "message": "is this change needed? i\u0027m seeing in some of the classes?",
+      "range": {
+        "startLine": 82,
+        "startChar": 37,
+        "endLine": 82,
+        "endChar": 53
+      },
+      "revId": "a4f7ecffd78c9570db8a61718c86265707fc141e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aa7dec3_a133e5c1",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-01T06:42:23Z",
+      "side": 1,
+      "message": "why this change needed?\n\ncan\u0027t we just keep FluentFuture\u003c?\u003e submitFuture ??",
+      "range": {
+        "startLine": 114,
+        "startChar": 27,
+        "endLine": 114,
+        "endChar": 55
+      },
+      "revId": "a4f7ecffd78c9570db8a61718c86265707fc141e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "820ca8cf_6d988ee0",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-01T06:42:23Z",
+      "side": 1,
+      "message": "same comment as before",
+      "range": {
+        "startLine": 313,
+        "startChar": 23,
+        "endLine": 313,
+        "endChar": 51
+      },
+      "revId": "a4f7ecffd78c9570db8a61718c86265707fc141e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
