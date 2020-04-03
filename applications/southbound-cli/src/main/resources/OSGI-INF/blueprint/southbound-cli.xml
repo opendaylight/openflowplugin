@@ -8,9 +8,9 @@
                interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
     <reference id="flowGroupCacheManager" interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
 
+
     <odl:rpc-service id="frmReconciliationService"
              interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
-
     <bean id="alarmAgent"
           class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
     </bean>
