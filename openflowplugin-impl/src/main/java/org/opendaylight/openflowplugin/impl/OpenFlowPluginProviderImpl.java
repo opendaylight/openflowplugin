@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
+import java.sql.Ref;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -50,6 +51,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -126,6 +128,7 @@ public class OpenFlowPluginProviderImpl implements
     private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
+    private final FlowGroupCacheManager flowGroupCacheManager;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
@@ -143,7 +146,8 @@ public class OpenFlowPluginProviderImpl implements
                                final @Reference EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
                                final @Reference OpenflowDiagStatusProvider openflowDiagStatusProvider,
-                               final @Reference SystemReadyMonitor systemReadyMonitor) {
+                               final @Reference SystemReadyMonitor systemReadyMonitor,
+                               final @Reference FlowGroupCacheManager flowGroupCacheManager) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -156,6 +160,7 @@ public class OpenFlowPluginProviderImpl implements
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         this.openflowDiagStatusProvider = openflowDiagStatusProvider;
+        this.flowGroupCacheManager = flowGroupCacheManager;
         systemReadyMonitor.registerListener(this);
         LOG.info("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
@@ -261,7 +266,8 @@ public class OpenFlowPluginProviderImpl implements
                 rpcProviderRegistry,
                 extensionConverterManager,
                 convertorManager,
-                notificationPublishService);
+                notificationPublishService,
+                flowGroupCacheManager);
 
         statisticsManager = new StatisticsManagerImpl(
                 config,

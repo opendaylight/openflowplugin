@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenFlowPluginProviderImplTest {
@@ -81,6 +82,9 @@ public class OpenFlowPluginProviderImplTest {
 
     @Mock
     MastershipChangeServiceManager mastershipChangeServiceManager;
+
+    @Mock
+    FlowGroupCacheManager flowGroupCacheManager;
 
     private static final int RPC_REQUESTS_QUOTA = 500;
     private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
@@ -128,7 +132,8 @@ public class OpenFlowPluginProviderImplTest {
                 entityOwnershipService,
                 mastershipChangeServiceManager,
                 ofPluginDiagstatusProvider,
-                systemReadyMonitor);
+                systemReadyMonitor,
+                flowGroupCacheManager);
 
         provider.initialize();
         // Calling the onSystemBootReady() callback
