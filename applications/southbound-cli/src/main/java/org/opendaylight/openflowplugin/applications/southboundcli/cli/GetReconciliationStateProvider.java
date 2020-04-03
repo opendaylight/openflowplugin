@@ -58,7 +58,6 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
     private ReconciliationJMXServiceMBean reconciliationJMXServiceMBean;
     private ClusterMemberInfo clusterMemberInfoProvider;
 
-
     public GetReconciliationStateProvider(final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean,
                                           final ClusterMemberInfo clusterMemberInfoProvider,
                                           @Nullable Integer httpPort) {

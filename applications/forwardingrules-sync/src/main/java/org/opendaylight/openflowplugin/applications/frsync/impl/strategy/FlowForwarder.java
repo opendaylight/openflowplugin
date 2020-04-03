@@ -110,7 +110,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
                 identifier, nodeIdent, addDataObj);
 
         final ListenableFuture<RpcResult<AddFlowOutput>> output;
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
+        final TableKey tableKey =
+        .firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
 

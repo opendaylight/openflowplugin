@@ -7,12 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
-import java.util.Map;
-import java.util.Queue;
-
-public interface FlowGroupCacheManager {
-
-    Map<String, ReconciliationState> getReconciliationStates();
-
-    Map<String, Queue<FlowGroupCache>> getFlowGroupCacheListForAllNodes();
+public enum FlowGroupStatus {
+    ADDED,
+    MODIFIED,
+    REMOVED
 }

@@ -28,7 +28,7 @@
     <argument ref="ppDB"/>
   </bean>
 
-  <reference id="switchConnectionProviderList" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList" ext:proxy-method="classes"/>
+   <reference id="switchConnectionProviderList" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList" ext:proxy-method="classes"/>
 
   <reference id="openflowPluginDiagStatusProviderImpl" interface="org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider" ext:proxy-method="classes"/>
 
