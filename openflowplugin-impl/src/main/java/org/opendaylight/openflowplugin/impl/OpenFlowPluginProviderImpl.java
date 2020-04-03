@@ -50,6 +50,7 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -127,6 +128,7 @@ public class OpenFlowPluginProviderImpl implements
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
     private final SystemReadyMonitor systemReadyMonitor;
+    private final FlowGroupCacheManager flowGroupCacheManager;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
@@ -144,7 +146,8 @@ public class OpenFlowPluginProviderImpl implements
                                final @Reference EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
                                final @Reference OpenflowDiagStatusProvider openflowDiagStatusProvider,
-                               final @Reference SystemReadyMonitor systemReadyMonitor) {
+                               final @Reference SystemReadyMonitor systemReadyMonitor,
+                               final FlowGroupCacheManager flowGroupCacheManager) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
@@ -158,6 +161,9 @@ public class OpenFlowPluginProviderImpl implements
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         this.openflowDiagStatusProvider = openflowDiagStatusProvider;
         this.systemReadyMonitor = systemReadyMonitor;
+        this.flowGroupCacheManager = flowGroupCacheManager;
+        systemReadyMonitor.registerListener(this);
+        LOG.info("registered onSystemBootReady() listener for deferred startSwitchConnections()");
     }
 
     @Override
@@ -261,7 +267,8 @@ public class OpenFlowPluginProviderImpl implements
                 rpcProviderRegistry,
                 extensionConverterManager,
                 convertorManager,
-                notificationPublishService);
+                notificationPublishService,
+                flowGroupCacheManager);
 
         statisticsManager = new StatisticsManagerImpl(
                 config,
