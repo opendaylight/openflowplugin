@@ -5,6 +5,7 @@
     <reference id="reconciliationJMXServiceMBean"
                interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"
                availability="optional"/>
+
     <cm:property-placeholder persistent-id="org.ops4j.pax.web" update-strategy="none">
         <cm:default-properties>
             <cm:property name="org.osgi.service.http.port" value="8181"/>
@@ -13,7 +14,6 @@
     <reference id="clusterMemberInfoProvider"
                interface="org.opendaylight.infrautils.diagstatus.ClusterMemberInfo"
                availability="optional"/>
-
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="openflow/getallnodes">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetAllNodesCommandProvider">
@@ -41,6 +41,11 @@
                 <argument ref ="reconciliationJMXServiceMBean"/>
                 <argument ref="clusterMemberInfoProvider"/>
                 <argument value="${org.osgi.service.http.port}"/>
+            </action>
+        </command>
+        <command name="openflow/getflownodecache">
+            <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetFlowGroupCacheProvider">
+                <argument ref="flowCacheManager"/>
             </action>
         </command>
     </command-bundle>
