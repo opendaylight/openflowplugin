@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.mockito.Mock;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
@@ -29,20 +30,33 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.gro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 public class SalGroupServiceImplTest extends ServiceMocking {
 
     private static final Long DUMMY_GROUP_ID = 15L;
+    private static final
+        KeyedInstanceIdentifier<Node, NodeKey> NODE_II = InstanceIdentifier.create(Nodes.class).child(Node.class,
+            new NodeKey(new NodeId(DUMMY_NODE_ID)));
+    NodeRef noderef = new NodeRef(NODE_II);
 
     @Mock
     DeviceGroupRegistry mockedDeviceGroupRegistry;
+    FlowGroupCacheManager flowGroupCacheManager;
 
     SalGroupServiceImpl salGroupService;
 
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager,
+                flowGroupCacheManager);
     }
 
     @Test
@@ -52,7 +66,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
 
     private void addGroup() {
         final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
-        AddGroupInput addGroupInput = new AddGroupInputBuilder().setGroupId(dummyGroupId).build();
+        AddGroupInput addGroupInput = new AddGroupInputBuilder().setGroupId(dummyGroupId).setNode(noderef).build();
 
         this.<AddGroupOutput>mockSuccessfulFuture();
 

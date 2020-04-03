@@ -7,11 +7,15 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import junit.framework.TestCase;
@@ -24,6 +28,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCache;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -32,9 +38,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.services.cache.FlowGroupCacheManagerImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -57,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
@@ -85,6 +91,27 @@ public class SalFlowServiceImplTest extends TestCase {
     private static final KeyedInstanceIdentifier<Table, TableKey> TABLE_II
             = NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
 
+    private NodeRef noderef = new NodeRef(NODE_II);
+    private static final String KEY = "0";
+    private static FlowGroupCache flowcache =
+            new FlowGroupCache("0","mock class", FlowGroupStatus.ADDED, LocalDateTime.MAX);
+
+    private static Queue<FlowGroupCache> caches() {
+        Queue<FlowGroupCache> cache = new LinkedList<>();
+        cache.add(flowcache);
+        return cache;
+    }
+
+    private static final Queue<FlowGroupCache> CACHE = caches();
+
+    private static Map<String, Queue<FlowGroupCache>> createMap() {
+        Map<String,Queue<FlowGroupCache>> myMap = new HashMap<>();
+        myMap.put(KEY, CACHE);
+        return myMap;
+    }
+
+    private static final Map<String, Queue<FlowGroupCache>> MYMAP = createMap();
+
     @Mock
     private RequestContextStack mockedRequestContextStack;
     @Mock
@@ -112,6 +139,8 @@ public class SalFlowServiceImplTest extends TestCase {
     private DeviceFlowRegistry deviceFlowRegistry;
     @Mock
     private GetFeaturesOutput mockedFeaturesOutput;
+    @Mock
+    private FlowGroupCacheManagerImpl flowGroupCacheManager;
 
     @Before
     public void initialization() {
@@ -129,6 +158,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
+        when(flowGroupCacheManager.getAllNodesFlowGroupCache()).thenReturn(MYMAP);
     }
 
     private SalFlowServiceImpl mockSalFlowService(final short version) {
@@ -138,7 +168,8 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager,
+                flowGroupCacheManager);
     }
 
     @Test
@@ -161,12 +192,12 @@ public class SalFlowServiceImplTest extends TestCase {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
+                .setNode(noderef)
                 .build();
 
         Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
-        mockingFlowRegistryLookup();
         final Future<RpcResult<AddFlowOutput>> rpcResultFuture =
                 mockSalFlowService(version).addFlow(mockedAddFlowInput);
 
@@ -190,6 +221,7 @@ public class SalFlowServiceImplTest extends TestCase {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setTableId((short)1)
                 .setMatch(match)
+                .setNode(noderef)
                 .build();
 
         Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
@@ -214,10 +246,10 @@ public class SalFlowServiceImplTest extends TestCase {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
+                .setNode(noderef)
                 .build();
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
 
-        mockingFlowRegistryLookup();
         verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
     }
 
@@ -237,6 +269,7 @@ public class SalFlowServiceImplTest extends TestCase {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .setTableId((short)1)
+                .setNode(noderef)
                 .build();
 
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
@@ -294,18 +327,10 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedUpdateFlowInput1.getOriginalFlow()).thenReturn(mockedOriginalFlow1);
 
         SalFlowServiceImpl salFlowService = mockSalFlowService(version);
-
+        when(mockedUpdateFlowInput.getNode()).thenReturn(noderef);
+        when(mockedUpdateFlowInput1.getNode()).thenReturn(noderef);
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput1));
-    }
-
-    private void mockingFlowRegistryLookup() {
-        FlowDescriptor mockedFlowDescriptor = mock(FlowDescriptor.class);
-        FlowId flowId = new FlowId(DUMMY_FLOW_ID);
-        when(mockedFlowDescriptor.getFlowId()).thenReturn(flowId);
-
-        when(deviceFlowRegistry
-                .retrieveDescriptor(any(FlowRegistryKey.class))).thenReturn(mockedFlowDescriptor);
     }
 
     private static <T extends DataObject> void verifyOutput(final Future<RpcResult<T>> rpcResultFuture)
