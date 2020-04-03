@@ -48,6 +48,7 @@ public final class FrmUtil {
     private static final Logger LOG = LoggerFactory.getLogger(FrmUtil.class);
     private static final String SEPARATOR = ":";
     private static final long RPC_RESULT_TIMEOUT = 2500;
+    public static final String OPENFLOW_PREFIX = "openflow:";
 
     private FrmUtil() {
         throw new IllegalStateException("This class should not be instantiated.");

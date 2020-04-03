@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -72,6 +73,8 @@ public class RpcManagerImplTest {
     private NotificationPublishService notificationPublishService;
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
+    @Mock
+    private FlowGroupCacheManager flowGroupCacheManager;
 
     private final NodeId nodeId = new NodeId("openflow-junit:1");
 
@@ -82,7 +85,8 @@ public class RpcManagerImplTest {
                 .setRpcRequestsQuota(new NonZeroUint16Type(QUOTA_VALUE))
                 .setIsStatisticsRpcEnabled(false)
                 .build(),
-                rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
+                rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService,
+                flowGroupCacheManager);
 
         FeaturesReply features = new GetFeaturesOutputBuilder()
                 .setVersion(OFConstants.OFP_VERSION_1_3)
