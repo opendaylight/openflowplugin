@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -34,17 +35,20 @@ public class RpcManagerImpl implements RpcManager {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
+    private final FlowGroupCacheManager flowGroupCacheManager;
 
     public RpcManagerImpl(final OpenflowProviderConfig config,
                           final RpcProviderService rpcProviderRegistry,
                           final ExtensionConverterProvider extensionConverterProvider,
                           final ConvertorExecutor convertorExecutor,
-                          final NotificationPublishService notificationPublishService) {
+                          final NotificationPublishService notificationPublishService,
+                          final FlowGroupCacheManager flowGroupCacheManager) {
         this.config = config;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
         this.convertorExecutor = convertorExecutor;
         this.notificationPublishService = notificationPublishService;
+        this.flowGroupCacheManager = flowGroupCacheManager;
     }
 
     @Override
@@ -74,7 +78,8 @@ public class RpcManagerImpl implements RpcManager {
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService,
-                config.isIsStatisticsRpcEnabled());
+                config.isIsStatisticsRpcEnabled(),
+                flowGroupCacheManager);
 
         contexts.put(deviceContext.getDeviceInfo(), rpcContext);
         return rpcContext;
