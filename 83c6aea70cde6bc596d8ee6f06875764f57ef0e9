@@ -1,0 +1,205 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a2ae64a_7690593c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "ODL controller to provide view of openflow node reconciliation status",
+      "range": {
+        "startLine": 7,
+        "startChar": 17,
+        "endLine": 7,
+        "endChar": 70
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "880505e3_c0a1a823",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "2020 - change for all the new files",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 22
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a64024ce_ad24d5b8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ReconciliationJMXAgent.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "remove extra line",
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62d38d34_164bd4cd",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "this one should be in info log and it doesnt contain any useful infor. So, remove this logger line",
+      "range": {
+        "startLine": 190,
+        "startChar": 8,
+        "endLine": 190,
+        "endChar": 47
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b46cc74d_c3a4ba16",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/NodeListenerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "keep it previous line",
+      "range": {
+        "startLine": 68,
+        "startChar": 13,
+        "endLine": 68,
+        "endChar": 15
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62aac6eb_8dc4950f",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetReconciliationStateProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "give line after package",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 8
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44c57b48_db9d9660",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetReconciliationStateProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "remove log",
+      "range": {
+        "startLine": 70,
+        "startChar": 7,
+        "endLine": 70,
+        "endChar": 51
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eff5b071_8735e0b8",
+        "filename": "openflowplugin-api/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "does this pom declaration needed?",
+      "range": {
+        "startLine": 57,
+        "startChar": 8,
+        "endLine": 61,
+        "endChar": 21
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6ebc0d9_6b4646f5",
+        "filename": "parent/pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-07T09:34:01Z",
+      "side": 1,
+      "message": "wrong infrautils version and i dont think you need to declare it as already infrautils dependency artificats has been imported",
+      "range": {
+        "startLine": 30,
+        "startChar": 4,
+        "endLine": 33,
+        "endChar": 17
+      },
+      "revId": "83c6aea70cde6bc596d8ee6f06875764f57ef0e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
