@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "e2f9cca6_944ffd8e",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-04-07T09:43:47Z",
+      "side": 1,
+      "message": "That should work, too",
+      "parentUuid": "5aa7dec3_a133e5c1",
+      "range": {
+        "startLine": 114,
+        "startChar": 27,
+        "endLine": 114,
+        "endChar": 55
+      },
+      "revId": "a4f7ecffd78c9570db8a61718c86265707fc141e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "820ca8cf_6d988ee0",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 7
