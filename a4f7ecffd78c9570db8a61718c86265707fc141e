@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "760571e0_f43e66cd",
+        "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/FlowReader.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 8606
+      },
+      "writtenOn": "2020-04-07T14:19:19Z",
+      "side": 1,
+      "message": "this is as per convention mentioned in notes as below . Let me know this change to be reverted.\n\nReadOnlyTransaction readTx \u003d dataBroker.newReadOnlyTransaction() to\n\tReadTransaction readTx \u003d dataBroker.newReadOnlyTransaction()",
+      "parentUuid": "58e4a8de_c2021f64",
+      "range": {
+        "startLine": 82,
+        "startChar": 37,
+        "endLine": 82,
+        "endChar": 53
+      },
+      "revId": "a4f7ecffd78c9570db8a61718c86265707fc141e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5aa7dec3_a133e5c1",
         "filename": "applications/bulk-o-matic/src/main/java/org/opendaylight/openflowplugin/applications/bulk/o/matic/SalBulkFlowServiceImpl.java",
         "patchSetId": 7
