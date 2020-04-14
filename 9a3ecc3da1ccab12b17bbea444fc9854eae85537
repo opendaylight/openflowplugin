@@ -22,6 +22,30 @@
       "revId": "9a3ecc3da1ccab12b17bbea444fc9854eae85537",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d16dc744_21f3ee82",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 8606
+      },
+      "writtenOn": "2020-04-14T10:04:26Z",
+      "side": 1,
+      "message": "Done. keeping it as before.",
+      "parentUuid": "06db1bda_44aa17e8",
+      "range": {
+        "startLine": 313,
+        "startChar": 22,
+        "endLine": 313,
+        "endChar": 50
+      },
+      "revId": "9a3ecc3da1ccab12b17bbea444fc9854eae85537",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
