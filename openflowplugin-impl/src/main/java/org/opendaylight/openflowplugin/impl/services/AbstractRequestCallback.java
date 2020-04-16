@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
+import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
@@ -68,8 +69,15 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
             builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, errorString, throwable);
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_FAILURE);
         } else {
-            builder = RpcResultBuilder.<T>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+            if (Objects.nonNull(throwable)) {
+                builder = RpcResultBuilder.<T>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+            } else {
+                Throwable deviceReadFailedThrowable = new Throwable("Failed to read from device.");
+                builder = RpcResultBuilder.<T>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, deviceReadFailedThrowable.getMessage(),
+                                deviceReadFailedThrowable);
+            }
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_ERROR);
         }
 
