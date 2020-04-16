@@ -34,7 +34,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
-    private static final int CONFIG_PROP_COUNT = 24;
+    private static final int CONFIG_PROP_COUNT = 25;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
     private static final int BARRIER_COUNT_LIMIT = 2000;
     private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
@@ -54,6 +54,7 @@ public class ConfigurationServiceFactoryImplTest {
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
+    private static final long DEVICE_DATASTORE_REMOVAL_DELAY = 500;
 
     @Mock
     private OpenflowProviderConfig config;
@@ -90,6 +91,7 @@ public class ConfigurationServiceFactoryImplTest {
         when(config.getThreadPoolTimeout()).thenReturn(THREAD_POOL_TIMEOUT);
         when(config.getDeviceConnectionRateLimitPerMin()).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
         when(config.getDeviceConnectionHoldTimeInSeconds()).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
+        when(config.getDeviceDatastoreRemovalDelay()).thenReturn(new NonZeroUint32Type(DEVICE_DATASTORE_REMOVAL_DELAY));
 
         final Map<String, String> properties = new Hashtable<>();
         properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
