@@ -119,7 +119,11 @@ public enum ConfigurationProperty {
     /**
      * Device connection hold time property type.
      */
-    DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS;
+    DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS,
+    /**
+     * Delay for Device removal from Operational DataStore.
+     */
+    DEVICE_DATASTORE_REMOVAL_DELAY;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 

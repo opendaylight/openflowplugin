@@ -185,4 +185,13 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
         return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString(),
                 Uint16::valueOf);
     }
+
+    @Override
+    public NonZeroUint32Type getDeviceDatastoreRemovalDelay() {
+        final Long property = service.getProperty(
+                ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(),
+                Long::valueOf);
+
+        return new NonZeroUint32Type(property);
+    }
 }
