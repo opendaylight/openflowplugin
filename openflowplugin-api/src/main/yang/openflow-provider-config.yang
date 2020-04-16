@@ -212,5 +212,15 @@ module openflow-provider-config {
             type uint16;
             default 0;
         }
+
+
+        leaf device-datastore-removal-delay {
+            description "Delay (in milliseconds) before device is removed from
+            the operational data store in the event of device disconnection
+            from the controller.";
+
+            type non-zero-uint32-type;
+            default 500;
+        }
     }
 }

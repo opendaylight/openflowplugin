@@ -88,6 +88,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getDeviceConnectionRateLimitPerMin().toString())
                     .put(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString(),
                             providerConfig.getDeviceConnectionHoldTimeInSeconds().toString())
+                    .put(ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(),
+                            providerConfig.getDeviceDatastoreRemovalDelay().getValue().toString())
                     .build());
         }
 
