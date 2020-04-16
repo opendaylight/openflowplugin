@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -28,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
+import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -65,6 +70,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String CONTEXT_CREATED_FOR_CONNECTION = " context created for connection: {}";
     private static final long REMOVE_DEVICE_FROM_DS_TIMEOUT = 5000L;
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
+    private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final String SEPARATOR = ":";
     private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
@@ -72,6 +78,13 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final ExecutorService executorService;
     private final OwnershipChangeListener ownershipChangeListener;
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true)
+            .setNameFormat("node-cleaner-%d").setUncaughtExceptionHandler((thread, throwable) -> {
+                LOG.warn("Uncaught exception while removing node data from operational datastore.", throwable);
+            }).build();
+    private final ScheduledExecutorService nodeCleanerExecutor = Executors.newScheduledThreadPool(
+            Runtime.getRuntime().availableProcessors() , threadFactory);
+    private final EntityOwnershipService entityOwnershipService;
     private DeviceManager deviceManager;
     private RpcManager rpcManager;
     private StatisticsManager statisticsManager;
@@ -85,6 +98,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         this.executorService = executorService;
         this.ownershipChangeListener = ownershipChangeListener;
         this.ownershipChangeListener.setMasterChecker(this);
+        this.entityOwnershipService = entityOwnershipService;
         this.eosListenerRegistration = Objects
                 .requireNonNull(entityOwnershipService.registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
     }
@@ -275,11 +289,17 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         contextChainMap.clear();
         eosListenerRegistration.close();
         OF_EVENT_LOG.debug("EOS registration closed for all devices");
+        nodeCleanerExecutor.shutdownNow();
     }
 
     @Override
     @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
     public void ownershipChanged(final EntityOwnershipChange entityOwnershipChange) {
+        LOG.info("Entity ownership change received for node : {}", entityOwnershipChange);
+        if (entityOwnershipChange.inJeopardy()) {
+            LOG.warn("Controller is in Jeopardy, ignore ownership change notification. {}", entityOwnershipChange);
+            return;
+        }
         if (entityOwnershipChange.getState().hasOwner()) {
             return;
         }
@@ -294,33 +314,43 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 .getName();
 
         if (entityName != null && entityName.startsWith("openflow:")) {
-            LOG.debug("Entity {} has no owner", entityName);
-            final String dpnId = getDpnIdFromNodeName(entityName);
-            try {
-                //TODO:Remove notifications
-                final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
-                        DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName));
-                deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
-                LOG.info("Try to remove device {} from operational DS", entityName);
-                ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier);
-                Futures.addCallback(future, new FutureCallback<Object>() {
-                    @Override
-                    public void onSuccess(final Object result) {
-                        LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
-                        OF_EVENT_LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
-                    }
-
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        LOG.error("Could not remove device {} from operational DS", dpnId, throwable);
-                    }
-                }, MoreExecutors.directExecutor());
-                future.get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
-                LOG.warn("Not able to remove device {} from operational DS. ", entityName, e);
+            if (nodeCleanerExecutor.isShutdown()) {
+                LOG.warn("Node cleaner executor thread-pool is down.");
+                return;
             }
-            OF_EVENT_LOG.debug("Node removed, Node: {}", dpnId);
-            LOG.info("Removing device from operational DS {} was successful", dpnId);
+            final String dpnId = getDpnIdFromNodeName(entityName);
+            nodeCleanerExecutor.schedule(() -> {
+                try {
+                    Optional<EntityOwnershipState> ownershipState = getCurrentOwnershipStatus(entityName);
+                    if (!ownershipState.isPresent()
+                            || Objects.equals(ownershipState.get(), EntityOwnershipState.NO_OWNER)) {
+                        LOG.debug("Entity {} has no owner", entityName);
+                        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
+                                DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName));
+                        deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
+                        LOG.info("Try to remove device {} from operational DS", entityName);
+                        ListenableFuture<?> future = deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier);
+                        Futures.addCallback(future, new FutureCallback<Object>() {
+                            @Override
+                            public void onSuccess(final Object result) {
+                                LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
+                                OF_EVENT_LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
+                            }
+
+                            @Override
+                            public void onFailure(final Throwable throwable) {
+                                LOG.error("Could not remove device {} from operational DS", dpnId, throwable);
+                            }
+                        }, MoreExecutors.directExecutor());
+                        future.get(REMOVE_DEVICE_FROM_DS_TIMEOUT, TimeUnit.MILLISECONDS);
+                    } else {
+                        LOG.warn("Seems like device is still owned by other controller instance. Skip deleting {} "
+                                + "node from operational datastore.", entityName);
+                    }
+                } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
+                    LOG.warn("Not able to remove device {} from operational DS. ", entityName, e);
+                }
+            }, 500, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -387,5 +417,23 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     private String getDpnIdFromNodeName(final String nodeName) {
         return nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
+    }
+
+    private Optional<EntityOwnershipState> getCurrentOwnershipStatus(final String nodeId) {
+        org.opendaylight.mdsal.eos.binding.api.Entity entity = createNodeEntity(nodeId);
+        Optional<EntityOwnershipState> ownershipStatus
+                = entityOwnershipService.getOwnershipState(entity);
+
+        if (ownershipStatus.isPresent()) {
+            LOG.debug("Current ownership status for node {} is {}", nodeId, ownershipStatus.get());
+            return Optional.of(ownershipStatus.get());
+        } else {
+            LOG.trace("Ownership status is not available for node {}", nodeId);
+        }
+        return Optional.empty();
+    }
+
+    private org.opendaylight.mdsal.eos.binding.api.Entity createNodeEntity(final String nodeId) {
+        return new org.opendaylight.mdsal.eos.binding.api.Entity(ASYNC_SERVICE_ENTITY_TYPE, nodeId);
     }
 }
