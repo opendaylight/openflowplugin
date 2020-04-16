@@ -44,6 +44,7 @@ public class OpenFlowProviderConfigImplTest {
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
+    private static final Long DEVICE_DATASTORE_REMOVAL_DELAY = 500L;
 
     @Mock
     private ConfigurationService configurationService;
@@ -88,6 +89,8 @@ public class OpenFlowProviderConfigImplTest {
         when(configurationService.getProperty(
                 eq(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString()),
                 any())).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
+        when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString()),
+                any())).thenReturn(DEVICE_DATASTORE_REMOVAL_DELAY);
         openflowProviderConfig = new OpenFlowProviderConfigImpl(configurationService);
     }
 
@@ -186,6 +189,12 @@ public class OpenFlowProviderConfigImplTest {
     public void getDeviceConnectionHoldTimeInSeconds() {
         assertEquals(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS,
                 openflowProviderConfig.getDeviceConnectionHoldTimeInSeconds());
+    }
+
+    @Test
+    public void getDeviceDatastoreRemovalDelay() {
+        assertEquals(DEVICE_DATASTORE_REMOVAL_DELAY,
+                openflowProviderConfig.getDeviceDatastoreRemovalDelay().getValue());
     }
 
 }
