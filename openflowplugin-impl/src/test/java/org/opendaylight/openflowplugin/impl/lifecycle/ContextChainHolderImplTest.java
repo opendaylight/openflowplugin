@@ -40,6 +40,8 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -49,6 +51,7 @@ public class ContextChainHolderImplTest {
     private static final String ENTITY_TEST = "EntityTest";
     private static final String OPENFLOW_TEST = "openflow:test";
     private static final Uint8 AUXILIARY_ID = Uint8.ZERO;
+    private static final Long DEVICE_DATASTORE_REMOVAL_DELAY = 500L;
     @Mock
     private StatisticsManager statisticsManager;
     @Mock
@@ -83,6 +86,8 @@ public class ContextChainHolderImplTest {
     private ReconciliationFrameworkEvent reconciliationFrameworkEvent;
     @Mock
     private FeaturesReply featuresReply;
+    @Mock
+    private OpenflowProviderConfig config;
 
     private ContextChainHolderImpl contextChainHolder;
     private ReconciliationFrameworkRegistration registration;
@@ -104,6 +109,8 @@ public class ContextChainHolderImplTest {
                 .thenReturn(entityOwnershipListenerRegistration);
         Mockito.when(connectionContext.getFeatures()).thenReturn(featuresReply);
         Mockito.when(featuresReply.getAuxiliaryId()).thenReturn(AUXILIARY_ID);
+        Mockito.when(config.getDeviceDatastoreRemovalDelay())
+                .thenReturn(new NonZeroUint32Type(DEVICE_DATASTORE_REMOVAL_DELAY));
 
         registration = manager.reconciliationFrameworkRegistration(reconciliationFrameworkEvent);
 
@@ -111,7 +118,8 @@ public class ContextChainHolderImplTest {
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
-                manager);
+                manager,
+                config);
         contextChainHolder.addManager(statisticsManager);
         contextChainHolder.addManager(rpcManager);
         contextChainHolder.addManager(deviceManager);
@@ -258,7 +266,7 @@ public class ContextChainHolderImplTest {
                 EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NO_OWNER
         );
         contextChainHolder.ownershipChanged(ownershipChange);
-        Mockito.verify(deviceManager).removeDeviceFromOperationalDS(Mockito.any());
+        Mockito.verify(deviceManager, Mockito.timeout(1000)).removeDeviceFromOperationalDS(Mockito.any());
     }
 
     @Test

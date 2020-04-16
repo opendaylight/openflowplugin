@@ -275,7 +275,8 @@ public class OpenFlowPluginProviderImpl implements
                 executorService,
                 singletonServicesProvider,
                 entityOwnershipService,
-                mastershipChangeServiceManager);
+                mastershipChangeServiceManager,
+                config);
 
         contextChainHolder.addManager(deviceManager);
         contextChainHolder.addManager(statisticsManager);
