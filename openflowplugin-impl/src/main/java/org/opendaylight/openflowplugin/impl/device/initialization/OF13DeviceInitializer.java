@@ -161,7 +161,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("Request of type {} for static info of node {} failed.",
-                        type, deviceContext.getDeviceInfo());
+                        type, deviceContext.getDeviceInfo(), throwable);
             }
         }, MoreExecutors.directExecutor());
     }

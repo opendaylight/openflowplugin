@@ -83,7 +83,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      */
     @Override
     public Long reserveEntry() {
-        final long xid = LAST_XID_OFFSET_UPDATER.incrementAndGet(this);
+        long xid = LAST_XID_OFFSET_UPDATER.incrementAndGet(this);
         final StackedSegment fastSegment = firstSegment;
 
         if (xid >= fastSegment.getBaseXid() + StackedSegment.SEGMENT_SIZE) {
