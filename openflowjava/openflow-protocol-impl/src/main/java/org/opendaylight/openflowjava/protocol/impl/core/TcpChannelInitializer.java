@@ -109,7 +109,7 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             ofEncoder.setSerializationFactory(getSerializationFactory());
             ch.pipeline().addLast(PipelineHandlers.OF_ENCODER.name(), ofEncoder);
             ch.pipeline().addLast(PipelineHandlers.IDLE_HANDLER.name(),
-                    new IdleHandler(getSwitchIdleTimeout(), TimeUnit.MILLISECONDS));
+                    new IdleHandler(getSwitchIdleTimeout() * 4, TimeUnit.MILLISECONDS));
             ch.pipeline().addLast(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name(),
                     new DelegatingInboundHandler(connectionFacade));
 
