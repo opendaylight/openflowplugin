@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -196,8 +197,8 @@ public class MatchConvertorTest {
         ipMatchBuilder.setIpProtocol((short) 10);
         builder.setIpMatch(ipMatchBuilder.build());
         TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-        tcpMatchBuilder.setTcpSourcePort(new PortNumber(11));
-        tcpMatchBuilder.setTcpDestinationPort(new PortNumber(12));
+        tcpMatchBuilder.setTcpSourcePort(new PortNumberRange(String.valueOf(11)));
+        tcpMatchBuilder.setTcpDestinationPort(new PortNumberRange(String.valueOf(12)));
         builder.setLayer4Match(tcpMatchBuilder.build());
         Icmpv4MatchBuilder icmpv4Builder = new Icmpv4MatchBuilder();
         icmpv4Builder.setIcmpv4Type((short) 13);
@@ -391,8 +392,8 @@ public class MatchConvertorTest {
     public void testUdpMatchConversion() {
         MatchBuilder builder = new MatchBuilder();
         UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
-        udpMatchBuilder.setUdpSourcePort(new PortNumber(11));
-        udpMatchBuilder.setUdpDestinationPort(new PortNumber(12));
+        udpMatchBuilder.setUdpSourcePort(new PortNumberRange(String.valueOf(11)));
+        udpMatchBuilder.setUdpDestinationPort(new PortNumberRange(String.valueOf(12)));
         builder.setLayer4Match(udpMatchBuilder.build());
         Match match = builder.build();
 

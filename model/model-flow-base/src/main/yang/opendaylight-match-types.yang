@@ -173,11 +173,11 @@ module opendaylight-match-types {
     grouping "udp-match-fields" {
         leaf udp-source-port {
             description "UDP source port.";
-            type inet:port-number;
+            type port-number-range;
         }
         leaf udp-destination-port {
             description "UDP destination port.";
-                type inet:port-number;
+            type port-number-range;
         }
     }
 
@@ -214,11 +214,22 @@ module opendaylight-match-types {
     grouping "tcp-match-fields" {
         leaf tcp-source-port {
             description "TCP source port.";
-            type inet:port-number;
+            type port-number-range;
         }
         leaf tcp-destination-port {
             description "TCP destination port.";
-            type inet:port-number;
+            type port-number-range;
+        }
+    }
+
+    typedef port-number-range {
+        type string {
+            pattern
+                '(6553[0-5]|655[0-2]\d|65[0-4]\d\d|6[0-4]\d{3}'
+                + '|[1-5]\d{4}|[1-9]\d{0,3}|0)|((6553[0-5]|655[0-2]\d'
+                + '|65[0-4]\d\d|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}|0)'
+                + '\/(6553[0-5]|655[0-2]\d|65[0-4]\d\d|6[0-4]\d{3}'
+                + '|[1-5]\d{4}|[1-9]\d{0,3}|0))';
         }
     }
 

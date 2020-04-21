@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.dst.action._case.SetTpDstAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
@@ -43,13 +44,13 @@ public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
                 }
                 case TCP: {
                     builder.setLayer4Match(new TcpMatchBuilder()
-                            .setTcpDestinationPort(port)
+                            .setTcpDestinationPort(new PortNumberRange(String.valueOf(port.getValue())))
                             .build());
                     break;
                 }
                 case UDP: {
                     builder.setLayer4Match(new UdpMatchBuilder()
-                            .setUdpDestinationPort(port)
+                            .setUdpDestinationPort(new PortNumberRange(String.valueOf(port.getValue())))
                             .build());
                     break;
                 }

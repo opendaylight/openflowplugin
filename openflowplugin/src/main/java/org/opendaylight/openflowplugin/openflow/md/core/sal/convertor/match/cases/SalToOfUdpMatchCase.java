@@ -15,6 +15,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
@@ -25,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry>, VersionConvertorData> {
     public SalToOfUdpMatchCase() {
@@ -43,7 +46,7 @@ public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry
 
             UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
             UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
-            udpSrcBuilder.setPort(source.getUdpSourcePort());
+            udpSrcBuilder.setPort(getPortNumber(source.getUdpSourcePort()));
             udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
             matchEntryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
             matchEntryBuilder.setHasMask(false);
@@ -57,7 +60,7 @@ public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry
 
             UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
             UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
-            udpDstBuilder.setPort(source.getUdpDestinationPort());
+            udpDstBuilder.setPort(getPortNumber(source.getUdpDestinationPort()));
             udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
             matchEntryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
             matchEntryBuilder.setHasMask(false);
@@ -65,5 +68,13 @@ public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry
         }
 
         return Optional.of(result);
+    }
+
+    private PortNumber getPortNumber(PortNumberRange portNumberRange) {
+        String port = portNumberRange.getValue();
+        if (port.contains("/")) {
+            port = port.substring(0, port.indexOf("/"));
+        }
+        return new PortNumber(Uint16.valueOf(port));
     }
 }

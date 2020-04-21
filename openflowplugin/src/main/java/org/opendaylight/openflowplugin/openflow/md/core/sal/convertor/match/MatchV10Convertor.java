@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
@@ -73,7 +74,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     private static boolean convertL4UdpDstMatch(final MatchV10Builder matchBuilder,
                                                 final UdpMatch udpMatch) {
         if (udpMatch.getUdpDestinationPort() != null) {
-            matchBuilder.setTpDst(udpMatch.getUdpDestinationPort().getValue());
+            matchBuilder.setTpDst(getPortNumber(udpMatch.getUdpDestinationPort()));
             return false;
         }
         return true;
@@ -82,7 +83,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     private static boolean convertL4UdpSrcMatch(final MatchV10Builder matchBuilder,
                                                 final UdpMatch udpMatch) {
         if (udpMatch.getUdpSourcePort() != null) {
-            matchBuilder.setTpSrc(udpMatch.getUdpSourcePort().getValue());
+            matchBuilder.setTpSrc(getPortNumber(udpMatch.getUdpSourcePort()));
             return false;
         }
         return true;
@@ -91,7 +92,7 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     private static boolean convertL4TpDstMatch(final MatchV10Builder matchBuilder,
                                                final TcpMatch tcpMatch) {
         if (tcpMatch.getTcpDestinationPort() != null) {
-            matchBuilder.setTpDst(tcpMatch.getTcpDestinationPort().getValue());
+            matchBuilder.setTpDst(getPortNumber(tcpMatch.getTcpDestinationPort()));
             return false;
         }
         return true;
@@ -100,10 +101,18 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
     private static boolean convertL4TpSrcMatch(final MatchV10Builder matchBuilder,
                                                final TcpMatch tcpMatch) {
         if (tcpMatch.getTcpSourcePort() != null) {
-            matchBuilder.setTpSrc(tcpMatch.getTcpSourcePort().getValue());
+            matchBuilder.setTpSrc(getPortNumber(tcpMatch.getTcpSourcePort()));
             return false;
         }
         return true;
+    }
+
+    private static Uint16 getPortNumber(PortNumberRange portNumberRange) {
+        String port = portNumberRange.getValue();
+        if (port.contains("/")) {
+            port = port.substring(0, port.indexOf("/"));
+        }
+        return Uint16.valueOf(port);
     }
 
     private static boolean convertNwTos(final MatchV10Builder matchBuilder,

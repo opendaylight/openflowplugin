@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
@@ -213,8 +214,8 @@ public class MatchConvertorV10Test {
 
         UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
 
-        udpMatchBuilder.setUdpDestinationPort(DEFAULT_PORT);
-        udpMatchBuilder.setUdpSourcePort(DEFAULT_PORT);
+        udpMatchBuilder.setUdpDestinationPort(new PortNumberRange(String.valueOf(DEFAULT_PORT.getValue())));
+        udpMatchBuilder.setUdpSourcePort(new PortNumberRange(String.valueOf(DEFAULT_PORT.getValue())));
         matchBuilder.setLayer4Match(udpMatchBuilder.build());
 
         return matchBuilder;
@@ -235,8 +236,8 @@ public class MatchConvertorV10Test {
         MatchBuilder matchBuilder = createMatchBuilderWithDefaults();
 
         TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-        tcpMatchBuilder.setTcpDestinationPort(DEFAULT_PORT);
-        tcpMatchBuilder.setTcpSourcePort(DEFAULT_PORT);
+        tcpMatchBuilder.setTcpDestinationPort(new PortNumberRange(String.valueOf(DEFAULT_PORT.getValue())));
+        tcpMatchBuilder.setTcpSourcePort(new PortNumberRange(String.valueOf(DEFAULT_PORT.getValue())));
         matchBuilder.setLayer4Match(tcpMatchBuilder.build());
 
         return matchBuilder;

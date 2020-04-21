@@ -99,8 +99,8 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip ecn", null, salMatch.getIpMatch().getIpEcn());
         Assert.assertEquals("Wrong ip dscp", 4, salMatch.getIpMatch().getIpDscp().getValue().intValue());
         TcpMatch tcpMatch = (TcpMatch) salMatch.getLayer4Match();
-        Assert.assertEquals("Wrong tp dst", 4096, tcpMatch.getTcpDestinationPort().getValue().intValue());
-        Assert.assertEquals("Wrong tp src", 2048, tcpMatch.getTcpSourcePort().getValue().intValue());
+        Assert.assertEquals("Wrong tp dst", 4096, Integer.parseInt(tcpMatch.getTcpDestinationPort().getValue()));
+        Assert.assertEquals("Wrong tp src", 2048, Integer.parseInt(tcpMatch.getTcpSourcePort().getValue()));
         Assert.assertEquals("Wrong ICMPv4 match", null, salMatch.getIcmpv4Match());
     }
 
@@ -192,8 +192,8 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong dl vlan match", null, salMatch.getVlanMatch());
         Assert.assertEquals("Wrong layer 3 match", null, salMatch.getLayer3Match());
         UdpMatch udpMatch = (UdpMatch) salMatch.getLayer4Match();
-        Assert.assertEquals("Wrong udp dst", 4096, udpMatch.getUdpDestinationPort().getValue().intValue());
-        Assert.assertEquals("Wrong udp src", 2048, udpMatch.getUdpSourcePort().getValue().intValue());
+        Assert.assertEquals("Wrong udp dst", 4096, Integer.parseInt(udpMatch.getUdpDestinationPort().getValue()));
+        Assert.assertEquals("Wrong udp src", 2048, Integer.parseInt(udpMatch.getUdpSourcePort().getValue()));
         Assert.assertEquals("Wrong ICMPv4 match", null, salMatch.getIcmpv4Match());
     }
 
@@ -532,7 +532,7 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip dscp", null, ipMatch.getIpDscp());
         Assert.assertEquals("Wrong L3 match", null, salMatch.getLayer3Match());
         Assert.assertEquals("Wrong TCP src", srcPort,
-                            tcpMatch.getTcpSourcePort().getValue());
+                            Uint16.valueOf(tcpMatch.getTcpSourcePort().getValue()));
         Assert.assertEquals("Wrong TCP dst", null,
                             tcpMatch.getTcpDestinationPort());
         Assert.assertEquals("Wrong ICMPv4 match",
@@ -561,7 +561,7 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip dscp", null, ipMatch.getIpDscp());
         Assert.assertEquals("Wrong L3 match", null, salMatch.getLayer3Match());
         Assert.assertEquals("Wrong TCP src", srcPort,
-                            tcpMatch.getTcpSourcePort().getValue());
+                            Uint16.valueOf(tcpMatch.getTcpSourcePort().getValue()));
         Assert.assertEquals("Wrong TCP dst", null,
                             tcpMatch.getTcpDestinationPort());
         Assert.assertEquals("Wrong ICMPv4 match",
@@ -591,7 +591,7 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong TCP src", null,
                             tcpMatch.getTcpSourcePort());
         Assert.assertEquals("Wrong TCP dst", dstPort,
-                            tcpMatch.getTcpDestinationPort().getValue());
+                            Uint16.valueOf(tcpMatch.getTcpDestinationPort().getValue()));
         Assert.assertEquals("Wrong ICMPv4 match",
                             null, salMatch.getIcmpv4Match());
 
@@ -618,9 +618,9 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip dscp", null, ipMatch.getIpDscp());
         Assert.assertEquals("Wrong L3 match", null, salMatch.getLayer3Match());
         Assert.assertEquals("Wrong TCP src", srcPort,
-                            tcpMatch.getTcpSourcePort().getValue());
+                            Uint16.valueOf(tcpMatch.getTcpSourcePort().getValue()));
         Assert.assertEquals("Wrong TCP dst", dstPort,
-                            tcpMatch.getTcpDestinationPort().getValue());
+                            Uint16.valueOf(tcpMatch.getTcpDestinationPort().getValue()));
         Assert.assertEquals("Wrong ICMPv4 match",
                             null, salMatch.getIcmpv4Match());
     }
@@ -730,7 +730,7 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip dscp", null, ipMatch.getIpDscp());
         Assert.assertEquals("Wrong L3 match", null, salMatch.getLayer3Match());
         Assert.assertEquals("Wrong UDP src", srcPort,
-                            udpMatch.getUdpSourcePort().getValue());
+                            Uint16.valueOf(udpMatch.getUdpSourcePort().getValue()));
         Assert.assertEquals("Wrong UDP dst", null,
                             udpMatch.getUdpDestinationPort());
         Assert.assertEquals("Wrong ICMPv4 match",
@@ -759,7 +759,7 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip dscp", null, ipMatch.getIpDscp());
         Assert.assertEquals("Wrong L3 match", null, salMatch.getLayer3Match());
         Assert.assertEquals("Wrong UDP src", srcPort,
-                            udpMatch.getUdpSourcePort().getValue());
+                            Uint16.valueOf(udpMatch.getUdpSourcePort().getValue()));
         Assert.assertEquals("Wrong UDP dst", null,
                             udpMatch.getUdpDestinationPort());
         Assert.assertEquals("Wrong ICMPv4 match",
@@ -789,7 +789,7 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong UDP src", null,
                             udpMatch.getUdpSourcePort());
         Assert.assertEquals("Wrong UDP dst", dstPort,
-                            udpMatch.getUdpDestinationPort().getValue());
+                            Uint16.valueOf(udpMatch.getUdpDestinationPort().getValue()));
         Assert.assertEquals("Wrong ICMPv4 match",
                             null, salMatch.getIcmpv4Match());
 
@@ -816,9 +816,9 @@ public class MatchV10ResponseConvertorTest {
         Assert.assertEquals("Wrong ip dscp", null, ipMatch.getIpDscp());
         Assert.assertEquals("Wrong L3 match", null, salMatch.getLayer3Match());
         Assert.assertEquals("Wrong UDP src", srcPort,
-                            udpMatch.getUdpSourcePort().getValue());
+                            Uint16.valueOf(udpMatch.getUdpSourcePort().getValue()));
         Assert.assertEquals("Wrong UDP dst", dstPort,
-                            udpMatch.getUdpDestinationPort().getValue());
+                            Uint16.valueOf(udpMatch.getUdpDestinationPort().getValue()));
         Assert.assertEquals("Wrong ICMPv4 match",
                             null, salMatch.getIcmpv4Match());
     }
