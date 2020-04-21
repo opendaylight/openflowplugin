@@ -140,7 +140,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
                 break;
             }
 
-            LOG.trace("Queue {} flushing entry at offset {}", this, flushOffset);
+            LOG.trace("Queue {} flushing entry at offset. {}", this, flushOffset);
             final OfHeader message = entry.takeMessage();
             flushOffset++;
             entries++;
