@@ -308,7 +308,7 @@ module opendaylight-action-types {
             case set-tp-dst-action-case {
                 container set-tp-dst-action {
                  leaf port {
-                     type inet:port-number;
+                     type match:port-number-range;
                  }
                  leaf ip-protocol {
                      description "IP protocol.";
@@ -321,7 +321,7 @@ module opendaylight-action-types {
             case set-tp-src-action-case {
                 container set-tp-src-action {
                  leaf port {
-                     type inet:port-number;
+                     type match:port-number-range;
                  }
                  leaf ip-protocol {
                      description "IP protocol.";

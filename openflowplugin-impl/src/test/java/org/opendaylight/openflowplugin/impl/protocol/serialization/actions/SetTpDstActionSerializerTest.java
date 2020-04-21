@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.dst.action._case.SetTpDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SetTpDstActionSerializerTest extends AbstractSetFieldActionSerializerTest {
@@ -27,7 +28,7 @@ public class SetTpDstActionSerializerTest extends AbstractSetFieldActionSerializ
 
         final Action action = new SetTpDstActionCaseBuilder()
                 .setSetTpDstAction(new SetTpDstActionBuilder()
-                        .setPort(port)
+                        .setPort(new PortNumberRange(String.valueOf(port)))
                         .setIpProtocol(protocol)
                         .build())
                 .build();

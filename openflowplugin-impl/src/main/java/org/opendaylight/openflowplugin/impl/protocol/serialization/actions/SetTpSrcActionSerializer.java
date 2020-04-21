@@ -15,18 +15,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
     @Override
     protected SetFieldCase buildAction(final Action input) {
         final SetTpSrcAction setTpSrcAction = ((SetTpSrcActionCase) input).getSetTpSrcAction();
-        final PortNumber port = setTpSrcAction.getPort();
+        final PortNumberRange portNumberRange = setTpSrcAction.getPort();
         final SetFieldBuilder builder = new SetFieldBuilder();
         final IPProtocols proto = IPProtocols.fromProtocolNum(setTpSrcAction.getIpProtocol());
+        String portNumber = portNumberRange.getValue();
+        PortNumber port;
+        if (portNumberRange.getValue().contains("/")) {
+            port = new PortNumber(Uint16.valueOf(portNumber.substring(0, portNumber.indexOf("/"))));
+        } else {
+            port = new PortNumber(Uint16.valueOf(portNumber));
+        }
         if (proto != null) {
             switch (proto) {
                 case ICMP: {
@@ -43,13 +52,13 @@ public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
                 }
                 case TCP: {
                     builder.setLayer4Match(new TcpMatchBuilder()
-                            .setTcpSourcePort(port)
+                            .setTcpSourcePort(portNumberRange)
                             .build());
                     break;
                 }
                 case UDP: {
                     builder.setLayer4Match(new UdpMatchBuilder()
-                            .setUdpSourcePort(port)
+                            .setUdpSourcePort(new PortNumber(Uint16.valueOf(portNumberRange.toString())))
                             .build());
                     break;
                 }
