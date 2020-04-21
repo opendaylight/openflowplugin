@@ -174,7 +174,7 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
         long messages = 0;
         for (;; ++messages) {
             if (!channel.isWritable()) {
-                LOG.trace("Channel is no longer writable");
+                LOG.warn("Channel is no longer writable.");
                 break;
             }
 

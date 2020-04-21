@@ -116,6 +116,10 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             if (!tlsPresent) {
                 connectionFacade.fireConnectionReadyNotification();
             }
+            LOG.info("Switch idle timeout is set to : {}", getSwitchIdleTimeout() * 4);
+            ch.pipeline().addLast(PipelineHandlers.IDLE_HANDLER.name(),
+                    new IdleHandler(getSwitchIdleTimeout() * 4, TimeUnit.MILLISECONDS));
+
         } catch (RuntimeException e) {
             LOG.warn("Failed to initialize channel", e);
             ch.close();
