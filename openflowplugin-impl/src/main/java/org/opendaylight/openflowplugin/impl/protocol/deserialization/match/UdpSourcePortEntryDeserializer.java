@@ -17,18 +17,28 @@ public class UdpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializ
 
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
-        processHeader(message);
+        boolean hasMask = processHeader(message);
         final int port = message.readUnsignedShort();
+        int portMask = 0;
+        if (hasMask) {
+            portMask = message.readUnsignedShort();
+        }
 
         if (builder.getLayer4Match() == null) {
-            builder.setLayer4Match(new UdpMatchBuilder()
-                    .setUdpSourcePort(new PortNumber(port))
-                    .build());
+            UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder()
+                    .setUdpSourcePort(new PortNumber(port));
+            if (hasMask) {
+                udpMatchBuilder.setUdpSourcePortMask(new PortNumber(portMask));
+            }
+            builder.setLayer4Match(udpMatchBuilder.build());
         } else if (builder.getLayer4Match() instanceof UdpMatch
                 && ((UdpMatch) builder.getLayer4Match()).getUdpSourcePort() == null) {
-            builder.setLayer4Match(new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
-                    .setUdpSourcePort(new PortNumber(port))
-                    .build());
+            UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
+                    .setUdpSourcePort(new PortNumber(port));
+            if (hasMask) {
+                udpMatchBuilder.setUdpSourcePortMask(new PortNumber(portMask));
+            }
+            builder.setLayer4Match(udpMatchBuilder.build());
         } else {
             throwErrorOnMalformed(builder, "layer4Match", "udpSourcePort");
         }

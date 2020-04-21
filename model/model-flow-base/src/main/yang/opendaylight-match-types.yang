@@ -175,9 +175,17 @@ module opendaylight-match-types {
             description "UDP source port.";
             type inet:port-number;
         }
+        leaf udp-source-port-mask {
+            description "UDP source port mask.";
+            type inet:port-number;
+        }
         leaf udp-destination-port {
             description "UDP destination port.";
-                type inet:port-number;
+            type inet:port-number;
+        }
+        leaf udp-destination-port-mask {
+            description "UDP destination port mask.";
+            type inet:port-number;
         }
     }
 
@@ -216,8 +224,16 @@ module opendaylight-match-types {
             description "TCP source port.";
             type inet:port-number;
         }
+        leaf tcp-source-port-mask {
+            description "TCP source port mask.";
+            type inet:port-number;
+        }
         leaf tcp-destination-port {
             description "TCP destination port.";
+            type inet:port-number;
+        }
+        leaf tcp-destination-port-mask {
+            description "TCP destination port mask.";
             type inet:port-number;
         }
     }
