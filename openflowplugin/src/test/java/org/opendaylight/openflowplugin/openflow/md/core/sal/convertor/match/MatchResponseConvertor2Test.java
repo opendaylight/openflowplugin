@@ -559,8 +559,8 @@ public class MatchResponseConvertor2Test {
         Assert.assertEquals("Wrong ip protocol", 8, builtMatch.getIpMatch().getIpProtocol().intValue());
 
         final TcpMatch tcpMatch = (TcpMatch) builtMatch.getLayer4Match();
-        Assert.assertEquals("Wrong tcp src port", 9, tcpMatch.getTcpSourcePort().getValue().intValue());
-        Assert.assertEquals("Wrong tcp dst port", 10, tcpMatch.getTcpDestinationPort().getValue().intValue());
+        Assert.assertEquals("Wrong tcp src port", 9, Integer.parseInt(tcpMatch.getTcpSourcePort().getValue()));
+        Assert.assertEquals("Wrong tcp dst port", 10, Integer.parseInt(tcpMatch.getTcpDestinationPort().getValue()));
         Assert.assertEquals("Wrong icmpv4 type", 15, builtMatch.getIcmpv4Match().getIcmpv4Type().intValue());
         Assert.assertEquals("Wrong icmpv4 code", 16, builtMatch.getIcmpv4Match().getIcmpv4Code().intValue());
         Assert.assertEquals("Wrong icmpv6 type", 19, builtMatch.getIcmpv6Match().getIcmpv6Type().intValue());
@@ -1058,8 +1058,8 @@ public class MatchResponseConvertor2Test {
                 .MatchBuilder builtMatch = convert(builder.build(), datapathIdConvertorData);
 
         final UdpMatch udpMatch = (UdpMatch) builtMatch.getLayer4Match();
-        Assert.assertEquals("Wrong udp src port", 11, udpMatch.getUdpSourcePort().getValue().intValue());
-        Assert.assertEquals("Wrong udp dst port", 12, udpMatch.getUdpDestinationPort().getValue().intValue());
+        Assert.assertEquals("Wrong udp src port", 11, Integer.parseInt(udpMatch.getUdpSourcePort().getValue()));
+        Assert.assertEquals("Wrong udp dst port", 12, Integer.parseInt(udpMatch.getUdpDestinationPort().getValue()));
     }
 
     /**

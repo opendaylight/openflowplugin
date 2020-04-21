@@ -8,8 +8,8 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 
@@ -17,17 +17,25 @@ public class TcpDestinationPortEntryDeserializer extends AbstractMatchEntryDeser
 
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
-        processHeader(message);
-        final int port = message.readUnsignedShort();
+        boolean hasMask = processHeader(message);
+        int startPort = message.readUnsignedShort();
+        int endPort;
+        String portRange;
+        if (hasMask) {
+            endPort = message.readUnsignedShort();
+            portRange = startPort + "/" + endPort;
+        } else {
+            portRange = String.valueOf(startPort);
+        }
 
         if (builder.getLayer4Match() == null) {
             builder.setLayer4Match(new TcpMatchBuilder()
-                    .setTcpDestinationPort(new PortNumber(port))
+                    .setTcpDestinationPort(new PortNumberRange(portRange))
                     .build());
         } else if (builder.getLayer4Match() instanceof TcpMatch
                 && ((TcpMatch) builder.getLayer4Match()).getTcpDestinationPort() == null) {
             builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
-                    .setTcpDestinationPort(new PortNumber(port))
+                    .setTcpDestinationPort(new PortNumberRange(portRange))
                     .build());
         } else {
             throwErrorOnMalformed(builder, "layer4Match", "tcpDestinationPort");

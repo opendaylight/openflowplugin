@@ -13,24 +13,24 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 
 public class UdpSourcePortEntrySerializerTest extends AbstractMatchEntrySerializerTest {
 
     @Test
     public void testSerialize() {
-        final int tcp = 10;
+        final int udp = 10;
 
         final Match sctpMatch = new MatchBuilder()
                 .setLayer4Match(new UdpMatchBuilder()
-                        .setUdpSourcePort(new PortNumber(tcp))
+                        .setUdpSourcePort(new PortNumberRange(String.valueOf(udp)))
                         .build())
                 .build();
 
-        assertMatch(sctpMatch, false, (out) -> assertEquals(out.readUnsignedShort(), tcp));
+        assertMatch(sctpMatch, false, (out) -> assertEquals(out.readUnsignedShort(), udp));
     }
 
     @Override

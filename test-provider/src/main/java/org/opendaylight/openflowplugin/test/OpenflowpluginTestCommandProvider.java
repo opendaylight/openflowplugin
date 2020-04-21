@@ -141,6 +141,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherTyp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -2192,8 +2193,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
 
         // Tcp
-        final PortNumber tcpsrcport = new PortNumber(1213);
-        final PortNumber tcpdstport = new PortNumber(646);
+        final PortNumberRange tcpsrcport = new PortNumberRange("1213");
+        final PortNumberRange tcpdstport = new PortNumberRange("646");
         final TcpMatchBuilder tcpmatch = new TcpMatchBuilder();
         final TcpMatchBuilder tcpmatch1 = new TcpMatchBuilder();
         tcpmatch.setTcpSourcePort(tcpsrcport);
@@ -2233,8 +2234,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
 
         // Udp
-        final PortNumber udpsrcport = new PortNumber(1325);
-        final PortNumber udpdstport = new PortNumber(42);
+        final PortNumberRange udpsrcport = new PortNumberRange("1325");
+        final PortNumberRange udpdstport = new PortNumberRange("42");
         final UdpMatchBuilder udpmatch = new UdpMatchBuilder();
         final UdpMatchBuilder udpmatch1 = new UdpMatchBuilder();
         udpmatch.setUdpDestinationPort(udpdstport);
@@ -2978,8 +2979,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipmatch.setIpProtocol((short) 6);
         match.setIpMatch(ipmatch.build());
 
-        final PortNumber srcport = new PortNumber(1213);
-        final PortNumber dstport = new PortNumber(646);
+        final PortNumberRange srcport = new PortNumberRange("1213");
+        final PortNumberRange dstport = new PortNumberRange("646");
         final TcpMatchBuilder tcpmatch = new TcpMatchBuilder(); // tcp match
         tcpmatch.setTcpSourcePort(srcport);
         tcpmatch.setTcpDestinationPort(dstport);
@@ -3001,8 +3002,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ipmatch.setIpProtocol((short) 17);
         match.setIpMatch(ipmatch.build());
 
-        final PortNumber srcport = new PortNumber(1325);
-        final PortNumber dstport = new PortNumber(42);
+        final PortNumberRange srcport = new PortNumberRange("1325");
+        final PortNumberRange dstport = new PortNumberRange("42");
         final UdpMatchBuilder udpmatch = new UdpMatchBuilder(); // udp match
         udpmatch.setUdpDestinationPort(dstport);
         udpmatch.setUdpSourcePort(srcport);
@@ -3117,7 +3118,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         match.setIpMatch(ipMatch.build());
 
         // TCP Port Match
-        final PortNumber dstPort = new PortNumber(80);
+        final PortNumberRange dstPort = new PortNumberRange("80");
         final TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
         tcpMatch.setTcpDestinationPort(dstPort);
         match.setLayer4Match(tcpMatch.build());

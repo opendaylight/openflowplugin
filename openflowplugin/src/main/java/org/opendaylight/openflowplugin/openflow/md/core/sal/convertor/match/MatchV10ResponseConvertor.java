@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
@@ -152,13 +153,11 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
                 boolean hasTcp = false;
                 if (!source.getWildcards().isTPSRC() && source.getTpSrc() != null) {
-                    tcpMatchBuilder.setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                            .inet.types.rev130715.PortNumber(source.getTpSrc()));
+                    tcpMatchBuilder.setTcpSourcePort(new PortNumberRange(String.valueOf(source.getTpSrc())));
                     hasTcp = true;
                 }
                 if (!source.getWildcards().isTPDST() && source.getTpDst() != null) {
-                    tcpMatchBuilder.setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
-                            .ietf.inet.types.rev130715.PortNumber(source.getTpDst()));
+                    tcpMatchBuilder.setTcpDestinationPort(new PortNumberRange(String.valueOf(source.getTpDst())));
                     hasTcp = true;
                 }
 
@@ -169,13 +168,11 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
                 boolean hasUdp = false;
                 if (!source.getWildcards().isTPSRC() && source.getTpSrc() != null) {
-                    udpMatchBuilder.setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                            .inet.types.rev130715.PortNumber(source.getTpSrc()));
+                    udpMatchBuilder.setUdpSourcePort(new PortNumberRange(String.valueOf(source.getTpSrc())));
                     hasUdp = true;
                 }
                 if (!source.getWildcards().isTPDST() && source.getTpDst() != null) {
-                    udpMatchBuilder.setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
-                            .ietf.inet.types.rev130715.PortNumber(source.getTpDst()));
+                    udpMatchBuilder.setUdpDestinationPort(new PortNumberRange(String.valueOf(source.getTpDst())));
                     hasUdp = true;
                 }
 

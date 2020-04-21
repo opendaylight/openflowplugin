@@ -15,6 +15,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
@@ -25,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry>, VersionConvertorData> {
     public SalToOfTcpMatchCase() {
@@ -43,7 +46,7 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
 
             TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
             TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
-            tcpSrcBuilder.setPort(source.getTcpSourcePort());
+            tcpSrcBuilder.setPort(getPortNumber(source.getTcpSourcePort()));
             tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
 
             matchEntryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
@@ -58,7 +61,7 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
 
             TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
             TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
-            tcpDstBuilder.setPort(source.getTcpDestinationPort());
+            tcpDstBuilder.setPort(getPortNumber(source.getTcpDestinationPort()));
             tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
             matchEntryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
             matchEntryBuilder.setHasMask(false);
@@ -66,5 +69,13 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
         }
 
         return Optional.of(result);
+    }
+
+    private PortNumber getPortNumber(PortNumberRange portNumberRange) {
+        String port = portNumberRange.getValue();
+        if (port.contains("/")) {
+            port = port.substring(0, port.indexOf("/"));
+        }
+        return new PortNumber(Uint16.valueOf(port));
     }
 }

@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDst;
@@ -35,7 +36,7 @@ public class OfToSalTcpDstCase extends ConvertorCase<TcpDstCase, MatchBuilder, M
         PortNumber portNumber = tcpDst.getPort();
 
         if (portNumber != null) {
-            tcpMatchBuilder.setTcpDestinationPort(portNumber);
+            tcpMatchBuilder.setTcpDestinationPort(new PortNumberRange(String.valueOf(portNumber.getValue())));
             matchBuilder.setLayer4Match(tcpMatchBuilder.build());
         }
 

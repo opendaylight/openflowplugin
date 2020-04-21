@@ -15,6 +15,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrc;
@@ -33,7 +34,7 @@ public class OfToSalUdpSrcCase extends ConvertorCase<UdpSrcCase, MatchBuilder, M
         UdpSrc udpSrc = source.getUdpSrc();
 
         if (udpSrc != null) {
-            udpMatchBuilder.setUdpSourcePort(udpSrc.getPort());
+            udpMatchBuilder.setUdpSourcePort(new PortNumberRange(String.valueOf(udpSrc.getPort().getValue())));
             matchBuilder.setLayer4Match(udpMatchBuilder.build());
         }
 
