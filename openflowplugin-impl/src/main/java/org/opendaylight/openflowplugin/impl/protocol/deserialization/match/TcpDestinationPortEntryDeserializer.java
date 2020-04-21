@@ -17,18 +17,25 @@ public class TcpDestinationPortEntryDeserializer extends AbstractMatchEntryDeser
 
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
-        processHeader(message);
+        boolean hasMask = processHeader(message);
         final int port = message.readUnsignedShort();
+        final int portMask = hasMask ? message.readUnsignedShort() : 0;
 
         if (builder.getLayer4Match() == null) {
-            builder.setLayer4Match(new TcpMatchBuilder()
-                    .setTcpDestinationPort(new PortNumber(port))
-                    .build());
+            TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder()
+                    .setTcpDestinationPort(new PortNumber(port));
+            if (hasMask) {
+                tcpMatchBuilder.setTcpDestinationPortMask(new PortNumber(portMask));
+            }
+            builder.setLayer4Match(tcpMatchBuilder.build());
         } else if (builder.getLayer4Match() instanceof TcpMatch
                 && ((TcpMatch) builder.getLayer4Match()).getTcpDestinationPort() == null) {
-            builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
-                    .setTcpDestinationPort(new PortNumber(port))
-                    .build());
+            TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
+                    .setTcpDestinationPort(new PortNumber(port));
+            if (hasMask) {
+                tcpMatchBuilder.setTcpDestinationPortMask(new PortNumber(portMask));
+            }
+            builder.setLayer4Match(tcpMatchBuilder.build());
         } else {
             throwErrorOnMalformed(builder, "layer4Match", "tcpDestinationPort");
         }
