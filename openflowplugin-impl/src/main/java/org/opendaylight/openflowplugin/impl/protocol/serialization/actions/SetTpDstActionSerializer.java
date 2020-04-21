@@ -15,16 +15,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.dst.action._case.SetTpDstAction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
     @Override
     protected SetFieldCase buildAction(final Action input) {
         final SetTpDstAction setTpDstAction = ((SetTpDstActionCase) input).getSetTpDstAction();
-        final PortNumber port = setTpDstAction.getPort();
+        final PortNumberRange portNumberRange = setTpDstAction.getPort();
+        String portNumber = portNumberRange.getValue();
+        PortNumber port;
+        if (portNumberRange.getValue().contains("/")) {
+            port = new PortNumber(Uint16.valueOf(portNumber.substring(portNumber.indexOf("/"))));
+        } else {
+            port = new PortNumber(Uint16.valueOf(portNumber));
+        }
         final SetFieldBuilder builder = new SetFieldBuilder();
         final IPProtocols proto = IPProtocols.fromProtocolNum(setTpDstAction.getIpProtocol());
         if (proto != null) {
@@ -43,7 +52,7 @@ public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
                 }
                 case TCP: {
                     builder.setLayer4Match(new TcpMatchBuilder()
-                            .setTcpDestinationPort(port)
+                            .setTcpDestinationPort(portNumberRange)
                             .build());
                     break;
                 }

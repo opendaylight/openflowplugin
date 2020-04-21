@@ -24,7 +24,6 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.AbstractSerializerTest;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCaseBuilder;
@@ -46,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.PortNumberRange;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 
@@ -118,7 +118,8 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
                                                     .setAction(new SetTpDstActionCaseBuilder()
                                                             .setSetTpDstAction(new SetTpDstActionBuilder()
                                                                     .setIpProtocol(IP_PROTOCOL)
-                                                                    .setPort(new PortNumber(TP_DST_PORT))
+                                                                    .setPort(new PortNumberRange(
+                                                                            String.valueOf(TP_DST_PORT)))
                                                                     .build())
                                                             .build())
                                                     .build()))
@@ -136,7 +137,8 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
                                                     .setAction(new SetTpSrcActionCaseBuilder()
                                                             .setSetTpSrcAction(new SetTpSrcActionBuilder()
                                                                     .setIpProtocol(IP_PROTOCOL)
-                                                                    .setPort(new PortNumber(TP_SRC_PORT))
+                                                                    .setPort(new PortNumberRange(
+                                                                            String.valueOf(TP_SRC_PORT)))
                                                                     .build())
                                                             .build())
                                                     .build()))
