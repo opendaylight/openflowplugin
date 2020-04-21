@@ -12,15 +12,31 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
-public class UdpDestinationPortEntrySerializer extends AbstractPortNumberEntrySerializer {
+public class UdpDestinationPortEntrySerializer extends AbstractPortNumberWithMaskEntrySerilizer {
     public UdpDestinationPortEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.UDP_DST);
     }
 
     @Override
-    protected PortNumber extractPort(final Match match) {
+    protected Uint16 extractPort(final Layer4Match l4match) {
+        PortNumber portNumber = l4match instanceof UdpMatch ? ((UdpMatch) l4match).getUdpDestinationPort() : null;
+        return portNumber == null ? null : portNumber.getValue();
+    }
+
+    @Override
+    protected Layer4Match extractEntry(Match match) {
         final Layer4Match l4match = match.getLayer4Match();
-        return l4match instanceof UdpMatch ? ((UdpMatch) l4match).getUdpDestinationPort() : null;
+        if (l4match instanceof UdpMatch && ((UdpMatch) l4match).getUdpDestinationPort() != null) {
+            return l4match;
+        }
+        return null;
+    }
+
+    @Override
+    protected Uint16 extractMask(Layer4Match entry) {
+        PortNumber portNumber = entry instanceof UdpMatch ? ((UdpMatch) entry).getUdpDestinationPortMask() : null;
+        return portNumber == null ? null : portNumber.getValue();
     }
 }

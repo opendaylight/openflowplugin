@@ -17,18 +17,36 @@ public class UdpDestinationPortEntryDeserializer extends AbstractMatchEntryDeser
 
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
-        processHeader(message);
+        boolean hasMask = processHeader(message);
         final int port = message.readUnsignedShort();
+        int maskPort = 0;
+        if (hasMask) {
+            maskPort = message.readUnsignedShort();
+        }
 
         if (builder.getLayer4Match() == null) {
-            builder.setLayer4Match(new UdpMatchBuilder()
-                    .setUdpDestinationPort(new PortNumber(port))
-                    .build());
+            if (hasMask) {
+                builder.setLayer4Match(new UdpMatchBuilder()
+                        .setUdpDestinationPort(new PortNumber(port))
+                        .setUdpDestinationPortMask(new PortNumber(maskPort))
+                        .build());
+            } else {
+                builder.setLayer4Match(new UdpMatchBuilder()
+                        .setUdpDestinationPort(new PortNumber(port))
+                        .build());
+            }
         } else if (builder.getLayer4Match() instanceof UdpMatch
                 && ((UdpMatch) builder.getLayer4Match()).getUdpDestinationPort() == null) {
-            builder.setLayer4Match(new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
-                    .setUdpDestinationPort(new PortNumber(port))
-                    .build());
+            if (hasMask && ((UdpMatch) builder.getLayer4Match()).getUdpDestinationPortMask() == null) {
+                builder.setLayer4Match(new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
+                        .setUdpDestinationPort(new PortNumber(port))
+                        .setUdpDestinationPortMask(new PortNumber(maskPort))
+                        .build());
+            } else {
+                builder.setLayer4Match(new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
+                        .setUdpDestinationPort(new PortNumber(port))
+                        .build());
+            }
         } else {
             throwErrorOnMalformed(builder, "layer4Match", "udpDestinationPort");
         }

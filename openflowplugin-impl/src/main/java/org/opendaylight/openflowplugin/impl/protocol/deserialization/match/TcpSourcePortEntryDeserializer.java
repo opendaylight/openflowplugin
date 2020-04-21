@@ -17,18 +17,36 @@ public class TcpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializ
 
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
-        processHeader(message);
+        boolean hasMask = processHeader(message);
         final int port = message.readUnsignedShort();
+        int maskPort = 0;
+        if (hasMask) {
+            maskPort = message.readUnsignedShort();
+        }
 
         if (builder.getLayer4Match() == null) {
-            builder.setLayer4Match(new TcpMatchBuilder()
-                    .setTcpSourcePort(new PortNumber(port))
-                    .build());
+            if (hasMask) {
+                builder.setLayer4Match(new TcpMatchBuilder()
+                        .setTcpSourcePort(new PortNumber(port))
+                        .setTcpSourcePortMask(new PortNumber(maskPort))
+                        .build());
+            } else {
+                builder.setLayer4Match(new TcpMatchBuilder()
+                        .setTcpSourcePort(new PortNumber(port))
+                        .build());
+            }
         } else if (builder.getLayer4Match() instanceof TcpMatch
             && ((TcpMatch) builder.getLayer4Match()).getTcpSourcePort() == null) {
-            builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
-                    .setTcpSourcePort(new PortNumber(port))
-                    .build());
+            if (hasMask && ((TcpMatch) builder.getLayer4Match()).getTcpSourcePortMask() == null) {
+                builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
+                        .setTcpSourcePort(new PortNumber(port))
+                        .setTcpSourcePortMask(new PortNumber(maskPort))
+                        .build());
+            } else {
+                builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())
+                        .setTcpSourcePort(new PortNumber(port))
+                        .build());
+            }
         } else {
             throwErrorOnMalformed(builder, "layer4Match", "tcpSource");
         }
