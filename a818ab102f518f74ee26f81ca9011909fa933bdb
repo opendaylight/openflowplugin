@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ec84993_5aa770fa",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/match/AbstractPortNumberWithMaskEntrySerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2020-04-22T13:40:17Z",
+      "side": 1,
+      "message": "here i am not able to extract mask from match, because entry is only allowed here, we need match to extract mask, more over this method is made final in super class, which has dependencies due to which cant be brought down to subclass",
+      "range": {
+        "startLine": 29,
+        "startChar": 35,
+        "endLine": 29,
+        "endChar": 51
+      },
+      "revId": "a818ab102f518f74ee26f81ca9011909fa933bdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
