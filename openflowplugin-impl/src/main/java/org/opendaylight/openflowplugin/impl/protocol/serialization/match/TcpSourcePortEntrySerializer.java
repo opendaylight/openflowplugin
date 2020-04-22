@@ -13,7 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatch;
 
-public class TcpSourcePortEntrySerializer extends AbstractPortNumberEntrySerializer {
+public class TcpSourcePortEntrySerializer extends AbstractPortNumberWithMaskEntrySerializer {
     public TcpSourcePortEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TCP_SRC);
     }

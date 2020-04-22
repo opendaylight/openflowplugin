@@ -216,8 +216,16 @@ module opendaylight-match-types {
             description "TCP source port.";
             type inet:port-number;
         }
+        leaf tcp-source-port-mask {
+            description "TCP source port mask.";
+            type inet:port-number;
+        }
         leaf tcp-destination-port {
             description "TCP destination port.";
+            type inet:port-number;
+        }
+        leaf tcp-destination-port-mask {
+            description "TCP destination port mask.";
             type inet:port-number;
         }
     }

@@ -13,7 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatch;
 
-public class UdpDestinationPortEntrySerializer extends AbstractPortNumberEntrySerializer {
+public class UdpDestinationPortEntrySerializer extends AbstractPortNumberWithMaskEntrySerializer {
     public UdpDestinationPortEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.UDP_DST);
     }
