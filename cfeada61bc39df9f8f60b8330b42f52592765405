@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e3e6cee0_0fe85433",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-match-types.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-04-23T08:12:17Z",
+      "side": 1,
+      "message": "this will cause quite a bit of incompatibility, I am afraid. how about just adding mask leaf to each?",
+      "range": {
+        "startLine": 225,
+        "startChar": 4,
+        "endLine": 225,
+        "endChar": 38
+      },
+      "revId": "cfeada61bc39df9f8f60b8330b42f52592765405",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e98120cf_b81a558b",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/match/AbstractPortNumberWithMaskEntrySerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-04-23T08:12:17Z",
+      "side": 1,
+      "message": "copy\u0026paste?",
+      "range": {
+        "startLine": 2,
+        "startChar": 22,
+        "endLine": 2,
+        "endChar": 43
+      },
+      "revId": "cfeada61bc39df9f8f60b8330b42f52592765405",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
