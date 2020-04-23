@@ -212,12 +212,22 @@ module opendaylight-match-types {
     }
 
     grouping "tcp-match-fields" {
-        leaf tcp-source-port {
+        container tcp-source-port {
             description "TCP source port.";
+            uses port-number-with-mask;
+        }
+        container tcp-destination-port {
+            description "TCP destination port.";
+            uses port-number-with-mask;
+        }
+    }
+
+    grouping "port-number-with-mask" {
+        leaf port {
+            mandatory true;
             type inet:port-number;
         }
-        leaf tcp-destination-port {
-            description "TCP destination port.";
+        leaf mask {
             type inet:port-number;
         }
     }
