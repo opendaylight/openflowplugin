@@ -45,6 +45,30 @@
       "revId": "cfeada61bc39df9f8f60b8330b42f52592765405",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da97d805_2e205072",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/match/AbstractPortNumberWithMaskEntrySerializer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 7649
+      },
+      "writtenOn": "2020-04-23T10:10:46Z",
+      "side": 1,
+      "message": "Robert, still this patch is not ready, just to discuss yang changes, i had raised this, the originl review is https://git.opendaylight.org/gerrit/c/openflowplugin/+/89181\nwhich is having jira",
+      "parentUuid": "e98120cf_b81a558b",
+      "range": {
+        "startLine": 2,
+        "startChar": 22,
+        "endLine": 2,
+        "endChar": 43
+      },
+      "revId": "cfeada61bc39df9f8f60b8330b42f52592765405",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
