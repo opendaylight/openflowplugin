@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -21,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfMetadata;
 
 public class MetadataCodec extends AbstractMatchCodec {
-
     private static final int VALUE_LENGTH = 8;
     private static final int NXM_FIELD_CODE = 2;
 
@@ -68,5 +66,4 @@ public class MetadataCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm0Class.class;
     }
-
 }
