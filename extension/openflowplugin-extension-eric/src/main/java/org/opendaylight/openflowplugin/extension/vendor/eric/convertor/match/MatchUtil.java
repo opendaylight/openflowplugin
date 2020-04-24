@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
 import com.google.common.base.Joiner;
@@ -29,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.er
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricOfIcmpv6NdOptionsTypeGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricOfIcmpv6NdReservedGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-
 import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 /**
@@ -71,5 +69,4 @@ public final class MatchUtil {
         matchEntryBuilder.setMatchEntryValue(matchEntryValue);
         return matchEntryBuilder;
     }
-
 }
