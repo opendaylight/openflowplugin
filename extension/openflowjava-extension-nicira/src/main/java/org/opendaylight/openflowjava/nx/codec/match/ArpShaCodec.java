@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
-
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -27,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpShaCaseValueBuilder;
 
 public class ArpShaCodec extends AbstractMatchCodec {
-
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 17;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxArpSha> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
@@ -78,5 +75,4 @@ public class ArpShaCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm1Class.class;
     }
-
 }
