@@ -9,7 +9,6 @@ package org.opendaylight.serviceutils.srm.impl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityNameBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityTypeBase;
 
