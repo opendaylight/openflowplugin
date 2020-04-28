@@ -124,13 +124,13 @@ public class FlowUtilTest {
         Assert.assertEquals(0, output.getErrors().size());
     }
 
-    private RpcResult<List<BatchFailedFlowsOutput>> createEmptyBatchOutcome() {
+    private static RpcResult<List<BatchFailedFlowsOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
                 .success(Collections.<BatchFailedFlowsOutput>emptyList())
                 .build();
     }
 
-    private RpcResult<List<BatchFailedFlowsOutput>> createBatchOutcomeWithError() {
+    private static RpcResult<List<BatchFailedFlowsOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedFlowsOutputBuilder()
@@ -139,11 +139,12 @@ public class FlowUtilTest {
                 .build();
     }
 
-    private <T extends BatchFlowOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+    private static <T extends BatchFlowOutputListGrouping> void checkBatchErrorOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
         Assert.assertEquals(1, output.getResult().getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(DUMMY_FLOW_ID, output.getResult().getBatchFailedFlowsOutput().get(0).getFlowId());
+        Assert.assertEquals(DUMMY_FLOW_ID,
+            output.getResult().getBatchFailedFlowsOutput().values().iterator().next().getFlowId());
 
         Assert.assertEquals(1, output.getErrors().size());
     }

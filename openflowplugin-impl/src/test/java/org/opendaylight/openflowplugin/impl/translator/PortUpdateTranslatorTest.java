@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.translator;
 
 import org.junit.Assert;
@@ -76,10 +75,10 @@ public class PortUpdateTranslatorTest {
         Assert.assertEquals(portFeatures, nodeConnector.getPeerFeatures());
         Assert.assertEquals(portFeatures, nodeConnector.getSupported());
         Assert.assertEquals(portStateBld.build(), nodeConnector.getState());
-        Assert.assertTrue(nodeConnector.getQueue().isEmpty());
+        Assert.assertNull(nodeConnector.getQueue());
     }
 
-    private void commonCheck(FlowCapableNodeConnector nodeConnector) {
+    private static void commonCheck(final FlowCapableNodeConnector nodeConnector) {
         Assert.assertEquals(84L, nodeConnector.getCurrentSpeed().longValue());
         Assert.assertEquals(84L * 2, nodeConnector.getMaximumSpeed().longValue());
         Assert.assertEquals("utPortName:21", nodeConnector.getName());
@@ -110,7 +109,7 @@ public class PortUpdateTranslatorTest {
         Assert.assertNull(nodeConnector.getQueue());
     }
 
-    private PortStatusMessageBuilder assemblePortStatusMessage(long portNoValue, long speed) {
+    private static PortStatusMessageBuilder assemblePortStatusMessage(final long portNoValue, final long speed) {
         final PortFeatures portFeatures13 = PortFeatures.getDefaultInstance("_100gbFd");
         final PortFeaturesV10 portFeatures10 = PortFeaturesV10.getDefaultInstance("_100mbFd");
         final PortConfig portConfig13 = PortConfig.getDefaultInstance("noFwd");
