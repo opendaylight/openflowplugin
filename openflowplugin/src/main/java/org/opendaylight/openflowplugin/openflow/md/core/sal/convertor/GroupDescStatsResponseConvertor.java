@@ -60,39 +60,41 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
         List<Bucket> allBuckets = new ArrayList<>();
         int bucketKey = 0;
 
-        for (BucketsList bucketDetails : bucketDescStats) {
-            BucketBuilder bucketDesc = new BucketBuilder();
-            final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>>
+        if (bucketDescStats != null) {
+            for (BucketsList bucketDetails : bucketDescStats) {
+                BucketBuilder bucketDesc = new BucketBuilder();
+                final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>>
                 convertedSalActions = getConvertorExecutor().convert(bucketDetails.getAction(), data);
 
-            if (convertedSalActions.isPresent()) {
-                List<Action> actions = new ArrayList<>();
+                if (convertedSalActions.isPresent()) {
+                    List<Action> actions = new ArrayList<>();
 
-                int actionKey = 0;
+                    int actionKey = 0;
 
-                for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action :
+                    for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action :
                         convertedSalActions.get()) {
-                    ActionBuilder wrappedAction = new ActionBuilder();
-                    wrappedAction.setAction(action);
-                    wrappedAction.withKey(new ActionKey(actionKey));
-                    wrappedAction.setOrder(actionKey);
-                    actions.add(wrappedAction.build());
-                    actionKey++;
+                        ActionBuilder wrappedAction = new ActionBuilder();
+                        wrappedAction.setAction(action);
+                        wrappedAction.withKey(new ActionKey(actionKey));
+                        wrappedAction.setOrder(actionKey);
+                        actions.add(wrappedAction.build());
+                        actionKey++;
+                    }
+
+                    bucketDesc.setAction(actions);
+                } else {
+                    bucketDesc.setAction(Collections.emptyList());
                 }
 
-                bucketDesc.setAction(actions);
-            } else {
-                bucketDesc.setAction(Collections.emptyList());
+                bucketDesc.setWeight(bucketDetails.getWeight());
+                bucketDesc.setWatchPort(bucketDetails.getWatchPort().getValue());
+                bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
+                BucketId bucketId = new BucketId((long) bucketKey);
+                bucketDesc.setBucketId(bucketId);
+                bucketDesc.withKey(new BucketKey(bucketId));
+                bucketKey++;
+                allBuckets.add(bucketDesc.build());
             }
-
-            bucketDesc.setWeight(bucketDetails.getWeight());
-            bucketDesc.setWatchPort(bucketDetails.getWatchPort().getValue());
-            bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
-            BucketId bucketId = new BucketId((long) bucketKey);
-            bucketDesc.setBucketId(bucketId);
-            bucketDesc.withKey(new BucketKey(bucketId));
-            bucketKey++;
-            allBuckets.add(bucketDesc.build());
         }
 
         salBucketsDesc.setBucket(allBuckets);

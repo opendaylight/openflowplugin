@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -300,10 +301,11 @@ public class TableFeaturesConvertorTest {
         setupFieldTableFeatures();
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<>();
-        for (int i = 0; i < INSTRUCTIONS_LIST.size(); i++) {
-            InstructionBuilder instructionBuilder = new InstructionBuilder();
-            instructionBuilder.setInstruction(INSTRUCTIONS_LIST.get(i));
-            instructions.add(instructionBuilder.build());
+        int order = 0;
+        for (var element : INSTRUCTIONS_LIST) {
+            instructions.add(new InstructionBuilder()
+                .setOrder(order++)
+                .setInstruction(element).build());
         }
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
             .prop.type.instructions.InstructionsBuilder instructionsBuilder1 =
@@ -403,19 +405,18 @@ public class TableFeaturesConvertorTest {
 
         assertNotNull(tableFeatures);
         assertEquals(10, tableFeatures.getTableFeatures().size());
-        List<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.getTableFeatures().get(0)
-                .getTableProperties().getTableFeatureProperties();
+        Collection<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.getTableFeatures().values()
+                .iterator().next().getTableProperties().nonnullTableFeatureProperties().values();
         assertEquals(AUGMENTATIONS_MAP.size() + 1, tableFeaturePropertieses.size());
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
             .prop.type.ApplyActionsMiss applyActionsMiss = null;
-        for (int i = 0; i < tableFeaturePropertieses.size(); i++) {
-            if (tableFeaturePropertieses.get(i).getTableFeaturePropType().implementedInterface().isAssignableFrom(
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table
-                        .feature.prop.type.ApplyActionsMiss.class)) {
+        for (var featureProp : tableFeaturePropertieses) {
+            var prop = featureProp.getTableFeaturePropType();
+            if (prop.implementedInterface().isAssignableFrom(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                    .rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss.class)) {
                 applyActionsMiss = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
-                    .prop.type.table.feature.prop.type.ApplyActionsMiss) tableFeaturePropertieses.get(i)
-                        .getTableFeaturePropType();
+                    .prop.type.table.feature.prop.type.ApplyActionsMiss) prop;
                 break;
             }
         }
