@@ -118,7 +118,7 @@ public class BundleControlConverterTest {
             Assert.assertTrue("Properties not empty",
                     ofjMessage
                             .getOnfControlGroupingData()
-                            .getBundleProperty()
+                            .nonnullBundleProperty()
                             .isEmpty());
         }
     }

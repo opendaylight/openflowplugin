@@ -25,7 +25,7 @@ public class FlowCommitWrapperImpl implements FlowCommitWrapper {
     @Override
     public ListenableFuture<?> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow flowBody) {
         ReadWriteTransaction addFlowTransaction = dataBrokerService.newReadWriteTransaction();
-        addFlowTransaction.put(LogicalDatastoreType.CONFIGURATION, flowPath, flowBody, true);
+        addFlowTransaction.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION, flowPath, flowBody);
         return addFlowTransaction.commit();
     }
 

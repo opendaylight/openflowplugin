@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyGroupDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 public class MultipartReplyGroupDescDeserializerTest extends AbstractMultipartDeserializerTest {
@@ -48,14 +50,14 @@ public class MultipartReplyGroupDescDeserializerTest extends AbstractMultipartDe
         buffer.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
 
         final MultipartReplyGroupDesc reply = (MultipartReplyGroupDesc) deserializeMultipart(buffer);
+        final GroupDescStats firstGroupDescStats = reply.nonnullGroupDescStats().values().iterator().next();
+        assertEquals(GROUP_ID, firstGroupDescStats.getGroupId().getValue().intValue());
+        assertEquals(GROUP_TYPE, firstGroupDescStats.getGroupType().getIntValue());
 
-        assertEquals(GROUP_ID, reply.getGroupDescStats().get(0).getGroupId().getValue().intValue());
-        assertEquals(WEIGHT, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWeight().intValue());
-        assertEquals(WATCH_PORT, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWatchPort()
-                .intValue());
-        assertEquals(WATCH_GROUP, reply.getGroupDescStats().get(0).getBuckets().getBucket().get(0).getWatchGroup()
-                .intValue());
-        assertEquals(GROUP_TYPE, reply.getGroupDescStats().get(0).getGroupType().getIntValue());
+        final Bucket firstBucket = firstGroupDescStats.getBuckets().nonnullBucket().values().iterator().next();
+        assertEquals(WEIGHT, firstBucket.getWeight().intValue());
+        assertEquals(WATCH_PORT, firstBucket.getWatchPort().intValue());
+        assertEquals(WATCH_GROUP, firstBucket.getWatchGroup().intValue());
         assertEquals(0, buffer.readableBytes());
     }
 

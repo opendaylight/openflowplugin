@@ -60,9 +60,8 @@ public class TableWriterTest {
     public void testAddTables() {
         tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
-                .put(ArgumentMatchers.any(),
-                        ArgumentMatchers.any(), ArgumentMatchers.any(),
-                        ArgumentMatchers.anyBoolean());
+                .mergeParentStructurePut(ArgumentMatchers.any(),
+                        ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
     @Test

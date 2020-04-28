@@ -64,9 +64,8 @@ public class FlowWriterTxChainTest {
     @Test
     public void testAddFlows() {
         flowWriterTxChain.addFlows(1, FLOWS_PER_DPN, 10, 10, 10, (short) 0, (short) 1, true);
-        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).put(ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(),
-                ArgumentMatchers.anyBoolean());
+        Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).mergeParentStructurePut(ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
     }
 
     @Test

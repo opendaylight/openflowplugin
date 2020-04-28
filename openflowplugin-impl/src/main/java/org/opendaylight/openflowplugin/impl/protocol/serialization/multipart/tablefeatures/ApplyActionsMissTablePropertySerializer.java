@@ -27,7 +27,7 @@ public class ApplyActionsMissTablePropertySerializer extends
     protected void serializeProperty(final ApplyActionsMiss property, final ByteBuf byteBuf) {
         property
                 .getApplyActionsMiss()
-                .getAction()
+                .nonnullAction().values()
                 .stream()
                 .sorted(OrderComparator.build())
                 .map(Action::getAction)

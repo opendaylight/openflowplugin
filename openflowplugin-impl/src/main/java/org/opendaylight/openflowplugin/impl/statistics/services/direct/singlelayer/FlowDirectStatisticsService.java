@@ -44,7 +44,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             .setFlowAndStatisticsMapList(input
                 .stream()
                 .flatMap(multipartReply -> ((MultipartReplyFlowStats) multipartReply.getMultipartReplyBody())
-                    .getFlowAndStatisticsMapList()
+                    .nonnullFlowAndStatisticsMapList().values()
                     .stream())
                 .map(flowAndStatisticsMapList -> {
                     final FlowId flowId = new FlowId(generateFlowId(flowAndStatisticsMapList));

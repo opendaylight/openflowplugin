@@ -116,9 +116,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
             @Override
             public void onSuccess(final Optional<FlowCapableNode> result) {
                 result.ifPresent(flowCapableNode -> {
-                    flowCapableNode.nonnullTable().stream()
+                    flowCapableNode.nonnullTable().values().stream()
                     .filter(Objects::nonNull)
-                    .flatMap(table -> table.nonnullFlow().stream())
+                    .flatMap(table -> table.nonnullFlow().values().stream())
                     .filter(Objects::nonNull)
                     .filter(flow -> flow.getId() != null)
                     .forEach(flowConsumer);

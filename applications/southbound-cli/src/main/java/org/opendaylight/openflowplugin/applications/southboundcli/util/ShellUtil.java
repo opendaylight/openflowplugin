@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.applications.southboundcli.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +80,8 @@ public final class ShellUtil {
             Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
                 Node node = result.get();
-                String name = null;
-                List<NodeConnector> nodeConnectors = null;
+                String name;
+                Collection<NodeConnector> nodeConnectors = node.nonnullNodeConnector().values();
                 List<String> portList = new ArrayList<>();
                 FlowCapableNode flowCapableNode = node.<FlowCapableNode>augmentation(FlowCapableNode.class);
                 if (flowCapableNode != null) {
@@ -89,7 +90,6 @@ public final class ShellUtil {
                     LOG.error("Error while converting OFNode:{} to FlowCapableNode", node.getId());
                     return null;
                 }
-                nodeConnectors = node.getNodeConnector();
                 for (NodeConnector nodeConnector : nodeConnectors) {
                     FlowCapableNodeConnector flowCapableNodeConnector =
                             nodeConnector.augmentation(FlowCapableNodeConnector.class);
@@ -112,15 +112,15 @@ public final class ShellUtil {
         return ofNode;
     }
 
-    public static List<ReconcileCounter> getReconcileCount(final DataBroker dataBroker) {
+    public static Collection<ReconcileCounter> getReconcileCount(final DataBroker dataBroker) {
         InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationCounter.class).build();
-        List<ReconcileCounter> output = Collections.emptyList();
+        Collection<ReconcileCounter> output = Collections.emptyList();
         try (ReadTransaction tx = dataBroker.newReadOnlyTransaction()) {
             Optional<ReconciliationCounter> result =
                     tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             if (result.isPresent()) {
-                output = result.get().getReconcileCounter();
+                output = result.get().nonnullReconcileCounter().values();
             }
         } catch (ExecutionException | InterruptedException | NullPointerException e) {
             LOG.error("Error reading reconciliation counter from datastore", e);

@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -49,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.add.groups.batch.input.BatchAddGroupsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.OriginalBatchedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.UpdatedBatchedGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.remove.groups.batch.input.BatchRemoveGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.remove.groups.batch.input.BatchRemoveGroupsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.update.groups.batch.input.BatchUpdateGroups;
@@ -147,14 +149,14 @@ public class SalGroupsBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<UpdateGroupsBatchOutput>> resultFuture = salGroupsBatchService.updateGroupsBatch(input);
+        Iterator<BatchFailedGroupsOutput> iterator = resultFuture.get().getResult().nonnullBatchFailedGroupsOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
-        Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(43L,
-                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(45L,
-                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(2, resultFuture.get().getResult().nonnullBatchFailedGroupsOutput().size());
+        Assert.assertEquals(43L, iterator.next().getGroupId().getValue().longValue());
+        Assert.assertEquals(45L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -215,14 +217,14 @@ public class SalGroupsBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<AddGroupsBatchOutput>> resultFuture = salGroupsBatchService.addGroupsBatch(input);
+        Iterator<BatchFailedGroupsOutput> iterator = resultFuture.get().getResult().nonnullBatchFailedGroupsOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
-        Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(42L,
-                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(43L,
-                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(2, resultFuture.get().getResult().nonnullBatchFailedGroupsOutput().size());
+        Assert.assertEquals(42L, iterator.next().getGroupId().getValue().longValue());
+        Assert.assertEquals(43L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -281,14 +283,14 @@ public class SalGroupsBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<RemoveGroupsBatchOutput>> resultFuture = salGroupsBatchService.removeGroupsBatch(input);
+        Iterator<BatchFailedGroupsOutput> iterator = resultFuture.get().getResult().nonnullBatchFailedGroupsOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
-        Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(42L,
-                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(43L,
-                resultFuture.get().getResult().getBatchFailedGroupsOutput().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(2, resultFuture.get().getResult().nonnullBatchFailedGroupsOutput().size());
+        Assert.assertEquals(42L, iterator.next().getGroupId().getValue().longValue());
+        Assert.assertEquals(43L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salGroupService, transactionService);
