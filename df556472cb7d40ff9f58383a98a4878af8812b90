@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4edbb5cd_0c8820d0",
+        "filename": "openflowjava/openflow-protocol-api/src/main/yang/openflow-instruction.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-04-28T18:30:12Z",
+      "side": 1,
+      "message": "Arun, I need some domain help here:\n\nI am pretty sure this part with \u0027ordered-by\u0027 is correct, as the order of instructions needs to be retained.\n\nI am not sure whether the \u0027key experimenter-id\u0027 is correct. There are unit tests which explicitly test for multiple items with the same experimenter -- if this were stored to the datastore, it would result in those duplicates eliminated, i.e. there really could only ever be a one instruction for a particular experimenter.\n\nIt feels \u0027key\u0027 here should be eliminated, but I do need your confirmation.",
+      "revId": "df556472cb7d40ff9f58383a98a4878af8812b90",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
