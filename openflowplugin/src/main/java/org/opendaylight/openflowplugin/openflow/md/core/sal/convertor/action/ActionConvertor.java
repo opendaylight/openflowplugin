@@ -77,8 +77,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * </pre>
  */
 public final class ActionConvertor extends Convertor<
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>,
-        List<Action>,
+        Collection<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>,
+        Collection<Action>,
         ActionConvertorData> {
 
     private static final ConvertorProcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -143,7 +143,7 @@ public final class ActionConvertor extends Convertor<
     }
 
     @Override
-    public List<Action> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
+    public List<Action> convert(Collection<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
             .list.Action> source, ActionConvertorData data) {
         // Prepare list of converted actions
         final List<Action> result = new ArrayList<>();

@@ -61,7 +61,7 @@ public final class MeterStatisticsToNotificationTransformer {
             final Optional<List<MeterStats>> meterStatsList =
                     convertorExecutor.convert(replyBody.getMeterStats(), data);
 
-            meterStatsList.ifPresent(meterStats -> notification.getMeterStats().addAll(meterStats));
+            meterStatsList.ifPresent(meterStats -> notification.getMeterStats().values().addAll(meterStats));
         }
 
         return notification.build();
