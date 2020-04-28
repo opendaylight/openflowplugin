@@ -99,8 +99,8 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
     protected Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> responseCache;
 
 
-    AbstractConnectionAdapter(@NonNull final Channel channel, @Nullable final InetSocketAddress address,
-                              @Nullable final int channelOutboundQueueSize) {
+    AbstractConnectionAdapter(final @NonNull Channel channel, final @Nullable InetSocketAddress address,
+                              final int channelOutboundQueueSize) {
         this.channel = requireNonNull(channel);
         this.address = address;
 
