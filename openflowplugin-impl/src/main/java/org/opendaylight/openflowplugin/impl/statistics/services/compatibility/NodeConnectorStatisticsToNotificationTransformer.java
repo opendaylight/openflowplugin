@@ -65,7 +65,7 @@ public final class NodeConnectorStatisticsToNotificationTransformer {
             for (PortStats portStats : replyBody.getPortStats()) {
                 NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                         processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats);
-                notification.getNodeConnectorStatisticsAndPortNumberMap().add(statsBuilder.build());
+                notification.getNodeConnectorStatisticsAndPortNumberMap().values().add(statsBuilder.build());
             }
         }
         return notification.build();

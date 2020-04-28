@@ -101,10 +101,10 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
                                             + "00 00 00 00"  // padding
                                             );
         HelloMessage builtByFactory = BufferHelper.deserialize(factory, bb);
-        Assert.assertEquals("Wrong - no element has been expected", 0, builtByFactory.getElements().size());
+        Assert.assertEquals("Wrong - no element has been expected", 0, builtByFactory.nonnullElements().size());
     }
 
-    private static List<Elements> createElement(int lengthInByte, int type) {
+    private static List<Elements> createElement(final int lengthInByte, final int type) {
         final ElementsBuilder elementsBuilder = new ElementsBuilder();
         final List<Elements> elementsList = new ArrayList<>();
         List<Boolean> booleanList = new ArrayList<>();

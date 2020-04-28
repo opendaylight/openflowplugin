@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
@@ -92,7 +93,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final GetQueueStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getQueueIdAndStatisticsMap().size() > 0);
 
-        final QueueIdAndStatisticsMap map = output.getQueueIdAndStatisticsMap().get(0);
+        final QueueIdAndStatisticsMap map = output.getQueueIdAndStatisticsMap().values().iterator().next();
         assertEquals(map.getQueueId().getValue(), QUEUE_NO);
         assertEquals(map.getNodeConnectorId(), nodeConnectorId);
     }
@@ -102,10 +103,10 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
         when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("1"));
+        when(map.key()).thenReturn(new QueueIdAndStatisticsMapKey(new NodeConnectorId("1"), new QueueId(QUEUE_NO)));
 
-        final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
-        when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
+        when(output.getQueueIdAndStatisticsMap()).thenReturn(Collections.singletonMap(map.key(), map));
 
         multipartWriterProvider.lookup(MultipartType.OFPMPQUEUE).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
@@ -116,10 +117,11 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
         when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
         when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("openflow:1:1"));
+        when(map.key()).thenReturn(new QueueIdAndStatisticsMapKey(new NodeConnectorId("openflow:1:1"),
+            new QueueId(QUEUE_NO)));
 
-        final List<QueueIdAndStatisticsMap> maps = Collections.singletonList(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
-        when(output.getQueueIdAndStatisticsMap()).thenReturn(maps);
+        when(output.getQueueIdAndStatisticsMap()).thenReturn(Collections.singletonMap(map.key(), map));
 
         multipartWriterProvider.lookup(MultipartType.OFPMPQUEUE).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

@@ -117,20 +117,20 @@ public class MeterUtilTest {
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_UPDATE_TRANSFORM.apply(input));
     }
 
-    private <T extends BatchMeterOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
+    private static <T extends BatchMeterOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
         Assert.assertEquals(0, output.getResult().getBatchFailedMetersOutput().size());
         Assert.assertEquals(0, output.getErrors().size());
     }
 
-    private RpcResult<List<BatchFailedMetersOutput>> createEmptyBatchOutcome() {
+    private static RpcResult<List<BatchFailedMetersOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
                 .success(Collections.<BatchFailedMetersOutput>emptyList())
                 .build();
     }
 
-    private RpcResult<List<BatchFailedMetersOutput>> createBatchOutcomeWithError() {
+    private static RpcResult<List<BatchFailedMetersOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedMetersOutputBuilder()
@@ -139,11 +139,12 @@ public class MeterUtilTest {
                 .build();
     }
 
-    private <T extends BatchMeterOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+    private static <T extends BatchMeterOutputListGrouping> void checkBatchErrorOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
         Assert.assertEquals(1, output.getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(DUMMY_METER_ID, output.getResult().getBatchFailedMetersOutput().get(0).getMeterId());
+        Assert.assertEquals(DUMMY_METER_ID,
+            output.getResult().getBatchFailedMetersOutput().values().iterator().next().getMeterId());
 
         Assert.assertEquals(1, output.getErrors().size());
     }
