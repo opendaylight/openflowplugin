@@ -47,7 +47,7 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
     public void storeStatistics(final QueueIdAndStatisticsMap statistics, final boolean withParents) {
         final OpenflowVersion openflowVersion = OpenflowVersion.get(features.getVersion());
 
-        statistics.getQueueIdAndStatisticsMap()
+        statistics.getQueueIdAndStatisticsMap().values()
             .forEach((stat) -> {
                 final Uint32 port = InventoryDataServiceUtil
                         .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());

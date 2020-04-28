@@ -95,7 +95,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                 .GroupStats>
                 stats = Collections.singletonList(stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
-        when(output.getGroupStats()).thenReturn(stats);
+        when(output.getGroupStats().values()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

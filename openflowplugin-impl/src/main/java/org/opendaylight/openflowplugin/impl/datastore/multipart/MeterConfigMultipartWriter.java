@@ -38,7 +38,7 @@ public class MeterConfigMultipartWriter extends AbstractMultipartWriter<MeterCon
 
     @Override
     public void storeStatistics(final MeterConfigStatsReply statistics, final boolean withParents) {
-        statistics.getMeterConfigStats()
+        statistics.getMeterConfigStats().values()
             .forEach(stat -> {
                 writeToTransaction(
                     getInstanceIdentifier()

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,18 +42,24 @@ public class MatchExtensionHelperTest {
 
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
-    private static final int PRESET_COUNT = 7;
-    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> KEY =
-        new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField.class);
+    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> KEY_1 =
+            new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField1.class);
+    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> KEY_2 =
+            new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField2.class);
 
     @Before
     public void setup() {
         OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterProvider);
-        when(extensionConverterProvider.getConverter(KEY))
-            .thenReturn((input, path) -> {
-                MockAugmentation mockAugmentation = new MockAugmentation();
-                return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey.class);
-            });
+        when(extensionConverterProvider.getConverter(KEY_1))
+                .thenReturn((input, path) -> {
+                    MockAugmentation mockAugmentation = new MockAugmentation();
+                    return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey1.class);
+                });
+        when(extensionConverterProvider.getConverter(KEY_2))
+                .thenReturn((input, path) -> {
+                    MockAugmentation mockAugmentation = new MockAugmentation();
+                    return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey2.class);
+                });
     }
 
 
@@ -80,13 +87,18 @@ public class MatchExtensionHelperTest {
 
     private static List<MatchEntry> createMatchEntrieses() {
         List<MatchEntry> matchEntries = new ArrayList<>();
-        for (int i = 0; i < PRESET_COUNT; i++) {
-            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setHasMask(true);
-            matchEntryBuilder.setOxmClass(MockOxmClassBase.class);
-            matchEntryBuilder.setOxmMatchField(MockMatchField.class);
-            matchEntries.add(matchEntryBuilder.build());
-        }
+        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
+        matchEntryBuilder.setHasMask(true);
+        matchEntryBuilder.setOxmClass(MockOxmClassBase.class);
+        matchEntryBuilder.setOxmMatchField(MockMatchField1.class);
+        matchEntries.add(matchEntryBuilder.build());
+
+
+        MatchEntryBuilder matchEntryBuilder1 = new MatchEntryBuilder();
+        matchEntryBuilder1.setHasMask(true);
+        matchEntryBuilder1.setOxmClass(MockOxmClassBase.class);
+        matchEntryBuilder1.setOxmMatchField(MockMatchField2.class);
+        matchEntries.add(matchEntryBuilder1.build());
         return matchEntries;
     }
 
@@ -94,15 +106,24 @@ public class MatchExtensionHelperTest {
 
     }
 
-    private interface MockMatchField extends MatchField {
+    private class MockMatchField1 implements MatchField {
+    }
+
+    private class MockMatchField2 implements MatchField {
+    }
+
+    private interface MockExtensionKey1 extends ExtensionKey {
 
     }
 
-    private interface MockExtensionKey extends ExtensionKey {
+    private interface MockExtensionKey2 extends ExtensionKey {
 
     }
 
     private final class MockAugmentation implements Augmentation<Extension> {
-
+        @Override
+        public Class<MockAugmentation> implementedInterface() {
+            return MockAugmentation.class;
+        }
     }
 }

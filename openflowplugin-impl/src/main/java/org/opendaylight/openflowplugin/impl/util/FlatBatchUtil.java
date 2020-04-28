@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
@@ -93,7 +94,7 @@ public final class FlatBatchUtil {
                 || previousTypes.contains(BatchStepType.FLOW_UPDATE));
     }
 
-    public static List<BatchPlanStep> assembleBatchPlan(List<Batch> batches) {
+    public static List<BatchPlanStep> assembleBatchPlan(Collection<Batch> batches) {
         final List<BatchPlanStep> plan = new ArrayList<>();
 
         BatchPlanStep planStep;
@@ -110,36 +111,36 @@ public final class FlatBatchUtil {
         return plan;
     }
 
-    private static List<? extends BatchOrderGrouping> extractBatchData(final BatchStepType batchStepType,
+    private static Collection<? extends BatchOrderGrouping> extractBatchData(final BatchStepType batchStepType,
                                                                        final BatchChoice batchChoice) {
-        final List<? extends BatchOrderGrouping> batchData;
+        final Collection<? extends BatchOrderGrouping> batchData;
         switch (batchStepType) {
             case FLOW_ADD:
-                batchData = ((FlatBatchAddFlowCase) batchChoice).getFlatBatchAddFlow();
+                batchData = ((FlatBatchAddFlowCase) batchChoice).getFlatBatchAddFlow().values();
                 break;
             case FLOW_REMOVE:
-                batchData = ((FlatBatchRemoveFlowCase) batchChoice).getFlatBatchRemoveFlow();
+                batchData = ((FlatBatchRemoveFlowCase) batchChoice).getFlatBatchRemoveFlow().values();
                 break;
             case FLOW_UPDATE:
-                batchData = ((FlatBatchUpdateFlowCase) batchChoice).getFlatBatchUpdateFlow();
+                batchData = ((FlatBatchUpdateFlowCase) batchChoice).getFlatBatchUpdateFlow().values();
                 break;
             case GROUP_ADD:
-                batchData = ((FlatBatchAddGroupCase) batchChoice).getFlatBatchAddGroup();
+                batchData = ((FlatBatchAddGroupCase) batchChoice).getFlatBatchAddGroup().values();
                 break;
             case GROUP_REMOVE:
-                batchData = ((FlatBatchRemoveGroupCase) batchChoice).getFlatBatchRemoveGroup();
+                batchData = ((FlatBatchRemoveGroupCase) batchChoice).getFlatBatchRemoveGroup().values();
                 break;
             case GROUP_UPDATE:
-                batchData = ((FlatBatchUpdateGroupCase) batchChoice).getFlatBatchUpdateGroup();
+                batchData = ((FlatBatchUpdateGroupCase) batchChoice).getFlatBatchUpdateGroup().values();
                 break;
             case METER_ADD:
-                batchData = ((FlatBatchAddMeterCase) batchChoice).getFlatBatchAddMeter();
+                batchData = ((FlatBatchAddMeterCase) batchChoice).getFlatBatchAddMeter().values();
                 break;
             case METER_REMOVE:
-                batchData = ((FlatBatchRemoveMeterCase) batchChoice).getFlatBatchRemoveMeter();
+                batchData = ((FlatBatchRemoveMeterCase) batchChoice).getFlatBatchRemoveMeter().values();
                 break;
             case METER_UPDATE:
-                batchData = ((FlatBatchUpdateMeterCase) batchChoice).getFlatBatchUpdateMeter();
+                batchData = ((FlatBatchUpdateMeterCase) batchChoice).getFlatBatchUpdateMeter().values();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported batch step type obtained: " + batchStepType);
@@ -188,7 +189,7 @@ public final class FlatBatchUtil {
                 if (jobResult != null) {
                     isSuccessful = (isSuccessful && jobResult.isSuccessful());
                     rpcErrors.addAll(jobResult.getErrors());
-                    batchFailures.addAll(jobResult.getResult().getBatchFailure());
+                    batchFailures.addAll(jobResult.getResult().getBatchFailure().values());
                 }
             }
 

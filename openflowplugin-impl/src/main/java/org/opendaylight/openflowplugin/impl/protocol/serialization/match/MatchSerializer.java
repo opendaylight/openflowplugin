@@ -8,10 +8,9 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -84,10 +83,10 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                 .getMatchExtensionResolver()
                 .getExtension(match)
                 .flatMap(extensions -> Optional.ofNullable(extensions.getExtensionList()))
-                .ifPresent(extensionList -> serializeExtensionList(extensionList, outBuffer));
+                .ifPresent(extensionList -> serializeExtensionList(extensionList.values(), outBuffer));
     }
 
-    private void serializeExtensionList(final List<ExtensionList> extensionList, final ByteBuf outBuffer) {
+    private void serializeExtensionList(final Collection<ExtensionList> extensionList, final ByteBuf outBuffer) {
         // TODO: Remove also extension converters
         extensionList.forEach(extension -> {
             final ConverterExtensionKey<? extends ExtensionKey> converterExtensionKey =
