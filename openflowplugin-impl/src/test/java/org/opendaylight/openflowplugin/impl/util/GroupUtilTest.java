@@ -14,6 +14,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.Ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.BatchGroupOutputListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutputKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -120,20 +123,20 @@ public class GroupUtilTest {
         checkBatchSuccessOutcomeTransformation(GroupUtil.GROUP_UPDATE_TRANSFORM.apply(input));
     }
 
-    private <T extends BatchGroupOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
+    private static <T extends BatchGroupOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
-        Assert.assertEquals(0, output.getResult().getBatchFailedGroupsOutput().size());
+        Assert.assertEquals(0, output.getResult().nonnullBatchFailedGroupsOutput().size());
         Assert.assertEquals(0, output.getErrors().size());
     }
 
-    private RpcResult<List<BatchFailedGroupsOutput>> createEmptyBatchOutcome() {
+    private static RpcResult<List<BatchFailedGroupsOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
                 .success(Collections.<BatchFailedGroupsOutput>emptyList())
                 .build();
     }
 
-    private RpcResult<List<BatchFailedGroupsOutput>> createBatchOutcomeWithError() {
+    private static RpcResult<List<BatchFailedGroupsOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedGroupsOutputBuilder()
@@ -142,11 +145,12 @@ public class GroupUtilTest {
                 .build();
     }
 
-    private <T extends BatchGroupOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+    private static <T extends BatchGroupOutputListGrouping> void checkBatchErrorOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
         Assert.assertEquals(1, output.getResult().getBatchFailedGroupsOutput().size());
-        Assert.assertEquals(DUMMY_GROUP_ID, output.getResult().getBatchFailedGroupsOutput().get(0).getGroupId());
+        Assert.assertEquals(DUMMY_GROUP_ID,
+            output.getResult().getBatchFailedGroupsOutput().values().iterator().next().getGroupId());
 
         Assert.assertEquals(1, output.getErrors().size());
     }
@@ -164,7 +168,7 @@ public class GroupUtilTest {
 
         Assert.assertTrue(composite.isSuccessful());
         Assert.assertEquals(0, composite.getErrors().size());
-        Assert.assertEquals(0, composite.getResult().getBatchFailedGroupsOutput().size());
+        Assert.assertEquals(0, composite.getResult().nonnullBatchFailedGroupsOutput().size());
     }
 
     @Test
@@ -196,7 +200,7 @@ public class GroupUtilTest {
 
         Assert.assertFalse(composite.isSuccessful());
         Assert.assertEquals(1, composite.getErrors().size());
-        Assert.assertEquals(0, composite.getResult().getBatchFailedGroupsOutput().size());
+        Assert.assertEquals(0, composite.getResult().nonnullBatchFailedGroupsOutput().size());
     }
 
     @Test

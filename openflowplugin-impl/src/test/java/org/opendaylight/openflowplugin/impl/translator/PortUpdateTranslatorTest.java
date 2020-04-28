@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.translator;
 
 import org.junit.Assert;
@@ -21,6 +20,8 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -29,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+
+import java.util.Map;
 
 /**
  * Test of {@link PortUpdateTranslator}.
@@ -76,10 +79,10 @@ public class PortUpdateTranslatorTest {
         Assert.assertEquals(portFeatures, nodeConnector.getPeerFeatures());
         Assert.assertEquals(portFeatures, nodeConnector.getSupported());
         Assert.assertEquals(portStateBld.build(), nodeConnector.getState());
-        Assert.assertTrue(nodeConnector.getQueue().isEmpty());
+        Assert.assertNull(nodeConnector.getQueue());
     }
 
-    private void commonCheck(FlowCapableNodeConnector nodeConnector) {
+    private static void commonCheck(final FlowCapableNodeConnector nodeConnector) {
         Assert.assertEquals(84L, nodeConnector.getCurrentSpeed().longValue());
         Assert.assertEquals(84L * 2, nodeConnector.getMaximumSpeed().longValue());
         Assert.assertEquals("utPortName:21", nodeConnector.getName());
@@ -110,7 +113,7 @@ public class PortUpdateTranslatorTest {
         Assert.assertNull(nodeConnector.getQueue());
     }
 
-    private PortStatusMessageBuilder assemblePortStatusMessage(long portNoValue, long speed) {
+    private static PortStatusMessageBuilder assemblePortStatusMessage(final long portNoValue, final long speed) {
         final PortFeatures portFeatures13 = PortFeatures.getDefaultInstance("_100gbFd");
         final PortFeaturesV10 portFeatures10 = PortFeaturesV10.getDefaultInstance("_100mbFd");
         final PortConfig portConfig13 = PortConfig.getDefaultInstance("noFwd");

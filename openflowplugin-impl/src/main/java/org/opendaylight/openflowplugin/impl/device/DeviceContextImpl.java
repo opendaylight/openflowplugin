@@ -764,9 +764,9 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 if (result != null) {
                     for (Optional<FlowCapableNode> optNode : result) {
                         if (optNode.isPresent()) {
-                            flowCount += optNode.get().nonnullTable().stream()
+                            flowCount += optNode.get().nonnullTable().values().stream()
                                     .filter(Objects::nonNull)
-                                    .flatMap(table -> table.nonnullFlow().stream())
+                                    .flatMap(table -> table.nonnullFlow().values().stream())
                                     .filter(Objects::nonNull)
                                     .count();
                         }
