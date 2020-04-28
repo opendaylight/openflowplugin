@@ -28,7 +28,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     private final RequestContext<T> context;
     private final Class<?> requestType;
     private final MessageSpy spy;
-    private EventIdentifier eventIdentifier;
+    private final EventIdentifier eventIdentifier;
 
     AbstractRequestCallback(final RequestContext<T> context,
                             final Class<?> requestType,
@@ -54,7 +54,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     }
 
     @Override
-    public final void onFailure(@NonNull final Throwable throwable) {
+    public final void onFailure(final Throwable throwable) {
         final RpcResultBuilder<T> builder;
         if (null != eventIdentifier) {
             EventsTimeCounter.markEnd(eventIdentifier);

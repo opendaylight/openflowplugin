@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestPortStatsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
@@ -92,7 +93,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         assertTrue(output.getNodeConnectorStatisticsAndPortNumberMap().size() > 0);
 
         final NodeConnectorStatisticsAndPortNumberMap stats =
-                output.getNodeConnectorStatisticsAndPortNumberMap().get(0);
+                output.getNodeConnectorStatisticsAndPortNumberMap().values().iterator().next();
 
         assertEquals(stats.getNodeConnectorId(), nodeConnectorId);
     }
@@ -100,11 +101,12 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
     @Override
     public void testStoreStatistics() {
         final NodeConnectorStatisticsAndPortNumberMap stat = mock(NodeConnectorStatisticsAndPortNumberMap.class);
+        when(stat.key()).thenReturn(new NodeConnectorStatisticsAndPortNumberMapKey(nodeConnectorId));
         when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
-        final List<NodeConnectorStatisticsAndPortNumberMap> stats = Collections.singletonList(stat);
         final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
-        when(output.getNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
+        when(output.getNodeConnectorStatisticsAndPortNumberMap())
+            .thenReturn(Collections.singletonMap(stat.key(), stat));
 
         multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

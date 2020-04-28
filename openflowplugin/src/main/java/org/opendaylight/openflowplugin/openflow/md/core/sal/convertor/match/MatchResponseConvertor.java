@@ -178,7 +178,7 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
         data.setTunnelIpv4MatchBuilder(new TunnelIpv4MatchBuilder());
         data.setTcpFlagsMatchBuilder(new TcpFlagsMatchBuilder());
 
-        for (MatchEntry ofMatch : source.getMatchEntry()) {
+        for (MatchEntry ofMatch : source.nonnullMatchEntry()) {
             if (TunnelIpv4Dst.class.isAssignableFrom(ofMatch.getOxmMatchField())
                     || TunnelIpv4Src.class.isAssignableFrom(ofMatch.getOxmMatchField())) {
                 /*

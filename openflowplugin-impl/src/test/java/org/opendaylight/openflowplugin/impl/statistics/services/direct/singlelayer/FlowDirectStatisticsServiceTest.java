@@ -96,7 +96,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         final GetFlowStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getFlowAndStatisticsMapList().size() > 0);
 
-        final FlowAndStatisticsMap stats = output.getFlowAndStatisticsMapList().get(0);
+        final FlowAndStatisticsMap stats = output.getFlowAndStatisticsMapList().values().iterator().next();
 
         assertEquals(stats.getTableId(), TABLE_NO);
     }
@@ -109,7 +109,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
         final List<FlowAndStatisticsMapList> stats = Collections.singletonList(stat);
         final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
-        when(output.getFlowAndStatisticsMapList()).thenReturn(stats);
+        when(output.getFlowAndStatisticsMapList().values()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
