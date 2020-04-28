@@ -53,9 +53,9 @@ public final class ByteUtil {
      * @param numBytes convert to number of bytes
      * @return byte array containing n * 8 bits.
      */
-    @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] convertBigIntegerToNBytes(@Nullable final BigInteger bigInteger, final int numBytes) {
+    public static byte @Nullable[] convertBigIntegerToNBytes(final @Nullable BigInteger bigInteger,
+            final int numBytes) {
         if (bigInteger == null) {
             return null;
         }
@@ -80,9 +80,8 @@ public final class ByteUtil {
      * @param uint Unsigned long, potentially null.
      * @return byte array, or null if input was null.
      */
-    @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] uint64toBytes(@Nullable final Uint64 uint) {
+    public static byte @Nullable[] uint64toBytes(@Nullable final Uint64 uint) {
         return uint == null ? null : Longs.toByteArray(uint.longValue());
     }
 

@@ -703,9 +703,8 @@ public final class IpConversionUtil {
         return netmask;
     }
 
-    @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] convertArbitraryMaskToByteArray(final DottedQuad mask) {
+    public static byte @Nullable[] convertArbitraryMaskToByteArray(final DottedQuad mask) {
         final String maskValue;
         if (mask != null && mask.getValue() != null) {
             maskValue = mask.getValue();
@@ -756,9 +755,8 @@ public final class IpConversionUtil {
         return false;
     }
 
-    @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
+    public static byte @Nullable[] convertIpv6ArbitraryMaskToByteArray(final Ipv6ArbitraryMask mask) {
         final String maskValue;
         if (mask != null && mask.getValue() != null) {
             maskValue = mask.getValue();

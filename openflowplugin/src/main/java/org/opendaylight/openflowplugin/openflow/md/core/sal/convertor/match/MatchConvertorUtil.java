@@ -70,9 +70,8 @@ public final class MatchConvertorUtil {
      * @param addressParts the address parts
      * @return the byte [ ]
      */
-    @Nullable
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte[] extractIpv4Mask(final Iterator<String> addressParts) {
+    public static byte @Nullable[] extractIpv4Mask(final Iterator<String> addressParts) {
         final int prefix;
         if (addressParts.hasNext()) {
             int potentionalPrefix = Integer.parseInt(addressParts.next());
