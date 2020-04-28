@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -196,19 +195,19 @@ public final class FlowUtil {
      * @return static reusable function
      */
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(
-            final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+            final Collection<? extends BatchFlowIdGrouping> inputBatchFlows) {
         return new CumulatingFunction<O>(inputBatchFlows).invoke();
     }
 
     private static class CumulatingFunction<O> {
-        private final List<? extends BatchFlowIdGrouping> inputBatchFlows;
+        private final Collection<? extends BatchFlowIdGrouping> inputBatchFlows;
 
-        CumulatingFunction(final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+        CumulatingFunction(final Collection<? extends BatchFlowIdGrouping> inputBatchFlows) {
             this.inputBatchFlows = inputBatchFlows;
         }
 
         public Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> invoke() {
-            return (@NonNull final List<RpcResult<O>> innerInput) -> {
+            return (final List<RpcResult<O>> innerInput) -> {
                 final int sizeOfFutures = innerInput.size();
                 final int sizeOfInputBatch = inputBatchFlows.size();
                 Preconditions.checkArgument(sizeOfFutures == sizeOfInputBatch,

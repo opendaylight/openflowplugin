@@ -45,7 +45,7 @@ public class MultipartReplyMeterStatsDeserializerTest extends AbstractMultipartD
 
         final MultipartReplyMeterStats reply = (MultipartReplyMeterStats) deserializeMultipart(buffer);
 
-        final MeterStats meterStats = reply.getMeterStats().get(0);
+        final MeterStats meterStats = reply.getMeterStats().values().iterator().next();
 
         assertEquals(METER_ID, meterStats.getMeterId().getValue().intValue());
         assertEquals(FLOW_COUNT, meterStats.getFlowCount().getValue().intValue());
@@ -53,9 +53,9 @@ public class MultipartReplyMeterStatsDeserializerTest extends AbstractMultipartD
         assertEquals(BYTE_IN_COUNT, meterStats.getByteInCount().getValue().intValue());
         assertEquals(SECOND, meterStats.getDuration().getSecond().getValue().intValue());
         assertEquals(NANOSECOND, meterStats.getDuration().getNanosecond().getValue().intValue());
-        assertEquals(PACKET_BAND_COUNT, meterStats.getMeterBandStats().getBandStat().get(0)
+        assertEquals(PACKET_BAND_COUNT, meterStats.getMeterBandStats().getBandStat().values().iterator().next()
                 .getPacketBandCount().getValue().longValue());
-        assertEquals(BYTE_BAND_COUNT, meterStats.getMeterBandStats().getBandStat().get(0)
+        assertEquals(BYTE_BAND_COUNT, meterStats.getMeterBandStats().getBandStat().values().iterator().next()
                 .getByteBandCount().getValue().longValue());
         assertEquals(0, buffer.readableBytes());
     }

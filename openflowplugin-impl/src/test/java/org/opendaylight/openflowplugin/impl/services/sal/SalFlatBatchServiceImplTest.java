@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -37,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.Batch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.BatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.BatchKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchAddMeterCaseBuilder;
@@ -48,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlowBuilder;
@@ -162,9 +165,9 @@ public class SalFlatBatchServiceImplTest {
                         createGroupRemoveBatch(4, 2L),
                         createGroupUpdateBatch(5, 3L),
 
-                        createMeterAddBatch(3, 1L),
-                        createMeterRemoveBatch(4, 2L),
-                        createMeterUpdateBatch(5, 3L)
+                        createMeterAddBatch(6, 1L),
+                        createMeterRemoveBatch(7, 2L),
+                        createMeterUpdateBatch(8, 3L)
                 ))
                 .setExitOnFirstError(true)
                 .build();
@@ -175,7 +178,7 @@ public class SalFlatBatchServiceImplTest {
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertTrue(rpcResult.getErrors().isEmpty());
-        Assert.assertTrue(rpcResult.getResult().getBatchFailure().isEmpty());
+        Assert.assertTrue(rpcResult.getResult().nonnullBatchFailure().isEmpty());
 
         final InOrder inOrder = Mockito.inOrder(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
         inOrder.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
@@ -221,7 +224,8 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
         Assert.assertEquals(1, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
+        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().values().iterator().next()
+                .getBatchOrder().intValue());
 
         final InOrder inOrder = Mockito.inOrder(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
         inOrder.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
@@ -260,7 +264,8 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
         Assert.assertEquals(1, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
+        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().values().iterator().next()
+                .getBatchOrder().intValue());
 
         final InOrder inOrder = Mockito.inOrder(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
         inOrder.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
@@ -312,15 +317,24 @@ public class SalFlatBatchServiceImplTest {
         return createFlowAddBatch(batchOrder, flowIdValue, 1);
     }
 
-    private Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, int amount) {
+    private Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, final int amount) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
-                        .setFlatBatchAddFlow(repeatInList(new FlatBatchAddFlowBuilder()
-                                .setFlowId(new FlowId(flowIdValue))
-                                .build(), amount))
+                        .setFlatBatchAddFlow(repeatFlatBatchAddFlowInList(flowIdValue, amount))
                         .build())
                 .build();
+    }
+
+    private List<FlatBatchAddFlow> repeatFlatBatchAddFlowInList(final String flowIdValue, final int amount) {
+        final List<FlatBatchAddFlow> list = new ArrayList<>();
+        for (int i = 0; i < amount; i++) {
+            list.add(new FlatBatchAddFlowBuilder()
+                    .setFlowId(new FlowId(flowIdValue + i))
+                    .withKey(new FlatBatchAddFlowKey(i))
+                    .build());
+        }
+        return list;
     }
 
     private <T> List<T> repeatInList(final T item, final int amount) {
@@ -345,6 +359,7 @@ public class SalFlatBatchServiceImplTest {
     private Batch createFlowUpdateBatch(final int batchOrder, final String flowIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
+                .withKey(new BatchKey(batchOrder))
                 .setBatchChoice(new FlatBatchUpdateFlowCaseBuilder()
                         .setFlatBatchUpdateFlow(Collections.singletonList(new FlatBatchUpdateFlowBuilder()
                                 .setFlowId(new FlowId(flowIdValue))
@@ -469,8 +484,11 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
+        Iterator<BatchFailure> iterator = rpcResult.getResult().getBatchFailure().values().iterator();
+        //Moving iterator two get second element
+        iterator.next();
         Assert.assertEquals("f2",
-                ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice())
+                ((FlatBatchFailureFlowIdCase) iterator.next().getBatchItemIdChoice())
                         .getFlowId().getValue());
     }
 
@@ -483,7 +501,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private ProcessFlatBatchOutput createFlatBatchOutput(BatchFailure... batchFailures) {
+    private ProcessFlatBatchOutput createFlatBatchOutput(final BatchFailure... batchFailures) {
         return new ProcessFlatBatchOutputBuilder()
                 .setBatchFailure(Lists.newArrayList(batchFailures))
                 .build();
@@ -491,11 +509,14 @@ public class SalFlatBatchServiceImplTest {
 
     @Test
     public void testPrepareBatchPlan_success() throws Exception {
-        final FlatBatchAddFlow flatBatchAddFlow = new FlatBatchAddFlowBuilder()
+        final FlatBatchAddFlow flatBatchAddFlow_1 = new FlatBatchAddFlowBuilder()
                 .setFlowId(new FlowId("f1"))
                 .build();
+        final FlatBatchAddFlow flatBatchAddFlow_2 = new FlatBatchAddFlowBuilder()
+                .setFlowId(new FlowId("f2"))
+                .build();
         final BatchPlanStep batchPlanStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
-        batchPlanStep.getTaskBag().addAll(Lists.newArrayList(flatBatchAddFlow, flatBatchAddFlow));
+        batchPlanStep.getTaskBag().addAll(Lists.newArrayList(flatBatchAddFlow_1, flatBatchAddFlow_2));
         final List<BatchPlanStep> batchPlan = Lists.newArrayList(batchPlanStep);
 
         final List<BatchStepJob> batchChain = salFlatBatchService.prepareBatchChain(batchPlan, NODE_REF, true);
@@ -513,18 +534,21 @@ public class SalFlatBatchServiceImplTest {
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
 
         Mockito.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
     }
 
     @Test
     public void testPrepareBatchPlan_failure() throws Exception {
-        final FlatBatchAddFlow flatBatchAddFlow = new FlatBatchAddFlowBuilder()
+        final FlatBatchAddFlow flatBatchAddFlow_1 = new FlatBatchAddFlowBuilder()
                 .setFlowId(new FlowId("f1"))
                 .build();
+        final FlatBatchAddFlow flatBatchAddFlow_2 = new FlatBatchAddFlowBuilder()
+                .setFlowId(new FlowId("f2"))
+                .build();
         final BatchPlanStep batchPlanStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
-        batchPlanStep.getTaskBag().addAll(Lists.newArrayList(flatBatchAddFlow, flatBatchAddFlow));
+        batchPlanStep.getTaskBag().addAll(Lists.newArrayList(flatBatchAddFlow_1, flatBatchAddFlow_2));
 
         final List<BatchPlanStep> batchPlan = Lists.newArrayList(batchPlanStep, batchPlanStep);
 

@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -209,7 +210,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 bucket.setAction(createInportOutputAction());
                 break;
             case "a24":
-                bucket.setAction(null);
+                bucket.setAction(Collections.EMPTY_LIST);
                 break;
             case "a25":
                 bucket.setAction(createNonAppyOutputAction());
@@ -613,8 +614,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()));
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
+                testNode);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object notUsed) {

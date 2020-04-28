@@ -216,8 +216,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void onNotAbleToStartMastership(@NonNull final DeviceInfo deviceInfo, @NonNull final String reason,
-                                           final boolean mandatory) {
+    public void onNotAbleToStartMastership(final DeviceInfo deviceInfo, final String reason, final boolean mandatory) {
         LOG.warn("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
 
         if (!mandatory) {
@@ -232,8 +231,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void onMasterRoleAcquired(@NonNull final DeviceInfo deviceInfo,
-                                     @NonNull final ContextChainMastershipState mastershipState) {
+    public void onMasterRoleAcquired(final DeviceInfo deviceInfo, final ContextChainMastershipState mastershipState) {
         Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
             if (!ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
                 if (contextChain.isMastered(mastershipState, true)) {

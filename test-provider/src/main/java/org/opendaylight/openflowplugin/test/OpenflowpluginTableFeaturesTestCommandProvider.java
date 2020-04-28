@@ -277,12 +277,6 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
 
     private TableFeaturePropertiesBuilder createInstructionsTblFeatureProp() {
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setOrder(1);
-        ib.setInstruction(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
-                .instruction.ApplyActionsCaseBuilder().build());
-        ib.withKey(new InstructionKey(1));
-
         List<Instruction> instLst = new ArrayList<>();
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(
@@ -302,18 +296,6 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
 
     private TableFeaturePropertiesBuilder createInstructionsMissTblFeatureProp() {
         // To set the instructions miss -- "t7"
-
-        InstructionBuilder ib1 = new InstructionBuilder();
-        ib1.setOrder(1);
-        ib1.setInstruction(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
-                .instruction.WriteMetadataCaseBuilder().build());
-        ib1.withKey(new InstructionKey(1));
-
-        InstructionBuilder ib2 = new InstructionBuilder();
-        ib2.setOrder(2);
-        ib2.setInstruction(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
-                .instruction.MeterCaseBuilder().build());
-        ib2.withKey(new InstructionKey(2));
 
         List<Instruction> instLst = new ArrayList<>();
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
@@ -595,10 +577,10 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                 .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
                         .child(TableFeatures.class, new TableFeaturesKey(tableFeatures.getTableId()));
 
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.OPERATIONAL, path1, tableFeatures, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, tableFeatures, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path1, tableFeatures);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, tableFeatures);
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object notUsed) {
