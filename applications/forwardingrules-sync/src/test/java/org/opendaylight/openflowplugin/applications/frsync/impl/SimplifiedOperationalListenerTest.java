@@ -11,7 +11,7 @@ import com.google.common.util.concurrent.Futures;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.snapshot.gathering.status.grouping.SnapshotGatheringStatusEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
@@ -83,7 +85,7 @@ public class SimplifiedOperationalListenerTest {
     @Mock
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private List nodeConnector;
+    private Map<NodeConnectorKey, NodeConnector> nodeConnector;
     @Mock
     private Node operationalNodeEmpty;
 

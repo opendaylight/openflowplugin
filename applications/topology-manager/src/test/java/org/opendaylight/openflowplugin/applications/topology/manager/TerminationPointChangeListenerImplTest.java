@@ -197,8 +197,8 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         InstanceIdentifier<TerminationPoint> expTpPath = topologyIID.child(
                 Node.class, new NodeKey(expNodeId)).child(TerminationPoint.class,
                         new TerminationPointKey(expTpId));
-        verify(mockTx).merge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
-                mergedNode.capture(), eq(true));
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
+                mergedNode.capture());
         assertEquals("getTpId", expTpId, mergedNode.getValue().getTpId());
         InventoryNodeConnector augmentation = mergedNode.getValue().augmentation(
                 InventoryNodeConnector.class);
@@ -245,8 +245,8 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 Node.class, new NodeKey(new NodeId("node1"))).child(TerminationPoint.class,
                         new TerminationPointKey(new TpId("tp1")));
 
-        verify(mockTx).merge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
-                any(TerminationPoint.class), eq(true));
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
+                any(TerminationPoint.class));
 
         assertDeletedIDs(new InstanceIdentifier[]{topologyIID.child(Link.class,
                 linkList.get(0).key())}, deletedLinkIDs);
@@ -290,8 +290,8 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 Node.class, new NodeKey(new NodeId("node1"))).child(TerminationPoint.class,
                         new TerminationPointKey(new TpId("tp1")));
 
-        verify(mockTx).merge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
-                any(TerminationPoint.class), eq(true));
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
+                any(TerminationPoint.class));
 
         assertDeletedIDs(new InstanceIdentifier[]{topologyIID.child(Link.class,
                 linkList.get(0).key())}, deletedLinkIDs);

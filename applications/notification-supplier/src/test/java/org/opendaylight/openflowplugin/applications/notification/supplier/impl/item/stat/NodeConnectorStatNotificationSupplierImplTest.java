@@ -76,7 +76,8 @@ public class NodeConnectorStatNotificationSupplierImplTest {
                 .createNotification(createTestConnectorStat(), createTestConnectorStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
-        assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnector().get(0).getId().getValue());
+        assertEquals(FLOW_CODE_CONNECTOR_ID, notification.nonnullNodeConnector().values().iterator().next().getId()
+                .getValue());
     }
 
     @Test

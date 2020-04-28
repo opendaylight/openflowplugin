@@ -156,7 +156,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
 
                     final AugmentTuple<Match> matchExtensionWrap =
                             MatchExtensionHelper.processAllExtensions(
-                                    flowStats.getMatch().getMatchEntry(),
+                                    flowStats.getMatch().nonnullMatchEntry(),
                                     OpenflowVersion.get(data.getVersion()),
                                     data.getMatchPath());
 

@@ -47,7 +47,7 @@ final class TopologyManagerUtil {
             return;
         }
 
-        for (Link link : topologyOptional.get().nonnullLink()) {
+        for (Link link : topologyOptional.get().nonnullLink().values()) {
             if (id.equals(link.getSource().getSourceNode()) || id.equals(link.getDestination().getDestNode())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }
@@ -75,7 +75,7 @@ final class TopologyManagerUtil {
             return;
         }
 
-        for (Link link : topologyOptional.get().nonnullLink()) {
+        for (Link link : topologyOptional.get().nonnullLink().values()) {
             if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
             }

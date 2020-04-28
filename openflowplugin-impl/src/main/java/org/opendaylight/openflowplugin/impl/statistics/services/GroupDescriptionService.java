@@ -7,10 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -79,7 +83,18 @@ final class GroupDescriptionService
             final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
-            groupDescStatsList.ifPresent(groupDescStats -> notification.getGroupDescStats().addAll(groupDescStats));
+            groupDescStatsList.ifPresent(groupDescStats -> {
+                if (notification.getGroupDescStats() == null) {
+                    List<GroupDescStats> stats = Lists.newArrayList(groupDescStats);
+                    notification.setGroupDescStats(stats);
+                } else {
+                    Set<GroupDescStats> stats = new HashSet<>(notification.getGroupDescStats().values());
+                    stats.addAll(groupDescStats);
+                    notification.setGroupDescStats(stats.stream().collect(Collectors.toList()));
+                }
+            });
+
+
         }
 
         return notification.build();

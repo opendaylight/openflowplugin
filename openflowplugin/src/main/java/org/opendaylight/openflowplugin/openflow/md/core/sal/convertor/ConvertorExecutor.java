@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 
@@ -36,4 +37,17 @@ public interface ConvertorExecutor {
      * @return the result (can be empty, if no convertor was found)
      */
     <F, T, D extends ConvertorData> Optional<T> convert(Collection<F> source, D data);
+
+    /**
+     * Lookup and use convertor by specified type, then converts source collection and returns converted result.
+     *
+     * @param <K> the source key type
+     * @param <F> the source value type
+     * @param <T>   the result type
+     * @param <D> the data type
+     * @param source the source collection
+     * @param data   convertor data
+     * @return the result (can be empty, if no convertor was found)
+     */
+    <K, F, T, D extends ConvertorData> Optional<T> convert(Map<K, F> source, D data);
 }

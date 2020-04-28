@@ -91,24 +91,19 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         assertTrue(output.getGroupStats().size() > 0);
 
         final org.opendaylight.yang.gen.v1.urn
-            .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stats = output.getGroupStats().get(0);
+            .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stats =
+                output.nonnullGroupStats().values().iterator().next();
 
         assertEquals(stats.getGroupId().getValue(), GROUP_NO);
     }
 
     @Override
     public void testStoreStatistics() {
-        final org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stat =
-                mock(org.opendaylight.yang.gen.v1.urn
-                        .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats.class);
-        when(stat.getGroupId()).thenReturn(new GroupId(GROUP_NO));
+        final var stat = new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
+                .GroupStatsBuilder().setGroupId(new GroupId(GROUP_NO)).build();
 
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>
-                stats = Collections.singletonList(stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
-        when(output.getGroupStats()).thenReturn(stats);
+        when(output.nonnullGroupStats()).thenReturn(Collections.singletonMap(stat.key(), stat));
 
         multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

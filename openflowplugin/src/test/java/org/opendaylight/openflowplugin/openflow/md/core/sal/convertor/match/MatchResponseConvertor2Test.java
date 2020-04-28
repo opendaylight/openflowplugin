@@ -180,12 +180,12 @@ public class MatchResponseConvertor2Test {
     /**
      * Test {@link MatchResponseConvertor#convert(MatchEntriesGrouping, VersionDatapathIdConvertorData)}.
      */
-    @Test(expected = NullPointerException.class)
     public void testEmptyMatch() {
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
-        convert(new MatchBuilder().build(), datapathIdConvertorData);
+        // Empty null match is the same as empty match
+        Assert.assertNotNull(convert(new MatchBuilder().build(), datapathIdConvertorData));
     }
 
     /**
@@ -204,8 +204,8 @@ public class MatchResponseConvertor2Test {
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                .MatchBuilder salMatch = convert(match, datapathIdConvertorData);
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder salMatch =
+                convert(match, datapathIdConvertorData);
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match builtMatch =
                 salMatch.build();

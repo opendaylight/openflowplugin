@@ -105,7 +105,7 @@ public class LLDPDataTreeChangeListenerTest {
     }
 
     private static void evaluateInstruction(final Instruction instruction) {
-        if (instruction.getInstruction() instanceof ApplyActionsCase) {
+        if (instruction != null && instruction.getInstruction() instanceof ApplyActionsCase) {
             ApplyActionsCase applyActionsCase = (ApplyActionsCase) instruction.getInstruction();
             assertNotNull(applyActionsCase.getApplyActions().getAction());
             assertEquals(1, applyActionsCase.getApplyActions().getAction().size());

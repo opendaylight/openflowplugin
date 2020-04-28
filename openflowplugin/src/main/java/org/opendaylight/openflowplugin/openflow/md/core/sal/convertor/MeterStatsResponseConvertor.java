@@ -78,7 +78,7 @@ public class MeterStatsResponseConvertor extends Convertor<
             salMeterStats.setPacketInCount(new Counter64(meterStats.getPacketInCount()));
             salMeterStats.withKey(new MeterStatsKey(salMeterStats.getMeterId()));
 
-            List<MeterBandStats> allMeterBandStats = meterStats.getMeterBandStats();
+            List<MeterBandStats> allMeterBandStats = meterStats.nonnullMeterBandStats();
 
             MeterBandStatsBuilder meterBandStatsBuilder = new MeterBandStatsBuilder();
             List<BandStat> listAllBandStats = new ArrayList<>();

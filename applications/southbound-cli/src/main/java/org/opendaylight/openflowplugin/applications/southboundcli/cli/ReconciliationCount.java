@@ -8,8 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
+import java.util.Collection;
 import java.util.Formatter;
-import java.util.List;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -29,7 +29,7 @@ public class ReconciliationCount extends OsgiCommandSupport {
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
     protected Object doExecute() {
-        List<ReconcileCounter> result = ShellUtil.getReconcileCount(dataBroker);
+        Collection<ReconcileCounter> result = ShellUtil.getReconcileCount(dataBroker);
         if (result.isEmpty()) {
             System.out.println("Reconciliation count not yet available for openflow nodes.");
         } else {

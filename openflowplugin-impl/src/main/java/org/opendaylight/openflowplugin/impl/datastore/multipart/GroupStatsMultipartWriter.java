@@ -37,7 +37,7 @@ public class GroupStatsMultipartWriter extends AbstractMultipartWriter<GroupStat
 
     @Override
     public void storeStatistics(final GroupStatisticsReply statistics, final boolean withParents) {
-        statistics.getGroupStats()
+        statistics.nonnullGroupStats().values()
                 .forEach(stat -> {
                     writeToTransaction(
                             getInstanceIdentifier()

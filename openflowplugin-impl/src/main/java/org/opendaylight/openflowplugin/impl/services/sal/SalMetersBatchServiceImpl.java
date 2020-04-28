@@ -108,7 +108,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
     public ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBatch(final AddMetersBatchInput input) {
         LOG.trace("Adding meters @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddMeters().size());
         final ArrayList<ListenableFuture<RpcResult<AddMeterOutput>>> resultsLot = new ArrayList<>();
-        for (BatchAddMeters addMeter : input.getBatchAddMeters()) {
+        for (BatchAddMeters addMeter : input.nonnullBatchAddMeters().values()) {
             final AddMeterInput addMeterInput = new AddMeterInputBuilder(addMeter)
                     .setMeterRef(createMeterRef(input.getNode(), addMeter))
                     .setNode(input.getNode())
@@ -118,7 +118,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
                 Futures.transform(Futures.allAsList(resultsLot),
-                        MeterUtil.createCumulativeFunction(input.getBatchAddMeters()),
+                        MeterUtil.createCumulativeFunction(input.nonnullBatchAddMeters().values()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBulkFuture =
@@ -138,7 +138,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveMeters().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveMeterOutput>>> resultsLot = new ArrayList<>();
-        for (BatchRemoveMeters addMeter : input.getBatchRemoveMeters()) {
+        for (BatchRemoveMeters addMeter : input.nonnullBatchRemoveMeters().values()) {
             final RemoveMeterInput removeMeterInput = new RemoveMeterInputBuilder(addMeter)
                     .setMeterRef(createMeterRef(input.getNode(), addMeter))
                     .setNode(input.getNode())
@@ -148,7 +148,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
                 Futures.transform(Futures.allAsList(resultsLot),
-                        MeterUtil.createCumulativeFunction(input.getBatchRemoveMeters()),
+                        MeterUtil.createCumulativeFunction(input.nonnullBatchRemoveMeters().values()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<RemoveMetersBatchOutput>> removeMetersBulkFuture =

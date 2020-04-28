@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -28,8 +29,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.BatchFlowOutputListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.add.flows.batch.input.BatchAddFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.remove.flows.batch.input.BatchRemoveFlows;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.update.flows.batch.input.BatchUpdateFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -59,11 +63,12 @@ public class FlatBatchFlowAdaptersTest {
                 createAddFlowBatch("2")));
 
         final AddFlowsBatchInput addFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, NODE_REF);
+        Iterator<BatchAddFlows> iterator = addFlowsBatchInput.nonnullBatchAddFlows().values().iterator();
 
         Assert.assertTrue(addFlowsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, addFlowsBatchInput.getBatchAddFlows().size());
-        Assert.assertEquals("1", addFlowsBatchInput.getBatchAddFlows().get(0).getFlowId().getValue());
-        Assert.assertEquals("2", addFlowsBatchInput.getBatchAddFlows().get(1).getFlowId().getValue());
+        Assert.assertEquals("1", iterator.next().getFlowId().getValue());
+        Assert.assertEquals("2", iterator.next().getFlowId().getValue());
     }
 
     private FlatBatchAddFlow createAddFlowBatch(final String flowIdValue) {
@@ -94,11 +99,12 @@ public class FlatBatchFlowAdaptersTest {
 
         final RemoveFlowsBatchInput removeFlowsBatchInput =
                 FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, NODE_REF);
+        Iterator<BatchRemoveFlows> iterator = removeFlowsBatchInput.nonnullBatchRemoveFlows().values().iterator();
 
         Assert.assertTrue(removeFlowsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, removeFlowsBatchInput.getBatchRemoveFlows().size());
-        Assert.assertEquals("1", removeFlowsBatchInput.getBatchRemoveFlows().get(0).getFlowId().getValue());
-        Assert.assertEquals("2", removeFlowsBatchInput.getBatchRemoveFlows().get(1).getFlowId().getValue());
+        Assert.assertEquals("1", iterator.next().getFlowId().getValue());
+        Assert.assertEquals("2", iterator.next().getFlowId().getValue());
     }
 
     @Test
@@ -111,11 +117,12 @@ public class FlatBatchFlowAdaptersTest {
 
         final UpdateFlowsBatchInput updateFlowsBatchInput =
                 FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, NODE_REF);
+        Iterator<BatchUpdateFlows> iterator = updateFlowsBatchInput.nonnullBatchUpdateFlows().values().iterator();
 
         Assert.assertTrue(updateFlowsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, updateFlowsBatchInput.getBatchUpdateFlows().size());
-        Assert.assertEquals("1", updateFlowsBatchInput.getBatchUpdateFlows().get(0).getFlowId().getValue());
-        Assert.assertEquals("2", updateFlowsBatchInput.getBatchUpdateFlows().get(1).getFlowId().getValue());
+        Assert.assertEquals("1", iterator.next().getFlowId().getValue());
+        Assert.assertEquals("2", iterator.next().getFlowId().getValue());
     }
 
     @Test
@@ -132,14 +139,17 @@ public class FlatBatchFlowAdaptersTest {
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchFlowAdapters
                 .convertBatchFlowResult(3).apply(input);
+        Iterator<BatchFailure> iterator = rpcResult.getResult().nonnullBatchFailure().values().iterator();
 
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
-        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
+        Assert.assertEquals(3, iterator.next()
+                .getBatchOrder().intValue());
+        BatchFailure secondBatchFailure = iterator.next();
+        Assert.assertEquals(4, secondBatchFailure.getBatchOrder().intValue());
         Assert.assertEquals("f2",
-                ((FlatBatchFailureFlowIdCase) rpcResult.getResult().getBatchFailure().get(1).getBatchItemIdChoice())
+                ((FlatBatchFailureFlowIdCase) secondBatchFailure.getBatchItemIdChoice())
                         .getFlowId().getValue());
     }
 
@@ -154,7 +164,7 @@ public class FlatBatchFlowAdaptersTest {
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
     private BatchFailedFlowsOutput createBatchFailedFlowsOutput(final Integer batchOrder, final String flowIdValue) {

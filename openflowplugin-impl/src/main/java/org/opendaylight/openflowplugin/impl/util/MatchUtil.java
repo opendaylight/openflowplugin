@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
@@ -159,6 +160,8 @@ public final class MatchUtil {
         return ExtensionResolvers
                 .getMatchExtensionResolver()
                 .getExtension(match)
-                .flatMap(matchExtension -> Optional.ofNullable(matchExtension.getExtensionList()));
+                .flatMap(matchExtension ->
+                        Optional.ofNullable(matchExtension.nonnullExtensionList().values()
+                        .stream().collect(Collectors.toList())));
     }
 }

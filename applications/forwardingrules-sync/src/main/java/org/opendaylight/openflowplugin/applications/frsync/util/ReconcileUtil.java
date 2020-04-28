@@ -224,8 +224,8 @@ public final class ReconcileUtil {
     public static boolean checkGroupPrecondition(final Set<Uint32> installedGroupIds, final Group pendingGroup) {
         boolean okToInstall = true;
         // check each bucket in the pending group
-        for (Bucket bucket : pendingGroup.getBuckets().getBucket()) {
-            for (Action action : bucket.getAction()) {
+        for (Bucket bucket : pendingGroup.getBuckets().nonnullBucket().values()) {
+            for (Action action : bucket.nonnullAction().values()) {
                 // if the output action is a group
                 if (GroupActionCase.class.equals(action.getAction().implementedInterface())) {
                     Uint32 groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
@@ -271,7 +271,7 @@ public final class ReconcileUtil {
      */
     public static ItemSyncBox<Meter> resolveMeterDiffs(final NodeId nodeId,
                                                        final Map<MeterId, Meter> meterOperationalMap,
-                                                       final List<Meter> metersConfigured,
+                                                       final Collection<Meter> metersConfigured,
                                                        final boolean gatherUpdates) {
         LOG.trace("resolving meters for {}", nodeId.getValue());
         final ItemSyncBox<Meter> syncBox = new ItemSyncBox<>();
@@ -297,7 +297,7 @@ public final class ReconcileUtil {
      * @param gatherUpdates      check content of pending item if present on device (and create update task eventually)
      * @return list of safe synchronization steps
      */
-    private static ItemSyncBox<Flow> resolveFlowDiffsInTable(final List<Flow> flowsConfigured,
+    private static ItemSyncBox<Flow> resolveFlowDiffsInTable(final Collection<Flow> flowsConfigured,
                                                             final Map<FlowDescriptor, Flow> flowOperationalMap,
                                                             final boolean gatherUpdates) {
         final ItemSyncBox<Flow> flowsSyncBox = new ItemSyncBox<>();
@@ -327,13 +327,13 @@ public final class ReconcileUtil {
      * @return map : key={@link TableKey}, value={@link ItemSyncBox} of safe synchronization steps
      */
     public static Map<TableKey, ItemSyncBox<Flow>> resolveFlowDiffsInAllTables(final NodeId nodeId,
-            final Map<Uint8, Table> tableOperationalMap, final List<Table> tablesConfigured,
+            final Map<Uint8, Table> tableOperationalMap, final Collection<Table> tablesConfigured,
             final boolean gatherUpdates) {
         LOG.trace("resolving flows in tables for {}", nodeId.getValue());
         final Map<TableKey, ItemSyncBox<Flow>> tableFlowSyncBoxes = new HashMap<>();
         for (final Table tableConfigured : tablesConfigured) {
-            final List<Flow> flowsConfigured = tableConfigured.getFlow();
-            if (flowsConfigured == null || flowsConfigured.isEmpty()) {
+            final Collection<Flow> flowsConfigured = tableConfigured.nonnullFlow().values();
+            if (flowsConfigured.isEmpty()) {
                 continue;
             }
 
@@ -342,7 +342,7 @@ public final class ReconcileUtil {
             // wrap existing (on device) flows in current table into map
             final Map<FlowDescriptor, Flow> flowOperationalMap = FlowCapableNodeLookups.wrapFlowsToMap(
                     tableOperational != null
-                            ? tableOperational.getFlow()
+                            ? tableOperational.nonnullFlow().values()
                             : null);
 
 
@@ -355,15 +355,15 @@ public final class ReconcileUtil {
         return tableFlowSyncBoxes;
     }
 
-    public static List<Group> safeGroups(FlowCapableNode node) {
-        return node == null ? Collections.emptyList() : node.nonnullGroup();
+    public static Collection<Group> safeGroups(FlowCapableNode node) {
+        return node == null ? Collections.emptyList() : node.nonnullGroup().values();
     }
 
-    public static List<Table> safeTables(FlowCapableNode node) {
-        return node == null ? Collections.emptyList() : node.nonnullTable();
+    public static Collection<Table> safeTables(FlowCapableNode node) {
+        return node == null ? Collections.emptyList() : node.nonnullTable().values();
     }
 
-    public static List<Meter> safeMeters(FlowCapableNode node) {
-        return node == null ? Collections.emptyList() : node.nonnullMeter();
+    public static Collection<Meter> safeMeters(FlowCapableNode node) {
+        return node == null ? Collections.emptyList() : node.nonnullMeter().values();
     }
 }

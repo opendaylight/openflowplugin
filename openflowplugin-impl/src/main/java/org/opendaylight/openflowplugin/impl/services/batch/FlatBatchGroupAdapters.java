@@ -140,7 +140,7 @@ public final class FlatBatchGroupAdapters {
             final RpcResult<T> input, final int stepOffset) {
         final List<BatchFailure> batchFailures = new ArrayList<>();
         if (input.getResult().getBatchFailedGroupsOutput() != null) {
-            for (BatchFailedGroupsOutput stepOutput : input.getResult().getBatchFailedGroupsOutput()) {
+            for (BatchFailedGroupsOutput stepOutput : input.getResult().nonnullBatchFailedGroupsOutput().values()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
                         .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
                         .setBatchItemIdChoice(new FlatBatchFailureGroupIdCaseBuilder()

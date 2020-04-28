@@ -134,7 +134,8 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
         final MultipartReplyFlowStats reply = (MultipartReplyFlowStats) message.getMultipartReplyBody();
 
         assertEquals(XID, message.getXid().intValue());
-        final FlowAndStatisticsMapList flowAndStatisticsMapList = reply.getFlowAndStatisticsMapList().get(0);
+        final FlowAndStatisticsMapList flowAndStatisticsMapList =
+                reply.nonnullFlowAndStatisticsMapList().values().iterator().next();
         assertEquals(TABLE_ID, flowAndStatisticsMapList.getTableId().shortValue());
         assertEquals(SECOND, flowAndStatisticsMapList.getDuration().getSecond().getValue().intValue());
         assertEquals(NANOSECOND, flowAndStatisticsMapList.getDuration().getNanosecond().getValue().intValue());
@@ -149,12 +150,13 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
         assertEquals(1, flowAndStatisticsMapList.getInstructions().getInstruction().size());
 
         final Instruction instruction =
-                flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
+                flowAndStatisticsMapList.getInstructions().nonnullInstruction().values().iterator().next()
+                        .getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().getAction().size());
-        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
+        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().values().iterator().next()
                 .getAction().implementedInterface());
     }
 }

@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -133,6 +134,7 @@ public final class DSInputFactory {
 
     public static Group createGroupWithPreconditions(final long groupIdValue, final long... requiredId) {
         final List<Action> actionBag = new ArrayList<>();
+        int key = 0;
         for (long groupIdPrecondition : requiredId) {
             final GroupAction groupAction = new GroupActionBuilder()
                     .setGroupId(groupIdPrecondition)
@@ -142,6 +144,7 @@ public final class DSInputFactory {
                     .build();
             final Action action = new ActionBuilder()
                     .setAction(groupActionCase)
+                    .withKey(new ActionKey(key++))
                     .build();
             actionBag.add(action);
         }

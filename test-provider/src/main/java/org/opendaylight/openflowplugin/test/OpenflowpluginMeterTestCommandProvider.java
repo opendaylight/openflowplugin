@@ -377,8 +377,9 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, meter, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
+                testNode);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object notUsed) {
@@ -396,12 +397,14 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, meter, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
+                testNode);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
         InstanceIdentifier<Meter> path2 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter1.getMeterId()));
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode), testNode, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path2, meter1, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
+                testNode);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, meter1);
 
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override

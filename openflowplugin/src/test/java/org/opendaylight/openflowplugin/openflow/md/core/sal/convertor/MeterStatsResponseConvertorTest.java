@@ -81,9 +81,9 @@ public class MeterStatsResponseConvertorTest {
             assertEquals(Uint32.valueOf(cnt), meterStats.getFlowCount().getValue());
             assertEquals(Uint64.valueOf(cnt), meterStats.getByteInCount().getValue());
 
-            assertEquals(PRESET_COUNT, meterStats.getMeterBandStats().getBandStat().size());
+            assertEquals(PRESET_COUNT, meterStats.getMeterBandStats().nonnullBandStat().size());
             int bandStatCount = 0;
-            for (BandStat bandStat : meterStats.getMeterBandStats().getBandStat()) {
+            for (BandStat bandStat : meterStats.getMeterBandStats().nonnullBandStat().values()) {
                 assertEquals(Uint64.valueOf(bandStatCount), bandStat.getByteBandCount().getValue());
                 assertEquals(Uint64.valueOf(bandStatCount), bandStat.getPacketBandCount().getValue());
                 bandStatCount++;
