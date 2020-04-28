@@ -58,7 +58,7 @@ public class MultipartReplyPortStatsDeserializerTest extends AbstractMultipartDe
         final MultipartReplyPortStats reply = (MultipartReplyPortStats) deserializeMultipart(buffer);
 
         final NodeConnectorStatisticsAndPortNumberMap portStats =
-                reply.getNodeConnectorStatisticsAndPortNumberMap().get(0);
+                reply.getNodeConnectorStatisticsAndPortNumberMap().values().iterator().next();
         assertEquals(PACKETS_RECEIVED, portStats.getPackets().getReceived().longValue());
         assertEquals(PACKETS_TRANSMITTED, portStats.getPackets().getTransmitted().longValue());
         assertEquals(BYTES_RECEIVED, portStats.getBytes().getReceived().longValue());

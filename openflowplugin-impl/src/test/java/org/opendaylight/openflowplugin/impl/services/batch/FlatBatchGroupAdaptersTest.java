@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -28,10 +29,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.Ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.BatchGroupOutputListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.add.groups.batch.input.BatchAddGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.OriginalBatchedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.UpdatedBatchedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.remove.groups.batch.input.BatchRemoveGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -62,11 +65,12 @@ public class FlatBatchGroupAdaptersTest {
 
         final AddGroupsBatchInput addGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, NODE_REF);
+        Iterator<BatchAddGroups> iterator = addGroupsBatchInput.getBatchAddGroups().values().iterator();
 
         Assert.assertTrue(addGroupsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, addGroupsBatchInput.getBatchAddGroups().size());
-        Assert.assertEquals(1L, addGroupsBatchInput.getBatchAddGroups().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(2L, addGroupsBatchInput.getBatchAddGroups().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(1L, iterator.next().getGroupId().getValue().longValue());
+        Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
     }
 
     private FlatBatchAddGroup createAddGroupBatch(final long groupIdValue) {
@@ -102,13 +106,12 @@ public class FlatBatchGroupAdaptersTest {
 
         final RemoveGroupsBatchInput removeGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, NODE_REF);
+        Iterator<BatchRemoveGroups> iterator = removeGroupsBatchInput.getBatchRemoveGroups().values().iterator();
 
         Assert.assertTrue(removeGroupsBatchInput.isBarrierAfter());
         Assert.assertEquals(2, removeGroupsBatchInput.getBatchRemoveGroups().size());
-        Assert.assertEquals(1L,
-                removeGroupsBatchInput.getBatchRemoveGroups().get(0).getGroupId().getValue().longValue());
-        Assert.assertEquals(2L,
-                removeGroupsBatchInput.getBatchRemoveGroups().get(1).getGroupId().getValue().longValue());
+        Assert.assertEquals(1L, iterator.next().getGroupId().getValue().longValue());
+        Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
     }
 
     @Test
@@ -144,13 +147,15 @@ public class FlatBatchGroupAdaptersTest {
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchGroupAdapters
                 .convertBatchGroupResult(3).apply(input);
+        Iterator<BatchFailure> iterator = rpcResult.getResult().getBatchFailure().values().iterator();
 
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
         Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
-        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2L, ((FlatBatchFailureGroupIdCase) rpcResult.getResult().getBatchFailure().get(1)
+        Assert.assertEquals(3, iterator.next().getBatchOrder().intValue());
+        BatchFailure secondBatchFailure = iterator.next();
+        Assert.assertEquals(4, secondBatchFailure.getBatchOrder().intValue());
+        Assert.assertEquals(2L, ((FlatBatchFailureGroupIdCase) secondBatchFailure
                 .getBatchItemIdChoice()).getGroupId().getValue().longValue());
     }
 
@@ -165,7 +170,7 @@ public class FlatBatchGroupAdaptersTest {
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
     private BatchFailedGroupsOutput createBatchFailedGroupsOutput(final Integer batchOrder, final long groupIdValue) {

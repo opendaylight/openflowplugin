@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -126,23 +128,19 @@ public class DeviceFlowRegistryImplTest {
 
         fillRegistry(path, null);
 
+        fillRegistry(path, new FlowCapableNodeBuilder().build());
+
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(null)
+                .setTable(Collections.EMPTY_LIST)
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(null))
-                .build());
-
-        fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(null)
-                        .build()))
+                .setTable(Collections.singletonList(new TableBuilder().build()))
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(Collections.singletonList(null))
+                        .setFlow(Collections.EMPTY_LIST)
                         .build()))
                 .build());
 

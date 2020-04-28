@@ -49,9 +49,9 @@ public class GroupingLooseResolverTest {
                 mb2.addAugmentation(GeneralAugMatchNotifPacketIn.class, odlxxx2).build();
 
         Assert.assertEquals(JoachimTheBig.class,
-                eqGroup.getExtension(match1).get().getExtensionList().get(0).getExtensionKey());
+                eqGroup.getExtension(match1).get().getExtensionList().values().iterator().next().getExtensionKey());
         Assert.assertEquals(JoachimTheTiny.class,
-                eqGroup.getExtension(match2).get().getExtensionList().get(0).getExtensionKey());
+                eqGroup.getExtension(match2).get().getExtensionList().values().iterator().next().getExtensionKey());
     }
 
     private interface JoachimTheBig extends ExtensionKey {
