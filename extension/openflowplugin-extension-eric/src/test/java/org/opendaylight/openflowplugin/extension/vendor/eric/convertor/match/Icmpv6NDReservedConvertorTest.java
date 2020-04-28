@@ -142,8 +142,8 @@ public class Icmpv6NDReservedConvertorTest {
         SetField setField = sb.addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
                 ndReservedSetField).build();
 
-        Assert.assertEquals(Icmpv6NdReservedKey.class, eqGroup.getExtension(setField).get().getExtensionList().get(0)
-                .getExtensionKey());
+        Assert.assertEquals(Icmpv6NdReservedKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
+                .values().iterator().next().getExtensionKey());
     }
 
 }

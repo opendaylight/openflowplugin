@@ -8,9 +8,14 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -58,7 +63,16 @@ public final class GroupStatisticsToNotificationTransformer {
             final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
                     replyBody.getGroupStats(), data);
 
-            groupStatsList.ifPresent(groupStats -> notification.getGroupStats().addAll(groupStats));
+            groupStatsList.ifPresent(groupStats -> {
+                if (notification.getGroupStats() == null) {
+                    List<GroupStats> stats = Lists.newArrayList(groupStats);
+                    notification.setGroupStats(stats);
+                } else {
+                    Set<GroupStats> stats = new HashSet<>(notification.getGroupStats().values());
+                    stats.addAll(groupStats);
+                    notification.setGroupStats(stats.stream().collect(Collectors.toList()));
+                }
+            });
         }
         return notification.build();
     }

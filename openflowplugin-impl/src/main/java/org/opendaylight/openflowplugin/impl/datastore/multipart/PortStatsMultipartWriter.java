@@ -42,7 +42,7 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
 
     @Override
     public void storeStatistics(final NodeConnectorStatisticsAndPortNumberMap statistics, final boolean withParents) {
-        statistics.getNodeConnectorStatisticsAndPortNumberMap()
+        statistics.nonnullNodeConnectorStatisticsAndPortNumberMap().values()
             .forEach(stat -> {
                 final OpenflowVersion openflowVersion = OpenflowVersion.get(features.getVersion());
                 final Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(openflowVersion,

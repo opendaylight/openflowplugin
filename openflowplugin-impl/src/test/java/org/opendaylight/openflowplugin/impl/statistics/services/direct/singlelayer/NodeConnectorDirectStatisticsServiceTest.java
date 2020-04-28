@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
@@ -31,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.request.multipart.request.body.MultipartRequestPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
@@ -75,7 +77,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         assertTrue(output.getNodeConnectorStatisticsAndPortNumberMap().size() > 0);
 
         final NodeConnectorStatisticsAndPortNumberMap stats =
-                output.getNodeConnectorStatisticsAndPortNumberMap().get(0);
+                output.nonnullNodeConnectorStatisticsAndPortNumberMap().values().iterator().next();
 
         assertEquals(stats.getNodeConnectorId(), nodeConnectorId);
     }
@@ -85,7 +87,8 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         final NodeConnectorStatisticsAndPortNumberMap stat = mock(NodeConnectorStatisticsAndPortNumberMap.class);
         when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
-        final List<NodeConnectorStatisticsAndPortNumberMap> stats = Collections.singletonList(stat);
+        final Map<NodeConnectorStatisticsAndPortNumberMapKey, NodeConnectorStatisticsAndPortNumberMap> stats
+                = Collections.singletonMap(stat.key(), stat);
         final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
         when(output.getNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
 

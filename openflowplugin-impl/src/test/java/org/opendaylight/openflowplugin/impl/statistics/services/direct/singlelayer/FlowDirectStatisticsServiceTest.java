@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -31,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -96,7 +98,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         final GetFlowStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.getFlowAndStatisticsMapList().size() > 0);
 
-        final FlowAndStatisticsMap stats = output.getFlowAndStatisticsMapList().get(0);
+        final FlowAndStatisticsMap stats = output.nonnullFlowAndStatisticsMapList().values().iterator().next();
 
         assertEquals(stats.getTableId(), TABLE_NO);
     }
@@ -107,7 +109,8 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(stat.getTableId()).thenReturn(TABLE_NO);
         when(stat.getMatch()).thenReturn(new MatchBuilder().build());
 
-        final List<FlowAndStatisticsMapList> stats = Collections.singletonList(stat);
+        final Map<FlowAndStatisticsMapListKey, FlowAndStatisticsMapList> stats
+                = Collections.singletonMap(stat.key(), stat);
         final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
         when(output.getFlowAndStatisticsMapList()).thenReturn(stats);
 

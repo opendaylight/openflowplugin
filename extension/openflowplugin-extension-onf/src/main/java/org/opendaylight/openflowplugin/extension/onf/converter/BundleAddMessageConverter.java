@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.extension.onf.converter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
@@ -22,7 +23,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidCo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
@@ -178,9 +179,10 @@ public class BundleAddMessageConverter implements
         Optional<PortModInput> portModInput = Optional.empty();
         final Class<?> clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleUpdatePortCase.class)) {
-            portModInput = CONVERTER_EXECUTOR.convert(new PortBuilder(
-                    ((BundleUpdatePortCase) messageCase).getUpdatePortCaseData().getPort().getPort().get(0)).build(),
-                    data);
+            Collection<Port> ports
+                    = ((BundleUpdatePortCase) messageCase).getUpdatePortCaseData().getPort().nonnullPort().values();
+            Port port = ports.iterator().next();
+            portModInput = CONVERTER_EXECUTOR.convert(port, data);
         }
 
         if (portModInput.isPresent()) {

@@ -140,7 +140,7 @@ public final class FlatBatchMeterAdapters {
             final RpcResult<T> input, final int stepOffset) {
         final List<BatchFailure> batchFailures = new ArrayList<>();
         if (input.getResult().getBatchFailedMetersOutput() != null) {
-            for (BatchFailedMetersOutput stepOutput : input.getResult().getBatchFailedMetersOutput()) {
+            for (BatchFailedMetersOutput stepOutput : input.getResult().nonnullBatchFailedMetersOutput().values()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
                         .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
                         .setBatchItemIdChoice(new FlatBatchFailureMeterIdCaseBuilder()

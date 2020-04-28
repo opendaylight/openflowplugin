@@ -78,7 +78,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
                   PathUtil.extractNodeId(input.getNode()).getValue(),
                   input.getBatch().size());
         // create plan
-        final List<BatchPlanStep> batchPlan = FlatBatchUtil.assembleBatchPlan(input.getBatch());
+        final List<BatchPlanStep> batchPlan = FlatBatchUtil.assembleBatchPlan(input.nonnullBatch().values());
         // add barriers where needed
         FlatBatchUtil.markBarriersWhereNeeded(batchPlan);
         // prepare chain elements

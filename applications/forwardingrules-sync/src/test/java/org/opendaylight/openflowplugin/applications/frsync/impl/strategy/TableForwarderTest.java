@@ -110,8 +110,10 @@ public class TableForwarderTest {
         Assert.assertEquals(nodePath, updateTableInput.getNode().getValue());
 
         Assert.assertEquals(1, updateTableInput.getOriginalTable().getTableFeatures().size());
-        Assert.assertEquals("test-table", updateTableInput.getOriginalTable().getTableFeatures().get(0).getName());
+        Assert.assertEquals("test-table", updateTableInput.getOriginalTable().nonnullTableFeatures().values()
+                .iterator().next().getName());
         Assert.assertEquals(1, updateTableInput.getUpdatedTable().getTableFeatures().size());
-        Assert.assertEquals("another-table", updateTableInput.getUpdatedTable().getTableFeatures().get(0).getName());
+        Assert.assertEquals("another-table", updateTableInput.getUpdatedTable().nonnullTableFeatures().values()
+                .iterator().next().getName());
     }
 }

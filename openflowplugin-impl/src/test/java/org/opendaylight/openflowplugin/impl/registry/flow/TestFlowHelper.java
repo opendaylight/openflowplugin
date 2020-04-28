@@ -10,7 +10,9 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -51,6 +53,7 @@ public final class TestFlowHelper {
         matchBuilder.setEthernetMatch(ethernetMatchBuilder.build());
 
         flowAndStatisticsMapListBuilder.setMatch(matchBuilder.build());
+        flowAndStatisticsMapListBuilder.withKey(new FlowAndStatisticsMapListKey(new FlowId(String.valueOf(index))));
         return flowAndStatisticsMapListBuilder;
     }
 }

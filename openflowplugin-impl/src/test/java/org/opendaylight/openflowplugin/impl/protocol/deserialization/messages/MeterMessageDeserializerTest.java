@@ -13,7 +13,8 @@ import static org.junit.Assert.assertTrue;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -22,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 
 public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
@@ -85,11 +87,13 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(message.getFlags().isMeterStats(), IS_STATS);
         assertEquals(message.getMeterId().getValue().intValue(), ID);
 
-        final List<MeterBandHeader> meterBandHeader = message.getMeterBandHeaders().getMeterBandHeader();
+        final Map<MeterBandHeaderKey, MeterBandHeader> meterBandHeader =
+                message.getMeterBandHeaders().nonnullMeterBandHeader();
         assertEquals(meterBandHeader.size(), 2);
+        final Iterator<MeterBandHeader> meterBandHeaderIt = meterBandHeader.values().iterator();
 
         // Drop band
-        final MeterBandHeader dropHeader = meterBandHeader.get(0);
+        final MeterBandHeader dropHeader = meterBandHeaderIt.next();
         assertEquals(Drop.class, dropHeader.getBandType().implementedInterface());
         assertTrue(dropHeader.getMeterBandTypes().getFlags().isOfpmbtDrop());
 
@@ -98,7 +102,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(DROP_BURST, drop.getDropBurstSize().intValue());
 
         // Dscp band
-        final MeterBandHeader dscpHeader = meterBandHeader.get(1);
+        final MeterBandHeader dscpHeader = meterBandHeaderIt.next();
         assertEquals(DscpRemark.class, dscpHeader.getBandType().implementedInterface());
         assertTrue(dscpHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark());
 

@@ -27,7 +27,8 @@ public class ApplyActionsTablePropertySerializer extends AbstractTablePropertySe
     protected void serializeProperty(final ApplyActions property, final ByteBuf byteBuf) {
         property
                 .getApplyActions()
-                .getAction()
+                .nonnullAction()
+                .values()
                 .stream()
                 .sorted(OrderComparator.build())
                 .map(Action::getAction)

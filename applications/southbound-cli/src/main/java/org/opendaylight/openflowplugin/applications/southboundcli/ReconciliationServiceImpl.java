@@ -228,7 +228,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 }
             }
             try {
-                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build(), true);
+                tx.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier,
+                        counterBuilder.build());
                 tx.commit().get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Exception while submitting counter for {}", nodeId, e);

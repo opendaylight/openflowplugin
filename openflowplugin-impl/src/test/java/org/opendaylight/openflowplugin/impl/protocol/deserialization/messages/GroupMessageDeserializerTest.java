@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
 import static org.junit.Assert.assertEquals;
@@ -79,12 +78,13 @@ public class GroupMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(GROUP_TYPE.getIntValue(), message.getGroupType().getIntValue());
         assertEquals(1, message.getBuckets().getBucket().size());
 
-        final Bucket bucket = message.getBuckets().getBucket().get(0);
+        final Bucket bucket = message.getBuckets().nonnullBucket().values().iterator().next();
         assertEquals(WEIGHT, bucket.getWeight().shortValue());
         assertEquals(WATCH_PORT, bucket.getWatchPort().intValue());
         assertEquals(WATCH_GROUP, bucket.getWatchGroup().intValue());
         assertEquals(1, bucket.getAction().size());
-        assertEquals(PopPbbActionCase.class, bucket.getAction().get(0).getAction().implementedInterface());
+        assertEquals(PopPbbActionCase.class,
+            bucket.nonnullAction().values().iterator().next().getAction().implementedInterface());
     }
 
 }

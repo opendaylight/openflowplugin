@@ -40,7 +40,7 @@ public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsS
             .setGroupStats(input
                 .stream()
                 .flatMap(multipartReply -> ((MultipartReplyGroupStats) multipartReply.getMultipartReplyBody())
-                    .getGroupStats()
+                    .nonnullGroupStats().values()
                     .stream())
                 .collect(Collectors.toList()))
             .build();

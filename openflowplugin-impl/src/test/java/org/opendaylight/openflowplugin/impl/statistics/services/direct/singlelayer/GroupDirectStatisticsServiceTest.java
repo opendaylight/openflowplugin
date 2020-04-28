@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
@@ -28,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
@@ -78,7 +80,8 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         assertTrue(output.getGroupStats().size() > 0);
 
         final org.opendaylight.yang.gen.v1.urn
-            .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stats = output.getGroupStats().get(0);
+            .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats stats =
+                output.nonnullGroupStats().values().iterator().next();
 
         assertEquals(stats.getGroupId().getValue(), GROUP_NO);
     }
@@ -91,9 +94,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                         .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats.class);
         when(stat.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>
-                stats = Collections.singletonList(stat);
+        final Map<GroupStatsKey, GroupStats> stats = Collections.singletonMap(stat.key(), stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
         when(output.getGroupStats()).thenReturn(stats);
 

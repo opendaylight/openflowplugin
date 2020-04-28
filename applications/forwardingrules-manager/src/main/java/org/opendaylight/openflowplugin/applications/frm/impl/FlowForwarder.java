@@ -305,7 +305,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private void persistStaleFlow(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent),
-                staleFlow, false);
+                staleFlow);
 
         FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleFlowResultFuture(submitFuture);
