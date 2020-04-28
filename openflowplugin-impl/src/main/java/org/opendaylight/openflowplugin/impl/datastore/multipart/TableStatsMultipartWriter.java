@@ -33,7 +33,7 @@ public class TableStatsMultipartWriter extends AbstractMultipartWriter<FlowTable
     @Override
     public void storeStatistics(final FlowTableAndStatisticsMap statistics,
                                 final boolean withParents) {
-        statistics.getFlowTableAndStatisticsMap()
+        statistics.getFlowTableAndStatisticsMap().values()
             .forEach(stat -> writeToTransaction(
                 getInstanceIdentifier()
                     .augmentation(FlowCapableNode.class)

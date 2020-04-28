@@ -79,7 +79,7 @@ public final class QueueStatisticsToNotificationTransformer {
 
                 statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
 
-                notification.getQueueIdAndStatisticsMap().add(statsBuilder.build());
+                notification.getQueueIdAndStatisticsMap().values().add(statsBuilder.build());
             }
         }
         return notification.build();

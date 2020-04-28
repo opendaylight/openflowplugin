@@ -113,7 +113,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
         final List<FlowAndStatisticsMapList> stats = Collections.singletonList(stat);
         final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
-        when(output.getFlowAndStatisticsMapList()).thenReturn(stats);
+        when(output.getFlowAndStatisticsMapList().values()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

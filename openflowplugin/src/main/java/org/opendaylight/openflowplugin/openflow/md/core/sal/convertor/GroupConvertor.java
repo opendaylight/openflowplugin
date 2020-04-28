@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -25,9 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.gro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
@@ -83,14 +83,14 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private List<BucketsList> salToOFBucketList(final Buckets buckets, final short version, final int groupType,
+    private List<BucketsList> salToOFBucketList(final List<Bucket> buckets, final short version, final int groupType,
             final Uint64 datapathid) {
         final List<BucketsList> bucketLists = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket groupBucket :
-                buckets.getBucket()) {
+                buckets) {
             BucketsListBuilder bucketBuilder = new BucketsListBuilder();
 
             salToOFBucketListWeight(groupBucket, bucketBuilder, groupType);
@@ -182,17 +182,18 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         // Only if the bucket is configured for the group then add it
         // During group deletion do not push the buckets
         if (groupModInputBuilder.getCommand() != GroupModCommand.OFPGCDELETE) {
-            if (source.getBuckets() != null && source.getBuckets().getBucket().size() != 0) {
-
-                List<Bucket> bucketList = new ArrayList<>(source.getBuckets().getBucket());
-                Group group = new GroupBuilder(source)
-                        .setBuckets(new BucketsBuilder().setBucket(bucketList).build())
-                        .build();
-                Collections.sort(group.getBuckets().getBucket(), COMPARATOR);
-
-                List<BucketsList> bucketLists = salToOFBucketList(group.getBuckets(), data.getVersion(),
-                        group.getGroupType().getIntValue(), data.getDatapathId());
-                groupModInputBuilder.setBucketsList(bucketLists);
+            final Buckets buckets = source.getBuckets();
+            if (buckets != null) {
+                final Map<BucketKey, Bucket> bucket = buckets.getBucket();
+                if (bucket != null && !bucket.isEmpty()) {
+                    // TODO: we should be able to just sort the resulting the resulting list and not go through
+                    //       two copies
+                    List<Bucket> bucketList = new ArrayList<>(bucket.values());
+                    Collections.sort(bucketList, COMPARATOR);
+                    List<BucketsList> bucketLists = salToOFBucketList(bucketList, data.getVersion(),
+                        source.getGroupType().getIntValue(), data.getDatapathId());
+                    groupModInputBuilder.setBucketsList(bucketLists);
+                }
             }
         }
 

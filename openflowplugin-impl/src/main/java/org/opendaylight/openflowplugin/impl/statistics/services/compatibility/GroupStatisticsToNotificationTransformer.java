@@ -58,7 +58,7 @@ public final class GroupStatisticsToNotificationTransformer {
             final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
                     replyBody.getGroupStats(), data);
 
-            groupStatsList.ifPresent(groupStats -> notification.getGroupStats().addAll(groupStats));
+            groupStatsList.ifPresent(groupStats -> notification.getGroupStats().values().addAll(groupStats));
         }
         return notification.build();
     }
