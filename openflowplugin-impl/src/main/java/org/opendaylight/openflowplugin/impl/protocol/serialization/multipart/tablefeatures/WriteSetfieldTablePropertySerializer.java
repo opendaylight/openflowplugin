@@ -29,7 +29,7 @@ public class WriteSetfieldTablePropertySerializer extends AbstractTablePropertyS
     protected void serializeProperty(final WriteSetfield property, final ByteBuf byteBuf) {
         property
             .getWriteSetfield()
-            .getSetFieldMatch()
+            .getSetFieldMatch().values()
             .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
                     new MessageTypeKey<>(

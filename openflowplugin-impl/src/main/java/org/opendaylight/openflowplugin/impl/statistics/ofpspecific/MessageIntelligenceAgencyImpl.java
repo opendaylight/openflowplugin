@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
             new ConcurrentHashMap<>();
 
     @Override
-    public void spyMessage(@NonNull final Class<?> message, final StatisticsGroup statGroup) {
+    public void spyMessage(final Class<?> message, final StatisticsGroup statGroup) {
         Preconditions.checkNotNull(message, "Message can't be null.");
         getCounters(message, statGroup).increment();
     }
