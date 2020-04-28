@@ -162,7 +162,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     private void persistStaleMeter(StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleMeterInstanceIdentifier(staleMeter, nodeIdent),
-                staleMeter, false);
+                staleMeter);
 
         FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleMeterResultFuture(submitFuture);

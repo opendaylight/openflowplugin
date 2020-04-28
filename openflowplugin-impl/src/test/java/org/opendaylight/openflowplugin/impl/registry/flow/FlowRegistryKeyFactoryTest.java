@@ -72,7 +72,7 @@ public class FlowRegistryKeyFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         HashSet<FlowRegistryKey> flowRegistryKeys = new HashSet<>();
-        for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
+        for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList().values()) {
             final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), item);
             final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), item);
             flowRegistryKeys.add(key1);
@@ -178,7 +178,7 @@ public class FlowRegistryKeyFactoryTest {
     public void testGetHash() {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
-        for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList()) {
+        for (FlowAndStatisticsMapList item : flowStats.getFlowAndStatisticsMapList().values()) {
             FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), item);
             FlowRegistryKey lastHash = null;
             if (null != lastHash) {

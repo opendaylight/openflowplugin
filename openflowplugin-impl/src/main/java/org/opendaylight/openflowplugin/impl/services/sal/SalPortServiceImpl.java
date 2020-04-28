@@ -61,6 +61,6 @@ public final class SalPortServiceImpl
     }
 
     private Port getPortFromInput(final UpdatePortInput input) {
-        return input.getUpdatedPort().getPort().getPort().get(0);
+        return input.getUpdatedPort().getPort().getPort().values().iterator().next();
     }
 }

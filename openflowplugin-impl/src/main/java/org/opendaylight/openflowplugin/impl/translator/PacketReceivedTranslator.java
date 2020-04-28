@@ -88,9 +88,8 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
                 .orElseGet(MatchBuilder::new);
 
         final AugmentTuple<org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match>
-                matchExtensionWrap = MatchExtensionHelper
-                .processAllExtensions(input.getMatch().getMatchEntry(), OpenflowVersion.get(input.getVersion()),
-                                      MatchPath.PACKET_RECEIVED_MATCH);
+                matchExtensionWrap = MatchExtensionHelper.processAllExtensions(input.getMatch().nonnullMatchEntry(),
+                    OpenflowVersion.get(input.getVersion()), MatchPath.PACKET_RECEIVED_MATCH);
 
         if (matchExtensionWrap != null) {
             matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(),

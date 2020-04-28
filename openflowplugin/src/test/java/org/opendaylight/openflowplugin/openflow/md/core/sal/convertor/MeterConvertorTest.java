@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
@@ -32,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdMeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
@@ -69,6 +71,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder.setBandType(drp);
         meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
+        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
 
         final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
 
@@ -90,6 +93,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
         meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
+        meterBandHeaderBuilder1.withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
 
         final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
 
@@ -111,6 +115,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder2.setBandType(experimenter);
         meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
+        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
         MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
 
         List<MeterBandHeader> meterBandList = new ArrayList<>();
@@ -200,6 +205,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder.setBandType(drp);
         meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
+        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
 
         final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
 
@@ -222,6 +228,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
         meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
+        meterBandHeaderBuilder1.withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
 
         final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
 
@@ -244,6 +251,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder2.setBandType(experimenter);
         meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
+        meterBandHeaderBuilder2.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
         MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
 
         List<MeterBandHeader> meterBandList = new ArrayList<>();
@@ -349,6 +357,7 @@ public class MeterConvertorTest {
         meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
 
         meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
+        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
 
         final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
 
@@ -366,6 +375,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder1.setBandType(dscpRemark);
         meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
+        meterBandHeaderBuilder1.withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
 
         final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
 
@@ -382,6 +392,7 @@ public class MeterConvertorTest {
 
         MeterBandTypesBuilder meterBandTypesB2 = new MeterBandTypesBuilder();
         meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
+        meterBandHeaderBuilder2.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
         MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
 
         List<MeterBandHeader> meterBandList = new ArrayList<>();

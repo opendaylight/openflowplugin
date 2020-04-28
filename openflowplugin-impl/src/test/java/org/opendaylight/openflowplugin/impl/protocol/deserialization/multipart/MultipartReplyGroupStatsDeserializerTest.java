@@ -14,6 +14,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyGroupStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 public class MultipartReplyGroupStatsDeserializerTest extends AbstractMultipartDeserializerTest {
@@ -44,14 +45,15 @@ public class MultipartReplyGroupStatsDeserializerTest extends AbstractMultipartD
         buffer.writeLong(BYTE_COUNT);
 
         final MultipartReplyGroupStats reply = (MultipartReplyGroupStats) deserializeMultipart(buffer);
-        assertEquals(GROUP_ID, reply.getGroupStats().get(0).getGroupId().getValue().intValue());
-        assertEquals(REF_COUNT, reply.getGroupStats().get(0).getRefCount().getValue().intValue());
-        assertEquals(PACKET_COUNT, reply.getGroupStats().get(0).getPacketCount().getValue().longValue());
-        assertEquals(BYTE_COUNT, reply.getGroupStats().get(0).getByteCount().getValue().longValue());
-        assertEquals(SECOND, reply.getGroupStats().get(0).getDuration().getSecond().getValue().intValue());
-        assertEquals(NANOSECOND, reply.getGroupStats().get(0).getDuration().getNanosecond().getValue().intValue());
-        assertEquals(PACKET_COUNT, reply.getGroupStats().get(0).getPacketCount().getValue().longValue());
-        assertEquals(BYTE_COUNT, reply.getGroupStats().get(0).getByteCount().getValue().longValue());
+        final GroupStats firstGroupStats = reply.getGroupStats().values().iterator().next();
+        assertEquals(GROUP_ID, firstGroupStats.getGroupId().getValue().intValue());
+        assertEquals(REF_COUNT, firstGroupStats.getRefCount().getValue().intValue());
+        assertEquals(PACKET_COUNT, firstGroupStats.getPacketCount().getValue().longValue());
+        assertEquals(BYTE_COUNT, firstGroupStats.getByteCount().getValue().longValue());
+        assertEquals(SECOND, firstGroupStats.getDuration().getSecond().getValue().intValue());
+        assertEquals(NANOSECOND, firstGroupStats.getDuration().getNanosecond().getValue().intValue());
+        assertEquals(PACKET_COUNT, firstGroupStats.getPacketCount().getValue().longValue());
+        assertEquals(BYTE_COUNT, firstGroupStats.getByteCount().getValue().longValue());
         assertEquals(0, buffer.readableBytes());
     }
 
