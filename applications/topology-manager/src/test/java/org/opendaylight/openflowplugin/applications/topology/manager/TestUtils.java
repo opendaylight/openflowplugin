@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -123,7 +124,8 @@ public final class TestUtils {
     }
 
     static Link newLink(String id, Source source, Destination dest) {
-        return new LinkBuilder().setLinkId(new LinkId(id)).setSource(source).setDestination(dest).build();
+        return new LinkBuilder().setLinkId(new LinkId(id)).setSource(source).setDestination(dest)
+                .withKey(new LinkKey(new LinkId(id))).build();
     }
 
     static Destination newDestTp(String id) {

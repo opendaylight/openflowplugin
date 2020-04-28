@@ -88,6 +88,16 @@
       <artifactId>blueprint-maven-plugin-annotation</artifactId>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-binding-runtime-spi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-binding-generator-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

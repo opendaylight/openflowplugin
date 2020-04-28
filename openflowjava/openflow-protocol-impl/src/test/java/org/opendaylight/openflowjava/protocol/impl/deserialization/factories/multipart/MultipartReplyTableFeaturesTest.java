@@ -46,7 +46,7 @@ public class MultipartReplyTableFeaturesTest {
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
-        Assert.assertEquals("Wrong table features size", 0, message.getTableFeatures().size());
+        Assert.assertEquals("Wrong table features size", 0, message.nonnullTableFeatures().size());
     }
 
     /**

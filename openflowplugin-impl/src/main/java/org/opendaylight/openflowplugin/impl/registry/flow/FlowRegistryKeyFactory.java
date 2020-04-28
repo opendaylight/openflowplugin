@@ -122,8 +122,8 @@ public final class FlowRegistryKeyFactory {
                     if (!Objects.equals(match.getVlanMatch(), input.getVlanMatch())) {
                         return false;
                     }
-                    for (ExtensionList inputExtensionList : inputAug.getExtensionList()) {
-                        if (!thisAug.getExtensionList().contains(inputExtensionList)) {
+                    for (ExtensionList inputExtensionList : inputAug.getExtensionList().values()) {
+                        if (!thisAug.getExtensionList().values().contains(inputExtensionList)) {
                             return false;
                         }
                     }

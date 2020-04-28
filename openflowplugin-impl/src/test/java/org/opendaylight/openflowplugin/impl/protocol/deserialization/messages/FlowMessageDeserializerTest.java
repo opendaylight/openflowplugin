@@ -129,12 +129,13 @@ public class FlowMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(MPLS_LABEL, message.getMatch().getProtocolMatchFields().getMplsLabel().intValue());
         assertEquals(1, message.getInstructions().getInstruction().size());
 
-        final Instruction instruction = message.getInstructions().getInstruction().get(0).getInstruction();
+        final Instruction instruction = message.getInstructions().getInstruction().values().iterator().next()
+                .getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().getAction().size());
-        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
+        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().values().iterator().next()
                 .getAction().implementedInterface());
     }
 

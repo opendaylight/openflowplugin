@@ -9,8 +9,8 @@
 package org.opendaylight.openflowplugin.applications.frm.util;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -86,17 +86,17 @@ public final class FrmUtil {
     public static Uint32 isFlowDependentOnGroup(final Flow flow) {
         LOG.debug("Check if flow {} is dependent on group", flow);
         if (flow.getInstructions() != null) {
-            List<Instruction> instructions = flow.getInstructions().getInstruction();
+            Collection<Instruction> instructions = flow.getInstructions().getInstruction().values();
             for (Instruction instruction : instructions) {
-                List<Action> actions = Collections.emptyList();
+                Collection<Action> actions = Collections.emptyList();
                 if (instruction.getInstruction().implementedInterface()
                         .equals(ActionType.APPLY_ACTION.getActionType())) {
                     actions = ((ApplyActionsCase) instruction.getInstruction())
-                            .getApplyActions().getAction();
+                            .getApplyActions().getAction().values();
                 } else if (instruction.getInstruction().implementedInterface()
                         .equals(ActionType.WRITE_ACTION.getActionType())) {
                     actions = ((WriteActionsCase)instruction.getInstruction())
-                            .getWriteActions().getAction();
+                            .getWriteActions().getAction().values();
                 }
                 for (Action action : actions) {
                     if (action.getAction().implementedInterface()

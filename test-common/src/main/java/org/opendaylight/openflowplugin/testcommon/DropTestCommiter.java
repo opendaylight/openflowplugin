@@ -109,7 +109,7 @@ public class DropTestCommiter extends AbstractDropTest {
         if (LOG.isDebugEnabled()) {
             LOG.debug("onPacketReceived - About to write flow {}", flow);
         }
-        transaction.put(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow, true);
+        transaction.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION, flowInstanceId, flow);
         transaction.commit();
         LOG.debug("onPacketReceived - About to write flow commited");
     }

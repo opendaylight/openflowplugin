@@ -62,7 +62,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
     }
 
     @Override
-    public List<MeterConfigStats> convert(List<MeterConfig> source, VersionConvertorData data) {
+    public List<MeterConfigStats> convert(final List<MeterConfig> source, final VersionConvertorData data) {
         List<MeterConfigStats> listMeterConfigStats = new ArrayList<>();
 
         for (MeterConfig meterConfig : source) {
@@ -70,7 +70,6 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
             meterConfigStatsBuilder.setMeterId(new MeterId(meterConfig.getMeterId().getValue()));
             meterConfigStatsBuilder.withKey(new MeterConfigStatsKey(meterConfigStatsBuilder.getMeterId()));
             MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
-            List<Bands> bands = meterConfig.getBands();
 
             MeterFlags meterFlags = new MeterFlags(meterConfig.getFlags().isOFPMFBURST(),
                     meterConfig.getFlags().isOFPMFKBPS(),
@@ -81,7 +80,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
             List<MeterBandHeader> listBandHeaders = new ArrayList<>();
             int bandKey = 0;
 
-            for (Bands band : bands) {
+            for (Bands band : meterConfig.nonnullBands()) {
                 MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
                 if (band.getMeterBand() instanceof MeterBandDropCase) {
                     MeterBandDropCase dropCaseBand = (MeterBandDropCase) band.getMeterBand();
@@ -120,6 +119,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
                     meterBandTypesBuilder.setFlags(new MeterBandType(false, true, false));
                     meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesBuilder.build());
+                    meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     listBandHeaders.add(meterBandHeaderBuilder.build());
 
                 } else if (band.getMeterBand() instanceof MeterBandExperimenterCase) {
@@ -139,11 +139,11 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     MeterBandTypesBuilder meterBandTypesBuilder = new MeterBandTypesBuilder();
                     meterBandTypesBuilder.setFlags(new MeterBandType(false, false, true));
                     meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesBuilder.build());
+                    meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
 
                     listBandHeaders.add(meterBandHeaderBuilder.build());
 
                 }
-
                 bandKey++;
             }
 

@@ -11,8 +11,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import org.junit.Before;
@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -65,9 +66,9 @@ public class FlowWriterDirectOFRpcTest {
         NodeBuilder nodeBuilder = new NodeBuilder()
                 .setId(new NodeId("1"));
 
-        final List<Node> nodes = new ArrayList<>();
+        final Map<NodeKey, Node> nodes = new HashMap<>();
         final Node node = nodeBuilder.build();
-        nodes.add(node);
+        nodes.put(node.key(), node);
 
         when(mockNodes.getNode()).thenReturn(nodes);
 
