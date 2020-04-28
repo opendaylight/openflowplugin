@@ -103,6 +103,9 @@ public class MatchExtensionHelperTest {
     }
 
     private final class MockAugmentation implements Augmentation<Extension> {
-
+        @Override
+        public Class<MockAugmentation> implementedInterface() {
+            return MockAugmentation.class;
+        }
     }
 }
