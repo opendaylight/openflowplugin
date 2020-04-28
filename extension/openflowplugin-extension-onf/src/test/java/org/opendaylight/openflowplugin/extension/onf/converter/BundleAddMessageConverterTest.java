@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.PortBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.PortKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -151,6 +152,7 @@ public class BundleAddMessageConverterTest {
                                     .setAdvertisedFeatures(Mockito.mock(PortFeatures.class))
                                     .setPortNumber(new PortNumberUni(Uint32.ZERO))
                                     .setHardwareAddress(Mockito.mock(MacAddress.class))
+                                    .withKey(new PortKey(Uint32.ZERO))
                                     .build()))
                             .build()).build())
                 .build(), BundlePortModCase.class);
@@ -194,7 +196,7 @@ public class BundleAddMessageConverterTest {
                     convertedProperty.getBundlePropertyExperimenterData());
         } else {
             Assert.assertTrue("Properties not empty",
-                    converted.getOnfAddMessageGroupingData().getBundleProperty().isEmpty());
+                    converted.getOnfAddMessageGroupingData().nonnullBundleProperty().isEmpty());
         }
     }
 

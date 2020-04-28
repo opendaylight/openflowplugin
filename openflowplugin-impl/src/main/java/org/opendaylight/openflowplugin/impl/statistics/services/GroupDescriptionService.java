@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +80,16 @@ final class GroupDescriptionService
             final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
-            groupDescStatsList.ifPresent(groupDescStats -> notification.getGroupDescStats().addAll(groupDescStats));
+            groupDescStatsList.ifPresent(groupDescStats -> {
+                if (notification.getGroupDescStats() == null) {
+                    List<GroupDescStats> stats = Lists.newArrayList(groupDescStats);
+                    notification.setGroupDescStats(stats);
+                } else {
+                    notification.getGroupDescStats().values().addAll(groupDescStats);
+                }
+            });
+
+
         }
 
         return notification.build();

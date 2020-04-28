@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -79,7 +80,11 @@ public final class QueueStatisticsToNotificationTransformer {
 
                 statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
 
-                notification.getQueueIdAndStatisticsMap().add(statsBuilder.build());
+                if (notification.getQueueIdAndStatisticsMap() == null) {
+                    notification.setQueueIdAndStatisticsMap(Lists.newArrayList(statsBuilder.build()));
+                } else {
+                    notification.getQueueIdAndStatisticsMap().values().add(statsBuilder.build());
+                }
             }
         }
         return notification.build();

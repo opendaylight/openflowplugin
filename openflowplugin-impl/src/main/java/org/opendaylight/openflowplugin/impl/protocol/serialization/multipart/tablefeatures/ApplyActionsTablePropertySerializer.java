@@ -28,6 +28,7 @@ public class ApplyActionsTablePropertySerializer extends AbstractTablePropertySe
         property
                 .getApplyActions()
                 .getAction()
+                .values()
                 .stream()
                 .sorted(OrderComparator.build())
                 .map(Action::getAction)

@@ -106,7 +106,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
     public ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBatch(final AddGroupsBatchInput input) {
         LOG.trace("Adding groups @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddGroups().size());
         final ArrayList<ListenableFuture<RpcResult<AddGroupOutput>>> resultsLot = new ArrayList<>();
-        for (BatchAddGroups addGroup : input.getBatchAddGroups()) {
+        for (BatchAddGroups addGroup : input.getBatchAddGroups().values()) {
             final AddGroupInput addGroupInput = new AddGroupInputBuilder(addGroup)
                     .setGroupRef(createGroupRef(input.getNode(), addGroup)).setNode(input.getNode()).build();
             resultsLot.add(salGroupService.addGroup(addGroupInput));
@@ -114,7 +114,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.createCumulatingFunction(input.getBatchAddGroups()),
+                           GroupUtil.createCumulatingFunction(input.getBatchAddGroups().values()),
                            MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBulkFuture = Futures
@@ -133,7 +133,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         LOG.trace("Removing groups @ {} : {}", PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveGroups().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveGroupOutput>>> resultsLot = new ArrayList<>();
-        for (BatchRemoveGroups addGroup : input.getBatchRemoveGroups()) {
+        for (BatchRemoveGroups addGroup : input.getBatchRemoveGroups().values()) {
             final RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder(addGroup)
                     .setGroupRef(createGroupRef(input.getNode(), addGroup)).setNode(input.getNode()).build();
             resultsLot.add(salGroupService.removeGroup(removeGroupInput));
@@ -141,7 +141,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedGroupsOutput>>> commonResult = Futures
                 .transform(Futures.allAsList(resultsLot),
-                           GroupUtil.createCumulatingFunction(input.getBatchRemoveGroups()),
+                           GroupUtil.createCumulatingFunction(input.getBatchRemoveGroups().values()),
                            MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBulkFuture = Futures

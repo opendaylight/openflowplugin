@@ -106,8 +106,13 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             FlowBuilder flowBuilder = new FlowBuilder(bulkFlow);
             flowBuilder.setTableId(bulkFlow.getTableId());
             flowBuilder.setId(new FlowId(bulkFlow.getFlowId()));
-            writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow),
-                    flowBuilder.build(), createParents);
+            if (createParents) {
+                writeTransaction.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow),
+                        flowBuilder.build());
+            } else {
+                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow),
+                        flowBuilder.build());
+            }
             createParents = createParentsNextTime;
         }
         FluentFuture<?> submitFuture = writeTransaction.commit();

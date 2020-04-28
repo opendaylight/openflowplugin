@@ -125,8 +125,8 @@ public class SalBulkFlowServiceImplTest {
         salBulkFlowService.addFlowsDs(addFlowsDsInput);
 
         verify(writeTransaction).commit();
-        verify(writeTransaction).put(ArgumentMatchers.any(), ArgumentMatchers.any(),
-                flowArgumentCaptor.capture(), Mockito.anyBoolean());
+        verify(writeTransaction).mergeParentStructurePut(ArgumentMatchers.any(), ArgumentMatchers.any(),
+                flowArgumentCaptor.capture());
 
         Flow flow = flowArgumentCaptor.getValue();
         Assert.assertEquals("1", flow.getId().getValue());
