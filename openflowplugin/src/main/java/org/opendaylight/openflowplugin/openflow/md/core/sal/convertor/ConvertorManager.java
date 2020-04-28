@@ -98,6 +98,36 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
 
     @Override
     @SuppressWarnings("unchecked")
+    public <K, F, T, D extends ConvertorData> Optional<T> convert(final Map<K, F> source, final D data) {
+        Optional<T> result = Optional.empty();
+
+        if (source == null) {
+            LOG.trace("Cannot extract type from null source");
+            return result;
+        }
+
+        final Optional<F> firstOptional = source.values().stream().findFirst();
+
+        if (!firstOptional.isPresent()) {
+            LOG.trace("Cannot extract type from empty collection");
+            return result;
+        }
+
+        final F first = firstOptional.get();
+
+        final Class<?> type = first instanceof DataContainer ? ((DataContainer) first).implementedInterface()
+                : first.getClass();
+
+        if (type == null) {
+            LOG.warn("Cannot extract type from {}, because implementedInterface() returns null", source);
+            return result;
+        }
+
+        return findConvertor(data.getVersion(), type).map(convertor -> (T)convertor.convert(source.values(), data));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public <F, T, D extends ConvertorData> Optional<T> convert(final Collection<F> source, final D data) {
         Optional<T> result = Optional.empty();
 

@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.test;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.List;
+import java.util.Collection;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -61,7 +61,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _portStats(CommandInterpreter ci) {
         int nodeConnectorCount = 0;
         int nodeConnectorStatsCount = 0;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<Node> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
@@ -69,7 +69,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             Node node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getNodeConnector() != null) {
-                    List<NodeConnector> ports = node.getNodeConnector();
+                    Collection<NodeConnector> ports = node.getNodeConnector().values();
 
                     for (NodeConnector nodeConnector2 : ports) {
                         nodeConnectorCount++;
@@ -102,7 +102,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _portDescStats(CommandInterpreter ci) {
         int nodeConnectorCount = 0;
         int nodeConnectorDescStatsCount = 0;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<Node> nodeRef = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey);
@@ -111,7 +111,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             Node node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getNodeConnector() != null) {
-                    List<NodeConnector> ports = node.getNodeConnector();
+                    Collection<NodeConnector> ports = node.getNodeConnector().values();
                     for (NodeConnector nodeConnector2 : ports) {
                         nodeConnectorCount++;
                         NodeConnectorKey nodeConnectorKey = nodeConnector2.key();
@@ -147,7 +147,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _flowStats(CommandInterpreter ci) {
         int flowCount = 0;
         int flowStatsCount = 0;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -157,7 +157,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
 
             if (node != null) {
-                List<Table> tables = node.getTable();
+                Collection<Table> tables = node.getTable().values();
                 for (Table table2 : tables) {
                     TableKey tableKey = table2.key();
                     InstanceIdentifier<Table> tableRef = InstanceIdentifier.create(Nodes.class)
@@ -166,7 +166,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
                     Table table = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, tableRef);
                     if (table != null) {
                         if (table.getFlow() != null) {
-                            List<Flow> flows = table.getFlow();
+                            Collection<Flow> flows = table.getFlow().values();
                             for (Flow flow2 : flows) {
                                 flowCount++;
                                 FlowKey flowKey = flow2.key();
@@ -202,7 +202,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _tableStats(CommandInterpreter ci) {
         int tableCount = 0;
         int tableStatsCount = 0;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -211,7 +211,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
-                List<Table> tables = node.getTable();
+                Collection<Table> tables = node.getTable().values();
                 for (Table table2 : tables) {
                     tableCount++;
                     TableKey tableKey = table2.key();
@@ -242,7 +242,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         int groupCount = 0;
         int groupStatsCount = 0;
         NodeGroupStatistics data = null;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -251,7 +251,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getGroup() != null) {
-                    List<Group> groups = node.getGroup();
+                    Collection<Group> groups = node.getGroup().values();
                     for (Group group2 : groups) {
                         groupCount++;
                         GroupKey groupKey = group2.key();
@@ -283,7 +283,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         int groupCount = 0;
         int groupDescStatsCount = 0;
         NodeGroupDescStats data = null;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -293,7 +293,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
             if (node != null) {
                 if (node.getGroup() != null) {
-                    List<Group> groups = node.getGroup();
+                    Collection<Group> groups = node.getGroup().values();
                     for (Group group2 : groups) {
                         groupCount++;
                         GroupKey groupKey = group2.key();
@@ -325,7 +325,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         int meterCount = 0;
         int meterStatsCount = 0;
         NodeMeterStatistics data = null;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -334,7 +334,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getMeter() != null) {
-                    List<Meter> meters = node.getMeter();
+                    Collection<Meter> meters = node.getMeter().values();
                     for (Meter meter2 : meters) {
                         meterCount++;
                         MeterKey meterKey = meter2.key();
@@ -366,7 +366,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         int meterCount = 0;
         int meterConfigStatsCount = 0;
         NodeMeterConfigStats data = null;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -375,7 +375,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
                 if (node.getMeter() != null) {
-                    List<Meter> meters = node.getMeter();
+                    Collection<Meter> meters = node.getMeter().values();
                     for (Meter meter2 : meters) {
                         meterCount++;
                         MeterKey meterKey = meter2.key();
@@ -407,7 +407,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _aggregateStats(CommandInterpreter ci) {
         int aggregateFlowCount = 0;
         int aggerateFlowStatsCount = 0;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             NodeKey nodeKey = node2.key();
             InstanceIdentifier<FlowCapableNode> nodeRef = InstanceIdentifier.create(Nodes.class)
@@ -415,7 +415,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
             ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
             FlowCapableNode node = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodeRef);
             if (node != null) {
-                List<Table> tables = node.getTable();
+                Collection<Table> tables = node.getTable().values();
                 for (Table table2 : tables) {
                     aggregateFlowCount++;
                     TableKey tableKey = table2.key();
@@ -445,7 +445,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
     public void _descStats(CommandInterpreter ci) {
         int descCount = 0;
         int descStatsCount = 0;
-        List<Node> nodes = getNodes();
+        Collection<Node> nodes = getNodes();
         for (Node node2 : nodes) {
             descCount++;
             NodeKey nodeKey = node2.key();
@@ -469,14 +469,14 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
 
     }
 
-    private List<Node> getNodes() {
+    private Collection<Node> getNodes() {
         ReadTransaction readOnlyTransaction = dataProviderService.newReadOnlyTransaction();
         InstanceIdentifier<Nodes> nodesID = InstanceIdentifier.create(Nodes.class);
         Nodes nodes = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodesID);
         if (nodes == null) {
             throw new RuntimeException("nodes are not found, pls add the node.");
         }
-        return nodes.getNode();
+        return nodes.getNode().values();
     }
 
     @Override

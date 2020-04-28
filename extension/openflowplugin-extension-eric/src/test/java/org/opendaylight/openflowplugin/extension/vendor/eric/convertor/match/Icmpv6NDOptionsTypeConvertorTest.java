@@ -142,8 +142,8 @@ public class Icmpv6NDOptionsTypeConvertorTest {
         SetField setField = sb.addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
                  ndOptionsTypeSetField).build();
 
-        Assert.assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().getExtensionList().get(0)
-                 .getExtensionKey());
+        Assert.assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().getExtensionList()
+                 .values().iterator().next().getExtensionKey());
     }
 
 }

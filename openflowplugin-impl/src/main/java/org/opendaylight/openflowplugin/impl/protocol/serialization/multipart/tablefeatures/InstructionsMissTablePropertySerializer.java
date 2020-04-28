@@ -28,7 +28,7 @@ public class InstructionsMissTablePropertySerializer extends
         property
                 .getInstructionsMiss()
                 .getInstruction()
-                .stream()
+                .values().stream()
                 .sorted(OrderComparator.build())
                 .map(Instruction::getInstruction)
                 .forEach(instruction -> InstructionUtil

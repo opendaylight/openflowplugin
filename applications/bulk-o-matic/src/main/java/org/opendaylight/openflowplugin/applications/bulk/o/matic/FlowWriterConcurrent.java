@@ -150,7 +150,11 @@ public class FlowWriterConcurrent implements FlowCounterMBean {
                 Flow flow, Integer sourceIp, Short tableId) {
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
-                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow, isCreateParents);
+                if (isCreateParents) {
+                    writeTransaction.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION, flowIid, flow);
+                } else {
+                    writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowIid, flow);
+                }
             } else {
                 LOG.trace("Deleting flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, flowIid);

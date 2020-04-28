@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -77,7 +77,7 @@ public class FlowWriterDirectOFRpc {
         try (ReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
             Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes).get();
             if (nodesDataNode.isPresent()) {
-                List<Node> nodesCollection = nodesDataNode.get().getNode();
+                Collection<Node> nodesCollection = nodesDataNode.get().getNode().values();
                 if (nodesCollection != null && !nodesCollection.isEmpty()) {
                     for (Node node : nodesCollection) {
                         LOG.info("Switch with ID {} discovered !!", node.getId().getValue());

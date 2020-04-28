@@ -126,23 +126,19 @@ public class DeviceFlowRegistryImplTest {
 
         fillRegistry(path, null);
 
+        fillRegistry(path, new FlowCapableNodeBuilder().build());
+
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(null)
+                .setTable(Collections.EMPTY_LIST)
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(null))
-                .build());
-
-        fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(null)
-                        .build()))
+                .setTable(Collections.singletonList(new TableBuilder().build()))
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(Collections.singletonList(null))
+                        .setFlow(Collections.EMPTY_LIST)
                         .build()))
                 .build());
 

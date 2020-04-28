@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
@@ -77,7 +78,7 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
                                                     .meter.types.rev130918.MeterBandType(true, false, false))
                                             .build())
                                     .setBandBurstSize(BAND_BURST_SIZE)
-                                    .setBandId(new BandId(BAND_ID))
+                                    .withKey(new MeterBandHeaderKey(new BandId(BAND_ID)))
                                     .setBandRate(BAND_RATE)
                                     .setBandType(new DropBuilder()
                                             .setDropRate(DROP_RATE)
@@ -90,7 +91,7 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
                                                     .meter.types.rev130918.MeterBandType(false, true, false))
                                             .build())
                                     .setBandBurstSize(BAND_BURST_SIZE)
-                                    .setBandId(new BandId(BAND_ID))
+                                    .withKey(new MeterBandHeaderKey(new BandId(BAND_ID + 1)))
                                     .setBandRate(BAND_RATE)
                                     .setBandType(new DscpRemarkBuilder()
                                             .setDscpRemarkBurstSize(DSCP_BURST_SIZE)

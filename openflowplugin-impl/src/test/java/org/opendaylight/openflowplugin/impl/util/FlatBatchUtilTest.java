@@ -30,22 +30,42 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateMeterCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.group._case.FlatBatchRemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.group._case.FlatBatchRemoveGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.group._case.FlatBatchRemoveGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.batch.failure.batch.item.id.choice.FlatBatchFailureFlowIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,47 +226,47 @@ public class FlatBatchUtilTest {
         switch (type) {
             case FLOW_ADD:
                 batchCase = new FlatBatchAddFlowCaseBuilder()
-                        .setFlatBatchAddFlow(repeatIntoList(new FlatBatchAddFlowBuilder().build(), size))
+                        .setFlatBatchAddFlow(repeatFlatBatchAddFlowIntoList(size))
                         .build();
                 break;
             case FLOW_REMOVE:
                 batchCase = new FlatBatchRemoveFlowCaseBuilder()
-                        .setFlatBatchRemoveFlow(repeatIntoList(new FlatBatchRemoveFlowBuilder().build(), size))
+                        .setFlatBatchRemoveFlow(repeatFlatBatchRemoveFlowIntoList(size))
                         .build();
                 break;
             case FLOW_UPDATE:
                 batchCase = new FlatBatchUpdateFlowCaseBuilder()
-                        .setFlatBatchUpdateFlow(repeatIntoList(new FlatBatchUpdateFlowBuilder().build(), size))
+                        .setFlatBatchUpdateFlow(repeatFlatBatchUpdateFlowIntoList(size))
                         .build();
                 break;
             case GROUP_ADD:
                 batchCase = new FlatBatchAddGroupCaseBuilder()
-                        .setFlatBatchAddGroup(repeatIntoList(new FlatBatchAddGroupBuilder().build(), size))
+                        .setFlatBatchAddGroup(repeatFlatBatchAddGroupIntoList(size))
                         .build();
                 break;
             case GROUP_REMOVE:
                 batchCase = new FlatBatchRemoveGroupCaseBuilder()
-                        .setFlatBatchRemoveGroup(repeatIntoList(new FlatBatchRemoveGroupBuilder().build(), size))
+                        .setFlatBatchRemoveGroup(repeatFlatBatchRemoveGroupIntoList(size))
                         .build();
                 break;
             case GROUP_UPDATE:
                 batchCase = new FlatBatchUpdateGroupCaseBuilder()
-                        .setFlatBatchUpdateGroup(repeatIntoList(new FlatBatchUpdateGroupBuilder().build(), size))
+                        .setFlatBatchUpdateGroup(repeatFlatBatchUpdateGroupIntoList(size))
                         .build();
                 break;
             case METER_ADD:
                 batchCase = new FlatBatchAddMeterCaseBuilder()
-                        .setFlatBatchAddMeter(repeatIntoList(new FlatBatchAddMeterBuilder().build(), size))
+                        .setFlatBatchAddMeter(repeatFlatBatchAddMeterIntoList(size))
                         .build();
                 break;
             case METER_REMOVE:
                 batchCase = new FlatBatchRemoveMeterCaseBuilder()
-                        .setFlatBatchRemoveMeter(repeatIntoList(new FlatBatchRemoveMeterBuilder().build(), size))
+                        .setFlatBatchRemoveMeter(repeatFlatBatchRemoveMeterIntoList(size))
                         .build();
                 break;
             case METER_UPDATE:
                 batchCase = new FlatBatchUpdateMeterCaseBuilder()
-                        .setFlatBatchUpdateMeter(repeatIntoList(new FlatBatchUpdateMeterBuilder().build(), size))
+                        .setFlatBatchUpdateMeter(repeatFlatBatchUpdateMeterIntoList(size))
                         .build();
                 break;
             default:
@@ -259,10 +279,74 @@ public class FlatBatchUtilTest {
                 .build();
     }
 
-    private <T> List<T> repeatIntoList(final T element, final int size) {
-        final List<T> list = new ArrayList<>();
+    private List<FlatBatchAddGroup> repeatFlatBatchAddGroupIntoList(final int size) {
+        final List<FlatBatchAddGroup> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(element);
+            list.add(new FlatBatchAddGroupBuilder().withKey(new FlatBatchAddGroupKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchUpdateGroup> repeatFlatBatchUpdateGroupIntoList(final int size) {
+        final List<FlatBatchUpdateGroup> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchUpdateGroupBuilder().withKey(new FlatBatchUpdateGroupKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchRemoveGroup> repeatFlatBatchRemoveGroupIntoList(final int size) {
+        final List<FlatBatchRemoveGroup> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchRemoveGroupBuilder().withKey(new FlatBatchRemoveGroupKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchAddFlow> repeatFlatBatchAddFlowIntoList(final int size) {
+        final List<FlatBatchAddFlow> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchAddFlowBuilder().withKey(new FlatBatchAddFlowKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchUpdateFlow> repeatFlatBatchUpdateFlowIntoList(final int size) {
+        final List<FlatBatchUpdateFlow> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchUpdateFlowBuilder().withKey(new FlatBatchUpdateFlowKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchRemoveFlow> repeatFlatBatchRemoveFlowIntoList(final int size) {
+        final List<FlatBatchRemoveFlow> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchRemoveFlowBuilder().withKey(new FlatBatchRemoveFlowKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchAddMeter> repeatFlatBatchAddMeterIntoList(final int size) {
+        final List<FlatBatchAddMeter> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchAddMeterBuilder().withKey(new FlatBatchAddMeterKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchUpdateMeter> repeatFlatBatchUpdateMeterIntoList(final int size) {
+        final List<FlatBatchUpdateMeter> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchUpdateMeterBuilder().withKey(new FlatBatchUpdateMeterKey(i)).build());
+        }
+        return list;
+    }
+
+    private List<FlatBatchRemoveMeter> repeatFlatBatchRemoveMeterIntoList(final int size) {
+        final List<FlatBatchRemoveMeter> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(new FlatBatchRemoveMeterBuilder().withKey(new FlatBatchRemoveMeterKey(i)).build());
         }
         return list;
     }
@@ -274,14 +358,29 @@ public class FlatBatchUtilTest {
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
                         .setFlowId(new FlowId("11"))
                         .build())
+                .withKey(new BatchFailureKey(Uint16.ZERO))
+                .build();
+        final BatchFailure batchFailure_1 = new BatchFailureBuilder()
+                .setBatchOrder(9)
+                .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
+                        .setFlowId(new FlowId("11"))
+                        .build())
+                .withKey(new BatchFailureKey(Uint16.ONE))
                 .build();
 
         final ProcessFlatBatchOutput output
                 = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure)).build();
 
+        final ProcessFlatBatchOutput output_1
+                = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure_1)).build();
+
         final RpcResult<ProcessFlatBatchOutput> rpcResultFailed = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
                 .withResult(output).build();
+
+        final RpcResult<ProcessFlatBatchOutput> rpcResultFailed_1 = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
+                .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
+                .withResult(output_1).build();
         final RpcResult<ProcessFlatBatchOutput> rpcResultSuccess = RpcResultBuilder.<ProcessFlatBatchOutput>success()
                 .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>())).build();
 
@@ -291,7 +390,7 @@ public class FlatBatchUtilTest {
         Assert.assertFalse(rpcResult1.isSuccessful());
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult2
-                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultFailed));
+                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultFailed_1));
         Assert.assertEquals(2, rpcResult2.getErrors().size());
         Assert.assertFalse(rpcResult2.isSuccessful());
 
