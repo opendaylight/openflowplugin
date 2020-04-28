@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -97,7 +98,13 @@ final class AllMeterConfigStatsService
             final Optional<List<MeterConfigStats>> meterConfigStatsList =
                     convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
-            meterConfigStatsList.ifPresent(meterConfigStats -> message.getMeterConfigStats().addAll(meterConfigStats));
+            meterConfigStatsList.ifPresent(meterConfigStats -> {
+                if (message.getMeterConfigStats() == null) {
+                    message.setMeterConfigStats(Lists.newArrayList(meterConfigStats));
+                } else {
+                    message.getMeterConfigStats().values().addAll(meterConfigStats);
+                }
+            });
         }
 
         return message.build();

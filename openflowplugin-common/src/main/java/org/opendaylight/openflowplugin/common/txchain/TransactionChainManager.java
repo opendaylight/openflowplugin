@@ -242,7 +242,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
-            writeTx.put(store, path, data, createParents);
+            if (createParents) {
+                writeTx.mergeParentStructurePut(store, path, data);
+            } else {
+                writeTx.put(store, path, data);
+            }
         }
     }
 
@@ -257,7 +261,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
-            writeTx.merge(store, path, data, createParents);
+            if (createParents) {
+                writeTx.mergeParentStructureMerge(store, path, data);
+            } else {
+                writeTx.merge(store, path, data);
+            }
         }
     }
 

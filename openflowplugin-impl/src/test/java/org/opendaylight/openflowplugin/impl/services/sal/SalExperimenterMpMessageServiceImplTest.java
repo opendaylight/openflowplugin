@@ -22,7 +22,6 @@ public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
     private SalExperimenterMpMessageServiceImpl salExperimenterMpMessageService;
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setup() {
         this.<List<MultipartReply>>mockSuccessfulFuture();
 

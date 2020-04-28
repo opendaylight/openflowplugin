@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
@@ -79,7 +80,7 @@ public class GroupDescStatsResponseConvertorTest {
         Assert.assertEquals("Wrong type", GroupTypes.GroupAll, stat.getGroupType());
         Assert.assertEquals("Wrong group-id", 42, stat.getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong key", 42, stat.key().getGroupId().getValue().intValue());
-        Assert.assertEquals("Wrong buckets size", 0, stat.getBuckets().getBucket().size());
+        Assert.assertEquals("Wrong buckets size", 0, stat.getBuckets().nonnullBucket().size());
     }
 
     /**
@@ -182,7 +183,8 @@ public class GroupDescStatsResponseConvertorTest {
         Assert.assertEquals("Wrong buckets size", 1, stat.getBuckets().getBucket().size());
 
         // Test first bucket for first group desc
-        Bucket bucket = stat.getBuckets().getBucket().get(0);
+        Iterator<Bucket> bucketIt = stat.getBuckets().getBucket().values().iterator();
+        Bucket bucket = bucketIt.next();
         Assert.assertEquals("Wrong type", 0, bucket.key().getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 0, bucket.getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 16, bucket.getWeight().intValue());
@@ -192,7 +194,7 @@ public class GroupDescStatsResponseConvertorTest {
 
         // Test first action for first bucket for first group desc
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-                .Action action = bucket.getAction().get(0);
+                .Action action = bucket.getAction().values().iterator().next();
         Assert.assertEquals("Wrong type", 0, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.CopyTtlInCase", action.getAction().implementedInterface().getName());
@@ -207,7 +209,8 @@ public class GroupDescStatsResponseConvertorTest {
         Assert.assertEquals("Wrong buckets size", 2, stat.getBuckets().getBucket().size());
 
         // Test first bucket for second group desc
-        bucket = stat.getBuckets().getBucket().get(0);
+        bucketIt = stat.getBuckets().getBucket().values().iterator();
+        bucket = bucketIt.next();
         Assert.assertEquals("Wrong type", 0, bucket.key().getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 0, bucket.getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 100, bucket.getWeight().intValue());
@@ -216,31 +219,32 @@ public class GroupDescStatsResponseConvertorTest {
         Assert.assertEquals("Wrong type", 3, bucket.getAction().size());
 
         // Test first action for first bucket of second group desc
-        action = bucket.getAction().get(0);
+        var actionIt = bucket.getAction().values().iterator();
+        action = actionIt.next();
         Assert.assertEquals("Wrong type", 0, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.CopyTtlOutCase", action.getAction().implementedInterface().getName());
 
         // Test second action for first bucket of second group desc
-        action = bucket.getAction().get(1);
+        action = actionIt.next();
         Assert.assertEquals("Wrong type", 1, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.DecNwTtlCase", action.getAction().implementedInterface().getName());
 
         // Test third action for first bucket of second group desc
-        action = bucket.getAction().get(2);
+        action = actionIt.next();
         Assert.assertEquals("Wrong type", 2, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.PopPbbActionCase", action.getAction().implementedInterface().getName());
 
         // Test second bucket for second group desc
-        bucket = stat.getBuckets().getBucket().get(1);
+        bucket = bucketIt.next();
         Assert.assertEquals("Wrong type", 1, bucket.key().getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 1, bucket.getBucketId().getValue().intValue());
         Assert.assertEquals("Wrong type", 5, bucket.getWeight().intValue());
         Assert.assertEquals("Wrong type", 15, bucket.getWatchGroup().intValue());
         Assert.assertEquals("Wrong type", 10, bucket.getWatchPort().intValue());
-        Assert.assertEquals("Wrong type", 0, bucket.getAction().size());
+        Assert.assertEquals("Wrong type", 0, bucket.nonnullAction().size());
     }
 
     private List<GroupDescStats> convert(List<GroupDesc> groupDescStats,VersionConvertorData data) {

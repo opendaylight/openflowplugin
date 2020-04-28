@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 import org.slf4j.Logger;
@@ -51,6 +53,7 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                 .setMeterId(new MeterId(message.readUnsignedInt()));
 
         final List<MeterBandHeader> bands = new ArrayList<>();
+        long key = 0;
 
         while (message.readableBytes() > 0) {
             final MeterBandHeaderBuilder bandBuilder = new MeterBandHeaderBuilder();
@@ -104,7 +107,7 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                     // no operation
             }
 
-            bands.add(bandBuilder.build());
+            bands.add(bandBuilder.withKey(new MeterBandHeaderKey(new BandId(key++))).build());
         }
 
         return builder

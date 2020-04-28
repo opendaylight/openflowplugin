@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +62,13 @@ public final class MeterStatisticsToNotificationTransformer {
             final Optional<List<MeterStats>> meterStatsList =
                     convertorExecutor.convert(replyBody.getMeterStats(), data);
 
-            meterStatsList.ifPresent(meterStats -> notification.getMeterStats().addAll(meterStats));
+            meterStatsList.ifPresent(meterStats -> {
+                if (notification.getMeterStats() == null) {
+                    notification.setMeterStats(Lists.newArrayList(meterStats));
+                } else {
+                    notification.getMeterStats().values().addAll(meterStats);
+                }
+            });
         }
 
         return notification.build();
