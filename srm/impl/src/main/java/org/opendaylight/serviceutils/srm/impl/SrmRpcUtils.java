@@ -66,7 +66,6 @@ public final class SrmRpcUtils {
 
     private static final boolean REINSTALL_FAILED = false;
     private static final boolean REINSTALL_SUCCESS = true;
-    private static final boolean CREATE_MISSING_PARENT = true;
 
     private SrmRpcUtils() {
     }
@@ -165,7 +164,7 @@ public final class SrmRpcUtils {
         Operations operation = opsBuilder.build();
         InstanceIdentifier<Operations> opsIid = getInstanceIdentifier(operation, serviceName);
         WriteTransaction tx = broker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, opsIid, operation, CREATE_MISSING_PARENT);
+        tx.mergeParentStructurePut(LogicalDatastoreType.OPERATIONAL, opsIid, operation);
         try {
             tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
@@ -220,7 +219,7 @@ public final class SrmRpcUtils {
         Operations operation = opsBuilder.build();
         InstanceIdentifier<Operations> opsIid = getInstanceIdentifier(operation, serviceName);
         WriteTransaction tx = broker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, opsIid, operation, CREATE_MISSING_PARENT);
+        tx.mergeParentStructurePut(LogicalDatastoreType.OPERATIONAL, opsIid, operation);
         try {
             tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
