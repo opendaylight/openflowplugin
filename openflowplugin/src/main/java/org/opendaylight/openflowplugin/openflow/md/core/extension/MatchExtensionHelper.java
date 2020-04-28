@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -68,13 +69,15 @@ public final class MatchExtensionHelper {
 
         final ExtensionListBuilder extBuilder = processExtension(matchEntry, ofVersion, matchPath);
 
+        // TODO: remove the Optional.ofNullable() here, which will result more performant and easier to understand code
         final GeneralAugMatchNodesNodeTableFlowBuilder builder = Optional
                 .ofNullable(matchBuilder.augmentation(GeneralAugMatchNodesNodeTableFlow.class))
                 .map(GeneralAugMatchNodesNodeTableFlowBuilder::new)
-                .orElse(new GeneralAugMatchNodesNodeTableFlowBuilder().setExtensionList(new ArrayList<>()));
+                .orElse(new GeneralAugMatchNodesNodeTableFlowBuilder().setExtensionList(new HashMap<>()));
 
         if (extBuilder != null) {
-            builder.getExtensionList().add(extBuilder.build());
+            final ExtensionList ext = extBuilder.build();
+            builder.getExtensionList().put(ext.key(), ext);
         } else {
             LOG.warn("Convertor for {} for version {} with match path {} not found.",
                     matchEntry, ofVersion, matchPath.name());

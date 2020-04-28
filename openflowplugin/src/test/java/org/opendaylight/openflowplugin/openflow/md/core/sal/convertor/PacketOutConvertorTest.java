@@ -70,8 +70,6 @@ public class PacketOutConvertorTest {
 
         TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
 
-        Long bufferId = null;
-
         String nodeId = "0";
         String port = "0";
 
@@ -80,9 +78,8 @@ public class PacketOutConvertorTest {
         NodeConnectorRef egressConfRef = new NodeConnectorRef(
                 createNodeConnRef(nodeId, nodeConnKey));
 
-        transmitPacketInputBuilder.setBufferId(bufferId);
+        transmitPacketInputBuilder.setBufferId((Uint32) null);
         transmitPacketInputBuilder.setConnectionCookie(null);
-        transmitPacketInputBuilder.setAction(null);
         transmitPacketInputBuilder.setNode(ref);
         transmitPacketInputBuilder.setPayload(null);
         transmitPacketInputBuilder.setEgress(egressConfRef);
