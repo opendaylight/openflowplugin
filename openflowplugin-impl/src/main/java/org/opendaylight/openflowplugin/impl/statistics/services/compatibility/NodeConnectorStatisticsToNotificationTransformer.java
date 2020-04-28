@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -65,7 +66,11 @@ public final class NodeConnectorStatisticsToNotificationTransformer {
             for (PortStats portStats : replyBody.getPortStats()) {
                 NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                         processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats);
-                notification.getNodeConnectorStatisticsAndPortNumberMap().add(statsBuilder.build());
+                if (notification.getNodeConnectorStatisticsAndPortNumberMap() != null) {
+                    notification.getNodeConnectorStatisticsAndPortNumberMap().values().add(statsBuilder.build());
+                } else {
+                    notification.setNodeConnectorStatisticsAndPortNumberMap(Lists.newArrayList(statsBuilder.build()));
+                }
             }
         }
         return notification.build();

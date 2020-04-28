@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.GroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetMplsTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -102,6 +103,7 @@ public class GroupConvertorTest {
         bucketB.setWeight(10);
         bucketB.setWatchPort(20L);
         bucketB.setWatchGroup(22L);
+        bucketB.withKey(new BucketKey(new BucketId(Uint32.ZERO)));
 
         bucketB.setAction(actionsList);
         final Bucket bucket = bucketB.build();
@@ -112,6 +114,7 @@ public class GroupConvertorTest {
         bucketB1.setWeight(50);
         bucketB1.setWatchPort(60L);
         bucketB1.setWatchGroup(70L);
+        bucketB1.withKey(new BucketKey(new BucketId(Uint32.ONE)));
 
         // Action1
         final CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
@@ -231,7 +234,7 @@ public class GroupConvertorTest {
 
         final BucketBuilder bucketB = new BucketBuilder();
 
-        bucketB.setAction(actionsList);
+        bucketB.setAction(actionsList).withKey(new BucketKey(new BucketId(Uint32.ZERO)));
         final Bucket bucket = bucketB.build();
 
         bucketList.add(bucket); // List of bucket
@@ -244,7 +247,7 @@ public class GroupConvertorTest {
         // Action2:
         actionsList1.add(assembleSetMplsTtlActionBuilder(actionOrder++).build());
 
-        bucketB1.setAction(actionsList1);
+        bucketB1.setAction(actionsList1).withKey(new BucketKey(new BucketId(Uint32.ONE)));
 
         final Bucket bucket1 = bucketB1.build(); // second bucket
 
@@ -459,7 +462,7 @@ public class GroupConvertorTest {
 
         final BucketBuilder bucketB = new BucketBuilder();
 
-        bucketB.setAction(actionsList);
+        bucketB.setAction(actionsList).withKey(new BucketKey(new BucketId(Uint32.ZERO)));
         final Bucket bucket = bucketB.build();
 
         bucketList.add(bucket); // List of bucket
@@ -471,7 +474,7 @@ public class GroupConvertorTest {
         // Action2:
         actionsList1.add(assembleSetMplsTtlActionBuilder(actionOrder++).build());
 
-        bucketB1.setAction(actionsList);
+        bucketB1.setAction(actionsList).withKey(new BucketKey(new BucketId(Uint32.ONE)));
 
         final Bucket bucket1 = bucketB1.build(); // second bucket
 

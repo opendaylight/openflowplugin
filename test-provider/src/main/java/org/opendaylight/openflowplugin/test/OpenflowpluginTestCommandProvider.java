@@ -1661,8 +1661,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
 
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        setFieldBuilder.setInPort(new NodeConnectorId(nodeId + ":2"));
         ab.withKey(new ActionKey(0));
         actionList.add(ab.build());
 
@@ -2206,7 +2204,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         setFieldBuilder1.setLayer4Match(tcpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionList.add(ab.build());
+        actionList.add(ab1.build());
 
         final ApplyActionsBuilder aab = new ApplyActionsBuilder();
         aab.setAction(actionList);
@@ -3184,9 +3182,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key());
-        modification.merge(LogicalDatastoreType.CONFIGURATION,
-                nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION,
+                nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(final Object notUsed) {

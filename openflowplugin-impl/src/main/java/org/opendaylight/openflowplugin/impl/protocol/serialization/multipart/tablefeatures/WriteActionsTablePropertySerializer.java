@@ -28,6 +28,7 @@ public class WriteActionsTablePropertySerializer extends AbstractTablePropertySe
         property
                 .getWriteActions()
                 .getAction()
+                .values()
                 .stream()
                 .sorted(OrderComparator.build())
                 .map(Action::getAction)

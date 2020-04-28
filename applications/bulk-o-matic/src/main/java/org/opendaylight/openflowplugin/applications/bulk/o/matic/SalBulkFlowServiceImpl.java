@@ -28,7 +28,6 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
@@ -106,8 +105,14 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             FlowBuilder flowBuilder = new FlowBuilder(bulkFlow);
             flowBuilder.setTableId(bulkFlow.getTableId());
             flowBuilder.setId(new FlowId(bulkFlow.getFlowId()));
-            writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow),
-                    flowBuilder.build(), createParents);
+            if (createParents) {
+                writeTransaction.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION,
+                        getFlowInstanceIdentifier(bulkFlow),
+                        flowBuilder.build());
+            } else {
+                writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow),
+                        flowBuilder.build());
+            }
             createParents = createParentsNextTime;
         }
         FluentFuture<?> submitFuture = writeTransaction.commit();
