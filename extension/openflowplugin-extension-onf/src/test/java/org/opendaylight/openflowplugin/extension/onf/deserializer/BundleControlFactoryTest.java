@@ -57,7 +57,7 @@ public class BundleControlFactoryTest {
         Assert.assertEquals("Wrong type",
                 BundleControlType.ONFBCTOPENREPLY, builtByFactory.getOnfControlGroupingData().getType());
         Assert.assertTrue("Properties not empty",
-                builtByFactory.getOnfControlGroupingData().getBundleProperty().isEmpty());
+                builtByFactory.getOnfControlGroupingData().nonnullBundleProperty().isEmpty());
     }
 
     @Test

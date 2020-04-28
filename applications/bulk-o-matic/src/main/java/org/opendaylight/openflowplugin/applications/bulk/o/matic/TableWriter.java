@@ -91,7 +91,7 @@ public class TableWriter implements FlowCounterMBean {
                     InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
 
                     if (isAdd) {
-                        wtx.put(LogicalDatastoreType.CONFIGURATION, tableIId, table, true);
+                        wtx.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION, tableIId, table);
                     } else {
                         wtx.delete(LogicalDatastoreType.CONFIGURATION, tableIId);
                     }

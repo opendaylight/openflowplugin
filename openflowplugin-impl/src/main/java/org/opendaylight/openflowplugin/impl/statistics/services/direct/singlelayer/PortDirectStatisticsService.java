@@ -40,8 +40,8 @@ public class PortDirectStatisticsService extends AbstractPortDirectStatisticsSer
             .setNodeConnectorStatisticsAndPortNumberMap(input
                 .stream()
                 .flatMap(multipartReply -> ((MultipartReplyPortStats) multipartReply.getMultipartReplyBody())
-                    .getNodeConnectorStatisticsAndPortNumberMap()
-                    .stream())
+                    .nonnullNodeConnectorStatisticsAndPortNumberMap()
+                    .values().stream())
                 .collect(Collectors.toList()))
             .build();
     }

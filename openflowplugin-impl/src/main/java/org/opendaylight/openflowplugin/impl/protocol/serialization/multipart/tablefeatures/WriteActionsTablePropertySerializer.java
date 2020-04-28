@@ -27,7 +27,8 @@ public class WriteActionsTablePropertySerializer extends AbstractTablePropertySe
     protected void serializeProperty(final WriteActions property, final ByteBuf byteBuf) {
         property
                 .getWriteActions()
-                .getAction()
+                .nonnullAction()
+                .values()
                 .stream()
                 .sorted(OrderComparator.build())
                 .map(Action::getAction)

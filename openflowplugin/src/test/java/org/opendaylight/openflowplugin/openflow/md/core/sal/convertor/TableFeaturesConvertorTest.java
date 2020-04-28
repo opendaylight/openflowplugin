@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 
 public class TableFeaturesConvertorTest {
     private static final TablePropertiesBuilder TABLE_PROPERTIES_BUILDER = new TablePropertiesBuilder();
@@ -106,6 +108,7 @@ public class TableFeaturesConvertorTest {
     }
 
     private static void setupFieldTableFeatures() {
+        int order = 0;
         SetFieldMatchBuilder setFieldMatchBuilder = new SetFieldMatchBuilder();
         setFieldMatchBuilder.setHasMask(true);
         setFieldMatchBuilder
@@ -220,7 +223,7 @@ public class TableFeaturesConvertorTest {
                 .setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class);
         FIELD_TABLE_FEATURES.add(setFieldMatchBuilder.build());
         setFieldMatchBuilder
-                .setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class);
+                .setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc.class);
         FIELD_TABLE_FEATURES.add(setFieldMatchBuilder.build());
         setFieldMatchBuilder
                 .setMatchType(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class);
@@ -243,53 +246,54 @@ public class TableFeaturesConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder actionBuilder =
                 new ActionBuilder();
 
+        int order = 0;
         OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(outputActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(outputActionCaseBuilder.build()).build());
 
         GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(groupActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(groupActionCaseBuilder.build()).build());
 
         CopyTtlOutCaseBuilder copyTtlOutCaseBuilder = new CopyTtlOutCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(copyTtlOutCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(copyTtlOutCaseBuilder.build()).build());
 
         CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(copyTtlInCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(copyTtlInCaseBuilder.build()).build());
 
         SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(setMplsTtlActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(setMplsTtlActionCaseBuilder.build()).build());
 
         DecMplsTtlCaseBuilder decMplsTtlCaseBuilder = new DecMplsTtlCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(decMplsTtlCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(decMplsTtlCaseBuilder.build()).build());
 
         PushVlanActionCaseBuilder pushVlanActionCaseBuilder = new PushVlanActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(pushVlanActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(pushVlanActionCaseBuilder.build()).build());
 
         PopVlanActionCaseBuilder popVlanActionCaseBuilder = new PopVlanActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(popVlanActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(popVlanActionCaseBuilder.build()).build());
 
         PushMplsActionCaseBuilder pushMplsActionCaseBuilder = new PushMplsActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(pushMplsActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(pushMplsActionCaseBuilder.build()).build());
 
         PopMplsActionCaseBuilder popMplsActionCaseBuilder = new PopMplsActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(popMplsActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(popMplsActionCaseBuilder.build()).build());
 
         SetQueueActionCaseBuilder setQueueActionCaseBuilder = new SetQueueActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(setQueueActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(setQueueActionCaseBuilder.build()).build());
 
         SetNwTtlActionCaseBuilder setNwTtlActionCaseBuilder = new SetNwTtlActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(setNwTtlActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(setNwTtlActionCaseBuilder.build()).build());
 
         DecNwTtlCaseBuilder decNwTtlCaseBuilder = new DecNwTtlCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(decNwTtlCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(decNwTtlCaseBuilder.build()).build());
 
         SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(setFieldCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(setFieldCaseBuilder.build()).build());
 
         PushPbbActionCaseBuilder pushPbbActionCaseBuilder = new PushPbbActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(pushPbbActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(pushPbbActionCaseBuilder.build()).build());
 
         PopPbbActionCaseBuilder popPbbActionCaseBuilder = new PopPbbActionCaseBuilder();
-        ACTIONS.add(actionBuilder.setAction(popPbbActionCaseBuilder.build()).build());
+        ACTIONS.add(actionBuilder.setOrder(order++).setAction(popPbbActionCaseBuilder.build()).build());
 
     }
 
@@ -300,10 +304,11 @@ public class TableFeaturesConvertorTest {
         setupFieldTableFeatures();
         InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
         List<Instruction> instructions = new ArrayList<>();
-        for (int i = 0; i < INSTRUCTIONS_LIST.size(); i++) {
-            InstructionBuilder instructionBuilder = new InstructionBuilder();
-            instructionBuilder.setInstruction(INSTRUCTIONS_LIST.get(i));
-            instructions.add(instructionBuilder.build());
+        int order = 0;
+        for (var element : INSTRUCTIONS_LIST) {
+            instructions.add(new InstructionBuilder()
+                .setOrder(order++)
+                .setInstruction(element).build());
         }
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
             .prop.type.instructions.InstructionsBuilder instructionsBuilder1 =
@@ -403,19 +408,18 @@ public class TableFeaturesConvertorTest {
 
         assertNotNull(tableFeatures);
         assertEquals(10, tableFeatures.getTableFeatures().size());
-        List<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.getTableFeatures().get(0)
-                .getTableProperties().getTableFeatureProperties();
+        Collection<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.nonnullTableFeatures().values()
+                .iterator().next().getTableProperties().nonnullTableFeatureProperties().values();
         assertEquals(AUGMENTATIONS_MAP.size() + 1, tableFeaturePropertieses.size());
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
             .prop.type.ApplyActionsMiss applyActionsMiss = null;
-        for (int i = 0; i < tableFeaturePropertieses.size(); i++) {
-            if (tableFeaturePropertieses.get(i).getTableFeaturePropType().implementedInterface().isAssignableFrom(
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table
-                        .feature.prop.type.ApplyActionsMiss.class)) {
+        for (var featureProp : tableFeaturePropertieses) {
+            var prop = featureProp.getTableFeaturePropType();
+            if (prop.implementedInterface().isAssignableFrom(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
+                    .rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss.class)) {
                 applyActionsMiss = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
-                    .prop.type.table.feature.prop.type.ApplyActionsMiss) tableFeaturePropertieses.get(i)
-                        .getTableFeaturePropType();
+                    .prop.type.table.feature.prop.type.ApplyActionsMiss) prop;
                 break;
             }
         }
@@ -429,13 +433,16 @@ public class TableFeaturesConvertorTest {
         TableFeaturePropertiesBuilder tableFeaturePropertiesBuilder = new TableFeaturePropertiesBuilder();
         List<TableFeatureProperties> tableFeaturePropertieses = new ArrayList<>();
         int counter = 0;
+        int order = 0;
         for (Entry<Class<? extends TableFeaturePropType>, TableFeaturePropType> entry : AUGMENTATIONS_MAP.entrySet()) {
             counter++;
             tableFeaturePropertiesBuilder.setTableFeaturePropType(entry.getValue());
             tableFeaturePropertiesBuilder.setOrder(counter);
+            tableFeaturePropertiesBuilder.withKey(new TableFeaturePropertiesKey(order++));
             tableFeaturePropertieses.add(tableFeaturePropertiesBuilder.build());
         }
-        tableFeaturePropertieses.add(tableFeaturePropertiesBuilder.build());
+        tableFeaturePropertieses.add(
+                tableFeaturePropertiesBuilder.withKey(new TableFeaturePropertiesKey(order++)).build());
         TABLE_PROPERTIES_BUILDER.setTableFeatureProperties(tableFeaturePropertieses);
         return TABLE_PROPERTIES_BUILDER.build();
     }

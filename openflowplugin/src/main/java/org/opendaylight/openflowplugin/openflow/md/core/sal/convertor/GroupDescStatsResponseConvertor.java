@@ -111,7 +111,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
         for (GroupDesc groupDesc : source) {
             GroupDescStatsBuilder salGroupDescStats = new GroupDescStatsBuilder();
 
-            salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.getBucketsList(), data.getVersion()));
+            salGroupDescStats.setBuckets(toSALBucketsDesc(groupDesc.nonnullBucketsList(), data.getVersion()));
             salGroupDescStats.setGroupId(new GroupId(groupDesc.getGroupId().getValue()));
             salGroupDescStats.setGroupType(GroupTypes.forValue(groupDesc.getType().getIntValue()));
             salGroupDescStats.withKey(new GroupDescStatsKey(salGroupDescStats.getGroupId()));

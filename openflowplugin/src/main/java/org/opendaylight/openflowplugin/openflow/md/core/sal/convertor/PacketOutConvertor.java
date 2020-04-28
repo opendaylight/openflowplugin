@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.controller.sal.common.util.Arguments;
@@ -120,11 +121,12 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
             LOG.error("PORT NR not exist in Egress");
         }
 
-        List<Action> actions = new ArrayList<>();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions =
-                source.getAction();
+        final List<Action> actions;
+        Map<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions =
+                source.nonnullAction();
 
-        if (inputActions != null) {
+        if (!inputActions.isEmpty()) {
             final ActionConvertorData actionConvertorData = new ActionConvertorData(data.getVersion());
             actionConvertorData.setDatapathId(data.getDatapathId());
 
@@ -142,6 +144,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
             outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
             ActionBuilder actionBuild = new ActionBuilder();
             actionBuild.setActionChoice(outputActionCaseBuilder.build());
+            actions = new ArrayList<>();
             actions.add(actionBuild.build());
         }
 

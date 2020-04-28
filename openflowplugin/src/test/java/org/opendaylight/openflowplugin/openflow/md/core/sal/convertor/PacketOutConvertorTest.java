@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
@@ -70,8 +69,6 @@ public class PacketOutConvertorTest {
 
         TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
 
-        Long bufferId = null;
-
         String nodeId = "0";
         String port = "0";
 
@@ -80,9 +77,8 @@ public class PacketOutConvertorTest {
         NodeConnectorRef egressConfRef = new NodeConnectorRef(
                 createNodeConnRef(nodeId, nodeConnKey));
 
-        transmitPacketInputBuilder.setBufferId(bufferId);
+        transmitPacketInputBuilder.setBufferId((Uint32) null);
         transmitPacketInputBuilder.setConnectionCookie(null);
-        transmitPacketInputBuilder.setAction(null);
         transmitPacketInputBuilder.setNode(ref);
         transmitPacketInputBuilder.setPayload(null);
         transmitPacketInputBuilder.setEgress(egressConfRef);
@@ -185,7 +181,7 @@ public class PacketOutConvertorTest {
 
         Optional<List<Action>> actionsOptional = convertorManager.convert(actionList, actionConvertorData);
 
-        List<Action> actions = actionsOptional.orElse(Collections.emptyList());
+        List<Action> actions = actionsOptional.orElse(null);
         Assert.assertEquals(actions, message.getAction());
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }

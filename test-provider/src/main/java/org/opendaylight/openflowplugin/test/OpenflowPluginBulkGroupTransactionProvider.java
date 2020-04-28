@@ -705,14 +705,16 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()));
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, group, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12),
+                testNode12);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
 
         InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group1.getGroupId()));
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12), testNode12, true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path2, group1, true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12),
+                testNode12);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, group1);
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object notUsed) {

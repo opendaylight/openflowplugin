@@ -27,8 +27,8 @@ public class InstructionsMissTablePropertySerializer extends
     protected void serializeProperty(final InstructionsMiss property, final ByteBuf byteBuf) {
         property
                 .getInstructionsMiss()
-                .getInstruction()
-                .stream()
+                .nonnullInstruction()
+                .values().stream()
                 .sorted(OrderComparator.build())
                 .map(Instruction::getInstruction)
                 .forEach(instruction -> InstructionUtil

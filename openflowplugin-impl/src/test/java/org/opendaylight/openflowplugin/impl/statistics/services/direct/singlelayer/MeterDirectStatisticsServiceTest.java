@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
@@ -33,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.MeterBandStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
@@ -88,9 +90,9 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final List<MultipartReply> input = Collections.singletonList(reply);
 
         final GetMeterStatisticsOutput output = service.buildReply(input, true);
-        assertTrue(output.getMeterStats().size() > 0);
+        assertTrue(output.nonnullMeterStats().size() > 0);
 
-        final MeterStats stats = output.getMeterStats().get(0);
+        final MeterStats stats = output.nonnullMeterStats().values().iterator().next();
         assertEquals(stats.getMeterId().getValue(), METER_NO);
     }
 
@@ -102,11 +104,11 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                         .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats.class);
         when(stat.getMeterId()).thenReturn(new MeterId(METER_NO));
 
-        final List<org.opendaylight.yang.gen.v1.urn
+        final Map<MeterStatsKey, org.opendaylight.yang.gen.v1.urn
                 .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats>
-                stats = Collections.singletonList(stat);
+                stats = Collections.singletonMap(stat.key(), stat);
         final GetMeterStatisticsOutput output = mock(GetMeterStatisticsOutput.class);
-        when(output.getMeterStats()).thenReturn(stats);
+        when(output.nonnullMeterStats()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPMETER).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

@@ -29,7 +29,7 @@ public class WildcardsTablePropertySerializer extends AbstractTablePropertySeria
     protected void serializeProperty(final Wildcards property, final ByteBuf byteBuf) {
         property
             .getWildcardSetfield()
-            .getSetFieldMatch()
+            .nonnullSetFieldMatch().values()
             .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
                     new MessageTypeKey<>(

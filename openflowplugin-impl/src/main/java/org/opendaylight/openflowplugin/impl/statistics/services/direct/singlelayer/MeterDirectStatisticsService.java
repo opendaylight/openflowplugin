@@ -40,7 +40,7 @@ public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsS
             .setMeterStats(input
                 .stream()
                 .flatMap(multipartReply -> ((MultipartReplyMeterStats) multipartReply.getMultipartReplyBody())
-                    .getMeterStats()
+                    .nonnullMeterStats().values()
                     .stream())
                 .collect(Collectors.toList()))
             .build();

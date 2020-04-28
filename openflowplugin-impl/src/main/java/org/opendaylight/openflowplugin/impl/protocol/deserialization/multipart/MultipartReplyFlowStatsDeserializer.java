@@ -25,8 +25,10 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.Instru
 import org.opendaylight.openflowplugin.impl.util.MatchUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
@@ -52,6 +54,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     public MultipartReplyBody deserialize(ByteBuf message) {
         final MultipartReplyFlowStatsBuilder builder = new MultipartReplyFlowStatsBuilder();
         final List<FlowAndStatisticsMapList> items = new ArrayList<>();
+        int key = 0;
 
         while (message.readableBytes() > 0) {
             final FlowAndStatisticsMapListBuilder itemBuilder = new FlowAndStatisticsMapListBuilder();
@@ -115,6 +118,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                         .build());
             }
 
+            itemBuilder.withKey(new FlowAndStatisticsMapListKey(new FlowId(String.valueOf(key++))));
             items.add(itemBuilder.build());
         }
 

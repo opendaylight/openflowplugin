@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.BatchMeterOutputListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -117,20 +119,20 @@ public class MeterUtilTest {
         checkBatchSuccessOutcomeTransformation(MeterUtil.METER_UPDATE_TRANSFORM.apply(input));
     }
 
-    private <T extends BatchMeterOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
+    private static <T extends BatchMeterOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
-        Assert.assertEquals(0, output.getResult().getBatchFailedMetersOutput().size());
+        Assert.assertEquals(0, output.getResult().nonnullBatchFailedMetersOutput().size());
         Assert.assertEquals(0, output.getErrors().size());
     }
 
-    private RpcResult<List<BatchFailedMetersOutput>> createEmptyBatchOutcome() {
+    private static RpcResult<List<BatchFailedMetersOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
                 .success(Collections.<BatchFailedMetersOutput>emptyList())
                 .build();
     }
 
-    private RpcResult<List<BatchFailedMetersOutput>> createBatchOutcomeWithError() {
+    private static RpcResult<List<BatchFailedMetersOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedMetersOutputBuilder()
@@ -139,11 +141,12 @@ public class MeterUtilTest {
                 .build();
     }
 
-    private <T extends BatchMeterOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+    private static <T extends BatchMeterOutputListGrouping> void checkBatchErrorOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
-        Assert.assertEquals(1, output.getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(DUMMY_METER_ID, output.getResult().getBatchFailedMetersOutput().get(0).getMeterId());
+        Assert.assertEquals(1, output.getResult().nonnullBatchFailedMetersOutput().size());
+        Assert.assertEquals(DUMMY_METER_ID,
+            output.getResult().nonnullBatchFailedMetersOutput().values().iterator().next().getMeterId());
 
         Assert.assertEquals(1, output.getErrors().size());
     }
@@ -161,7 +164,9 @@ public class MeterUtilTest {
 
         Assert.assertTrue(composite.isSuccessful());
         Assert.assertEquals(0, composite.getErrors().size());
-        Assert.assertEquals(0, composite.getResult().getBatchFailedMetersOutput().size());
+        Map<BatchFailedMetersOutputKey, BatchFailedMetersOutput> failedMeters
+                = composite.getResult().nonnullBatchFailedMetersOutput();
+        Assert.assertEquals(0, failedMeters.size());
     }
 
     @Test
@@ -193,7 +198,9 @@ public class MeterUtilTest {
 
         Assert.assertFalse(composite.isSuccessful());
         Assert.assertEquals(1, composite.getErrors().size());
-        Assert.assertEquals(0, composite.getResult().getBatchFailedMetersOutput().size());
+        Map<BatchFailedMetersOutputKey, BatchFailedMetersOutput> failedMeters
+                = composite.getResult().nonnullBatchFailedMetersOutput();
+        Assert.assertEquals(0, failedMeters.size());
     }
 
     @Test
@@ -221,7 +228,7 @@ public class MeterUtilTest {
     private RpcResult<AddMetersBatchOutput> createAddMetersBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(Collections.emptyList())
+                        .setBatchFailedMetersOutput(Collections.emptyMap())
                         .build())
                 .build();
     }

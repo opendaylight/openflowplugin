@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
@@ -83,7 +84,7 @@ public class GroupStatsResponseConvertorTest {
         Assert.assertEquals("Wrong byte count", 12345, stat.getByteCount().getValue().intValue());
         Assert.assertEquals("Wrong duration sec", 5000, stat.getDuration().getSecond().getValue().intValue());
         Assert.assertEquals("Wrong duration n sec", 1000000, stat.getDuration().getNanosecond().getValue().intValue());
-        Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().getBucketCounter().size());
+        Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().nonnullBucketCounter().size());
     }
 
     /**
@@ -129,7 +130,7 @@ public class GroupStatsResponseConvertorTest {
         Assert.assertEquals("Wrong byte count", 12345, stat.getByteCount().getValue().intValue());
         Assert.assertEquals("Wrong duration sec", 5000, stat.getDuration().getSecond().getValue().intValue());
         Assert.assertEquals("Wrong duration n sec", 1000000, stat.getDuration().getNanosecond().getValue().intValue());
-        Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().getBucketCounter().size());
+        Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().nonnullBucketCounter().size());
         stat = salGroupStats.get(1);
         Assert.assertEquals("Wrong group-id", 4, stat.getGroupId().getValue().intValue());
         Assert.assertEquals("Wrong key", 4, stat.key().getGroupId().getValue().intValue());
@@ -138,7 +139,7 @@ public class GroupStatsResponseConvertorTest {
         Assert.assertEquals("Wrong byte count", 1, stat.getByteCount().getValue().intValue());
         Assert.assertEquals("Wrong duration sec", 3, stat.getDuration().getSecond().getValue().intValue());
         Assert.assertEquals("Wrong duration n sec", 2, stat.getDuration().getNanosecond().getValue().intValue());
-        Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().getBucketCounter().size());
+        Assert.assertEquals("Wrong bucket stats", 0, stat.getBuckets().nonnullBucketCounter().size());
     }
 
     /**
@@ -184,12 +185,14 @@ public class GroupStatsResponseConvertorTest {
         Assert.assertEquals("Wrong duration sec", 5000, stat.getDuration().getSecond().getValue().intValue());
         Assert.assertEquals("Wrong duration n sec", 1000000, stat.getDuration().getNanosecond().getValue().intValue());
         Assert.assertEquals("Wrong bucket stats", 2, stat.getBuckets().getBucketCounter().size());
-        List<BucketCounter> list = stat.getBuckets().getBucketCounter();
-        Assert.assertEquals("Wrong bucket-id", 0, list.get(0).getBucketId().getValue().intValue());
-        Assert.assertEquals("Wrong bucket packet count", 654, list.get(0).getPacketCount().getValue().intValue());
-        Assert.assertEquals("Wrong bucket byte count", 987, list.get(0).getByteCount().getValue().intValue());
-        Assert.assertEquals("Wrong bucket-id", 1, list.get(1).getBucketId().getValue().intValue());
-        Assert.assertEquals("Wrong bucket packet count", 456, list.get(1).getPacketCount().getValue().intValue());
-        Assert.assertEquals("Wrong bucket byte count", 123, list.get(1).getByteCount().getValue().intValue());
+        Iterator<BucketCounter> it = stat.getBuckets().nonnullBucketCounter().values().iterator();
+        BucketCounter counter = it.next();
+        Assert.assertEquals("Wrong bucket-id", 0, counter.getBucketId().getValue().intValue());
+        Assert.assertEquals("Wrong bucket packet count", 654, counter.getPacketCount().getValue().intValue());
+        Assert.assertEquals("Wrong bucket byte count", 987, counter.getByteCount().getValue().intValue());
+        counter = it.next();
+        Assert.assertEquals("Wrong bucket-id", 1, counter.getBucketId().getValue().intValue());
+        Assert.assertEquals("Wrong bucket packet count", 456, counter.getPacketCount().getValue().intValue());
+        Assert.assertEquals("Wrong bucket byte count", 123, counter.getByteCount().getValue().intValue());
     }
 }

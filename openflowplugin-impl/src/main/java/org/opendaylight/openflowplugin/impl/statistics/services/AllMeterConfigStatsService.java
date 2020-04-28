@@ -7,10 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -97,7 +101,15 @@ final class AllMeterConfigStatsService
             final Optional<List<MeterConfigStats>> meterConfigStatsList =
                     convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
-            meterConfigStatsList.ifPresent(meterConfigStats -> message.getMeterConfigStats().addAll(meterConfigStats));
+            meterConfigStatsList.ifPresent(meterConfigStats -> {
+                if (message.getMeterConfigStats() == null) {
+                    message.setMeterConfigStats(Lists.newArrayList(meterConfigStats));
+                } else {
+                    Set<MeterConfigStats> stats = new HashSet<>(message.getMeterConfigStats().values());
+                    stats.addAll(meterConfigStats);
+                    message.setMeterConfigStats(stats.stream().collect(Collectors.toList()));
+                }
+            });
         }
 
         return message.build();
