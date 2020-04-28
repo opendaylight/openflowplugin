@@ -52,7 +52,7 @@ public class GroupStatsResponseConvertor extends Convertor<
             .openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart
                 .reply.group.GroupStats.class);
 
-    private Buckets toSALBuckets(List<BucketStats> bucketStats) {
+    private static Buckets toSALBuckets(List<BucketStats> bucketStats) {
         BucketsBuilder salBuckets = new BucketsBuilder();
 
         List<BucketCounter> allBucketStats = new ArrayList<>();
@@ -88,7 +88,7 @@ public class GroupStatsResponseConvertor extends Convertor<
                 .body.multipart.reply.group._case.multipart.reply.group.GroupStats groupStats : source) {
             GroupStatsBuilder salGroupStats = new GroupStatsBuilder();
 
-            salGroupStats.setBuckets(toSALBuckets(groupStats.getBucketStats()));
+            salGroupStats.setBuckets(toSALBuckets(groupStats.nonnullBucketStats()));
             salGroupStats.setByteCount(new Counter64(groupStats.getByteCount()));
 
             DurationBuilder time = new DurationBuilder();

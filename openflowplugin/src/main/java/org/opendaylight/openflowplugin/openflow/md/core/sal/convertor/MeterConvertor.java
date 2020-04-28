@@ -67,14 +67,14 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
      * @param version Openflow version
      * @return default empty meter mod input builder
      */
-    public static MeterModInputBuilder defaultResult(short version) {
+    public static MeterModInputBuilder defaultResult(final short version) {
         return new MeterModInputBuilder()
                 .setVersion(version)
                 .setFlags(new MeterFlags(false, false, true, false));
     }
 
-    private static void getBandsFromSAL(MeterBandHeaders meterBandHeaders, List<Bands> bands) {
-        for (MeterBandHeader meterBandHeader : meterBandHeaders.getMeterBandHeader()) {
+    private static void getBandsFromSAL(final MeterBandHeaders meterBandHeaders, final List<Bands> bands) {
+        for (MeterBandHeader meterBandHeader : meterBandHeaders.nonnullMeterBandHeader().values()) {
             // The band types :drop,DSCP_Remark or experimenter.
             if (null != meterBandHeader.getMeterBandTypes() && null != meterBandHeader.getMeterBandTypes().getFlags()) {
                 if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()) {
@@ -152,7 +152,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
     }
 
     @Override
-    public MeterModInputBuilder convert(Meter source, VersionConvertorData data) {
+    public MeterModInputBuilder convert(final Meter source, final VersionConvertorData data) {
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
         List<Bands> bands = new ArrayList<>();
 

@@ -13,8 +13,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
+
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -29,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupStatisticsReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.AggregateFlowStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
@@ -145,11 +148,11 @@ public class MultipartReplyTranslatorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap
                 nodeConnectorStatisticsUpdate = (org.opendaylight.yang.gen.v1.urn
                 .opendaylight.port.statistics.rev131214.NodeConnectorStatisticsAndPortNumberMap) dataObject;
-        List<NodeConnectorStatisticsAndPortNumberMap> nodeConnectorStatisticsAndPortNumberMaps =
+        var nodeConnectorStatisticsAndPortNumberMaps =
                 nodeConnectorStatisticsUpdate.getNodeConnectorStatisticsAndPortNumberMap();
         assertEquals(1, nodeConnectorStatisticsAndPortNumberMaps.size());
         NodeConnectorStatisticsAndPortNumberMap nodeConnectorStatisticsAndPortNumberMap =
-                nodeConnectorStatisticsAndPortNumberMaps.get(0);
+                nodeConnectorStatisticsAndPortNumberMaps.values().iterator().next();
         assertEquals("openflow:" + DUMMY_DATAPATH_ID + ":" + DUMMY_PORT_NO,
                 nodeConnectorStatisticsAndPortNumberMap.getNodeConnectorId().getValue());
         assertEquals(DUMMY_RX_BYTES, nodeConnectorStatisticsAndPortNumberMap.getBytes().getReceived());
@@ -182,12 +185,9 @@ public class MultipartReplyTranslatorTest {
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupStatisticsReply);
         GroupStatisticsReply groupStatisticsUpdate = (GroupStatisticsReply)dataObject;
-        List<org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats> groupStats =
-                groupStatisticsUpdate.getGroupStats();
+        var groupStats = groupStatisticsUpdate.getGroupStats();
         assertEquals(1, groupStats.size());
-        org.opendaylight.yang.gen.v1.urn
-                .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats groupStat = groupStats.get(0);
+        var groupStat = groupStats.values().iterator().next();
 
         assertEquals(DUMMY_BYTE_COUNT, groupStat.getByteCount().getValue());
         assertEquals(DUMMY_DURATION_SEC, groupStat.getDuration().getSecond().getValue());
@@ -213,9 +213,9 @@ public class MultipartReplyTranslatorTest {
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupDescStatsReply);
         GroupDescStatsReply groupStatistics = (GroupDescStatsReply) dataObject;
-        List<GroupDescStats> groupDescStats = groupStatistics.getGroupDescStats();
+        Map<GroupDescStatsKey, GroupDescStats> groupDescStats = groupStatistics.getGroupDescStats();
         assertEquals(1, groupDescStats.size());
-        GroupDescStats groupDescStat = groupDescStats.get(0);
+        GroupDescStats groupDescStat = groupDescStats.values().iterator().next();
         assertEquals(DUMMY_GROUP_ID.getValue(),groupDescStat.getGroupId().getValue());
         assertEquals(DUMMY_GROUPS_TYPE,groupDescStat.getGroupType());
     }

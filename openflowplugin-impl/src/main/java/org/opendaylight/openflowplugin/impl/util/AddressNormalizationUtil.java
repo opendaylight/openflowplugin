@@ -47,8 +47,7 @@ public final class AddressNormalizationUtil {
      * @param protocolVersion the OpenFLow protocol version
      * @return normalized uri
      */
-    @Nullable
-    public static Uri normalizeProtocolAgnosticPort(@Nullable final Uri port, final short protocolVersion) {
+    public static @Nullable Uri normalizeProtocolAgnosticPort(@Nullable final Uri port, final short protocolVersion) {
         if (port == null) {
             return null;
         }
@@ -65,8 +64,7 @@ public final class AddressNormalizationUtil {
      * @param ipv6Prefix the Ipv6 prefix
      * @return normalized Ipv6 prefix
      */
-    @Nullable
-    public static Ipv6Prefix normalizeIpv6Prefix(@Nullable final Ipv6Prefix ipv6Prefix) {
+    public static @Nullable Ipv6Prefix normalizeIpv6Prefix(@Nullable final Ipv6Prefix ipv6Prefix) {
         if (ipv6Prefix == null) {
             return null;
         }
@@ -84,9 +82,8 @@ public final class AddressNormalizationUtil {
      * @param ipv4Mask    the Ipv4 mask
      * @return normalized Ipv6 prefix
      */
-    @Nullable
-    public static Ipv6Prefix normalizeIpv6Arbitrary(@Nullable final Ipv6Address ipv6Address,
-                                                    @Nullable final Ipv6ArbitraryMask ipv4Mask) {
+    public static @Nullable Ipv6Prefix normalizeIpv6Arbitrary(@Nullable final Ipv6Address ipv6Address,
+                                                              @Nullable final Ipv6ArbitraryMask ipv4Mask) {
         if (ipv6Address == null) {
             return null;
         }
@@ -102,8 +99,7 @@ public final class AddressNormalizationUtil {
      * @param ipv6Address the Ipv6 address
      * @return normalized Ipv6 address
      */
-    @Nullable
-    public static Ipv6Address normalizeIpv6AddressWithoutMask(@Nullable final Ipv6Address ipv6Address) {
+    public static @Nullable Ipv6Address normalizeIpv6AddressWithoutMask(@Nullable final Ipv6Address ipv6Address) {
         final Ipv6Prefix ipv6Prefix = normalizeIpv6Arbitrary(ipv6Address, null);
         return ipv6Prefix == null ? null : new Ipv6Address(ipv6Prefix.getValue().split(PREFIX_SEPARATOR)[0]);
     }
@@ -114,8 +110,7 @@ public final class AddressNormalizationUtil {
      * @param ipv4Prefix the Ipv4 prefix
      * @return normalized Ipv4 prefix
      */
-    @Nullable
-    public static Ipv4Prefix normalizeIpv4Prefix(@Nullable final Ipv4Prefix ipv4Prefix) {
+    public static @Nullable Ipv4Prefix normalizeIpv4Prefix(@Nullable final Ipv4Prefix ipv4Prefix) {
         if (ipv4Prefix == null) {
             return null;
         }
@@ -133,9 +128,8 @@ public final class AddressNormalizationUtil {
      * @param ipv4Mask    the Ipv4 mask
      * @return normalized Ipv4 prefix
      */
-    @Nullable
-    public static Ipv4Prefix normalizeIpv4Arbitrary(@Nullable final Ipv4Address ipv4Address,
-                                                    @Nullable final DottedQuad ipv4Mask) {
+    public static @Nullable Ipv4Prefix normalizeIpv4Arbitrary(@Nullable final Ipv4Address ipv4Address,
+                                                              @Nullable final DottedQuad ipv4Mask) {
         if (ipv4Address == null) {
             return null;
         }
@@ -152,8 +146,8 @@ public final class AddressNormalizationUtil {
      * @param mask    Ipv4 mask byte array
      * @return normalized Ipv4 prefix
      */
-    @Nullable
-    public static Ipv4Prefix normalizeIpv4Address(@Nullable final byte[] address, @Nullable final byte[] mask) {
+    public static @Nullable Ipv4Prefix normalizeIpv4Address(final byte @Nullable [] address,
+                                                            final byte @Nullable [] mask) {
         final String addressPrefix = normalizeInetAddressWithMask(normalizeIpAddress(address, mask), mask);
 
         if (addressPrefix == null) {
@@ -171,8 +165,8 @@ public final class AddressNormalizationUtil {
      * @param mask    Ipv6 mask byte array
      * @return normalized Ipv6 prefix
      */
-    @Nullable
-    public static Ipv6Prefix normalizeIpv6Address(@Nullable final byte[] address, @Nullable final byte[] mask) {
+    public static @Nullable Ipv6Prefix normalizeIpv6Address(final byte @Nullable [] address,
+                                                            final byte @Nullable [] mask) {
         final String addressPrefix = normalizeInetAddressWithMask(normalizeIpAddress(address, mask), mask);
 
         if (addressPrefix == null) {
@@ -189,8 +183,8 @@ public final class AddressNormalizationUtil {
      * @param mask    mask byte array
      * @return normalized Inet address
      */
-    @Nullable
-    public static InetAddress normalizeIpAddress(@Nullable final byte[] address, @Nullable final byte[] mask) {
+    public static @Nullable InetAddress normalizeIpAddress(final byte @Nullable [] address,
+                                                           final byte @Nullable [] mask) {
         if (address == null) {
             return null;
         }
@@ -216,9 +210,8 @@ public final class AddressNormalizationUtil {
      * @param mask    the mask
      * @return the string
      */
-    @Nullable
-    public static String normalizeInetAddressWithMask(@Nullable final InetAddress address,
-                                                      @Nullable final byte[] mask) {
+    public static @Nullable String normalizeInetAddressWithMask(final @Nullable InetAddress address,
+                                                                final byte @Nullable [] mask) {
         if (address == null) {
             return null;
         }

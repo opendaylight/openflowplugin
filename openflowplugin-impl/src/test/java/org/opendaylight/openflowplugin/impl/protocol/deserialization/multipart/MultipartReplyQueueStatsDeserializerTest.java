@@ -39,7 +39,7 @@ public class MultipartReplyQueueStatsDeserializerTest extends AbstractMultipartD
 
         final MultipartReplyQueueStats reply = (MultipartReplyQueueStats) deserializeMultipart(buffer);
 
-        final QueueIdAndStatisticsMap queueStats = reply.getQueueIdAndStatisticsMap().get(0);
+        final QueueIdAndStatisticsMap queueStats = reply.getQueueIdAndStatisticsMap().values().iterator().next();
 
         assertEquals(QUEUE_ID, queueStats.getQueueId().getValue().intValue());
         assertEquals(TRANSMITTED_BYTES, queueStats.getTransmittedBytes().getValue().longValue());

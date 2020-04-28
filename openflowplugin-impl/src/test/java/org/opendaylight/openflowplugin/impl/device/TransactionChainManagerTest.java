@@ -84,7 +84,7 @@ public class TransactionChainManagerTest {
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
     }
 
     /**
@@ -98,7 +98,7 @@ public class TransactionChainManagerTest {
         txChainManager.submitTransaction();
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx).commit();
     }
 
@@ -112,7 +112,7 @@ public class TransactionChainManagerTest {
         txChainManager.submitTransaction();
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx, Mockito.never()).commit();
     }
 
@@ -126,7 +126,7 @@ public class TransactionChainManagerTest {
         txChainManager.submitTransaction();
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx).commit();
     }
 
@@ -140,7 +140,7 @@ public class TransactionChainManagerTest {
         txChainManager.writeToTransaction(LogicalDatastoreType.CONFIGURATION, path, data, false);
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx, Mockito.times(2)).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx, Mockito.times(2)).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx, Mockito.never()).commit();
     }
 
@@ -182,7 +182,7 @@ public class TransactionChainManagerTest {
         txChainManager.deactivateTransactionManager();
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx, Mockito.never()).commit();
         Mockito.verify(writeTx).cancel();
         Mockito.verify(txChain).close();
@@ -196,7 +196,7 @@ public class TransactionChainManagerTest {
         txChainManager.shuttingDown();
 
         Mockito.verify(txChain).newReadWriteTransaction();
-        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data, false);
+        Mockito.verify(writeTx).put(LogicalDatastoreType.CONFIGURATION, path, data);
         Mockito.verify(writeTx).commit();
     }
 

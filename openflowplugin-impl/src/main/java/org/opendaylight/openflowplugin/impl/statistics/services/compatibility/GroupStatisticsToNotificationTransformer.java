@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ public final class GroupStatisticsToNotificationTransformer {
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        notification.setGroupStats(new ArrayList<>());
+        notification.setGroupStats(new ArrayList<GroupStats>());
 
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
@@ -58,7 +59,14 @@ public final class GroupStatisticsToNotificationTransformer {
             final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
                     replyBody.getGroupStats(), data);
 
-            groupStatsList.ifPresent(groupStats -> notification.getGroupStats().addAll(groupStats));
+            groupStatsList.ifPresent(groupStats -> {
+                if (notification.getGroupStats() == null) {
+                    List<GroupStats> stats = Lists.newArrayList(groupStats);
+                    notification.setGroupStats(stats);
+                } else {
+                    notification.getGroupStats().values().addAll(groupStats);
+                }
+            });
         }
         return notification.build();
     }

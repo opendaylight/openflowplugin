@@ -28,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
+import java.util.Iterator;
+
 public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDeserializerTest {
 
     private static final byte PADDING_IN_FLOW_STATS_HEADER_01 = 1;
@@ -129,7 +131,8 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         buffer.setShort(instructionLengthIndex, buffer.writerIndex() - instructionStartIndex);
 
         final MultipartReplyFlowStats reply = (MultipartReplyFlowStats) deserializeMultipart(buffer);
-        final FlowAndStatisticsMapList flowAndStatisticsMapList = reply.getFlowAndStatisticsMapList().get(0);
+        final FlowAndStatisticsMapList flowAndStatisticsMapList =
+                reply.getFlowAndStatisticsMapList().values().iterator().next();
         assertEquals(TABLE_ID, flowAndStatisticsMapList.getTableId().shortValue());
         assertEquals(SECOND, flowAndStatisticsMapList.getDuration().getSecond().getValue().intValue());
         assertEquals(NANOSECOND, flowAndStatisticsMapList.getDuration().getNanosecond().getValue().intValue());
@@ -142,23 +145,22 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         assertEquals(PACKET_COUNT, flowAndStatisticsMapList.getPacketCount().getValue().longValue());
 
         assertEquals(2, flowAndStatisticsMapList.getInstructions().getInstruction().size());
+        final var instructionIter = flowAndStatisticsMapList.getInstructions().getInstruction().values().iterator();
 
-        final Instruction instruction =
-                flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
+        final Instruction instruction = instructionIter.next().getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().getAction().size());
-        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
+        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().values().iterator().next()
                 .getAction().implementedInterface());
 
-        final Instruction instruction1 =
-                flowAndStatisticsMapList.getInstructions().getInstruction().get(1).getInstruction();
+        final Instruction instruction1 = instructionIter.next().getInstruction();
         assertEquals(WriteActionsCase.class, instruction1.implementedInterface());
 
         final WriteActionsCase writeActions = (WriteActionsCase) instruction1;
         assertEquals(1, writeActions.getWriteActions().getAction().size());
-        assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().getAction().get(0)
+        assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().getAction().values().iterator().next()
                 .getAction().implementedInterface());
     }
 

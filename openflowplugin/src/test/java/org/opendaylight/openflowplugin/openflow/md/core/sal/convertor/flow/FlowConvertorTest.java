@@ -129,7 +129,7 @@ public class FlowConvertorTest {
         Assert.assertEquals("Wrong match",
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType",
                 flowMod.get(0).getMatch().getType().getName());
-        Assert.assertEquals("Wrong match entries size", 0, flowMod.get(0).getMatch().getMatchEntry().size());
+        Assert.assertEquals("Wrong match entries size", 0, flowMod.get(0).getMatch().nonnullMatchEntry().size());
     }
 
     /**
@@ -246,13 +246,13 @@ public class FlowConvertorTest {
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         WriteActionsCase writeActionsCase = (WriteActionsCase) instruction.getInstructionChoice();
-        Assert.assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().getAction().size());
+        Assert.assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().nonnullAction().size());
         instruction = flowMod.get(0).getInstruction().get(3);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         ApplyActionsCase applyActionsCase =  (ApplyActionsCase) instruction.getInstructionChoice();
-        Assert.assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().getAction().size());
+        Assert.assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().nonnullAction().size());
         instruction = flowMod.get(0).getInstruction().get(4);
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase",
