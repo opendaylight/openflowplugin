@@ -33,7 +33,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
     public void serialize(final MultipartRequestTableFeatures multipartRequestTableFeatures, final ByteBuf byteBuf) {
         Optional
             .ofNullable(multipartRequestTableFeatures.getTableFeatures())
-            .ifPresent(tableFeatures -> tableFeatures
+            .ifPresent(tableFeatures -> tableFeatures.values()
                 .stream()
                 .filter(Objects::nonNull)
                 .forEach(tableFeature -> {
@@ -57,7 +57,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
         Optional
             .ofNullable(tableProperties)
             .flatMap(properties -> Optional.ofNullable(properties.getTableFeatureProperties()))
-            .ifPresent(properties -> properties
+            .ifPresent(properties -> properties.values()
                 .stream()
                 .filter(Objects::nonNull)
                 .forEach(property -> {

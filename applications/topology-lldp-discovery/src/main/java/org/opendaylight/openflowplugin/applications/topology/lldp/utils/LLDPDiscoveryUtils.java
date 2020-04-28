@@ -18,7 +18,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
-import org.apache.commons.lang3.ArrayUtils;
 import org.opendaylight.mdsal.eos.binding.api.Entity;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
@@ -205,7 +204,7 @@ public final class LLDPDiscoveryUtils {
         boolean secAuthenticatorOk = false;
         if (hashLldptlv != null) {
             byte[] rawTlvValue = hashLldptlv.getValue();
-            byte[] lldpCustomSecurityHash = ArrayUtils.subarray(rawTlvValue, 4, rawTlvValue.length);
+            byte[] lldpCustomSecurityHash = Arrays.copyOfRange(rawTlvValue, 4, rawTlvValue.length);
             byte[] calculatedHash = getValueForLLDPPacketIntegrityEnsuring(srcNodeConnectorId);
             secAuthenticatorOk = Arrays.equals(calculatedHash, lldpCustomSecurityHash);
         } else {

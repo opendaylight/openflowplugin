@@ -66,6 +66,11 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-binding-generator-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.mdsal</groupId>
       <artifactId>mdsal-binding-dom-adapter</artifactId>
       <scope>test</scope>
       <type>test-jar</type>

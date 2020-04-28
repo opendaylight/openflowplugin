@@ -109,9 +109,9 @@ public class FlowCapableTopologyExporterTest {
         waitForSubmit(submitLatch);
 
         ArgumentCaptor<Link> mergedNode = ArgumentCaptor.forClass(Link.class);
-        verify(mockTx).merge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.child(
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.child(
                         Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))),
-                mergedNode.capture(), eq(true));
+                mergedNode.capture());
         assertEquals("Source node ID", "sourceNode",
                 mergedNode.getValue().getSource().getSourceNode().getValue());
         assertEquals("Dest TP ID", "sourceTP",

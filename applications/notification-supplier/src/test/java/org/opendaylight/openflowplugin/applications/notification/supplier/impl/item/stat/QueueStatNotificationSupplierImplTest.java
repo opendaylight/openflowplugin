@@ -78,7 +78,8 @@ public class QueueStatNotificationSupplierImplTest {
                 .createNotification(createTestQueueStat(), createTestQueueStatPath());
         assertNotNull(notification);
         assertEquals(FLOW_NODE_ID, notification.getId().getValue());
-        assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnector().get(0).getId().getValue());
+        assertEquals(FLOW_CODE_CONNECTOR_ID, notification.getNodeConnector().values().iterator().next().getId()
+                .getValue());
     }
 
     @Test

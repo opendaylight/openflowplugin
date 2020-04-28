@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -56,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.add.meters.batch.input.BatchAddMetersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMetersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMeters;
@@ -148,14 +150,14 @@ public class SalMetersBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<UpdateMetersBatchOutput>> resultFuture = salMetersBatchService.updateMetersBatch(input);
+        Iterator<BatchFailedMetersOutput> iterator = resultFuture.get().getResult().getBatchFailedMetersOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(43L,
-                resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(45L,
-                resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(43L, iterator.next().getMeterId().getValue().longValue());
+        Assert.assertEquals(45L,iterator.next().getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -216,14 +218,14 @@ public class SalMetersBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<AddMetersBatchOutput>> resultFuture = salMetersBatchService.addMetersBatch(input);
+        Iterator<BatchFailedMetersOutput> iterator = resultFuture.get().getResult().getBatchFailedMetersOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(42L,
-                resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(43L,
-                resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(42L, iterator.next().getMeterId().getValue().longValue());
+        Assert.assertEquals(43L,iterator.next().getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
@@ -282,14 +284,14 @@ public class SalMetersBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<RemoveMetersBatchOutput>> resultFuture = salMetersBatchService.removeMetersBatch(input);
+        Iterator<BatchFailedMetersOutput> iterator = resultFuture.get().getResult().getBatchFailedMetersOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedMetersOutput().size());
-        Assert.assertEquals(42L,
-                resultFuture.get().getResult().getBatchFailedMetersOutput().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(43L,
-                resultFuture.get().getResult().getBatchFailedMetersOutput().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(42L, iterator.next().getMeterId().getValue().longValue());
+        Assert.assertEquals(43L, iterator.next().getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);

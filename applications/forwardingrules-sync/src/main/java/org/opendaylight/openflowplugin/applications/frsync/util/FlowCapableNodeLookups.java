@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,7 +36,7 @@ public final class FlowCapableNodeLookups {
     }
 
     @NonNull
-    public static Map<Uint8, Table> wrapTablesToMap(@Nullable final List<Table> tables) {
+    public static Map<Uint8, Table> wrapTablesToMap(@Nullable final Collection<Table> tables) {
         final Map<Uint8, Table> tableMap;
 
         if (tables == null) {
@@ -53,7 +53,7 @@ public final class FlowCapableNodeLookups {
     }
 
     @NonNull
-    public static Map<FlowDescriptor, Flow> wrapFlowsToMap(@Nullable final List<Flow> flows) {
+    public static Map<FlowDescriptor, Flow> wrapFlowsToMap(@Nullable final Collection<Flow> flows) {
         final Map<FlowDescriptor, Flow> flowMap;
 
         if (flows == null) {
@@ -74,7 +74,7 @@ public final class FlowCapableNodeLookups {
     }
 
     @NonNull
-    public static Map<MeterId, Meter> wrapMetersToMap(@Nullable final List<Meter> meters) {
+    public static Map<MeterId, Meter> wrapMetersToMap(@Nullable final Collection<Meter> meters) {
         final Map<MeterId, Meter> meterMap;
 
         if (meters == null) {
@@ -91,7 +91,7 @@ public final class FlowCapableNodeLookups {
     }
 
     @NonNull
-    public static Map<Uint32, Group> wrapGroupsToMap(@Nullable final List<Group> groups) {
+    public static Map<Uint32, Group> wrapGroupsToMap(@Nullable final Collection<Group> groups) {
         final Map<Uint32, Group> groupMap;
 
         if (groups == null) {
