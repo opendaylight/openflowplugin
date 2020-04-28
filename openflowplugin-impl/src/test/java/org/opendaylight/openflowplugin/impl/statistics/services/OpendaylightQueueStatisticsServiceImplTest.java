@@ -62,7 +62,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
     }
 
     @Test
-    public void testGetAllQueuesStatisticsFromAllPorts() throws Exception {
+    public void FlowMessageSerializertestGetAllQueuesStatisticsFromAllPorts() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
 

@@ -29,7 +29,7 @@ public class MatchTablePropertySerializer extends AbstractTablePropertySerialize
     protected void serializeProperty(final Match property, final ByteBuf byteBuf) {
         property
             .getMatchSetfield()
-            .getSetFieldMatch()
+            .getSetFieldMatch().values()
             .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
                     new MessageTypeKey<>(

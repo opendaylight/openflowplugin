@@ -45,7 +45,8 @@ public class MeterConfigStatsResponseConvertorTest {
 
             BandsBuilder bandsBuilder = new BandsBuilder();
             bandsBuilder.setMeterBand(new MeterBandDropCaseBuilder()
-                    .setMeterBandDrop(new MeterBandDropBuilder().build()).build());
+                    .setMeterBandDrop(new MeterBandDropBuilder().build())
+                    .build());
             bandses.add(bandsBuilder.build());
 
             bandsBuilder = new BandsBuilder();
@@ -67,7 +68,7 @@ public class MeterConfigStatsResponseConvertorTest {
             meterConfigs.add(meterConfigBuilder.build());
         }
 
-        return meterConfigs;
+         return meterConfigs;
     }
 
     @Test

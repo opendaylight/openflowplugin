@@ -84,15 +84,17 @@ public class MeterStatsResponseConvertor extends Convertor<
             List<BandStat> listAllBandStats = new ArrayList<>();
             int bandKey = 0;
 
-            for (MeterBandStats meterBandStats : allMeterBandStats) {
-                BandStatBuilder bandStatBuilder = new BandStatBuilder();
-                bandStatBuilder.setByteBandCount(new Counter64(meterBandStats.getByteBandCount()));
-                bandStatBuilder.setPacketBandCount(new Counter64(meterBandStats.getPacketBandCount()));
-                BandId bandId = new BandId((long) bandKey);
-                bandStatBuilder.withKey(new BandStatKey(bandId));
-                bandStatBuilder.setBandId(bandId);
-                bandKey++;
-                listAllBandStats.add(bandStatBuilder.build());
+            if (allMeterBandStats != null) {
+                for (MeterBandStats meterBandStats : allMeterBandStats) {
+                    BandStatBuilder bandStatBuilder = new BandStatBuilder();
+                    bandStatBuilder.setByteBandCount(new Counter64(meterBandStats.getByteBandCount()));
+                    bandStatBuilder.setPacketBandCount(new Counter64(meterBandStats.getPacketBandCount()));
+                    BandId bandId = new BandId((long) bandKey);
+                    bandStatBuilder.withKey(new BandStatKey(bandId));
+                    bandStatBuilder.setBandId(bandId);
+                    bandKey++;
+                    listAllBandStats.add(bandStatBuilder.build());
+                }
             }
 
             meterBandStatsBuilder.setBandStat(listAllBandStats);
