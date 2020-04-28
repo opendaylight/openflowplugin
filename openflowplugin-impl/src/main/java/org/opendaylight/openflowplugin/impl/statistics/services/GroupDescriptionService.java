@@ -79,7 +79,8 @@ final class GroupDescriptionService
             final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
-            groupDescStatsList.ifPresent(groupDescStats -> notification.getGroupDescStats().addAll(groupDescStats));
+            groupDescStatsList.ifPresent(groupDescStats -> notification.getGroupDescStats().values()
+                    .addAll(groupDescStats));
         }
 
         return notification.build();

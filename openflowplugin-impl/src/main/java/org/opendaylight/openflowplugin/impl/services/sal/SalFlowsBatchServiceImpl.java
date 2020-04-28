@@ -70,7 +70,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveFlows().size());
         final ArrayList<ListenableFuture<RpcResult<RemoveFlowOutput>>> resultsLot = new ArrayList<>();
-        for (BatchFlowInputGrouping batchFlow : input.getBatchRemoveFlows()) {
+        for (BatchFlowInputGrouping batchFlow : input.getBatchRemoveFlows().values()) {
             final RemoveFlowInput removeFlowInput = new RemoveFlowInputBuilder(batchFlow)
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
@@ -80,7 +80,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
                 Futures.transform(Futures.successfulAsList(resultsLot),
-                        FlowUtil.createCumulatingFunction(input.getBatchRemoveFlows()),
+                        FlowUtil.createCumulatingFunction(input.getBatchRemoveFlows().values()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBulkFuture =
@@ -98,7 +98,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     public ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBatch(final AddFlowsBatchInput input) {
         LOG.trace("Adding flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddFlows().size());
         final ArrayList<ListenableFuture<RpcResult<AddFlowOutput>>> resultsLot = new ArrayList<>();
-        for (BatchFlowInputGrouping batchFlow : input.getBatchAddFlows()) {
+        for (BatchFlowInputGrouping batchFlow : input.getBatchAddFlows().values()) {
             final AddFlowInput addFlowInput = new AddFlowInputBuilder(batchFlow)
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
@@ -108,7 +108,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
                 Futures.transform(Futures.successfulAsList(resultsLot),
-                        FlowUtil.createCumulatingFunction(input.getBatchAddFlows()),
+                        FlowUtil.createCumulatingFunction(input.getBatchAddFlows().values()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBulkFuture =
@@ -138,7 +138,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchUpdateFlows().size());
         final ArrayList<ListenableFuture<RpcResult<UpdateFlowOutput>>> resultsLot = new ArrayList<>();
-        for (BatchUpdateFlows batchFlow : input.getBatchUpdateFlows()) {
+        for (BatchUpdateFlows batchFlow : input.getBatchUpdateFlows().values()) {
             final UpdateFlowInput updateFlowInput = new UpdateFlowInputBuilder(input)
                     .setOriginalFlow(new OriginalFlowBuilder(batchFlow.getOriginalBatchedFlow()).build())
                     .setUpdatedFlow(new UpdatedFlowBuilder(batchFlow.getUpdatedBatchedFlow()).build())
@@ -150,7 +150,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
                 Futures.transform(Futures.successfulAsList(resultsLot),
-                                  FlowUtil.createCumulatingFunction(input.getBatchUpdateFlows()),
+                                  FlowUtil.createCumulatingFunction(input.getBatchUpdateFlows().values()),
                         MoreExecutors.directExecutor());
 
         ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBulkFuture =

@@ -106,7 +106,7 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                 .opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats>
                 stats = Collections.singletonList(stat);
         final GetMeterStatisticsOutput output = mock(GetMeterStatisticsOutput.class);
-        when(output.getMeterStats()).thenReturn(stats);
+        when(output.getMeterStats().values()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPMETER).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

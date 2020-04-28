@@ -196,14 +196,14 @@ public final class FlowUtil {
      * @return static reusable function
      */
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(
-            final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+            final Collection<? extends BatchFlowIdGrouping> inputBatchFlows) {
         return new CumulatingFunction<O>(inputBatchFlows).invoke();
     }
 
     private static class CumulatingFunction<O> {
-        private final List<? extends BatchFlowIdGrouping> inputBatchFlows;
+        private final Collection<? extends BatchFlowIdGrouping> inputBatchFlows;
 
-        CumulatingFunction(final List<? extends BatchFlowIdGrouping> inputBatchFlows) {
+        CumulatingFunction(final Collection<? extends BatchFlowIdGrouping> inputBatchFlows) {
             this.inputBatchFlows = inputBatchFlows;
         }
 
