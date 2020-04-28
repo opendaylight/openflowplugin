@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,7 +164,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 if (!result.isSuccessful() && result.getResult() != null
                         && !result.getResult().getBatchFailure().isEmpty()) {
                     Map<Range<Uint16>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
-                    decrementBatchFailuresCounters(result.getResult().getBatchFailure(), batchMap, counters);
+                    decrementBatchFailuresCounters(result.getResult().nonnullBatchFailure().values(), batchMap,
+                            counters);
                 }
             }
 
@@ -176,7 +178,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private static void decrementBatchFailuresCounters(final List<BatchFailure> batchFailures,
+    private static void decrementBatchFailuresCounters(final Collection<BatchFailure> batchFailures,
                                                 final Map<Range<Uint16>, Batch> batchMap,
                                                 final SyncCrudCounters counters) {
         for (BatchFailure batchFailure : batchFailures) {

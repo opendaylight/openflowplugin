@@ -34,7 +34,7 @@ public class TableFeaturesMultipartWriter extends AbstractMultipartWriter<TableF
 
     @Override
     public void storeStatistics(final TableFeatures statistics, final boolean withParents) {
-        statistics.getTableFeatures()
+        statistics.nonnullTableFeatures().values()
             .forEach(stat -> {
                 writeToTransaction(getInstanceIdentifier()
                         .augmentation(FlowCapableNode.class)

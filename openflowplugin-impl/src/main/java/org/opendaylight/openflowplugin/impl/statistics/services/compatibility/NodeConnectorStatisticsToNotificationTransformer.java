@@ -9,8 +9,12 @@
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -25,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.multipart.reply.port.stats.PortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
 
@@ -65,7 +70,15 @@ public final class NodeConnectorStatisticsToNotificationTransformer {
             for (PortStats portStats : replyBody.getPortStats()) {
                 NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
                         processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats);
-                notification.getNodeConnectorStatisticsAndPortNumberMap().add(statsBuilder.build());
+                if (notification.getNodeConnectorStatisticsAndPortNumberMap() != null) {
+                    Set<NodeConnectorStatisticsAndPortNumberMap> stats
+                            = new HashSet<>(notification.getNodeConnectorStatisticsAndPortNumberMap().values());
+                    stats.add(statsBuilder.build());
+                    notification.setNodeConnectorStatisticsAndPortNumberMap(
+                            stats.stream().collect(Collectors.toList()));
+                } else {
+                    notification.setNodeConnectorStatisticsAndPortNumberMap(Lists.newArrayList(statsBuilder.build()));
+                }
             }
         }
         return notification.build();

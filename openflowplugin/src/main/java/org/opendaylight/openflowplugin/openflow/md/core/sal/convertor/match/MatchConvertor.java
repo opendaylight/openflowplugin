@@ -652,8 +652,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         Optional<GeneralExtensionListGrouping> extensionListOpt =
                 ExtensionResolvers.getMatchExtensionResolver().getExtension(source);
         if (extensionListOpt.isPresent()) {
-            List<ExtensionList> extensionListList = extensionListOpt.get().getExtensionList();
-            for (ExtensionList extensionItem : extensionListList) {
+            for (ExtensionList extensionItem : extensionListOpt.get().nonnullExtensionList().values()) {
                 // TODO: get real version
                 ConverterExtensionKey<? extends ExtensionKey> key =
                         new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);

@@ -8,8 +8,12 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -24,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.multipart.reply.queue.QueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 
 /**
@@ -79,7 +84,14 @@ public final class QueueStatisticsToNotificationTransformer {
 
                 statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
 
-                notification.getQueueIdAndStatisticsMap().add(statsBuilder.build());
+                if (notification.getQueueIdAndStatisticsMap() == null) {
+                    notification.setQueueIdAndStatisticsMap(Lists.newArrayList(statsBuilder.build()));
+                } else {
+                    Set<QueueIdAndStatisticsMap> stats
+                            = new HashSet<>(notification.getQueueIdAndStatisticsMap().values());
+                    stats.add(statsBuilder.build());
+                    notification.setQueueIdAndStatisticsMap(stats.stream().collect(Collectors.toList()));
+                }
             }
         }
         return notification.build();

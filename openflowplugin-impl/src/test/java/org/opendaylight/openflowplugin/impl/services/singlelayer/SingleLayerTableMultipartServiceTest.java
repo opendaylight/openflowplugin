@@ -55,7 +55,7 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
         final MultipartRequestTableFeatures result = (MultipartRequestTableFeatures) ((MultipartRequest) ofHeader)
             .getMultipartRequestBody();
 
-        assertEquals(MAX_ENTRIES, result.getTableFeatures().get(0).getMaxEntries().longValue());
+        assertEquals(MAX_ENTRIES, result.nonnullTableFeatures().values().iterator().next().getMaxEntries().longValue());
     }
 
     @Test

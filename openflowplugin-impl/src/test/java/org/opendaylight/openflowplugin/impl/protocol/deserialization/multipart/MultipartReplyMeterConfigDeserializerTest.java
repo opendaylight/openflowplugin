@@ -51,10 +51,11 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
 
         final MultipartReplyMeterConfig reply = (MultipartReplyMeterConfig) deserializeMultipart(buffer);
 
-        assertEquals(METER_ID, reply.getMeterConfigStats().get(0).getMeterId().getValue().intValue());
-        assertEquals(FLAGS, reply.getMeterConfigStats().get(0).getFlags());
-        final Drop drop = (Drop) reply.getMeterConfigStats().get(0)
-                .getMeterBandHeaders().getMeterBandHeader().get(0).getBandType();
+        assertEquals(METER_ID,
+            reply.nonnullMeterConfigStats().values().iterator().next().getMeterId().getValue().intValue());
+        assertEquals(FLAGS, reply.nonnullMeterConfigStats().values().iterator().next().getFlags());
+        final Drop drop = (Drop) reply.nonnullMeterConfigStats().values().iterator().next()
+                .getMeterBandHeaders().nonnullMeterBandHeader().values().iterator().next().getBandType();
         assertEquals(DROP_RATE, drop.getDropRate().intValue());
         assertEquals(DROP_BURST_SIZE, drop.getDropBurstSize().intValue());
     }
@@ -72,8 +73,8 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
 
         final MultipartReplyMeterConfig reply = (MultipartReplyMeterConfig) deserializeMultipart(buffer);
 
-        final DscpRemark dscpRemark = (DscpRemark) reply.getMeterConfigStats().get(0)
-                .getMeterBandHeaders().getMeterBandHeader().get(0).getBandType();
+        final DscpRemark dscpRemark = (DscpRemark) reply.nonnullMeterConfigStats().values().iterator().next()
+                .getMeterBandHeaders().nonnullMeterBandHeader().values().iterator().next().getBandType();
         assertEquals(DSCP_REMARK_RATE, dscpRemark.getDscpRemarkRate().intValue());
         assertEquals(DSCP_REMARK_BURST_SIZE, dscpRemark.getDscpRemarkBurstSize().intValue());
         assertEquals(PREC_LEVEL, dscpRemark.getPrecLevel().byteValue());
@@ -84,7 +85,7 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
         return MultipartType.OFPMPMETERCONFIG.getIntValue();
     }
 
-    private void writeCommonAtributes(ByteBuf buffer) {
+    private void writeCommonAtributes(final ByteBuf buffer) {
         buffer.writeShort(ITEM_LENGTH);
         buffer.writeShort(ByteBufUtils.fillBitMask(0,
                 FLAGS.isMeterKbps(),

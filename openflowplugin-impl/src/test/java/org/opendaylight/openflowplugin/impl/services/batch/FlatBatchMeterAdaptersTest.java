@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -33,10 +33,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.BatchMeterOutputListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.add.meters.batch.input.BatchAddMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMeters;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -64,9 +66,11 @@ public class FlatBatchMeterAdaptersTest {
                 FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, NODE_REF);
 
         Assert.assertTrue(addMetersBatchInput.isBarrierAfter());
-        Assert.assertEquals(2, addMetersBatchInput.getBatchAddMeters().size());
-        Assert.assertEquals(1L, addMetersBatchInput.getBatchAddMeters().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(2L, addMetersBatchInput.getBatchAddMeters().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(2, addMetersBatchInput.nonnullBatchAddMeters().size());
+        final Iterator<BatchAddMeters> it = addMetersBatchInput.nonnullBatchAddMeters().values().iterator();
+
+        Assert.assertEquals(1L, it.next().getMeterId().getValue().longValue());
+        Assert.assertEquals(2L, it.next().getMeterId().getValue().longValue());
     }
 
     private FlatBatchAddMeter createAddMeterBatch(final long groupIdValue) {
@@ -102,13 +106,12 @@ public class FlatBatchMeterAdaptersTest {
 
         final RemoveMetersBatchInput removeMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, NODE_REF);
+        Iterator<BatchRemoveMeters> iterator = removeMetersBatchInput.nonnullBatchRemoveMeters().values().iterator();
 
         Assert.assertTrue(removeMetersBatchInput.isBarrierAfter());
-        Assert.assertEquals(2, removeMetersBatchInput.getBatchRemoveMeters().size());
-        Assert.assertEquals(1L,
-                removeMetersBatchInput.getBatchRemoveMeters().get(0).getMeterId().getValue().longValue());
-        Assert.assertEquals(2L,
-                removeMetersBatchInput.getBatchRemoveMeters().get(1).getMeterId().getValue().longValue());
+        Assert.assertEquals(2, removeMetersBatchInput.nonnullBatchRemoveMeters().size());
+        Assert.assertEquals(1L, iterator.next().getMeterId().getValue().longValue());
+        Assert.assertEquals(2L, iterator.next().getMeterId().getValue().longValue());
     }
 
     @Test
@@ -144,13 +147,15 @@ public class FlatBatchMeterAdaptersTest {
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult = FlatBatchMeterAdapters
                 .convertBatchMeterResult(3).apply(input);
+        Iterator<BatchFailure> iterator = rpcResult.getResult().nonnullBatchFailure().values().iterator();
 
         Assert.assertFalse(rpcResult.isSuccessful());
         Assert.assertEquals(1, rpcResult.getErrors().size());
-        Assert.assertEquals(2, rpcResult.getResult().getBatchFailure().size());
-        Assert.assertEquals(3, rpcResult.getResult().getBatchFailure().get(0).getBatchOrder().intValue());
-        Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().get(1).getBatchOrder().intValue());
-        Assert.assertEquals(2L, ((FlatBatchFailureMeterIdCase) rpcResult.getResult().getBatchFailure().get(1)
+        Assert.assertEquals(2, rpcResult.getResult().nonnullBatchFailure().size());
+        Assert.assertEquals(3, iterator.next().getBatchOrder().intValue());
+        BatchFailure secondBatchFailure = iterator.next();
+        Assert.assertEquals(4, secondBatchFailure.getBatchOrder().intValue());
+        Assert.assertEquals(2L, ((FlatBatchFailureMeterIdCase) secondBatchFailure
                 .getBatchItemIdChoice()).getMeterId().getValue().longValue());
     }
 
@@ -165,7 +170,7 @@ public class FlatBatchMeterAdaptersTest {
 
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
     private BatchFailedMetersOutput createBatchFailedMetersOutput(final Integer batchOrder, final long groupIdValue) {

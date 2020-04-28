@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.junit.After;
@@ -50,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.add.flows.batch.input.BatchAddFlowsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.input.update.grouping.OriginalBatchedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.input.update.grouping.UpdatedBatchedFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.remove.flows.batch.input.BatchRemoveFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.remove.flows.batch.input.BatchRemoveFlowsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.update.flows.batch.input.BatchUpdateFlows;
@@ -130,7 +132,7 @@ public class SalFlowsBatchServiceImplTest {
         final RpcResult<RemoveFlowsBatchOutput> rpcResult = resultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
         final RemoveFlowsBatchOutput result = rpcResult.getResult();
-        Assert.assertEquals(0, result.getBatchFailedFlowsOutput().size());
+        Assert.assertEquals(0, result.nonnullBatchFailedFlowsOutput().size());
 
         final InOrder inOrder = Mockito.inOrder(salFlowService, transactionService);
 
@@ -165,9 +167,10 @@ public class SalFlowsBatchServiceImplTest {
         final RpcResult<RemoveFlowsBatchOutput> rpcResult = resultFuture.get();
         Assert.assertFalse(rpcResult.isSuccessful());
         final RemoveFlowsBatchOutput result = rpcResult.getResult();
-        Assert.assertEquals(2, result.getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(FLOW_ID_VALUE_1, result.getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
-        Assert.assertEquals(FLOW_ID_VALUE_2, result.getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
+        Iterator<BatchFailedFlowsOutput> iterator = result.nonnullBatchFailedFlowsOutput().values().iterator();
+        Assert.assertEquals(2, result.nonnullBatchFailedFlowsOutput().size());
+        Assert.assertEquals(FLOW_ID_VALUE_1, iterator.next().getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_2, iterator.next().getFlowId().getValue());
 
         final InOrder inOrder = Mockito.inOrder(salFlowService, transactionService);
 
@@ -253,14 +256,14 @@ public class SalFlowsBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<AddFlowsBatchOutput>> resultFuture = salFlowsBatchService.addFlowsBatch(input);
+        Iterator<BatchFailedFlowsOutput> iterator = resultFuture.get().getResult().nonnullBatchFailedFlowsOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
-        Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(FLOW_ID_VALUE_1,
-                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
-        Assert.assertEquals(FLOW_ID_VALUE_2,
-                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
+        Assert.assertEquals(2, resultFuture.get().getResult().nonnullBatchFailedFlowsOutput().size());
+        Assert.assertEquals(FLOW_ID_VALUE_1, iterator.next().getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_2, iterator.next().getFlowId().getValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salFlowService, transactionService);
@@ -321,15 +324,15 @@ public class SalFlowsBatchServiceImplTest {
                 .build();
 
         final Future<RpcResult<UpdateFlowsBatchOutput>> resultFuture = salFlowsBatchService.updateFlowsBatch(input);
+        Iterator<BatchFailedFlowsOutput> iterator = resultFuture.get().getResult().nonnullBatchFailedFlowsOutput()
+                .values().iterator();
 
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertFalse(resultFuture.get().isSuccessful());
         Assert.assertFalse(resultFuture.get().isSuccessful());
-        Assert.assertEquals(2, resultFuture.get().getResult().getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(FLOW_ID_VALUE_1,
-                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(0).getFlowId().getValue());
-        Assert.assertEquals(FLOW_ID_VALUE_2,
-                resultFuture.get().getResult().getBatchFailedFlowsOutput().get(1).getFlowId().getValue());
+        Assert.assertEquals(2, resultFuture.get().getResult().nonnullBatchFailedFlowsOutput().size());
+        Assert.assertEquals(FLOW_ID_VALUE_1, iterator.next().getFlowId().getValue());
+        Assert.assertEquals(FLOW_ID_VALUE_2, iterator.next().getFlowId().getValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
         final InOrder inOrder = Mockito.inOrder(salFlowService, transactionService);

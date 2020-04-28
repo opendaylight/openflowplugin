@@ -184,7 +184,7 @@ public final class StatisticsGatheringUtils {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.get().getTable()) {
+                        for (final Table tableData : flowCapNodeOpt.get().nonnullTable().values()) {
                             final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
                                 .child(Table.class, tableData.key());

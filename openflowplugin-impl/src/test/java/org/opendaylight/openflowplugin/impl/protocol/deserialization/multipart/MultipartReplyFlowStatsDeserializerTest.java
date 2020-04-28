@@ -129,7 +129,8 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         buffer.setShort(instructionLengthIndex, buffer.writerIndex() - instructionStartIndex);
 
         final MultipartReplyFlowStats reply = (MultipartReplyFlowStats) deserializeMultipart(buffer);
-        final FlowAndStatisticsMapList flowAndStatisticsMapList = reply.getFlowAndStatisticsMapList().get(0);
+        final FlowAndStatisticsMapList flowAndStatisticsMapList =
+                reply.nonnullFlowAndStatisticsMapList().values().iterator().next();
         assertEquals(TABLE_ID, flowAndStatisticsMapList.getTableId().shortValue());
         assertEquals(SECOND, flowAndStatisticsMapList.getDuration().getSecond().getValue().intValue());
         assertEquals(NANOSECOND, flowAndStatisticsMapList.getDuration().getNanosecond().getValue().intValue());
@@ -142,23 +143,22 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         assertEquals(PACKET_COUNT, flowAndStatisticsMapList.getPacketCount().getValue().longValue());
 
         assertEquals(2, flowAndStatisticsMapList.getInstructions().getInstruction().size());
+        final var instructionIter = flowAndStatisticsMapList.getInstructions().nonnullInstruction().values().iterator();
 
-        final Instruction instruction =
-                flowAndStatisticsMapList.getInstructions().getInstruction().get(0).getInstruction();
+        final Instruction instruction = instructionIter.next().getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
-        assertEquals(1, applyActions.getApplyActions().getAction().size());
-        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().getAction().get(0)
+        assertEquals(1, applyActions.getApplyActions().nonnullAction().size());
+        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().values().iterator().next()
                 .getAction().implementedInterface());
 
-        final Instruction instruction1 =
-                flowAndStatisticsMapList.getInstructions().getInstruction().get(1).getInstruction();
+        final Instruction instruction1 = instructionIter.next().getInstruction();
         assertEquals(WriteActionsCase.class, instruction1.implementedInterface());
 
         final WriteActionsCase writeActions = (WriteActionsCase) instruction1;
         assertEquals(1, writeActions.getWriteActions().getAction().size());
-        assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().getAction().get(0)
+        assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().nonnullAction().values().iterator().next()
                 .getAction().implementedInterface());
     }
 

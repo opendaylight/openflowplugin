@@ -58,7 +58,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
 
     private void serializeBands(final MeterBandHeaders meterBandHeaders, final ByteBuf outBuffer) {
         if (meterBandHeaders != null && meterBandHeaders.getMeterBandHeader() != null) {
-            meterBandHeaders.getMeterBandHeader().forEach(meterBandHeader ->
+            meterBandHeaders.nonnullMeterBandHeader().values().forEach(meterBandHeader ->
                     Optional.ofNullable(meterBandHeader.getMeterBandTypes())
                             .flatMap(m -> Optional.ofNullable(m.getFlags()))
                             .ifPresent(flags -> Optional.ofNullable(meterBandHeader.getBandType()).ifPresent(type -> {

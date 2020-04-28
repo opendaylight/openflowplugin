@@ -141,7 +141,7 @@ public final class FlatBatchFlowAdapters {
             final RpcResult<T> input, final int stepOffset) {
         final List<BatchFailure> batchFailures = new ArrayList<>();
         if (input.getResult().getBatchFailedFlowsOutput() != null) {
-            for (BatchFailedFlowsOutput stepOutput : input.getResult().getBatchFailedFlowsOutput()) {
+            for (BatchFailedFlowsOutput stepOutput : input.getResult().nonnullBatchFailedFlowsOutput().values()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
                         .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
                         .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()

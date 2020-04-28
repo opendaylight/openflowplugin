@@ -668,41 +668,41 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
-                true);
-        modification.merge(LogicalDatastoreType.OPERATIONAL, path1, flow.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
-                nodeBuilder.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path1, flow.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
         InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.key());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
-                true);
-        modification.merge(LogicalDatastoreType.OPERATIONAL, path2, flow1.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
-                nodeBuilder.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path2, flow1.build(), true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path2, flow1.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, flow1.build());
 
         InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.key());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
-                true);
-        modification.merge(LogicalDatastoreType.OPERATIONAL, path3, flow2.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
-                nodeBuilder.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path3, flow2.build(), true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path3, flow2.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path3, flow2.build());
 
         InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.key());
-        modification.merge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build(),
-                true);
-        modification.merge(LogicalDatastoreType.OPERATIONAL, path4, flow3.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
-                nodeBuilder.build(), true);
-        modification.merge(LogicalDatastoreType.CONFIGURATION, path4, flow3.build(), true);
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path4, flow3.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
+                nodeBuilder.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path4, flow3.build());
         modification.commit().addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object notUsed) {

@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.util;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -27,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Bat
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.BatchFlowOutputListGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -120,17 +122,19 @@ public class FlowUtilTest {
     private <T extends BatchFlowOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
-        Assert.assertEquals(0, output.getResult().getBatchFailedFlowsOutput().size());
+        Map<BatchFailedFlowsOutputKey, BatchFailedFlowsOutput> failedFlows
+                = output.getResult().nonnullBatchFailedFlowsOutput();
+        Assert.assertEquals(0, failedFlows.size());
         Assert.assertEquals(0, output.getErrors().size());
     }
 
-    private RpcResult<List<BatchFailedFlowsOutput>> createEmptyBatchOutcome() {
+    private static RpcResult<List<BatchFailedFlowsOutput>> createEmptyBatchOutcome() {
         return RpcResultBuilder
                 .success(Collections.<BatchFailedFlowsOutput>emptyList())
                 .build();
     }
 
-    private RpcResult<List<BatchFailedFlowsOutput>> createBatchOutcomeWithError() {
+    private static RpcResult<List<BatchFailedFlowsOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedFlowsOutputBuilder()
@@ -139,11 +143,12 @@ public class FlowUtilTest {
                 .build();
     }
 
-    private <T extends BatchFlowOutputListGrouping> void checkBatchErrorOutcomeTransformation(
+    private static <T extends BatchFlowOutputListGrouping> void checkBatchErrorOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertFalse(output.isSuccessful());
-        Assert.assertEquals(1, output.getResult().getBatchFailedFlowsOutput().size());
-        Assert.assertEquals(DUMMY_FLOW_ID, output.getResult().getBatchFailedFlowsOutput().get(0).getFlowId());
+        Assert.assertEquals(1, output.getResult().nonnullBatchFailedFlowsOutput().size());
+        Assert.assertEquals(DUMMY_FLOW_ID,
+            output.getResult().nonnullBatchFailedFlowsOutput().values().iterator().next().getFlowId());
 
         Assert.assertEquals(1, output.getErrors().size());
     }
@@ -161,7 +166,9 @@ public class FlowUtilTest {
 
         Assert.assertTrue(composite.isSuccessful());
         Assert.assertEquals(0, composite.getErrors().size());
-        Assert.assertEquals(0, composite.getResult().getBatchFailedFlowsOutput().size());
+        Map<BatchFailedFlowsOutputKey, BatchFailedFlowsOutput> failedFlows
+                = composite.getResult().nonnullBatchFailedFlowsOutput();
+        Assert.assertEquals(0, failedFlows.size());
     }
 
     @Test
@@ -193,7 +200,9 @@ public class FlowUtilTest {
 
         Assert.assertFalse(composite.isSuccessful());
         Assert.assertEquals(1, composite.getErrors().size());
-        Assert.assertEquals(0, composite.getResult().getBatchFailedFlowsOutput().size());
+        Map<BatchFailedFlowsOutputKey, BatchFailedFlowsOutput> failedFlows
+                = composite.getResult().nonnullBatchFailedFlowsOutput();
+        Assert.assertEquals(0, failedFlows.size());
     }
 
     @Test

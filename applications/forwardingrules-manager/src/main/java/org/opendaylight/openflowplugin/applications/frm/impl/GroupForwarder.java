@@ -219,7 +219,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     private void persistStaleGroup(StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleGroupInstanceIdentifier(staleGroup, nodeIdent),
-                staleGroup, false);
+                staleGroup);
 
         FluentFuture<?> submitFuture = writeTransaction.commit();
         handleStaleGroupResultFuture(submitFuture);

@@ -45,9 +45,9 @@ public class SetFieldExtensionTest {
                 odlxxx2).build();
 
         Assert.assertEquals(ZVendorExt1.class,
-                eqGroup.getExtension(setField1).get().getExtensionList().get(0).getExtensionKey());
+                eqGroup.getExtension(setField1).get().nonnullExtensionList().values().iterator().next().getExtensionKey());
         Assert.assertEquals(ZVendorExt2.class,
-                eqGroup.getExtension(setField2).get().getExtensionList().get(0).getExtensionKey());
+                eqGroup.getExtension(setField2).get().nonnullExtensionList().values().iterator().next().getExtensionKey());
     }
 
     private interface ZVendorExt1 extends ExtensionKey {
