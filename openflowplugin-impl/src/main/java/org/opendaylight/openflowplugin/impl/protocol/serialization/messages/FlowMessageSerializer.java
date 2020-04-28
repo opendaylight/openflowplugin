@@ -11,7 +11,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -192,7 +191,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         // Update instructions if needed and then serialize all instructions
         Optional.ofNullable(message.getInstructions())
                 .flatMap(is -> Optional.ofNullable(is.getInstruction()))
-                .ifPresent(is -> is.stream()
+                .ifPresent(is -> is.values().stream()
                         .filter(Objects::nonNull)
                         .sorted(OrderComparator.build())
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
@@ -218,6 +217,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                     .map(as -> new ApplyActionsCaseBuilder()
                             .setApplyActions(new ApplyActionsBuilder()
                                     .setAction(as
+                                            .values()
                                             .stream()
                                             .filter(Objects::nonNull)
                                             .map(a -> updateSetTpActions(a, protocol))
@@ -276,7 +276,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private static List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
             .Instruction> updateSetVlanIdAction(final FlowMessage message) {
-        return message.getInstructions().getInstruction()
+        return message.getInstructions().getInstruction().values()
                 .stream()
                 .map(i -> {
                     final int[] offset = {0};
@@ -285,7 +285,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                             ? Optional
                             .ofNullable(((ApplyActionsCase) i.getInstruction()).getApplyActions())
                             .flatMap(as -> Optional.ofNullable(as.getAction()))
-                            .map(a -> a.stream()
+                            .map(a -> a.values().stream()
                                     .sorted(OrderComparator.build())
                                     .flatMap(action -> {
                                         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -375,7 +375,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         return Optional
                 .ofNullable(flow.getInstructions())
                 .flatMap(is -> Optional.ofNullable(is.getInstruction()))
-                .flatMap(is -> is.stream()
+                .flatMap(is -> is.values().stream()
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
                                 .rev131026.Instruction::getInstruction)
                         .filter(ApplyActionsCase.class::isInstance)
@@ -383,7 +383,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                         .filter(Objects::nonNull)
                         .map(ActionList::getAction)
                         .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
+                        .flatMap(map -> map.values().stream())
                         .map(Action::getAction)
                         .filter(SetVlanIdActionCase.class::isInstance)
                         .findFirst())

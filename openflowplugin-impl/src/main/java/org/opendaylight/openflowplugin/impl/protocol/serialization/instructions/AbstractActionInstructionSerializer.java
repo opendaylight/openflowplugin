@@ -41,7 +41,7 @@ public abstract class AbstractActionInstructionSerializer<T extends Instruction>
             final int lengthIndex = outBuffer.writerIndex();
             outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
             outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
-            as.stream().sorted(OrderComparator.build()).forEach(a -> ActionUtil
+            as.values().stream().sorted(OrderComparator.build()).forEach(a -> ActionUtil
                     .writeAction(a.getAction(), version, registry, outBuffer));
             outBuffer.setShort(lengthIndex, outBuffer.writerIndex() - startIndex);
             return actions;

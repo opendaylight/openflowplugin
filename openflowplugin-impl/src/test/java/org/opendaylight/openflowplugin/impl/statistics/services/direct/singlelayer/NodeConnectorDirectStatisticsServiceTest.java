@@ -87,7 +87,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
 
         final List<NodeConnectorStatisticsAndPortNumberMap> stats = Collections.singletonList(stat);
         final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
-        when(output.getNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
+        when(output.getNodeConnectorStatisticsAndPortNumberMap().values()).thenReturn(stats);
 
         multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).get().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());

@@ -67,7 +67,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
         Optional.ofNullable(message.getBuckets())
             .filter(b -> !GroupModCommand.OFPGCDELETE.equals(message.getCommand()))
             .flatMap(b -> Optional.ofNullable(b.getBucket()))
-            .ifPresent(b -> b.stream()
+            .ifPresent(b -> b.values().stream()
                 .sorted(COMPARATOR)
                 .forEach(bucket -> {
                     final int bucketIndex = outBuffer.writerIndex();
@@ -79,7 +79,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
                             .intValue());
                     outBuffer.writeZero(PADDING_IN_BUCKET);
 
-                    Optional.ofNullable(bucket.getAction()).ifPresent(as -> as
+                    Optional.ofNullable(bucket.getAction()).ifPresent(as -> as.values()
                             .stream()
                             .sorted(OrderComparator.build())
                             .forEach(a -> ActionUtil.writeAction(
