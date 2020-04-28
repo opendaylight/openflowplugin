@@ -8,8 +8,8 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
@@ -43,7 +43,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(Match match, ByteBuf outBuffer) {
+    public void serialize(final Match match, final ByteBuf outBuffer) {
         // Save start index in buffer
         final int matchStartIndex = outBuffer.writerIndex();
 
@@ -70,7 +70,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     }
 
     @Override
-    public void serializeHeader(Match match, ByteBuf outBuffer) {
+    public void serializeHeader(final Match match, final ByteBuf outBuffer) {
         if (match == null) {
             LOG.debug("Match is null, skipping serialization of match entries");
             return;
@@ -84,10 +84,10 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                 .getMatchExtensionResolver()
                 .getExtension(match)
                 .flatMap(extensions -> Optional.ofNullable(extensions.getExtensionList()))
-                .ifPresent(extensionList -> serializeExtensionList(extensionList, outBuffer));
+                .ifPresent(extensionList -> serializeExtensionList(extensionList.values(), outBuffer));
     }
 
-    private void serializeExtensionList(final List<ExtensionList> extensionList, final ByteBuf outBuffer) {
+    private void serializeExtensionList(final Collection<ExtensionList> extensionList, final ByteBuf outBuffer) {
         // TODO: Remove also extension converters
         extensionList.forEach(extension -> {
             final ConverterExtensionKey<? extends ExtensionKey> converterExtensionKey =
@@ -121,13 +121,14 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 
     @Override
-    public void registerEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization
-                                                    .MatchEntrySerializerKey key, MatchEntrySerializer serializer) {
+    public void registerEntrySerializer(
+            final org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey key,
+            final MatchEntrySerializer serializer) {
         if (key == null || serializer == null) {
             throw new IllegalArgumentException("MatchEntrySerializerKey or Serializer is null");
         }
@@ -140,8 +141,8 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
     }
 
     @Override
-    public boolean unregisterEntrySerializer(org.opendaylight.openflowplugin.api.openflow.protocol.serialization
-                                                         .MatchEntrySerializerKey key) {
+    public boolean unregisterEntrySerializer(
+            final org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey key) {
         return entryRegistry.remove(key) != null;
     }
 }

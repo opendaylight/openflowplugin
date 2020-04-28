@@ -29,7 +29,7 @@ public class WriteSetfieldMissTablePropertySerializer extends
     protected void serializeProperty(final WriteSetfieldMiss property, final ByteBuf byteBuf) {
         property
             .getWriteSetfieldMiss()
-            .getSetFieldMatch()
+            .getSetFieldMatch().values()
             .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
                     new MessageTypeKey<>(

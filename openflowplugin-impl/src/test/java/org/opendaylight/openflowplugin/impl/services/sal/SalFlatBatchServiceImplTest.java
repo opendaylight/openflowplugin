@@ -312,7 +312,7 @@ public class SalFlatBatchServiceImplTest {
         return createFlowAddBatch(batchOrder, flowIdValue, 1);
     }
 
-    private Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, int amount) {
+    private Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, final int amount) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
@@ -483,7 +483,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private ProcessFlatBatchOutput createFlatBatchOutput(BatchFailure... batchFailures) {
+    private ProcessFlatBatchOutput createFlatBatchOutput(final BatchFailure... batchFailures) {
         return new ProcessFlatBatchOutputBuilder()
                 .setBatchFailure(Lists.newArrayList(batchFailures))
                 .build();
@@ -513,7 +513,7 @@ public class SalFlatBatchServiceImplTest {
         final RpcResult<ProcessFlatBatchOutput> rpcResult = rpcResultFuture.get();
         Assert.assertTrue(rpcResult.isSuccessful());
         Assert.assertEquals(0, rpcResult.getErrors().size());
-        Assert.assertEquals(0, rpcResult.getResult().getBatchFailure().size());
+        Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
 
         Mockito.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
     }

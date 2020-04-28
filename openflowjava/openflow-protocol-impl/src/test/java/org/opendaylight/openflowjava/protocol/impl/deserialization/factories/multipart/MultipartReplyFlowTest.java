@@ -59,7 +59,7 @@ public class MultipartReplyFlowTest {
         Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyFlowCase messageCase = (MultipartReplyFlowCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyFlow message = messageCase.getMultipartReplyFlow();
-        Assert.assertEquals("Wrong flow stats size", 0, message.getFlowStats().size());
+        Assert.assertEquals("Wrong flow stats size", 0, message.nonnullFlowStats().size());
     }
 
     /**

@@ -128,6 +128,6 @@ public class OF10FeaturesReplyMessageFactoryTest {
                 builtByFactory.getCapabilitiesV10());
         Assert.assertEquals("Wrong actions", new ActionTypeV10(false, false, false, false, false, false, false,
                 false, false, false, false, false, false), builtByFactory.getActionsV10());
-        Assert.assertEquals("Wrong ports size", 0, builtByFactory.getPhyPort().size());
+        Assert.assertEquals("Wrong ports size", 0, builtByFactory.nonnullPhyPort().size());
     }
 }

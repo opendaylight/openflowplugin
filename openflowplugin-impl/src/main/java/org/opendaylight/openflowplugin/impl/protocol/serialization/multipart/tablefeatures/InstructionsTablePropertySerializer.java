@@ -27,7 +27,7 @@ public class InstructionsTablePropertySerializer extends AbstractTablePropertySe
     protected void serializeProperty(final Instructions property, final ByteBuf byteBuf) {
         property
                 .getInstructions()
-                .getInstruction()
+                .getInstruction().values()
                 .stream()
                 .sorted(OrderComparator.build())
                 .map(Instruction::getInstruction)
