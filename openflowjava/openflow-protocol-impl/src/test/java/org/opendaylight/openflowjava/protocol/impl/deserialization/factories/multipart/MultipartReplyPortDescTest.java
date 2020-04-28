@@ -44,7 +44,7 @@ public class MultipartReplyPortDescTest {
         Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyPortDescCase messageCase = (MultipartReplyPortDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortDesc message = messageCase.getMultipartReplyPortDesc();
-        Assert.assertEquals("Wrong table features size", 0, message.getPorts().size());
+        Assert.assertEquals("Wrong table features size", 0, message.nonnullPorts().size());
     }
 
     /**
