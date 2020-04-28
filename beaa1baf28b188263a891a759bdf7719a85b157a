@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50695641_fa352361",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-28T04:26:56Z",
+      "side": 1,
+      "message": "why do we need scheduled executor with 500ms? What is the reason behind it?\n\nAs we already have a executorService in this class, clarify the need for Scheduled Executor Service.",
+      "range": {
+        "startLine": 86,
+        "startChar": 3,
+        "endLine": 87,
+        "endChar": 72
+      },
+      "revId": "beaa1baf28b188263a891a759bdf7719a85b157a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "41dcb6a5_bcb8a2a9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractRequestCallback.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-28T04:26:56Z",
+      "side": 1,
+      "message": "throwable !\u003d null\n\nRef review: https://git.opendaylight.org/gerrit/c/openflowplugin/+/81079",
+      "range": {
+        "startLine": 72,
+        "startChar": 12,
+        "endLine": 72,
+        "endChar": 45
+      },
+      "revId": "beaa1baf28b188263a891a759bdf7719a85b157a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
