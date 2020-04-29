@@ -16,6 +16,24 @@
       "revId": "df556472cb7d40ff9f58383a98a4878af8812b90",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8dd16d9a_8f9bf739",
+        "filename": "openflowjava/openflow-protocol-api/src/main/yang/openflow-instruction.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-04-29T08:04:06Z",
+      "side": 1,
+      "message": "The key has been added recently to this list. Also, experimenter-id is not always needed to filled. We can have both goto and write-metadata at the same time. \n\nWe can remove the key for this group.",
+      "parentUuid": "4edbb5cd_0c8820d0",
+      "revId": "df556472cb7d40ff9f58383a98a4878af8812b90",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
