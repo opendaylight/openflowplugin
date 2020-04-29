@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e4d036bf_3a1e5804",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2020-04-29T11:38:16Z",
+      "side": 1,
+      "message": "The reason for adding the delay is to allow for the device ownership to be properly established before we go ahead and take action for device removal from the datastore.",
+      "parentUuid": "50695641_fa352361",
+      "range": {
+        "startLine": 86,
+        "startChar": 3,
+        "endLine": 87,
+        "endChar": 72
+      },
+      "revId": "beaa1baf28b188263a891a759bdf7719a85b157a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "41dcb6a5_bcb8a2a9",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractRequestCallback.java",
         "patchSetId": 7
@@ -45,6 +69,30 @@
       "revId": "beaa1baf28b188263a891a759bdf7719a85b157a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b3c12b6_3b52c5af",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/AbstractRequestCallback.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2020-04-29T11:38:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41dcb6a5_bcb8a2a9",
+      "range": {
+        "startLine": 72,
+        "startChar": 12,
+        "endLine": 72,
+        "endChar": 45
+      },
+      "revId": "beaa1baf28b188263a891a759bdf7719a85b157a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
