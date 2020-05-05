@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5db48c8_ebc17516",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-match-types.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "do we need this to be port-number?",
+      "range": {
+        "startLine": 180,
+        "startChar": 17,
+        "endLine": 180,
+        "endChar": 34
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2fa10f1_c316e08f",
+        "filename": "model/model-flow-base/src/main/yang/opendaylight-match-types.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 188,
+        "startChar": 17,
+        "endLine": 188,
+        "endChar": 33
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b21a09ba_8dd0d563",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/TcpDestinationPortEntryDeserializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "portMask",
+      "range": {
+        "startLine": 22,
+        "startChar": 12,
+        "endLine": 22,
+        "endChar": 21
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ac121dd_81da012d",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/TcpDestinationPortEntryDeserializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "if (builder.getLayer4Match() \u003d\u003d null) {\n            builder.setLayer4Match(new TcpMatchBuilder()\n                    .setTcpDestinationPort(new PortNumber(port));\n\n            if (hasMask) {\n                builder.setTcpDestinationPortMask(new PortNumber(maskPort);\n            }\n\n            builder.build();",
+      "range": {
+        "startLine": 28,
+        "startChar": 12,
+        "endLine": 37,
+        "endChar": 13
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "965ffaa9_d8d301c9",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/TcpDestinationPortEntryDeserializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "builder.setLayer4Match(new TcpMatchBuilder((TcpMatch) builder.getLayer4Match())\n                    .setTcpDestinationPort(new PortNumber(port));\n            if (hasMask \u0026\u0026 ((TcpMatch) builder.getLayer4Match()).getTcpDestinationPortMask() \u003d\u003d null)){\n                builder.setTcpDestinationPortMask();\n            }\n            builder.build();",
+      "range": {
+        "startLine": 40,
+        "startChar": 12,
+        "endLine": 49,
+        "endChar": 13
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19fdd3ef_e95f23a1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/TcpSourcePortEntryDeserializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "same comment as previous file",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 49,
+        "endChar": 13
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96bbaf13_e766eecf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/UdpDestinationPortEntryDeserializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "same comment",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec198d2e_34c49082",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/UdpSourcePortEntryDeserializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "same comment",
+      "range": {
+        "startLine": 20,
+        "startChar": 8,
+        "endLine": 49,
+        "endChar": 13
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9efb13cc_943e20bb",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/match/TcpDestinationPortEntrySerializer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-05-05T13:13:50Z",
+      "side": 1,
+      "message": "is this check really needed? Already we have instance of check and its tcp match.",
+      "range": {
+        "startLine": 31,
+        "startChar": 40,
+        "endLine": 31,
+        "endChar": 96
+      },
+      "revId": "dcf9391a2c4dc83dec6883055de2eadb68bf09bc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
