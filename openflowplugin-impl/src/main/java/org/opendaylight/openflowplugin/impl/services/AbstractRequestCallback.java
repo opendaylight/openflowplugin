@@ -68,8 +68,15 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
             builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, errorString, throwable);
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_FAILURE);
         } else {
-            builder = RpcResultBuilder.<T>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+            if (throwable != null) {
+                builder = RpcResultBuilder.<T>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+            } else {
+                Throwable deviceReadFailedThrowable = new Throwable("Failed to read from device.");
+                builder = RpcResultBuilder.<T>failed()
+                        .withError(RpcError.ErrorType.APPLICATION, deviceReadFailedThrowable.getMessage(),
+                                deviceReadFailedThrowable);
+            }
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_ERROR);
         }
 
