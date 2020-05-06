@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 public final class SessionStatistics {
@@ -19,7 +20,7 @@ public final class SessionStatistics {
     private SessionStatistics() {
     }
 
-    private static final Map<String, Map<ConnectionStatus, EventCounter>> SESSION_EVENTS = new HashMap<>();
+    private static final Map<String, Map<ConnectionStatus, EventCounter>> SESSION_EVENTS = new ConcurrentHashMap<>();
 
     public static void countEvent(final String sessionId, final ConnectionStatus connectionStatus) {
         Map<ConnectionStatus, EventCounter> sessionsConnectionEvents = getConnectionEvents(sessionId);
