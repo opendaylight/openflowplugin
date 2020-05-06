@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "08ee5c16_d2fbb75e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2264
+      },
+      "writtenOn": "2020-05-06T22:48:25Z",
+      "side": 1,
+      "message": "if this is the fix, you can make a better commit message and include the jira number",
+      "revId": "3c5e303469e74ca9a0ba89adf305b465b66978b8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
