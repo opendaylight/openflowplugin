@@ -22,6 +22,23 @@
       "revId": "75c4bb5acee1429c998e1cef85e810460d5f18f1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd6eefba_e276edfd",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/util/MatchUtil.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-08T08:34:34Z",
+      "side": 1,
+      "message": "same here: import groups are not to be separated, this actually reverts my previous fix",
+      "revId": "75c4bb5acee1429c998e1cef85e810460d5f18f1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
