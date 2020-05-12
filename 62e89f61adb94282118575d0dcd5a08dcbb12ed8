@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2531c1cb_78fa9ef2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 35
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-12T11:47:29Z",
+      "side": 1,
+      "message": "Missing Som\u0027s sign-off ... I wonder how this was even allowed to be published.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 13
+      },
+      "revId": "62e89f61adb94282118575d0dcd5a08dcbb12ed8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4723f6bd_1d036757",
+        "filename": "extension/openflowplugin-extension-onf/src/main/java/org/opendaylight/openflowplugin/extension/onf/converter/BundleAddMessageConverter.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-12T11:47:29Z",
+      "side": 1,
+      "message": "this does not look right. with Lists this returned the first Port, now it is looking up Port\u003d0.",
+      "range": {
+        "startLine": 185,
+        "startChar": 28,
+        "endLine": 185,
+        "endChar": 58
+      },
+      "revId": "62e89f61adb94282118575d0dcd5a08dcbb12ed8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53c656fe_0007b30f",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/FlowRegistryKeyFactory.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-12T11:47:29Z",
+      "side": 1,
+      "message": "containsValue",
+      "range": {
+        "startLine": 126,
+        "startChar": 56,
+        "endLine": 126,
+        "endChar": 73
+      },
+      "revId": "62e89f61adb94282118575d0dcd5a08dcbb12ed8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13022ce8_f92da9ca",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/AllMeterConfigStatsService.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-12T11:47:29Z",
+      "side": 1,
+      "message": "this is wrong. Map.value()\u0027s return collection is documented to:\n\n\"It does not support the add or addAll operations.\"\n\nif you think about it -- how could that operation even be implemented?\n\n\nThis is the usual \u0027set a list and then use it through getter\u0027 antipattern (see line 93). This needs a proper refactor.",
+      "range": {
+        "startLine": 105,
+        "startChar": 50,
+        "endLine": 105,
+        "endChar": 65
+      },
+      "revId": "62e89f61adb94282118575d0dcd5a08dcbb12ed8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb3b0a92_f7bf08de",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/compatibility/GroupStatisticsToNotificationTransformer.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-12T11:47:29Z",
+      "side": 1,
+      "message": "there should be no need to specify generic type (we do have Java 11 after all)",
+      "range": {
+        "startLine": 54,
+        "startChar": 49,
+        "endLine": 54,
+        "endChar": 59
+      },
+      "revId": "62e89f61adb94282118575d0dcd5a08dcbb12ed8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70825498_e6d146b7",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/compatibility/GroupStatisticsToNotificationTransformer.java",
+        "patchSetId": 35
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-05-12T11:47:29Z",
+      "side": 1,
+      "message": "same as previous, and this is repeated in other files, too",
+      "range": {
+        "startLine": 67,
+        "startChar": 49,
+        "endLine": 67,
+        "endChar": 64
+      },
+      "revId": "62e89f61adb94282118575d0dcd5a08dcbb12ed8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
