@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e247e86_6153fc05",
+        "filename": "openflowplugin/src/main/java/org/opendaylight/openflowplugin/openflow/md/core/sal/convertor/PacketOutConvertor.java",
+        "patchSetId": 39
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 7781
+      },
+      "writtenOn": "2020-05-21T05:57:52Z",
+      "side": 1,
+      "message": "I don\u0027t see this class is exist in the controller project still. Please check and suggest us correct alternative method.",
+      "range": {
+        "startLine": 18,
+        "startChar": 7,
+        "endLine": 18,
+        "endChar": 61
+      },
+      "revId": "818e6d023a6a72ed2282fec8a850eae6ab279db8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
