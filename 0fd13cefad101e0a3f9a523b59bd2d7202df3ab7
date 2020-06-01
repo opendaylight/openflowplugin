@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "293f2296_8a2ffa27",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-06-01T06:11:36Z",
+      "side": 1,
+      "message": "actually, why is that runtime exception even being caught and not fixed? that hardly contitutes \"code cleanup\" as the commit message would lead us to believe",
+      "parentUuid": "346013a7_d6ba113c",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 37
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a3a0a3d6_79b8b283",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
         "patchSetId": 9
