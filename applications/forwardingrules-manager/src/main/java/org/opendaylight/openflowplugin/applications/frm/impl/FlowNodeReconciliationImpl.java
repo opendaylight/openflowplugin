@@ -305,7 +305,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     reconciliationState.setState(FAILED, LocalDateTime.now());
-                    LOG.error("commit bundle failed for device {} with error ", dpnId, e);
+                    LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId, e);
                     return false;
                 } finally {
                     service.shutdown();
