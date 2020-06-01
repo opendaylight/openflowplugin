@@ -1,0 +1,291 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "346013a7_d6ba113c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/AbstractListeningCommiter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "@SuppressWarnings(\"checkstyle:IllegalCatch\")",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 37
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3a0a3d6_79b8b283",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowForwarder.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "why do you need registerListener in all Forwarders now?",
+      "range": {
+        "startLine": 97,
+        "startChar": 2,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7ae4011_4a833ee3",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/GroupForwarder.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "dont add extra line",
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89b205a7_fb8ae1ee",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/MeterForwarder.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "dont add extra line",
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42dd0d1c_81192f1c",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "2020",
+      "range": {
+        "startLine": 2,
+        "startChar": 18,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "839dde52_9857287d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "no longer valid, you need to use cfg file\n\nFor now hard code.",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 94
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11f8e5f2_1c5c6655",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "you can remove start method and move it to constructor",
+      "range": {
+        "startLine": 66,
+        "startChar": 2,
+        "endLine": 72,
+        "endChar": 5
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2e714a6_a003ee17",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "use Executors.newListeningSingleThreadExecutor from infrautils\n\nprivate final ListeningExecutorService listeningExecutorService \u003d Executors.newListeningSingleThreadExecutor(\"frm-listener\", LOG);",
+      "range": {
+        "startLine": 67,
+        "startChar": 8,
+        "endLine": 73,
+        "endChar": 0
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "984b4867_e820a0c8",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "Executors.shutdownAndAwaitTermination(listeningExecutorService);",
+      "range": {
+        "startLine": 75,
+        "startChar": 8,
+        "endLine": 76,
+        "endChar": 54
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c3c4c3d_80074d87",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/util/FrmUtil.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "catch (MBeanException | AttributeNotFoundException | \n                   InstanceNotFoundException | ReflectionException ex)\n{\nLOG.error(Exception while reading list of shards, e)",
+      "range": {
+        "startLine": 200,
+        "startChar": 20,
+        "endLine": 210,
+        "endChar": 13
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67206f2d_cce4f428",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/util/FrmUtil.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "both the method are having same code, avoid code duplicate",
+      "range": {
+        "startLine": 216,
+        "startChar": 2,
+        "endLine": 235,
+        "endChar": 5
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb7f7827_e7b5f7bb",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/GroupListenerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "why this final for all SalGroupServiceMock",
+      "range": {
+        "startLine": 168,
+        "startChar": 8,
+        "endLine": 168,
+        "endChar": 13
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e9d67ce_7d47bb85",
+        "filename": "applications/forwardingrules-manager/src/test/java/test/mock/NodeListenerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-01T05:56:11Z",
+      "side": 1,
+      "message": "move this to previous line",
+      "range": {
+        "startLine": 69,
+        "startChar": 11,
+        "endLine": 69,
+        "endChar": 15
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
