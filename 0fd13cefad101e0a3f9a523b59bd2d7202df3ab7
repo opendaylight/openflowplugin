@@ -129,6 +129,29 @@
     },
     {
       "key": {
+        "uuid": "2cff4591_db220c58",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-06-01T06:18:00Z",
+      "side": 1,
+      "message": "this class needs a better name and a chunk of documentation. It is essentially a single thread (@Singleton, plusing single-threaded executor).",
+      "range": {
+        "startLine": 33,
+        "startChar": 13,
+        "endLine": 33,
+        "endChar": 31
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "839dde52_9857287d",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
         "patchSetId": 9
@@ -144,6 +167,52 @@
         "startLine": 36,
         "startChar": 4,
         "endLine": 36,
+        "endChar": 94
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6575e3ee_3d737f26",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-06-01T06:18:00Z",
+      "side": 1,
+      "message": "why volatile?\n\nalso, this patch is changing threading model in non-obvious ways and there is not a single line describing what is being done and why.",
+      "range": {
+        "startLine": 39,
+        "startChar": 11,
+        "endLine": 39,
+        "endChar": 60
+      },
+      "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4bae90b6_3ed32d24",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/RegistrationHelper.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2020-06-01T06:18:00Z",
+      "side": 1,
+      "message": "this method is not documented to throw an exception. what is it that we are trying to fix?",
+      "range": {
+        "startLine": 62,
+        "startChar": 53,
+        "endLine": 62,
         "endChar": 94
       },
       "revId": "0fd13cefad101e0a3f9a523b59bd2d7202df3ab7",
