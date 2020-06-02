@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ade6028f_65758d2b",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 8606
+      },
+      "writtenOn": "2020-06-02T14:52:10Z",
+      "side": 1,
+      "message": "As per the suggestion this code was removed.",
+      "parentUuid": "c6149e8d_6e89bd33",
+      "range": {
+        "startLine": 248,
+        "startChar": 49,
+        "endLine": 248,
+        "endChar": 86
+      },
+      "revId": "8ae2541b1ea86e40c855ba6ab23a3c3b6871ad97",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b9700560_75bb5ac8",
         "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
         "patchSetId": 11
@@ -45,6 +69,30 @@
       "revId": "8ae2541b1ea86e40c855ba6ab23a3c3b6871ad97",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9efcad79_1821a9b5",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/impl/FlowNodeReconciliationImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 8606
+      },
+      "writtenOn": "2020-06-02T14:52:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9700560_75bb5ac8",
+      "range": {
+        "startLine": 252,
+        "startChar": 36,
+        "endLine": 253,
+        "endChar": 55
+      },
+      "revId": "8ae2541b1ea86e40c855ba6ab23a3c3b6871ad97",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
