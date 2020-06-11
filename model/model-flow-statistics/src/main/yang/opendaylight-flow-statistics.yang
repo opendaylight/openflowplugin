@@ -39,7 +39,6 @@ module opendaylight-flow-statistics {
     grouping flow-and-statistics-map-list {
         description "List of flow and statistics map";
         list flow-and-statistics-map-list {
-            key "flow-id";
             leaf flow-id {
                 type flow-id;
             }

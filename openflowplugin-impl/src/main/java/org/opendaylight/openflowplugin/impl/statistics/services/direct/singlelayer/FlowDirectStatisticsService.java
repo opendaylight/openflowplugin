@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.stats.FlowStatsBuilder;
@@ -44,12 +43,11 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             .setFlowAndStatisticsMapList(input
                 .stream()
                 .flatMap(multipartReply -> ((MultipartReplyFlowStats) multipartReply.getMultipartReplyBody())
-                    .nonnullFlowAndStatisticsMapList().values()
+                    .nonnullFlowAndStatisticsMapList()
                     .stream())
                 .map(flowAndStatisticsMapList -> {
                     final FlowId flowId = new FlowId(generateFlowId(flowAndStatisticsMapList));
                     return new FlowAndStatisticsMapListBuilder(flowAndStatisticsMapList)
-                        .withKey(new FlowAndStatisticsMapListKey(flowId))
                         .setFlowId(flowId)
                         .build();
                 })
