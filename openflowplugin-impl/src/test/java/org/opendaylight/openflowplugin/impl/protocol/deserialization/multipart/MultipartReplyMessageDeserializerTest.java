@@ -135,7 +135,7 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
 
         assertEquals(XID, message.getXid().intValue());
         final FlowAndStatisticsMapList flowAndStatisticsMapList =
-                reply.nonnullFlowAndStatisticsMapList().values().iterator().next();
+                reply.nonnullFlowAndStatisticsMapList().iterator().next();
         assertEquals(TABLE_ID, flowAndStatisticsMapList.getTableId().shortValue());
         assertEquals(SECOND, flowAndStatisticsMapList.getDuration().getSecond().getValue().intValue());
         assertEquals(NANOSECOND, flowAndStatisticsMapList.getDuration().getNanosecond().getValue().intValue());
