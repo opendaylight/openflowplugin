@@ -46,7 +46,7 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
 
     @Override
     public void storeStatistics(final FlowAndStatisticsMapList statistics, final boolean withParents) {
-        statistics.nonnullFlowAndStatisticsMapList().values()
+        statistics.nonnullFlowAndStatisticsMapList()
             .forEach(stat -> {
                 final FlowBuilder flow = new FlowBuilder(stat)
                     .addAugmentation(
