@@ -8,8 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -21,15 +19,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.stats.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsService<MultipartReply> {
+    private static final Logger LOG = LoggerFactory.getLogger(FlowDirectStatisticsService.class);
 
     public FlowDirectStatisticsService(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext,
@@ -44,12 +47,12 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
             .setFlowAndStatisticsMapList(input
                 .stream()
                 .flatMap(multipartReply -> ((MultipartReplyFlowStats) multipartReply.getMultipartReplyBody())
-                    .nonnullFlowAndStatisticsMapList().values()
+                    .nonnullFlowAndStatisticsMapList()
                     .stream())
                 .map(flowAndStatisticsMapList -> {
                     final FlowId flowId = new FlowId(generateFlowId(flowAndStatisticsMapList));
+                    LOG.debug("FlowId{}", flowId.getValue());
                     return new FlowAndStatisticsMapListBuilder(flowAndStatisticsMapList)
-                        .withKey(new FlowAndStatisticsMapListKey(flowId))
                         .setFlowId(flowId)
                         .build();
                 })
@@ -68,5 +71,4 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
                 .build())
             .build();
     }
-
 }

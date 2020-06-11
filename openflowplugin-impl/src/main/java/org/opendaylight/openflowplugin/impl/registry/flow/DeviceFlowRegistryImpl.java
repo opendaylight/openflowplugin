@@ -101,6 +101,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         final ListenableFuture<List<Optional<FlowCapableNode>>> lastFillFuture =
                 Futures.allAsList(Arrays.asList(configFuture, operationalFuture));
         lastFillFutures.add(lastFillFuture);
+        LOG.debug("fillesd flows{}",lastFillFutures);
         return lastFillFuture;
     }
 
