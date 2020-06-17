@@ -87,12 +87,32 @@ request to the controller:
    <topology xmlns="urn:TBD:params:xml:ns:yang:network-topology">
        <topology-id>flow:1</topology-id>
        <node>
+           <node-id>openflow:5</node-id>
+           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:5']</inventory-node-ref>
+           <termination-point>
+               <tp-id>openflow:5:LOCAL</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:5']/a:node-connector[a:id='openflow:5:LOCAL']</inventory-node-connector-ref>
+           </termination-point>
+       </node>
+       <node>
+           <node-id>openflow:6</node-id>
+           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:6']</inventory-node-ref>
+           <termination-point>
+               <tp-id>openflow:6:LOCAL</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:6']/a:node-connector[a:id='openflow:6:LOCAL']</inventory-node-connector-ref>
+           </termination-point>
+       </node>
+       <node>
+           <node-id>openflow:7</node-id>
+           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:7']</inventory-node-ref>
+           <termination-point>
+               <tp-id>openflow:7:LOCAL</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:7']/a:node-connector[a:id='openflow:7:LOCAL']</inventory-node-connector-ref>
+           </termination-point>
+       </node>
+       <node>
            <node-id>openflow:1</node-id>
            <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']</inventory-node-ref>
-           <termination-point>
-               <tp-id>openflow:1:1</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:1']</inventory-node-connector-ref>
-           </termination-point>
            <termination-point>
                <tp-id>openflow:1:LOCAL</tp-id>
                <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:LOCAL']</inventory-node-connector-ref>
@@ -101,46 +121,164 @@ request to the controller:
                <tp-id>openflow:1:2</tp-id>
                <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:2']</inventory-node-connector-ref>
            </termination-point>
+           <termination-point>
+               <tp-id>openflow:1:1</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:1']</inventory-node-connector-ref>
+           </termination-point>
        </node>
        <node>
            <node-id>openflow:2</node-id>
            <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']</inventory-node-ref>
            <termination-point>
-               <tp-id>openflow:2:2</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']/a:node-connector[a:id='openflow:2:2']</inventory-node-connector-ref>
-           </termination-point>
-           <termination-point>
                <tp-id>openflow:2:LOCAL</tp-id>
                <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']/a:node-connector[a:id='openflow:2:LOCAL']</inventory-node-connector-ref>
            </termination-point>
+       </node>
+       <node>
+           <node-id>openflow:3</node-id>
+           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:3']</inventory-node-ref>
            <termination-point>
-               <tp-id>openflow:2:1</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']/a:node-connector[a:id='openflow:2:1']</inventory-node-connector-ref>
+               <tp-id>openflow:3:2</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:3']/a:node-connector[a:id='openflow:3:2']</inventory-node-connector-ref>
+           </termination-point>
+           <termination-point>
+               <tp-id>openflow:3:1</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:3']/a:node-connector[a:id='openflow:3:1']</inventory-node-connector-ref>
+           </termination-point>
+           <termination-point>
+               <tp-id>openflow:3:LOCAL</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:3']/a:node-connector[a:id='openflow:3:LOCAL']</inventory-node-connector-ref>
+           </termination-point>
+           <termination-point>
+               <tp-id>openflow:3:3</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:3']/a:node-connector[a:id='openflow:3:3']</inventory-node-connector-ref>
            </termination-point>
        </node>
-       <link>
-           <link-id>openflow:2:2</link-id>
-           <source>
-               <source-node>openflow:2</source-node>
-               <source-tp>openflow:2:2</source-tp>
-           </source>
-           <destination>
-               <dest-node>openflow:1</dest-node>
-               <dest-tp>openflow:1:2</dest-tp>
-           </destination>
-       </link>
-       <link>
-           <link-id>openflow:1:2</link-id>
-           <source>
-               <source-node>openflow:1</source-node>
-               <source-tp>openflow:1:2</source-tp>
-           </source>
-           <destination>
-               <dest-node>openflow:2</dest-node>
-               <dest-tp>openflow:2:2</dest-tp>
-           </destination>
-       </link>
+       <node>
+           <node-id>openflow:4</node-id>
+           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:4']</inventory-node-ref>
+           <termination-point>
+               <tp-id>openflow:4:LOCAL</tp-id>
+               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:4']/a:node-connector[a:id='openflow:4:LOCAL']</inventory-node-connector-ref>
+           </termination-point>
+       </node>
    </topology>
+
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/network-topology:network-topology/topology/flow:1``
+
+**Method:** GET
+
+**Sample output:**
+
+.. code-block:: none
+
+   {
+        "topology": [
+            {
+                "topology-id": "flow:1",
+                "node": [
+                    {
+                        "node-id": "openflow:5",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:5']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:5:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:5']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:5:LOCAL']"
+                            }
+                        ]
+                    },
+                    {
+                        "node-id": "openflow:6",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:6']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:6:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:6']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:6:LOCAL']"
+                            }
+                        ]
+                    },
+                    {
+                        "node-id": "openflow:7",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:7']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:7:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:7']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:7:LOCAL']"
+                            }
+                        ]
+                    },
+                    {
+                        "node-id": "openflow:1",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:1:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:1:LOCAL']"
+                            },
+                            {
+                                "tp-id": "openflow:1:2",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:1:2']"
+                            },
+                            {
+                                "tp-id": "openflow:1:1",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:1:1']"
+                            }
+                        ]
+                    },
+                    {
+                        "node-id": "openflow:2",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:2']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:2:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:2']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:2:LOCAL']"
+                            }
+                            ]
+                    },
+                    {
+                        "node-id": "openflow:3",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:3']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:3:2",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:3']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:3:2']"
+                            },
+                            {
+                                "tp-id": "openflow:3:1",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:3']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:3:1']"
+                            },
+                            {
+                                "tp-id": "openflow:3:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:3']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:3:LOCAL']"
+                            },
+                            {
+                                "tp-id": "openflow:3:3",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:3']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:3:3']"
+                            }
+                        ]
+                    },
+                    {
+                        "node-id": "openflow:4",
+                        "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:4']",
+                        "termination-point": [
+                            {
+                                "tp-id": "openflow:4:LOCAL",
+                                "opendaylight-topology-inventory:inventory-node-connector-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:4']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:4:LOCAL']"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
 
 .. note:: In the example above the OpenFlow node is represented as openflow:1
           where 1 is the datapath ID of the OpenFlow-enabled device.
