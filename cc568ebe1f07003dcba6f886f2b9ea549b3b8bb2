@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c046d636_bd79d2fa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "Ask originator to raise a JIRA in openflowplugin and update the ticket here.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 13
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cad66f89_0abbf37a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "all these should be in jira ticket",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 199
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8aa68a05_ff5e705b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "this fix is not specific to elan alone, so dont specify it. Give general description of the issue and fix",
+      "range": {
+        "startLine": 16,
+        "startChar": 1,
+        "endLine": 16,
+        "endChar": 578
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6adf26ad_4a3c0f40",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/registry/flow/DeviceFlowRegistryImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "remove unwanted debug statements from all the files",
+      "range": {
+        "startLine": 104,
+        "startChar": 7,
+        "endLine": 104,
+        "endChar": 53
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2637ecc_3f6b0e0c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/multilayer/FlowDirectStatisticsService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "In general, \nRemove all the commented out code in your review (all files)\nRemove unwanted logs statement from this review\nDont remove any lines which is needed",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 32
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "006a31cb_24821c08",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/singlelayer/FlowDirectStatisticsService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "dont remove the above line",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 7
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f59a01f3_daf1f4b1",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/registry/flow/TestFlowHelper.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 54,
+        "startChar": 6,
+        "endLine": 54,
+        "endChar": 118
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "319f4513_1fe60075",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/statistics/services/direct/multilayer/FlowDirectStatisticsServiceTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-06-18T09:11:36Z",
+      "side": 1,
+      "message": "single line??",
+      "range": {
+        "startLine": 114,
+        "startChar": 8,
+        "endLine": 115,
+        "endChar": 50
+      },
+      "revId": "cc568ebe1f07003dcba6f886f2b9ea549b3b8bb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
