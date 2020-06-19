@@ -68,6 +68,24 @@
       "revId": "fe56b04cbcce971967d5f28390dc3d908a5aefb4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9411d3b6_2d6bc5a5",
+        "filename": "docs/users/operation.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 8458
+      },
+      "writtenOn": "2020-06-19T12:20:16Z",
+      "side": 1,
+      "message": "Yes, I felt this too better would be to use **Sample XML Output**\n**Sample JSON Output** \nI will update it.",
+      "parentUuid": "c307e912_d582f751",
+      "revId": "fe56b04cbcce971967d5f28390dc3d908a5aefb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
