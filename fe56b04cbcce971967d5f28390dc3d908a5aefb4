@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "e3ba4807_5ac4d06d",
+        "filename": "docs/users/operation.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 8351
+      },
+      "writtenOn": "2020-06-19T11:56:35Z",
+      "side": 1,
+      "message": "Retain the old URL too. Add the RFC8040 URL as **RFC8040 URL**\n\nApply elsewhere",
+      "revId": "fe56b04cbcce971967d5f28390dc3d908a5aefb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2cff6d53_b4e73131",
         "filename": "docs/users/operation.rst",
         "patchSetId": 2
