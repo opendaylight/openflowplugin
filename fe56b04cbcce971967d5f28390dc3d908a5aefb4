@@ -33,6 +33,24 @@
       "revId": "fe56b04cbcce971967d5f28390dc3d908a5aefb4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c307e912_d582f751",
+        "filename": "docs/users/operation.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 8351
+      },
+      "writtenOn": "2020-06-19T11:52:35Z",
+      "side": 1,
+      "message": "Maybe better if we have a **XML** above Headers and another or the **JSON** above the headers of JSON",
+      "parentUuid": "2cff6d53_b4e73131",
+      "revId": "fe56b04cbcce971967d5f28390dc3d908a5aefb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
