@@ -68,84 +68,185 @@ request.
 To view the topology data for all the connected nodes, send the following
 request to the controller:
 
-**Headers:**
-
--  **Content-type:** ``application/xml``
-
--  **Accept:** ``application/xml``
-
--  **Authentication:** ``admin:admin``
-
 **URL:** ``/restconf/operational/network-topology:network-topology/topology/flow:1``
+
+**RFC8040 URL:** ``/rests/data/network-topology:network-topology/topology=flow%3A1?content=nonconfig``
 
 **Method:** GET
 
-**Sample output:**
+.. tabs::
 
-.. code-block:: none
+    .. tab:: XML
 
-   <topology xmlns="urn:TBD:params:xml:ns:yang:network-topology">
-       <topology-id>flow:1</topology-id>
-       <node>
-           <node-id>openflow:1</node-id>
-           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']</inventory-node-ref>
-           <termination-point>
-               <tp-id>openflow:1:1</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:1']</inventory-node-connector-ref>
-           </termination-point>
-           <termination-point>
-               <tp-id>openflow:1:LOCAL</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:LOCAL']</inventory-node-connector-ref>
-           </termination-point>
-           <termination-point>
-               <tp-id>openflow:1:2</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:1']/a:node-connector[a:id='openflow:1:2']</inventory-node-connector-ref>
-           </termination-point>
-       </node>
-       <node>
-           <node-id>openflow:2</node-id>
-           <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']</inventory-node-ref>
-           <termination-point>
-               <tp-id>openflow:2:2</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']/a:node-connector[a:id='openflow:2:2']</inventory-node-connector-ref>
-           </termination-point>
-           <termination-point>
-               <tp-id>openflow:2:LOCAL</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']/a:node-connector[a:id='openflow:2:LOCAL']</inventory-node-connector-ref>
-           </termination-point>
-           <termination-point>
-               <tp-id>openflow:2:1</tp-id>
-               <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow:2']/a:node-connector[a:id='openflow:2:1']</inventory-node-connector-ref>
-           </termination-point>
-       </node>
-       <link>
-           <link-id>openflow:2:2</link-id>
-           <source>
-               <source-node>openflow:2</source-node>
-               <source-tp>openflow:2:2</source-tp>
-           </source>
-           <destination>
-               <dest-node>openflow:1</dest-node>
-               <dest-tp>openflow:1:2</dest-tp>
-           </destination>
-       </link>
-       <link>
-           <link-id>openflow:1:2</link-id>
-           <source>
-               <source-node>openflow:1</source-node>
-               <source-tp>openflow:1:2</source-tp>
-           </source>
-           <destination>
-               <dest-node>openflow:2</dest-node>
-               <dest-tp>openflow:2:2</dest-tp>
-           </destination>
-       </link>
-   </topology>
+        **Headers:**
 
-.. note:: In the example above the OpenFlow node is represented as openflow:1
+        **Content-type:** ``application/xml``
+
+        **Accept:** ``application/xml``
+
+        **Authentication:** ``admin:admin``
+
+        .. code-block:: none
+
+			<topology xmlns="urn:TBD:params:xml:ns:yang:network-topology">
+			    <topology-id>flow: 1</topology-id>
+			    <node>
+			        <node-id>openflow: 2</node-id>
+			        <termination-point>
+			            <tp-id>openflow: 2: 2</tp-id>
+			            <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 2']/a:node-connector[a:id='openflow: 2: 2']
+		            </inventory-node-connector-ref>
+			        </termination-point>
+			        <termination-point>
+			            <tp-id>openflow: 2: 1</tp-id>
+			            <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 2']/a:node-connector[a:id='openflow: 2: 1']
+			        </inventory-node-connector-ref>
+			        </termination-point>
+			        <termination-point>
+			            <tp-id>openflow: 2:LOCAL</tp-id>
+			            <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 2']/a:node-connector[a:id='openflow: 2:LOCAL']
+			        </inventory-node-connector-ref>
+			        </termination-point>
+			        <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 2']
+			        </inventory-node-ref>
+			    </node>
+			    <node>
+			        <node-id>openflow: 1</node-id>
+			        <termination-point>
+			            <tp-id>openflow: 1: 1</tp-id>
+			            <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 1']/a:node-connector[a:id='openflow: 1: 1']
+			        </inventory-node-connector-ref>
+			        </termination-point>
+			        <termination-point>
+			            <tp-id>openflow: 1:LOCAL</tp-id>
+			            <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 1']/a:node-connector[a:id='openflow: 1:LOCAL']
+			        </inventory-node-connector-ref>
+			        </termination-point>
+			        <termination-point>
+			            <tp-id>openflow: 1: 2</tp-id>
+			            <inventory-node-connector-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 1']/a:node-connector[a:id='openflow: 1: 2']
+			        </inventory-node-connector-ref>
+			        </termination-point>
+			        <inventory-node-ref xmlns="urn:opendaylight:model:topology:inventory" xmlns:a="urn:opendaylight:inventory">/a:nodes/a:node[a:id='openflow: 1']
+			    </inventory-node-ref>
+			    </node>
+			    <link>
+			        <link-id>openflow:1:2</link-id>
+			        <destination>
+			            <dest-tp>openflow:2:2</dest-tp>
+			            <dest-node>openflow:2</dest-node>
+			        </destination>
+			        <source>
+			            <source-node>openflow:1</source-node>
+			            <source-tp>openflow:1:2</source-tp>
+			        </source>
+			    </link>
+			    <link>
+			        <link-id>openflow:2:2</link-id>
+			        <destination>
+			            <dest-tp>openflow:1:2</dest-tp>
+			            <dest-node>openflow:1</dest-node>
+			        </destination>
+			        <source>
+			            <source-node>openflow:2</source-node>
+			            <source-tp>openflow:2:2</source-tp>
+			        </source>
+			    </link>
+			</topology>
+
+    .. tab:: JSON
+
+        **Headers:**
+
+        **Content-type:** ``application/json``
+
+        **Accept:** ``application/json``
+
+        **Authentication:** ``admin:admin``
+
+        .. code-block:: none
+                
+
+	        {
+	            "topology": [
+	                {
+	                    "topology-id": "flow:1",
+	                    "node": [
+	                        {
+	                            "node-id": "openflow:2",
+	                            "termination-point": [
+	                                {
+	                                    "tp-id": "openflow:2:2",
+	                                    "opendaylight-topology-inventory:inventory-node-connector-ref":
+	                                    "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:2']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:2:2']"
+	                                },
+	                                {
+	                                    "tp-id": "openflow:2:1",
+	                                    "opendaylight-topology-inventory:inventory-node-connector-ref":
+	                                    "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:2']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:2:1']"
+	                                },
+	                                {
+	                                    "tp-id": "openflow:2:LOCAL",
+	                                    "opendaylight-topology-inventory:inventory-node-connector-ref":
+	                                    "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:2']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:2:LOCAL']"
+	                                }
+	                            ],
+	                            "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:2']"
+	                        },
+	                        {
+	                            "node-id": "openflow:1",
+	                            "termination-point": [
+	                                {
+	                                    "tp-id": "openflow:1:1",
+	                                    "opendaylight-topology-inventory:inventory-node-connector-ref":
+	                                    "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:1:1']"
+	                                },
+	                                {
+	                                    "tp-id": "openflow:1:LOCAL",
+	                                    "opendaylight-topology-inventory:inventory-node-connector-ref":
+	                                    "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:1:LOCAL']"
+	                                },
+	                                {
+	                                    "tp-id": "openflow:1:2",
+	                                    "opendaylight-topology-inventory:inventory-node-connector-ref":
+	                                    "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']/opendaylight-inventory:node-connector[opendaylight-inventory:id='openflow:1:2']"
+	                                }
+	                            ],
+	                            "opendaylight-topology-inventory:inventory-node-ref": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']"
+	                        }
+	                    ],
+	                    "link": [
+	                        {
+	                            "link-id": "openflow:1:2",
+	                            "destination": {
+	                                "dest-tp": "openflow:2:2",
+	                                "dest-node": "openflow:2"
+	                            },
+	                            "source": {
+	                                "source-node": "openflow:1",
+	                                "source-tp": "openflow:1:2"
+	                            }
+	                        },
+	                        {
+	                            "link-id": "openflow:2:2",
+	                            "destination": {
+	                                "dest-tp": "openflow:1:2",
+	                                "dest-node": "openflow:1"
+	                            },
+	                            "source": {
+	                                "source-node": "openflow:2",
+	                                 "source-tp": "openflow:2:2"
+	                                }
+	                        }
+	                    ]
+	                }
+	            ]
+	        }
+
+.. note:: In the examples above the OpenFlow node is represented as openflow:1
           where 1 is the datapath ID of the OpenFlow-enabled device.
 
-.. note:: In the example above the OpenFlow node connector is represented as
+.. note:: In the examples above the OpenFlow node connector is represented as
           openflow:1:2 where 1 is the datapath ID and 2 is the port ID of the
           OpenFlow-enabled device.
 
@@ -229,32 +330,85 @@ the controller:
 
 **URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample XML output:**
 
 .. code-block:: none
 
-   <node>
-      <hardware xmlns="urn:opendaylight:flow:inventory">Open vSwitch</hardware>
-      <description xmlns="urn:opendaylight:flow:inventory">None</description>
-      <switch-features xmlns="urn:opendaylight:flow:inventory">
-          <max_tables>254</max_tables>
-          <max_buffers>0</max_buffers>
-          <capabilities>flow-feature-capability-queue-stats</capabilities>
-          <capabilities>flow-feature-capability-table-stats</capabilities>
-          <capabilities>flow-feature-capability-flow-stats</capabilities>
-          <capabilities>flow-feature-capability-port-stats</capabilities>
-          <capabilities>flow-feature-capability-group-stats</capabilities>
-      </switch-features>
-      <manufacturer xmlns="urn:opendaylight:flow:inventory">Nicira, Inc.</manufacturer>
-      <serial-number xmlns="urn:opendaylight:flow:inventory">None</serial-number>
-      <software xmlns="urn:opendaylight:flow:inventory">2.8.1</software>
-      <ip-address xmlns="urn:opendaylight:flow:inventory">192.168.0.24</ip-address>
+   <node xmlns="urn:opendaylight:inventory">
+        <id>openflow:1</id>
+        <serial-number xmlns="urn:opendaylight:flow:inventory">None</serial-number>
+        <port-number xmlns="urn:opendaylight:flow:inventory">45170</port-number>
+        <description xmlns="urn:opendaylight:flow:inventory">None</description>
+        <hardware xmlns="urn:opendaylight:flow:inventory">Open vSwitch</hardware>
+        <manufacturer xmlns="urn:opendaylight:flow:inventory">Nicira, Inc.</manufacturer>
+        <switch-features xmlns="urn:opendaylight:flow:inventory">
+            <max_tables>254</max_tables>
+            <capabilities>flow-feature-capability-queue-stats</capabilities>
+            <capabilities>flow-feature-capability-flow-stats</capabilities>
+            <capabilities>flow-feature-capability-port-stats</capabilities>
+            <capabilities>flow-feature-capability-table-stats</capabilities>
+            <max_buffers>256</max_buffers>
+        </switch-features>
 
       --- Omitted output —--
 
-.. note:: In the example above the OpenFlow node is represented as openflow:1
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1?content=nonconfig``
+
+**Method:** ``GET``
+
+**Sample JSON output:**
+
+.. code-block:: none
+
+   {
+        "opendaylight-inventory:nodes": {
+            "node": [
+                {
+                    "id": "openflow:1",
+                    "flow-node-inventory:serial-number": "None",
+                    "flow-node-inventory:port-number": 45170,
+                    "flow-node-inventory:description": "None",
+                    "flow-node-inventory:hardware": "Open vSwitch",
+                    "flow-node-inventory:manufacturer": "Nicira, Inc.",
+                    "flow-node-inventory:switch-features": {
+                        "max_tables": 254,
+                        "capabilities": [
+                            "flow-node-inventory:flow-feature-capability-queue-stats",
+                            "flow-node-inventory:flow-feature-capability-flow-stats",
+                            "flow-node-inventory:flow-feature-capability-port-stats",
+                            "flow-node-inventory:flow-feature-capability-table-stats"
+                        ],
+                        "max_buffers": 256
+                    },
+                    "flow-node-inventory:software": "2.0.2",
+                    "flow-node-inventory:ip-address": "192.168.56.106",
+                    "flow-node-inventory:table": [
+                        {
+                            "id": 88,
+                            "opendaylight-flow-table-statistics:flow-table-statistics": {
+                                "packets-looked-up": "0",
+                                "active-flows": 0,
+                                "packets-matched": "0"
+                            }
+                        },
+
+      --- Omitted output —--
+
+.. note:: In the examples above the OpenFlow node is represented as openflow:1
           where 1 is the datapath ID of the OpenFlow-enabled device.
 
 Example of port description and port statistics
@@ -273,9 +427,11 @@ following request to the controller:
 
 **URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/node-connector/openflow:1:2``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/node-connector=openflow%3A1%3A2?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample XML output:**
 
 .. code-block:: none
 
@@ -321,7 +477,70 @@ following request to the controller:
        </flow-capable-node-connector-statistics>
    </node-connector>
 
-.. note:: In the example above the OpenFlow node connector is represented as
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/node-connector/openflow:1:2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/node-connector=openflow%3A1%3A2?content=nonconfig``
+
+**Method:** ``GET``
+
+**Sample JSON output:**
+
+.. code-block:: none
+
+   {
+        "node-connector": [
+            {
+                "id": "openflow:1:2",
+                "flow-node-inventory:hardware-address": "ca:56:91:bf:07:c9",
+                "flow-node-inventory:supported": "",
+                "flow-node-inventory:peer-features": "",
+                "flow-node-inventory:advertised-features": "",
+                "flow-node-inventory:name": "s1-eth2",
+                "flow-node-inventory:port-number": 2,
+                "flow-node-inventory:current-speed": 10000000,
+                "flow-node-inventory:configuration": "",
+                "flow-node-inventory:current-feature": "ten-gb-fd copper",
+                "flow-node-inventory:maximum-speed": 0,
+                "flow-node-inventory:state": {
+                    "blocked": false,
+                    "link-down": false,
+                    "live": false
+                },
+                "opendaylight-port-statistics:flow-capable-node-connector-statistics": {
+                    "packets": {
+                        "transmitted": 203,
+                        "received": 203
+                    },
+                    "receive-frame-error": 0,
+                    "collision-count": 0,
+                    "receive-errors": 0,
+                    "transmit-errors": 0,
+                    "bytes": {
+                        "transmitted": 17255,
+                        "received": 17255
+                    },
+                    "receive-crc-error": 0,
+                    "duration": {
+                        "nanosecond": 246000000,
+                        "second": 1008
+                    },
+                    "receive-drops": 0,
+                    "transmit-drops": 0,
+                    "receive-over-run-error": 0
+                }
+            }
+        ]
+    }
+
+.. note:: In the examples above the OpenFlow node connector is represented as
           openflow:1:2 where 1 is the datapath ID and 2 is the port ID of the
           OpenFlow-enabled device.
 
@@ -343,23 +562,126 @@ send the following request to the controller:
 
 **URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/table/0/``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample XML output:**
 
 .. code-block:: none
 
    <table xmlns="urn:opendaylight:flow:inventory">
-     <id>0</id>
-     <flow-table-statistics xmlns="urn:opendaylight:flow:table:statistics">
-        <active-flows>3</active-flows>
-        <packets-looked-up>548</packets-looked-up>
-        <packets-matched>535</packets-matched>
-     </flow-table-statistics>
+        <id>0</id>
+        <flow-table-statistics xmlns="urn:opendaylight:flow:table:statistics">
+            <packets-looked-up>1570</packets-looked-up>
+            <active-flows>1</active-flows>
+            <packets-matched>1570</packets-matched>
+        </flow-table-statistics>
+        <flow>
+            <id>#UF$TABLE*0-1</id>
+            <table_id>0</table_id>
+            <flow-statistics xmlns="urn:opendaylight:flow:statistics">
+                <duration>
+                    <second>4004</second>
+                    <nanosecond>706000000</nanosecond>
+                </duration>
+                <packet-count>786</packet-count>
+                <byte-count>66810</byte-count>
+            </flow-statistics>
+            <priority>0</priority>
+            <hard-timeout>0</hard-timeout>
+            <match/>
+            <cookie_mask>0</cookie_mask>
+            <cookie>10</cookie>
+            <flags>SEND_FLOW_REM</flags>
+            <instructions>
+                <instruction>
+                    <order>0</order>
+                    <apply-actions>
+                        <action>
+                            <order>0</order>
+                            <output-action>
+                                <output-node-connector>CONTROLLER</output-node-connector>
+                                <max-length>65535</max-length>
+                            </output-action>
+                        </action>
+                    </apply-actions>
+                </instruction>
+            </instructions>
+            <idle-timeout>0</idle-timeout>
+        </flow>
+    </table>
 
-   --- Omitted output —--
+**Headers:**
 
-.. note:: In the example above the OpenFlow node table is 0.
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/table/0/``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0?content=nonconfig``
+
+**Method:** ``GET``
+
+**Sample JSON output:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:table": [
+            {
+                "id": 0,
+                "opendaylight-flow-table-statistics:flow-table-statistics": {
+                    "packets-looked-up": 1581,
+                    "active-flows": 1,
+                    "packets-matched": 1581
+                },
+                "flow": [
+                    {
+                        "id": "#UF$TABLE*0-1",
+                        "table_id": 0,
+                        "opendaylight-flow-statistics:flow-statistics": {
+                            "duration": {
+                                "second": 4056,
+                                "nanosecond": 4000000
+                            },
+                            "packet-count": 797,
+                            "byte-count": 67745
+                        },
+                        "priority": 0,
+                        "hard-timeout": 0,
+                        "cookie_mask": 0,
+                        "cookie": 10,
+                        "flags": "SEND_FLOW_REM",
+                        "instructions": {
+                            "instruction": [
+                                {
+                                    "order": 0,
+                                    "apply-actions": {
+                                        "action": [
+                                            {
+                                                "order": 0,
+                                                "output-action": {
+                                                    "output-node-connector": "CONTROLLER",
+                                                    "max-length": 65535
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "idle-timeout": 0
+                    }
+                ]
+            }
+        ]
+    }
+
+.. note:: In the examples above the OpenFlow node table is 0.
 
 .. _example-of-individual-flow-statistics:
 
@@ -367,7 +689,7 @@ Example of flow description and flow statistics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To view the individual flow statistics, send the following request to the
-controller:
+controller but before that :
 
 **Headers:**
 
@@ -379,9 +701,11 @@ controller:
 
 **URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/fm-sr-link-discovery``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0/flow=fm-sr-link-discovery?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample XML output:**
 
 .. code-block:: none
 
@@ -425,7 +749,73 @@ controller:
        <idle-timeout>0</idle-timeout>
    </flow>
 
-.. note:: In the example above the flow ID fm-sr-link-discovery is internal to
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/fm-sr-link-discovery``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0/flow=fm-sr-link-discovery?content=nonconfig``
+
+**Method:** ``GET``
+
+**Sample JSON output:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:flow": [
+            {
+                "id": "fm-sr-link-discovery",
+                "table_id": 0,
+                "opendaylight-flow-statistics:flow-statistics": {
+                    "duration": {
+                        "second": 2681,
+                        "nanosecond": 174000000
+                    },
+                    "packet-count": 536,
+                    "byte-count": 45560
+                },
+                "priority": 99,
+                "hard-timeout": 0,
+                "match": {
+                    "ethernet-match": {
+                        "ethernet-type": {
+                            "type": 35020
+                        }
+                    }
+                },
+                "cookie_mask": 0,
+                "cookie": 1000000000000001,
+                "flags": "",
+                "instructions": {
+                    "instruction": [
+                        {
+                            "order": 0,
+                            "apply-actions": {
+                                "action": [
+                                    {
+                                        "order": 0,
+                                        "output-action": {
+                                            "output-node-connector": "CONTROLLER",
+                                            "max-length": 65535
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "idle-timeout": 0
+            }
+        ]
+    }
+
+.. note:: In the examples above the flow ID fm-sr-link-discovery is internal to
           the controller and has to match the datastore configured flow ID.
           For more information see flow ID match section
           :ref:`flow-id-match-function`.
@@ -448,9 +838,11 @@ to the controller:
 
 **URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/group/2``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/group=2?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample XML output:**
 
 .. code-block:: none
 
@@ -497,7 +889,78 @@ to the controller:
       </group-statistics>
    </group>
 
-.. note:: In the example above the group ID 2 matches the switch stored
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/group/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/group=2?content=nonconfig``
+
+**Method:** ``GET``
+
+**Sample JSON output:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:group": [
+            {
+                "group-id": 2,
+                "buckets": {
+                    "bucket": [
+                        {
+                            "bucket-id": 0,
+                            "watch_group": 4294967295,
+                            "action": [
+                                {
+                                    "order": 0,
+                                    "pop-mpls-action": {
+                                        "ethernet-type": 34887
+                                    }
+                                },
+                                {
+                                    "order": 1,
+                                    "output-action": {
+                                        "output-node-connector": "2",
+                                        "max-length": 0
+                                    }
+                                }
+                            ],
+                            "weight": 0,
+                            "watch_port": 2
+                        }
+                    ]
+                },
+                "group-type": "group-ff",
+                "opendaylight-group-statistics:group-statistics": {
+                    "byte-count": 0,
+                    "group-id": 2,
+                    "buckets": {
+                        "bucket-counter": [
+                            {
+                                "bucket-id": 0,
+                                "packet-count": 0,
+                                "byte-count": 0
+                            }
+                        ]
+                    },
+                    "duration": {
+                        "nanosecond": 746000000,
+                        "second": 4116
+                    },
+                    "ref-count": 1,
+                    "packet-count": 0
+                }
+            }
+        ]
+    }
+
+.. note:: In the examples above the group ID 2 matches the switch stored
           group ID.
 
 .. _example-of-meter-description-and-meter-statistics:
@@ -518,9 +981,11 @@ to the controller:
 
 **URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/meter/2``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/meter=2?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample XML output:**
 
 .. code-block:: none
 
@@ -559,7 +1024,67 @@ to the controller:
      </meter-band-headers>
    </meter>
 
-.. note:: In the example above the meter ID 2 matches the switch stored
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/meter/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/meter=2?content=nonconfig``
+
+**Method:** ``GET``
+
+**Sample JSON output:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:meter": [
+           {
+                "meter-id": 2,
+                "meter-band-headers": {
+                    "meter-band-header": [
+                        {
+                            "band-id": 0,
+                            "drop-rate": 100,
+                            "drop-burst-size": 0,
+                            "band-rate": 100,
+                            "band-burst-size": 0,
+                            "meter-band-types": {
+                                "flags": "ofpmbt-drop"
+                            }
+                        }
+                    ]
+                },
+                "opendaylight-meter-statistics:meter-statistics": {
+                    "packet-in-count": 0,
+                    "flow-count": 0,
+                    "meter-id": 2,
+                    "byte-in-count": 0,
+                    "meter-band-stats": {
+                        "band-stat": [
+                            {
+                                "band-id": 0,
+                                "packet-band-count": 0,
+                                "byte-band-count": 0
+                            }
+                        ]
+                    },
+                    "duration": {
+                        "nanosecond": 364000000,
+                        "second": 114
+                    }
+                },
+                "flags": "meter-kbps"
+            }
+        ]
+    }
+
+.. note:: In the examples above the meter ID 2 matches the switch stored
           meter ID.
 
 .. _openflow-programming-overview:
@@ -602,9 +1127,11 @@ The flow is installed in table 0 of the switch with datapath ID 1.
 
 **URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/1``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0/flow=1``
+
 **Method:** ``PUT``
 
-**Request body:**
+**Request XML body:**
 
 .. code-block:: none
 
@@ -640,7 +1167,64 @@ The flow is installed in table 0 of the switch with datapath ID 1.
        </instructions>
    </flow>
 
-.. note:: In the example above the flow ID 1 is internal to the controller and
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/1``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0/flow=1``
+
+**Method:** ``PUT``
+
+**Request JSON body:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:flow": [
+            {
+                "id": "1",
+                "priority": 2,
+                "table_id": 0,
+                "hard-timeout": 0,
+                "match": {
+                    "ethernet-match": {
+                        "ethernet-type": {
+                            "type": 2048
+                        }
+                    },
+                    "ipv4-destination": "10.0.10.0/24"
+                },
+                "cookie": 1,
+                "flow-name": "flow1",
+                "instructions": {
+                    "instruction": [
+                        {
+                            "order": 0,
+                            "apply-actions": {
+                                "action": [
+                                    {
+                                        "order": 0,
+                                        "output-action": {
+                                            "output-node-connector": "1"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "idle-timeout": 0
+            }
+        ]
+    }
+
+.. note:: In the examples above the flow ID 1 is internal to the controller and
           the same ID can be found when retrieving the flow statistics if
           controller finds a match between the configured flow and the flow
           received from switch. For more information see flow ID match section
@@ -674,6 +1258,8 @@ ID 1.
 
 **URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/1``
 
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/table=0/flow=1``
+
 **Method:** ``DELETE``
 
 You can also use the below URL to delete all flows in table 0 of the switch
@@ -700,6 +1286,8 @@ The flow is installed in table 0 of the switch with datapath ID 1.
 -  **Authentication:** ``admin:admin``
 
 **URL:** ``/restconf/operations/sal-flow:add-flow``
+
+**RFC8040 URL:** ``/rests/operations/sal-flow:add-flow``
 
 **Method:** ``POST``
 
@@ -735,6 +1323,58 @@ The flow is installed in table 0 of the switch with datapath ID 1.
        </instructions>
    </input>
 
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operations/sal-flow:add-flow``
+
+**RFC8040 URL:** ``/rests/operations/sal-flow:add-flow``
+
+**Method:** ``POST``
+
+**Request body:**
+
+.. code-block:: none
+
+   {
+        "input": {
+            "node": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']",
+            "table_id": 0,
+            "priority": 2,
+            "match": {
+                "ipv4-destination": "10.0.1.0/24",
+                "ethernet-match": {
+                    "ethernet-type": {
+                        "type": 2048
+                    }
+                }
+            },
+            "instructions": {
+                "instruction": [
+                    {
+                        "order": 0,
+                        "apply-actions": {
+                            "action": [
+                                {
+                                    "order": 0,
+                                    "output-action": {
+                                        "output-node-connector": "1",
+                                        "max-length": 0
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+
 .. note:: This payload does not require flow ID as this value is internal to
           controller and only used to store flows in the datastore. When
           retrieving flow statistics users will see an alien flow ID for flows
@@ -761,6 +1401,8 @@ with datapath ID 1.
 
 **URL:** ``/restconf/operations/sal-flow:remove-flow``
 
+**RFC8040 URL:** ``/rests/operations/sal-flow:remove-flow``
+
 **Method:** ``POST``
 
 **Request body:**
@@ -783,6 +1425,41 @@ with datapath ID 1.
        </match>
    </input>
 
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/operations/sal-flow:remove-flow``
+
+**RFC8040 URL:** ``/rests/operations/sal-flow:remove-flow``
+
+**Method:** ``POST``
+
+**Request body:**
+
+.. code-block:: none
+
+   {
+        "input": {
+            "node": "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:1']",
+            "table_id": 0,
+            "priority": 2,
+            "strict": true,
+            "match": {
+                "ipv4-destination": "10.0.1.0/24",
+                "ethernet-match": {
+                    "ethernet-type": {
+                        "type": 2048
+                    }
+                }
+            }
+        }
+    }
+
 To verify that the flow has been correctly programmed in the switch, issue the
 RESTCONF request as provided in :ref:`example-of-table-statistics`.
 
@@ -794,17 +1471,19 @@ port 1 and port 2 in switch with datapath ID 1.
 
 **Headers:**
 
--  **Content-type:** ``application/json``
+-  **Content-type:** ``application/xml``
 
--  **Accept:** ``application/json``
+-  **Accept:** ``application/xml``
 
 -  **Authentication:** ``admin:admin``
 
-**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/group/1``
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/group/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/group=2``
 
 **Method:** ``PUT``
 
-**Request body:**
+**Request XML body:**
 
 .. code-block:: none
 
@@ -835,8 +1514,65 @@ port 1 and port 2 in switch with datapath ID 1.
      </buckets>
      <barrier>false</barrier>
      <group-name>SelectGroup</group-name>
-     <group-id>1</group-id>
+     <group-id>2</group-id>
    </group>
+
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/group/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/group=2``
+
+**Method:** ``PUT``
+
+**Request JSON body:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:group": [
+            {
+                "group-id": 2,
+                "barrier": false,
+                "group-name": "SelectGroup",
+                "buckets": {
+                    "bucket": [
+                        {
+                            "bucket-id": 1,
+                            "weight": 1,
+                            "action": [
+                                {
+                                    "order": 1,
+                                    "output-action": {
+                                        "output-node-connector": "1"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "bucket-id": 2,
+                            "weight": 1,
+                            "action": [
+                                {
+                                    "order": 1,
+                                    "output-action": {
+                                        "output-node-connector": "2"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "group-type": "group-select"
+            }
+        ]
+    }
 
 .. note:: In the example above the group ID 1 will be stored in the switch
           and will be used by the switch to report group statistics.
@@ -877,7 +1613,9 @@ This example deletes the group ID 1 in the switch with datapath ID 1.
 
 -  **Authentication:** ``admin:admin``
 
-**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/group/1``
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/group/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/group=2``
 
 **Method:** ``DELETE``
 
@@ -889,17 +1627,19 @@ size of 512 in switch with datapath ID 1.
 
 **Headers:**
 
--  **Content-type:** ``application/json``
+-  **Content-type:** ``application/xml``
 
--  **Accept:** ``application/json``
+-  **Accept:** ``application/xml``
 
 -  **Authentication:** ``admin:admin``
 
-**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/meter/1``
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/meter/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/meter=2``
 
 **Method:** ``PUT``
 
-**Request body:**
+**Request XML body:**
 
 .. code-block:: none
 
@@ -916,9 +1656,49 @@ size of 512 in switch with datapath ID 1.
                </meter-band-types>
            </meter-band-header>
        </meter-band-headers>
-       <meter-id>1</meter-id>
+       <meter-id>2</meter-id>
        <meter-name>Foo</meter-name>
    </meter>
+
+**Headers:**
+
+-  **Content-type:** ``application/json``
+
+-  **Accept:** ``application/json``
+
+-  **Authentication:** ``admin:admin``
+
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/meter/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/meter=2``
+
+**Method:** ``PUT``
+
+**Request JSON body:**
+
+.. code-block:: none
+
+   {
+        "flow-node-inventory:meter": [
+            {
+                "meter-id": 2,
+                "meter-band-headers": {
+                    "meter-band-header": [
+                        {
+                            "band-id": 0,
+                            "drop-rate": 256,
+                            "drop-burst-size": 512,
+                            "meter-band-types": {
+                                "flags": "ofpmbt-drop"
+                            }
+                        }
+                    ]
+                },
+                "flags": "meter-kbps",
+                "meter-name": "Foo"
+            }
+        ]
+    }
 
 .. note:: In the example above the meter ID 1 will be stored in the switch
           and will be used by the switch to report group statistics.
@@ -959,7 +1739,9 @@ This example deletes the meter ID 1 in the switch with datapath ID 1.
 
 -  **Authentication:** ``admin:admin``
 
-**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/meter/1``
+**URL:** ``/restconf/config/opendaylight-inventory:nodes/node/openflow:1/meter/2``
+
+**RFC8040 URL:** ``/rests/data/opendaylight-inventory:nodes/node=openflow%3A1/meter=2``
 
 **Method:** ``DELETE``
 
@@ -1103,13 +1885,15 @@ following request to the controller:
 
 **URL:** ``/restconf/operational/entity-owners:entity-owners``
 
+**RFC8040 URL:** ``/rests/data/entity-owners:entity-owners?content=nonconfig``
+
 **Method:** ``GET``
 
-**Sample output:**
+**Sample JSON output:**
 
 .. code-block:: none
 
-       {
+   {
           "entity-owners":{
              "entity-type":[
                 {
@@ -1198,7 +1982,7 @@ following request to the controller:
           }
        }
 
-In the above sample output, ``member 3`` is the master controller
+In the above sample outputs, ``member 3`` is the master controller
 (EOS owner) for the OpenFlow device with datapath ID ``1``, and
 ``member-1`` is the master controller (EOS owner) for the OpenFlow
 devices with the datapath IDs of ``2`` and ``3``.
