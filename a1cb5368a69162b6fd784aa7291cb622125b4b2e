@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea9ed964_ac0ea8ff",
+        "filename": "docs/users/flow-examples.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 3597,
+      "author": {
+        "id": 797
+      },
+      "writtenOn": "2020-06-23T18:20:59Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "revId": "a1cb5368a69162b6fd784aa7291cb622125b4b2e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
