@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "396f047d_67310b16",
+        "filename": "docs/users/operation.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 1262,
+      "author": {
+        "id": 797
+      },
+      "writtenOn": "2020-06-23T18:18:25Z",
+      "side": 1,
+      "message": "Is there any problem with RPC operations? RFC8040 URL or JSON body.",
+      "revId": "dae975522c683bd78e41bfe9dd68530e63497195",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efb5d7c0_6d457afc",
+        "filename": "docs/users/operation.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 1770,
+      "author": {
+        "id": 797
+      },
+      "writtenOn": "2020-06-23T18:18:25Z",
+      "side": 1,
+      "message": "This section is for cluster which means 3 controller setup. Since this is expensive to test, I would leave the original JSON body and just add the RFC8040 URL.",
+      "revId": "dae975522c683bd78e41bfe9dd68530e63497195",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
