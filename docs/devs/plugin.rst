@@ -424,7 +424,7 @@ Configuration file contains
 
    -  openflow-provider
 
-.. code:: xml
+.. code-block:: none
 
     <snapshot>
      <required-capabilities>
@@ -433,10 +433,7 @@ Configuration file contains
        <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&revision=2014-03-26</capability>
        <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&revision=2014-03-26</capability>
      </required-capabilities>
-
      <configuration>
-
-
          <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
            <module>
              <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl">prefix:openflow-switch-connection-provider-impl</type>
@@ -450,12 +447,9 @@ Configuration file contains
              <port>6653</port>
              <switch-idle-timeout>15000</switch-idle-timeout>
            </module>
-
-
            <module>
              <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl">prefix:openflow-provider-impl</type>
              <name>openflow-provider-impl</name>
-
              <openflow-switch-connection-provider>
                <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
                <name>openflow-switch-connection-provider-default</name>
@@ -464,15 +458,12 @@ Configuration file contains
                <type xmlns:ofSwitch="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">ofSwitch:openflow-switch-connection-provider</type>
                <name>openflow-switch-connection-provider-legacy</name>
              </openflow-switch-connection-provider>
-
-
              <binding-aware-broker>
                <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
                <name>binding-osgi-broker</name>
              </binding-aware-broker>
            </module>
          </modules>
-
          <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
            <service>
              <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider">prefix:openflow-switch-connection-provider</type>
@@ -485,7 +476,6 @@ Configuration file contains
                <provider>/modules/module[type='openflow-switch-connection-provider-impl'][name='openflow-switch-connection-provider-legacy-impl']</provider>
              </instance>
            </service>
-
            <service>
              <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:openflow:common:config">prefix:openflow-provider</type>
              <instance>
@@ -494,8 +484,6 @@ Configuration file contains
              </instance>
            </service>
          </services>
-
-
      </configuration>
     </snapshot>
 
