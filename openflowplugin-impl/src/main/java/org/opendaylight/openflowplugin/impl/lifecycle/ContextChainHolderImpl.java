@@ -241,6 +241,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 }
             } else if (contextChain.isMastered(mastershipState, false)) {
                 LOG.info("Role MASTER was granted to device {}", deviceInfo);
+                OF_EVENT_LOG.debug("Master Elected, Node: {}", deviceInfo.getDatapathId());
                 deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
             }
         });
