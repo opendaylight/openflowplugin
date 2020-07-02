@@ -428,10 +428,10 @@ Configuration file contains
 
     <snapshot>
      <required-capabilities>
-       <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl?module=openflow-switch-connection-provider-impl&revision=2014-03-28</capability>
-       <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&revision=2014-03-28</capability>
-       <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&revision=2014-03-26</capability>
-       <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&revision=2014-03-26</capability>
+       <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider:impl?module=openflow-switch-connection-provider-impl&amp;revision=2014-03-28</capability>
+       <capability>urn:opendaylight:params:xml:ns:yang:openflow:switch:connection:provider?module=openflow-switch-connection-provider&amp;revision=2014-03-28</capability>
+       <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config:impl?module=openflow-provider-impl&amp;revision=2014-03-26</capability>
+       <capability>urn:opendaylight:params:xml:ns:yang:openflow:common:config?module=openflow-provider&amp;revision=2014-03-26</capability>
      </required-capabilities>
 
      <configuration>
