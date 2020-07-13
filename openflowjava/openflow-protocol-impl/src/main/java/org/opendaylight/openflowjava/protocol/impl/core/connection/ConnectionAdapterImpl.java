@@ -12,14 +12,22 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
 import java.math.BigInteger;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.List;
+import java.util.TimeZone;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.openflowjava.protocol.impl.core.OFVersionDetector;
 import org.opendaylight.openflowjava.protocol.impl.core.PipelineHandlers;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
@@ -33,12 +41,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionErrorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927._switch.certificate.IssuerBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927._switch.certificate.SubjectBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.ssl.connection.error.SwitchCertificate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.ssl.connection.error.SwitchCertificateBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.x509.X500Name;
 
 /**
  * Handles messages (notifications + rpcs) and connections.
@@ -58,6 +72,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     private BigInteger datapathId;
     private ExecutorService executorService;
     private final boolean useBarrier;
+    private X509Certificate switchCertificate;
     /**
      * Default constructor.
      * @param channel the channel to be set - used for communication
@@ -111,7 +126,8 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             } else if (message instanceof SwitchIdleEvent) {
                 systemListener.onSwitchIdleEvent((SwitchIdleEvent) message);
             } else if (message instanceof SslConnectionError) {
-                systemListener.onSslConnectionError((SslConnectionError) message);
+                systemListener.onSslConnectionError((SslConnectionError) new SslConnectionErrorBuilder().setInfo(
+                        ((SslConnectionError) message).getInfo()).setSwitchCertificate(buildSwitchCertificate()).build());
             // OpenFlow messages
             } else if (message instanceof EchoRequestMessage) {
                 if (outputManager != null) {
@@ -195,6 +211,11 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     @Override
+    public void onSwitchCertificateIdentified(X509Certificate switchcertificate) {
+        this.switchCertificate = switchcertificate;
+    }
+
+    @Override
     public <T extends OutboundQueueHandler> OutboundQueueHandlerRegistration<T> registerOutboundQueueHandler(
             final T handler, final int maxQueueDepth, final long maxBarrierNanos) {
         Preconditions.checkState(outputManager == null, "Manager %s already registered", outputManager);
@@ -234,6 +255,53 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     public void setPacketInFiltering(final boolean enabled) {
         versionDetector.setFilterPacketIns(enabled);
         LOG.debug("PacketIn filtering {}abled", enabled ? "en" : "dis");
+    }
+
+    private SwitchCertificate buildSwitchCertificate() {
+        if (switchCertificate != null) {
+            SwitchCertificateBuilder switchCertificateBuilder = new SwitchCertificateBuilder();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'-00:00'");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            try {
+                X500Name subject = new X500Name(switchCertificate.getSubjectX500Principal().getName());
+                X500Name issuer = new X500Name(switchCertificate.getIssuerX500Principal().getName());
+                IssuerBuilder issuerBuilder = new IssuerBuilder();
+                SubjectBuilder subjectBuilder = new SubjectBuilder();
+                issuerBuilder.setCommonName(issuer.getCommonName());
+                issuerBuilder.setCountry(issuer.getCountry());
+                issuerBuilder.setState(issuer.getState());
+                issuerBuilder.setLocality(issuer.getLocality());
+                issuerBuilder.setOrganization(issuer.getOrganization());
+                issuerBuilder.setOrganizationUnit(issuer.getOrganizationalUnit());
+                subjectBuilder.setCommonName(subject.getCommonName());
+                subjectBuilder.setCountry(subject.getCountry());
+                subjectBuilder.setState(subject.getState());
+                subjectBuilder.setLocality(subject.getLocality());
+                subjectBuilder.setOrganization(subject.getOrganization());
+                subjectBuilder.setOrganizationUnit(subject.getOrganizationalUnit());
+                switchCertificateBuilder.setSubject(subjectBuilder.build());
+                switchCertificateBuilder.setIssuer(issuerBuilder.build());
+            } catch (IOException e) {
+                LOG.warn("Exception : {}",e);
+            }
+            switchCertificateBuilder.setSerialNumber(switchCertificate.getSerialNumber());
+            try {
+                List<String> subjectAlternateNames = new ArrayList<>();
+                switchCertificate.getSubjectAlternativeNames().forEach(generalName -> {
+                    final Object value = generalName.get(1);
+                    if (value instanceof String) {
+                        subjectAlternateNames.add(((String) value));
+                    }
+                });
+                switchCertificateBuilder.setSubjectAlternateNames(subjectAlternateNames);
+            } catch (CertificateParsingException e) {
+                LOG.warn("Error encountered while parsing certificate : {}",e);
+            }
+            switchCertificateBuilder.setValidFrom(new DateAndTime(formatter.format(switchCertificate.getNotBefore())));
+            switchCertificateBuilder.setValidTo(new DateAndTime(formatter.format(switchCertificate.getNotAfter())));
+            return switchCertificateBuilder.build();
+        }
+        return null;
     }
 
     @Override
