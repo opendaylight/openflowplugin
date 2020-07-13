@@ -10,8 +10,51 @@
     namespace "urn:opendaylight:openflow:system";
     prefix "ofs";
 
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
+
     revision "2013-09-27" {
         description "#NOT_PUBLISHED# Model of system messages used in OpenFlow Protocol Library";
+    }
+
+    grouping x500-principal {
+        leaf country {
+           type string;
+        }
+        leaf state {
+           type string;
+        }
+        leaf locality {
+           type string;
+        }
+        leaf organization {
+           type string;
+        }
+        leaf organization-unit {
+           type string;
+        }
+        leaf common-name {
+           type string;
+        }
+    }
+    grouping switch-certificate {
+        container subject {
+            uses x500-principal;
+        }
+        container issuer {
+            uses x500-principal;
+        }
+        leaf valid-from {
+            type yang:date-and-time;
+        }
+        leaf valid-to {
+            type yang:date-and-time;
+        }
+        leaf serial-number {
+            type uint64;
+        }
+        leaf-list subject-alternate-names {
+            type string;
+        }
     }
 
     notification disconnect-event {
@@ -32,6 +75,9 @@
         description "Switch ssl connection error notification.";
         leaf info {
             type string;
+        }
+        container switch-certificate{
+            uses switch-certificate;
         }
     }
 
