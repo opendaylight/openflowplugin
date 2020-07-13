@@ -29,6 +29,7 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
+import org.opendaylight.openflowjava.protocol.impl.core.SslContextFactory;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -115,6 +116,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext,
                 config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService);
         connectionAdapter.setSystemListener(systemListener);
+        SslContextFactory.setIsCustomTrustManagerEnabled(config.isEnableCustomTrustManager());
 
         LOG.trace("connection ballet finished");
     }
