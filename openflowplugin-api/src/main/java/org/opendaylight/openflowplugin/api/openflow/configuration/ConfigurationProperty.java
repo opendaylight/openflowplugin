@@ -123,7 +123,11 @@ public enum ConfigurationProperty {
     /**
      * Delay for Device removal from Operational DataStore.
      */
-    DEVICE_DATASTORE_REMOVAL_DELAY;
+    DEVICE_DATASTORE_REMOVAL_DELAY,
+    /**
+     * Enable or disable adding switch certificate to TLS failure notification property type.
+     */
+    ADD_SWITCH_CERTIFICATE_TLS_FAILURE_NOTIFICATION;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
