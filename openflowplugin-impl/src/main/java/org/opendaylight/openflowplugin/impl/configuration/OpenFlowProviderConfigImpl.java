@@ -194,4 +194,10 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
 
         return new NonZeroUint32Type(property);
     }
+
+    @Override
+    public Boolean isAddSwitchCertificateTlsFailureNotification() {
+        return service.getProperty(ConfigurationProperty.ADD_SWITCH_CERTIFICATE_TLS_FAILURE_NOTIFICATION.toString(),
+                Boolean::valueOf);
+    }
 }
