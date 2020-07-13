@@ -4,6 +4,8 @@ module node-ssl-connection-error {
 
     import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
 
+    import system-notifications { prefix system-notifications; revision-date "2013-09-27"; }
+
     description "Openflow node ssl connection error.";
 
     revision "2019-07-23" {
@@ -42,6 +44,9 @@ module node-ssl-connection-error {
     notification ssl-error {
         description "Model for Node SSL Error Messages.";
         uses error-message;
+        container switch-certificate {
+            uses system-notifications:switch-certificate;
+        }
     }
 
 }
