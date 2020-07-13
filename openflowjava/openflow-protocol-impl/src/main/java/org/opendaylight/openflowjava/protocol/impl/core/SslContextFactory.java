@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -16,9 +17,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509ExtendedTrustManager;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,7 @@ public class SslContextFactory {
     // Use "TLSv1", "TLSv1.1", "TLSv1.2" for specific TLS version
     private static final String PROTOCOL = "TLS";
     private final TlsConfiguration tlsConfig;
+    private static X509Certificate switchCertificate;
 
     private static final Logger LOG = LoggerFactory
             .getLogger(SslContextFactory.class);
@@ -47,6 +52,14 @@ public class SslContextFactory {
      */
     public SslContextFactory(TlsConfiguration tlsConfig) {
         this.tlsConfig = tlsConfig;
+    }
+
+    public X509Certificate getSwitchCertificate() {
+        return switchCertificate;
+    }
+
+    public static void setSwitchCertificate(X509Certificate certificate) {
+        switchCertificate = certificate;
     }
 
     public SSLContext getServerContext() {
@@ -68,9 +81,13 @@ public class SslContextFactory {
                     tlsConfig.getTruststorePassword().toCharArray());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
             tmf.init(ts);
+            CustomTrustManager customTrustManager[] = new CustomTrustManager[tmf.getTrustManagers().length];
+            for(int i=0;i<tmf.getTrustManagers().length; i++) {
+                customTrustManager[i]=new CustomTrustManager((X509ExtendedTrustManager)tmf.getTrustManagers()[i]);
+            }
 
             serverContext = SSLContext.getInstance(PROTOCOL);
-            serverContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            serverContext.init(kmf.getKeyManagers(), customTrustManager, null);
         } catch (IOException e) {
             LOG.warn("IOException - Failed to load keystore / truststore."
                     + " Failed to initialize the server-side SSLContext", e);
@@ -84,5 +101,51 @@ public class SslContextFactory {
             LOG.warn("Exception - Failed to initialize the server-side SSLContext", e);
         }
         return serverContext;
+    }
+}
+
+class CustomTrustManager extends X509ExtendedTrustManager {
+    private final X509ExtendedTrustManager trustManager;
+
+    public CustomTrustManager(final X509ExtendedTrustManager trustManager) {
+        this.trustManager = trustManager;
+	}
+
+	@Override
+    public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
+        SslContextFactory.setSwitchCertificate(x509Certificates[0]);
+        trustManager.checkClientTrusted(x509Certificates, s);
+    }
+
+    @Override
+    public void checkServerTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
+        trustManager.checkServerTrusted(x509Certificates, s);
+    }
+
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+        return trustManager.getAcceptedIssuers();
+    }
+
+    @Override
+    public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s, final Socket socket) throws CertificateException {
+        SslContextFactory.setSwitchCertificate(x509Certificates[0]);
+        trustManager.checkClientTrusted(x509Certificates, s, socket);
+    }
+
+    @Override
+    public void checkServerTrusted(final X509Certificate[] x509Certificates, final String s, final Socket socket) throws CertificateException {
+        trustManager.checkServerTrusted(x509Certificates, s, socket);
+    }
+
+    @Override
+    public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s, final SSLEngine sslEngine) throws CertificateException {
+        SslContextFactory.setSwitchCertificate(x509Certificates[0]);
+        trustManager.checkClientTrusted(x509Certificates, s, sslEngine);
+    }
+
+    @Override
+    public void checkServerTrusted(final X509Certificate[] x509Certificates, final String s, final SSLEngine sslEngine) throws CertificateException {
+        trustManager.checkServerTrusted(x509Certificates, s, sslEngine);
     }
 }
