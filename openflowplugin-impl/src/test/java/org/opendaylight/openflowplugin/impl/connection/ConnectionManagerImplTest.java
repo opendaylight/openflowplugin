@@ -72,6 +72,7 @@ public class ConnectionManagerImplTest {
     private static final long ECHO_REPLY_TIMEOUT = 500;
     private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
     private static final int DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = 60;
+    private static final boolean ENABLE_CUSTOM_TRUST_MANAGER = false;
 
     @Before
     public void setUp() {
@@ -83,6 +84,7 @@ public class ConnectionManagerImplTest {
                 .setEchoReplyTimeout(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT))
                 .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
                 .setDeviceConnectionHoldTimeInSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS)
+                .setEnableCustomTrustManager(ENABLE_CUSTOM_TRUST_MANAGER)
                 .build(), threadPool, dataBroker, notificationPublishService);
 
         connectionManagerImpl.setDeviceConnectedHandler(deviceConnectedHandler);

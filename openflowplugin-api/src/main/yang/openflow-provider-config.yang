@@ -221,5 +221,12 @@ module openflow-provider-config {
             type non-zero-uint32-type;
             default 500;
         }
+
+        leaf enable-custom-trust-manager {
+            description "When true would use customtrustmanager to get switch certificate for TLS
+            authentication failure notification. ";
+            type boolean;
+            default "false";
+       }
     }
 }

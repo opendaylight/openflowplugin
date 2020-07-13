@@ -194,4 +194,10 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
 
         return new NonZeroUint32Type(property);
     }
+
+    @Override
+    public Boolean isEnableCustomTrustManager() {
+        return service.getProperty(ConfigurationProperty.ENABLE_CUSTOM_TRUST_MANAGER.toString(),
+                Boolean::valueOf);
+    }
 }
