@@ -34,7 +34,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigurationServiceFactoryImplTest {
-    private static final int CONFIG_PROP_COUNT = 25;
+    private static final int CONFIG_PROP_COUNT = 26;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
     private static final int BARRIER_COUNT_LIMIT = 2000;
     private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
@@ -55,6 +55,7 @@ public class ConfigurationServiceFactoryImplTest {
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
     private static final long DEVICE_DATASTORE_REMOVAL_DELAY = 500;
+    private static final boolean ADD_SWITCH_CERTIFICATE_TLS_FAILURE_NOTIFICATION = false;
 
     @Mock
     private OpenflowProviderConfig config;
@@ -92,6 +93,8 @@ public class ConfigurationServiceFactoryImplTest {
         when(config.getDeviceConnectionRateLimitPerMin()).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
         when(config.getDeviceConnectionHoldTimeInSeconds()).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
         when(config.getDeviceDatastoreRemovalDelay()).thenReturn(new NonZeroUint32Type(DEVICE_DATASTORE_REMOVAL_DELAY));
+        when(config.isAddSwitchCertificateTlsFailureNotification())
+                .thenReturn(ADD_SWITCH_CERTIFICATE_TLS_FAILURE_NOTIFICATION);
 
         final Map<String, String> properties = new Hashtable<>();
         properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
