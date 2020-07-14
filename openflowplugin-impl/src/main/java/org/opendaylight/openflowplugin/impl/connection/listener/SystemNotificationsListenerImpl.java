@@ -147,8 +147,10 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             ip = IpAddressBuilder.getDefaultInstance(
                     connectionContext.getConnectionAdapter().getRemoteAddress().getAddress().getHostAddress());
         }
-        SwitchCertificateBuilder switchCertificateBuilder = new SwitchCertificateBuilder(notification.getSwitchCertificate());
-
+        SwitchCertificateBuilder switchCertificateBuilder = new SwitchCertificateBuilder();
+        if (notification.getSwitchCertificate() != null) {
+            switchCertificateBuilder = new SwitchCertificateBuilder(notification.getSwitchCertificate());
+        }
         notificationPublishService
                 .offerNotification(
                         new SslErrorBuilder().setType(SslErrorType.SslConFailed)

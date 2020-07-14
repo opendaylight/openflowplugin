@@ -90,6 +90,8 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                             providerConfig.getDeviceConnectionHoldTimeInSeconds().toString())
                     .put(ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(),
                             providerConfig.getDeviceDatastoreRemovalDelay().getValue().toString())
+                    .put(ConfigurationProperty.ADD_SWITCH_CERTIFICATE_TLS_FAILURE_NOTIFICATION.toString(),
+                            providerConfig.isAddSwitchCertificateTlsFailureNotification().toString())
                     .build());
         }
 

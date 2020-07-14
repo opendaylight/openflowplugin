@@ -10,8 +10,8 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import com.google.common.annotations.Beta;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
@@ -79,7 +79,8 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
     void fireConnectionReadyNotification();
 
     /**
-     * Notify listener about switch certificate information
+     * Notify listener about switch certificate information.
+     * @param switchcertificate X509Certificate of switch
      */
     void onSwitchCertificateIdentified(X509Certificate switchcertificate);
 

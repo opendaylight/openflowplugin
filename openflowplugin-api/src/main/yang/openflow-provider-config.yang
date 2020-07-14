@@ -221,5 +221,12 @@ module openflow-provider-config {
             type non-zero-uint32-type;
             default 500;
         }
+
+        leaf add-switch-certificate-tls-failure-notification {
+            description "When true would include switch certificate to TLS Authentication
+            Failure Notification. ";
+            type boolean;
+            default "false";
+        }
     }
 }

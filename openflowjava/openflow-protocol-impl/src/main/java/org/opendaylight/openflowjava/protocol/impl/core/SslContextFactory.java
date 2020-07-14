@@ -38,7 +38,8 @@ public class SslContextFactory {
     // Use "TLSv1", "TLSv1.1", "TLSv1.2" for specific TLS version
     private static final String PROTOCOL = "TLS";
     private final TlsConfiguration tlsConfig;
-    private static X509Certificate switchCertificate;
+    private static X509Certificate switchCertificate = null;
+    private static boolean isAddSwitchCertificate;
 
     private static final Logger LOG = LoggerFactory
             .getLogger(SslContextFactory.class);
@@ -62,6 +63,10 @@ public class SslContextFactory {
         switchCertificate = certificate;
     }
 
+    public static void setIsAddSwitchCertificate(boolean AddSwitchCertificate) {
+        isAddSwitchCertificate = AddSwitchCertificate;
+    }
+
     public SSLContext getServerContext() {
         String algorithm = Security
                 .getProperty("ssl.KeyManagerFactory.algorithm");
@@ -81,13 +86,15 @@ public class SslContextFactory {
                     tlsConfig.getTruststorePassword().toCharArray());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
             tmf.init(ts);
-            CustomTrustManager customTrustManager[] = new CustomTrustManager[tmf.getTrustManagers().length];
-            for(int i=0;i<tmf.getTrustManagers().length; i++) {
-                customTrustManager[i]=new CustomTrustManager((X509ExtendedTrustManager)tmf.getTrustManagers()[i]);
+            if (isAddSwitchCertificate) {
+                CustomTrustManager customTrustManager[] = new CustomTrustManager[tmf.getTrustManagers().length];
+                for (int i = 0; i < tmf.getTrustManagers().length; i++) {
+                    customTrustManager[i] = new CustomTrustManager((X509ExtendedTrustManager) tmf.getTrustManagers()[i]);
+                }
+                serverContext.init(kmf.getKeyManagers(), customTrustManager, null);
+            } else {
+                serverContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
             }
-
-            serverContext = SSLContext.getInstance(PROTOCOL);
-            serverContext.init(kmf.getKeyManagers(), customTrustManager, null);
         } catch (IOException e) {
             LOG.warn("IOException - Failed to load keystore / truststore."
                     + " Failed to initialize the server-side SSLContext", e);
