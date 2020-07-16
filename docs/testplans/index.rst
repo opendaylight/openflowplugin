@@ -1,3 +1,6 @@
+.. Allow index files to be orphan so downstream docs can create their own indexes.
+:orphan:
+
 Openflowplugin Test Plans
 =========================
 

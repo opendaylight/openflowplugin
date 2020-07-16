@@ -1,7 +1,5 @@
-.. Openflowplugin documentation master file, created by
-   sphinx-quickstart on Wed Nov 15 21:47:32 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Allow index files to be orphan so downstream docs can create their own indexes.
+:orphan:
 
 Openflowplugin Documentation
 ============================
