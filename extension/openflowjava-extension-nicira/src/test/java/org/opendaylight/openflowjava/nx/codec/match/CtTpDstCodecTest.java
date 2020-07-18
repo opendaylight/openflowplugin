@@ -63,7 +63,7 @@ public class CtTpDstCodecTest {
         assertEquals(2, result.getCtTpDstValues().getCtTpDst().shortValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final CtTpDstCaseValueBuilder caseBuilder = new CtTpDstCaseValueBuilder();
         final CtTpDstValuesBuilder valuesBuilder = new CtTpDstValuesBuilder();
@@ -79,7 +79,7 @@ public class CtTpDstCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

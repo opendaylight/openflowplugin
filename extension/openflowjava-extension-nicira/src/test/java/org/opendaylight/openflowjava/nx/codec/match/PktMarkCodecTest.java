@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +62,7 @@ public class PktMarkCodecTest {
         assertEquals(2, result.getPktMarkValues().getPktMark().intValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final PktMarkCaseValueBuilder caseBuilder = new PktMarkCaseValueBuilder();
         final PktMarkValuesBuilder valuesBuilder = new PktMarkValuesBuilder();
@@ -79,7 +78,7 @@ public class PktMarkCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

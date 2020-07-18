@@ -119,7 +119,7 @@ public class OutputReg2CodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private Action createAction(final Uint64 src) {
+    private static Action createAction(final Uint64 src) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -136,7 +136,7 @@ public class OutputReg2CodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(final ByteBuf message, final boolean withExpSrc) {
+    private static void createBuffer(final ByteBuf message, final boolean withExpSrc) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());

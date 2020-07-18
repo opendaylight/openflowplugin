@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +49,7 @@ public class OxmPacketTypeSerializerTest {
         assertEquals(packetType, buffer.readUnsignedInt());
     }
 
-    private MatchEntry createMatchEntry(long packetType) {
+    private static MatchEntry createMatchEntry(long packetType) {
         PacketTypeCase packetTypeCase = new PacketTypeCaseBuilder()
                 .setPacketType(new PacketTypeBuilder().setPacketType(packetType).build())
                 .build();

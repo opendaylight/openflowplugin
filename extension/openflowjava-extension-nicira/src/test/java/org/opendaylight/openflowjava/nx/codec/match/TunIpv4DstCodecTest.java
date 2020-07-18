@@ -64,9 +64,7 @@ public class TunIpv4DstCodecTest {
         assertEquals(1, result.getTunIpv4DstValues().getValue().intValue());
     }
 
-
-
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final TunIpv4DstCaseValueBuilder caseBuilder = new TunIpv4DstCaseValueBuilder();
         final TunIpv4DstValuesBuilder valuesBuilder = new TunIpv4DstValuesBuilder();
@@ -82,7 +80,7 @@ public class TunIpv4DstCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

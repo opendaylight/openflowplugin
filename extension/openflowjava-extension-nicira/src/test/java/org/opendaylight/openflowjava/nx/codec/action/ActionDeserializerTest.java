@@ -86,7 +86,7 @@ public class ActionDeserializerTest {
         Mockito.verify(deserializer).deserialize(buffer);
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         //size of experiment type
         message.writeShort(1);
         //size of length
@@ -97,7 +97,7 @@ public class ActionDeserializerTest {
         message.writeShort(SUBTYPE);
     }
 
-    private void createBufferWithWrongExperimentId(ByteBuf message) {
+    private static void createBufferWithWrongExperimentId(ByteBuf message) {
         //size of experiment type
         message.writeShort(1);
         //size of length
