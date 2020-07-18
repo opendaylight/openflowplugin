@@ -11,7 +11,6 @@ import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainerBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlagsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
@@ -39,7 +38,6 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
 
     private static void addTcpFlagsAugmentation(ByteBuf input, ExperimenterIdCaseBuilder expCaseBuilder,
             boolean hasMask) {
-        TcpFlagsContainerBuilder flagsContainerBuilder = new TcpFlagsContainerBuilder();
         TcpFlagsBuilder flagsBuilder = new TcpFlagsBuilder();
         flagsBuilder.setFlags(input.readUnsignedShort());
         if (hasMask) {
@@ -47,8 +45,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
             input.readBytes(mask);
             flagsBuilder.setMask(mask);
         }
-        flagsContainerBuilder.setTcpFlags(flagsBuilder.build());
-        expCaseBuilder.addAugmentation(TcpFlagsContainer.class, flagsContainerBuilder.build());
+        expCaseBuilder.addAugmentation(new TcpFlagsContainerBuilder().setTcpFlags(flagsBuilder.build()).build());
     }
 
     /**

@@ -23,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -140,13 +139,13 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                                                                     final
                                                                     InstanceIdentifier<FlowCapableNodeConnector>
                                                                             iiToNodeInInventory) {
-        final InventoryNodeConnector inventoryNodeConnector = new InventoryNodeConnectorBuilder()
-                .setInventoryNodeConnectorRef(
-                        new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class))).build();
-        final TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
-        terminationPointBuilder.setTpId(terminationPointIdInTopology);
-        terminationPointBuilder.addAugmentation(InventoryNodeConnector.class, inventoryNodeConnector);
-        return terminationPointBuilder.build();
+        return new TerminationPointBuilder()
+                .setTpId(terminationPointIdInTopology)
+                .addAugmentation(new InventoryNodeConnectorBuilder()
+                    .setInventoryNodeConnectorRef(
+                        new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class)))
+                    .build())
+                .build();
     }
 
     private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(

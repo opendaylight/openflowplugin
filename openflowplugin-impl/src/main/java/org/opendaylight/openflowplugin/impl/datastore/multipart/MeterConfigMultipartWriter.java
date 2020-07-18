@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
@@ -15,7 +14,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterConfigStatsReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -46,12 +44,11 @@ public class MeterConfigMultipartWriter extends AbstractMultipartWriter<MeterCon
                         .child(Meter.class, new MeterKey(stat.getMeterId())),
                     new MeterBuilder(stat)
                         .withKey(new MeterKey(stat.getMeterId()))
-                        .addAugmentation(NodeMeterStatistics.class, new NodeMeterStatisticsBuilder().build())
+                        .addAugmentation(new NodeMeterStatisticsBuilder().build())
                         .build(),
                     withParents);
 
                 registry.getDeviceMeterRegistry().store(stat.getMeterId());
             });
     }
-
 }
