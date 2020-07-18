@@ -52,7 +52,7 @@ public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> ex
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ExperimenterIdMeterSubTypeSerializerKey other = (ExperimenterIdMeterSubTypeSerializerKey) obj;
+        ExperimenterIdMeterSubTypeSerializerKey<?> other = (ExperimenterIdMeterSubTypeSerializerKey<?>) obj;
         if (meterSubType == null) {
             if (other.meterSubType != null) {
                 return false;
