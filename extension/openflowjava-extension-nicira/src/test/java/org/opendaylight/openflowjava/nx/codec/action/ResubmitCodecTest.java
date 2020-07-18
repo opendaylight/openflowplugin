@@ -61,8 +61,7 @@ public class ResubmitCodecTest {
      */
     @Test
     public void getSubTypeTest2() {
-        Byte table = new Byte((byte)1);
-        action = createAction(null, table);
+        action = createAction(null, (byte)1);
         ActionResubmit actionResubmit = (ActionResubmit) action.getActionChoice();
 
         byte result = resubmitCodec.getSubType(actionResubmit);
