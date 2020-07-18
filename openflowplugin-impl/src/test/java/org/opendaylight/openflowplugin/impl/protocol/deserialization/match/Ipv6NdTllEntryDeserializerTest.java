@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +26,7 @@ public class Ipv6NdTllEntryDeserializerTest extends AbstractMatchEntryDeserializ
         final MacAddress address = new MacAddress("00:01:02:03:04:05");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(address));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(address));
 
         Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(address.getValue(), match.getIpv6NdTll().getValue());
@@ -48,5 +47,4 @@ public class Ipv6NdTllEntryDeserializerTest extends AbstractMatchEntryDeserializ
     protected int getValueLength() {
         return EncodeConstants.MAC_ADDRESS_LENGTH;
     }
-
 }

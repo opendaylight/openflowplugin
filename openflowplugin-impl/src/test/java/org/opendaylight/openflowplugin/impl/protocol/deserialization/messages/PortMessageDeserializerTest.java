@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
 import static org.junit.Assert.assertEquals;
@@ -66,7 +65,7 @@ public class PortMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.writeInt(XID);
         buffer.writeInt(PORT);
         buffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_1);
-        buffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(ADDRESS));
+        buffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ADDRESS));
 
         final int config = ByteBufUtils.fillBitMaskFromMap(ImmutableMap
                 .<Integer, Boolean>builder()

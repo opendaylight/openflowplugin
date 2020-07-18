@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -29,7 +28,7 @@ public class ArpTargetHardwareAddressEntryDeserializerTest extends AbstractMatch
         final MacAddress arpTargetHardwareAddressMask = new MacAddress("00:00:00:00:00:00");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(arpTargetHardwareAddress));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddress));
 
         assertEquals(arpTargetHardwareAddress.getValue(),
                 ((ArpMatch) deserialize(in).getLayer3Match()).getArpTargetHardwareAddress().getAddress()
@@ -37,8 +36,8 @@ public class ArpTargetHardwareAddressEntryDeserializerTest extends AbstractMatch
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(arpTargetHardwareAddress));
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(arpTargetHardwareAddressMask));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddress));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddressMask));
 
         final ArpTargetHardwareAddress desAddress =
                 ((ArpMatch) deserialize(in).getLayer3Match()).getArpTargetHardwareAddress();
