@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -24,7 +26,7 @@ public class OF10FeaturesRequestMessageFactory implements OFDeserializer<GetFeat
     public GetFeaturesInput deserialize(ByteBuf rawMessage) {
         GetFeaturesInputBuilder builder = new GetFeaturesInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         return builder.build();
     }
 }

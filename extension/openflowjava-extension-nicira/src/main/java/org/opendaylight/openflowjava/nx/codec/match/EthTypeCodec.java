@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -16,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.eth.type.grouping.EthTypeValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthTypeCaseValue;
@@ -39,13 +40,11 @@ public class EthTypeCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        EthTypeCaseValueBuilder caseBuilder = new EthTypeCaseValueBuilder();
-        EthTypeValuesBuilder valuesBuilder = new EthTypeValuesBuilder();
-        valuesBuilder.setValue(message.readUnsignedShort()).build();
-        caseBuilder.setEthTypeValues(valuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setMatchEntryValue(new EthTypeCaseValueBuilder()
+                    .setEthTypeValues(new EthTypeValuesBuilder().setValue(readUint16(message)).build())
+                    .build())
+                .build();
     }
 
     @Override

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -15,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
 
@@ -29,17 +30,11 @@ public class OxmUdpDstDeserializer extends AbstractOxmMatchEntryDeserializer
 
     @Override
     public MatchEntry deserialize(ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addUdpDstValue(input, builder);
-        return builder.build();
-    }
-
-    private static void addUdpDstValue(ByteBuf input, MatchEntryBuilder builder) {
-        UdpDstCaseBuilder caseBuilder = new UdpDstCaseBuilder();
-        UdpDstBuilder udpBuilder = new UdpDstBuilder();
-        udpBuilder.setPort(new PortNumber(input.readUnsignedShort()));
-        caseBuilder.setUdpDst(udpBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        return processHeader(getOxmClass(), getOxmField(), input)
+                .setMatchEntryValue(new UdpDstCaseBuilder()
+                    .setUdpDst(new UdpDstBuilder().setPort(new PortNumber(readUint16(input))).build())
+                    .build())
+                .build();
     }
 
     @Override

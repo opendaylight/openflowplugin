@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -16,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfIcmpType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.icmp.type.grouping.IcmpTypeValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IcmpTypeCaseValue;
@@ -37,13 +38,12 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
-        IcmpTypeCaseValueBuilder icmpTypeCaseValueBuilder = new IcmpTypeCaseValueBuilder();
-        icmpTypeCaseValueBuilder.setIcmpTypeValues(new IcmpTypeValuesBuilder()
-                .setValue(message.readUnsignedByte()).build());
-        matchEntriesBuilder.setMatchEntryValue(icmpTypeCaseValueBuilder.build());
-        matchEntriesBuilder.setHasMask(false);
-        return matchEntriesBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setMatchEntryValue(new IcmpTypeCaseValueBuilder()
+                    .setIcmpTypeValues(new IcmpTypeValuesBuilder().setValue(readUint8(message)).build())
+                    .build())
+                .setHasMask(false)
+                .build();
     }
 
     @Override
