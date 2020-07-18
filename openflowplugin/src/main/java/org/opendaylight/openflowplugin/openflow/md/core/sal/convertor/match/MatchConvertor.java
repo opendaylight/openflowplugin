@@ -56,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.Pbb;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainerBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlagsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
@@ -472,7 +471,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             experimenterBuilder.setExperimenter(new ExperimenterId(OFApprovedExperimenterIds.MATCH_TCP_FLAGS_EXP_ID));
             expIdCaseBuilder.setExperimenter(experimenterBuilder.build());
 
-            expIdCaseBuilder.addAugmentation(TcpFlagsContainer.class, tcpFlagsContainerBuilder.build());
+            expIdCaseBuilder.addAugmentation(tcpFlagsContainerBuilder.build());
             matchEntryBuilder.setMatchEntryValue(expIdCaseBuilder.build());
             matchEntryList.add(matchEntryBuilder.build());
         }

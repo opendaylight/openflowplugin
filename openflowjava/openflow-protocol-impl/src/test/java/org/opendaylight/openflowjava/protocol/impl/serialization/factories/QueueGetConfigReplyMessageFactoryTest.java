@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.get.config.reply.QueuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for QueueGetConfigReplyMessageFactory.
@@ -102,23 +104,21 @@ public class QueueGetConfigReplyMessageFactoryTest {
     private static List<Queues> createQueuesList() {
         List<Queues> queuesList = new ArrayList<>();
         for (int i = 1; i < 3; i++) {
-            QueuesBuilder qb = new QueuesBuilder();
-            qb.setQueueId(new QueueId((long) i));
-            qb.setPort(new PortNumber((long) i));
-            qb.setQueueProperty(createPropertiesList());
-            queuesList.add(qb.build());
+            queuesList.add(new QueuesBuilder()
+                .setQueueId(new QueueId(Uint32.valueOf(i)))
+                .setPort(new PortNumber(Uint32.valueOf(i)))
+                .setQueueProperty(createPropertiesList())
+                .build());
         }
         return queuesList;
     }
 
     private static List<QueueProperty> createPropertiesList() {
         final List<QueueProperty> propertiesList = new ArrayList<>();
-        QueuePropertyBuilder pb = new QueuePropertyBuilder();
-        pb.setProperty(QueueProperties.forValue(2));
-        RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();
-        rateBuilder.setRate(5);
-        pb.addAugmentation(RateQueueProperty.class, rateBuilder.build());
-        propertiesList.add(pb.build());
+        propertiesList.add(new QueuePropertyBuilder()
+            .setProperty(QueueProperties.forValue(2))
+            .addAugmentation(new RateQueuePropertyBuilder().setRate(Uint16.valueOf(5)).build())
+            .build());
         return propertiesList;
     }
 }

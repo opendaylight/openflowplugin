@@ -19,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
@@ -65,9 +64,7 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
                         new QueueBuilder()
                                 .withKey(new QueueKey(stat.getQueueId()))
                                 .setQueueId(stat.getQueueId())
-                                .addAugmentation(
-                                        FlowCapableNodeConnectorQueueStatisticsData.class,
-                                        new FlowCapableNodeConnectorQueueStatisticsDataBuilder()
+                                .addAugmentation(new FlowCapableNodeConnectorQueueStatisticsDataBuilder()
                                                 .setFlowCapableNodeConnectorQueueStatistics(
                                                         new FlowCapableNodeConnectorQueueStatisticsBuilder(stat)
                                                                 .build())
@@ -76,5 +73,4 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
                         withParents);
             });
     }
-
 }

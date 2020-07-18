@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
-
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link Icmpv6NDReservedConvertor}.
@@ -60,7 +59,7 @@ public class Icmpv6NDReservedConvertorTest {
     @Before
     public void setUp()  {
         final EricOfIcmpv6NdReservedBuilder ericOfIcmpv6NdReservedBuilder = new EricOfIcmpv6NdReservedBuilder()
-                .setIcmpv6NdReserved(1L);
+                .setIcmpv6NdReserved(Uint32.ONE);
         final EricAugMatchNodesNodeTableFlowBuilder ericAugMatchNotifUpdateFlowStatsBuilder =
                 new EricAugMatchNodesNodeTableFlowBuilder();
         ericAugMatchNotifUpdateFlowStatsBuilder.setEricOfIcmpv6NdReserved(ericOfIcmpv6NdReservedBuilder.build());
@@ -82,7 +81,7 @@ public class Icmpv6NDReservedConvertorTest {
     @Test
     public void testConvert1()  {
         final Icmpv6NdReservedValuesBuilder icmpv6NdReservedValuesBuilder = new Icmpv6NdReservedValuesBuilder()
-                .setIcmpv6NdReserved(10L);
+                .setIcmpv6NdReserved(Uint32.TEN);
         final Icmpv6NdReservedCaseValueBuilder icmpv6NdReservedCaseValueBuilder = new Icmpv6NdReservedCaseValueBuilder()
                 .setIcmpv6NdReservedValues(icmpv6NdReservedValuesBuilder.build());
 
@@ -123,24 +122,22 @@ public class Icmpv6NDReservedConvertorTest {
         ExtensionAugment<? extends Augmentation<Extension>> extensionMatch
                 =  new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdReserved(
-                        new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(1L).build()).build(),
+                        new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(Uint32.ONE).build()).build(),
                 Icmpv6NdReservedKey.class);
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();
-        extBld.addAugmentation(extensionMatch.getAugmentationClass(), extensionMatch.getAugmentationObject());
+        extBld.addAugmentation(extensionMatch.getAugmentationObject());
 
         extListBld = new ExtensionListBuilder();
         extListBld.setExtension(extBld.build());
         extListBld.setExtensionKey(extensionMatch.getKey());
 
-        GeneralAugMatchNodesNodeTableFlowWriteActionsSetField ndReservedSetField =
-                 new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                         .setExtensionList(Collections.singletonList(extListBld.build())).build();
-
-        SetFieldBuilder sb = new SetFieldBuilder();
-        SetField setField = sb.addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
-                ndReservedSetField).build();
+        SetField setField = new SetFieldBuilder()
+                .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
+                    .setExtensionList(Collections.singletonList(extListBld.build()))
+                    .build())
+                .build();
 
         Assert.assertEquals(Icmpv6NdReservedKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
                 .values().iterator().next().getExtensionKey());

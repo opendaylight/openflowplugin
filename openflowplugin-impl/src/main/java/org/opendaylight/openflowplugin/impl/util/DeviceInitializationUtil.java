@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
@@ -81,9 +80,7 @@ public final class DeviceInitializationUtil {
                             .child(Table.class, new TableKey((short) i)),
                     new TableBuilder()
                             .setId((short) i)
-                            .addAugmentation(
-                                    FlowTableStatisticsData.class,
-                                    new FlowTableStatisticsDataBuilder().build())
+                            .addAugmentation(new FlowTableStatisticsDataBuilder().build())
                             .build());
         }
     }
