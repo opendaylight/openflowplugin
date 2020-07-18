@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import com.google.common.net.InetAddresses;
 import io.netty.buffer.ByteBuf;
 import java.net.InetAddress;
@@ -177,10 +181,10 @@ public class ConntrackCodec extends AbstractActionCodec {
     public Action deserialize(final ByteBuf message) {
         final short length = deserializeCtHeader(message);
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
-        nxActionConntrackBuilder.setFlags(message.readUnsignedShort());
-        nxActionConntrackBuilder.setZoneSrc(message.readUnsignedInt());
-        nxActionConntrackBuilder.setConntrackZone(message.readUnsignedShort());
-        nxActionConntrackBuilder.setRecircTable(message.readUnsignedByte());
+        nxActionConntrackBuilder.setFlags(readUint16(message));
+        nxActionConntrackBuilder.setZoneSrc(readUint32(message));
+        nxActionConntrackBuilder.setConntrackZone(readUint16(message));
+        nxActionConntrackBuilder.setRecircTable(readUint8(message));
         message.skipBytes(5);
 
         if  (length > CT_LENGTH) {
@@ -213,7 +217,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                 processedCtActionsLength = processedCtActionsLength - length;
                 NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
                 message.skipBytes(2);
-                nxActionNatBuilder.setFlags(message.readUnsignedShort());
+                nxActionNatBuilder.setFlags(readUint16(message));
 
                 int rangePresent = message.readUnsignedShort();
                 nxActionNatBuilder.setRangePresent(rangePresent);
@@ -226,10 +230,10 @@ public class ConntrackCodec extends AbstractActionCodec {
                     nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
                 }
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
-                    nxActionNatBuilder.setPortMin(message.readUnsignedShort());
+                    nxActionNatBuilder.setPortMin(readUint16(message));
                 }
                 if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
-                    nxActionNatBuilder.setPortMax(message.readUnsignedShort());
+                    nxActionNatBuilder.setPortMax(readUint16(message));
                 }
 
                 NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
@@ -248,7 +252,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                 deserializeCtHeaderWithoutSubtype(message);
 
                 NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
-                nxActionCtMarkBuilder.setCtMark(message.readUnsignedInt());
+                nxActionCtMarkBuilder.setCtMark(readUint32(message));
 
                 NxActionCtMarkCaseBuilder caseBuilder = new NxActionCtMarkCaseBuilder();
                 caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());

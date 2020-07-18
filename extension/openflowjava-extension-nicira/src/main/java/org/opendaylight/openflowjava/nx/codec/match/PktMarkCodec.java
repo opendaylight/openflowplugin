@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -45,7 +46,7 @@ public class PktMarkCodec extends AbstractMatchCodec {
         final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         PktMarkCaseValueBuilder pktMarkCaseValueBuilder = new PktMarkCaseValueBuilder();
         PktMarkValuesBuilder pktMarkValuesBuilder = new PktMarkValuesBuilder();
-        pktMarkValuesBuilder.setPktMark(message.readUnsignedInt());
+        pktMarkValuesBuilder.setPktMark(readUint32(message));
         pktMarkCaseValueBuilder.setPktMarkValues(pktMarkValuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(pktMarkCaseValueBuilder.build());
         return matchEntryBuilder.build();

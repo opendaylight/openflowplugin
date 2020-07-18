@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -54,10 +57,10 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
 
         MeterModInputBuilder builder = new MeterModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setCommand(MeterModCommand.forValue(rawMessage.readUnsignedShort()));
         builder.setFlags(createMeterFlags(rawMessage.readUnsignedShort()));
-        builder.setMeterId(new MeterId(rawMessage.readUnsignedInt()));
+        builder.setMeterId(new MeterId(readUint32(rawMessage)));
         List<Bands> bandsList = new ArrayList<>();
         while (rawMessage.readableBytes() > 0) {
             BandsBuilder bandsBuilder = new BandsBuilder();
@@ -69,8 +72,8 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
                     MeterBandDropBuilder bandDropBuilder = new MeterBandDropBuilder();
                     bandDropBuilder.setType(MeterBandType.forValue(bandType));
                     rawMessage.readUnsignedShort();
-                    bandDropBuilder.setRate(rawMessage.readUnsignedInt());
-                    bandDropBuilder.setBurstSize(rawMessage.readUnsignedInt());
+                    bandDropBuilder.setRate(readUint32(rawMessage));
+                    bandDropBuilder.setBurstSize(readUint32(rawMessage));
                     rawMessage.skipBytes(PADDING_IN_METER_BAND_DROP_HEADER);
                     bandDropCaseBuilder.setMeterBandDrop(bandDropBuilder.build());
                     bandsBuilder.setMeterBand(bandDropCaseBuilder.build());
@@ -81,9 +84,9 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
                     MeterBandDscpRemarkBuilder bandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                     bandDscpRemarkBuilder.setType(MeterBandType.forValue(bandType));
                     rawMessage.readUnsignedShort();
-                    bandDscpRemarkBuilder.setRate(rawMessage.readUnsignedInt());
-                    bandDscpRemarkBuilder.setBurstSize(rawMessage.readUnsignedInt());
-                    bandDscpRemarkBuilder.setPrecLevel(rawMessage.readUnsignedByte());
+                    bandDscpRemarkBuilder.setRate(readUint32(rawMessage));
+                    bandDscpRemarkBuilder.setBurstSize(readUint32(rawMessage));
+                    bandDscpRemarkBuilder.setPrecLevel(readUint8(rawMessage));
                     rawMessage.skipBytes(PADDING_IN_METER_BAND_DSCP_HEADER);
                     bandDscpRemarkCaseBuilder.setMeterBandDscpRemark(bandDscpRemarkBuilder.build());
                     bandsBuilder.setMeterBand(bandDscpRemarkCaseBuilder.build());
@@ -114,5 +117,4 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
         final Boolean mfSTATS = (input & 1 << 3) != 0;
         return new MeterFlags(mfBURST, mfKBPS, mfPKTPS, mfSTATS);
     }
-
 }

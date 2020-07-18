@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -41,8 +44,8 @@ public class RegLoadCodec extends AbstractActionCodec {
         final ActionBuilder actionBuilder = deserializeHeader(message);
         NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
         final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
-        nxActionRegLoadBuilder.setOfsNbits(message.readUnsignedShort());
-        nxActionRegLoadBuilder.setDst(message.readUnsignedInt());
+        nxActionRegLoadBuilder.setOfsNbits(readUint16(message));
+        nxActionRegLoadBuilder.setDst(readUint32(message));
         nxActionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
         actionBuilder.setActionChoice(actionRegLoadBuilder.build());

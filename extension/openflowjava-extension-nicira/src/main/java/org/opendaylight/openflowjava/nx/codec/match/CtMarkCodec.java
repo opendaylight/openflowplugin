@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -51,9 +52,9 @@ public class CtMarkCodec extends AbstractMatchCodec {
         CtMarkCaseValueBuilder caseBuilder = new CtMarkCaseValueBuilder();
         CtMarkValuesBuilder ctMarkValuesBuilder = new CtMarkValuesBuilder();
         if (matchEntryBuilder.isHasMask()) {
-            ctMarkValuesBuilder.setMask(message.readUnsignedInt());
+            ctMarkValuesBuilder.setMask(readUint32(message));
         }
-        ctMarkValuesBuilder.setCtMark(message.readUnsignedInt());
+        ctMarkValuesBuilder.setCtMark(readUint32(message));
         caseBuilder.setCtMarkValues(ctMarkValuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();
@@ -83,5 +84,4 @@ public class CtMarkCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm1Class.class;
     }
-
 }

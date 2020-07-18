@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -30,9 +32,9 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
     public PacketOutInput deserialize(ByteBuf rawMessage) {
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        builder.setBufferId(rawMessage.readUnsignedInt());
-        builder.setInPort(new PortNumber(rawMessage.readUnsignedInt()));
+        builder.setXid(readUint32(rawMessage));
+        builder.setBufferId(readUint32(rawMessage));
+        builder.setInPort(new PortNumber(readUint32(rawMessage)));
         int actionsLen = rawMessage.readShort();
         rawMessage.skipBytes(PADDING);
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);

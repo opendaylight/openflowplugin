@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -35,7 +36,7 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
     public ErrorMessage deserialize(ByteBuf rawMessage) {
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         ErrorTypeV10 errorType = ErrorTypeV10.forValue(type);
         decodeType(builder, errorType, type);

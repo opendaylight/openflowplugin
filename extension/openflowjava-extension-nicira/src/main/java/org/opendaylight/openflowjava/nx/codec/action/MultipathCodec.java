@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -56,16 +58,16 @@ public class MultipathCodec extends AbstractActionCodec {
 
         NxActionMultipathBuilder nxActionMultipathBuilder = new NxActionMultipathBuilder();
         nxActionMultipathBuilder.setFields(OfjNxHashFields.forValue(message.readUnsignedShort()));
-        nxActionMultipathBuilder.setBasis(message.readUnsignedShort());
+        nxActionMultipathBuilder.setBasis(readUint16(message));
         message.skipBytes(2); //two bytes
 
         nxActionMultipathBuilder.setAlgorithm(OfjNxMpAlgorithm.forValue(message.readUnsignedShort()));
-        nxActionMultipathBuilder.setMaxLink(message.readUnsignedShort());
-        nxActionMultipathBuilder.setArg(message.readUnsignedInt());
+        nxActionMultipathBuilder.setMaxLink(readUint16(message));
+        nxActionMultipathBuilder.setArg(readUint32(message));
         message.skipBytes(2); //two bytes
 
-        nxActionMultipathBuilder.setOfsNbits(message.readUnsignedShort());
-        nxActionMultipathBuilder.setDst(message.readUnsignedInt());
+        nxActionMultipathBuilder.setOfsNbits(readUint16(message));
+        nxActionMultipathBuilder.setDst(readUint32(message));
         actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
         actionBuilder.setActionChoice(actionMultipathBuilder.build());
 

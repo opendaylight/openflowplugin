@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match.ext;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.AbstractOxmMatchEntryDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
@@ -22,7 +24,7 @@ public abstract class AbstractOxmExperimenterMatchEntryDeserializer extends Abst
     protected ExperimenterIdCaseBuilder createExperimenterIdCase(MatchEntryBuilder entryBuilder, ByteBuf input) {
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
-        expBuilder.setExperimenter(new ExperimenterId(input.readUnsignedInt()));
+        expBuilder.setExperimenter(new ExperimenterId(readUint32(input)));
         expCaseBuilder.setExperimenter(expBuilder.build());
         return expCaseBuilder;
     }
