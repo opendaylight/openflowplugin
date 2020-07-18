@@ -59,7 +59,7 @@ public class TimeCounterTest {
         Assert.assertTrue(timeCounter.getAverageTimeBetweenMarks() >= 3);
     }
 
-    private void zzz(long length) {
+    private static void zzz(long length) {
         try {
             Thread.sleep(length);
         } catch (InterruptedException e) {

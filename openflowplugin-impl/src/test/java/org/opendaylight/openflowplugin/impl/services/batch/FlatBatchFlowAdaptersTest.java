@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.collect.Lists;
@@ -71,19 +70,19 @@ public class FlatBatchFlowAdaptersTest {
         Assert.assertEquals("2", iterator.next().getFlowId().getValue());
     }
 
-    private FlatBatchAddFlow createAddFlowBatch(final String flowIdValue) {
+    private static FlatBatchAddFlow createAddFlowBatch(final String flowIdValue) {
         return new FlatBatchAddFlowBuilder()
                 .setFlowId(new FlowId(flowIdValue))
                 .build();
     }
 
-    private FlatBatchRemoveFlow createRemoveFlowBatch(final String flowIdValue) {
+    private static FlatBatchRemoveFlow createRemoveFlowBatch(final String flowIdValue) {
         return new FlatBatchRemoveFlowBuilder()
                 .setFlowId(new FlowId(flowIdValue))
                 .build();
     }
 
-    private FlatBatchUpdateFlow createUpdateFlowBatch(final String flowIdValue) {
+    private static FlatBatchUpdateFlow createUpdateFlowBatch(final String flowIdValue) {
         return new FlatBatchUpdateFlowBuilder()
                 .setFlowId(new FlowId(flowIdValue))
                 .build();
@@ -167,14 +166,15 @@ public class FlatBatchFlowAdaptersTest {
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
-    private BatchFailedFlowsOutput createBatchFailedFlowsOutput(final Integer batchOrder, final String flowIdValue) {
+    private static BatchFailedFlowsOutput createBatchFailedFlowsOutput(final Integer batchOrder,
+            final String flowIdValue) {
         return new BatchFailedFlowsOutputBuilder()
                 .setFlowId(new FlowId(flowIdValue))
                 .setBatchOrder(batchOrder)
                 .build();
     }
 
-    private BatchFailure createChainFailure(final int batchOrder, final String flowIdValue) {
+    private static BatchFailure createChainFailure(final int batchOrder, final String flowIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()

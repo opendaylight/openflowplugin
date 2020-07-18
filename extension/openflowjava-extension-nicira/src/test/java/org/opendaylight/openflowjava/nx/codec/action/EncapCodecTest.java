@@ -70,7 +70,7 @@ public class EncapCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
@@ -79,7 +79,7 @@ public class EncapCodecTest {
         message.writeInt((int) PACKET_TYPE);
     }
 
-    private Action createAction() {
+    private static Action createAction() {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import static org.junit.Assert.assertEquals;
@@ -78,13 +77,12 @@ public class NshFlagsCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-
-    private NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
         NshFlagsValues nshFlagsValues = new NshFlagsValuesBuilder().setNshFlags(value).setMask(mask).build();
         return new NshFlagsCaseValueBuilder().setNshFlagsValues(nshFlagsValues).build();
     }
 
-    private void writeBuffer(ByteBuf message, Short value, Short mask) {
+    private static void writeBuffer(ByteBuf message, Short value, Short mask) {
         message.writeByte(value.intValue());
         if (mask != null) {
             message.writeByte(mask.intValue());

@@ -123,7 +123,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         }
     }
 
-    private void logErrors(final InetSocketAddress remoteAddress, final RpcResult<EchoOutput> echoReplyValue) {
+    private static void logErrors(final InetSocketAddress remoteAddress, final RpcResult<EchoOutput> echoReplyValue) {
         for (RpcError replyError : echoReplyValue.getErrors()) {
             Throwable cause = replyError.getCause();
             if (LOG.isWarnEnabled()) {
@@ -140,9 +140,9 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     @Override
     public void onSslConnectionError(SslConnectionError notification) {
         IpAddress ip = null;
-        if ((connectionContext.getConnectionAdapter() != null)
-                && (connectionContext.getConnectionAdapter().getRemoteAddress() != null)
-                && (connectionContext.getConnectionAdapter().getRemoteAddress().getAddress() != null)) {
+        if (connectionContext.getConnectionAdapter() != null
+                && connectionContext.getConnectionAdapter().getRemoteAddress() != null
+                && connectionContext.getConnectionAdapter().getRemoteAddress().getAddress() != null) {
             ip = IpAddressBuilder.getDefaultInstance(
                     connectionContext.getConnectionAdapter().getRemoteAddress().getAddress().getHostAddress());
         }

@@ -65,7 +65,7 @@ public class CtStateCodecTest {
         assertEquals(2, result.getCtStateValues().getMask().intValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final CtStateCaseValueBuilder caseBuilder = new CtStateCaseValueBuilder();
         final CtStateValuesBuilder valuesBuilder = new CtStateValuesBuilder();
@@ -82,7 +82,7 @@ public class CtStateCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

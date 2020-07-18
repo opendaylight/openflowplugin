@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.common;
 
 import org.junit.Assert;
@@ -261,7 +260,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertEquals(xid, mpRqInput.getXid().longValue());
     }
 
-    private void checkEmptyBody(Class<? extends DataContainer> mpRqBody, Class<? extends
+    private static void checkEmptyBody(Class<? extends DataContainer> mpRqBody, Class<? extends
             MultipartRequestBody> expectedMpRqBodyClass) {
         Assert.assertTrue(expectedMpRqBodyClass.isAssignableFrom(mpRqBody));
         Assert.assertEquals(expectedMpRqBodyClass, mpRqBody);

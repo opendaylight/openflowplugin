@@ -13,7 +13,6 @@ import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 
-
 public class MessageIntelligenceAgencyImplTest {
 
     @Test
@@ -26,14 +25,14 @@ public class MessageIntelligenceAgencyImplTest {
                 "FROM_SWITCH: MSG[String] -> +1 | 1", "TO_SWITCH_ENTERED: MSG[Integer] -> +1 | 1");
     }
 
-    private void findExpectedStatistics(final List<String> statisticsInfo, String ... expectedValues) {
+    private static void findExpectedStatistics(final List<String> statisticsInfo, String ... expectedValues) {
         for (String expectedValue : expectedValues) {
             assertTrue("Expected value " + expectedValue + "wasn't found.",
                     findValueInStatistics(statisticsInfo, expectedValue));
         }
     }
 
-    private boolean findValueInStatistics(List<String> statisticsInfo, String expectedValue) {
+    private static  boolean findValueInStatistics(List<String> statisticsInfo, String expectedValue) {
         for (String pieceOfInfo : statisticsInfo) {
             if (pieceOfInfo.equals(expectedValue)) {
                 return true;

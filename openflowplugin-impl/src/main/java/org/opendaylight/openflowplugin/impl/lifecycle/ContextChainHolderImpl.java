@@ -422,7 +422,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         };
     }
 
-    private String getDpnIdFromNodeName(final String nodeName) {
+    private static String getDpnIdFromNodeName(final String nodeName) {
         return nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
     }
 
@@ -440,7 +440,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         return Optional.empty();
     }
 
-    private org.opendaylight.mdsal.eos.binding.api.Entity createNodeEntity(final String nodeId) {
+    private static org.opendaylight.mdsal.eos.binding.api.Entity createNodeEntity(final String nodeId) {
         return new org.opendaylight.mdsal.eos.binding.api.Entity(ASYNC_SERVICE_ENTITY_TYPE, nodeId);
     }
 }

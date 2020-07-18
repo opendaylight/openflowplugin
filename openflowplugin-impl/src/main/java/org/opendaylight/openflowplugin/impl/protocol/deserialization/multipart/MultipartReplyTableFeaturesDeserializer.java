@@ -107,7 +107,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 .build();
     }
 
-    private TableConfig readTableConfig(final ByteBuf message) {
+    private static TableConfig readTableConfig(final ByteBuf message) {
         final long input = message.readUnsignedInt();
         final boolean deprecated = (input & 3) != 0;
 
@@ -278,7 +278,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             .build();
     }
 
-    private List<SetFieldMatch> readMatchFields(final ByteBuf message, final int length) {
+    private static List<SetFieldMatch> readMatchFields(final ByteBuf message, final int length) {
         final List<SetFieldMatch> matchFields = new ArrayList<>();
 
         final int startIndex = message.readerIndex();

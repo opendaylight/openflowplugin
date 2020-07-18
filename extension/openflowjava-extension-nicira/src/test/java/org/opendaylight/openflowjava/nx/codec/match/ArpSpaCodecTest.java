@@ -64,8 +64,7 @@ public class ArpSpaCodecTest {
         assertEquals(2, result.getArpSpaValues().getValue().shortValue());
     }
 
-
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final ArpSpaCaseValueBuilder caseBuilder = new ArpSpaCaseValueBuilder();
         final ArpSpaValuesBuilder valuesBuilder = new ArpSpaValuesBuilder();
@@ -81,7 +80,7 @@ public class ArpSpaCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

@@ -77,12 +77,12 @@ public class NsiCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
         NsiValues nsiValues = new NsiValuesBuilder().setNsi(value).setMask(mask).build();
         return new NsiCaseValueBuilder().setNsiValues(nsiValues).build();
     }
 
-    private void writeBuffer(ByteBuf message, Short value, Short mask) {
+    private static void writeBuffer(ByteBuf message, Short value, Short mask) {
         message.writeByte(value.intValue());
         if (mask != null) {
             message.writeByte(mask.intValue());

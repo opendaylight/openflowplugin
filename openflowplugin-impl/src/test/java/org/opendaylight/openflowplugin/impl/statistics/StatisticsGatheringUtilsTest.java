@@ -207,7 +207,7 @@ public class StatisticsGatheringUtilsTest {
         Assert.assertEquals(42, flow.getValue().getTableId().intValue());
     }
 
-    private Iterable<FlowsStatisticsUpdate> prepareFlowStatisticsData() {
+    private static Iterable<FlowsStatisticsUpdate> prepareFlowStatisticsData() {
         final FlowAndStatisticsMapListBuilder flowAndStatsMapListBld = new FlowAndStatisticsMapListBuilder();
         flowAndStatsMapListBld.setTableId((short) 42);
         flowAndStatsMapListBld.setMatch(new MatchBuilder().build());

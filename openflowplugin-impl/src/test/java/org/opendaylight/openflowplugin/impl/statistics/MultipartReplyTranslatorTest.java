@@ -218,7 +218,7 @@ public class MultipartReplyTranslatorTest {
         assertEquals(DUMMY_GROUPS_TYPE,groupDescStat.getGroupType());
     }
 
-    private MultipartReplyBody prepareMultipartReplyGroupDesc() {
+    private static MultipartReplyBody prepareMultipartReplyGroupDesc() {
         GroupDescBuilder groupDescBuilder = new GroupDescBuilder();
         groupDescBuilder.setGroupId(DUMMY_GROUP_ID);
         groupDescBuilder.setBucketsList(Collections.emptyList());
@@ -231,7 +231,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyGroupDescCaseBuilder.build();
     }
 
-    private MultipartReplyBody prepareMultipartReplyGroup() {
+    private static MultipartReplyBody prepareMultipartReplyGroup() {
         GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
         groupStatsBuilder.setByteCount(DUMMY_BYTE_COUNT);
         groupStatsBuilder.setBucketStats(Collections.emptyList());
@@ -247,7 +247,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyGroupCaseBuilder.build();
     }
 
-    private MultipartReplyBody prepareMultipartReplyPortStats() {
+    private static MultipartReplyBody prepareMultipartReplyPortStats() {
         PortStatsBuilder dummyPortStatBuilder = new PortStatsBuilder();
         dummyPortStatBuilder.setPortNo(DUMMY_PORT_NO);
         dummyPortStatBuilder.setRxBytes(DUMMY_RX_BYTES);
@@ -271,7 +271,7 @@ public class MultipartReplyTranslatorTest {
     }
 
 
-    private MultipartReplyBody prepareMultipartReplyAggregate() {
+    private static MultipartReplyBody prepareMultipartReplyAggregate() {
         MultipartReplyAggregateBuilder multipartReplyAggregateBuilder = new MultipartReplyAggregateBuilder();
         multipartReplyAggregateBuilder.setByteCount(DUMMY_BYTE_COUNT);
         multipartReplyAggregateBuilder.setPacketCount(DUMMY_PACKET_COUNT);
@@ -282,7 +282,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyAggregateCaseBuilder.build();
     }
 
-    private MultipartReplyBody prepareMultipartReplyFlow() {
+    private static MultipartReplyBody prepareMultipartReplyFlow() {
         MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder();
         multipartReplyFlowBuilder.setFlowStats(Collections.emptyList());
@@ -290,7 +290,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyFlowCaseBuilder.build();
     }
 
-    private MultipartReplyMessage prepareMocks(final DeviceContext mockedDeviceContext,
+    private static MultipartReplyMessage prepareMocks(final DeviceContext mockedDeviceContext,
                                                final MultipartReplyBody multipartReplyBody,
                                                final MultipartType multipartType) {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
@@ -314,7 +314,7 @@ public class MultipartReplyTranslatorTest {
         return multipartReplyMessage;
     }
 
-    private DataContainer validateOutput(final DataContainer dataObject) {
+    private static DataContainer validateOutput(final DataContainer dataObject) {
         return dataObject;
     }
 }

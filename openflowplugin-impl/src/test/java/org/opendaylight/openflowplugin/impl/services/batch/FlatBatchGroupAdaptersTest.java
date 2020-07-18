@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.collect.Lists;
@@ -73,19 +72,19 @@ public class FlatBatchGroupAdaptersTest {
         Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
     }
 
-    private FlatBatchAddGroup createAddGroupBatch(final long groupIdValue) {
+    private static FlatBatchAddGroup createAddGroupBatch(final long groupIdValue) {
         return new FlatBatchAddGroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
                 .build();
     }
 
-    private FlatBatchRemoveGroup createRemoveGroupBatch(final long groupIdValue) {
+    private static FlatBatchRemoveGroup createRemoveGroupBatch(final long groupIdValue) {
         return new FlatBatchRemoveGroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
                 .build();
     }
 
-    private FlatBatchUpdateGroup createUpdateGroupBatch(final long groupIdValue) {
+    private static FlatBatchUpdateGroup createUpdateGroupBatch(final long groupIdValue) {
         return new FlatBatchUpdateGroupBuilder()
                 .setOriginalBatchedGroup(new OriginalBatchedGroupBuilder()
                         .setGroupId(new GroupId(groupIdValue))
@@ -173,14 +172,15 @@ public class FlatBatchGroupAdaptersTest {
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
-    private BatchFailedGroupsOutput createBatchFailedGroupsOutput(final Integer batchOrder, final long groupIdValue) {
+    private static BatchFailedGroupsOutput createBatchFailedGroupsOutput(final Integer batchOrder,
+            final long groupIdValue) {
         return new BatchFailedGroupsOutputBuilder()
                 .setGroupId(new GroupId(groupIdValue))
                 .setBatchOrder(batchOrder)
                 .build();
     }
 
-    private BatchFailure createChainFailure(final int batchOrder, final long groupIdValue) {
+    private static BatchFailure createChainFailure(final int batchOrder, final long groupIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureGroupIdCaseBuilder()

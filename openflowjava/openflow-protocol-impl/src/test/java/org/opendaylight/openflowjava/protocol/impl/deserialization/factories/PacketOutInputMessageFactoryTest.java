@@ -62,7 +62,7 @@ public class PacketOutInputMessageFactoryTest {
         Assert.assertArrayEquals("Wrong data", data, deserializedMessage.getData());
     }
 
-    private List<Action> createAction() {
+    private static List<Action> createAction() {
         final List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
@@ -85,5 +85,4 @@ public class PacketOutInputMessageFactoryTest {
         actions.add(actionBuilder.build());
         return actions;
     }
-
 }

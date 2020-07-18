@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -58,7 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanV
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 
 public class TableFeaturesMatchFieldDeserializerTest {
-    private TableFeaturesMatchFieldDeserializer deserializer = new TableFeaturesMatchFieldDeserializer();
+    private final TableFeaturesMatchFieldDeserializer deserializer = new TableFeaturesMatchFieldDeserializer();
 
     @Test
     public void deserialize() {
@@ -223,7 +222,7 @@ public class TableFeaturesMatchFieldDeserializerTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private void addValues(ByteBuf buffer, int oxmClass, int oxmField) {
+    private static void addValues(ByteBuf buffer, int oxmClass, int oxmField) {
         buffer.clear();
         buffer.writeShort(oxmClass);
         buffer.writeByte(oxmField << 1);

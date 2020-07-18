@@ -155,7 +155,7 @@ public class RegMoveCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private Action createAction(Uint64 src, Uint64 dst) {
+    private static Action createAction(Uint64 src, Uint64 dst) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -174,7 +174,7 @@ public class RegMoveCodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message, boolean withExpSrc, boolean withExpDst) {
+    private static void createBuffer(ByteBuf message, boolean withExpSrc, boolean withExpDst) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         int length = withExpSrc || withExpDst ? 32 : 24;
         message.writeShort(length);
