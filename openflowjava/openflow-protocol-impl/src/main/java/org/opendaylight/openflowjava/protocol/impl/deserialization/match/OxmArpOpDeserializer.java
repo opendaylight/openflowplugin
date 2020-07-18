@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpOp;
@@ -34,11 +36,9 @@ public class OxmArpOpDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addArpOpValue(ByteBuf input, MatchEntryBuilder builder) {
-        ArpOpCaseBuilder caseBuilder = new ArpOpCaseBuilder();
-        ArpOpBuilder opBuilder = new ArpOpBuilder();
-        opBuilder.setOpCode(input.readUnsignedShort());
-        caseBuilder.setArpOp(opBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new ArpOpCaseBuilder()
+            .setArpOp(new ArpOpBuilder().setOpCode(readUint16(input)).build())
+            .build());
     }
 
     @Override

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -25,8 +27,8 @@ public class GetQueueConfigInputMessageFactory implements OFDeserializer<GetQueu
     public GetQueueConfigInput deserialize(ByteBuf rawMessage) {
         GetQueueConfigInputBuilder builder = new GetQueueConfigInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        builder.setPort(new PortNumber(rawMessage.readUnsignedInt()));
+        builder.setXid(readUint32(rawMessage));
+        builder.setPort(new PortNumber(readUint32(rawMessage)));
         return builder.build();
     }
 

@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
@@ -24,9 +26,9 @@ public class BarrierReplyMessageFactory extends VersionAssignableFactory impleme
 
     @Override
     public BarrierOutput deserialize(ByteBuf rawMessage) {
-        BarrierOutputBuilder builder = new BarrierOutputBuilder();
-        builder.setVersion(getVersion());
-        builder.setXid(rawMessage.readUnsignedInt());
-        return builder.build();
+        return new BarrierOutputBuilder()
+                .setVersion(getVersion())
+                .setXid(readUint32(rawMessage))
+                .build();
     }
 }

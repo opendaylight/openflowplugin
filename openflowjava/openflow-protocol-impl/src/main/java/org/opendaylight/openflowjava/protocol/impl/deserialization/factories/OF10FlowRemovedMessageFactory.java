@@ -5,12 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -41,26 +43,20 @@ public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemoved
 
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         builder.setMatchV10(matchDeserializer.deserialize(rawMessage));
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookie);
-        builder.setCookie(new BigInteger(1, cookie));
-        builder.setPriority(rawMessage.readUnsignedShort());
+        builder.setCookie(readUint64(rawMessage));
+        builder.setPriority(readUint16(rawMessage));
         builder.setReason(FlowRemovedReason.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_FLOW_REMOVED_MESSAGE);
-        builder.setDurationSec(rawMessage.readUnsignedInt());
-        builder.setDurationNsec(rawMessage.readUnsignedInt());
-        builder.setIdleTimeout(rawMessage.readUnsignedShort());
+        builder.setDurationSec(readUint32(rawMessage));
+        builder.setDurationNsec(readUint32(rawMessage));
+        builder.setIdleTimeout(readUint16(rawMessage));
         rawMessage.skipBytes(PADDING_IN_FLOW_REMOVED_MESSAGE_2);
-        byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(packetCount);
-        builder.setPacketCount(new BigInteger(1, packetCount));
-        byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(byteCount);
-        builder.setByteCount(new BigInteger(1, byteCount));
+        builder.setPacketCount(readUint64(rawMessage));
+        builder.setByteCount(readUint64(rawMessage));
         return builder.build();
     }
 

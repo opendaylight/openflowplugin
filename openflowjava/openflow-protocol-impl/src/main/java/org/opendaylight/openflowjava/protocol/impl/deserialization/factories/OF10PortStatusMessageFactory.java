@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -30,7 +32,7 @@ public class OF10PortStatusMessageFactory implements OFDeserializer<PortStatusMe
     public PortStatusMessage deserialize(final ByteBuf rawMessage) {
         PortStatusMessageBuilder builder = new PortStatusMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setReason(PortReason.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_PORT_STATUS_HEADER);
         deserializePort(rawMessage, builder);
@@ -38,7 +40,7 @@ public class OF10PortStatusMessageFactory implements OFDeserializer<PortStatusMe
     }
 
     private static void deserializePort(final ByteBuf rawMessage, final PortStatusMessageBuilder builder) {
-        builder.setPortNo((long) rawMessage.readUnsignedShort());
+        builder.setPortNo(readUint16(rawMessage).toUint32());
         builder.setHwAddr(ByteBufUtils.readIetfMacAddress(rawMessage));
         builder.setName(ByteBufUtils.decodeNullTerminatedString(rawMessage, EncodeConstants.MAX_PORT_NAME_LENGTH));
         builder.setConfigV10(OpenflowUtils.createPortConfig(rawMessage.readUnsignedInt()));

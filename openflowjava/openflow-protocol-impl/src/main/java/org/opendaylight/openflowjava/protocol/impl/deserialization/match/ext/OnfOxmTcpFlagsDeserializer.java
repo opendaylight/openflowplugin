@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match.ext;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -39,7 +41,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
     private static void addTcpFlagsAugmentation(ByteBuf input, ExperimenterIdCaseBuilder expCaseBuilder,
             boolean hasMask) {
         TcpFlagsBuilder flagsBuilder = new TcpFlagsBuilder();
-        flagsBuilder.setFlags(input.readUnsignedShort());
+        flagsBuilder.setFlags(readUint16(input));
         if (hasMask) {
             byte[] mask = new byte[EncodeConstants.SIZE_OF_SHORT_IN_BYTES];
             input.readBytes(mask);

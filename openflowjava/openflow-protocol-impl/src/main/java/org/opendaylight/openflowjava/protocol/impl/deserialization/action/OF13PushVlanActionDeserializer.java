@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
@@ -17,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
+import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 
 /**
  * OF13PushVlanActionDeserializer.
@@ -24,16 +24,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  * @author michal.polkorab
  */
 public class OF13PushVlanActionDeserializer extends AbstractActionDeserializer {
-
     @Override
     public Action deserialize(ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        PushVlanCaseBuilder caseBuilder = new PushVlanCaseBuilder();
-        PushVlanActionBuilder vlanBuilder = new PushVlanActionBuilder();
-        vlanBuilder.setEthertype(new EtherType(input.readUnsignedShort()));
-        caseBuilder.setPushVlanAction(vlanBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+        final ActionBuilder builder = new ActionBuilder()
+                .setActionChoice(new PushVlanCaseBuilder()
+                    .setPushVlanAction(new PushVlanActionBuilder()
+                        .setEthertype(new EtherType(ByteBufUtils.readUint16(input)))
+                        .build())
+                    .build());
         input.skipBytes(ActionConstants.ETHERTYPE_ACTION_PADDING);
         return builder.build();
     }
@@ -42,5 +41,4 @@ public class OF13PushVlanActionDeserializer extends AbstractActionDeserializer {
     protected ActionChoice getType() {
         return new PushVlanCaseBuilder().build();
     }
-
 }
