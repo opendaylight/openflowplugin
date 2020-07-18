@@ -113,7 +113,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         // TODO: experimenterBody does not have get methods
     }
 
-    private void serializeQueueBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeQueueBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyQueueCase queueCase = (MultipartReplyQueueCase) body;
         MultipartReplyQueue queue = queueCase.getMultipartReplyQueue();
         for (QueueStats queueStats : queue.getQueueStats()) {
@@ -129,7 +129,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private void serializePortStatsBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializePortStatsBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyPortStatsCase portStatsCase = (MultipartReplyPortStatsCase) body;
         MultipartReplyPortStats portStats = portStatsCase.getMultipartReplyPortStats();
         for (PortStats portStat : portStats.getPortStats()) {
@@ -165,7 +165,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private void writeFlowWildcardsV10(FlowWildcardsV10 feature, ByteBuf outBuffer) {
+    private static void writeFlowWildcardsV10(FlowWildcardsV10 feature, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, feature.isINPORT());
         map.put(1, feature.isDLVLAN());
@@ -181,7 +181,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeInt(bitmap);
     }
 
-    private void serializeAggregateBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeAggregateBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyAggregateCase aggregateCase = (MultipartReplyAggregateCase) body;
         MultipartReplyAggregate aggregate = aggregateCase.getMultipartReplyAggregate();
         outBuffer.writeLong(aggregate.getPacketCount().longValue());
@@ -216,14 +216,14 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private void writeFlags(MultipartRequestFlags flags, ByteBuf outBuffer) {
+    private static void writeFlags(MultipartRequestFlags flags, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, flags.isOFPMPFREQMORE());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeShort(bitmap);
     }
 
-    private void serializeDescBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeDescBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyDescCase descCase = (MultipartReplyDescCase) body;
         MultipartReplyDesc desc = descCase.getMultipartReplyDesc();
         write256String(desc.getMfrDesc(), outBuffer);
@@ -233,7 +233,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         write256String(desc.getDpDesc(), outBuffer);
     }
 
-    private void write256String(String toWrite, ByteBuf outBuffer) {
+    private static void write256String(String toWrite, ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 256) {
             byte[] nameBytesPadding = new byte[256];
@@ -251,7 +251,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private void write16String(String toWrite, ByteBuf outBuffer) {
+    private static void write16String(String toWrite, ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
@@ -269,7 +269,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private void write32String(String toWrite, ByteBuf outBuffer) {
+    private static void write32String(String toWrite, ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 32) {
             byte[] nameBytesPadding = new byte[32];

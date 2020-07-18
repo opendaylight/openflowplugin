@@ -64,7 +64,7 @@ public class Ipv6SrcCodecTest {
         assertEquals(2, result.getIpSrcValues().getValue().intValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final IpSrcCaseValueBuilder caseBuilder = new IpSrcCaseValueBuilder();
         final IpSrcValuesBuilder valuesBuilder = new IpSrcValuesBuilder();
@@ -80,7 +80,7 @@ public class Ipv6SrcCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

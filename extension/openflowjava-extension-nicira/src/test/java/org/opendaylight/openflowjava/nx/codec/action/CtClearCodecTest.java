@@ -63,7 +63,7 @@ public class CtClearCodecTest {
 
     }
 
-    private Action createAction() {
+    private static Action createAction() {
 
         NxActionCtClearBuilder nxActionCtClearBuilder = new NxActionCtClearBuilder();
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);

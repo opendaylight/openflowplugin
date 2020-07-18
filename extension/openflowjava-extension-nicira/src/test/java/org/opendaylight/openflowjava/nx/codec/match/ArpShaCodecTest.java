@@ -72,7 +72,7 @@ public class ArpShaCodecTest {
     }
 
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final ArpShaCaseValueBuilder caseBuilder = new ArpShaCaseValueBuilder();
         final ArpShaValuesBuilder valuesBuilder = new ArpShaValuesBuilder();
@@ -91,7 +91,7 @@ public class ArpShaCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;
