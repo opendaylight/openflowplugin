@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -17,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtZone;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.zone.grouping.CtZoneValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtZoneCaseValue;
@@ -46,13 +46,11 @@ public class CtZoneCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        CtZoneCaseValueBuilder caseBuilder = new CtZoneCaseValueBuilder();
-        CtZoneValuesBuilder ctZoneValuesBuilder = new CtZoneValuesBuilder();
-        ctZoneValuesBuilder.setCtZone(message.readUnsignedShort());
-        caseBuilder.setCtZoneValues(ctZoneValuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setMatchEntryValue(new CtZoneCaseValueBuilder()
+                    .setCtZoneValues(new CtZoneValuesBuilder().setCtZone(readUint16(message)).build())
+                    .build())
+                .build();
     }
 
     @Override
@@ -79,5 +77,4 @@ public class CtZoneCodec extends AbstractMatchCodec {
     public Class<? extends OxmClassBase> getOxmClass() {
         return Nxm1Class.class;
     }
-
 }

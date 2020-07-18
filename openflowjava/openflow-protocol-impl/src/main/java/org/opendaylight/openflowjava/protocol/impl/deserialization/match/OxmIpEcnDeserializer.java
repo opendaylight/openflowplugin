@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpEcn;
@@ -34,11 +36,9 @@ public class OxmIpEcnDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addIpEcnValue(ByteBuf input, MatchEntryBuilder builder) {
-        IpEcnCaseBuilder caseBuilder = new IpEcnCaseBuilder();
-        IpEcnBuilder ecnBuilder = new IpEcnBuilder();
-        ecnBuilder.setEcn(input.readUnsignedByte());
-        caseBuilder.setIpEcn(ecnBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new IpEcnCaseBuilder()
+            .setIpEcn(new IpEcnBuilder().setEcn(readUint8(input)).build())
+            .build());
     }
 
     @Override

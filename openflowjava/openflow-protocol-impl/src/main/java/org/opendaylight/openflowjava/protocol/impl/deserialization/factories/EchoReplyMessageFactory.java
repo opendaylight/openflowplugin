@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
@@ -26,7 +28,7 @@ public class EchoReplyMessageFactory extends VersionAssignableFactory implements
     public EchoOutput deserialize(ByteBuf rawMessage) {
         EchoOutputBuilder builder = new EchoOutputBuilder();
         builder.setVersion(getVersion());
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int remainingBytes = rawMessage.readableBytes();
         if (remainingBytes > 0) {
             byte[] data = new byte[remainingBytes];

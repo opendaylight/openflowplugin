@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
@@ -34,8 +36,7 @@ public class EncapCodec extends AbstractActionCodec {
         final ActionBuilder actionBuilder = deserializeHeader(message);
         // skip header size, not used
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        final long packetType = message.readUnsignedInt();
-        NxActionEncap nxActionEncap = new NxActionEncapBuilder().setPacketType(packetType).build();
+        NxActionEncap nxActionEncap = new NxActionEncapBuilder().setPacketType(readUint32(message)).build();
         ActionEncap actionEncap = new ActionEncapBuilder().setNxActionEncap(nxActionEncap).build();
         actionBuilder.setActionChoice(actionEncap);
         return actionBuilder.build();

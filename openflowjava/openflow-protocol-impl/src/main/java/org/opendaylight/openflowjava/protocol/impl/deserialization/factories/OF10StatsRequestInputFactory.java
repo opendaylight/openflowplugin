@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
@@ -61,7 +65,7 @@ public class OF10StatsRequestInputFactory
 
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         builder.setType(getMultipartType(type));
         builder.setFlags(getMultipartRequestFlags(rawMessage.readUnsignedShort()));
@@ -103,9 +107,9 @@ public class OF10StatsRequestInputFactory
     private static MultipartRequestQueueCase setQueue(ByteBuf input) {
         final MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
-        queueBuilder.setPortNo((long) input.readUnsignedShort());
+        queueBuilder.setPortNo(readUint16(input).toUint32());
         input.skipBytes(2);
-        queueBuilder.setQueueId(input.readUnsignedInt());
+        queueBuilder.setQueueId(readUint32(input));
         caseBuilder.setMultipartRequestQueue(queueBuilder.build());
         return caseBuilder.build();
     }
@@ -113,7 +117,7 @@ public class OF10StatsRequestInputFactory
     private static MultipartRequestPortStatsCase setPortStats(ByteBuf input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
-        portBuilder.setPortNo((long) input.readUnsignedShort());
+        portBuilder.setPortNo(readUint16(input).toUint32());
         caseBuilder.setMultipartRequestPortStats(portBuilder.build());
         return caseBuilder.build();
     }
@@ -132,9 +136,9 @@ public class OF10StatsRequestInputFactory
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         aggregateBuilder.setMatchV10(matchDeserializer.deserialize(input));
-        aggregateBuilder.setTableId(input.readUnsignedByte());
+        aggregateBuilder.setTableId(readUint8(input));
         input.skipBytes(AGGREGATE_PADDING_1);
-        aggregateBuilder.setOutPort((long) input.readUnsignedShort());
+        aggregateBuilder.setOutPort(readUint16(input).toUint32());
         caseBuilder.setMultipartRequestAggregate(aggregateBuilder.build());
         return caseBuilder.build();
     }
@@ -145,9 +149,9 @@ public class OF10StatsRequestInputFactory
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         flowBuilder.setMatchV10(matchDeserializer.deserialize(input));
-        flowBuilder.setTableId(input.readUnsignedByte());
+        flowBuilder.setTableId(readUint8(input));
         input.skipBytes(FLOW_PADDING_1);
-        flowBuilder.setOutPort((long) input.readUnsignedShort());
+        flowBuilder.setOutPort(readUint16(input).toUint32());
         caseBuilder.setMultipartRequestFlow(flowBuilder.build());
         return caseBuilder.build();
     }
