@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
@@ -22,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author michal.polkorab
  */
 public class OF10MatchSerializer implements OFSerializer<MatchV10> {
-
     private static final byte PADDING_IN_MATCH = 1;
     private static final byte PADDING_IN_MATCH_2 = 2;
     private static final byte NW_SRC_SHIFT = 8;
@@ -39,8 +37,8 @@ public class OF10MatchSerializer implements OFSerializer<MatchV10> {
         outBuffer.writeInt(encodeWildcards(match.getWildcards(), match.getNwSrcMask().toJava(),
                     match.getNwDstMask().toJava()));
         outBuffer.writeShort(match.getInPort().toJava());
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(match.getDlSrc()));
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(match.getDlDst()));
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(match.getDlSrc()));
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(match.getDlDst()));
         outBuffer.writeShort(match.getDlVlan().toJava());
         outBuffer.writeByte(match.getDlVlanPcp().toJava());
         outBuffer.writeZero(PADDING_IN_MATCH);

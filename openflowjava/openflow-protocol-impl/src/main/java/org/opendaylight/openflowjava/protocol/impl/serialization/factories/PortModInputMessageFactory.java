@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -37,7 +36,7 @@ public class PortModInputMessageFactory implements OFSerializer<PortMod> {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getPortNo().getValue().intValue());
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_01);
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(message.getHwAddress()));
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(message.getHwAddress()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_02);
         outBuffer.writeInt(createPortConfigBitmask(message.getConfig()));
         outBuffer.writeInt(createPortConfigBitmask(message.getMask()));

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
@@ -24,7 +23,7 @@ public class OF10SetDlDstActionSerializer extends AbstractActionSerializer {
     @Override
     public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(((SetDlDstCase) action.getActionChoice())
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(((SetDlDstCase) action.getActionChoice())
                 .getSetDlDstAction().getDlDstAddress()));
         outBuffer.writeZero(ActionConstants.PADDING_IN_DL_ADDRESS_ACTION);
     }
