@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
@@ -55,7 +57,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         int startIndex = rawMessage.readerIndex();
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         ErrorType errorType = ErrorType.forValue(type);
         if (ErrorType.EXPERIMENTER.equals(errorType)) {

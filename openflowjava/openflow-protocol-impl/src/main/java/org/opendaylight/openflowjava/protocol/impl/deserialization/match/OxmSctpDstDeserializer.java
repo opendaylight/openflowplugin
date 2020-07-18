@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -35,11 +37,9 @@ public class OxmSctpDstDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addSctpDstValue(ByteBuf input, MatchEntryBuilder builder) {
-        SctpDstCaseBuilder caseBuilder = new SctpDstCaseBuilder();
-        SctpDstBuilder sctpBuilder = new SctpDstBuilder();
-        sctpBuilder.setPort(new PortNumber(input.readUnsignedShort()));
-        caseBuilder.setSctpDst(sctpBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new SctpDstCaseBuilder()
+            .setSctpDst(new SctpDstBuilder().setPort(new PortNumber(readUint16(input))).build())
+            .build());
     }
 
     @Override
