@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for keys.
@@ -57,9 +58,9 @@ public class KeysTest {
     @Test
     public void testEqualsAndHashcodeOfActionDeserializerKeys() {
         ActionSerializerKey<ExperimenterIdCase> actionSerializerKey = new ActionSerializerKey<>(
-                EncodeConstants.OF13_VERSION_ID, ExperimenterIdCase.class, 1L);
+                EncodeConstants.OF13_VERSION_ID, ExperimenterIdCase.class, Uint32.ONE);
         ExperimenterActionSerializerKey experimenterActionSerializerKey = new ExperimenterActionSerializerKey(
-                EncodeConstants.OF13_VERSION_ID, 1L, ExpSubType.class);
+                EncodeConstants.OF13_VERSION_ID,  Uint32.ONE, ExpSubType.class);
         Assert.assertFalse(actionSerializerKey.equals(experimenterActionSerializerKey));
         Assert.assertFalse(experimenterActionSerializerKey.equals(actionSerializerKey));
 
