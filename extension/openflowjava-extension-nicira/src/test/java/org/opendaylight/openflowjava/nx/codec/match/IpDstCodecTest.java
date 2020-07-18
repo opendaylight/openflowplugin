@@ -64,8 +64,7 @@ public class IpDstCodecTest {
         assertEquals(2, result.getIpDstValues().getValue().intValue());
     }
 
-
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final IpDstCaseValueBuilder caseBuilder = new IpDstCaseValueBuilder();
         final IpDstValuesBuilder valuesBuilder = new IpDstValuesBuilder();
@@ -81,7 +80,7 @@ public class IpDstCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

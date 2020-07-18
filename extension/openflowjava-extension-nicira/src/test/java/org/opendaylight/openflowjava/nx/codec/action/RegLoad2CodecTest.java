@@ -111,7 +111,7 @@ public class RegLoad2CodecTest {
         assertEquals(RegLoad2Codec.SUBTYPE, out.readUnsignedShort());
     }
 
-    private Action createAction() {
+    private static Action createAction() {
         ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
         experimenterBuilder.setExperimenter(new ExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID));
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();

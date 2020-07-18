@@ -63,7 +63,7 @@ public class ArpTpaCodecTest {
         assertEquals(2, result.getArpTpaValues().getValue().intValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final ArpTpaCaseValueBuilder caseBuilder = new ArpTpaCaseValueBuilder();
         final ArpTpaValuesBuilder valuesBuilder = new ArpTpaValuesBuilder();
@@ -79,7 +79,7 @@ public class ArpTpaCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

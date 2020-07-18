@@ -67,7 +67,7 @@ public class TcpSrcCodecTest {
         assertEquals(0xffff, result.getTcpSrcValues().getMask().shortValue() & 0xffff);
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
         final TcpSrcValuesBuilder valuesBuilder = new TcpSrcValuesBuilder();
@@ -84,7 +84,7 @@ public class TcpSrcCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

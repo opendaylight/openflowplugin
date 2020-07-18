@@ -166,7 +166,7 @@ public class ConntrackCodecTest {
         Assert.assertEquals(4, result.getNxActionConntrack().getRecircTable().byteValue());
     }
 
-    private Action createAction() {
+    private static Action createAction() {
 
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
         nxActionConntrackBuilder.setFlags(1);
@@ -218,7 +218,7 @@ public class ConntrackCodecTest {
         return actionBuilder.build();
     }
 
-    private Action createActionWithoutCtAction() {
+    private static Action createActionWithoutCtAction() {
 
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
         nxActionConntrackBuilder.setFlags(1);

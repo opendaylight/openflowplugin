@@ -79,7 +79,7 @@ public class LearnCodecTest {
 
     @Test
     public void deserializeTest() {
-        createBufer(buffer);
+        createBuffer(buffer);
         action = learnCodec.deserialize(buffer);
 
         ActionLearn result = (ActionLearn) action.getActionChoice();
@@ -121,9 +121,7 @@ public class LearnCodecTest {
         Assert.assertEquals(0, buffer.readableBytes());
     }
 
-
-
-    private Action createAction() {
+    private static Action createAction() {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -145,7 +143,7 @@ public class LearnCodecTest {
         return actionBuilder.build();
     }
 
-    private List<FlowMods> createFlowMods() {
+    private static List<FlowMods> createFlowMods() {
 
         final List<FlowMods> flowMods = new ArrayList<>();
         //length = 14
@@ -212,7 +210,7 @@ public class LearnCodecTest {
         return flowMods;
     }
 
-    private void createBufer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LEARN_HEADER_LEN + 56);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
@@ -255,7 +253,7 @@ public class LearnCodecTest {
         message.writeShort(10);
     }
 
-    private void toFlowModSpecHeader(ByteBuf message, int src, int dst) {
+    private static void toFlowModSpecHeader(ByteBuf message, int src, int dst) {
         short value = 0;
         short bitNum = 48;
         value |= src << 13;

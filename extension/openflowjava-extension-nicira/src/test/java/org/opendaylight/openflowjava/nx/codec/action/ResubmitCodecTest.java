@@ -124,7 +124,7 @@ public class ResubmitCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private Action createAction(Short inPort, Byte table) {
+    private static Action createAction(Short inPort, Byte table) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -144,7 +144,7 @@ public class ResubmitCodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());

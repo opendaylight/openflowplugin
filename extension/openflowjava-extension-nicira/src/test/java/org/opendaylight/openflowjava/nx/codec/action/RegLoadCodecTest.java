@@ -68,7 +68,7 @@ public class RegLoadCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private Action createAction() {
+    private static Action createAction() {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -85,7 +85,7 @@ public class RegLoadCodecTest {
         return actionBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
