@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Sat, 18 Jul 2020 06:47:26 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/91388
+Project: openflowplugin
+Branch: refs/heads/stable/magnesium
