@@ -19,6 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 public abstract class AbstractOxmMacAddressSerializer extends AbstractOxmMatchEntrySerializer {
 
     protected void writeMacAddress(final MacAddress address, final ByteBuf outBuffer) {
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(address)); // 48 b + mask [OF 1.3.2 spec]
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(address)); // 48 b + mask [OF 1.3.2 spec]
     }
 }

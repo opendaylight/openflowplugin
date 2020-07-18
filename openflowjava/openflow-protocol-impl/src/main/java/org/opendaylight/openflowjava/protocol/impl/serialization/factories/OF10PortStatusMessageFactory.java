@@ -36,7 +36,7 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         outBuffer.writeByte(message.getReason().getIntValue());
         outBuffer.writeZero(PADDING);
         outBuffer.writeShort(message.getPortNo().intValue());
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(message.getHwAddr()));
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(message.getHwAddr()));
         writeName(message.getName(), outBuffer);
         writePortConfig(message.getConfigV10(), outBuffer);
         writePortState(message.getStateV10(), outBuffer);

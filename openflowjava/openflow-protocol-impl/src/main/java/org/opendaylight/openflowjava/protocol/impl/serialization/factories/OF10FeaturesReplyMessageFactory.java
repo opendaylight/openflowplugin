@@ -44,7 +44,7 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
         outBuffer.writeInt(createActionsV10(message.getActionsV10()));
         for (PhyPort port : message.getPhyPort()) {
             outBuffer.writeShort(port.getPortNo().intValue());
-            outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(port.getHwAddr()));
+            outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(port.getHwAddr()));
             writeName(port.getName(), outBuffer);
             writePortConfig(port.getConfigV10(), outBuffer);
             writePortState(port.getStateV10(), outBuffer);

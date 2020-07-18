@@ -195,7 +195,7 @@ public abstract class AbstractMatchEntrySerializer<E, M> implements MatchEntrySe
      */
     protected static void writeMacAddress(final MacAddress address, final ByteBuf outBuffer) {
         // 48 b + mask [OF 1.3.2 spec]
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.bytesFor(address));
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(address));
     }
 
     /**

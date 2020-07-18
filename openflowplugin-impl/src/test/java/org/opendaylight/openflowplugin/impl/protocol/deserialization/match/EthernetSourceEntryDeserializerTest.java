@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -28,15 +27,15 @@ public class EthernetSourceEntryDeserializerTest extends AbstractMatchEntryDeser
         final MacAddress ethernetSourceAddressMask = new MacAddress("00:00:00:00:00:00");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(ethernetSourceAddress));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSourceAddress));
 
         assertEquals(ethernetSourceAddress.getValue(),
                 deserialize(in).getEthernetMatch().getEthernetSource().getAddress().getValue());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(ethernetSourceAddress));
-        in.writeBytes(IetfYangUtil.INSTANCE.bytesFor(ethernetSourceAddressMask));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSourceAddress));
+        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSourceAddressMask));
 
         final EthernetSource desAddress = deserialize(in).getEthernetMatch().getEthernetSource();
         assertEquals(ethernetSourceAddress.getValue(), desAddress.getAddress().getValue());
