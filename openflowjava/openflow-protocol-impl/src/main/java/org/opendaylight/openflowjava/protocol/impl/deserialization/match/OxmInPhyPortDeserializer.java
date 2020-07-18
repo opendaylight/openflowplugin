@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
@@ -35,11 +37,9 @@ public class OxmInPhyPortDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addInPhyPortValue(ByteBuf input, MatchEntryBuilder builder) {
-        InPhyPortCaseBuilder caseBuilder = new InPhyPortCaseBuilder();
-        InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(input.readUnsignedInt()));
-        caseBuilder.setInPhyPort(inPhyPortBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new InPhyPortCaseBuilder()
+            .setInPhyPort(new InPhyPortBuilder().setPortNumber(new PortNumber(readUint32(input))).build())
+            .build());
     }
 
     @Override

@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -16,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionDecap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionDecapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.decap.grouping.NxActionDecap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.decap.grouping.NxActionDecapBuilder;
 
 public class DecapCodec extends AbstractActionCodec {
@@ -35,11 +35,11 @@ public class DecapCodec extends AbstractActionCodec {
         final ActionBuilder actionBuilder = deserializeHeader(message);
         // skip padding
         message.skipBytes(PADDING);
-        long packetType = message.readUnsignedInt();
-        NxActionDecap nxActionDecap = new NxActionDecapBuilder().setPacketType(packetType).build();
-        ActionDecap actionDecap = new ActionDecapBuilder().setNxActionDecap(nxActionDecap).build();
-        actionBuilder.setActionChoice(actionDecap);
-        return actionBuilder.build();
+        return actionBuilder
+                .setActionChoice(new ActionDecapBuilder()
+                    .setNxActionDecap(new NxActionDecapBuilder().setPacketType(readUint32(message)).build())
+                    .build())
+                .build();
     }
 
     @Override

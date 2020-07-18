@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -23,14 +24,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10SetNwTosActionDeserializer extends AbstractActionDeserializer {
-
     @Override
     public Action deserialize(ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         SetNwTosCaseBuilder caseBuilder = new SetNwTosCaseBuilder();
         SetNwTosActionBuilder tosBuilder = new SetNwTosActionBuilder();
-        tosBuilder.setNwTos(input.readUnsignedByte());
+        tosBuilder.setNwTos(readUint8(input));
         caseBuilder.setSetNwTosAction(tosBuilder.build());
         builder.setActionChoice(caseBuilder.build());
         input.skipBytes(ActionConstants.PADDING_IN_SET_NW_TOS_ACTION);
@@ -41,5 +41,4 @@ public class OF10SetNwTosActionDeserializer extends AbstractActionDeserializer {
     protected ActionChoice getType() {
         return new SetNwTosCaseBuilder().build();
     }
-
 }

@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
@@ -27,22 +28,17 @@ public class MeterInstructionDeserializer implements OFDeserializer<Instruction>
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        final InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        MeterCaseBuilder caseBuilder = new MeterCaseBuilder();
-        MeterBuilder instructionBuilder = new MeterBuilder();
-        instructionBuilder.setMeterId(input.readUnsignedInt());
-        caseBuilder.setMeter(instructionBuilder.build());
-        builder.setInstructionChoice(caseBuilder.build());
-        return builder.build();
+        return new InstructionBuilder()
+                .setInstructionChoice(new MeterCaseBuilder()
+                    .setMeter(new MeterBuilder().setMeterId(readUint32(input)).build())
+                    .build())
+                .build();
     }
 
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
-        InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        builder.setInstructionChoice(new MeterCaseBuilder().build());
-        return builder.build();
+        return new InstructionBuilder().setInstructionChoice(new MeterCaseBuilder().build()).build();
     }
-
 }
