@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class GetAsyncReplyMessageFactory implements OFDeserializer<GetAsyncOutpu
     public GetAsyncOutput deserialize(ByteBuf rawMessage) {
         GetAsyncOutputBuilder builder = new GetAsyncOutputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setPacketInMask(decodePacketInMask(rawMessage));
         builder.setPortStatusMask(decodePortStatusMask(rawMessage));
         builder.setFlowRemovedMask(decodeFlowRemovedMask(rawMessage));

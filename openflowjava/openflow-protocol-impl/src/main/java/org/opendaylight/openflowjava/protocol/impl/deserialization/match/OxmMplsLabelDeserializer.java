@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -34,11 +36,9 @@ public class OxmMplsLabelDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addMplsLabelValue(ByteBuf input, MatchEntryBuilder builder) {
-        MplsLabelCaseBuilder caseBuilder = new MplsLabelCaseBuilder();
-        MplsLabelBuilder labelBuilder = new MplsLabelBuilder();
-        labelBuilder.setMplsLabel(input.readUnsignedInt());
-        caseBuilder.setMplsLabel(labelBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new MplsLabelCaseBuilder()
+            .setMplsLabel(new MplsLabelBuilder().setMplsLabel(readUint32(input)).build())
+            .build());
     }
 
     @Override

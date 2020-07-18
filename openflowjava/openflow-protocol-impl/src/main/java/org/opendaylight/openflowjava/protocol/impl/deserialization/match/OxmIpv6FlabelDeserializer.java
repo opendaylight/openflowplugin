@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -38,7 +40,7 @@ public class OxmIpv6FlabelDeserializer extends AbstractOxmMatchEntryDeserializer
     private static void addIpv6FlabelValue(ByteBuf input, MatchEntryBuilder builder) {
         Ipv6FlabelCaseBuilder caseBuilder = new Ipv6FlabelCaseBuilder();
         Ipv6FlabelBuilder labelBuilder = new Ipv6FlabelBuilder();
-        labelBuilder.setIpv6Flabel(new Ipv6FlowLabel(input.readUnsignedInt()));
+        labelBuilder.setIpv6Flabel(new Ipv6FlowLabel(readUint32(input)));
         if (builder.isHasMask()) {
             labelBuilder.setMask(OxmDeserializerHelper.convertMask(input,
                     EncodeConstants.SIZE_OF_INT_IN_BYTES));

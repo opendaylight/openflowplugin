@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class HelloMessageFactory extends VersionAssignableFactory implements OFD
     public HelloMessage deserialize(ByteBuf rawMessage) {
         HelloMessageBuilder builder = new HelloMessageBuilder();
         builder.setVersion(getVersion());
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         if (rawMessage.readableBytes() > 0) {
             builder.setElements(readElement(rawMessage));
         }

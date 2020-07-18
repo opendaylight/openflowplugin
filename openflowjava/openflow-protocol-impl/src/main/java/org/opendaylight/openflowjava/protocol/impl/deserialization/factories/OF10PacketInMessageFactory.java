@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -28,10 +30,10 @@ public class OF10PacketInMessageFactory implements OFDeserializer<PacketInMessag
     public PacketInMessage deserialize(final ByteBuf rawMessage) {
         PacketInMessageBuilder builder = new PacketInMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        builder.setBufferId(rawMessage.readUnsignedInt());
-        builder.setTotalLen(rawMessage.readUnsignedShort());
-        builder.setInPort(rawMessage.readUnsignedShort());
+        builder.setXid(readUint32(rawMessage));
+        builder.setBufferId(readUint32(rawMessage));
+        builder.setTotalLen(readUint16(rawMessage));
+        builder.setInPort(readUint16(rawMessage));
         builder.setReason(PacketInReason.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_PACKET_IN_HEADER);
         int remainingBytes = rawMessage.readableBytes();

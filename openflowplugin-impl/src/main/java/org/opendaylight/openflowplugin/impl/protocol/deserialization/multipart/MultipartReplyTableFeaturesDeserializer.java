@@ -7,8 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -80,23 +83,17 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while (message.readableBytes() > 0) {
             final int itemLength = message.readUnsignedShort();
             final TableFeaturesBuilder itemBuilder = new TableFeaturesBuilder()
-                    .setTableId(message.readUnsignedByte());
+                    .setTableId(readUint8(message));
 
             message.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
 
-            final String name = ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH);
-            final byte[] match = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            message.readBytes(match);
-            final byte[] write = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            message.readBytes(write);
-
             items.add(itemBuilder
                     .withKey(new TableFeaturesKey(itemBuilder.getTableId()))
-                    .setName(name)
-                    .setMetadataMatch(new BigInteger(1, match))
-                    .setMetadataWrite(new BigInteger(1, write))
+                    .setName(ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH))
+                    .setMetadataMatch(readUint64(message))
+                    .setMetadataWrite(readUint64(message))
                     .setConfig(readTableConfig(message))
-                    .setMaxEntries(message.readUnsignedInt())
+                    .setMaxEntries(readUint32(message))
                     .setTableProperties(readTableProperties(message,
                             itemLength - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH))
                     .build());

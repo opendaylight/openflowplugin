@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -41,23 +44,17 @@ public class FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMess
 
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookie);
-        builder.setCookie(new BigInteger(1, cookie));
-        builder.setPriority(rawMessage.readUnsignedShort());
+        builder.setXid(readUint32(rawMessage));
+        builder.setCookie(readUint64(rawMessage));
+        builder.setPriority(readUint16(rawMessage));
         builder.setReason(FlowRemovedReason.forValue(rawMessage.readUnsignedByte()));
-        builder.setTableId(new TableId((long)rawMessage.readUnsignedByte()));
-        builder.setDurationSec(rawMessage.readUnsignedInt());
-        builder.setDurationNsec(rawMessage.readUnsignedInt());
-        builder.setIdleTimeout(rawMessage.readUnsignedShort());
-        builder.setHardTimeout(rawMessage.readUnsignedShort());
-        byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(packetCount);
-        builder.setPacketCount(new BigInteger(1, packetCount));
-        byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(byteCount);
-        builder.setByteCount(new BigInteger(1, byteCount));
+        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
+        builder.setDurationSec(readUint32(rawMessage));
+        builder.setDurationNsec(readUint32(rawMessage));
+        builder.setIdleTimeout(readUint16(rawMessage));
+        builder.setHardTimeout(readUint16(rawMessage));
+        builder.setPacketCount(readUint64(rawMessage));
+        builder.setByteCount(readUint64(rawMessage));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(new MessageCodeKey(
                 EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
         builder.setMatch(matchDeserializer.deserialize(rawMessage));

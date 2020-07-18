@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,18 +51,18 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
     public GroupModInput deserialize(ByteBuf rawMessage) {
         GroupModInputBuilder builder = new GroupModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setCommand(GroupModCommand.forValue(rawMessage.readUnsignedShort()));
         builder.setType(GroupType.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING);
-        builder.setGroupId(new GroupId(rawMessage.readUnsignedInt()));
+        builder.setGroupId(new GroupId(readUint32(rawMessage)));
         List<BucketsList> bucketsList = new ArrayList<>();
         while (rawMessage.readableBytes() > 0) {
             BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
             final int bucketsLength = rawMessage.readUnsignedShort();
-            bucketsBuilder.setWeight(rawMessage.readUnsignedShort());
-            bucketsBuilder.setWatchPort(new PortNumber(rawMessage.readUnsignedInt()));
-            bucketsBuilder.setWatchGroup(rawMessage.readUnsignedInt());
+            bucketsBuilder.setWeight(readUint16(rawMessage));
+            bucketsBuilder.setWatchPort(new PortNumber(readUint32(rawMessage)));
+            bucketsBuilder.setWatchGroup(readUint32(rawMessage));
             rawMessage.skipBytes(PADDING_IN_BUCKETS_HEADER);
             CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
             List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,
@@ -70,5 +73,4 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
         builder.setBucketsList(bucketsList);
         return builder.build();
     }
-
 }

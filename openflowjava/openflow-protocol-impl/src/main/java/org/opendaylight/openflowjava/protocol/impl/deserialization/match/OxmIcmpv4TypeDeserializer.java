@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmpv4Type;
@@ -14,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4TypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv4.type._case.Icmpv4TypeBuilder;
 
@@ -28,17 +29,11 @@ public class OxmIcmpv4TypeDeserializer extends AbstractOxmMatchEntryDeserializer
 
     @Override
     public MatchEntry deserialize(ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addIcmpv4TypeValue(input, builder);
-        return builder.build();
-    }
-
-    private static void addIcmpv4TypeValue(ByteBuf input, MatchEntryBuilder builder) {
-        Icmpv4TypeCaseBuilder caseBuilder = new Icmpv4TypeCaseBuilder();
-        Icmpv4TypeBuilder icmpBuilder = new Icmpv4TypeBuilder();
-        icmpBuilder.setIcmpv4Type(input.readUnsignedByte());
-        caseBuilder.setIcmpv4Type(icmpBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        return processHeader(getOxmClass(), getOxmField(), input)
+                .setMatchEntryValue(new Icmpv4TypeCaseBuilder()
+                    .setIcmpv4Type(new Icmpv4TypeBuilder().setIcmpv4Type(readUint8(input)).build())
+                    .build())
+                .build();
     }
 
     @Override
