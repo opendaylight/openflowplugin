@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
@@ -166,8 +165,7 @@ public abstract class PortTranslatorUtil {
         fcncub.setMaximumSpeed(port.getMaxSpeed());
         fcncub.setName(port.getName());
         fcncub.setPortNumber(OpenflowPortsUtil.getProtocolAgnosticPort(ofVersion, portNumber));
-        builder.addAugmentation(FlowCapableNodeConnectorUpdated.class, fcncub.build());
-        return builder.build();
+        return builder.addAugmentation(fcncub.build()).build();
     }
 
     public static NodeConnectorRemoved translatePortRemoved(final Short version, final Uint64 datapathId,
