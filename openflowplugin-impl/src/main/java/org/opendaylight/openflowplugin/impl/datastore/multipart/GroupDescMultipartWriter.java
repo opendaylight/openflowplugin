@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.NodeGroupStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupDescStatsReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -46,12 +44,11 @@ public class GroupDescMultipartWriter extends AbstractMultipartWriter<GroupDescS
                         .child(Group.class, new GroupKey(stat.getGroupId())),
                     new GroupBuilder(stat)
                         .withKey(new GroupKey(stat.getGroupId()))
-                        .addAugmentation(NodeGroupStatistics.class, new NodeGroupStatisticsBuilder().build())
+                        .addAugmentation(new NodeGroupStatisticsBuilder().build())
                         .build(),
                     withParents);
 
                 registry.getDeviceGroupRegistry().store(stat.getGroupId());
             });
     }
-
 }

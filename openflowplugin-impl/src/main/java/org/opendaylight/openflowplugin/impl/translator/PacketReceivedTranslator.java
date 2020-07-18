@@ -92,8 +92,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
                     OpenflowVersion.get(input.getVersion()), MatchPath.PACKET_RECEIVED_MATCH);
 
         if (matchExtensionWrap != null) {
-            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(),
-                                         matchExtensionWrap.getAugmentationObject());
+            matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationObject());
         }
 
         return matchBuilder.build();

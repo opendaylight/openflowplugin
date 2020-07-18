@@ -36,10 +36,9 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
     public void addFlowCapableNode(NodeKey nodeKey) {
         Nodes nodes = new NodesBuilder().build();
 
-        FlowCapableNodeBuilder fcnBuilder = new FlowCapableNodeBuilder();
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.withKey(nodeKey);
-        nodeBuilder.addAugmentation(FlowCapableNode.class, fcnBuilder.build());
+        nodeBuilder.addAugmentation(new FlowCapableNodeBuilder().build());
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), nodes);

@@ -41,7 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -111,20 +110,20 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                 port.getPortNo(),
                 OpenflowVersion.get(deviceInfo.getVersion()));
 
+            final NodeConnectorBuilder connectorBuilder = new NodeConnectorBuilder()
+                    .setId(nodeConnectorId)
+                    .addAugmentation(new FlowCapableNodeConnectorStatisticsDataBuilder().build());
+            final FlowCapableNodeConnector augment = translator.translate(port, deviceInfo, null);
+            if (augment != null) {
+                connectorBuilder.addAugmentation(augment);
+            }
+
             try {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
                     deviceInfo
                         .getNodeInstanceIdentifier()
                         .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)),
-                    new NodeConnectorBuilder()
-                        .setId(nodeConnectorId)
-                        .addAugmentation(
-                            FlowCapableNodeConnector.class,
-                            translator.translate(port, deviceInfo, null))
-                        .addAugmentation(
-                            FlowCapableNodeConnectorStatisticsData.class,
-                            new FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                        .build());
+                        connectorBuilder.build());
             } catch (final Exception e) {
                 LOG.debug("Failed to write node {} to DS ", deviceInfo, e);
             }
