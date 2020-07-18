@@ -65,9 +65,9 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
         }
     }
 
-    private String getSslErrorCause(Throwable cause) {
+    private static String getSslErrorCause(Throwable cause) {
         String sslError = null;
-        while ((cause != null) && (cause.getCause() != null)) {
+        while (cause != null && cause.getCause() != null) {
             sslError = cause.getCause().getMessage();
             cause = cause.getCause();
         }

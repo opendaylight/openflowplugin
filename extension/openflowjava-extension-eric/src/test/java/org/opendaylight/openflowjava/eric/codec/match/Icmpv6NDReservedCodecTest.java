@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import static org.junit.Assert.assertEquals;
@@ -64,7 +63,7 @@ public class Icmpv6NDReservedCodecTest {
         assertEquals(2, result.getIcmpv6NdReservedValues().getIcmpv6NdReserved().intValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final Icmpv6NdReservedCaseValueBuilder caseBuilder = new Icmpv6NdReservedCaseValueBuilder();
         final Icmpv6NdReservedValuesBuilder valuesBuilder = new Icmpv6NdReservedValuesBuilder();
@@ -79,7 +78,7 @@ public class Icmpv6NDReservedCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(EricConstants.ERICOXM_OF_EXPERIMENTER_ID);
         int fieldMask = ERIC_FIELD_CODE << 1;
         message.writeByte(fieldMask);

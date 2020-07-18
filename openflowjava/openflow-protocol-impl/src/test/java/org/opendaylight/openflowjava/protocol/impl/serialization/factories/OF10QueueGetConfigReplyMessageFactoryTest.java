@@ -76,7 +76,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
         serializedBuffer.skipBytes(6);
     }
 
-    private List<Queues> createQueues() {
+    private static List<Queues> createQueues() {
         List<Queues> list = new ArrayList<>();
         QueuesBuilder builder = new QueuesBuilder();
         builder.setQueueId(new QueueId(1L));

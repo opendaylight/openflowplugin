@@ -85,7 +85,7 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
         return MultipartType.OFPMPMETERCONFIG.getIntValue();
     }
 
-    private void writeCommonAtributes(final ByteBuf buffer) {
+    private static void writeCommonAtributes(final ByteBuf buffer) {
         buffer.writeShort(ITEM_LENGTH);
         buffer.writeShort(ByteBufUtils.fillBitMask(0,
                 FLAGS.isMeterKbps(),

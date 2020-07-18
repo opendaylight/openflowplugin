@@ -175,7 +175,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         }
     }
 
-    private boolean compareInstanceIdentifierTail(final InstanceIdentifier<?> identifier1,
+    private static boolean compareInstanceIdentifierTail(final InstanceIdentifier<?> identifier1,
             final InstanceIdentifier<?> identifier2) {
         return Iterables.getLast(identifier1.getPathArguments())
                 .equals(Iterables.getLast(identifier2.getPathArguments()));

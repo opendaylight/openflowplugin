@@ -288,7 +288,7 @@ public class DeviceContextImplTest {
         verify(writeTx).commit();
     }
 
-    private ConnectionContext prepareConnectionContext() {
+    private static ConnectionContext prepareConnectionContext() {
         final ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         when(mockedFeaturesReply.getAuxiliaryId()).thenReturn(DUMMY_AUXILIARY_ID);

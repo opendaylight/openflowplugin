@@ -73,19 +73,19 @@ public class FlatBatchMeterAdaptersTest {
         Assert.assertEquals(2L, it.next().getMeterId().getValue().longValue());
     }
 
-    private FlatBatchAddMeter createAddMeterBatch(final long groupIdValue) {
+    private static FlatBatchAddMeter createAddMeterBatch(final long groupIdValue) {
         return new FlatBatchAddMeterBuilder()
                 .setMeterId(new MeterId(groupIdValue))
                 .build();
     }
 
-    private FlatBatchRemoveMeter createRemoveMeterBatch(final long groupIdValue) {
+    private static FlatBatchRemoveMeter createRemoveMeterBatch(final long groupIdValue) {
         return new FlatBatchRemoveMeterBuilder()
                 .setMeterId(new MeterId(groupIdValue))
                 .build();
     }
 
-    private FlatBatchUpdateMeter createUpdateMeterBatch(final long groupIdValue) {
+    private static FlatBatchUpdateMeter createUpdateMeterBatch(final long groupIdValue) {
         return new FlatBatchUpdateMeterBuilder()
                 .setOriginalBatchedMeter(new OriginalBatchedMeterBuilder()
                         .setMeterId(new MeterId(groupIdValue))
@@ -173,14 +173,15 @@ public class FlatBatchMeterAdaptersTest {
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
-    private BatchFailedMetersOutput createBatchFailedMetersOutput(final Integer batchOrder, final long groupIdValue) {
+    private static BatchFailedMetersOutput createBatchFailedMetersOutput(final Integer batchOrder,
+            final long groupIdValue) {
         return new BatchFailedMetersOutputBuilder()
                 .setMeterId(new MeterId(groupIdValue))
                 .setBatchOrder(batchOrder)
                 .build();
     }
 
-    private BatchFailure createChainFailure(final int batchOrder, final long groupIdValue) {
+    private static BatchFailure createChainFailure(final int batchOrder, final long groupIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureMeterIdCaseBuilder()

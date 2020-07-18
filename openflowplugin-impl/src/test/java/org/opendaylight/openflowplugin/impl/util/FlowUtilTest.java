@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.collect.Lists;
@@ -119,7 +118,7 @@ public class FlowUtilTest {
         checkBatchSuccessOutcomeTransformation(FlowUtil.FLOW_UPDATE_TRANSFORM.apply(input));
     }
 
-    private <T extends BatchFlowOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
+    private static <T extends BatchFlowOutputListGrouping> void checkBatchSuccessOutcomeTransformation(
             final RpcResult<T> output) {
         Assert.assertTrue(output.isSuccessful());
         Map<BatchFailedFlowsOutputKey, BatchFailedFlowsOutput> failedFlows
@@ -221,13 +220,13 @@ public class FlowUtilTest {
         Assert.assertEquals(1, composite.getResult().getBatchFailedFlowsOutput().size());
     }
 
-    private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
+    private static RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
         return RpcResultBuilder.<SendBarrierOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }
 
-    private RpcResult<AddFlowsBatchOutput> createAddFlowsBatchSuccessOutput() {
+    private static RpcResult<AddFlowsBatchOutput> createAddFlowsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(Collections.emptyList())
@@ -235,7 +234,7 @@ public class FlowUtilTest {
                 .build();
     }
 
-    private RpcResult<AddFlowsBatchOutput> createAddFlowsBatchFailureOutcome() {
+    private static RpcResult<AddFlowsBatchOutput> createAddFlowsBatchFailureOutcome() {
         final RpcResult<List<BatchFailedFlowsOutput>> batchOutcomeWithError = createBatchOutcomeWithError();
         return RpcResultBuilder.<AddFlowsBatchOutput>failed()
                 .withResult(new AddFlowsBatchOutputBuilder()
