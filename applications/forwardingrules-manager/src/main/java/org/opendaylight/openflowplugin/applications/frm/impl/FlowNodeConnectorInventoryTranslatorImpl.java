@@ -120,7 +120,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
         }
     }
 
-    private boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
+    private static boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
                                   InstanceIdentifier<?> identifier2) {
         return Iterables.getLast(identifier1.getPathArguments())
                 .equals(Iterables.getLast(identifier2.getPathArguments()));
@@ -132,7 +132,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     }
 
 
-    private BigInteger getDpIdFromPortName(String portName) {
+    private static BigInteger getDpIdFromPortName(String portName) {
         String dpId = portName.substring(portName.indexOf(SEPARATOR) + 1, portName.lastIndexOf(SEPARATOR));
         return new BigInteger(dpId);
     }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +50,7 @@ public class NodeConfigServiceImplTest extends ServiceMocking {
         assertEquals(DUMMY_XID_VALUE, setConfigInput.getXid());
     }
 
-    private SetConfigInput dummyConfigInput() {
+    private static SetConfigInput dummyConfigInput() {
         SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
         setConfigInputBuilder.setFlag(DUMMY_FLAG_STR);
         setConfigInputBuilder.setMissSearchLength(DUMMY_MISS_SEARCH_LENGTH);

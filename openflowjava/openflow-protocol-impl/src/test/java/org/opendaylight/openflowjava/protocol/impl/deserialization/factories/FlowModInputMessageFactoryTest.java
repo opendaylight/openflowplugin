@@ -96,7 +96,7 @@ public class FlowModInputMessageFactoryTest {
 
     }
 
-    private List<Instruction> createInstructions() {
+    private static List<Instruction> createInstructions() {
         final List<Instruction> instructions = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
         GotoTableCaseBuilder goToCaseBuilder = new GotoTableCaseBuilder();
@@ -133,7 +133,7 @@ public class FlowModInputMessageFactoryTest {
         return instructions;
     }
 
-    private Match createMatch() {
+    private static Match createMatch() {
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
         final List<MatchEntry> entries = new ArrayList<>();

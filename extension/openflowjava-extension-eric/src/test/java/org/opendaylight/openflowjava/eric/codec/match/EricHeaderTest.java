@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import static org.junit.Assert.assertEquals;
@@ -60,7 +59,7 @@ public class EricHeaderTest {
         assertEquals(shouldBe, ericHeader.toString());
     }
 
-    private long createHeader() {
+    private static long createHeader() {
         long result = 0;
         int oxmClass = 4096 << 16;
         result = result | oxmClass;
@@ -72,5 +71,4 @@ public class EricHeaderTest {
         result = result | length;
         return result;
     }
-
 }

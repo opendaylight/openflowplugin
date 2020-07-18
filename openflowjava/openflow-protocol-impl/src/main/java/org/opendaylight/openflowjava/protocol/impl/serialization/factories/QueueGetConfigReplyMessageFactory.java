@@ -73,12 +73,12 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 
-    private void serializeRateBody(RateQueueProperty body, ByteBuf outBuffer) {
+    private static void serializeRateBody(RateQueueProperty body, ByteBuf outBuffer) {
         outBuffer.writeShort(body.getRate().toJava());
         outBuffer.writeZero(PROPERTY_RATE_PADDING);
     }
 
-    private void serializeExperimenterBody(ExperimenterIdQueueProperty body, ByteBuf outBuffer) {
+    private static void serializeExperimenterBody(ExperimenterIdQueueProperty body, ByteBuf outBuffer) {
         // TODO: Experimenter Data is vendor specific that should implement its
         // own serializer
         outBuffer.writeInt(body.getExperimenter().getValue().intValue());

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import static org.junit.Assert.assertEquals;
@@ -226,13 +225,13 @@ public class GroupUtilTest {
         assertEquals(GROUP_ACTION_BITMAP,  groupActionsSupportBitmap.get(0).toJava());
     }
 
-    private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
+    private static RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
         return RpcResultBuilder.<SendBarrierOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }
 
-    private RpcResult<AddGroupsBatchOutput> createAddGroupsBatchSuccessOutput() {
+    private static RpcResult<AddGroupsBatchOutput> createAddGroupsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddGroupsBatchOutputBuilder()
                         .setBatchFailedGroupsOutput(Collections.emptyList())
@@ -240,7 +239,7 @@ public class GroupUtilTest {
                 .build();
     }
 
-    private RpcResult<AddGroupsBatchOutput> createAddGroupsBatchFailureOutcome() {
+    private static RpcResult<AddGroupsBatchOutput> createAddGroupsBatchFailureOutcome() {
         final RpcResult<List<BatchFailedGroupsOutput>> batchOutcomeWithError = createBatchOutcomeWithError();
         return RpcResultBuilder.<AddGroupsBatchOutput>failed()
                 .withResult(new AddGroupsBatchOutputBuilder()

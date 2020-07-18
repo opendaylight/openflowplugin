@@ -60,7 +60,7 @@ public final class SalPortServiceImpl
         return mdInput.build();
     }
 
-    private Port getPortFromInput(final UpdatePortInput input) {
+    private static Port getPortFromInput(final UpdatePortInput input) {
         return input.getUpdatedPort().getPort().nonnullPort().values().iterator().next();
     }
 }

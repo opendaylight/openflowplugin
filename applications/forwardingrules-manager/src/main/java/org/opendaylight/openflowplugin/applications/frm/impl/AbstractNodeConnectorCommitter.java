@@ -57,7 +57,7 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
      */
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
-    private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    private static boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         Preconditions.checkNotNull(nodeConnIdent, "FlowCapableNodeConnector ident can not be null!");
         return true;
     }

@@ -90,7 +90,7 @@ final class MeterFeaturesService
     }
 
     @VisibleForTesting
-    protected List<Class<? extends MeterBand>> extractSupportedMeterBand(MultipartReplyMeterFeatures replyBody,
+    protected static List<Class<? extends MeterBand>> extractSupportedMeterBand(MultipartReplyMeterFeatures replyBody,
                                                                          MeterBandTypeBitmap bandTypes) {
         List<Class<? extends MeterBand>> supportedMeterBand = new ArrayList<>();
         if (bandTypes.isOFPMBTDROP()) {

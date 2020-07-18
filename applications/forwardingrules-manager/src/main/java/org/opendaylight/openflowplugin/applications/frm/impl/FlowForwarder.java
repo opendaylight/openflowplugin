@@ -296,7 +296,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         return true;
     }
 
-    private StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del,
+    private static StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
         return staleFlowBuilder.setId(del.getId()).build();
@@ -311,7 +311,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         handleStaleFlowResultFuture(submitFuture);
     }
 
-    private void handleStaleFlowResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleFlowResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object result) {
@@ -326,7 +326,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
             StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(

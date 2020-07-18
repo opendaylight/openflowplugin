@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import com.google.common.net.InetAddresses;
@@ -76,7 +75,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         serializeCtAction(outBuffer,action);
     }
 
-    private int getActionLength(final ActionConntrack action) {
+    private static int getActionLength(final ActionConntrack action) {
         int length = 0;
         List<CtActions> ctActionsList = action.getNxActionConntrack().getCtActions();
         if (ctActionsList == null) {
@@ -97,7 +96,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         return length;
     }
 
-    private int getNatActionLength(final NxActionNat natAction) {
+    private static int getNatActionLength(final NxActionNat natAction) {
         int natLength = NX_NAT_LENGTH;
         short rangePresent = natAction.getRangePresent().shortValue();
         if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
@@ -113,10 +112,9 @@ public class ConntrackCodec extends AbstractActionCodec {
             natLength += SHORT_LENGTH;
         }
         return natLength;
-
     }
 
-    private void serializeCtAction(final ByteBuf outBuffer, final ActionConntrack action) {
+    private static void serializeCtAction(final ByteBuf outBuffer, final ActionConntrack action) {
         List<CtActions> ctActionsList = action.getNxActionConntrack().getCtActions();
         if (ctActionsList != null) {
             for (CtActions ctActions : ctActionsList) {
@@ -196,8 +194,8 @@ public class ConntrackCodec extends AbstractActionCodec {
         return actionBuilder.build();
     }
 
-    private void deserializeCtAction(final ByteBuf message, final NxActionConntrackBuilder nxActionConntrackBuilder,
-            final int ctActionsLength) {
+    private static void deserializeCtAction(final ByteBuf message,
+            final NxActionConntrackBuilder nxActionConntrackBuilder, final int ctActionsLength) {
         List<CtActions> ctActionsList = new ArrayList<>();
         int processedCtActionsLength = ctActionsLength;
 
@@ -265,7 +263,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         nxActionConntrackBuilder.setCtActions(ctActionsList);
     }
 
-    private short deserializeCtHeaderWithoutSubtype(final ByteBuf message) {
+    private static short deserializeCtHeaderWithoutSubtype(final ByteBuf message) {
         // size of experimenter type / size of set field code (in case of ct_mark)
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         // size of length
@@ -275,7 +273,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         return length;
     }
 
-    private short deserializeCtHeader(final ByteBuf message) {
+    private static short deserializeCtHeader(final ByteBuf message) {
         short length = deserializeCtHeaderWithoutSubtype(message);
         // subtype
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);

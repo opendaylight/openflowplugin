@@ -210,7 +210,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     }
 
-    private StaleGroup makeStaleGroup(InstanceIdentifier<Group> identifier, Group del,
+    private static StaleGroup makeStaleGroup(InstanceIdentifier<Group> identifier, Group del,
             InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleGroupBuilder staleGroupBuilder = new StaleGroupBuilder(del);
         return staleGroupBuilder.setGroupId(del.getGroupId()).build();
@@ -225,7 +225,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         handleStaleGroupResultFuture(submitFuture);
     }
 
-    private void handleStaleGroupResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleGroupResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object result) {
@@ -237,10 +237,9 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 LOG.error("Stale Group creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
-
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
         .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
             StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));

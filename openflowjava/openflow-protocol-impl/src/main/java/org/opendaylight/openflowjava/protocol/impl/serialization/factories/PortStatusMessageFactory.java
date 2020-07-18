@@ -53,7 +53,7 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 
-    private void writePortConfig(final PortConfig config, final ByteBuf outBuffer) {
+    private static void writePortConfig(final PortConfig config, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, config.isPortDown());
         map.put(2, config.isNoRecv());
@@ -63,7 +63,7 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         outBuffer.writeInt(bitmap);
     }
 
-    private void writeName(final String name, final ByteBuf outBuffer) {
+    private static void writeName(final String name, final ByteBuf outBuffer) {
         byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
@@ -79,10 +79,9 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         } else {
             outBuffer.writeBytes(nameBytes);
         }
-
     }
 
-    private void writePortState(final PortState state, final ByteBuf outBuffer) {
+    private static void writePortState(final PortState state, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, state.isLinkDown());
         map.put(1, state.isBlocked());
@@ -91,7 +90,7 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         outBuffer.writeInt(bitmap);
     }
 
-    private void writePortFeatures(final PortFeatures features, final ByteBuf outBuffer) {
+    private static void writePortFeatures(final PortFeatures features, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, features.is_10mbHd());
         map.put(1, features.is_10mbFd());

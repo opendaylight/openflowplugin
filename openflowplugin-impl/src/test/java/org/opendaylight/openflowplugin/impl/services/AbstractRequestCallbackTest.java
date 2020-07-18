@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.connection.DeviceRequestFailedException;
@@ -54,9 +55,7 @@ public class AbstractRequestCallbackTest {
             public void onSuccess(final Object object) {
 
             }
-
         };
-
     }
 
     @Test
@@ -79,8 +78,8 @@ public class AbstractRequestCallbackTest {
         assertEquals(DUMMY_MESSAGE_ILLEGAL_STATE_EXCEPTION, rpcError.getMessage());
     }
 
-    private RpcError provideRpcError(final ListenableFuture futureResult) throws InterruptedException,
-                                                                           java.util.concurrent.ExecutionException {
+    private static RpcError provideRpcError(final ListenableFuture futureResult)
+            throws InterruptedException, ExecutionException {
         final Object result = futureResult.get();
         assertTrue(result instanceof RpcResult);
         RpcResult rpcResult = (RpcResult) result;
