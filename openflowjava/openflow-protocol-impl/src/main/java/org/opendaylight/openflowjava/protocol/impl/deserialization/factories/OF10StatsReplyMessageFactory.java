@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +95,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
 
         MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         builder.setType(MultipartType.forValue(type));
         builder.setFlags(new MultipartRequestFlags((rawMessage.readUnsignedShort() & 0x01) != 0));
@@ -158,26 +161,20 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         while (input.readableBytes() > 0) {
             FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder();
             final int length = input.readUnsignedShort();
-            flowStatsBuilder.setTableId(input.readUnsignedByte());
+            flowStatsBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_FLOW_STATS_HEADER);
             OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                     new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
             flowStatsBuilder.setMatchV10(matchDeserializer.deserialize(input));
-            flowStatsBuilder.setDurationSec(input.readUnsignedInt());
-            flowStatsBuilder.setDurationNsec(input.readUnsignedInt());
-            flowStatsBuilder.setPriority(input.readUnsignedShort());
-            flowStatsBuilder.setIdleTimeout(input.readUnsignedShort());
-            flowStatsBuilder.setHardTimeout(input.readUnsignedShort());
+            flowStatsBuilder.setDurationSec(readUint32(input));
+            flowStatsBuilder.setDurationNsec(readUint32(input));
+            flowStatsBuilder.setPriority(readUint16(input));
+            flowStatsBuilder.setIdleTimeout(readUint16(input));
+            flowStatsBuilder.setHardTimeout(readUint16(input));
             input.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
-            byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(cookie);
-            flowStatsBuilder.setCookie(new BigInteger(1, cookie));
-            byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(packetCount);
-            flowStatsBuilder.setPacketCount(new BigInteger(1, packetCount));
-            byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(byteCount);
-            flowStatsBuilder.setByteCount(new BigInteger(1, byteCount));
+            flowStatsBuilder.setCookie(readUint64(input));
+            flowStatsBuilder.setPacketCount(readUint64(input));
+            flowStatsBuilder.setByteCount(readUint64(input));
             CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
             List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID,
                     length - LENGTH_OF_FLOW_STATS, input, keyMaker, registry);
@@ -192,13 +189,9 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     private static MultipartReplyAggregateCase setAggregate(ByteBuf input) {
         final MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder builder = new MultipartReplyAggregateBuilder();
-        byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(packetCount);
-        builder.setPacketCount(new BigInteger(1, packetCount));
-        byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(byteCount);
-        builder.setByteCount(new BigInteger(1, byteCount));
-        builder.setFlowCount(input.readUnsignedInt());
+        builder.setPacketCount(readUint64(input));
+        builder.setByteCount(readUint64(input));
+        builder.setFlowCount(readUint32(input));
         input.skipBytes(PADDING_IN_AGGREGATE_HEADER);
         caseBuilder.setMultipartReplyAggregate(builder.build());
         return caseBuilder.build();
@@ -211,21 +204,17 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         // TODO - replace ">= TABLE_STATS_LENGTH" with "> 0" after fix in OVS switch
         while (input.readableBytes() >= TABLE_STATS_LENGTH) {
             TableStatsBuilder tableStatsBuilder = new TableStatsBuilder();
-            tableStatsBuilder.setTableId(input.readUnsignedByte());
+            tableStatsBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_TABLE_HEADER);
             tableStatsBuilder.setName(ByteBufUtils.decodeNullTerminatedString(input, MAX_TABLE_NAME_LENGTH));
             long wildcards = input.readUnsignedInt();
             tableStatsBuilder.setWildcards(OF10MatchDeserializer.createWildcards(wildcards));
             tableStatsBuilder.setNwSrcMask(OF10MatchDeserializer.decodeNwSrcMask(wildcards));
             tableStatsBuilder.setNwDstMask(OF10MatchDeserializer.decodeNwDstMask(wildcards));
-            tableStatsBuilder.setMaxEntries(input.readUnsignedInt());
-            tableStatsBuilder.setActiveCount(input.readUnsignedInt());
-            byte[] lookupCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(lookupCount);
-            tableStatsBuilder.setLookupCount(new BigInteger(1, lookupCount));
-            byte[] matchedCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(matchedCount);
-            tableStatsBuilder.setMatchedCount(new BigInteger(1, matchedCount));
+            tableStatsBuilder.setMaxEntries(readUint32(input));
+            tableStatsBuilder.setActiveCount(readUint32(input));
+            tableStatsBuilder.setLookupCount(readUint64(input));
+            tableStatsBuilder.setMatchedCount(readUint64(input));
             tableStatsList.add(tableStatsBuilder.build());
         }
         input.skipBytes(input.readableBytes());
@@ -240,44 +229,20 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         List<PortStats> portStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             PortStatsBuilder portStatsBuilder = new PortStatsBuilder();
-            portStatsBuilder.setPortNo((long) input.readUnsignedShort());
+            portStatsBuilder.setPortNo(readUint16(input).toUint32());
             input.skipBytes(PADDING_IN_PORT_STATS_HEADER);
-            byte[] rxPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxPackets);
-            portStatsBuilder.setRxPackets(new BigInteger(1, rxPackets));
-            byte[] txPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txPackets);
-            portStatsBuilder.setTxPackets(new BigInteger(1, txPackets));
-            byte[] rxBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxBytes);
-            portStatsBuilder.setRxBytes(new BigInteger(1, rxBytes));
-            byte[] txBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txBytes);
-            portStatsBuilder.setTxBytes(new BigInteger(1, txBytes));
-            byte[] rxDropped = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxDropped);
-            portStatsBuilder.setRxDropped(new BigInteger(1, rxDropped));
-            byte[] txDropped = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txDropped);
-            portStatsBuilder.setTxDropped(new BigInteger(1, txDropped));
-            byte[] rxErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxErrors);
-            portStatsBuilder.setRxErrors(new BigInteger(1, rxErrors));
-            byte[] txErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txErrors);
-            portStatsBuilder.setTxErrors(new BigInteger(1, txErrors));
-            byte[] rxFrameErr = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxFrameErr);
-            portStatsBuilder.setRxFrameErr(new BigInteger(1, rxFrameErr));
-            byte[] rxOverErr = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxOverErr);
-            portStatsBuilder.setRxOverErr(new BigInteger(1, rxOverErr));
-            byte[] rxCrcErr = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxCrcErr);
-            portStatsBuilder.setRxCrcErr(new BigInteger(1, rxCrcErr));
-            byte[] collisions = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(collisions);
-            portStatsBuilder.setCollisions(new BigInteger(1, collisions));
+            portStatsBuilder.setRxPackets(readUint64(input));
+            portStatsBuilder.setTxPackets(readUint64(input));
+            portStatsBuilder.setRxBytes(readUint64(input));
+            portStatsBuilder.setTxBytes(readUint64(input));
+            portStatsBuilder.setRxDropped(readUint64(input));
+            portStatsBuilder.setTxDropped(readUint64(input));
+            portStatsBuilder.setRxErrors(readUint64(input));
+            portStatsBuilder.setTxErrors(readUint64(input));
+            portStatsBuilder.setRxFrameErr(readUint64(input));
+            portStatsBuilder.setRxOverErr(readUint64(input));
+            portStatsBuilder.setRxCrcErr(readUint64(input));
+            portStatsBuilder.setCollisions(readUint64(input));
             portStatsList.add(portStatsBuilder.build());
         }
         builder.setPortStats(portStatsList);
@@ -291,18 +256,12 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         List<QueueStats> queueStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             QueueStatsBuilder queueStatsBuilder = new QueueStatsBuilder();
-            queueStatsBuilder.setPortNo((long) input.readUnsignedShort());
+            queueStatsBuilder.setPortNo(readUint16(input).toUint32());
             input.skipBytes(PADDING_IN_QUEUE_HEADER);
-            queueStatsBuilder.setQueueId(input.readUnsignedInt());
-            byte[] txBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txBytes);
-            queueStatsBuilder.setTxBytes(new BigInteger(1, txBytes));
-            byte[] txPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txPackets);
-            queueStatsBuilder.setTxPackets(new BigInteger(1, txPackets));
-            byte[] txErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txErrors);
-            queueStatsBuilder.setTxErrors(new BigInteger(1, txErrors));
+            queueStatsBuilder.setQueueId(readUint32(input));
+            queueStatsBuilder.setTxBytes(readUint64(input));
+            queueStatsBuilder.setTxPackets(readUint64(input));
+            queueStatsBuilder.setTxErrors(readUint64(input));
             queueStatsList.add(queueStatsBuilder.build());
         }
         builder.setQueueStats(queueStatsList);

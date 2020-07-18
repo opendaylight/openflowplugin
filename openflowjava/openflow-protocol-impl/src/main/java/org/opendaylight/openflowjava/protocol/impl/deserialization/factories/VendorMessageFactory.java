@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
@@ -20,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates ExperimenterMessages.
@@ -36,7 +38,7 @@ public class VendorMessageFactory implements OFDeserializer<ExperimenterMessage>
     public ExperimenterMessage deserialize(ByteBuf message) {
         Objects.requireNonNull(deserializerRegistry);
 
-        final long xid = message.readUnsignedInt();
+        final Uint32 xid = readUint32(message);
         final long expId = message.readUnsignedInt();
         OFDeserializer<ExperimenterDataOfChoice> deserializer = deserializerRegistry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createVendorMessageDeserializerKey(

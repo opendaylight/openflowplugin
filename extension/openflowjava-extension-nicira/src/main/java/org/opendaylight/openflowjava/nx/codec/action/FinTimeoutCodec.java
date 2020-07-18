@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -56,15 +57,14 @@ public class FinTimeoutCodec extends AbstractActionCodec {
     public Action deserialize(final ByteBuf message) {
         final ActionBuilder actionBuilder = deserializeHeader(message);
 
-        ActionFinTimeoutBuilder builder = new ActionFinTimeoutBuilder();
-        NxActionFinTimeoutBuilder nxActionFinTimeoutBuilder = new NxActionFinTimeoutBuilder();
-        nxActionFinTimeoutBuilder.setFinIdleTimeout(message.readUnsignedShort());
-        nxActionFinTimeoutBuilder.setFinHardTimeout(message.readUnsignedShort());
-        builder.setNxActionFinTimeout(nxActionFinTimeoutBuilder.build());
+        ActionFinTimeoutBuilder builder = new ActionFinTimeoutBuilder()
+                .setNxActionFinTimeout(new NxActionFinTimeoutBuilder()
+                    .setFinIdleTimeout(readUint16(message))
+                    .setFinHardTimeout(readUint16(message))
+                    .build());
         message.skipBytes(PADDING);
 
         actionBuilder.setActionChoice(builder.build());
         return actionBuilder.build();
     }
-
 }

@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -47,9 +48,9 @@ public class NshMdtypeCodec extends AbstractExperimenterMatchCodec {
 
     @Override
     protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
-        Short value = message.readUnsignedByte();
-        NshMdtypeValues nshMdtypeValues = new NshMdtypeValuesBuilder().setValue(value).build();
-        return new NshMdtypeCaseValueBuilder().setNshMdtypeValues(nshMdtypeValues).build();
+        return new NshMdtypeCaseValueBuilder()
+                .setNshMdtypeValues(new NshMdtypeValuesBuilder().setValue(readUint8(message)).build())
+                .build();
     }
 
     @Override

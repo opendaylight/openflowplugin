@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -49,19 +52,17 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
 
         FlowModInputBuilder builder = new FlowModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         builder.setMatchV10(matchDeserializer.deserialize(rawMessage));
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookie);
-        builder.setCookie(new BigInteger(1, cookie));
+        builder.setCookie(readUint64(rawMessage));
         builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedShort()));
-        builder.setIdleTimeout(rawMessage.readUnsignedShort());
-        builder.setHardTimeout(rawMessage.readUnsignedShort());
-        builder.setPriority(rawMessage.readUnsignedShort());
-        builder.setBufferId(rawMessage.readUnsignedInt());
-        builder.setOutPort(new PortNumber((long) rawMessage.readUnsignedShort()));
+        builder.setIdleTimeout(readUint16(rawMessage));
+        builder.setHardTimeout(readUint16(rawMessage));
+        builder.setPriority(readUint16(rawMessage));
+        builder.setBufferId(readUint32(rawMessage));
+        builder.setOutPort(new PortNumber(readUint16(rawMessage).toUint32()));
         builder.setFlagsV10(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
 
@@ -78,5 +79,4 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
         final Boolean _oFPFFEMERG = (input & 1 << 2) != 0;
         return new FlowModFlagsV10(_oFPFFCHECKOVERLAP, _oFPFFEMERG, _oFPFFSENDFLOWREM);
     }
-
 }

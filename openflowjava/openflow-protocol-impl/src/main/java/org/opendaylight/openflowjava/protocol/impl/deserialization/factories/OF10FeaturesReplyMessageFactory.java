@@ -5,11 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -36,12 +39,10 @@ public class OF10FeaturesReplyMessageFactory implements OFDeserializer<GetFeatur
     public GetFeaturesOutput deserialize(final ByteBuf rawMessage) {
         GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        byte[] datapathId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(datapathId);
-        builder.setDatapathId(new BigInteger(1, datapathId));
-        builder.setBuffers(rawMessage.readUnsignedInt());
-        builder.setTables(rawMessage.readUnsignedByte());
+        builder.setXid(readUint32(rawMessage));
+        builder.setDatapathId(readUint64(rawMessage));
+        builder.setBuffers(readUint32(rawMessage));
+        builder.setTables(readUint8(rawMessage));
         rawMessage.skipBytes(PADDING_IN_FEATURES_REPLY_HEADER);
         builder.setCapabilitiesV10(createCapabilitiesV10(rawMessage.readUnsignedInt()));
         builder.setActionsV10(createActionsV10(rawMessage.readUnsignedInt()));
@@ -87,7 +88,7 @@ public class OF10FeaturesReplyMessageFactory implements OFDeserializer<GetFeatur
 
     private static PhyPort deserializePort(final ByteBuf rawMessage) {
         PhyPortBuilder builder = new PhyPortBuilder();
-        builder.setPortNo((long) rawMessage.readUnsignedShort());
+        builder.setPortNo(readUint16(rawMessage).toUint32());
         builder.setHwAddr(ByteBufUtils.readIetfMacAddress(rawMessage));
         builder.setName(ByteBufUtils.decodeNullTerminatedString(rawMessage, EncodeConstants.MAX_PORT_NAME_LENGTH));
         builder.setConfigV10(OpenflowUtils.createPortConfig(rawMessage.readUnsignedInt()));

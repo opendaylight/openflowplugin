@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -32,8 +33,8 @@ public class OutputReg2Codec extends AbstractActionCodec {
         final ActionBuilder actionBuilder = deserializeHeader(message);
         final ActionOutputReg2Builder builder = new ActionOutputReg2Builder();
         NxActionOutputReg2Builder nxActionOutputReg2Builder = new NxActionOutputReg2Builder();
-        nxActionOutputReg2Builder.setNBits(message.readUnsignedShort());
-        nxActionOutputReg2Builder.setMaxLen(message.readUnsignedShort());
+        nxActionOutputReg2Builder.setNBits(readUint16(message));
+        nxActionOutputReg2Builder.setMaxLen(readUint16(message));
         nxActionOutputReg2Builder.setSrc(readNxmHeader(message));
         skipPadding(message, startIndex);
         builder.setNxActionOutputReg2(nxActionOutputReg2Builder.build());
