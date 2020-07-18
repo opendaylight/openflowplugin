@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -20,7 +19,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.RateQueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.RateQueuePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.QueueId;
@@ -30,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.get.config.reply.QueuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for QueueGetConfigReplyMessageFactory.
@@ -67,23 +67,21 @@ public class QueueGetConfigReplyMessageFactoryTest {
 
     private static List<Queues> createQueuesList() {
         final List<Queues> queuesList = new ArrayList<>();
-        QueuesBuilder qb = new QueuesBuilder();
-        qb.setQueueId(new QueueId(1L));
-        qb.setPort(new PortNumber(3L));
-        qb.setQueueProperty(createPropertiesList());
-        queuesList.add(qb.build());
+        queuesList.add(new QueuesBuilder()
+            .setQueueId(new QueueId(Uint32.ONE))
+            .setPort(new PortNumber(Uint32.valueOf(3)))
+            .setQueueProperty(createPropertiesList())
+            .build());
 
         return queuesList;
     }
 
     private static List<QueueProperty> createPropertiesList() {
         final List<QueueProperty> propertiesList = new ArrayList<>();
-        QueuePropertyBuilder pb = new QueuePropertyBuilder();
-        pb.setProperty(QueueProperties.forValue(2));
-        RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();
-        rateBuilder.setRate(5);
-        pb.addAugmentation(RateQueueProperty.class, rateBuilder.build());
-        propertiesList.add(pb.build());
+        propertiesList.add(new QueuePropertyBuilder()
+            .setProperty(QueueProperties.forValue(2))
+            .addAugmentation(new RateQueuePropertyBuilder().setRate(Uint16.valueOf(5)).build())
+            .build());
         return propertiesList;
     }
 }

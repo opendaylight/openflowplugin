@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -20,13 +19,9 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
@@ -54,6 +49,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for MultipartRequestTableFeaturesInputMessageFactory.
@@ -95,47 +93,43 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
 
     public List<TableFeatures> createTableFeaturesList() {
         final List<TableFeatures> list = new ArrayList<>();
-        TableFeaturesBuilder builder = new TableFeaturesBuilder();
-        builder.setTableId((short) 1);
-        builder.setName("Name");
-        builder.setMetadataWrite(new BigInteger("1"));
-        builder.setMetadataMatch(new BigInteger("1"));
-        builder.setMaxEntries(1L);
-        builder.setConfig(new TableConfig(false));
-        builder.setTableFeatureProperties(createTableFeatureProperties());
-        list.add(builder.build());
+        list.add(new TableFeaturesBuilder()
+            .setTableId(Uint8.ONE)
+            .setName("Name")
+            .setMetadataWrite(Uint64.ONE)
+            .setMetadataMatch(Uint64.ONE)
+            .setMaxEntries(Uint32.ONE)
+            .setConfig(new TableConfig(false))
+            .setTableFeatureProperties(createTableFeatureProperties())
+            .build());
         return list;
     }
 
     public List<TableFeatureProperties> createTableFeatureProperties() {
         final List<TableFeatureProperties> list = new ArrayList<>();
-        TableFeaturePropertiesBuilder builder = new TableFeaturePropertiesBuilder();
-        builder.setType(TableFeaturesPropType.forValue(0));
-        InstructionRelatedTableFeaturePropertyBuilder insBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
-        insBuilder.setInstruction(createInstructions());
-        builder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insBuilder.build());
-        list.add(builder.build());
+        list.add(new TableFeaturePropertiesBuilder()
+            .setType(TableFeaturesPropType.forValue(0))
+            .addAugmentation(new InstructionRelatedTableFeaturePropertyBuilder()
+                .setInstruction(createInstructions())
+                .build())
+            .build());
 
-        builder = new TableFeaturePropertiesBuilder();
-        builder.setType(TableFeaturesPropType.forValue(2));
-        NextTableRelatedTableFeaturePropertyBuilder nextBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
-        nextBuilder.setNextTableIds(createNextTableIds());
-        builder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextBuilder.build());
-        list.add(builder.build());
+        list.add(new TableFeaturePropertiesBuilder()
+            .setType(TableFeaturesPropType.forValue(2))
+            .addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder()
+                .setNextTableIds(createNextTableIds())
+                .build())
+            .build());
 
-        builder = new TableFeaturePropertiesBuilder();
-        builder.setType(TableFeaturesPropType.forValue(4));
-        ActionRelatedTableFeaturePropertyBuilder actionBuilder = new ActionRelatedTableFeaturePropertyBuilder();
-        actionBuilder.setAction(createAction());
-        builder.addAugmentation(ActionRelatedTableFeatureProperty.class, actionBuilder.build());
-        list.add(builder.build());
+        list.add(new TableFeaturePropertiesBuilder()
+            .setType(TableFeaturesPropType.forValue(4))
+            .addAugmentation(new ActionRelatedTableFeaturePropertyBuilder().setAction(createAction()).build())
+            .build());
 
-        builder = new TableFeaturePropertiesBuilder();
-        builder.setType(TableFeaturesPropType.forValue(8));
-        OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        oxmBuilder.setMatchEntry(createMatchEntries());
-        builder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
-        list.add(builder.build());
+        list.add(new TableFeaturePropertiesBuilder()
+            .setType(TableFeaturesPropType.forValue(8))
+            .addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(createMatchEntries()).build())
+            .build());
 
         return list;
     }

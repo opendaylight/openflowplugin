@@ -14,9 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -67,14 +65,14 @@ public final class FlowCapableNodeMapping {
     public static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology
             .topology.Node toTopologyNode(
             final NodeId nodeId, final NodeRef invNodeRef) {
-        return new NodeBuilder().setNodeId(nodeId).addAugmentation(InventoryNode.class, new InventoryNodeBuilder()
+        return new NodeBuilder().setNodeId(nodeId).addAugmentation(new InventoryNodeBuilder()
                 .setInventoryNodeRef(invNodeRef).build()).build();
     }
 
     public static TerminationPoint toTerminationPoint(final TpId id, final NodeConnectorRef invNodeConnectorRef) {
         return new TerminationPointBuilder()
                 .setTpId(id)
-                .addAugmentation(InventoryNodeConnector.class, new InventoryNodeConnectorBuilder()
+                .addAugmentation(new InventoryNodeConnectorBuilder()
                     .setInventoryNodeConnectorRef(invNodeConnectorRef)
                     .build())
                 .build();

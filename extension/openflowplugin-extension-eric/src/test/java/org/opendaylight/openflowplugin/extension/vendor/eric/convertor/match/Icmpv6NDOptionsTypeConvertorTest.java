@@ -128,19 +128,16 @@ public class Icmpv6NDOptionsTypeConvertorTest {
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();
-        extBld.addAugmentation(extensionMatch.getAugmentationClass(), extensionMatch.getAugmentationObject());
+        extBld.addAugmentation(extensionMatch.getAugmentationObject());
 
         extListBld = new ExtensionListBuilder();
         extListBld.setExtension(extBld.build());
         extListBld.setExtensionKey(extensionMatch.getKey());
 
-        GeneralAugMatchNodesNodeTableFlowWriteActionsSetField ndOptionsTypeSetField =
-                 new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                         .setExtensionList(Collections.singletonList(extListBld.build())).build();
-
-        SetFieldBuilder sb = new SetFieldBuilder();
-        SetField setField = sb.addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
-                 ndOptionsTypeSetField).build();
+        SetField setField = new SetFieldBuilder()
+                .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
+                    .setExtensionList(Collections.singletonList(extListBld.build())).build())
+                .build();
 
         Assert.assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
                  .values().iterator().next().getExtensionKey());

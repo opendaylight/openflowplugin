@@ -23,13 +23,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.CodeKeyMakerFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.ListDeserializer;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
@@ -236,18 +232,15 @@ public class MultipartRequestInputMessageFactory
             tableFeaturesLength -= propertyLength;
             if (type.equals(TableFeaturesPropType.OFPTFPTINSTRUCTIONS)
                     || type.equals(TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS)) {
-                InstructionRelatedTableFeaturePropertyBuilder insBuilder =
-                        new InstructionRelatedTableFeaturePropertyBuilder();
                 CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
                 List<Instruction> instructions = ListDeserializer.deserializeHeaders(EncodeConstants.OF13_VERSION_ID,
                         propertyLength - COMMON_PROPERTY_LENGTH, input, keyMaker, registry);
-                insBuilder.setInstruction(instructions);
-                builder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insBuilder.build());
+                builder.addAugmentation(new InstructionRelatedTableFeaturePropertyBuilder()
+                    .setInstruction(instructions)
+                    .build());
             } else if (type.equals(TableFeaturesPropType.OFPTFPTNEXTTABLES)
                     || type.equals(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS)) {
                 propertyLength -= COMMON_PROPERTY_LENGTH;
-                NextTableRelatedTableFeaturePropertyBuilder tableBuilder =
-                        new NextTableRelatedTableFeaturePropertyBuilder();
                 List<NextTableIds> ids = new ArrayList<>();
                 while (propertyLength > 0) {
                     NextTableIdsBuilder nextTableIdsBuilder = new NextTableIdsBuilder();
@@ -255,30 +248,25 @@ public class MultipartRequestInputMessageFactory
                     ids.add(nextTableIdsBuilder.build());
                     propertyLength--;
                 }
-                tableBuilder.setNextTableIds(ids);
-                builder.addAugmentation(NextTableRelatedTableFeatureProperty.class, tableBuilder.build());
+                builder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder().setNextTableIds(ids).build());
             } else if (type.equals(TableFeaturesPropType.OFPTFPTWRITEACTIONS)
                     || type.equals(TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS)
                     || type.equals(TableFeaturesPropType.OFPTFPTAPPLYACTIONS)
                     || type.equals(TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS)) {
-                ActionRelatedTableFeaturePropertyBuilder actionBuilder = new ActionRelatedTableFeaturePropertyBuilder();
                 CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
                 List<Action> actions = ListDeserializer.deserializeHeaders(EncodeConstants.OF13_VERSION_ID,
                         propertyLength - COMMON_PROPERTY_LENGTH, input, keyMaker, registry);
-                actionBuilder.setAction(actions);
-                builder.addAugmentation(ActionRelatedTableFeatureProperty.class, actionBuilder.build());
+                builder.addAugmentation(new ActionRelatedTableFeaturePropertyBuilder().setAction(actions).build());
             } else if (type.equals(TableFeaturesPropType.OFPTFPTMATCH)
                     || type.equals(TableFeaturesPropType.OFPTFPTWILDCARDS)
                     || type.equals(TableFeaturesPropType.OFPTFPTWRITESETFIELD)
                     || type.equals(TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS)
                     || type.equals(TableFeaturesPropType.OFPTFPTAPPLYSETFIELD)
                     || type.equals(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS)) {
-                OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
                 CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
                 List<MatchEntry> entries = ListDeserializer.deserializeHeaders(EncodeConstants.OF13_VERSION_ID,
                         propertyLength - COMMON_PROPERTY_LENGTH, input, keyMaker, registry);
-                oxmBuilder.setMatchEntry(entries);
-                builder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+                builder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
             } else if (type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTER)
                     || type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS)) {
                 long expId = input.readUnsignedInt();

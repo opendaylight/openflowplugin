@@ -29,20 +29,19 @@ public class SetFieldExtensionTest {
         eqGroup.add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class);
         eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        SetFieldBuilder sb1 = new SetFieldBuilder();
         ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(ZVendorExt1.class).build();
-        GeneralAugMatchRpcAddFlowWriteActionsSetField odlxxx1 =
-                new GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder()
-                    .setExtensionList(Collections.singletonList(extension1)).build();
-        SetField setField1 = sb1.addAugmentation(GeneralAugMatchRpcAddFlowWriteActionsSetField.class, odlxxx1).build();
+        SetField setField1 = new SetFieldBuilder()
+                .addAugmentation(new GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder()
+                    .setExtensionList(Collections.singletonMap(extension1.key(), extension1))
+                    .build())
+                .build();
 
-        SetFieldBuilder sb2 = new SetFieldBuilder();
         ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(ZVendorExt2.class).build();
-        GeneralAugMatchNodesNodeTableFlowWriteActionsSetField odlxxx2 =
-                new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                    .setExtensionList(Collections.singletonList(extension2)).build();
-        SetField setField2 = sb2.addAugmentation(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
-                odlxxx2).build();
+        SetField setField2 = new SetFieldBuilder()
+                .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
+                    .setExtensionList(Collections.singletonMap(extension2.key(), extension2))
+                    .build())
+                .build();
 
         Assert.assertEquals(ZVendorExt1.class,
                 eqGroup.getExtension(setField1).get().nonnullExtensionList().values().iterator().next()

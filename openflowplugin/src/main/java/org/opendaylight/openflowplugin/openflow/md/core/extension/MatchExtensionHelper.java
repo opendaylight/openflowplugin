@@ -83,7 +83,7 @@ public final class MatchExtensionHelper {
                     matchEntry, ofVersion, matchPath.name());
         }
 
-        matchBuilder.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, builder.build());
+        matchBuilder.addAugmentation(builder.build());
     }
 
     /**
@@ -189,7 +189,7 @@ public final class MatchExtensionHelper {
                 ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
                         convertor.convert(matchEntry, matchPath);
                 ExtensionBuilder extBld = new ExtensionBuilder();
-                extBld.addAugmentation(extensionMatch.getAugmentationClass(), extensionMatch.getAugmentationObject());
+                extBld.addAugmentation(extensionMatch.getAugmentationObject());
 
                 extListBld = new ExtensionListBuilder();
                 extListBld.setExtension(extBld.build());

@@ -23,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeaders;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdMeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdMeterBandBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
@@ -119,9 +118,9 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                         Experimenter experimenter = (Experimenter) meterBandHeader.getBandType();
                         meterBandExperimenterBuilder.setBurstSize(experimenter.getExperimenterBurstSize());
                         meterBandExperimenterBuilder.setRate(experimenter.getExperimenterRate());
-                        ExperimenterIdMeterBandBuilder expBuilder = new ExperimenterIdMeterBandBuilder();
-                        expBuilder.setExperimenter(new ExperimenterId(experimenter.getExperimenter()));
-                        meterBandExperimenterBuilder.addAugmentation(ExperimenterIdMeterBand.class, expBuilder.build());
+                        meterBandExperimenterBuilder.addAugmentation(new ExperimenterIdMeterBandBuilder()
+                            .setExperimenter(new ExperimenterId(experimenter.getExperimenter()))
+                            .build());
                         // TODO - implement / finish experimenter meter band translation
                         MeterBandExperimenterCaseBuilder experimenterCaseBuilder =
                                 new MeterBandExperimenterCaseBuilder();

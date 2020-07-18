@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.deserializer;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ExperimenterIdErrorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -58,7 +56,7 @@ public class OnfExperimenterErrorFactory implements OFDeserializer<ErrorMessage>
             builder.setCodeString(UNKNOWN_CODE);
         }
 
-        builder.addAugmentation(ExperimenterIdError.class, new ExperimenterIdErrorBuilder()
+        builder.addAugmentation(new ExperimenterIdErrorBuilder()
                 .setExperimenter(new ExperimenterId(message.readUnsignedInt()))
                 .build());
 

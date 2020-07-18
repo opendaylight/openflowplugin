@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.MatchEntryValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
@@ -181,13 +180,10 @@ public final class MatchUtil {
             final Class<? extends MatchField> matchField,
             final Uint32 experimenterId,
             final NxExpMatchEntryValue value) {
-        ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
-        experimenterBuilder.setExperimenter(new ExperimenterId(experimenterId));
-        ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
-        expCaseBuilder.setExperimenter(experimenterBuilder.build());
-        OfjAugNxExpMatch ofjAugNxExpMatch = new OfjAugNxExpMatchBuilder().setNxExpMatchEntryValue(value).build();
-        expCaseBuilder.addAugmentation(OfjAugNxExpMatch.class, ofjAugNxExpMatch);
-        return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.class, expCaseBuilder.build());
+        return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.class, new ExperimenterIdCaseBuilder()
+            .setExperimenter(new ExperimenterBuilder().setExperimenter(new ExperimenterId(experimenterId)).build())
+            .addAugmentation(new OfjAugNxExpMatchBuilder().setNxExpMatchEntryValue(value).build())
+            .build());
     }
 
     public static Long ipv4ToLong(final Ipv4Address ipv4) {

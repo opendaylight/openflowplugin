@@ -29,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Expe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -107,7 +106,7 @@ public class AbstractExperimenterMatchCodecTest {
 
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
         assertEquals(FIELD_CODE << 1 | 1, buffer.readUnsignedByte());
-        assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES + (VALUE_LENGTH * 2), buffer.readUnsignedByte());
+        assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES + VALUE_LENGTH * 2, buffer.readUnsignedByte());
         assertEquals(EXPERIMENTER_ID.longValue(), buffer.readUnsignedInt());
         assertFalse(buffer.isReadable());
         verify(testCodec).serializeValue(null, true, buffer);
@@ -144,19 +143,17 @@ public class AbstractExperimenterMatchCodecTest {
     }
 
     static MatchEntry createMatchEntry(NxExpMatchEntryValue value, boolean hasMask) {
-        OfjAugNxExpMatchBuilder ofjAugNxExpMatchBuilder = new OfjAugNxExpMatchBuilder();
-        ofjAugNxExpMatchBuilder.setNxExpMatchEntryValue(value);
-        ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
-        experimenterBuilder.setExperimenter(new ExperimenterId(EXPERIMENTER_ID));
-        ExperimenterIdCaseBuilder experimenterIdCaseBuilder = new ExperimenterIdCaseBuilder();
-        experimenterIdCaseBuilder.setExperimenter(experimenterBuilder.build());
-        experimenterIdCaseBuilder.addAugmentation(OfjAugNxExpMatch.class, ofjAugNxExpMatchBuilder.build());
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(ExperimenterClass.class);
-        matchEntryBuilder.setOxmMatchField(TestNxmField.class);
-        matchEntryBuilder.setHasMask(hasMask);
-        matchEntryBuilder.setMatchEntryValue(experimenterIdCaseBuilder.build());
-        return matchEntryBuilder.build();
+        return new MatchEntryBuilder()
+                .setOxmClass(ExperimenterClass.class)
+                .setOxmMatchField(TestNxmField.class)
+                .setHasMask(hasMask)
+                .setMatchEntryValue(new ExperimenterIdCaseBuilder()
+                    .setExperimenter(new ExperimenterBuilder()
+                        .setExperimenter(new ExperimenterId(EXPERIMENTER_ID))
+                        .build())
+                    .addAugmentation(new OfjAugNxExpMatchBuilder().setNxExpMatchEntryValue(value).build())
+                    .build())
+                .build();
     }
 
     static void writeBuffer(ByteBuf message, boolean hasMask) {

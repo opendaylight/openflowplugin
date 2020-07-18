@@ -36,17 +36,19 @@ public class GroupingResolverTest {
         eqGroup.add(GeneralAugMatchNodesNodeTableFlow.class);
         eqGroup.add(GeneralAugMatchRpcAddFlow.class);
 
-        MatchBuilder mb1 = new MatchBuilder();
         ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(JoachimTheBig.class).build();
-        GeneralAugMatchNodesNodeTableFlow odlxxx1 = new GeneralAugMatchNodesNodeTableFlowBuilder()
-                .setExtensionList(Collections.singletonList(extension1)).build();
-        Match match1 = mb1.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, odlxxx1).build();
+        Match match1 = new MatchBuilder()
+                .addAugmentation(new GeneralAugMatchNodesNodeTableFlowBuilder()
+                    .setExtensionList(Collections.singletonMap(extension1.key(), extension1))
+                    .build())
+                .build();
 
-        MatchBuilder mb2 = new MatchBuilder();
         ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(JoachimTheTiny.class).build();
-        GeneralAugMatchNodesNodeTableFlow odlxxx2 = new GeneralAugMatchNodesNodeTableFlowBuilder()
-                .setExtensionList(Collections.singletonList(extension2)).build();
-        Match match2 = mb2.addAugmentation(GeneralAugMatchNodesNodeTableFlow.class, odlxxx2).build();
+        Match match2 = new MatchBuilder()
+                .addAugmentation(new GeneralAugMatchNodesNodeTableFlowBuilder()
+                    .setExtensionList(Collections.singletonMap(extension2.key(), extension2))
+                    .build())
+                .build();
 
         Assert.assertEquals(JoachimTheBig.class,
                 eqGroup.getExtension(match1).get().nonnullExtensionList().values().iterator().next().getExtensionKey());

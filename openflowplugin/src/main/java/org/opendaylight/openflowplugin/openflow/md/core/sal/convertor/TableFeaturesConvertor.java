@@ -46,9 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
@@ -518,10 +516,9 @@ public class TableFeaturesConvertor extends Convertor<
             nextTableIdsList.add(nextTableId.build());
         }
 
-        NextTableRelatedTableFeaturePropertyBuilder propBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
-        propBuilder.setNextTableIds(nextTableIdsList);
-        builder.setType(type);
-        builder.addAugmentation(NextTableRelatedTableFeatureProperty.class, propBuilder.build());
+        builder.setType(type).addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder()
+            .setNextTableIds(nextTableIdsList)
+            .build());
     }
 
     private static void setActionTableFeatureProperty(final TableFeaturePropertiesBuilder builder,
@@ -614,10 +611,9 @@ public class TableFeaturesConvertor extends Convertor<
             matchEntriesList.add(matchEntryBuilder.build());
         }
 
-        OxmRelatedTableFeaturePropertyBuilder propBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        propBuilder.setMatchEntry(matchEntriesList);
-        builder.setType(type);
-        builder.addAugmentation(OxmRelatedTableFeatureProperty.class, propBuilder.build());
+        builder.setType(type).addAugmentation(new OxmRelatedTableFeaturePropertyBuilder()
+            .setMatchEntry(matchEntriesList)
+            .build());
     }
 
     private static void setMatchEntry(final MatchEntryBuilder builder,

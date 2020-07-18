@@ -161,8 +161,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                                     data.getMatchPath());
 
                     if (matchExtensionWrap != null) {
-                        matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationClass(),
-                                matchExtensionWrap.getAugmentationObject());
+                        matchBuilder.addAugmentation(matchExtensionWrap.getAugmentationObject());
                     }
 
                     salFlowStatsBuilder.setMatch(matchBuilder.build());

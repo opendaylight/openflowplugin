@@ -19,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowAndStatisticsMapList;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -49,9 +48,7 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
         statistics.nonnullFlowAndStatisticsMapList()
             .forEach(stat -> {
                 final FlowBuilder flow = new FlowBuilder(stat)
-                    .addAugmentation(
-                        FlowStatisticsData.class,
-                        new FlowStatisticsDataBuilder()
+                        .addAugmentation(new FlowStatisticsDataBuilder()
                             .setFlowStatistics(new FlowStatisticsBuilder(stat).build())
                             .build());
 

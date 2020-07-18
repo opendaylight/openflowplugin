@@ -20,13 +20,9 @@ import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
@@ -191,24 +187,19 @@ public class TableFeaturesResponseConvertorTest {
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
 
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
-        NextTableRelatedTableFeaturePropertyBuilder nextPropBuilder =
-                new NextTableRelatedTableFeaturePropertyBuilder();
         List<NextTableIds> nextIds = new ArrayList<>();
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 1).build());
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 2).build());
-        nextPropBuilder.setNextTableIds(nextIds);
-        propBuilder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextPropBuilder.build());
+        propBuilder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder().setNextTableIds(nextIds).build());
 
         List<TableFeatureProperties> properties = new ArrayList<>();
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
 
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS);
-        nextPropBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
         nextIds = new ArrayList<>();
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 3).build());
-        nextPropBuilder.setNextTableIds(nextIds);
-        propBuilder.addAugmentation(NextTableRelatedTableFeatureProperty.class, nextPropBuilder.build());
+        propBuilder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder().setNextTableIds(nextIds).build());
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
 
@@ -241,17 +232,13 @@ public class TableFeaturesResponseConvertorTest {
         insBuilder.setInstructionChoice(gotoCaseBuilder.build());
         insIds.add(insBuilder.build());
 
-        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder =
-                new InstructionRelatedTableFeaturePropertyBuilder();
-        insPropBuilder.setInstruction(insIds);
-        propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
+        propBuilder.addAugmentation(new InstructionRelatedTableFeaturePropertyBuilder().setInstruction(insIds).build());
         properties.add(propBuilder.build());
 
          /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS);
-        insPropBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
         insIds = new ArrayList<>();
         insBuilder = new InstructionBuilder();
         WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
@@ -288,8 +275,7 @@ public class TableFeaturesResponseConvertorTest {
         insBuilder.setInstructionChoice(gotoCaseBuilder2.build());
         insIds.add(insBuilder.build());
 
-        insPropBuilder.setInstruction(insIds);
-        propBuilder.addAugmentation(InstructionRelatedTableFeatureProperty.class, insPropBuilder.build());
+        propBuilder.addAugmentation(new InstructionRelatedTableFeaturePropertyBuilder().setInstruction(insIds).build());
         properties.add(propBuilder.build());
         featuresBuilder.setTableFeatureProperties(properties);
 
@@ -323,16 +309,13 @@ public class TableFeaturesResponseConvertorTest {
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
-        OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        oxmBuilder.setMatchEntry(entries);
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
         properties.add(propBuilder.build()); //[0]
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELD);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -344,15 +327,13 @@ public class TableFeaturesResponseConvertorTest {
         entriesBuilder.setOxmMatchField(IpEcn.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
-        oxmBuilder.setMatchEntry(entries);
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
         properties.add(propBuilder.build());//[1]
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELD);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -364,15 +345,13 @@ public class TableFeaturesResponseConvertorTest {
         entriesBuilder.setOxmMatchField(VlanVid.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
-        oxmBuilder.setMatchEntry(entries);
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
         properties.add(propBuilder.build());//[2]
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -384,15 +363,13 @@ public class TableFeaturesResponseConvertorTest {
         entriesBuilder.setOxmMatchField(TcpSrc.class);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
-        oxmBuilder.setMatchEntry(entries);
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
         properties.add(propBuilder.build());//[3]
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
         entriesBuilder.setOxmClass(OpenflowBasicClass.class);
@@ -406,15 +383,13 @@ public class TableFeaturesResponseConvertorTest {
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
-        oxmBuilder.setMatchEntry(entries);
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
         properties.add(propBuilder.build());//[4]
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWILDCARDS);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
         entries = new ArrayList<>();
 
         entriesBuilder = new MatchEntryBuilder();
@@ -429,8 +404,7 @@ public class TableFeaturesResponseConvertorTest {
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
-        oxmBuilder.setMatchEntry(entries);
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
         properties.add(propBuilder.build());//[5]
 
         /* -------------------------------------------------- */
@@ -451,16 +425,13 @@ public class TableFeaturesResponseConvertorTest {
         actionBuilder.setActionChoice(createSetNwSrcAction());
         actions.add(actionBuilder.build());
 
-        ActionRelatedTableFeaturePropertyBuilder actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
-        actBuilder.setAction(actions);
-        propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
+        propBuilder.addAugmentation(new ActionRelatedTableFeaturePropertyBuilder().setAction(actions).build());
         properties.add(propBuilder.build());//[6]
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS);
-        actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
 
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
@@ -474,14 +445,12 @@ public class TableFeaturesResponseConvertorTest {
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(createCopyTtlOutCase());
         actions.add(actionBuilder.build());
-        actBuilder.setAction(actions);
-        propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
+        propBuilder.addAugmentation(new ActionRelatedTableFeaturePropertyBuilder().setAction(actions).build());
         properties.add(propBuilder.build());//[7]
 
         /* -------------------------------------------------- */
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITEACTIONS);
-        actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
 
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
@@ -495,16 +464,14 @@ public class TableFeaturesResponseConvertorTest {
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(pushVlanCase());
         actions.add(actionBuilder.build());
-        actBuilder.setAction(actions);
 
-        propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
+        propBuilder.addAugmentation(new ActionRelatedTableFeaturePropertyBuilder().setAction(actions).build());
         properties.add(propBuilder.build());
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS);
-        actBuilder = new ActionRelatedTableFeaturePropertyBuilder();
 
         actions = new ArrayList<>();
         actionBuilder = new ActionBuilder();
@@ -518,25 +485,22 @@ public class TableFeaturesResponseConvertorTest {
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(createEmptySetFieldCase());
         actions.add(actionBuilder.build());
-        actBuilder.setAction(actions);
 
-        propBuilder.addAugmentation(ActionRelatedTableFeatureProperty.class, actBuilder.build());
+        propBuilder.addAugmentation(new ActionRelatedTableFeaturePropertyBuilder().setAction(actions).build());
         properties.add(propBuilder.build());
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTER);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().build());
         properties.add(propBuilder.build());
 
         /* -------------------------------------------------- */
 
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS);
-        oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-        propBuilder.addAugmentation(OxmRelatedTableFeatureProperty.class, oxmBuilder.build());
+        propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().build());
         properties.add(propBuilder.build());
 
         /* -------------------------------------------------- */

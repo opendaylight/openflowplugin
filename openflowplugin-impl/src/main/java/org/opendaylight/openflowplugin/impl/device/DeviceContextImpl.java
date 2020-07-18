@@ -96,7 +96,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -370,9 +369,8 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
                 writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
                         .withKey(iiToNodeConnector.getKey())
-                        .addAugmentation(FlowCapableNodeConnectorStatisticsData.class, new
-                                FlowCapableNodeConnectorStatisticsDataBuilder().build())
-                        .addAugmentation(FlowCapableNodeConnector.class, flowCapableNodeConnector)
+                        .addAugmentation(new FlowCapableNodeConnectorStatisticsDataBuilder().build())
+                        .addAugmentation(flowCapableNodeConnector)
                         .build());
                 syncSubmitTransaction();
                 if (PortReason.OFPPRDELETE.equals(portStatusMessage.getReason())) {
@@ -727,7 +725,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public <T> RequestContext<T> createRequestContext() {
         final Long xid = deviceInfo.reserveXidForDeviceMessage();
 
-        final AbstractRequestContext<T> abstractRequestContext = new AbstractRequestContext<T>(xid) {
+        final AbstractRequestContext<T> abstractRequestContext = new AbstractRequestContext<>(xid) {
             @Override
             public void close() {
                 requestContexts.remove(this);

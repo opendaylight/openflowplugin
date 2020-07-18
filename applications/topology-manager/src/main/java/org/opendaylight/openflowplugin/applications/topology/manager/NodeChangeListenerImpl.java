@@ -19,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
@@ -97,14 +96,11 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
             .topology.topology.Node prepareTopologyNode(
             final NodeId nodeIdInTopology, final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory) {
-        final InventoryNode inventoryNode = new InventoryNodeBuilder()
-                .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class))).build();
-
-        final NodeBuilder topologyNodeBuilder = new NodeBuilder();
-        topologyNodeBuilder.setNodeId(nodeIdInTopology);
-        topologyNodeBuilder.addAugmentation(InventoryNode.class, inventoryNode);
-
-        return topologyNodeBuilder.build();
+        return new NodeBuilder()
+                .setNodeId(nodeIdInTopology)
+                .addAugmentation(new InventoryNodeBuilder()
+                    .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class)))
+                    .build())
+                .build();
     }
-
 }

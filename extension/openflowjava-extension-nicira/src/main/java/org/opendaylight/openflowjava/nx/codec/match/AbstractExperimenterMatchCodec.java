@@ -82,12 +82,12 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     private static MatchEntry buildMatchEntry(MatchEntryBuilder matchEntryBuilder,
                                                 ExperimenterIdCaseBuilder experimenterIdCaseBuilder,
                                                 NxExpMatchEntryValue nxExpMatchEntryValue) {
-        OfjAugNxExpMatch ofjAugNxExpMatch = new OfjAugNxExpMatchBuilder()
-                .setNxExpMatchEntryValue(nxExpMatchEntryValue)
+        return matchEntryBuilder
+                .setMatchEntryValue(experimenterIdCaseBuilder.addAugmentation(new OfjAugNxExpMatchBuilder()
+                    .setNxExpMatchEntryValue(nxExpMatchEntryValue)
+                    .build())
+                    .build())
                 .build();
-        experimenterIdCaseBuilder.addAugmentation(OfjAugNxExpMatch.class, ofjAugNxExpMatch);
-        matchEntryBuilder.setMatchEntryValue(experimenterIdCaseBuilder.build());
-        return matchEntryBuilder.build();
     }
 
     @Override

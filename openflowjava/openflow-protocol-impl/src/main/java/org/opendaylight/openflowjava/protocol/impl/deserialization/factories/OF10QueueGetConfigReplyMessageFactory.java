@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.RateQueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.RateQueuePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.QueueId;
@@ -72,9 +71,9 @@ public class OF10QueueGetConfigReplyMessageFactory implements OFDeserializer<Get
             propertiesLength -= input.readUnsignedShort();
             input.skipBytes(PADDING_IN_QUEUE_PROPERTY_HEADER);
             if (property.equals(QueueProperties.OFPQTMINRATE)) {
-                RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();
-                rateBuilder.setRate(input.readUnsignedShort());
-                propertiesBuilder.addAugmentation(RateQueueProperty.class, rateBuilder.build());
+                propertiesBuilder.addAugmentation(new RateQueuePropertyBuilder()
+                    .setRate(input.readUnsignedShort())
+                    .build());
                 input.skipBytes(PADDING_IN_RATE_QUEUE_PROPERTY);
             }
             propertiesList.add(propertiesBuilder.build());

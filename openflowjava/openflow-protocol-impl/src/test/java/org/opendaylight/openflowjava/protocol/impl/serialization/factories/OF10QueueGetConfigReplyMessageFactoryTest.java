@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.get.config.reply.QueuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10QueueGetConfigReplyMessageFactory.
@@ -53,7 +55,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
     public void testSerialize() throws Exception {
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setPort(new PortNumber(1L));
+        builder.setPort(new PortNumber(Uint32.ONE));
         builder.setQueues(createQueues());
         GetQueueConfigOutput message = builder.build();
 
@@ -78,22 +80,19 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
 
     private static List<Queues> createQueues() {
         List<Queues> list = new ArrayList<>();
-        QueuesBuilder builder = new QueuesBuilder();
-        builder.setQueueId(new QueueId(1L));
-        builder.setQueueProperty(createPropertiesList());
-
-        list.add(builder.build());
+        list.add(new QueuesBuilder()
+            .setQueueId(new QueueId(Uint32.ONE))
+            .setQueueProperty(createPropertiesList())
+            .build());
         return list;
     }
 
     private static List<QueueProperty> createPropertiesList() {
         final List<QueueProperty> propertiesList = new ArrayList<>();
-        QueuePropertyBuilder pb = new QueuePropertyBuilder();
-        pb.setProperty(QueueProperties.forValue(1));
-        RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();
-        rateBuilder.setRate(5);
-        pb.addAugmentation(RateQueueProperty.class, rateBuilder.build());
-        propertiesList.add(pb.build());
+        propertiesList.add(new QueuePropertyBuilder()
+            .setProperty(QueueProperties.forValue(1))
+            .addAugmentation(new RateQueuePropertyBuilder().setRate(Uint16.valueOf(5)).build())
+            .build());
         return propertiesList;
     }
 }
