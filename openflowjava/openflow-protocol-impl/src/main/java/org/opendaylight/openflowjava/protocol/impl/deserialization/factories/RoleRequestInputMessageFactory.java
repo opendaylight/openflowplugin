@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
@@ -28,12 +30,10 @@ public class RoleRequestInputMessageFactory implements OFDeserializer<RoleReques
     public RoleRequestInput deserialize(ByteBuf rawMessage) {
         RoleRequestInputBuilder builder = new RoleRequestInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setRole(ControllerRole.forValue(rawMessage.readInt()));
         rawMessage.skipBytes(PADDING);
-        byte[] generationId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(generationId);
-        builder.setGenerationId(new BigInteger(1, generationId));
+        builder.setGenerationId(readUint64(rawMessage));
         return builder.build();
     }
 }

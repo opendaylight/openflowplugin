@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -30,8 +32,8 @@ public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
 
     @Override
     protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
-        Long nshc = message.readUnsignedInt();
-        Long mask = hasMask ? message.readUnsignedInt() : null;
+        Uint32 nshc = readUint32(message);
+        Uint32 mask = hasMask ? readUint32(message) : null;
         return new NshcCaseValueBuilder().setNshc(nshc).setMask(mask).build();
     }
 

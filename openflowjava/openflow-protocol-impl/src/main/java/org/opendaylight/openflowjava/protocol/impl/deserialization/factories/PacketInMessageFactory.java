@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -44,14 +47,12 @@ public class PacketInMessageFactory implements OFDeserializer<PacketInMessage>,
 
         PacketInMessageBuilder builder = new PacketInMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        builder.setBufferId(rawMessage.readUnsignedInt());
-        builder.setTotalLen(rawMessage.readUnsignedShort());
+        builder.setXid(readUint32(rawMessage));
+        builder.setBufferId(readUint32(rawMessage));
+        builder.setTotalLen(readUint16(rawMessage));
         builder.setReason(PacketInReason.forValue(rawMessage.readUnsignedByte()));
-        builder.setTableId(new TableId((long)rawMessage.readUnsignedByte()));
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookie);
-        builder.setCookie(new BigInteger(1, cookie));
+        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
+        builder.setCookie(readUint64(rawMessage));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
         builder.setMatch(matchDeserializer.deserialize(rawMessage));
         rawMessage.skipBytes(PADDING_IN_PACKET_IN_HEADER);

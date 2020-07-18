@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -19,12 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  */
 public class GetAsyncRequestMessageFactory implements OFDeserializer<GetAsyncInput> {
-
     @Override
     public GetAsyncInput deserialize(ByteBuf rawMessage) {
-        GetAsyncInputBuilder builder = new GetAsyncInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        return builder.build();
+        return new GetAsyncInputBuilder()
+                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setXid(readUint32(rawMessage))
+                .build();
     }
 }

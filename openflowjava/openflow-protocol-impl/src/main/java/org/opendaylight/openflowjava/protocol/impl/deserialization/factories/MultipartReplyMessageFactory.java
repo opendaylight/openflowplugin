@@ -5,11 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -182,7 +185,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     public MultipartReplyMessage deserialize(final ByteBuf rawMessage) {
         MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         builder.setType(MultipartType.forValue(type));
         builder.setFlags(new MultipartRequestFlags((rawMessage.readUnsignedShort() & 0x01) != 0));
@@ -276,24 +279,18 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder();
             int flowRecordLength = input.readUnsignedShort();
             ByteBuf subInput = input.readSlice(flowRecordLength - EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-            flowStatsBuilder.setTableId(subInput.readUnsignedByte());
+            flowStatsBuilder.setTableId(readUint8(subInput));
             subInput.skipBytes(PADDING_IN_FLOW_STATS_HEADER_01);
-            flowStatsBuilder.setDurationSec(subInput.readUnsignedInt());
-            flowStatsBuilder.setDurationNsec(subInput.readUnsignedInt());
-            flowStatsBuilder.setPriority(subInput.readUnsignedShort());
-            flowStatsBuilder.setIdleTimeout(subInput.readUnsignedShort());
-            flowStatsBuilder.setHardTimeout(subInput.readUnsignedShort());
+            flowStatsBuilder.setDurationSec(readUint32(subInput));
+            flowStatsBuilder.setDurationNsec(readUint32(subInput));
+            flowStatsBuilder.setPriority(readUint16(subInput));
+            flowStatsBuilder.setIdleTimeout(readUint16(subInput));
+            flowStatsBuilder.setHardTimeout(readUint16(subInput));
             flowStatsBuilder.setFlags(createFlowModFlagsFromBitmap(subInput.readUnsignedShort()));
             subInput.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
-            byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            subInput.readBytes(cookie);
-            flowStatsBuilder.setCookie(new BigInteger(1, cookie));
-            byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            subInput.readBytes(packetCount);
-            flowStatsBuilder.setPacketCount(new BigInteger(1, packetCount));
-            byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            subInput.readBytes(byteCount);
-            flowStatsBuilder.setByteCount(new BigInteger(1, byteCount));
+            flowStatsBuilder.setCookie(readUint64(subInput));
+            flowStatsBuilder.setPacketCount(readUint64(subInput));
+            flowStatsBuilder.setByteCount(readUint64(subInput));
             OFDeserializer<Match> matchDeserializer = registry.getDeserializer(new MessageCodeKey(
                     EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
             flowStatsBuilder.setMatch(matchDeserializer.deserialize(subInput));
@@ -322,13 +319,9 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     private static MultipartReplyAggregateCase setAggregate(final ByteBuf input) {
         final MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder builder = new MultipartReplyAggregateBuilder();
-        byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(packetCount);
-        builder.setPacketCount(new BigInteger(1, packetCount));
-        byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(byteCount);
-        builder.setByteCount(new BigInteger(1, byteCount));
-        builder.setFlowCount(input.readUnsignedInt());
+        builder.setPacketCount(readUint64(input));
+        builder.setByteCount(readUint64(input));
+        builder.setFlowCount(readUint32(input));
         input.skipBytes(PADDING_IN_AGGREGATE_HEADER);
         caseBuilder.setMultipartReplyAggregate(builder.build());
         return caseBuilder.build();
@@ -340,15 +333,11 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<TableStats> tableStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             TableStatsBuilder tableStatsBuilder = new TableStatsBuilder();
-            tableStatsBuilder.setTableId(input.readUnsignedByte());
+            tableStatsBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_TABLE_HEADER);
-            tableStatsBuilder.setActiveCount(input.readUnsignedInt());
-            byte[] lookupCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(lookupCount);
-            tableStatsBuilder.setLookupCount(new BigInteger(1, lookupCount));
-            byte[] matchedCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(matchedCount);
-            tableStatsBuilder.setMatchedCount(new BigInteger(1, matchedCount));
+            tableStatsBuilder.setActiveCount(readUint32(input));
+            tableStatsBuilder.setLookupCount(readUint64(input));
+            tableStatsBuilder.setMatchedCount(readUint64(input));
             tableStatsList.add(tableStatsBuilder.build());
         }
         builder.setTableStats(tableStatsList);
@@ -363,7 +352,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         while (input.readableBytes() > 0) {
             TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
             final int length = input.readUnsignedShort();
-            featuresBuilder.setTableId(input.readUnsignedByte());
+            featuresBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
             featuresBuilder.setName(ByteBufUtils.decodeNullTerminatedString(input, MAX_TABLE_NAME_LENGTH));
             byte[] metadataMatch = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
@@ -373,7 +362,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             input.readBytes(metadataWrite);
             featuresBuilder.setMetadataWrite(metadataWrite);
             featuresBuilder.setConfig(createTableConfig(input.readUnsignedInt()));
-            featuresBuilder.setMaxEntries(input.readUnsignedInt());
+            featuresBuilder.setMaxEntries(readUint32(input));
             featuresBuilder.setTableFeatureProperties(createTableFeaturesProperties(input,
                     length - MULTIPART_REPLY_TABLE_FEATURES_STRUCTURE_LENGTH));
             features.add(featuresBuilder.build());
@@ -413,7 +402,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                 List<NextTableIds> ids = new ArrayList<>();
                 while (propertyLength > 0) {
                     NextTableIdsBuilder nextTableIdsBuilder = new NextTableIdsBuilder();
-                    nextTableIdsBuilder.setTableId(input.readUnsignedByte());
+                    nextTableIdsBuilder.setTableId(readUint8(input));
                     ids.add(nextTableIdsBuilder.build());
                     propertyLength--;
                 }
@@ -462,46 +451,22 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<PortStats> portStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             PortStatsBuilder portStatsBuilder = new PortStatsBuilder();
-            portStatsBuilder.setPortNo(input.readUnsignedInt());
+            portStatsBuilder.setPortNo(readUint32(input));
             input.skipBytes(PADDING_IN_PORT_STATS_HEADER);
-            byte[] rxPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxPackets);
-            portStatsBuilder.setRxPackets(new BigInteger(1, rxPackets));
-            byte[] txPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txPackets);
-            portStatsBuilder.setTxPackets(new BigInteger(1, txPackets));
-            byte[] rxBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxBytes);
-            portStatsBuilder.setRxBytes(new BigInteger(1, rxBytes));
-            byte[] txBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txBytes);
-            portStatsBuilder.setTxBytes(new BigInteger(1, txBytes));
-            byte[] rxDropped = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxDropped);
-            portStatsBuilder.setRxDropped(new BigInteger(1, rxDropped));
-            byte[] txDropped = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txDropped);
-            portStatsBuilder.setTxDropped(new BigInteger(1, txDropped));
-            byte[] rxErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxErrors);
-            portStatsBuilder.setRxErrors(new BigInteger(1, rxErrors));
-            byte[] txErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txErrors);
-            portStatsBuilder.setTxErrors(new BigInteger(1, txErrors));
-            byte[] rxFrameErr = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxFrameErr);
-            portStatsBuilder.setRxFrameErr(new BigInteger(1, rxFrameErr));
-            byte[] rxOverErr = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxOverErr);
-            portStatsBuilder.setRxOverErr(new BigInteger(1, rxOverErr));
-            byte[] rxCrcErr = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(rxCrcErr);
-            portStatsBuilder.setRxCrcErr(new BigInteger(1, rxCrcErr));
-            byte[] collisions = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(collisions);
-            portStatsBuilder.setCollisions(new BigInteger(1, collisions));
-            portStatsBuilder.setDurationSec(input.readUnsignedInt());
-            portStatsBuilder.setDurationNsec(input.readUnsignedInt());
+            portStatsBuilder.setRxPackets(readUint64(input));
+            portStatsBuilder.setTxPackets(readUint64(input));
+            portStatsBuilder.setRxBytes(readUint64(input));
+            portStatsBuilder.setTxBytes(readUint64(input));
+            portStatsBuilder.setRxDropped(readUint64(input));
+            portStatsBuilder.setTxDropped(readUint64(input));
+            portStatsBuilder.setRxErrors(readUint64(input));
+            portStatsBuilder.setTxErrors(readUint64(input));
+            portStatsBuilder.setRxFrameErr(readUint64(input));
+            portStatsBuilder.setRxOverErr(readUint64(input));
+            portStatsBuilder.setRxCrcErr(readUint64(input));
+            portStatsBuilder.setCollisions(readUint64(input));
+            portStatsBuilder.setDurationSec(readUint32(input));
+            portStatsBuilder.setDurationNsec(readUint32(input));
             portStatsList.add(portStatsBuilder.build());
         }
         builder.setPortStats(portStatsList);
@@ -515,19 +480,13 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<QueueStats> queueStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             QueueStatsBuilder queueStatsBuilder = new QueueStatsBuilder();
-            queueStatsBuilder.setPortNo(input.readUnsignedInt());
-            queueStatsBuilder.setQueueId(input.readUnsignedInt());
-            byte[] txBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txBytes);
-            queueStatsBuilder.setTxBytes(new BigInteger(1, txBytes));
-            byte[] txPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txPackets);
-            queueStatsBuilder.setTxPackets(new BigInteger(1, txPackets));
-            byte[] txErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(txErrors);
-            queueStatsBuilder.setTxErrors(new BigInteger(1, txErrors));
-            queueStatsBuilder.setDurationSec(input.readUnsignedInt());
-            queueStatsBuilder.setDurationNsec(input.readUnsignedInt());
+            queueStatsBuilder.setPortNo(readUint32(input));
+            queueStatsBuilder.setQueueId(readUint32(input));
+            queueStatsBuilder.setTxBytes(readUint64(input));
+            queueStatsBuilder.setTxPackets(readUint64(input));
+            queueStatsBuilder.setTxErrors(readUint64(input));
+            queueStatsBuilder.setDurationSec(readUint32(input));
+            queueStatsBuilder.setDurationNsec(readUint32(input));
             queueStatsList.add(queueStatsBuilder.build());
         }
         builder.setQueueStats(queueStatsList);
@@ -543,27 +502,19 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
             final int bodyLength = input.readUnsignedShort();
             input.skipBytes(PADDING_IN_GROUP_HEADER_01);
-            groupStatsBuilder.setGroupId(new GroupId(input.readUnsignedInt()));
-            groupStatsBuilder.setRefCount(input.readUnsignedInt());
+            groupStatsBuilder.setGroupId(new GroupId(readUint32(input)));
+            groupStatsBuilder.setRefCount(readUint32(input));
             input.skipBytes(PADDING_IN_GROUP_HEADER_02);
-            byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(packetCount);
-            groupStatsBuilder.setPacketCount(new BigInteger(1, packetCount));
-            byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(byteCount);
-            groupStatsBuilder.setByteCount(new BigInteger(1, byteCount));
-            groupStatsBuilder.setDurationSec(input.readUnsignedInt());
-            groupStatsBuilder.setDurationNsec(input.readUnsignedInt());
+            groupStatsBuilder.setPacketCount(readUint64(input));
+            groupStatsBuilder.setByteCount(readUint64(input));
+            groupStatsBuilder.setDurationSec(readUint32(input));
+            groupStatsBuilder.setDurationNsec(readUint32(input));
             int actualLength = GROUP_BODY_LENGTH;
             List<BucketStats> bucketStatsList = new ArrayList<>();
             while (actualLength < bodyLength) {
                 BucketStatsBuilder bucketStatsBuilder = new BucketStatsBuilder();
-                byte[] packetCountBucket = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-                input.readBytes(packetCountBucket);
-                bucketStatsBuilder.setPacketCount(new BigInteger(1, packetCountBucket));
-                byte[] byteCountBucket = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-                input.readBytes(byteCountBucket);
-                bucketStatsBuilder.setByteCount(new BigInteger(1, byteCountBucket));
+                bucketStatsBuilder.setPacketCount(readUint64(input));
+                bucketStatsBuilder.setByteCount(readUint64(input));
                 bucketStatsList.add(bucketStatsBuilder.build());
                 actualLength += BUCKET_COUNTER_LENGTH;
             }
@@ -578,11 +529,11 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     private static MultipartReplyMeterFeaturesCase setMeterFeatures(final ByteBuf input) {
         final MultipartReplyMeterFeaturesCaseBuilder caseBuilder = new MultipartReplyMeterFeaturesCaseBuilder();
         MultipartReplyMeterFeaturesBuilder builder = new MultipartReplyMeterFeaturesBuilder();
-        builder.setMaxMeter(input.readUnsignedInt());
+        builder.setMaxMeter(readUint32(input));
         builder.setBandTypes(createMeterBandsBitmap(input.readUnsignedInt()));
         builder.setCapabilities(createMeterFlags(input.readUnsignedInt()));
-        builder.setMaxBands(input.readUnsignedByte());
-        builder.setMaxColor(input.readUnsignedByte());
+        builder.setMaxBands(readUint8(input));
+        builder.setMaxColor(readUint8(input));
         input.skipBytes(PADDING_IN_METER_FEATURES_HEADER);
         caseBuilder.setMultipartReplyMeterFeatures(builder.build());
         return caseBuilder.build();
@@ -610,28 +561,20 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<MeterStats> meterStatsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             MeterStatsBuilder meterStatsBuilder = new MeterStatsBuilder();
-            meterStatsBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
+            meterStatsBuilder.setMeterId(new MeterId(readUint32(input)));
             final int meterStatsBodyLength = input.readUnsignedShort();
             input.skipBytes(PADDING_IN_METER_STATS_HEADER);
-            meterStatsBuilder.setFlowCount(input.readUnsignedInt());
-            byte[] packetInCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(packetInCount);
-            meterStatsBuilder.setPacketInCount(new BigInteger(1, packetInCount));
-            byte[] byteInCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(byteInCount);
-            meterStatsBuilder.setByteInCount(new BigInteger(1, byteInCount));
-            meterStatsBuilder.setDurationSec(input.readUnsignedInt());
-            meterStatsBuilder.setDurationNsec(input.readUnsignedInt());
+            meterStatsBuilder.setFlowCount(readUint32(input));
+            meterStatsBuilder.setPacketInCount(readUint64(input));
+            meterStatsBuilder.setByteInCount(readUint64(input));
+            meterStatsBuilder.setDurationSec(readUint32(input));
+            meterStatsBuilder.setDurationNsec(readUint32(input));
             int actualLength = METER_BODY_LENGTH;
             List<MeterBandStats> meterBandStatsList = new ArrayList<>();
             while (actualLength < meterStatsBodyLength) {
                 MeterBandStatsBuilder meterBandStatsBuilder = new MeterBandStatsBuilder();
-                byte[] packetBandCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-                input.readBytes(packetBandCount);
-                meterBandStatsBuilder.setPacketBandCount(new BigInteger(1, packetBandCount));
-                byte[] byteBandCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-                input.readBytes(byteBandCount);
-                meterBandStatsBuilder.setByteBandCount(new BigInteger(1, byteBandCount));
+                meterBandStatsBuilder.setPacketBandCount(readUint64(input));
+                meterBandStatsBuilder.setByteBandCount(readUint64(input));
                 meterBandStatsList.add(meterBandStatsBuilder.build());
                 actualLength += METER_BAND_STATS_LENGTH;
             }
@@ -651,7 +594,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             MeterConfigBuilder meterConfigBuilder = new MeterConfigBuilder();
             int meterConfigBodyLength = input.readUnsignedShort();
             meterConfigBuilder.setFlags(createMeterFlags(input.readUnsignedShort()));
-            meterConfigBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
+            meterConfigBuilder.setMeterId(new MeterId(readUint32(input)));
             int actualLength = METER_CONFIG_LENGTH;
             List<Bands> bandsList = new ArrayList<>();
             while (actualLength < meterConfigBodyLength) {
@@ -664,8 +607,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                         MeterBandDropBuilder bandDropBuilder = new MeterBandDropBuilder();
                         bandDropBuilder.setType(MeterBandType.forValue(bandType));
                         actualLength += input.readUnsignedShort();
-                        bandDropBuilder.setRate(input.readUnsignedInt());
-                        bandDropBuilder.setBurstSize(input.readUnsignedInt());
+                        bandDropBuilder.setRate(readUint32(input));
+                        bandDropBuilder.setBurstSize(readUint32(input));
                         input.skipBytes(PADDING_IN_METER_BAND_DROP_HEADER);
                         bandDropCaseBuilder.setMeterBandDrop(bandDropBuilder.build());
                         bandsBuilder.setMeterBand(bandDropCaseBuilder.build());
@@ -676,9 +619,9 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                         MeterBandDscpRemarkBuilder bandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         bandDscpRemarkBuilder.setType(MeterBandType.forValue(bandType));
                         actualLength += input.readUnsignedShort();
-                        bandDscpRemarkBuilder.setRate(input.readUnsignedInt());
-                        bandDscpRemarkBuilder.setBurstSize(input.readUnsignedInt());
-                        bandDscpRemarkBuilder.setPrecLevel(input.readUnsignedByte());
+                        bandDscpRemarkBuilder.setRate(readUint32(input));
+                        bandDscpRemarkBuilder.setBurstSize(readUint32(input));
+                        bandDscpRemarkBuilder.setPrecLevel(readUint8(input));
                         input.skipBytes(PADDING_IN_METER_BAND_DSCP_HEADER);
                         bandDscpRemarkCaseBuilder.setMeterBandDscpRemark(bandDscpRemarkBuilder.build());
                         bandsBuilder.setMeterBand(bandDscpRemarkCaseBuilder.build());
@@ -729,7 +672,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         List<Ports> portsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             PortsBuilder portsBuilder = new PortsBuilder();
-            portsBuilder.setPortNo(input.readUnsignedInt());
+            portsBuilder.setPortNo(readUint32(input));
             input.skipBytes(PADDING_IN_PORT_DESC_HEADER_01);
             portsBuilder.setHwAddr(ByteBufUtils.readIetfMacAddress(input));
             input.skipBytes(PADDING_IN_PORT_DESC_HEADER_02);
@@ -740,8 +683,8 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             portsBuilder.setAdvertisedFeatures(createPortFeatures(input.readUnsignedInt()));
             portsBuilder.setSupportedFeatures(createPortFeatures(input.readUnsignedInt()));
             portsBuilder.setPeerFeatures(createPortFeatures(input.readUnsignedInt()));
-            portsBuilder.setCurrSpeed(input.readUnsignedInt());
-            portsBuilder.setMaxSpeed(input.readUnsignedInt());
+            portsBuilder.setCurrSpeed(readUint32(input));
+            portsBuilder.setMaxSpeed(readUint32(input));
             portsList.add(portsBuilder.build());
         }
         builder.setPorts(portsList);
@@ -854,15 +797,15 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             final int bodyLength = input.readUnsignedShort();
             groupDescBuilder.setType(GroupType.forValue(input.readUnsignedByte()));
             input.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
-            groupDescBuilder.setGroupId(new GroupId(input.readUnsignedInt()));
+            groupDescBuilder.setGroupId(new GroupId(readUint32(input)));
             int actualLength = GROUP_DESC_HEADER_LENGTH;
             List<BucketsList> bucketsList = new ArrayList<>();
             while (actualLength < bodyLength) {
                 BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
                 final int bucketsLength = input.readUnsignedShort();
-                bucketsBuilder.setWeight(input.readUnsignedShort());
-                bucketsBuilder.setWatchPort(new PortNumber(input.readUnsignedInt()));
-                bucketsBuilder.setWatchGroup(input.readUnsignedInt());
+                bucketsBuilder.setWeight(readUint16(input));
+                bucketsBuilder.setWatchPort(new PortNumber(readUint32(input)));
+                bucketsBuilder.setWatchGroup(readUint32(input));
                 input.skipBytes(PADDING_IN_BUCKETS_HEADER);
                 CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
                 List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,

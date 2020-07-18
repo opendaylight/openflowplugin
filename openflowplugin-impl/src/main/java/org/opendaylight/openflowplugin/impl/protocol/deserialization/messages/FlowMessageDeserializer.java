@@ -5,8 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
@@ -51,17 +54,17 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     public FlowMessage deserialize(ByteBuf message) {
         final FlowMessageBuilder builder = new FlowMessageBuilder()
             .setVersion((short) EncodeConstants.OF13_VERSION_ID)
-            .setXid(message.readUnsignedInt())
+            .setXid(readUint32(message))
             .setCookie(new FlowCookie(BigInteger.valueOf(message.readLong())))
             .setCookieMask(new FlowCookie(BigInteger.valueOf(message.readLong())))
-            .setTableId(message.readUnsignedByte())
+            .setTableId(readUint8(message))
             .setCommand(FlowModCommand.forValue(message.readUnsignedByte()))
-            .setIdleTimeout(message.readUnsignedShort())
-            .setHardTimeout(message.readUnsignedShort())
-            .setPriority(message.readUnsignedShort())
-            .setBufferId(message.readUnsignedInt())
+            .setIdleTimeout(readUint16(message))
+            .setHardTimeout(readUint16(message))
+            .setPriority(readUint16(message))
+            .setBufferId(readUint32(message))
             .setOutPort(BigInteger.valueOf(message.readUnsignedInt()))
-            .setOutGroup(message.readUnsignedInt())
+            .setOutGroup(readUint32(message))
             .setFlags(createFlowModFlagsFromBitmap(message.readUnsignedShort()));
 
         message.skipBytes(PADDING);

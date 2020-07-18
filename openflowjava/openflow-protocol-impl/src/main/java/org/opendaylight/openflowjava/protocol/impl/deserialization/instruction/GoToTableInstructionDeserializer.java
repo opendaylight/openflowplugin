@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
@@ -28,22 +29,18 @@ public class GoToTableInstructionDeserializer  implements OFDeserializer<Instruc
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        final InstructionBuilder builder = new InstructionBuilder();
-        GotoTableCaseBuilder caseBuilder = new GotoTableCaseBuilder();
-        GotoTableBuilder instructionBuilder = new GotoTableBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        instructionBuilder.setTableId(input.readUnsignedByte());
-        caseBuilder.setGotoTable(instructionBuilder.build());
-        builder.setInstructionChoice(caseBuilder.build());
+        final InstructionBuilder builder = new InstructionBuilder()
+                .setInstructionChoice(new GotoTableCaseBuilder()
+                    .setGotoTable(new GotoTableBuilder().setTableId(readUint8(input)).build())
+                    .build());
         input.skipBytes(InstructionConstants.PADDING_IN_GOTO_TABLE);
         return builder.build();
     }
 
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
-        InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        builder.setInstructionChoice(new GotoTableCaseBuilder().build());
-        return builder.build();
+        return new InstructionBuilder().setInstructionChoice(new GotoTableCaseBuilder().build()).build();
     }
 }

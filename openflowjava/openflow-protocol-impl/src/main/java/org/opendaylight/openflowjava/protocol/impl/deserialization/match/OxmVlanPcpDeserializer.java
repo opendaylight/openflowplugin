@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -14,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.pcp._case.VlanPcpBuilder;
 
@@ -28,17 +29,11 @@ public class OxmVlanPcpDeserializer extends AbstractOxmMatchEntryDeserializer
 
     @Override
     public MatchEntry deserialize(ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addVlanPcpValue(input, builder);
-        return builder.build();
-    }
-
-    private static void addVlanPcpValue(ByteBuf input, MatchEntryBuilder builder) {
-        VlanPcpCaseBuilder caseBuilder = new VlanPcpCaseBuilder();
-        VlanPcpBuilder vlanBuilder = new VlanPcpBuilder();
-        vlanBuilder.setVlanPcp(input.readUnsignedByte());
-        caseBuilder.setVlanPcp(vlanBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        return processHeader(getOxmClass(), getOxmField(), input)
+                .setMatchEntryValue(new VlanPcpCaseBuilder()
+                    .setVlanPcp(new VlanPcpBuilder().setVlanPcp(readUint8(input)).build())
+                    .build())
+                .build();
     }
 
     @Override

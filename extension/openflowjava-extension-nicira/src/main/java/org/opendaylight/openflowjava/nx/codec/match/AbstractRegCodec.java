@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
@@ -25,10 +26,10 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     public MatchEntry deserialize(ByteBuf message) {
         final MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         final RegValuesBuilder regValuesBuilder = new RegValuesBuilder();
-        regValuesBuilder.setValue(message.readUnsignedInt());
+        regValuesBuilder.setValue(readUint32(message));
 
         if (matchEntriesBuilder.isHasMask()) {
-            regValuesBuilder.setMask(message.readUnsignedInt());
+            regValuesBuilder.setMask(readUint32(message));
         }
 
         return matchEntriesBuilder
@@ -41,7 +42,7 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        final RegCaseValue regCase = ((RegCaseValue) input.getMatchEntryValue());
+        final RegCaseValue regCase = (RegCaseValue) input.getMatchEntryValue();
         outBuffer.writeInt(regCase.getRegValues().getValue().intValue());
 
         if (input.isHasMask()) {

@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -22,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
 
@@ -55,10 +58,11 @@ public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
 
     @Override
     protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
-        Short flagsValue = message.readUnsignedByte();
-        Short maskValue = hasMask ? message.readUnsignedByte() : null;
-        NshFlagsValues flagsValues = new NshFlagsValuesBuilder().setNshFlags(flagsValue).setMask(maskValue).build();
-        return new NshFlagsCaseValueBuilder().setNshFlagsValues(flagsValues).build();
+        Uint8 flagsValue = readUint8(message);
+        Uint8 maskValue = hasMask ? readUint8(message) : null;
+        return new NshFlagsCaseValueBuilder()
+                .setNshFlagsValues(new NshFlagsValuesBuilder().setNshFlags(flagsValue).setMask(maskValue).build())
+                .build();
     }
 
     @Override

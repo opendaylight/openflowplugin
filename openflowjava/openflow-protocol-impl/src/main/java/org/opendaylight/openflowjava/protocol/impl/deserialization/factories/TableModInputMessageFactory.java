@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -28,8 +31,8 @@ public class TableModInputMessageFactory implements OFDeserializer<TableModInput
     public TableModInput deserialize(ByteBuf rawMessage) {
         TableModInputBuilder builder = new TableModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        builder.setTableId(new TableId((long) rawMessage.readUnsignedByte()));
+        builder.setXid(readUint32(rawMessage));
+        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
         rawMessage.skipBytes(PADDING_IN_TABLE_MOD_MESSAGE);
         builder.setConfig(createTableConfig(rawMessage.readUnsignedInt()));
         return builder.build();

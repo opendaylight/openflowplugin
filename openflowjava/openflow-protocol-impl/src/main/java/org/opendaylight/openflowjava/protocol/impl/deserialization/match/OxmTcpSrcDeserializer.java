@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -15,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
 
@@ -29,17 +30,11 @@ public class OxmTcpSrcDeserializer extends AbstractOxmMatchEntryDeserializer
 
     @Override
     public MatchEntry deserialize(ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addTcpSrcValue(input, builder);
-        return builder.build();
-    }
-
-    private static void addTcpSrcValue(ByteBuf input, MatchEntryBuilder builder) {
-        TcpSrcCaseBuilder caseBuilder = new TcpSrcCaseBuilder();
-        TcpSrcBuilder tcpBuilder = new TcpSrcBuilder();
-        tcpBuilder.setPort(new PortNumber(input.readUnsignedShort()));
-        caseBuilder.setTcpSrc(tcpBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        return processHeader(getOxmClass(), getOxmField(), input)
+                .setMatchEntryValue(new TcpSrcCaseBuilder()
+                    .setTcpSrc(new TcpSrcBuilder().setPort(new PortNumber(readUint16(input))).build())
+                    .build())
+                .build();
     }
 
     @Override

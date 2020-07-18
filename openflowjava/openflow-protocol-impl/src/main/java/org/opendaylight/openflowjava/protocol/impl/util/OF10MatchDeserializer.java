@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import org.eclipse.jdt.annotation.NonNull;
@@ -40,21 +42,21 @@ public class OF10MatchDeserializer implements OFDeserializer<MatchV10> {
         builder.setWildcards(createWildcards(wildcards));
         builder.setNwSrcMask(decodeNwSrcMask(wildcards));
         builder.setNwDstMask(decodeNwDstMask(wildcards));
-        builder.setInPort(input.readUnsignedShort());
+        builder.setInPort(readUint16(input));
         builder.setDlSrc(ByteBufUtils.readIetfMacAddress(input));
         builder.setDlDst(ByteBufUtils.readIetfMacAddress(input));
 
-        builder.setDlVlan(input.readUnsignedShort());
-        builder.setDlVlanPcp(input.readUnsignedByte());
+        builder.setDlVlan(readUint16(input));
+        builder.setDlVlanPcp(readUint8(input));
         input.skipBytes(PADDING_IN_MATCH);
-        builder.setDlType(input.readUnsignedShort());
-        builder.setNwTos(input.readUnsignedByte());
-        builder.setNwProto(input.readUnsignedByte());
+        builder.setDlType(readUint16(input));
+        builder.setNwTos(readUint8(input));
+        builder.setNwProto(readUint8(input));
         input.skipBytes(PADDING_IN_MATCH_2);
         builder.setNwSrc(ByteBufUtils.readIetfIpv4Address(input));
         builder.setNwDst(ByteBufUtils.readIetfIpv4Address(input));
-        builder.setTpSrc(input.readUnsignedShort());
-        builder.setTpDst(input.readUnsignedShort());
+        builder.setTpSrc(readUint16(input));
+        builder.setTpDst(readUint16(input));
         return builder.build();
     }
 

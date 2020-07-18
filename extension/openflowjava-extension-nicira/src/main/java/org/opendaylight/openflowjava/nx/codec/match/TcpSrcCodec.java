@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -17,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfTcpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.tcp.src.grouping.TcpSrcValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpSrcCaseValue;
@@ -47,17 +48,15 @@ public class TcpSrcCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        matchEntryBuilder.setHasMask(true);
-        int portNo = message.readUnsignedShort();
-        int mask = message.readUnsignedShort();
-        TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
-        TcpSrcValuesBuilder tcpSrcValuesBuilder = new TcpSrcValuesBuilder();
-        tcpSrcValuesBuilder.setPort(new PortNumber(portNo));
-        tcpSrcValuesBuilder.setMask(mask);
-        caseBuilder.setTcpSrcValues(tcpSrcValuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setHasMask(true)
+                .setMatchEntryValue(new TcpSrcCaseValueBuilder()
+                    .setTcpSrcValues(new TcpSrcValuesBuilder()
+                        .setPort(new PortNumber(readUint16(message)))
+                        .setMask(readUint16(message))
+                        .build())
+                    .build())
+                .build();
     }
 
     @Override
