@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -16,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpOp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.arp.op.grouping.ArpOpValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpOpCaseValue;
@@ -33,17 +34,17 @@ public class ArpOpCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        ArpOpCaseValue arpOpCase = ((ArpOpCaseValue) input.getMatchEntryValue());
+        ArpOpCaseValue arpOpCase = (ArpOpCaseValue) input.getMatchEntryValue();
         outBuffer.writeShort(arpOpCase.getArpOpValues().getValue().toJava());
     }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        ArpOpCaseValueBuilder caseBuilder = new ArpOpCaseValueBuilder();
-        caseBuilder.setArpOpValues(new ArpOpValuesBuilder().setValue(message.readUnsignedShort()).build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setMatchEntryValue(new ArpOpCaseValueBuilder()
+                    .setArpOpValues(new ArpOpValuesBuilder().setValue(readUint16(message)).build())
+                    .build())
+                .build();
     }
 
     @Override

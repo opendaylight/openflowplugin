@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -68,11 +70,11 @@ public class ResubmitCodec extends AbstractActionCodec {
     public Action deserialize(final ByteBuf message) {
         final ActionBuilder actionBuilder = deserializeHeader(message);
 
-        ActionResubmitBuilder builder = new ActionResubmitBuilder();
-        NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
-        nxActionResubmitBuilder.setInPort(message.readUnsignedShort());
-        nxActionResubmitBuilder.setTable(message.readUnsignedByte());
-        builder.setNxActionResubmit(nxActionResubmitBuilder.build());
+        ActionResubmitBuilder builder = new ActionResubmitBuilder()
+                .setNxActionResubmit(new NxActionResubmitBuilder()
+                    .setInPort(readUint16(message))
+                    .setTable(readUint8(message))
+                    .build());
         message.skipBytes(PADDING);
 
         actionBuilder.setActionChoice(builder.build());

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -21,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NsiCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NsiCodec extends AbstractExperimenterMatchCodec {
 
@@ -49,8 +52,8 @@ public class NsiCodec extends AbstractExperimenterMatchCodec {
 
     @Override
     protected NxExpMatchEntryValue deserializeValue(final ByteBuf message, final boolean hasMask) {
-        Short value = message.readUnsignedByte();
-        Short mask = hasMask ? message.readUnsignedByte() : null;
+        Uint8 value = readUint8(message);
+        Uint8 mask = hasMask ? readUint8(message) : null;
         NsiValues nsiValues = new NsiValuesBuilder().setNsi(value).setMask(mask).build();
         return new NsiCaseValueBuilder().setNsiValues(nsiValues).build();
     }

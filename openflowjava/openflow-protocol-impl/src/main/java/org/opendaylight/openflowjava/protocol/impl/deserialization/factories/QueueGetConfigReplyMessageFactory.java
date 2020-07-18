@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
@@ -52,8 +54,8 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
 
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        builder.setPort(new PortNumber(rawMessage.readUnsignedInt()));
+        builder.setXid(readUint32(rawMessage));
+        builder.setPort(new PortNumber(readUint32(rawMessage)));
         rawMessage.skipBytes(PADDING_IN_QUEUE_GET_CONFIG_REPLY_HEADER);
         builder.setQueues(createQueuesList(rawMessage));
         return builder.build();
@@ -63,8 +65,8 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
         List<Queues> queuesList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             QueuesBuilder queueBuilder = new QueuesBuilder();
-            queueBuilder.setQueueId(new QueueId(input.readUnsignedInt()));
-            queueBuilder.setPort(new PortNumber(input.readUnsignedInt()));
+            queueBuilder.setQueueId(new QueueId(readUint32(input)));
+            queueBuilder.setPort(new PortNumber(readUint32(input)));
             int length = input.readUnsignedShort();
             input.skipBytes(PADDING_IN_PACKET_QUEUE_HEADER);
             queueBuilder.setQueueProperty(createPropertiesList(input, length - PACKET_QUEUE_LENGTH));
@@ -86,7 +88,7 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
             input.skipBytes(PADDING_IN_QUEUE_PROPERTY_HEADER);
             if (property.equals(QueueProperties.OFPQTMINRATE) || property.equals(QueueProperties.OFPQTMAXRATE)) {
                 propertiesBuilder.addAugmentation(new RateQueuePropertyBuilder()
-                    .setRate(input.readUnsignedShort())
+                    .setRate(readUint16(input))
                     .build());
                 input.skipBytes(PADDING_IN_RATE_QUEUE_PROPERTY);
             } else if (property.equals(QueueProperties.OFPQTEXPERIMENTER)) {

@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -17,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.pkt.mark.grouping.PktMarkValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValue;
@@ -42,13 +42,11 @@ public class PktMarkCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        PktMarkCaseValueBuilder pktMarkCaseValueBuilder = new PktMarkCaseValueBuilder();
-        PktMarkValuesBuilder pktMarkValuesBuilder = new PktMarkValuesBuilder();
-        pktMarkValuesBuilder.setPktMark(message.readUnsignedInt());
-        pktMarkCaseValueBuilder.setPktMarkValues(pktMarkValuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(pktMarkCaseValueBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setMatchEntryValue(new PktMarkCaseValueBuilder()
+                    .setPktMarkValues(new PktMarkValuesBuilder().setPktMark(readUint32(message)).build())
+                    .build())
+                .build();
     }
 
     @Override
