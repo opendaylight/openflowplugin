@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -35,10 +37,10 @@ public class PortStatusMessageFactory implements OFDeserializer<PortStatusMessag
     public PortStatusMessage deserialize(final ByteBuf rawMessage) {
         PortStatusMessageBuilder builder = new PortStatusMessageBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setReason(PortReason.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_PORT_STATUS_HEADER);
-        builder.setPortNo(rawMessage.readUnsignedInt());
+        builder.setPortNo(readUint32(rawMessage));
         rawMessage.skipBytes(PADDING_IN_OFP_PORT_HEADER_1);
         builder.setHwAddr(ByteBufUtils.readIetfMacAddress(rawMessage));
         rawMessage.skipBytes(PADDING_IN_OFP_PORT_HEADER_2);
@@ -49,8 +51,8 @@ public class PortStatusMessageFactory implements OFDeserializer<PortStatusMessag
         builder.setAdvertisedFeatures(createPortFeatures(rawMessage.readUnsignedInt()));
         builder.setSupportedFeatures(createPortFeatures(rawMessage.readUnsignedInt()));
         builder.setPeerFeatures(createPortFeatures(rawMessage.readUnsignedInt()));
-        builder.setCurrSpeed(rawMessage.readUnsignedInt());
-        builder.setMaxSpeed(rawMessage.readUnsignedInt());
+        builder.setCurrSpeed(readUint32(rawMessage));
+        builder.setMaxSpeed(readUint32(rawMessage));
         return builder.build();
     }
 

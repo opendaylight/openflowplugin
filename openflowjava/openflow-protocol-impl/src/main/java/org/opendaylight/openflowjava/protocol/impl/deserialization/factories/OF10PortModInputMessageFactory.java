@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -28,7 +30,7 @@ public class OF10PortModInputMessageFactory implements OFDeserializer<PortModInp
     public PortModInput deserialize(final ByteBuf rawMessage) {
         PortModInputBuilder builder = new PortModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         builder.setPortNo(new PortNumber((long) rawMessage.readUnsignedShort()));
         builder.setHwAddress(ByteBufUtils.readIetfMacAddress(rawMessage));
         builder.setConfigV10(createPortConfig(rawMessage.readUnsignedInt()));
