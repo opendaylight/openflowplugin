@@ -46,20 +46,20 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
     public FlowModInput deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        FlowModInputBuilder builder = new FlowModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setCookie(readUint64(rawMessage));
-        builder.setCookieMask(readUint64(rawMessage));
-        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
-        builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedByte()));
-        builder.setIdleTimeout(readUint16(rawMessage));
-        builder.setHardTimeout(readUint16(rawMessage));
-        builder.setPriority(readUint16(rawMessage));
-        builder.setBufferId(readUint32(rawMessage));
-        builder.setOutPort(new PortNumber(readUint32(rawMessage)));
-        builder.setOutGroup(readUint32(rawMessage));
-        builder.setFlags(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
+        FlowModInputBuilder builder = new FlowModInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setCookie(readUint64(rawMessage))
+                .setCookieMask(readUint64(rawMessage))
+                .setTableId(new TableId(readUint8(rawMessage).toUint32()))
+                .setCommand(FlowModCommand.forValue(rawMessage.readUnsignedByte()))
+                .setIdleTimeout(readUint16(rawMessage))
+                .setHardTimeout(readUint16(rawMessage))
+                .setPriority(readUint16(rawMessage))
+                .setBufferId(readUint32(rawMessage))
+                .setOutPort(new PortNumber(readUint32(rawMessage)))
+                .setOutGroup(readUint32(rawMessage))
+                .setFlags(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
         rawMessage.skipBytes(PADDING);
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));

@@ -30,11 +30,11 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
 
     @Override
     public PacketOutInput deserialize(ByteBuf rawMessage) {
-        PacketOutInputBuilder builder = new PacketOutInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setBufferId(readUint32(rawMessage));
-        builder.setInPort(new PortNumber(readUint32(rawMessage)));
+        PacketOutInputBuilder builder = new PacketOutInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setBufferId(readUint32(rawMessage))
+                .setInPort(new PortNumber(readUint32(rawMessage)));
         int actionsLen = rawMessage.readShort();
         rawMessage.skipBytes(PADDING);
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);

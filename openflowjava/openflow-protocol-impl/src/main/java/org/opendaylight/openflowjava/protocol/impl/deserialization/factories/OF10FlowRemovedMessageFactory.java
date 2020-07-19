@@ -31,9 +31,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMessage>,
         DeserializerRegistryInjector {
-
     private static final byte PADDING_IN_FLOW_REMOVED_MESSAGE = 1;
     private static final byte PADDING_IN_FLOW_REMOVED_MESSAGE_2 = 2;
+
     private DeserializerRegistry registry;
 
     @Override
@@ -41,9 +41,9 @@ public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemoved
     public FlowRemovedMessage deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage));
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         builder.setMatchV10(matchDeserializer.deserialize(rawMessage));

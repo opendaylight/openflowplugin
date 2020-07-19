@@ -45,14 +45,14 @@ public class PacketInMessageFactory implements OFDeserializer<PacketInMessage>,
     public PacketInMessage deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        PacketInMessageBuilder builder = new PacketInMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setBufferId(readUint32(rawMessage));
-        builder.setTotalLen(readUint16(rawMessage));
-        builder.setReason(PacketInReason.forValue(rawMessage.readUnsignedByte()));
-        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
-        builder.setCookie(readUint64(rawMessage));
+        PacketInMessageBuilder builder = new PacketInMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setBufferId(readUint32(rawMessage))
+                .setTotalLen(readUint16(rawMessage))
+                .setReason(PacketInReason.forValue(rawMessage.readUnsignedByte()))
+                .setTableId(new TableId(readUint8(rawMessage).toUint32()))
+                .setCookie(readUint64(rawMessage));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
         builder.setMatch(matchDeserializer.deserialize(rawMessage));
         rawMessage.skipBytes(PADDING_IN_PACKET_IN_HEADER);
