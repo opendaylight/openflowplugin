@@ -5,10 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.util;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Stores common constants.
@@ -23,14 +24,26 @@ public interface EncodeConstants {
     /** OpenFlow v1.0 wire protocol number. */
     byte OF10_VERSION_ID = 0x01;
 
+    /** OpenFlow v1.0 wire protocol number as Uint8. */
+    @NonNull Uint8 OF_VERSION_1_0 = Uint8.valueOf(OF10_VERSION_ID);
+
     /** OpenFlow v1.3 wire protocol number. */
     byte OF13_VERSION_ID = 0x04;
+
+    /** OpenFlow v1.3 wire protocol number as Uint8. */
+    @NonNull Uint8 OF_VERSION_1_3 = Uint8.valueOf(OF13_VERSION_ID);
 
     /** OpenFlow v1.4 wire protocol number. */
     byte OF14_VERSION_ID = 0x05;
 
+    /** OpenFlow v1.4 wire protocol number as Uint8. */
+    @NonNull Uint8 OF_VERSION_1_4 = Uint8.valueOf(OF14_VERSION_ID);
+
     /** OpenFlow v1.5 wire protocol number. */
     byte OF15_VERSION_ID = 0x06;
+
+    /** OpenFlow v1.5 wire protocol number as Uint8. */
+    @NonNull Uint8 OF_VERSION_1_5 = Uint8.valueOf(OF15_VERSION_ID);
 
     /** OpenFlow Hello message type value. */
     byte OF_HELLO_MESSAGE_TYPE_VALUE = 0;

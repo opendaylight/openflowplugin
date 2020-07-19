@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
@@ -55,9 +54,9 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         Objects.requireNonNull(registry);
 
         int startIndex = rawMessage.readerIndex();
-        ErrorMessageBuilder builder = new ErrorMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        ErrorMessageBuilder builder = new ErrorMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         ErrorType errorType = ErrorType.forValue(type);
         if (ErrorType.EXPERIMENTER.equals(errorType)) {

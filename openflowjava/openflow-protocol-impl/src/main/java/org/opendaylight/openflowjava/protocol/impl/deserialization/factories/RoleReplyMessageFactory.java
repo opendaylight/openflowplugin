@@ -29,10 +29,10 @@ public class RoleReplyMessageFactory implements OFDeserializer<RoleRequestOutput
 
     @Override
     public RoleRequestOutput deserialize(ByteBuf rawMessage) {
-        RoleRequestOutputBuilder builder = new RoleRequestOutputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setRole(ControllerRole.forValue((int) rawMessage.readUnsignedInt()));
+        RoleRequestOutputBuilder builder = new RoleRequestOutputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setRole(ControllerRole.forValue((int) rawMessage.readUnsignedInt()));
         rawMessage.skipBytes(PADDING_IN_ROLE_REPLY_HEADER);
         builder.setGenerationId(readUint64(rawMessage));
         return builder.build();

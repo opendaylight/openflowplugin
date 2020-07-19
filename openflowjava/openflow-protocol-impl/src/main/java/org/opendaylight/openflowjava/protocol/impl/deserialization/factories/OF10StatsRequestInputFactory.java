@@ -63,13 +63,14 @@ public class OF10StatsRequestInputFactory
     public MultipartRequestInput deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
-        builder.setType(getMultipartType(type));
+        final MultipartType multipartType = getMultipartType(type);
+        builder.setType(multipartType);
         builder.setFlags(getMultipartRequestFlags(rawMessage.readUnsignedShort()));
-        switch (getMultipartType(type)) {
+        switch (multipartType) {
             case OFPMPDESC:
                 builder.setMultipartRequestBody(setDesc(rawMessage));
                 break;
