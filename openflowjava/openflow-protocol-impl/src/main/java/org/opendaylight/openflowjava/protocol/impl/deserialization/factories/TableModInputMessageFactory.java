@@ -29,10 +29,10 @@ public class TableModInputMessageFactory implements OFDeserializer<TableModInput
 
     @Override
     public TableModInput deserialize(ByteBuf rawMessage) {
-        TableModInputBuilder builder = new TableModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
+        TableModInputBuilder builder = new TableModInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setTableId(new TableId(readUint8(rawMessage).toUint32()));
         rawMessage.skipBytes(PADDING_IN_TABLE_MOD_MESSAGE);
         builder.setConfig(createTableConfig(rawMessage.readUnsignedInt()));
         return builder.build();
