@@ -183,15 +183,15 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
 
     @Override
     public MultipartReplyMessage deserialize(final ByteBuf rawMessage) {
-        MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        int type = rawMessage.readUnsignedShort();
-        builder.setType(MultipartType.forValue(type));
+        MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage));
+        final MultipartType type = MultipartType.forValue(rawMessage.readUnsignedShort());
+        builder.setType(type);
         builder.setFlags(new MultipartRequestFlags((rawMessage.readUnsignedShort() & 0x01) != 0));
         rawMessage.skipBytes(PADDING_IN_MULTIPART_REPLY_HEADER);
 
-        switch (MultipartType.forValue(type)) {
+        switch (type) {
             case OFPMPDESC:
                 builder.setMultipartReplyBody(setDesc(rawMessage));
                 break;

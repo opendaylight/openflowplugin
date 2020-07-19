@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
@@ -34,18 +33,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public class GetAsyncReplyMessageFactory implements OFDeserializer<GetAsyncOutput> {
-
     private static final byte SEPARATE_ROLES = 2;
 
     @Override
     public GetAsyncOutput deserialize(ByteBuf rawMessage) {
-        GetAsyncOutputBuilder builder = new GetAsyncOutputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setPacketInMask(decodePacketInMask(rawMessage));
-        builder.setPortStatusMask(decodePortStatusMask(rawMessage));
-        builder.setFlowRemovedMask(decodeFlowRemovedMask(rawMessage));
-        return builder.build();
+        return new GetAsyncOutputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setPacketInMask(decodePacketInMask(rawMessage))
+                .setPortStatusMask(decodePortStatusMask(rawMessage))
+                .setFlowRemovedMask(decodeFlowRemovedMask(rawMessage))
+                .build();
     }
 
     private static List<PacketInMask> decodePacketInMask(ByteBuf input) {

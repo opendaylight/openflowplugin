@@ -30,10 +30,10 @@ public class OF10PortStatusMessageFactory implements OFDeserializer<PortStatusMe
 
     @Override
     public PortStatusMessage deserialize(final ByteBuf rawMessage) {
-        PortStatusMessageBuilder builder = new PortStatusMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setReason(PortReason.forValue(rawMessage.readUnsignedByte()));
+        PortStatusMessageBuilder builder = new PortStatusMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage))
+                .setReason(PortReason.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_PORT_STATUS_HEADER);
         deserializePort(rawMessage, builder);
         return builder.build();

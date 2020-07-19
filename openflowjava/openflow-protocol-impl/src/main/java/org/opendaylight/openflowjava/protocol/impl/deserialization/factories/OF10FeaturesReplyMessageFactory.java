@@ -37,12 +37,12 @@ public class OF10FeaturesReplyMessageFactory implements OFDeserializer<GetFeatur
 
     @Override
     public GetFeaturesOutput deserialize(final ByteBuf rawMessage) {
-        GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setDatapathId(readUint64(rawMessage));
-        builder.setBuffers(readUint32(rawMessage));
-        builder.setTables(readUint8(rawMessage));
+        GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage))
+                .setDatapathId(readUint64(rawMessage))
+                .setBuffers(readUint32(rawMessage))
+                .setTables(readUint8(rawMessage));
         rawMessage.skipBytes(PADDING_IN_FEATURES_REPLY_HEADER);
         builder.setCapabilitiesV10(createCapabilitiesV10(rawMessage.readUnsignedInt()));
         builder.setActionsV10(createActionsV10(rawMessage.readUnsignedInt()));

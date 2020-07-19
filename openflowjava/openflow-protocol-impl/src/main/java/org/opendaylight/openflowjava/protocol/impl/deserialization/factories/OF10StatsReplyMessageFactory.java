@@ -93,9 +93,9 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     public MultipartReplyMessage deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         builder.setType(MultipartType.forValue(type));
         builder.setFlags(new MultipartRequestFlags((rawMessage.readUnsignedShort() & 0x01) != 0));

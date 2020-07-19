@@ -34,9 +34,9 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
 
     @Override
     public ErrorMessage deserialize(ByteBuf rawMessage) {
-        ErrorMessageBuilder builder = new ErrorMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        ErrorMessageBuilder builder = new ErrorMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         ErrorTypeV10 errorType = ErrorTypeV10.forValue(type);
         decodeType(builder, errorType, type);
