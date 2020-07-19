@@ -24,9 +24,9 @@ public class OF10HelloMessageFactory implements OFDeserializer<HelloMessage> {
 
     @Override
     public HelloMessage deserialize(ByteBuf rawMessage) {
-        HelloMessageBuilder builder = new HelloMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        HelloMessageBuilder builder = new HelloMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage));
         if (rawMessage.readableBytes() > 0) {
             rawMessage.skipBytes(rawMessage.readableBytes());
         }
