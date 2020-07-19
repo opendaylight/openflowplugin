@@ -11,8 +11,8 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.reg.grouping.RegValuesBuilder;
@@ -21,6 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 
 public abstract class AbstractRegCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 4;
+
+    protected AbstractRegCodec(Class<? extends MatchField> nxmField,
+            NxmHeader headerWithMask, NxmHeader headerWithoutMask) {
+        super(Nxm1Class.class, nxmField, headerWithMask, headerWithoutMask);
+    }
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
@@ -58,10 +63,5 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     @Override
     public int getValueLength() {
         return VALUE_LENGTH;
-    }
-
-    @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
     }
 }
