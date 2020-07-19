@@ -20,7 +20,7 @@ public class GetFeaturesInputMessageFactory implements OFDeserializer<GetFeature
     @Override
     public GetFeaturesInput deserialize(ByteBuf rawMessage) {
         return new GetFeaturesInputBuilder()
-                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
                 .build();
     }

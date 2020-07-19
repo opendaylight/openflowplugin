@@ -37,13 +37,13 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
 
     @Override
     public SetAsyncInput deserialize(ByteBuf rawMessage) {
-        SetAsyncInputBuilder builder = new SetAsyncInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setPacketInMask(decodePacketInMask(rawMessage));
-        builder.setPortStatusMask(decodePortStatusMask(rawMessage));
-        builder.setFlowRemovedMask(decodeFlowRemovedMask(rawMessage));
-        return builder.build();
+        return new SetAsyncInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setPacketInMask(decodePacketInMask(rawMessage))
+                .setPortStatusMask(decodePortStatusMask(rawMessage))
+                .setFlowRemovedMask(decodeFlowRemovedMask(rawMessage))
+                .build();
     }
 
     private static List<PacketInMask> decodePacketInMask(ByteBuf input) {

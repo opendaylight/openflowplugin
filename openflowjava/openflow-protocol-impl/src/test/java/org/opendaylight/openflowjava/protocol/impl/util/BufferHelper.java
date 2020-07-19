@@ -85,7 +85,7 @@ public abstract class BufferHelper {
      * @param ofHeader OpenFlow protocol header
      */
     public static void checkHeaderV13(final OfHeader ofHeader) {
-        checkHeader(ofHeader, Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
+        checkHeader(ofHeader, EncodeConstants.OF_VERSION_1_3);
     }
 
     /**
@@ -105,7 +105,7 @@ public abstract class BufferHelper {
      * @param ofHeader OpenFlow protocol header
      */
     public static void checkHeaderV10(final OfHeader ofHeader) {
-        checkHeader(ofHeader, Uint8.valueOf(EncodeConstants.OF10_VERSION_ID));
+        checkHeader(ofHeader, EncodeConstants.OF_VERSION_1_0);
     }
 
     private static void checkHeader(final ByteBuf input, final byte msgType, final int length, final Short version) {
