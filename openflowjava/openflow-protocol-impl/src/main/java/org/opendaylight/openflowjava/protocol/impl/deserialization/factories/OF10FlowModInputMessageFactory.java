@@ -50,9 +50,9 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
     public FlowModInput deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        FlowModInputBuilder builder = new FlowModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
+        FlowModInputBuilder builder = new FlowModInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage));
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         builder.setMatchV10(matchDeserializer.deserialize(rawMessage));

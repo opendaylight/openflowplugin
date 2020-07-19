@@ -28,13 +28,13 @@ public class OF10PacketInMessageFactory implements OFDeserializer<PacketInMessag
 
     @Override
     public PacketInMessage deserialize(final ByteBuf rawMessage) {
-        PacketInMessageBuilder builder = new PacketInMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setBufferId(readUint32(rawMessage));
-        builder.setTotalLen(readUint16(rawMessage));
-        builder.setInPort(readUint16(rawMessage));
-        builder.setReason(PacketInReason.forValue(rawMessage.readUnsignedByte()));
+        PacketInMessageBuilder builder = new PacketInMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage))
+                .setBufferId(readUint32(rawMessage))
+                .setTotalLen(readUint16(rawMessage))
+                .setInPort(readUint16(rawMessage))
+                .setReason(PacketInReason.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_PACKET_IN_HEADER);
         int remainingBytes = rawMessage.readableBytes();
         if (remainingBytes > 0) {

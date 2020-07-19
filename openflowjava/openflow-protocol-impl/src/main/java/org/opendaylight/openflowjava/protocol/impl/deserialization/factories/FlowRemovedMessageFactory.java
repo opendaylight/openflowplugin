@@ -42,19 +42,19 @@ public class FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMess
     public FlowRemovedMessage deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setCookie(readUint64(rawMessage));
-        builder.setPriority(readUint16(rawMessage));
-        builder.setReason(FlowRemovedReason.forValue(rawMessage.readUnsignedByte()));
-        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
-        builder.setDurationSec(readUint32(rawMessage));
-        builder.setDurationNsec(readUint32(rawMessage));
-        builder.setIdleTimeout(readUint16(rawMessage));
-        builder.setHardTimeout(readUint16(rawMessage));
-        builder.setPacketCount(readUint64(rawMessage));
-        builder.setByteCount(readUint64(rawMessage));
+        FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setCookie(readUint64(rawMessage))
+                .setPriority(readUint16(rawMessage))
+                .setReason(FlowRemovedReason.forValue(rawMessage.readUnsignedByte()))
+                .setTableId(new TableId(readUint8(rawMessage).toUint32()))
+                .setDurationSec(readUint32(rawMessage))
+                .setDurationNsec(readUint32(rawMessage))
+                .setIdleTimeout(readUint16(rawMessage))
+                .setHardTimeout(readUint16(rawMessage))
+                .setPacketCount(readUint64(rawMessage))
+                .setByteCount(readUint64(rawMessage));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(new MessageCodeKey(
                 EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
         builder.setMatch(matchDeserializer.deserialize(rawMessage));

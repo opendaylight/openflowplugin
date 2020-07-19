@@ -52,10 +52,10 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
     public GetQueueConfigOutput deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setPort(new PortNumber(readUint32(rawMessage)));
+        GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setPort(new PortNumber(readUint32(rawMessage)));
         rawMessage.skipBytes(PADDING_IN_QUEUE_GET_CONFIG_REPLY_HEADER);
         builder.setQueues(createQueuesList(rawMessage));
         return builder.build();
@@ -64,9 +64,9 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
     private List<Queues> createQueuesList(ByteBuf input) {
         List<Queues> queuesList = new ArrayList<>();
         while (input.readableBytes() > 0) {
-            QueuesBuilder queueBuilder = new QueuesBuilder();
-            queueBuilder.setQueueId(new QueueId(readUint32(input)));
-            queueBuilder.setPort(new PortNumber(readUint32(input)));
+            QueuesBuilder queueBuilder = new QueuesBuilder()
+                    .setQueueId(new QueueId(readUint32(input)))
+                    .setPort(new PortNumber(readUint32(input)));
             int length = input.readUnsignedShort();
             input.skipBytes(PADDING_IN_PACKET_QUEUE_HEADER);
             queueBuilder.setQueueProperty(createPropertiesList(input, length - PACKET_QUEUE_LENGTH));

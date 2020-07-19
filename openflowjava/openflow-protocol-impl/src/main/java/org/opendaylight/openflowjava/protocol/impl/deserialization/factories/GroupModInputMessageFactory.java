@@ -49,11 +49,11 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
 
     @Override
     public GroupModInput deserialize(ByteBuf rawMessage) {
-        GroupModInputBuilder builder = new GroupModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setCommand(GroupModCommand.forValue(rawMessage.readUnsignedShort()));
-        builder.setType(GroupType.forValue(rawMessage.readUnsignedByte()));
+        GroupModInputBuilder builder = new GroupModInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setCommand(GroupModCommand.forValue(rawMessage.readUnsignedShort()))
+                .setType(GroupType.forValue(rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING);
         builder.setGroupId(new GroupId(readUint32(rawMessage)));
         List<BucketsList> bucketsList = new ArrayList<>();
