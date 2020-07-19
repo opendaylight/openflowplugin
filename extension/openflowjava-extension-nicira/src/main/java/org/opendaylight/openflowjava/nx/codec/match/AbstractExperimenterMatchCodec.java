@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
@@ -29,6 +28,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec {
+    protected AbstractExperimenterMatchCodec(Class<? extends MatchField> nxmField,
+            NxmHeader headerWithMask, NxmHeader headerWithoutMask) {
+        super(ExperimenterClass.class, nxmField, headerWithMask, headerWithoutMask);
+        // TODO Auto-generated constructor stub
+    }
 
     protected static <F extends MatchField> MatchEntrySerializerKey<ExperimenterClass, F> createSerializerKey(
             short version, Uint32 expId, Class<F> oxmField) {
@@ -102,11 +106,6 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
                 hasMask,
                 EncodeConstants.SIZE_OF_INT_IN_BYTES + (hasMask ? getValueLength() * 2 : getValueLength()),
                 getExperimenterId().longValue());
-    }
-
-    @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return ExperimenterClass.class;
     }
 
     @Override

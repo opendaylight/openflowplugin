@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
@@ -25,15 +26,25 @@ public abstract class AbstractMatchCodec implements
         HeaderSerializer<MatchEntry>,
         HeaderDeserializer<MatchEntry> {
 
-    protected NxmHeader headerWithMask;
-    protected NxmHeader headerWithoutMask;
+    private final Class<? extends MatchField> nxmField;
+    private final Class<? extends OxmClassBase> oxmClass;
+    private final NxmHeader headerWithMask;
+    private final NxmHeader headerWithoutMask;
+
+    protected AbstractMatchCodec(Class<? extends OxmClassBase> oxmClass, Class<? extends MatchField> nxmField,
+            NxmHeader headerWithMask, NxmHeader headerWithoutMask) {
+        this.oxmClass = requireNonNull(oxmClass);
+        this.nxmField = requireNonNull(nxmField);
+        this.headerWithMask = requireNonNull(headerWithMask);
+        this.headerWithoutMask = requireNonNull(headerWithoutMask);
+    }
 
     protected MatchEntryBuilder deserializeHeaderToBuilder(ByteBuf message) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(getOxmClass());
+        builder.setOxmClass(oxmClass);
         // skip oxm_class - provided
         message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
-        builder.setOxmMatchField(getNxmField());
+        builder.setOxmMatchField(nxmField);
         boolean hasMask = (message.readUnsignedByte() & 1) != 0;
         builder.setHasMask(hasMask);
         // skip match entry length - not needed
@@ -48,25 +59,11 @@ public abstract class AbstractMatchCodec implements
 
     @Override
     public void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
-        serializeHeader(getHeader(input.isHasMask()), outBuffer);
+        serializeHeader(input.isHasMask() ? headerWithMask : headerWithoutMask, outBuffer);
     }
 
     public void serializeHeader(NxmHeader input, ByteBuf outBuffer) {
         outBuffer.writeInt((int) input.toLong());
-    }
-
-    protected NxmHeader getHeader(boolean hasMask) {
-        if (hasMask) {
-            if (headerWithMask == null) {
-                headerWithMask = buildHeader(hasMask);
-            }
-            return headerWithMask;
-        } else {
-            if (headerWithoutMask == null) {
-                headerWithoutMask = buildHeader(hasMask);
-            }
-            return headerWithoutMask;
-        }
     }
 
     protected NxmHeader buildHeader(boolean hasMask) {
@@ -78,12 +75,12 @@ public abstract class AbstractMatchCodec implements
         );
     }
 
-    public NxmHeader getHeaderWithoutHasMask() {
-        return getHeader(false);
+    public final NxmHeader getHeaderWithoutHasMask() {
+        return headerWithoutMask;
     }
 
-    public NxmHeader getHeaderWithHasMask() {
-        return getHeader(true);
+    public final NxmHeader getHeaderWithHasMask() {
+        return headerWithMask;
     }
 
     /**
@@ -104,11 +101,14 @@ public abstract class AbstractMatchCodec implements
     /**
      * Returns the nxm_field class.
      */
-    public abstract Class<? extends MatchField> getNxmField();
+    public final Class<? extends MatchField> getNxmField() {
+        return nxmField;
+    }
 
     /**
      * Returns the oxm_class class.
      */
-    public abstract Class<? extends OxmClassBase> getOxmClass();
-
+    public final Class<? extends OxmClassBase> getOxmClass() {
+        return oxmClass;
+    }
 }
