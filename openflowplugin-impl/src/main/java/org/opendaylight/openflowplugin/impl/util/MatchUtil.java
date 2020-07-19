@@ -30,11 +30,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class MatchUtil {
-
     private static final MacAddress ZERO_MAC_ADDRESS = new MacAddress("00:00:00:00:00:00");
     private static final Ipv4Address ZERO_IPV4_ADDRESS = new Ipv4Address("0.0.0.0");
+    private static final FlowWildcardsV10 FULL_WILDCARDS =
+            new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true);
 
     private static final Map<Class<? extends Match>, Function<Match, Match>> TRANSFORMERS = ImmutableMap
             .<Class<? extends Match>, Function<Match, Match>>builder()
@@ -108,27 +111,22 @@ public final class MatchUtil {
 
 
     public static MatchV10Builder createEmptyV10Match() {
-        Short zeroShort = 0;
-        Integer zeroInteger = 0;
-        MatchV10Builder matchV10Builder = new MatchV10Builder();
-        matchV10Builder.setDlDst(ZERO_MAC_ADDRESS);
-        matchV10Builder.setDlSrc(ZERO_MAC_ADDRESS);
-        matchV10Builder.setDlType(zeroInteger);
-        matchV10Builder.setDlVlan(zeroInteger);
-        matchV10Builder.setDlVlanPcp(zeroShort);
-        matchV10Builder.setInPort(zeroInteger);
-        matchV10Builder.setNwDst(ZERO_IPV4_ADDRESS);
-        matchV10Builder.setNwDstMask(zeroShort);
-        matchV10Builder.setNwProto(zeroShort);
-        matchV10Builder.setNwSrc(ZERO_IPV4_ADDRESS);
-        matchV10Builder.setNwSrcMask(zeroShort);
-        matchV10Builder.setNwTos(zeroShort);
-        matchV10Builder.setTpDst(zeroInteger);
-        matchV10Builder.setTpSrc(zeroInteger);
-        FlowWildcardsV10 flowWildcardsV10 =
-                new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true);
-        matchV10Builder.setWildcards(flowWildcardsV10);
-        return matchV10Builder;
+        return new MatchV10Builder()
+                .setDlDst(ZERO_MAC_ADDRESS)
+                .setDlSrc(ZERO_MAC_ADDRESS)
+                .setDlType(Uint16.ZERO)
+                .setDlVlan(Uint16.ZERO)
+                .setDlVlanPcp(Uint8.ZERO)
+                .setInPort(Uint16.ZERO)
+                .setNwDst(ZERO_IPV4_ADDRESS)
+                .setNwDstMask(Uint8.ZERO)
+                .setNwProto(Uint8.ZERO)
+                .setNwSrc(ZERO_IPV4_ADDRESS)
+                .setNwSrcMask(Uint8.ZERO)
+                .setNwTos(Uint8.ZERO)
+                .setTpDst(Uint16.ZERO)
+                .setTpSrc(Uint16.ZERO)
+                .setWildcards(FULL_WILDCARDS);
     }
 
     @Nullable
