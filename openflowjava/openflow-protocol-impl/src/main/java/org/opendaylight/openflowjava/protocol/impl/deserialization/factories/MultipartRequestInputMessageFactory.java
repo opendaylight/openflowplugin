@@ -124,14 +124,14 @@ public class MultipartRequestInputMessageFactory
     public MultipartRequestInput deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        int type = rawMessage.readUnsignedShort();
-        builder.setType(getMultipartType(type));
+        MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage));
+        MultipartType type = getMultipartType(rawMessage.readUnsignedShort());
+        builder.setType(type);
         builder.setFlags(getMultipartRequestFlags(rawMessage.readUnsignedShort()));
         rawMessage.skipBytes(PADDING);
-        switch (MultipartType.forValue(type)) {
+        switch (type) {
             case OFPMPDESC:
                 builder.setMultipartRequestBody(setDesc(rawMessage));
                 break;

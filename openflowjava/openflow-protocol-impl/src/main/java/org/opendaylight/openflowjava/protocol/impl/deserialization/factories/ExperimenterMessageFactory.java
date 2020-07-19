@@ -48,7 +48,7 @@ public class ExperimenterMessageFactory implements OFDeserializer<ExperimenterMe
         final ExperimenterDataOfChoice vendorData = deserializer.deserialize(message);
 
         ExperimenterMessageBuilder messageBld = new ExperimenterMessageBuilder()
-                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(xid)
                 .setExperimenter(new ExperimenterId(expId))
                 .setExpType(expType)

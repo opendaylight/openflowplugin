@@ -24,7 +24,7 @@ public class GetAsyncRequestMessageFactory implements OFDeserializer<GetAsyncInp
     @Override
     public GetAsyncInput deserialize(ByteBuf rawMessage) {
         return new GetAsyncInputBuilder()
-                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
                 .build();
     }

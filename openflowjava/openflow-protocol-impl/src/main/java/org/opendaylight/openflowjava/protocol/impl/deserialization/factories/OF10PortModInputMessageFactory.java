@@ -29,15 +29,15 @@ public class OF10PortModInputMessageFactory implements OFDeserializer<PortModInp
 
     @Override
     public PortModInput deserialize(final ByteBuf rawMessage) {
-        PortModInputBuilder builder = new PortModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setPortNo(new PortNumber(readUint16(rawMessage).toUint32()));
-        builder.setHwAddress(ByteBufUtils.readIetfMacAddress(rawMessage));
-        builder.setConfigV10(createPortConfig(rawMessage.readUnsignedInt()));
-        builder.setMaskV10(createPortConfig(rawMessage.readUnsignedInt()));
-        builder.setAdvertiseV10(createPortFeatures(rawMessage.readUnsignedInt()));
-        return builder.build();
+        return new PortModInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_0)
+                .setXid(readUint32(rawMessage))
+                .setPortNo(new PortNumber(readUint16(rawMessage).toUint32()))
+                .setHwAddress(ByteBufUtils.readIetfMacAddress(rawMessage))
+                .setConfigV10(createPortConfig(rawMessage.readUnsignedInt()))
+                .setMaskV10(createPortConfig(rawMessage.readUnsignedInt()))
+                .setAdvertiseV10(createPortFeatures(rawMessage.readUnsignedInt()))
+                .build();
     }
 
     private static PortConfigV10 createPortConfig(final long input) {

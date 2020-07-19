@@ -55,12 +55,12 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
     public MeterModInput deserialize(ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
-        MeterModInputBuilder builder = new MeterModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(readUint32(rawMessage));
-        builder.setCommand(MeterModCommand.forValue(rawMessage.readUnsignedShort()));
-        builder.setFlags(createMeterFlags(rawMessage.readUnsignedShort()));
-        builder.setMeterId(new MeterId(readUint32(rawMessage)));
+        MeterModInputBuilder builder = new MeterModInputBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(readUint32(rawMessage))
+                .setCommand(MeterModCommand.forValue(rawMessage.readUnsignedShort()))
+                .setFlags(createMeterFlags(rawMessage.readUnsignedShort()))
+                .setMeterId(new MeterId(readUint32(rawMessage)));
         List<Bands> bandsList = new ArrayList<>();
         while (rawMessage.readableBytes() > 0) {
             BandsBuilder bandsBuilder = new BandsBuilder();
