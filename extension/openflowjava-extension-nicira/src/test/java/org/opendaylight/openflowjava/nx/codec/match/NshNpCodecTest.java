@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import static org.junit.Assert.assertEquals;
@@ -55,12 +54,12 @@ public class NshNpCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private NxExpMatchEntryValue createMatchEntryValue(Short value) {
+    private static NxExpMatchEntryValue createMatchEntryValue(Short value) {
         NshNpValues nshNpValues = new NshNpValuesBuilder().setValue(value).build();
         return new NshNpCaseValueBuilder().setNshNpValues(nshNpValues).build();
     }
 
-    private void writeBuffer(ByteBuf message, Short value) {
+    private static void writeBuffer(ByteBuf message, Short value) {
         message.writeByte(value.intValue());
     }
 }

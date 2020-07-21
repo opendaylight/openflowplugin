@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.icmpv6.nd.options.type.grouping.Icmpv6NdOptionsTypeValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValueBuilder;
-
 
 public class Icmpv6NDOptionsTypeCodecTest {
 
@@ -66,7 +64,7 @@ public class Icmpv6NDOptionsTypeCodecTest {
         assertEquals(2, result.getIcmpv6NdOptionsTypeValues().getIcmpv6NdOptionsType().shortValue());
     }
 
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final Icmpv6NdOptionsTypeCaseValueBuilder caseBuilder = new Icmpv6NdOptionsTypeCaseValueBuilder();
         final Icmpv6NdOptionsTypeValuesBuilder valuesBuilder = new Icmpv6NdOptionsTypeValuesBuilder();
@@ -82,7 +80,7 @@ public class Icmpv6NDOptionsTypeCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(EricConstants.ERICOXM_OF_EXPERIMENTER_ID);
 
         int fieldMask = ERIC_FIELD_CODE << 1;
@@ -90,5 +88,4 @@ public class Icmpv6NDOptionsTypeCodecTest {
         message.writeByte(VALUE_LENGTH);
         message.writeByte(2);
     }
-
 }

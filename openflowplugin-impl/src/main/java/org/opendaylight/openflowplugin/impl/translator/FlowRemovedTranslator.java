@@ -77,7 +77,7 @@ public class FlowRemovedTranslator implements MessageTranslator
         return Uint8.valueOf(flowRemoved.getTableId().getValue());
     }
 
-    private RemovedFlowReason translateReason(final FlowRemoved removedFlow) {
+    private static RemovedFlowReason translateReason(final FlowRemoved removedFlow) {
         LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason: {}", removedFlow.getReason());
         switch (removedFlow.getReason()) {
             case OFPRRIDLETIMEOUT:

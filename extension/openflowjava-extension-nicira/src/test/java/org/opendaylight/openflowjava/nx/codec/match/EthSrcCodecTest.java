@@ -70,9 +70,7 @@ public class EthSrcCodecTest {
         assertEquals(TEST_ADDRESS, result.getEthSrcValues().getMacAddress());
     }
 
-
-
-    private MatchEntry createMatchEntry() {
+    private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final EthSrcCaseValueBuilder caseBuilder = new EthSrcCaseValueBuilder();
         final EthSrcValuesBuilder valuesBuilder = new EthSrcValuesBuilder();
@@ -91,7 +89,7 @@ public class EthSrcCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private void createBuffer(ByteBuf message) {
+    private static void createBuffer(ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

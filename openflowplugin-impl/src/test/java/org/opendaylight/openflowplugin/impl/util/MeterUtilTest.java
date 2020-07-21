@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Function;
@@ -76,7 +75,7 @@ public class MeterUtilTest {
         Assert.assertEquals(1, output.getResult().get(0).getBatchOrder().intValue());
     }
 
-    private org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter createBatchMeter(
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter createBatchMeter(
             final MeterId meterId) {
         return new MeterBuilder()
                 .setMeterId(meterId)
@@ -219,13 +218,13 @@ public class MeterUtilTest {
         Assert.assertEquals(1, composite.getResult().getBatchFailedMetersOutput().size());
     }
 
-    private RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
+    private static RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
         return RpcResultBuilder.<SendBarrierOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }
 
-    private RpcResult<AddMetersBatchOutput> createAddMetersBatchSuccessOutput() {
+    private static RpcResult<AddMetersBatchOutput> createAddMetersBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddMetersBatchOutputBuilder()
                         .setBatchFailedMetersOutput(Collections.emptyMap())
@@ -233,7 +232,7 @@ public class MeterUtilTest {
                 .build();
     }
 
-    private RpcResult<AddMetersBatchOutput> createAddMetersBatchFailureOutcome() {
+    private static RpcResult<AddMetersBatchOutput> createAddMetersBatchFailureOutcome() {
         final RpcResult<List<BatchFailedMetersOutput>> batchOutcomeWithError = createBatchOutcomeWithError();
         return RpcResultBuilder.<AddMetersBatchOutput>failed()
                 .withResult(new AddMetersBatchOutputBuilder()

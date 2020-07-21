@@ -38,7 +38,7 @@ public final class SalEchoServiceImpl implements SalEchoService {
         return transform(echoService.handleServiceCall(echoInputBld));
     }
 
-    private ListenableFuture<RpcResult<SendEchoOutput>>
+    private static ListenableFuture<RpcResult<SendEchoOutput>>
             transform(final ListenableFuture<RpcResult<EchoOutput>> rpcResultListenableFuture) {
         return Futures.transform(rpcResultListenableFuture, input -> {
             Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");

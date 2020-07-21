@@ -45,7 +45,7 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
         this.forwardingRulesManagerImpl = forwardingRulesManagerImpl;
     }
 
-    private Node buildNode(long nodeIid) {
+    private static Node buildNode(long nodeIid) {
         NodeId nodeId = new NodeId("openflow:" + nodeIid);
         Node nodeDpn = new NodeBuilder().setId(nodeId).withKey(new NodeKey(nodeId)).build();
         return nodeDpn;

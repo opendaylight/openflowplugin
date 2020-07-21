@@ -123,7 +123,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
         verify(mockedRequestContextStack).createRequestContext();
     }
 
-    private UpdateTableInput prepareUpdateTable() {
+    private static UpdateTableInput prepareUpdateTable() {
         UpdateTableInputBuilder updateTableInputBuilder = new UpdateTableInputBuilder();
         UpdatedTableBuilder updatedTableBuilder = new UpdatedTableBuilder();
         updatedTableBuilder.setTableFeatures(Collections.emptyList());

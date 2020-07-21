@@ -77,13 +77,12 @@ public class NspCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-
-    private NxExpMatchEntryValue createMatchEntryValue(final Long value, final Long mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(final Long value, final Long mask) {
         NspValues nspValues = new NspValuesBuilder().setNsp(value).setMask(mask).build();
         return new NspCaseValueBuilder().setNspValues(nspValues).build();
     }
 
-    private void writeBuffer(final ByteBuf message, final Long value, final Long mask) {
+    private static void writeBuffer(final ByteBuf message, final Long value, final Long mask) {
         message.writeInt(value.intValue());
         if (mask != null) {
             message.writeInt(mask.intValue());

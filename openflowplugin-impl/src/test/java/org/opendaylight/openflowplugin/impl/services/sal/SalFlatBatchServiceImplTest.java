@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.collect.Lists;
@@ -317,7 +316,7 @@ public class SalFlatBatchServiceImplTest {
         return createFlowAddBatch(batchOrder, flowIdValue, 1);
     }
 
-    private Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, final int amount) {
+    private static Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, final int amount) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
@@ -326,7 +325,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private List<FlatBatchAddFlow> repeatFlatBatchAddFlowInList(final String flowIdValue, final int amount) {
+    private static List<FlatBatchAddFlow> repeatFlatBatchAddFlowInList(final String flowIdValue, final int amount) {
         final List<FlatBatchAddFlow> list = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             list.add(new FlatBatchAddFlowBuilder()
@@ -337,7 +336,7 @@ public class SalFlatBatchServiceImplTest {
         return list;
     }
 
-    private <T> List<T> repeatInList(final T item, final int amount) {
+    private static <T> List<T> repeatInList(final T item, final int amount) {
         final List<T> list = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             list.add(item);
@@ -345,7 +344,7 @@ public class SalFlatBatchServiceImplTest {
         return list;
     }
 
-    private Batch createFlowRemoveBatch(final int batchOrder, final String flowIdValue) {
+    private static Batch createFlowRemoveBatch(final int batchOrder, final String flowIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchRemoveFlowCaseBuilder()
@@ -356,7 +355,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createFlowUpdateBatch(final int batchOrder, final String flowIdValue) {
+    private static Batch createFlowUpdateBatch(final int batchOrder, final String flowIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .withKey(new BatchKey(batchOrder))
@@ -368,7 +367,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createGroupAddBatch(final int batchOrder, final long groupIdValue) {
+    private static Batch createGroupAddBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchAddGroupCaseBuilder()
@@ -379,7 +378,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createGroupRemoveBatch(final int batchOrder, final long groupIdValue) {
+    private static Batch createGroupRemoveBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchRemoveGroupCaseBuilder()
@@ -390,7 +389,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createGroupUpdateBatch(final int batchOrder, final long groupIdValue) {
+    private static Batch createGroupUpdateBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchUpdateGroupCaseBuilder()
@@ -406,7 +405,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createMeterAddBatch(final int batchOrder, final long groupIdValue) {
+    private static Batch createMeterAddBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchAddMeterCaseBuilder()
@@ -417,7 +416,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createMeterRemoveBatch(final int batchOrder, final long groupIdValue) {
+    private static Batch createMeterRemoveBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchRemoveMeterCaseBuilder()
@@ -428,7 +427,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private Batch createMeterUpdateBatch(final int batchOrder, final long groupIdValue) {
+    private static Batch createMeterUpdateBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchChoice(new FlatBatchUpdateMeterCaseBuilder()
@@ -492,7 +491,7 @@ public class SalFlatBatchServiceImplTest {
                         .getFlowId().getValue());
     }
 
-    private BatchFailure createFlowBatchFailure(final int batchOrder, final String flowIdValue) {
+    private static BatchFailure createFlowBatchFailure(final int batchOrder, final String flowIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
@@ -501,7 +500,7 @@ public class SalFlatBatchServiceImplTest {
                 .build();
     }
 
-    private ProcessFlatBatchOutput createFlatBatchOutput(final BatchFailure... batchFailures) {
+    private static ProcessFlatBatchOutput createFlatBatchOutput(final BatchFailure... batchFailures) {
         return new ProcessFlatBatchOutputBuilder()
                 .setBatchFailure(Lists.newArrayList(batchFailures))
                 .build();

@@ -56,7 +56,7 @@ public class SalPortServiceImplTest extends ServiceMocking {
         final OfHeader ofHeader = salPortService.buildRequest(new Xid(DUMMY_XID), dummyUpdatePortInput());
     }
 
-    private UpdatePortInput dummyUpdatePortInput() {
+    private static UpdatePortInput dummyUpdatePortInput() {
         org.opendaylight.yang.gen.v1.urn
                 .opendaylight.flow.types.port.rev130925.port.mod.port.PortBuilder concretePortBuilder
                 = new org.opendaylight.yang.gen.v1.urn

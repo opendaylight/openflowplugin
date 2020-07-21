@@ -143,7 +143,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
-    private Map<String, ReconciliationState> reconciliationStates;
+    private final Map<String, ReconciliationState> reconciliationStates;
 
     public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
                                       final String serviceName, final int priority, final ResultState resultState,
@@ -595,8 +595,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private BigInteger getDpnIdFromNodeName(String nodeName) {
-
+    private static BigInteger getDpnIdFromNodeName(String nodeName) {
         String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
         return new BigInteger(dpId);
     }
@@ -721,7 +720,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
             StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
@@ -729,13 +728,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 new StaleFlowKey(new FlowId(staleFlow.getId())));
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .group.types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
             StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
-    private InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
+    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .flow.inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
             StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
@@ -763,7 +762,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return futureList;
     }
 
-    private void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
             public void onSuccess(Object result) {
@@ -777,22 +776,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         }, MoreExecutors.directExecutor());
     }
 
-    private Flow getDeleteAllFlow() {
-        final FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.setTableId(OFConstants.OFPTT_ALL);
-        return flowBuilder.build();
+    private static Flow getDeleteAllFlow() {
+        return new FlowBuilder().setTableId(OFConstants.OFPTT_ALL).build();
     }
 
-    private Group getDeleteAllGroup() {
-        final GroupBuilder groupBuilder = new GroupBuilder();
-        groupBuilder.setGroupType(GroupTypes.GroupAll);
-        groupBuilder.setGroupId(new GroupId(OFConstants.OFPG_ALL));
-        return groupBuilder.build();
+    private static Group getDeleteAllGroup() {
+        return new GroupBuilder()
+                .setGroupType(GroupTypes.GroupAll)
+                .setGroupId(new GroupId(OFConstants.OFPG_ALL))
+                .build();
     }
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private Messages createMessages(final NodeRef nodeRef) {
+    private static Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder().setNode(nodeRef)
                 .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
