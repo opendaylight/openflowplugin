@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.junit.Assert;
@@ -21,6 +20,8 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author michal.polkorab
  */
 public class ActionSerializerKeyTest {
+    private static final Uint32 FORTY_TWO = Uint32.valueOf(42);
+    private static final Uint32 FIFTY_FIVE = Uint32.valueOf(55);
 
     /**
      * Test ActionSerializerKey equals and hashCode.
@@ -28,9 +29,9 @@ public class ActionSerializerKeyTest {
     @Test
     public void test() {
         ActionSerializerKey<CopyTtlInCase> key1 =
-                new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, 42L);
+                new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, FORTY_TWO);
         ActionSerializerKey<?> key2 =
-                new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, 42L);
+                new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, FORTY_TWO);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, (Uint32) null);
@@ -39,13 +40,13 @@ public class ActionSerializerKeyTest {
         key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, (Uint32) null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlOutCase.class, 42L);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlOutCase.class, FORTY_TWO);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, 55L);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, FIFTY_FIVE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, CopyTtlInCase.class, 55L);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, CopyTtlInCase.class, FIFTY_FIVE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
     }
@@ -55,14 +56,14 @@ public class ActionSerializerKeyTest {
      */
     @Test
     public void testEquals() {
-        ActionSerializerKey<?> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, 42L);
+        ActionSerializerKey<?> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, FORTY_TWO);
         ActionSerializerKey<?> key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
-                CopyTtlInCase.class, 42L);
+                CopyTtlInCase.class, FORTY_TWO);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal by actionType", key1.equals(key2));
 
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, 42L);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, FORTY_TWO);
         Assert.assertTrue("Wrong equal by action type", key1.equals(key2));
         key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,  CopyTtlInCase.class, (Uint32) null);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
@@ -76,7 +77,7 @@ public class ActionSerializerKeyTest {
     @Test
     public void testToString() {
         ActionSerializerKey<CopyTtlInCase> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
-                CopyTtlInCase.class, 42L);
+                CopyTtlInCase.class, FORTY_TWO);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectType: org.opendaylight.yang.gen.v1.urn"
                 + ".opendaylight.openflow.common.action.rev150203.actions.grouping.Action action type:"
