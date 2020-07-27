@@ -9,11 +9,13 @@
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Deserializes ofp_match (OpenFlow v1.0) structure.
@@ -83,8 +85,8 @@ public class OF10MatchDeserializer implements OFDeserializer<MatchV10> {
      * @param input binary FlowWildcards
      * @return decoded NwSrcMask
      */
-    public static short decodeNwSrcMask(final long input) {
-        return (short) Math.max(32 - ((input & NW_SRC_MASK) >> NW_SRC_SHIFT), 0);
+    public static @NonNull Uint8 decodeNwSrcMask(final long input) {
+        return Uint8.valueOf(Math.max(32 - ((input & NW_SRC_MASK) >> NW_SRC_SHIFT), 0));
     }
 
     /**
@@ -93,7 +95,7 @@ public class OF10MatchDeserializer implements OFDeserializer<MatchV10> {
      * @param input binary FlowWildcards
      * @return decoded NwDstMask
      */
-    public static short decodeNwDstMask(final long input) {
-        return (short) Math.max(32 - ((input & NW_DST_MASK) >> NW_DST_SHIFT), 0);
+    public static @NonNull Uint8 decodeNwDstMask(final long input) {
+        return Uint8.valueOf(Math.max(32 - ((input & NW_DST_MASK) >> NW_DST_SHIFT), 0));
     }
 }
