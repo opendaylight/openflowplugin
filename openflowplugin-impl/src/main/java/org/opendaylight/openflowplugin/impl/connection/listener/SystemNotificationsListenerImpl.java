@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.SslErrorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.SslErrorType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.ssl.error.SwitchCertificateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
@@ -146,12 +147,18 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
             ip = IpAddressBuilder.getDefaultInstance(
                     connectionContext.getConnectionAdapter().getRemoteAddress().getAddress().getHostAddress());
         }
+        SwitchCertificateBuilder switchCertificateBuilder = new SwitchCertificateBuilder();
+        if (notification.getSwitchCertificate() != null) {
+            switchCertificateBuilder = new SwitchCertificateBuilder(notification.getSwitchCertificate());
+        }
         notificationPublishService
                 .offerNotification(
                         new SslErrorBuilder().setType(SslErrorType.SslConFailed)
                                 .setCode(SslErrorType.SslConFailed.getIntValue())
                                 .setNodeIpAddress(ip)
                                 .setData(notification.getInfo())
+                                .setSwitchCertificate(notification.getSwitchCertificate() != null
+                                        ? switchCertificateBuilder.build() : null)
                                 .build());
     }
 }

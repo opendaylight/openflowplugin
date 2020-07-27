@@ -96,6 +96,10 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
                 final SslHandler ssl = new SslHandler(engine);
                 final Future<Channel> handshakeFuture = ssl.handshakeFuture();
                 final ConnectionFacade finalConnectionFacade = connectionFacade;
+                if (sslFactory.isCustomTrustManagerEnabled()) {
+                    handshakeFuture.addListener(future -> finalConnectionFacade
+                            .onSwitchCertificateIdentified(sslFactory.getSwitchCertificate()));
+                }
                 handshakeFuture.addListener(future -> finalConnectionFacade.fireConnectionReadyNotification());
                 ch.pipeline().addLast(PipelineHandlers.SSL_HANDLER.name(), ssl);
             }

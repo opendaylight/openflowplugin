@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import com.google.common.annotations.Beta;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
@@ -76,6 +77,12 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
      * Notify listener about connection ready-to-use event.
      */
     void fireConnectionReadyNotification();
+
+    /**
+     * Notify listener about switch certificate information.
+     * @param switchcertificate X509Certificate of switch
+     */
+    void onSwitchCertificateIdentified(X509Certificate switchcertificate);
 
     /**
      * Set listener for connection became ready-to-use event.
