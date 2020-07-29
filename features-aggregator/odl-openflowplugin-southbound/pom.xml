@@ -115,11 +115,6 @@
             <artifactId>openflowplugin-extension-onf</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.serviceutils</groupId>
             <artifactId>odl-serviceutils-srm</artifactId>
             <classifier>features</classifier>
