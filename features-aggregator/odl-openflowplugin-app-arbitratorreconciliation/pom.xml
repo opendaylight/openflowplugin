@@ -11,7 +11,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-app-arbitratorreconciliation</artifactId>
     <packaging>feature</packaging>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.12.0-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Application - Arbitrator Reconciliation</name>
 
