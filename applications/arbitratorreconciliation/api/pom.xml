@@ -3,7 +3,7 @@
     <parent>
         <artifactId>applications</artifactId>
         <groupId>org.opendaylight.openflowplugin</groupId>
-        <version>0.9.4-SNAPSHOT</version>
+        <version>0.9.4</version>
         <relativePath>../..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
