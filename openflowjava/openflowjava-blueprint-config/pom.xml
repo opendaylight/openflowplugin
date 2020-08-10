@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
         <artifactId>openflowjava-parent</artifactId>
-        <version>0.10.2-SNAPSHOT</version>
+        <version>0.10.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>openflowjava-blueprint-config</artifactId>
