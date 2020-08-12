@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7ce898de_6f521907",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 8351
+      },
+      "writtenOn": "2020-08-12T13:12:44Z",
+      "side": 1,
+      "message": "Use a Empty line after the first comment line\n\nThen add a para of the intent of the change\nthen\n\nJIRA-ID: OPENFLWPLUG-1101",
+      "revId": "cb06a884139de309604db12452cd2b28fd70e802",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51a153f4_50559279",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 8351
+      },
+      "writtenOn": "2020-08-12T13:12:44Z",
+      "side": 1,
+      "message": "Pls use a constant here and check not null as this may lead to unboxing and hence a NPE",
+      "revId": "cb06a884139de309604db12452cd2b28fd70e802",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
