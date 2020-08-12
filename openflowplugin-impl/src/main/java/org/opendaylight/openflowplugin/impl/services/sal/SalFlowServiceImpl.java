@@ -56,6 +56,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     private final SingleLayerFlowService<UpdateFlowOutput> flowUpdateMessage;
     private final SingleLayerFlowService<RemoveFlowOutput> flowRemoveMessage;
     private final DeviceContext deviceContext;
+    private short OFP_TABLE_ALL = (short) 255;
 
     public SalFlowServiceImpl(final RequestContextStack requestContextStack,
                               final DeviceContext deviceContext,
@@ -242,9 +243,13 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
-                FlowRegistryKey flowRegistryKey =
-                        FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
-                deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                if (input.getTableId() != null && input.getTableId().shortValue() != OFP_TABLE_ALL) {
+                    FlowRegistryKey flowRegistryKey =
+                            FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
+                    deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                } else {
+                    deviceContext.getDeviceFlowRegistry().clearFlowRegistry();
+                }
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove failed for flow={}, errors={}", input,
