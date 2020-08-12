@@ -242,9 +242,13 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
-                FlowRegistryKey flowRegistryKey =
-                        FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
-                deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                if (input.getTableId() != 255) {
+                    FlowRegistryKey flowRegistryKey =
+                            FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
+                    deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                } else {
+                    deviceContext.getDeviceFlowRegistry().clearFlowRegistry();
+                }
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove failed for flow={}, errors={}", input,
