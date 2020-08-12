@@ -280,4 +280,9 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors() {
         return flowRegistry;
     }
+
+    @Override
+    public void clearFlowRegistry() {
+        flowRegistry.clear();
+    }
 }
