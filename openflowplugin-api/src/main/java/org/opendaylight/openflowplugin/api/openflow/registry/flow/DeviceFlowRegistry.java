@@ -28,4 +28,6 @@ public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey
     @Nullable
     FlowDescriptor retrieveDescriptor(@NonNull FlowRegistryKey flowRegistryKey);
 
+    void clearFlowRegistry();
+
 }
