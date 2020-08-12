@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "831114c7_8b2a3a43",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 8523
+      },
+      "writtenOn": "2020-08-12T14:30:55Z",
+      "side": 1,
+      "message": "We need to consider here the scenario when delete all flows RPC is invoked. Delete all flows RPC will be like below.\nPOST: http://controller:8181/restconf/operations/sal-flow:remove-flow\nBody:\n{\n    \"input\": {\n      \"opendaylight-flow-service:node\":\"/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id\u003d\u0027openflow:1\u0027]\",\n      \"table_id\": 255\n     }\n}\n\nAs seen above in this case there won\u0027t be any flow specific info in the body. We need to handle this scenario.\n\n\nWe had opened one gerrit patch for one more issue, when delete all flows RPC is invoked, the Flow descriptors are not cleared.\n\nJira ID: OPNFLWPLUG-1101\nGerrit Review: https://git.opendaylight.org/gerrit/c/openflowplugin/+/92109",
+      "revId": "b9c7519aeb80179073ae0abe06ad156f447addd9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
