@@ -31,6 +31,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -89,6 +90,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
+@Service(classes = ArbitratorReconcileService.class)
 public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileService,
         ReconciliationNotificationListener, AutoCloseable {
 
@@ -121,11 +123,13 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             Executors.newFixedThreadPool(THREAD_POOL_SIZE));
     private final Map<Uint64, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
     private  ObjectRegistration<? extends RpcService> rpcRegistration;
+    private  ArbitratorReconcileService arbitratorReconcileService;
 
     @Inject
     public ArbitratorReconciliationManagerImpl(
             @Reference ReconciliationManager reconciliationManager, @Reference RpcProviderService rpcProviderService,
-            @Reference final RpcConsumerRegistry rpcRegistry, @Reference UpgradeState upgradeState) {
+            @Reference final RpcConsumerRegistry rpcRegistry, @Reference UpgradeState upgradeState,
+            @Reference ArbitratorReconcileService arbitratorReconcileService) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
         this.reconciliationManager = Preconditions.checkNotNull(reconciliationManager,
                 "ReconciliationManager cannot be null!");
@@ -133,6 +137,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 "RPC SalBundleService not found.");
         this.rpcProviderService = rpcProviderService;
         this.upgradeState = Preconditions.checkNotNull(upgradeState, "UpgradeState cannot be null!");
+        this.arbitratorReconcileService = Preconditions.checkNotNull(arbitratorReconcileService,
+                "ArbitratorReconcileService cannot be null!");
     }
 
     @PostConstruct
@@ -374,7 +380,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is registered : {}", path);
         rpcRegistration = rpcProviderService.registerRpcImplementation(ArbitratorReconcileService.class,
-                this, ImmutableSet.of(path));
+                arbitratorReconcileService, ImmutableSet.of(path));
     }
 
     private void deregisterRpc(DeviceInfo node) {
