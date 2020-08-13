@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -121,6 +122,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             Executors.newFixedThreadPool(THREAD_POOL_SIZE));
     private final Map<Uint64, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
     private  ObjectRegistration<? extends RpcService> rpcRegistration;
+    private final ConcurrentMap<String,
+            ObjectRegistration<? extends RpcService>> rpcRegistrations = new ConcurrentHashMap<>();
 
     @Inject
     public ArbitratorReconciliationManagerImpl(
@@ -375,14 +378,18 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         LOG.debug("The path is registered : {}", path);
         rpcRegistration = rpcProviderService.registerRpcImplementation(ArbitratorReconcileService.class,
                 this, ImmutableSet.of(path));
+        rpcRegistrations.put(node.getNodeId().getValue(), rpcRegistration);
     }
 
     private void deregisterRpc(DeviceInfo node) {
         KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is unregistered : {}", path);
+        rpcRegistration = rpcRegistrations.get(node.getNodeId().getValue());
         if (rpcRegistration != null) {
             rpcRegistration.close();
+            rpcRegistration = null;
+            rpcRegistrations.remove(node.getNodeId().getValue());
         }
     }
 
