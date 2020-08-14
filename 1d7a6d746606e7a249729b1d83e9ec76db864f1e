@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7ba78475_b55f150a",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetFlowGroupCacheProvider.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2020-08-14T10:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f0c42629_1464f428",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 95
+      },
+      "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "284ba6d6_7db1aa90",
         "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetFlowGroupCacheProvider.java",
         "patchSetId": 13
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "0af40ca6_270bc5ab",
+        "filename": "applications/southbound-cli/src/main/java/org/opendaylight/openflowplugin/applications/southboundcli/cli/GetFlowGroupCacheProvider.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2020-08-14T10:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "284ba6d6_7db1aa90",
+      "range": {
+        "startLine": 37,
+        "startChar": 7,
+        "endLine": 37,
+        "endChar": 53
+      },
+      "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3f946754_61bad243",
         "filename": "applications/southbound-cli/src/main/resources/OSGI-INF/blueprint/commands.xml",
         "patchSetId": 13
@@ -62,6 +110,24 @@
       "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6833ce20_31818083",
+        "filename": "applications/southbound-cli/src/main/resources/OSGI-INF/blueprint/commands.xml",
+        "patchSetId": 13
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2020-08-14T10:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f946754_61bad243",
+      "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "039137be_fde877ac",
+        "filename": "openflowplugin-api/src/main/java/org/opendaylight/openflowplugin/api/openflow/FlowGroupCacheManager.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2020-08-14T10:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95a71009_85a0e367",
+      "range": {
+        "startLine": 17,
+        "startChar": 39,
+        "endLine": 17,
+        "endChar": 73
+      },
+      "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c68b2b4d_d10fca92",
         "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
         "patchSetId": 13
@@ -99,6 +189,30 @@
       "writtenOn": "2020-06-01T06:44:10Z",
       "side": 1,
       "message": "why do you need to declare systemReadyMonitor if its not used anywhere else",
+      "range": {
+        "startLine": 163,
+        "startChar": 8,
+        "endLine": 163,
+        "endChar": 53
+      },
+      "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bab17540_8c295268",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2020-08-14T10:29:12Z",
+      "side": 1,
+      "message": "its used in initialize()",
+      "parentUuid": "c68b2b4d_d10fca92",
       "range": {
         "startLine": 163,
         "startChar": 8,
@@ -131,6 +245,30 @@
       "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2310a77f_8d722195",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/OpenFlowPluginProviderImpl.java",
+        "patchSetId": 13
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 8249
+      },
+      "writtenOn": "2020-08-14T10:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a4857a0_5b7998df",
+      "range": {
+        "startLine": 166,
+        "startChar": 62,
+        "endLine": 166,
+        "endChar": 95
+      },
+      "revId": "1d7a6d746606e7a249729b1d83e9ec76db864f1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     },
     {
       "key": {
