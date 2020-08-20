@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ffee893_dd708564",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 8351
+      },
+      "writtenOn": "2020-08-20T14:52:43Z",
+      "side": 1,
+      "message": "private static final pls and all UPCASE",
+      "revId": "1e5049be4f4d8e9345068c8fbbd0343806eb0f1a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
