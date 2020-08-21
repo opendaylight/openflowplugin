@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95ecb1d7_6c206dcf",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-08-21T06:46:59Z",
+      "side": 1,
+      "message": "private static final Uint8 OFPTT_ALL\u003d Uint8.MAX_VALUE;",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 59,
+        "endChar": 59
+      },
+      "revId": "bb201311308f783f1d54d4988391e06da29aff48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f8dabc0_997c46b8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-08-21T06:46:59Z",
+      "side": 1,
+      "message": "if (input.getTableId() !\u003dnull \u0026\u0026 !input.getTableId.equals(OFPTT_ALL)) {",
+      "range": {
+        "startLine": 246,
+        "startChar": 16,
+        "endLine": 246,
+        "endChar": 101
+      },
+      "revId": "bb201311308f783f1d54d4988391e06da29aff48",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
