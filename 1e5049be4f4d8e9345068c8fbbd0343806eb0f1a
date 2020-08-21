@@ -16,6 +16,24 @@
       "revId": "1e5049be4f4d8e9345068c8fbbd0343806eb0f1a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fce32841_57e76eb5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 8361
+      },
+      "writtenOn": "2020-08-21T10:58:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ffee893_dd708564",
+      "revId": "1e5049be4f4d8e9345068c8fbbd0343806eb0f1a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
