@@ -11,7 +11,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-openflowplugin</artifactId>
     <packaging>feature</packaging>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

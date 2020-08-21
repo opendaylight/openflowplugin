@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
@@ -31,8 +31,8 @@
 
     <properties>
         <exi.nagasena.version>0000.0002.0053.0</exi.nagasena.version>
-        <infrautils.version>1.6.4-SNAPSHOT</infrautils.version>
-        <serviceutils.version>0.4.4-SNAPSHOT</serviceutils.version>
+        <infrautils.version>1.6.5-SNAPSHOT</infrautils.version>
+        <serviceutils.version>0.4.5-SNAPSHOT</serviceutils.version>
     </properties>
 
     <dependencyManagement>
@@ -47,7 +47,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>1.10.4-SNAPSHOT</version>
+                <version>1.10.5-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

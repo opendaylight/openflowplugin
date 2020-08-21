@@ -11,7 +11,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-app-table-miss-enforcer</artifactId>
     <packaging>feature</packaging>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Application - table-miss-enforcer</name>
 
