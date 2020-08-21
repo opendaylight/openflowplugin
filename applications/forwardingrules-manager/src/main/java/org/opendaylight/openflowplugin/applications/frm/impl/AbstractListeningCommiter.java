@@ -8,15 +8,22 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Collection;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesCommiter;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -26,24 +33,28 @@ import org.slf4j.LoggerFactory;
  * AbstractChangeListner implemented basic {@link org.opendaylight.mdsal.binding.api.DataTreeModification}
  * processing for flow node subDataObject (flows, groups and meters).
  */
-public abstract class AbstractListeningCommiter<T extends DataObject> implements ForwardingRulesCommiter<T>,
-        RecoverableListener {
+public abstract class AbstractListeningCommiter<T extends DataObject>
+        implements ForwardingRulesCommiter<T>, RecoverableListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
-
     final ForwardingRulesManager provider;
     NodeConfigurator nodeConfigurator;
     protected final DataBroker dataBroker;
+    protected final ListenerRegistrationHelper registrationHelper;
+    protected ListenerRegistration<AbstractListeningCommiter> listenerRegistration;
 
-    public AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker) {
+    public AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
+                                     final ListenerRegistrationHelper registrationHelper) {
         this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
         this.nodeConfigurator = Preconditions.checkNotNull(provider.getNodeConfigurator(),
                 "NodeConfigurator can not be null!");
         this.dataBroker = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        this.registrationHelper = Preconditions.checkNotNull(registrationHelper, "registrationHelper can not be null!");
         registerListener();
         provider.addRecoverableListener(this);
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     @Override
     public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
         Preconditions.checkNotNull(changes, "Changes may not be null!");
@@ -54,44 +65,71 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
             final DataObjectModification<T> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNode> nodeIdent =
                     key.firstIdentifierOf(FlowCapableNode.class);
-            if (preConfigurationCheck(nodeIdent)) {
-                switch (mod.getModificationType()) {
-                    case DELETE:
-                        remove(key, mod.getDataBefore(), nodeIdent);
-                        break;
-                    case SUBTREE_MODIFIED:
-                        update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
-                        break;
-                    case WRITE:
-                        if (mod.getDataBefore() == null) {
-                            add(key, mod.getDataAfter(), nodeIdent);
-                        } else {
-                            update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
-                        }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
-                }
-            } else {
-                if (provider.isStaleMarkingEnabled()) {
-                    LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
-                            nodeIdent.toString());
-                    // Switch is NOT connected
+            try {
+                if (preConfigurationCheck(nodeIdent)) {
                     switch (mod.getModificationType()) {
                         case DELETE:
-                            createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                            remove(key, mod.getDataBefore(), nodeIdent);
                             break;
                         case SUBTREE_MODIFIED:
+                            update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
                             break;
                         case WRITE:
+                            if (mod.getDataBefore() == null) {
+                                add(key, mod.getDataAfter(), nodeIdent);
+                            } else {
+                                update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                            }
                             break;
                         default:
                             throw new
-                            IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                                    IllegalArgumentException("Unhandled modification type "
+                                    + mod.getModificationType());
+                    }
+                } else {
+                    if (provider.isStaleMarkingEnabled()) {
+                        LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
+                                nodeIdent.toString());
+                        // Switch is NOT connected
+                        switch (mod.getModificationType()) {
+                            case DELETE:
+                                createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                                break;
+                            case SUBTREE_MODIFIED:
+                                break;
+                            case WRITE:
+                                break;
+                            default:
+                                throw new
+                                        IllegalArgumentException("Unhandled modification type "
+                                        + mod.getModificationType());
+                        }
                     }
                 }
+            } catch (RuntimeException e) {
+                LOG.error("Failed to handle event {} key {} due to error ", mod.getModificationType(), key, e);
             }
         }
+    }
+
+    @Override
+    public void registerListener() {
+        final DataTreeIdentifier<T> treeId =
+                DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
+        Futures.addCallback(registrationHelper.checkedRegisterListener(treeId, this),
+                new FutureCallback<ListenerRegistration<AbstractListeningCommiter>>() {
+                    @Override
+                    public void onSuccess(
+                            @Nullable ListenerRegistration<AbstractListeningCommiter> flowListenerRegistration) {
+                        LOG.info("{} registered successfully", flowListenerRegistration.getInstance());
+                        listenerRegistration = flowListenerRegistration;
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        LOG.error("Registration failed ", throwable);
+                    }
+                }, MoreExecutors.directExecutor());
     }
 
     /**
@@ -114,4 +152,3 @@ public abstract class AbstractListeningCommiter<T extends DataObject> implements
         return provider.isNodeOwner(nodeIdent);
     }
 }
-

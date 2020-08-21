@@ -17,6 +17,7 @@ import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.binding.dom.adapter.test.AbstractDataBrokerTest;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -107,5 +108,10 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
     protected Callable<Integer> listSize(List<?> list) {
         // The condition supplier part
         return list::size;
+    }
+
+    public ListenerRegistrationHelper getRegistrationHelper() {
+        ListenerRegistrationHelper registrationHelper = new ListenerRegistrationHelper(getDataBroker());
+        return registrationHelper;
     }
 }

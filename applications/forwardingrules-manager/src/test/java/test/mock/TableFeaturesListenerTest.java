@@ -7,6 +7,8 @@
  */
 package test.mock;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
@@ -68,7 +70,9 @@ public class TableFeaturesListenerTest extends FRMTest {
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
                 rpcProviderRegistryMock, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
                 getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry, flowGroupCacheManager);
+                serviceRecoveryRegistry, flowGroupCacheManager, getRegistrationHelper());
+
+
         forwardingRulesManager.start();
         // TODO consider tests rewrite (added because of complicated access)
         forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
@@ -96,6 +100,7 @@ public class TableFeaturesListenerTest extends FRMTest {
         assertCommit(writeTx.commit());
 
         SalTableServiceMock salTableServiceMock = (SalTableServiceMock) forwardingRulesManager.getSalTableService();
+        await().atMost(10, SECONDS).until(() -> salTableServiceMock.getUpdateTableInput().size() == 1);
         List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();
         assertEquals(1, updateTableInputs.size());
         assertEquals("DOM-0", updateTableInputs.get(0).getTransactionUri().getValue());

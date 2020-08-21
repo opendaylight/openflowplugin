@@ -8,12 +8,21 @@
 
 package org.opendaylight.openflowplugin.applications.frm.util;
 
+import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import org.opendaylight.openflowplugin.applications.frm.ActionType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
@@ -44,10 +53,15 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("IllegalCatch")
 public final class FrmUtil {
     private static final Logger LOG = LoggerFactory.getLogger(FrmUtil.class);
     private static final String SEPARATOR = ":";
     private static final long RPC_RESULT_TIMEOUT = 2500;
+
+    private static final String JMX_OBJ_NAME_LIST_OF_SHRDS = "org.opendaylight.controller:type="
+            + "DistributedConfigDatastore,Category=ShardManager,name=shard-manager-config";
+    private static String JMX_OBJECT_SHARD_STATUS = "";
 
     private FrmUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
@@ -145,5 +159,71 @@ public final class FrmUtil {
                                                 final ForwardingRulesManager provider) {
         String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return provider.getDevicesGroupRegistry().isGroupPresent(nodeId, groupId);
+    }
+
+    public static String getInventoryConfigDataStoreStatus() {
+        boolean statusResult = true;
+        try {
+            ArrayList listOfShards = getAttributeJMXCommand(JMX_OBJ_NAME_LIST_OF_SHRDS, "LocalShards");
+            if (listOfShards != null) {
+                for (Object listOfShard : listOfShards) {
+                    LOG.info("Listofshard is  {} ",listOfShard);
+                    if (listOfShard.toString().contains("inventory")) {
+                        JMX_OBJECT_SHARD_STATUS =
+                                "org.opendaylight.controller:Category=Shards,name=" + listOfShard
+                                        + ",type=DistributedConfigDatastore";
+                        LOG.info("JMX object shard status is {} ",JMX_OBJECT_SHARD_STATUS);
+                        String leader = getLeaderJMX(JMX_OBJECT_SHARD_STATUS, "Leader");
+                        if (leader != null && leader.length() > 1) {
+                            LOG.info("{} ::Inventory Shard has the Leader as:: {}", listOfShard, leader);
+                        } else {
+                            statusResult = false;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("ERROR ::", e);
+        }
+        if (statusResult) {
+            return "OPERATIONAL";
+        } else {
+            return "ERROR";
+        }
+    }
+
+    private static ArrayList getAttributeJMXCommand(String objectName, String attributeName) {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ArrayList listOfShards = new ArrayList();
+        if (mbs != null) {
+            try {
+                listOfShards = (ArrayList) mbs.getAttribute(new ObjectName(objectName), attributeName);
+            } catch (MBeanException | AttributeNotFoundException | InstanceNotFoundException
+                    | MalformedObjectNameException | ReflectionException e) {
+                LOG.error("Exception while reading list of shards ", e);
+            }
+        }
+        return listOfShards;
+    }
+
+    private static String getLeaderJMX(String objectName, String atrName) {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        String leader = "";
+        if (mbs != null) {
+            try {
+                leader  = (String) mbs.getAttribute(new ObjectName(objectName), atrName);
+            } catch (MalformedObjectNameException monEx) {
+                LOG.error("CRITICAL EXCEPTION : Malformed Object Name Exception");
+            } catch (MBeanException mbEx) {
+                LOG.error("CRITICAL EXCEPTION : MBean Exception");
+            } catch (InstanceNotFoundException infEx) {
+                LOG.error("CRITICAL EXCEPTION : Instance Not Found Exception");
+            } catch (ReflectionException rEx) {
+                LOG.error("CRITICAL EXCEPTION : Reflection Exception");
+            } catch (Exception e) {
+                LOG.error("Attribute not found");
+            }
+        }
+        return leader;
     }
 }

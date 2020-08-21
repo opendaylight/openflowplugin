@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -35,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -52,29 +50,14 @@ import org.slf4j.LoggerFactory;
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
-    private ListenerRegistration<MeterForwarder> listenerRegistration;
 
-    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db) {
-        super(manager, db);
-    }
-
-    @SuppressWarnings("IllegalCatch")
-    @Override
-    public void registerListener() {
-        final DataTreeIdentifier<Meter> treeId = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
-                getWildCardPath());
-
-        try {
-            listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, MeterForwarder.this);
-        } catch (final Exception e) {
-            LOG.warn("FRM Meter DataTreeChange listener registration fail!");
-            LOG.debug("FRM Meter DataTreeChange listener registration fail ..", e);
-            throw new IllegalStateException("MeterForwarder startup fail! System needs restart.", e);
-        }
+    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db,
+                          final ListenerRegistrationHelper listenerRegistrationHelper) {
+        super(manager, db, listenerRegistrationHelper);
     }
 
     @Override
-    public  void deregisterListener() {
+    public void deregisterListener() {
         close();
     }
 
