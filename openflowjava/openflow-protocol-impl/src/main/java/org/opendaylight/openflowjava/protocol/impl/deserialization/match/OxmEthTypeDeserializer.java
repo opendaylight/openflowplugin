@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.type._case.EthTypeBuilder;
+import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 
 /**
  * Translates OxmEthType messages.
@@ -35,11 +36,9 @@ public class OxmEthTypeDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addEthTypeValue(ByteBuf input, MatchEntryBuilder builder) {
-        EthTypeCaseBuilder caseBuilder = new EthTypeCaseBuilder();
-        EthTypeBuilder ethBuilder = new EthTypeBuilder();
-        ethBuilder.setEthType(new EtherType(input.readUnsignedShort()));
-        caseBuilder.setEthType(ethBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new EthTypeCaseBuilder()
+            .setEthType(new EthTypeBuilder().setEthType(new EtherType(ByteBufUtils.readUint16(input))).build())
+            .build());
     }
 
     @Override

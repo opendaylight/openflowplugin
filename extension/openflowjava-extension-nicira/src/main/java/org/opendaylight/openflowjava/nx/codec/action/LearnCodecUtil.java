@@ -7,6 +7,10 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -187,15 +191,15 @@ public final class LearnCodecUtil {
     */
 
     static void deserializeLearnHeader(final ByteBuf message, NxActionLearnBuilder nxActionLearnBuilder) {
-        nxActionLearnBuilder.setIdleTimeout(message.readUnsignedShort());
-        nxActionLearnBuilder.setHardTimeout(message.readUnsignedShort());
-        nxActionLearnBuilder.setPriority(message.readUnsignedShort());
+        nxActionLearnBuilder.setIdleTimeout(readUint16(message));
+        nxActionLearnBuilder.setHardTimeout(readUint16(message));
+        nxActionLearnBuilder.setPriority(readUint16(message));
         nxActionLearnBuilder.setCookie(BigInteger.valueOf(message.readLong()));
-        nxActionLearnBuilder.setFlags(message.readUnsignedShort());
-        nxActionLearnBuilder.setTableId(message.readUnsignedByte());
+        nxActionLearnBuilder.setFlags(readUint16(message));
+        nxActionLearnBuilder.setTableId(readUint8(message));
         message.skipBytes(1);
-        nxActionLearnBuilder.setFinIdleTimeout(message.readUnsignedShort());
-        nxActionLearnBuilder.setFinHardTimeout(message.readUnsignedShort());
+        nxActionLearnBuilder.setFinIdleTimeout(readUint16(message));
+        nxActionLearnBuilder.setFinHardTimeout(readUint16(message));
     }
 
     static synchronized void buildFlowModSpecs(NxActionLearnBuilder nxActionLearnBuilder, ByteBuf message,
@@ -252,9 +256,9 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowModAddMatchFromField(ByteBuf message, short numBits) {
         FlowModAddMatchFromFieldBuilder builder = new FlowModAddMatchFromFieldBuilder();
-        builder.setSrcField(message.readUnsignedInt());
+        builder.setSrcField(readUint32(message));
         builder.setSrcOfs((int) message.readShort());
-        builder.setDstField(message.readUnsignedInt());
+        builder.setDstField(readUint32(message));
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -268,8 +272,8 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowModAddMatchFromValue(ByteBuf message, short numBits) {
         FlowModAddMatchFromValueBuilder builder = new FlowModAddMatchFromValueBuilder();
-        builder.setValue(message.readUnsignedShort());
-        builder.setSrcField(message.readUnsignedInt());
+        builder.setValue(readUint16(message));
+        builder.setSrcField(readUint32(message));
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -283,9 +287,9 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowModCopyFromField(ByteBuf message, short numBits) {
         FlowModCopyFieldIntoFieldBuilder builder = new FlowModCopyFieldIntoFieldBuilder();
-        builder.setSrcField(message.readUnsignedInt());
+        builder.setSrcField(readUint32(message));
         builder.setSrcOfs((int) message.readShort());
-        builder.setDstField(message.readUnsignedInt());
+        builder.setDstField(readUint32(message));
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -299,8 +303,8 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowModCopyFromValue(ByteBuf message, short numBits) {
         FlowModCopyValueIntoFieldBuilder builder = new FlowModCopyValueIntoFieldBuilder();
-        builder.setValue(message.readUnsignedShort());
-        builder.setDstField(message.readUnsignedInt());
+        builder.setValue(readUint16(message));
+        builder.setDstField(readUint32(message));
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
@@ -314,7 +318,7 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowToPort(ByteBuf message, short numBits) {
         FlowModOutputToPortBuilder builder = new FlowModOutputToPortBuilder();
-        builder.setSrcField(message.readUnsignedInt());
+        builder.setSrcField(readUint32(message));
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
         length -= TO_PORT_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;

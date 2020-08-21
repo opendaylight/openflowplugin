@@ -7,9 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -44,21 +48,17 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
 
         FlowModInputBuilder builder = new FlowModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookie);
-        builder.setCookie(new BigInteger(1, cookie));
-        final byte[] cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(cookieMask);
-        builder.setCookieMask(new BigInteger(1, cookieMask));
-        builder.setTableId(new TableId((long) rawMessage.readUnsignedByte()));
+        builder.setXid(readUint32(rawMessage));
+        builder.setCookie(readUint64(rawMessage));
+        builder.setCookieMask(readUint64(rawMessage));
+        builder.setTableId(new TableId(readUint8(rawMessage).toUint32()));
         builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedByte()));
-        builder.setIdleTimeout(rawMessage.readUnsignedShort());
-        builder.setHardTimeout(rawMessage.readUnsignedShort());
-        builder.setPriority(rawMessage.readUnsignedShort());
-        builder.setBufferId(rawMessage.readUnsignedInt());
-        builder.setOutPort(new PortNumber(rawMessage.readUnsignedInt()));
-        builder.setOutGroup(rawMessage.readUnsignedInt());
+        builder.setIdleTimeout(readUint16(rawMessage));
+        builder.setHardTimeout(readUint16(rawMessage));
+        builder.setPriority(readUint16(rawMessage));
+        builder.setBufferId(readUint32(rawMessage));
+        builder.setOutPort(new PortNumber(readUint32(rawMessage)));
+        builder.setOutGroup(readUint32(rawMessage));
         builder.setFlags(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
         rawMessage.skipBytes(PADDING);
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(

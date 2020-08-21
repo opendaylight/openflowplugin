@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
@@ -19,13 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  */
 public class GetConfigInputMessageFactory extends VersionAssignableFactory implements OFDeserializer<GetConfigInput> {
-
     @Override
     public GetConfigInput deserialize(ByteBuf rawMessage) {
-        GetConfigInputBuilder builder = new GetConfigInputBuilder();
-        builder.setVersion(getVersion());
-        builder.setXid(rawMessage.readUnsignedInt());
-        return builder.build();
+        return new GetConfigInputBuilder()
+                .setVersion(getVersion())
+                .setXid(readUint32(rawMessage))
+                .build();
     }
-
 }

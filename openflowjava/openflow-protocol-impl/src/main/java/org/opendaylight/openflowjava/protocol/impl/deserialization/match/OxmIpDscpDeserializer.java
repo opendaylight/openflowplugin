@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpDscpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ip.dscp._case.IpDscpBuilder;
+import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 
 /**
  * Translates OxmIpDscp messages.
@@ -35,11 +36,9 @@ public class OxmIpDscpDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     private static void addIpDscpValue(ByteBuf input, MatchEntryBuilder builder) {
-        IpDscpCaseBuilder caseBuilder = new IpDscpCaseBuilder();
-        IpDscpBuilder dscpBuilder = new IpDscpBuilder();
-        dscpBuilder.setDscp(new Dscp(input.readUnsignedByte()));
-        caseBuilder.setIpDscp(dscpBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new IpDscpCaseBuilder()
+            .setIpDscp(new IpDscpBuilder().setDscp(new Dscp(ByteBufUtils.readUint8(input))).build())
+            .build());
     }
 
     @Override

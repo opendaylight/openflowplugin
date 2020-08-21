@@ -16,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfInPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.in.port.type.grouping.NxmOfInPortValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfInPortCaseValue;
@@ -44,13 +43,11 @@ public class InPortCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        OfInPortCaseValueBuilder caseBuilder = new OfInPortCaseValueBuilder();
-        NxmOfInPortValuesBuilder valuesBuilder = new NxmOfInPortValuesBuilder();
-        valuesBuilder.setValue(message.readInt()).build();
-        caseBuilder.setNxmOfInPortValues(valuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setMatchEntryValue(new OfInPortCaseValueBuilder()
+                    .setNxmOfInPortValues(new NxmOfInPortValuesBuilder().setValue(message.readInt()).build())
+                    .build())
+                .build();
     }
 
     @Override

@@ -17,11 +17,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfTcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.tcp.dst.grouping.TcpDstValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpDstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpDstCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 
 /**
  * Codec for the TcpDst message.
@@ -47,17 +47,15 @@ public class TcpDstCodec extends AbstractMatchCodec {
 
     @Override
     public MatchEntry deserialize(final ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        matchEntryBuilder.setHasMask(true);
-        int portNo = message.readUnsignedShort();
-        int mask = message.readUnsignedShort();
-        TcpDstCaseValueBuilder caseBuilder = new TcpDstCaseValueBuilder();
-        TcpDstValuesBuilder tcpDstValuesBuilder = new TcpDstValuesBuilder();
-        tcpDstValuesBuilder.setPort(new PortNumber(portNo));
-        tcpDstValuesBuilder.setMask(mask);
-        caseBuilder.setTcpDstValues(tcpDstValuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+        return deserializeHeaderToBuilder(message)
+                .setHasMask(true)
+                .setMatchEntryValue(new TcpDstCaseValueBuilder()
+                    .setTcpDstValues(new TcpDstValuesBuilder()
+                        .setPort(new PortNumber(ByteBufUtils.readUint16(message)))
+                        .setMask(ByteBufUtils.readUint16(message))
+                        .build())
+                    .build())
+                .build();
     }
 
     @Override

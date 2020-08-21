@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -123,7 +126,7 @@ public class MultipartRequestInputMessageFactory
 
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
+        builder.setXid(readUint32(rawMessage));
         int type = rawMessage.readUnsignedShort();
         builder.setType(getMultipartType(type));
         builder.setFlags(getMultipartRequestFlags(rawMessage.readUnsignedShort()));
@@ -199,17 +202,13 @@ public class MultipartRequestInputMessageFactory
         while (input.readableBytes() > 0) {
             TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
             final int length = input.readUnsignedShort();
-            featuresBuilder.setTableId(input.readUnsignedByte());
+            featuresBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES);
             featuresBuilder.setName(ByteBufUtils.decodeNullTerminatedString(input, MAX_TABLE_NAME_LENGTH));
-            byte[] metadataMatch = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(metadataMatch);
-            featuresBuilder.setMetadataMatch(new BigInteger(1, metadataMatch));
-            byte[] metadataWrite = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-            input.readBytes(metadataWrite);
-            featuresBuilder.setMetadataWrite(new BigInteger(1, metadataWrite));
+            featuresBuilder.setMetadataMatch(readUint64(input));
+            featuresBuilder.setMetadataWrite(readUint64(input));
             featuresBuilder.setConfig(createTableConfig(input.readUnsignedInt()));
-            featuresBuilder.setMaxEntries(input.readUnsignedInt());
+            featuresBuilder.setMaxEntries(readUint32(input));
             featuresBuilder.setTableFeatureProperties(
                     createTableFeaturesProperties(input, length - MULTIPART_REQUEST_TABLE_FEATURES_STRUCTURE_LENGTH));
             features.add(featuresBuilder.build());
@@ -244,7 +243,7 @@ public class MultipartRequestInputMessageFactory
                 List<NextTableIds> ids = new ArrayList<>();
                 while (propertyLength > 0) {
                     NextTableIdsBuilder nextTableIdsBuilder = new NextTableIdsBuilder();
-                    nextTableIdsBuilder.setTableId(input.readUnsignedByte());
+                    nextTableIdsBuilder.setTableId(readUint8(input));
                     ids.add(nextTableIdsBuilder.build());
                     propertyLength--;
                 }
@@ -303,17 +302,13 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestFlowCase setFlow(ByteBuf input) {
         final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
-        flowBuilder.setTableId(input.readUnsignedByte());
+        flowBuilder.setTableId(readUint8(input));
         input.skipBytes(FLOW_PADDING_1);
-        flowBuilder.setOutPort(input.readUnsignedInt());
-        flowBuilder.setOutGroup(input.readUnsignedInt());
+        flowBuilder.setOutPort(readUint32(input));
+        flowBuilder.setOutGroup(readUint32(input));
         input.skipBytes(FLOW_PADDING_2);
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(cookie);
-        flowBuilder.setCookie(new BigInteger(1, cookie));
-        final byte[] cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(cookieMask);
-        flowBuilder.setCookieMask(new BigInteger(1, cookieMask));
+        flowBuilder.setCookie(readUint64(input));
+        flowBuilder.setCookieMask(readUint64(input));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
         flowBuilder.setMatch(matchDeserializer.deserialize(input));
@@ -324,17 +319,13 @@ public class MultipartRequestInputMessageFactory
     private MultipartRequestAggregateCase setAggregate(ByteBuf input) {
         final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
-        aggregateBuilder.setTableId(input.readUnsignedByte());
+        aggregateBuilder.setTableId(readUint8(input));
         input.skipBytes(AGGREGATE_PADDING_1);
-        aggregateBuilder.setOutPort(input.readUnsignedInt());
-        aggregateBuilder.setOutGroup(input.readUnsignedInt());
+        aggregateBuilder.setOutPort(readUint32(input));
+        aggregateBuilder.setOutGroup(readUint32(input));
         input.skipBytes(AGGREGATE_PADDING_2);
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(cookie);
-        aggregateBuilder.setCookie(new BigInteger(1, cookie));
-        final byte[] cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        input.readBytes(cookieMask);
-        aggregateBuilder.setCookieMask(new BigInteger(1, cookieMask));
+        aggregateBuilder.setCookie(readUint64(input));
+        aggregateBuilder.setCookieMask(readUint64(input));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(
                 new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
         aggregateBuilder.setMatch(matchDeserializer.deserialize(input));
@@ -353,7 +344,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestPortStatsCase setPortStats(ByteBuf input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
-        portBuilder.setPortNo(input.readUnsignedInt());
+        portBuilder.setPortNo(readUint32(input));
         caseBuilder.setMultipartRequestPortStats(portBuilder.build());
         return caseBuilder.build();
     }
@@ -361,8 +352,8 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestQueueCase setQueue(ByteBuf input) {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
-        queueBuilder.setPortNo(input.readUnsignedInt());
-        queueBuilder.setQueueId(input.readUnsignedInt());
+        queueBuilder.setPortNo(readUint32(input));
+        queueBuilder.setQueueId(readUint32(input));
         caseBuilder.setMultipartRequestQueue(queueBuilder.build());
         return caseBuilder.build();
     }
@@ -370,7 +361,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestGroupCase setGroup(ByteBuf input) {
         MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder groupBuilder = new MultipartRequestGroupBuilder();
-        groupBuilder.setGroupId(new GroupId(input.readUnsignedInt()));
+        groupBuilder.setGroupId(new GroupId(readUint32(input)));
         caseBuilder.setMultipartRequestGroup(groupBuilder.build());
         return caseBuilder.build();
     }
@@ -394,7 +385,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestMeterCase setMeter(ByteBuf input) {
         MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder meterBuilder = new MultipartRequestMeterBuilder();
-        meterBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
+        meterBuilder.setMeterId(new MeterId(readUint32(input)));
         caseBuilder.setMultipartRequestMeter(meterBuilder.build());
         return caseBuilder.build();
     }
@@ -402,7 +393,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestMeterConfigCase setMeterConfig(ByteBuf input) {
         MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder meterBuilder = new MultipartRequestMeterConfigBuilder();
-        meterBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
+        meterBuilder.setMeterId(new MeterId(readUint32(input)));
         caseBuilder.setMultipartRequestMeterConfig(meterBuilder.build());
         return caseBuilder.build();
     }

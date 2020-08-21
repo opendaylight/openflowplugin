@@ -5,11 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -30,16 +32,14 @@ public class FeaturesReplyMessageFactory implements OFDeserializer<GetFeaturesOu
     public GetFeaturesOutput deserialize(ByteBuf rawMessage) {
         GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        byte[] datapathId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-        rawMessage.readBytes(datapathId);
-        builder.setDatapathId(new BigInteger(1, datapathId));
-        builder.setBuffers(rawMessage.readUnsignedInt());
-        builder.setTables(rawMessage.readUnsignedByte());
-        builder.setAuxiliaryId(rawMessage.readUnsignedByte());
+        builder.setXid(readUint32(rawMessage));
+        builder.setDatapathId(readUint64(rawMessage));
+        builder.setBuffers(readUint32(rawMessage));
+        builder.setTables(readUint8(rawMessage));
+        builder.setAuxiliaryId(readUint8(rawMessage));
         rawMessage.skipBytes(PADDING_IN_FEATURES_REPLY_HEADER);
         builder.setCapabilities(createCapabilities(rawMessage.readUnsignedInt()));
-        builder.setReserved(rawMessage.readUnsignedInt());
+        builder.setReserved(readUint32(rawMessage));
         return builder.build();
     }
 
