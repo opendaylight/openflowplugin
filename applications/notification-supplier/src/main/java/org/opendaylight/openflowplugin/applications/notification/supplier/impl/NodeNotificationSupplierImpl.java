@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
@@ -51,11 +50,10 @@ public class NodeNotificationSupplierImpl extends AbstractNotificationSupplierFo
                                           final InstanceIdentifier<FlowCapableNode> ii) {
         Preconditions.checkArgument(flowCapableNode != null);
         Preconditions.checkArgument(ii != null);
-        final FlowCapableNodeUpdatedBuilder flowNodeNotifBuilder = new FlowCapableNodeUpdatedBuilder(flowCapableNode);
         final NodeUpdatedBuilder notifBuilder = new NodeUpdatedBuilder();
         notifBuilder.setId(ii.firstKeyOf(Node.class).getId());
         notifBuilder.setNodeRef(new NodeRef(getNodeII(ii)));
-        notifBuilder.addAugmentation(FlowCapableNodeUpdated.class, flowNodeNotifBuilder.build());
+        notifBuilder.addAugmentation(new FlowCapableNodeUpdatedBuilder(flowCapableNode).build());
         return notifBuilder.build();
     }
 

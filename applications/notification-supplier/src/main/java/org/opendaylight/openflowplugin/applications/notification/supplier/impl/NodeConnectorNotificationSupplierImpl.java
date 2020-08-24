@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
@@ -53,11 +52,9 @@ public class NodeConnectorNotificationSupplierImpl extends
         Preconditions.checkArgument(flowCapableNodeConnector != null);
         Preconditions.checkArgument(path != null);
         final NodeConnectorUpdatedBuilder notifBuilder = new NodeConnectorUpdatedBuilder();
-        final FlowCapableNodeConnectorUpdatedBuilder connNotifBuilder = new FlowCapableNodeConnectorUpdatedBuilder(
-                flowCapableNodeConnector);
         notifBuilder.setId(path.firstKeyOf(NodeConnector.class).getId());
         notifBuilder.setNodeConnectorRef(new NodeConnectorRef(path));
-        notifBuilder.addAugmentation(FlowCapableNodeConnectorUpdated.class, connNotifBuilder.build());
+        notifBuilder.addAugmentation(new FlowCapableNodeConnectorUpdatedBuilder(flowCapableNodeConnector).build());
         return notifBuilder.build();
     }
 
