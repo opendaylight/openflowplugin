@@ -31,7 +31,7 @@ public final class FxChainUtil {
 
 
     public static FutureCallback<RpcResult<Void>> logResultCallback(final NodeId nodeId, final String prefix) {
-        return new FutureCallback<RpcResult<Void>>() {
+        return new FutureCallback<>() {
             @Override
             public void onSuccess(final RpcResult<Void> result) {
                 if (result != null) {
