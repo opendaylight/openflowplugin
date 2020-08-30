@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,9 +110,9 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
         LOG.info("Total Flows read: {}", flowCount);
     }
 
-    private InstanceIdentifier<Flow> getFlowInstanceIdentifier(String dpId, Short tableId, String flowId) {
+    private static InstanceIdentifier<Flow> getFlowInstanceIdentifier(String dpId, short tableId, String flowId) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(dpId)))
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId))
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(Uint8.valueOf(tableId)))
                 .child(Flow.class, new FlowKey(new FlowId(flowId)));
     }
 

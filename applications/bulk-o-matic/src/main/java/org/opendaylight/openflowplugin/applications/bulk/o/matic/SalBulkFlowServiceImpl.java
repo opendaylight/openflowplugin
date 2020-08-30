@@ -125,7 +125,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         },MoreExecutors.directExecutor());
     }
 
-    private InstanceIdentifier<Flow> getFlowInstanceIdentifier(BulkFlowDsItem bulkFlow) {
+    private static InstanceIdentifier<Flow> getFlowInstanceIdentifier(BulkFlowDsItem bulkFlow) {
         final NodeRef nodeRef = bulkFlow.getNode();
         return ((InstanceIdentifier<Node>) nodeRef.getValue()).augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(bulkFlow.getTableId()))
@@ -147,7 +147,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         }, MoreExecutors.directExecutor());
     }
 
-    private <T> ListenableFuture<RpcResult<Void>> handleResultFuture(ListenableFuture<List<T>> submitFuture) {
+    private static <T> ListenableFuture<RpcResult<Void>> handleResultFuture(ListenableFuture<List<T>> submitFuture) {
         final SettableFuture<RpcResult<Void>> rpcResult = SettableFuture.create();
         Futures.addCallback(submitFuture, new FutureCallback<List<T>>() {
             @Override

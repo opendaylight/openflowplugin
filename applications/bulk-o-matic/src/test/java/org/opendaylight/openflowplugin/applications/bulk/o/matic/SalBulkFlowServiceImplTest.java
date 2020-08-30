@@ -70,6 +70,8 @@ import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link SalBulkFlowServiceImpl}.
@@ -109,7 +111,7 @@ public class SalBulkFlowServiceImplTest {
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
 
         final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
-                .setTableId((short) 2);
+                .setTableId(Uint8.TWO);
 
         final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
         bulkFlowDsItemBuilder.setNode(new NodeRef(nodeId));
@@ -178,8 +180,9 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testReadFlowTest() throws Exception {
-        final ReadFlowTestInputBuilder readFlowTestInputBuilder = new ReadFlowTestInputBuilder().setDpnCount(1L)
-                .setStartTableId(1L).setEndTableId(2L).setIsConfigDs(false).setFlowsPerDpn(1L).setVerbose(true);
+        final ReadFlowTestInputBuilder readFlowTestInputBuilder = new ReadFlowTestInputBuilder().setDpnCount(Uint32.ONE)
+                .setStartTableId(Uint32.ONE).setEndTableId(Uint32.TWO).setIsConfigDs(false).setFlowsPerDpn(Uint32.ONE)
+                .setVerbose(true);
 
         final ReadFlowTestInput readFlowTestInput = readFlowTestInputBuilder.build();
         final ListenableFuture<RpcResult<ReadFlowTestOutput>> resultFuture
@@ -193,8 +196,8 @@ public class SalBulkFlowServiceImplTest {
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
             .read(any(LogicalDatastoreType.class), any());
 
-        final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder().setFlowCount(1L)
-                .setDpnId("1").setRpcBatchSize(1L);
+        final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder()
+                .setFlowCount(Uint32.ONE).setDpnId("1").setRpcBatchSize(Uint32.ONE);
 
         final FlowRpcAddTestInput flowRpcAddTestInput = flowRpcAddTestInputBuilder.build();
         final ListenableFuture<RpcResult<FlowRpcAddTestOutput>> resultFuture
@@ -205,9 +208,10 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testFlowTest() throws Exception {
-        final FlowTestInputBuilder flowTestInputBuilder = new FlowTestInputBuilder().setBatchSize(1L).setDpnCount(1L)
-                .setEndTableId(2L).setFlowsPerDpn(1L).setIsAdd(true).setSeq(true).setSleepAfter(20L).setSleepFor(1L)
-                .setStartTableId(1L).setTxChain(true).setCreateParents(true);
+        final FlowTestInputBuilder flowTestInputBuilder = new FlowTestInputBuilder()
+                .setBatchSize(Uint32.ONE).setDpnCount(Uint32.ONE).setEndTableId(Uint32.TWO).setFlowsPerDpn(Uint32.ONE)
+                .setIsAdd(true).setSeq(true).setSleepAfter(Uint32.valueOf(20)).setSleepFor(Uint32.ONE)
+                .setStartTableId(Uint32.ONE).setTxChain(true).setCreateParents(true);
 
         FlowTestInput flowTestInput = flowTestInputBuilder.build();
 
@@ -245,7 +249,7 @@ public class SalBulkFlowServiceImplTest {
             .read(any(LogicalDatastoreType.class), any());
 
         final FlowRpcAddMultipleInputBuilder flowRpcAddMultipleInputBuilder = new FlowRpcAddMultipleInputBuilder()
-                .setFlowCount(1L).setRpcBatchSize(1L);
+                .setFlowCount(Uint32.ONE).setRpcBatchSize(Uint32.ONE);
 
         final FlowRpcAddMultipleInput flowRpcAddMultipleInput = flowRpcAddMultipleInputBuilder.build();
 
@@ -254,8 +258,8 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testTableTest() throws Exception {
-        final TableTestInputBuilder tableTestInputBuilder = new TableTestInputBuilder().setStartTableId(0L)
-                .setEndTableId(99L).setDpnCount(1L).setOperation(Operation.Add);
+        final TableTestInputBuilder tableTestInputBuilder = new TableTestInputBuilder().setStartTableId(Uint32.ZERO)
+                .setEndTableId(Uint32.valueOf(99)).setDpnCount(Uint32.ONE).setOperation(Operation.Add);
 
         TableTestInput tableTestInput = tableTestInputBuilder.build();
 

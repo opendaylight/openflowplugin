@@ -24,9 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class BulkOMaticUtils {
 
@@ -48,28 +49,27 @@ public final class BulkOMaticUtils {
     }
 
     public static Match getMatch(final int sourceIp) {
-        Ipv4Match ipv4Match = new Ipv4MatchBuilder().setIpv4Source(new Ipv4Prefix(ipIntToStr(sourceIp))).build();
-        MatchBuilder matchBuilder = new MatchBuilder();
-        matchBuilder.setLayer3Match(ipv4Match);
-        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
-        ethTypeBuilder.setType(new EtherType(2048L));
-        ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
-        matchBuilder.setEthernetMatch(ethMatchBuilder.build());
-        return matchBuilder.build();
+        return new MatchBuilder()
+                .setLayer3Match(new Ipv4MatchBuilder().setIpv4Source(new Ipv4Prefix(ipIntToStr(sourceIp))).build())
+                .setEthernetMatch(new EthernetMatchBuilder()
+                    .setEthernetType(new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(2048))).build())
+                    .build())
+                .build();
     }
 
-    public static Flow buildFlow(Short tableId, String flowId, Match match) {
-        FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.withKey(new FlowKey(new FlowId(flowId)));
-        flowBuilder.setTableId(tableId);
-        flowBuilder.setMatch(match);
-        return flowBuilder.build();
+    public static Flow buildFlow(short tableId, String flowId, Match match) {
+        return new FlowBuilder()
+                .withKey(new FlowKey(new FlowId(flowId)))
+                .setTableId(Uint8.valueOf(tableId))
+                .setMatch(match)
+                .build();
     }
 
-    public static InstanceIdentifier<Flow> getFlowInstanceIdentifier(Short tableId, String flowId, String dpId) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(dpId)))
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId))
+    public static InstanceIdentifier<Flow> getFlowInstanceIdentifier(short tableId, String flowId, String dpId) {
+        return InstanceIdentifier.create(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(dpId)))
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(Uint8.valueOf(tableId)))
                 .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow.class,
                         new FlowKey(new FlowId(flowId)));
     }
@@ -78,9 +78,9 @@ public final class BulkOMaticUtils {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId(dpId))).build();
     }
 
-    public static InstanceIdentifier<Table> getTableId(Short tableId, String dpId) {
+    public static InstanceIdentifier<Table> getTableId(short tableId, String dpId) {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId(dpId)))
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tableId)).build();
+                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(Uint8.valueOf(tableId))).build();
     }
 
     public static InstanceIdentifier<Flow> getFlowId(final InstanceIdentifier<Table> tablePath, final String flowId) {

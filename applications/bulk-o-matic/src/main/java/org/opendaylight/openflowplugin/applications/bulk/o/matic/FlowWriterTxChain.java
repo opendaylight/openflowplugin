@@ -194,7 +194,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
             private final short beginTableId;
             private final TransactionChain txChain;
 
-            DsCallBack(String dpId, Short beginTableId, Short endTableId, Integer sourceIp,
+            DsCallBack(String dpId, short beginTableId, short endTableId, int sourceIp,
                     TransactionChain txChain) {
                 this.dpId = dpId;
                 this.sourceIp = sourceIp;

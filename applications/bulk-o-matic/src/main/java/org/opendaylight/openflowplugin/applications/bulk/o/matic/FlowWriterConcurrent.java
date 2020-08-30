@@ -167,7 +167,7 @@ public class FlowWriterConcurrent implements FlowCounterMBean {
             private final short endTableId;
             private final short beginTableId;
 
-            DsCallBack(String dpId, Short beginTableId, Short endTableId, Integer sourceIp) {
+            DsCallBack(String dpId, short beginTableId, short endTableId, int sourceIp) {
                 this.dpId = dpId;
                 this.sourceIp = sourceIp;
                 this.endTableId = endTableId;

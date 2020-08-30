@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,7 @@ public class TableWriter implements FlowCounterMBean {
                 String dpId = BulkOMaticUtils.DEVICE_TYPE_PREFIX + String.valueOf(dpn);
                 for (short tableId = startTableId; tableId <= endTableId; tableId++) {
                     WriteTransaction wtx = dataBroker.newWriteOnlyTransaction();
-                    Table table = new TableBuilder().withKey(new TableKey(tableId)).setId(tableId).build();
+                    Table table = new TableBuilder().withKey(new TableKey(Uint8.valueOf(tableId))).build();
                     InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
 
                     if (isAdd) {
