@@ -203,7 +203,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         public Boolean call() {
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             Optional<FlowCapableNode> flowNode = Optional.empty();
-            BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
+            BundleId bundleIdValue = new BundleId(Uint32.valueOf(BUNDLE_ID.getAndIncrement()));
             BigInteger dpnId = getDpnIdFromNodeName(node);
             ExecutorService service = Executors.newSingleThreadExecutor(THREAD_FACTORY);
             LOG.info("Triggering bundle based reconciliation for device : {}", dpnId);

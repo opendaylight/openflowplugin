@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public abstract class FRMTest extends AbstractDataBrokerTest {
 
@@ -75,12 +76,12 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
     }
 
     public ForwardingRulesManagerConfig getConfig() {
-        ForwardingRulesManagerConfigBuilder cfgBuilder = new ForwardingRulesManagerConfigBuilder();
-        cfgBuilder.setDisableReconciliation(false);
-        cfgBuilder.setStaleMarkingEnabled(false);
-        cfgBuilder.setReconciliationRetryCount(0);
-        cfgBuilder.setBundleBasedReconciliationEnabled(false);
-        return cfgBuilder.build();
+        return new ForwardingRulesManagerConfigBuilder()
+                .setDisableReconciliation(false)
+                .setStaleMarkingEnabled(false)
+                .setReconciliationRetryCount(Uint16.ZERO)
+                .setBundleBasedReconciliationEnabled(false)
+                .build();
     }
 
     public ConfigurationService getConfigurationService() {

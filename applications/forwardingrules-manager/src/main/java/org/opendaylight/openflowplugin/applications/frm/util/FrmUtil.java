@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.applications.frm.util;
 
 import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,10 +91,9 @@ public final class FrmUtil {
         return getTableId(new FlowTableRef(identifier));
     }
 
-    public static BigInteger getDpnIdFromNodeName(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public static Uint64 getDpnIdFromNodeName(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         String nodeId = nodeIdent.firstKeyOf(Node.class).getId().getValue();
-        String dpId = nodeId.substring(nodeId.lastIndexOf(SEPARATOR) + 1);
-        return new BigInteger(dpId);
+        return Uint64.valueOf(nodeId.substring(nodeId.lastIndexOf(SEPARATOR) + 1));
     }
 
     public static Uint32 isFlowDependentOnGroup(final Flow flow) {
@@ -137,7 +136,7 @@ public final class FrmUtil {
 
     public static BundleId getActiveBundle(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                            final ForwardingRulesManager provider) {
-        BigInteger dpId = getDpnIdFromNodeName(nodeIdent);
+        final Uint64 dpId = getDpnIdFromNodeName(nodeIdent);
         final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class));
         GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder().setNodeId(dpId).setNode(nodeRef);
         try {

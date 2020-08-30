@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalMeterServiceMock;
@@ -98,7 +99,7 @@ public class MeterListenerTest extends FRMTest {
     public void addTwoMetersTest() {
         addFlowCapableNode(NODE_KEY);
 
-        MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
+        MeterKey meterKey = new MeterKey(new MeterId(Uint32.valueOf(2000)));
         InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").build();
@@ -112,7 +113,7 @@ public class MeterListenerTest extends FRMTest {
         assertEquals(1, addMeterCalls.size());
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
 
-        meterKey = new MeterKey(new MeterId((long) 2001));
+        meterKey = new MeterKey(new MeterId(Uint32.valueOf(2001)));
         meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
@@ -130,7 +131,7 @@ public class MeterListenerTest extends FRMTest {
     public void updateMeterTest() {
         addFlowCapableNode(NODE_KEY);
 
-        MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
+        MeterKey meterKey = new MeterKey(new MeterId(Uint32.valueOf(2000)));
         InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").setBarrier(false).build();
@@ -159,7 +160,7 @@ public class MeterListenerTest extends FRMTest {
     public void removeMeterTest() {
         addFlowCapableNode(NODE_KEY);
 
-        MeterKey meterKey = new MeterKey(new MeterId((long) 2000));
+        MeterKey meterKey = new MeterKey(new MeterId(Uint32.valueOf(2000)));
         InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
         Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").build();
@@ -187,7 +188,7 @@ public class MeterListenerTest extends FRMTest {
     public void staleMeterCreationTest() {
         addFlowCapableNode(NODE_KEY);
 
-        StaleMeterKey meterKey = new StaleMeterKey(new MeterId((long) 2000));
+        StaleMeterKey meterKey = new StaleMeterKey(new MeterId(Uint32.valueOf(2000)));
         InstanceIdentifier<StaleMeter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(StaleMeter.class, meterKey);
         StaleMeter meter = new StaleMeterBuilder().withKey(meterKey).setMeterName("stale_meter_one").build();

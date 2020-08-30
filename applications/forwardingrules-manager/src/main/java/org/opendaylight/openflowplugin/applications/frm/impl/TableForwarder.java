@@ -85,11 +85,13 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-        builder.setUpdatedTable(
-                new UpdatedTableBuilder().setTableFeatures(Collections.singletonList(updatedTableFeatures)).build());
+        builder.setUpdatedTable(new UpdatedTableBuilder()
+            .setTableFeatures(Collections.singletonMap(updatedTableFeatures.key(), updatedTableFeatures))
+            .build());
 
-        builder.setOriginalTable(
-                new OriginalTableBuilder().setTableFeatures(Collections.singletonList(originalTableFeatures)).build());
+        builder.setOriginalTable(new OriginalTableBuilder()
+            .setTableFeatures(Collections.singletonMap(originalTableFeatures.key(), originalTableFeatures))
+            .build());
         LOG.debug("Invoking SalTableService ");
 
         if (this.provider.getSalTableService() != null) {

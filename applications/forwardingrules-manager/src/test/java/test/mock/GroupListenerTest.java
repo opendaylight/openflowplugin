@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalGroupServiceMock;
@@ -98,7 +99,7 @@ public class GroupListenerTest extends FRMTest {
     public void addTwoGroupsTest() {
         addFlowCapableNode(NODE_KEY);
 
-        GroupKey groupKey = new GroupKey(new GroupId((long) 255));
+        GroupKey groupKey = new GroupKey(new GroupId(Uint32.valueOf(255)));
         InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
@@ -112,7 +113,7 @@ public class GroupListenerTest extends FRMTest {
         assertEquals(1, addGroupCalls.size());
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
-        groupKey = new GroupKey(new GroupId((long) 256));
+        groupKey = new GroupKey(new GroupId(Uint32.valueOf(256)));
         groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
@@ -129,7 +130,7 @@ public class GroupListenerTest extends FRMTest {
     public void updateGroupTest() {
         addFlowCapableNode(NODE_KEY);
 
-        GroupKey groupKey = new GroupKey(new GroupId((long) 255));
+        GroupKey groupKey = new GroupKey(new GroupId(Uint32.valueOf(255)));
         InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
@@ -157,7 +158,7 @@ public class GroupListenerTest extends FRMTest {
     public void removeGroupTest() {
         addFlowCapableNode(NODE_KEY);
 
-        GroupKey groupKey = new GroupKey(new GroupId((long) 255));
+        GroupKey groupKey = new GroupKey(new GroupId(Uint32.valueOf(255)));
         InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
         Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
@@ -184,7 +185,7 @@ public class GroupListenerTest extends FRMTest {
     public void staleGroupCreationTest() {
         addFlowCapableNode(NODE_KEY);
 
-        StaleGroupKey groupKey = new StaleGroupKey(new GroupId((long) 255));
+        StaleGroupKey groupKey = new StaleGroupKey(new GroupId(Uint32.valueOf(255)));
         InstanceIdentifier<StaleGroup> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
                 .augmentation(FlowCapableNode.class).child(StaleGroup.class, groupKey);
         StaleGroup group = new StaleGroupBuilder().withKey(groupKey).setGroupName("Stale_Group1").build();
