@@ -123,7 +123,7 @@ public class SimplifiedOperationalListenerTest {
         operationalAdd();
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
         Mockito.verify(deviceMastershipManager).onDeviceConnected(NODE_ID);
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -134,7 +134,7 @@ public class SimplifiedOperationalListenerTest {
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(deviceMastershipManager).onDeviceDisconnected(NODE_ID);
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SimplifiedOperationalListenerTest {
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(deviceMastershipManager).onDeviceDisconnected(NODE_ID);
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -169,7 +169,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -196,7 +196,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -207,7 +207,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
     }
 
     @Test
@@ -252,7 +252,7 @@ public class SimplifiedOperationalListenerTest {
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }
 

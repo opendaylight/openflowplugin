@@ -611,9 +611,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Test
     public void testUpdateTableFeatures() throws Exception {
-        Mockito.lenient().when(tableCommitter.update(ArgumentMatchers.any(),
-                ArgumentMatchers.isNull(TableFeatures.class), tableFeaturesCaptor.capture(),
-                ArgumentMatchers.same(NODE_IDENT)))
+        Mockito.lenient().when(tableCommitter.update(ArgumentMatchers.any(), ArgumentMatchers.isNull(),
+                tableFeaturesCaptor.capture(), ArgumentMatchers.same(NODE_IDENT)))
                 .thenReturn(RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture());
 
         final FlowCapableNode operational = new FlowCapableNodeBuilder()

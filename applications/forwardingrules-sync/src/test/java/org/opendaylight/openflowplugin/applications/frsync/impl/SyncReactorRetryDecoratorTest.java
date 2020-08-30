@@ -82,7 +82,7 @@ public class SyncReactorRetryDecoratorTest {
 
         reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verifyZeroInteractions(delegate);
+        Mockito.verifyNoMoreInteractions(delegate);
     }
 
 }
