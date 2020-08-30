@@ -84,6 +84,7 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -273,7 +274,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             InstanceIdentifier<FlowCapableNode> nodeIdentity = deviceInfo.getNodeInstanceIdentifier()
                     .augmentation(FlowCapableNode.class);
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
-            BundleId bundleIdValue = new BundleId(BUNDLE_ID.getAndIncrement());
+            BundleId bundleIdValue = new BundleId(Uint32.valueOf(BUNDLE_ID.getAndIncrement()));
             LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
             final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
