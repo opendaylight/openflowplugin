@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.math.BigInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
@@ -46,6 +44,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test for {@link GroupForwarder}.
@@ -54,7 +54,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class GroupForwarderTest {
 
     private final NodeKey s1Key = new NodeKey(new NodeId("S1"));
-    private final GroupId groupId = new GroupId(42L);
+    private final GroupId groupId = new GroupId(Uint32.valueOf(42));
     private final GroupKey groupKey = new GroupKey(groupId);
     private final Group group = new GroupBuilder()
             .setGroupId(groupId)
@@ -84,7 +84,7 @@ public class GroupForwarderTest {
     @Before
     public void setUp() {
         groupForwarder = new GroupForwarder(salGroupService);
-        txId = new TransactionId(BigInteger.ONE);
+        txId = new TransactionId(Uint64.ONE);
     }
 
     @Test

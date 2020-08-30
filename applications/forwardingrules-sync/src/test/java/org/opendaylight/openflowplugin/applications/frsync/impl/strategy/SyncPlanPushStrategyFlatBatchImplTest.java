@@ -62,6 +62,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link SyncPlanPushStrategyFlatBatchImpl}.
@@ -100,11 +101,11 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         metersToRemove = DiffInputFactory.createMeterSyncBox(1, 2, 3);
 
         flowsToAddOrUpdate = new HashMap<>();
-        flowsToAddOrUpdate.put(new TableKey((short) 0), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
-        flowsToAddOrUpdate.put(new TableKey((short) 1), DiffInputFactory.createFlowSyncBoxWithUpdates("4", "5", "6"));
+        flowsToAddOrUpdate.put(new TableKey(Uint8.ZERO), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
+        flowsToAddOrUpdate.put(new TableKey(Uint8.ONE), DiffInputFactory.createFlowSyncBoxWithUpdates("4", "5", "6"));
         flowsToRemove = new HashMap<>();
-        flowsToRemove.put(new TableKey((short) 0), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
-        flowsToRemove.put(new TableKey((short) 1), DiffInputFactory.createFlowSyncBox("4", "5", "6"));
+        flowsToRemove.put(new TableKey(Uint8.ZERO), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
+        flowsToRemove.put(new TableKey(Uint8.ONE), DiffInputFactory.createFlowSyncBox("4", "5", "6"));
     }
 
 

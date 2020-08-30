@@ -42,6 +42,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DropBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Provides create methods for dataObjects involved in
@@ -51,17 +54,14 @@ public final class DSInputFactory {
     private DSInputFactory() {
     }
 
-    public static Group createGroup(final long groupIdValue) {
-        final Buckets buckets = new BucketsBuilder()
-                .setBucket(Collections.emptyList())
-                .build();
+    public static Group createGroup(final Uint32 groupIdValue) {
         return new GroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
-                .setBuckets(buckets)
+                .setBuckets(new BucketsBuilder().build())
                 .build();
     }
 
-    public static Group createGroupWithAction(final long groupIdValue) {
+    public static Group createGroupWithAction(final Uint32 groupIdValue) {
         final Buckets buckets = new BucketsBuilder()
                 .setBucket(Collections.singletonList(new BucketBuilder()
                         .setAction(Collections.singletonList(new ActionBuilder()
@@ -82,8 +82,8 @@ public final class DSInputFactory {
     public static Flow createFlow(final String flowIdValue, final int priority) {
         return new FlowBuilder()
                 .setId(new FlowId(flowIdValue))
-                .setPriority(priority)
-                .setTableId((short) 42)
+                .setPriority(Uint16.valueOf(priority))
+                .setTableId(Uint8.valueOf(42))
                 .setMatch(new MatchBuilder().build())
                 .build();
     }
@@ -91,8 +91,8 @@ public final class DSInputFactory {
     public static Flow createFlowWithInstruction(final String flowIdValue, final int priority) {
         return new FlowBuilder()
                 .setId(new FlowId(flowIdValue))
-                .setPriority(priority)
-                .setTableId((short) 42)
+                .setPriority(Uint16.valueOf(priority))
+                .setTableId(Uint8.valueOf(42))
                 .setMatch(new MatchBuilder().build())
                 .setInstructions(new InstructionsBuilder()
                         .setInstruction(Collections.singletonList(new InstructionBuilder()
@@ -112,20 +112,20 @@ public final class DSInputFactory {
                 .build();
     }
 
-    public static Meter createMeter(final Long meterIdValue) {
+    public static Meter createMeter(final Uint32 meterIdValue) {
         return new MeterBuilder()
                 .setMeterId(new MeterId(meterIdValue))
                 .build();
     }
 
-    public static Meter createMeterWithBody(final Long meterIdValue) {
+    public static Meter createMeterWithBody(final Uint32 meterIdValue) {
         return new MeterBuilder()
                 .setMeterId(new MeterId(meterIdValue))
                 .setMeterBandHeaders(new MeterBandHeadersBuilder()
                         .setMeterBandHeader(Collections.singletonList(new MeterBandHeaderBuilder()
-                                .setBandId(new BandId(42L))
+                                .setBandId(new BandId(Uint32.valueOf(42)))
                                 .setBandType(new DropBuilder()
-                                        .setDropRate(43L)
+                                        .setDropRate(Uint32.valueOf(43))
                                         .build())
                                 .build()))
                         .build())
@@ -137,7 +137,7 @@ public final class DSInputFactory {
         int key = 0;
         for (long groupIdPrecondition : requiredId) {
             final GroupAction groupAction = new GroupActionBuilder()
-                    .setGroupId(groupIdPrecondition)
+                    .setGroupId(Uint32.valueOf(groupIdPrecondition))
                     .build();
             final GroupActionCase groupActionCase = new GroupActionCaseBuilder()
                     .setGroupAction(groupAction)
@@ -157,7 +157,7 @@ public final class DSInputFactory {
                 .build();
 
         return new GroupBuilder()
-                .setGroupId(new GroupId(groupIdValue))
+                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                 .setBuckets(buckets)
                 .build();
     }

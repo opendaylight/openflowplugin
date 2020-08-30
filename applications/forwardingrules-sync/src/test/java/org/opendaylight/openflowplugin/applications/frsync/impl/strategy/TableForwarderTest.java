@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.math.BigInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
@@ -40,6 +38,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link TableForwarder}.
@@ -48,7 +48,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class TableForwarderTest {
 
     private final NodeKey s1Key = new NodeKey(new NodeId("S1"));
-    private final Short tableId = (short) 42;
+    private final Uint8 tableId = Uint8.valueOf(42);
     private final TableKey tableKey = new TableKey(tableId);
     private final TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableId);
     private final TableFeatures tableFeatures = new TableFeaturesBuilder()
@@ -78,7 +78,7 @@ public class TableForwarderTest {
     @Before
     public void setUp() {
         tableForwarder = new TableForwarder(salTableService);
-        txId = new TransactionId(BigInteger.ONE);
+        txId = new TransactionId(Uint64.ONE);
     }
 
     @Test

@@ -32,9 +32,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -257,28 +255,23 @@ public class ReconcileUtilTest {
         final List<Action> actionBag = new ArrayList<>();
         int key = 0;
         for (long groupIdPrecondition : requiredId) {
-            final GroupAction groupAction = new GroupActionBuilder()
-                    .setGroupId(groupIdPrecondition)
-                    .build();
-            final GroupActionCase groupActionCase = new GroupActionCaseBuilder()
-                    .setGroupAction(groupAction)
-                    .build();
-            final Action action = new ActionBuilder()
-                    .setAction(groupActionCase)
-                    .withKey(new ActionKey(key++))
-                    .build();
-            actionBag.add(action);
+            actionBag.add(new ActionBuilder()
+                .setAction(new GroupActionCaseBuilder()
+                    .setGroupAction(new GroupActionBuilder()
+                        .setGroupId(Uint32.valueOf(groupIdPrecondition))
+                        .build())
+                    .build())
+                .withKey(new ActionKey(key++))
+                .build());
         }
 
-        final Bucket bucket = new BucketBuilder()
-                .setAction(actionBag)
-                .build();
+        final Bucket bucket = new BucketBuilder().setAction(actionBag).build();
         final Buckets buckets = new BucketsBuilder()
-                .setBucket(Collections.singletonList(bucket))
+                .setBucket(Collections.singletonMap(bucket.key(), bucket))
                 .build();
 
         return new GroupBuilder()
-                .setGroupId(new GroupId(groupIdValue))
+                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                 .setBuckets(buckets)
                 .build();
     }
@@ -292,12 +285,9 @@ public class ReconcileUtilTest {
     }
 
     private static Group createGroup(final long groupIdValue) {
-        final Buckets buckets = new BucketsBuilder()
-                .setBucket(Collections.emptyList())
-                .build();
         return new GroupBuilder()
-                .setGroupId(new GroupId(groupIdValue))
-                .setBuckets(buckets)
+                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
+                .setBuckets(new BucketsBuilder().build())
                 .build();
     }
 
