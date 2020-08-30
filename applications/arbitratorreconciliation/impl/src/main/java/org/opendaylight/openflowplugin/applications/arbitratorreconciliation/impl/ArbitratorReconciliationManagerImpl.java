@@ -173,7 +173,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         MoreExecutors.directExecutor());
                 return Futures.transform(
                         rpcResult,
-                        this.createRpcResultCondenser("committed active bundle"),
+                        createRpcResultCondenser("committed active bundle"),
                         MoreExecutors.directExecutor());
             }
         }
@@ -249,7 +249,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private Messages createMessages(final NodeRef nodeRef) {
+    private static Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder()
                 .setNode(nodeRef)
@@ -349,7 +349,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
     }
 
-    private <D> Function<RpcResult<D>,
+    private static <D> Function<RpcResult<D>,
             RpcResult<CommitActiveBundleOutput>> createRpcResultCondenser(final String action) {
         return input -> {
             final RpcResultBuilder<CommitActiveBundleOutput> resultSink;
@@ -406,7 +406,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private Uint64 getDpnIdFromNodeName(String nodeName) {
+    private static Uint64 getDpnIdFromNodeName(String nodeName) {
         String dpnId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
         return Uint64.valueOf(dpnId);
     }
