@@ -298,7 +298,7 @@ public class ReconcileUtilTest {
         Assert.assertEquals(6, ReconcileUtil.countTotalUpdated(syncPlan));
     }
 
-    private ItemSyncBox<String> createSyncBox(final String pushes, final String updates) {
+    private static ItemSyncBox<String> createSyncBox(final String pushes, final String updates) {
         ItemSyncBox<String> syncBox1 = new ItemSyncBox<>();
         syncBox1.getItemsToPush().addAll(COMMA_SPLITTER.splitToList(pushes));
         for (String orig : COMMA_SPLITTER.splitToList(updates)) {
