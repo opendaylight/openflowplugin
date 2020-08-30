@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceMastershipManager {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
     private final ClusterSingletonServiceProvider clusterSingletonService;
-    private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap();
+    private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
     private final ReconciliationRegistry reconciliationRegistry;
 
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
