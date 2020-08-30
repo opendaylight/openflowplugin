@@ -153,10 +153,11 @@ public class FlowWriterSequential implements FlowCounterMBean {
 
         private class DsCallBack implements FutureCallback<Object> {
             private final String dpId;
-            private int sourceIp;
-            private final Short tableId;
+            private final short tableId;
 
-            DsCallBack(String dpId, int sourceIp, Short tableId) {
+            private int sourceIp;
+
+            DsCallBack(String dpId, int sourceIp, short tableId) {
                 this.dpId = dpId;
                 this.sourceIp = sourceIp;
                 short numberA = 1;
