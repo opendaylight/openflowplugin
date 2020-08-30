@@ -243,7 +243,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     int itemOrder = 0;
                     for (Flow flow : flowItemSyncBox.getItemsToPush()) {
                         flatBatchRemoveFlowBag.add(new FlatBatchRemoveFlowBuilder(flow)
-                                .setBatchOrder(itemOrder++)
+                                .setBatchOrder(Uint16.valueOf(itemOrder++))
                                 .setFlowId(flow.getId())
                                 .build());
                     }
@@ -251,7 +251,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                             .setBatchChoice(new FlatBatchRemoveFlowCaseBuilder()
                                     .setFlatBatchRemoveFlow(flatBatchRemoveFlowBag)
                                     .build())
-                            .setBatchOrder(order)
+                            .setBatchOrder(Uint16.valueOf(order))
                             .build();
                     order += itemOrder;
                     batchBag.add(batch);
@@ -274,13 +274,13 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     int itemOrder = 0;
                     for (Group group : groupItemSyncBox.getItemsToPush()) {
                         flatBatchAddGroupBag.add(new FlatBatchAddGroupBuilder(group)
-                                .setBatchOrder(itemOrder++).build());
+                                .setBatchOrder(Uint16.valueOf(itemOrder++)).build());
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchAddGroupCaseBuilder()
                                     .setFlatBatchAddGroup(flatBatchAddGroupBag)
                                     .build())
-                            .setBatchOrder(order)
+                            .setBatchOrder(Uint16.valueOf(order))
                             .build();
                     order += itemOrder;
                     batchBag.add(batch);

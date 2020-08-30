@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Provides create methods for data involved in {@link SynchronizationDiffInput}.
@@ -46,7 +47,7 @@ public final class DiffInputFactory {
     }
 
     private static Group createPlainGroup(final long gid) {
-        return new GroupBuilder().setGroupId(new GroupId(gid)).build();
+        return new GroupBuilder().setGroupId(new GroupId(Uint32.valueOf(gid))).build();
     }
 
     static ItemSyncBox<Meter> createMeterSyncBox(final long... meterIDs) {
@@ -70,7 +71,7 @@ public final class DiffInputFactory {
     }
 
     private static Meter createPlainMeter(final long mid) {
-        return new MeterBuilder().setMeterId(new MeterId(mid)).build();
+        return new MeterBuilder().setMeterId(new MeterId(Uint32.valueOf(mid))).build();
     }
 
     static ItemSyncBox<Flow> createFlowSyncBox(final String... flowIDs) {

@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +57,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link FlowForwarder}.
@@ -66,13 +66,13 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class FlowForwarderTest {
     private final NodeKey s1Key = new NodeKey(new NodeId("S1"));
-    private final TableKey tableKey = new TableKey((short) 2);
+    private final TableKey tableKey = new TableKey(Uint8.TWO);
     private final FlowId flowId = new FlowId("test_Flow");
     private final FlowKey flowKey = new FlowKey(flowId);
     private final Match emptyMatch = new MatchBuilder().build();
     private final Flow flow = new FlowBuilder()
             .setId(flowId)
-            .setTableId((short) 2)
+            .setTableId(Uint8.TWO)
             .setMatch(emptyMatch)
             .build();
 
@@ -105,7 +105,7 @@ public class FlowForwarderTest {
         Mockito.when(salFlowService.addFlow(addFlowInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new AddFlowOutputBuilder()
-                                .setTransactionId(new TransactionId(BigInteger.ONE))
+                                .setTransactionId(new TransactionId(Uint64.ONE))
                                 .build()).buildFuture());
 
         final Future<RpcResult<AddFlowOutput>> addResult = flowForwarder.add(flowPath, flow, flowCapableNodePath);
@@ -131,7 +131,7 @@ public class FlowForwarderTest {
         Mockito.when(salFlowService.updateFlow(updateFlowInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new UpdateFlowOutputBuilder()
-                                .setTransactionId(new TransactionId(BigInteger.ONE))
+                                .setTransactionId(new TransactionId(Uint64.ONE))
                                 .build()).buildFuture());
 
         final Instructions originalInstructions = new InstructionsBuilder()
@@ -185,7 +185,7 @@ public class FlowForwarderTest {
         Mockito.when(salFlowService.removeFlow(removeFlowInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new RemoveFlowOutputBuilder()
-                                .setTransactionId(new TransactionId(BigInteger.ONE))
+                                .setTransactionId(new TransactionId(Uint64.ONE))
                                 .build()).buildFuture());
 
         final Flow removeFlow = new FlowBuilder(flow).build();

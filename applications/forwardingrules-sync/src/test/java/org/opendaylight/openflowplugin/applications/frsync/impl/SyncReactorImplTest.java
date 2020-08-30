@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,19 +85,19 @@ public class SyncReactorImplTest {
     @Test
     public void testSyncup() throws Exception {
         final FlowCapableNode configFcn = new FlowCapableNodeBuilder()
-                .setGroup(Collections.singletonList(DSInputFactory.createGroup(1L)))
+                .setGroup(Collections.singletonList(DSInputFactory.createGroup(Uint32.ONE)))
                 .setTable(Collections.singletonList(new TableBuilder()
                         .setFlow(Collections.singletonList(DSInputFactory.createFlow("f1", 1)))
                         .build()))
-                .setMeter(Collections.singletonList(DSInputFactory.createMeter(1L)))
+                .setMeter(Collections.singletonList(DSInputFactory.createMeter(Uint32.ONE)))
                 .build();
 
         final FlowCapableNode operationalFcn = new FlowCapableNodeBuilder()
-                .setGroup(Collections.singletonList(DSInputFactory.createGroup(2L)))
+                .setGroup(Collections.singletonList(DSInputFactory.createGroup(Uint32.TWO)))
                 .setTable(Collections.singletonList(new TableBuilder()
                         .setFlow(Collections.singletonList(DSInputFactory.createFlow("f2", 2)))
                         .build()))
-                .setMeter(Collections.singletonList(DSInputFactory.createMeter(2L)))
+                .setMeter(Collections.singletonList(DSInputFactory.createMeter(Uint32.TWO)))
                 .build();
 
         final SyncupEntry syncupEntry = new SyncupEntry(configFcn, LogicalDatastoreType.CONFIGURATION,

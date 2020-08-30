@@ -59,6 +59,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link SyncPlanPushStrategyIncrementalImpl}.
@@ -119,11 +121,11 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         metersToRemove = DiffInputFactory.createMeterSyncBox(1, 2, 3);
 
         flowsToAddOrUpdate = new HashMap<>();
-        flowsToAddOrUpdate.put(new TableKey((short) 0), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
-        flowsToAddOrUpdate.put(new TableKey((short) 1), DiffInputFactory.createFlowSyncBoxWithUpdates("4", "5", "6"));
+        flowsToAddOrUpdate.put(new TableKey(Uint8.ZERO), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
+        flowsToAddOrUpdate.put(new TableKey(Uint8.ONE), DiffInputFactory.createFlowSyncBoxWithUpdates("4", "5", "6"));
         flowsToRemove = new HashMap<>();
-        flowsToRemove.put(new TableKey((short) 0), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
-        flowsToRemove.put(new TableKey((short) 1), DiffInputFactory.createFlowSyncBox("4", "5", "6"));
+        flowsToRemove.put(new TableKey(Uint8.ZERO), DiffInputFactory.createFlowSyncBox("1", "2", "3"));
+        flowsToRemove.put(new TableKey(Uint8.ONE), DiffInputFactory.createFlowSyncBox("4", "5", "6"));
     }
 
     @Test
@@ -224,7 +226,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         counters = new SyncCrudCounters();
     }
 
-    private <O> Answer<Future<RpcResult<O>>> createSalServiceFutureAnswer() {
+    private static <O> Answer<Future<RpcResult<O>>> createSalServiceFutureAnswer() {
         return invocation -> RpcResultBuilder.<O>success().buildFuture();
     }
 
@@ -239,7 +241,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         flowBox.getItemsToPush().add(DSInputFactory.createFlow("f4", 4));
 
         final Map<TableKey, ItemSyncBox<Flow>> flowBoxMap = new LinkedHashMap<>();
-        flowBoxMap.put(new TableKey((short) 0), flowBox);
+        flowBoxMap.put(new TableKey(Uint8.ZERO), flowBox);
 
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.addMissingFlows(
                 NODE_ID, NODE_IDENT, flowBoxMap, counters);
@@ -271,7 +273,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         flowBox.getItemsToPush().add(DSInputFactory.createFlow("f4", 4));
 
         final Map<TableKey, ItemSyncBox<Flow>> flowBoxMap = new LinkedHashMap<>();
-        flowBoxMap.put(new TableKey((short) 0), flowBox);
+        flowBoxMap.put(new TableKey(Uint8.ZERO), flowBox);
 
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.removeRedundantFlows(
                 NODE_ID, NODE_IDENT, flowBoxMap, counters);
@@ -310,7 +312,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 DSInputFactory.createFlow("f1", 1), DSInputFactory.createFlowWithInstruction("f1", 1)));
 
         final Map<TableKey, ItemSyncBox<Flow>> flowBoxMap = new LinkedHashMap<>();
-        flowBoxMap.put(new TableKey((short) 0), flowBox);
+        flowBoxMap.put(new TableKey(Uint8.ZERO), flowBox);
 
 
         //TODO: replace null
@@ -350,8 +352,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new AddMeterOutputBuilder().build()).buildFuture());
 
         final ItemSyncBox<Meter> meterSyncBox = new ItemSyncBox<>();
-        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(2L));
-        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(4L));
+        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(Uint32.TWO));
+        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(Uint32.valueOf(4L)));
 
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.addMissingMeters(
                 NODE_ID, NODE_IDENT, meterSyncBox, counters);
@@ -383,10 +385,10 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new UpdateMeterOutputBuilder().build()).buildFuture());
 
         final ItemSyncBox<Meter> meterSyncBox = new ItemSyncBox<>();
-        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(2L));
-        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(4L));
+        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(Uint32.TWO));
+        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(Uint32.valueOf(4)));
         meterSyncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(
-                DSInputFactory.createMeter(1L), DSInputFactory.createMeterWithBody(1L)));
+                DSInputFactory.createMeter(Uint32.ONE), DSInputFactory.createMeterWithBody(Uint32.ONE)));
 
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.addMissingMeters(
                 NODE_ID, NODE_IDENT, meterSyncBox, counters);
@@ -423,10 +425,10 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new RemoveMeterOutputBuilder().build()).buildFuture());
 
         final ItemSyncBox<Meter> meterSyncBox = new ItemSyncBox<>();
-        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(2L));
-        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(4L));
+        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(Uint32.TWO));
+        meterSyncBox.getItemsToPush().add(DSInputFactory.createMeter(Uint32.valueOf(4)));
         meterSyncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(
-                DSInputFactory.createMeter(1L), DSInputFactory.createMeterWithBody(1L)));
+                DSInputFactory.createMeter(Uint32.ONE), DSInputFactory.createMeterWithBody(Uint32.ONE)));
 
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.removeRedundantMeters(
                 NODE_ID, NODE_IDENT, meterSyncBox, counters);
@@ -454,7 +456,7 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new AddGroupOutputBuilder().build()).buildFuture());
 
         ItemSyncBox<Group> groupBox1 = new ItemSyncBox<>();
-        groupBox1.getItemsToPush().add(DSInputFactory.createGroup(2L));
+        groupBox1.getItemsToPush().add(DSInputFactory.createGroup(Uint32.TWO));
 
         ItemSyncBox<Group> groupBox2 = new ItemSyncBox<>();
         groupBox2.getItemsToPush().add(DSInputFactory.createGroupWithPreconditions(3L, 2L));
@@ -507,9 +509,9 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new UpdateGroupOutputBuilder().build()).buildFuture());
 
         ItemSyncBox<Group> groupBox1 = new ItemSyncBox<>();
-        groupBox1.getItemsToPush().add(DSInputFactory.createGroup(2L));
+        groupBox1.getItemsToPush().add(DSInputFactory.createGroup(Uint32.TWO));
         groupBox1.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(
-                DSInputFactory.createGroup(1L), DSInputFactory.createGroupWithAction(1L)));
+                DSInputFactory.createGroup(Uint32.ONE), DSInputFactory.createGroupWithAction(Uint32.ONE)));
 
         ItemSyncBox<Group> groupBox2 = new ItemSyncBox<>();
         groupBox2.getItemsToPush().add(DSInputFactory.createGroupWithPreconditions(3L, 2L));
@@ -565,9 +567,9 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new RemoveGroupOutputBuilder().build()).buildFuture());
 
         ItemSyncBox<Group> groupBox1 = new ItemSyncBox<>();
-        groupBox1.getItemsToPush().add(DSInputFactory.createGroup(2L));
+        groupBox1.getItemsToPush().add(DSInputFactory.createGroup(Uint32.TWO));
         groupBox1.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(
-                DSInputFactory.createGroup(1L), DSInputFactory.createGroupWithAction(1L)));
+                DSInputFactory.createGroup(Uint32.ONE), DSInputFactory.createGroupWithAction(Uint32.ONE)));
 
         ItemSyncBox<Group> groupBox2 = new ItemSyncBox<>();
         groupBox2.getItemsToPush().add(DSInputFactory.createGroupWithPreconditions(3L, 2L));
@@ -616,11 +618,11 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
         final FlowCapableNode operational = new FlowCapableNodeBuilder()
                 .setTable(Collections.singletonList(new TableBuilder()
-                        .setId((short) 1)
+                        .setId(Uint8.ONE)
                         .build()))
                 .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()
                         .setName("test table features")
-                        .setTableId((short) 1)
+                        .setTableId(Uint8.ONE)
                         .build()))
                 .build();
 
