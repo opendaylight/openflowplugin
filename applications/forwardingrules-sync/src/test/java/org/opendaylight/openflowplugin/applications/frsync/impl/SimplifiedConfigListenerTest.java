@@ -135,7 +135,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
-        Mockito.verifyZeroInteractions(reactor);
+        Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }
 

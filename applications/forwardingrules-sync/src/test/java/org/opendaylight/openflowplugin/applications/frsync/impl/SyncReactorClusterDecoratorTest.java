@@ -65,7 +65,7 @@ public class SyncReactorClusterDecoratorTest {
 
         reactor.syncup(fcNodePath, syncupEntry);
 
-        Mockito.verifyZeroInteractions(delegate);
+        Mockito.verifyNoMoreInteractions(delegate);
     }
 
 }
