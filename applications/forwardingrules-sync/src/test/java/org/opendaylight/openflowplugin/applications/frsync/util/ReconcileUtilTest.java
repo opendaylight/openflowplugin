@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -67,8 +65,6 @@ public class ReconcileUtilTest {
             .child(Node.class, new NodeKey(NODE_ID));
     private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     @Mock
     private FlowCapableTransactionService flowCapableService;
     @Captor
@@ -217,9 +213,8 @@ public class ReconcileUtilTest {
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroupWithPreconditions(3L, 4L));
 
-        thrown.expect(IllegalStateException.class);
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
-                NODE_ID, installedGroups, pendingGroups);
+        Assert.assertThrows(IllegalStateException.class,
+            () -> ReconcileUtil.resolveAndDivideGroupDiffs(NODE_ID, installedGroups, pendingGroups));
     }
 
     /**
@@ -232,9 +227,8 @@ public class ReconcileUtilTest {
         final List<Group> pendingGroups = new ArrayList<>();
         pendingGroups.add(createGroupWithPreconditions(1L, 3L));
 
-        thrown.expect(IllegalStateException.class);
-        final List<ItemSyncBox<Group>> plan = ReconcileUtil.resolveAndDivideGroupDiffs(
-                NODE_ID, installedGroups, pendingGroups);
+        Assert.assertThrows(IllegalStateException.class,
+            () -> ReconcileUtil.resolveAndDivideGroupDiffs(NODE_ID, installedGroups, pendingGroups));
     }
 
     @Test
