@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.math.BigInteger;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -27,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setPriority(PRIORITY);
         fb.setBufferId(BUFFER_ID);
 
-        final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
+        final FlowCookie cookie = new FlowCookie(Uint64.TEN);
         fb.setCookie(cookie);
         fb.setCookieMask(cookie);
         fb.setTableId(TABLE_ID);
