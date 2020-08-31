@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import static java.util.Objects.requireNonNull;
@@ -23,7 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,7 +62,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
 
     private final DataBroker broker;
@@ -74,7 +71,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final Long startCount = 1L;
     private final int threadPoolSize = 10;
     private final ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
-    private volatile Map<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap();
+    private final Map<String, ReconciliationState> reconciliationStates;
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
                                      final AlarmAgent alarmAgent, final NodeListener nodeListener,
@@ -147,12 +144,11 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         return reconciliationStates.get(nodeId.toString());
     }
 
-    private ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
-        SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
+    private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
         LOG.error("Error {}", msg);
-        RpcError error = RpcResultBuilder.newError(RpcError.ErrorType.PROTOCOL, "reconcile", msg);
-        result.set(RpcResultBuilder.<ReconcileOutput>failed().withRpcError(error).build());
-        return result;
+        return RpcResultBuilder.<ReconcileOutput>failed()
+                .withError(RpcError.ErrorType.PROTOCOL, "reconcile", msg)
+                .buildFuture();
     }
 
     private List<Long> getAllNodes() {
