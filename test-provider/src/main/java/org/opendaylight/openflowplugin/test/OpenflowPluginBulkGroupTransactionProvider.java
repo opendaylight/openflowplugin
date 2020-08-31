@@ -96,6 +96,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +160,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -200,7 +204,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -247,7 +251,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
         // match
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-        EtherType type = new EtherType(0x0800L);
+        EtherType type = new EtherType(Uint32.valueOf(0x0800));
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
@@ -274,7 +278,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private static InstructionsBuilder createMeterInstructions() {
 
         MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(1L));
+        aab.setMeterId(new MeterId(Uint32.ONE));
 
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
@@ -292,7 +296,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
         ControllerActionBuilder controller = new ControllerActionBuilder();
-        controller.setMaxLength(5);
+        controller.setMaxLength(Uint16.valueOf(5));
         ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
         actionList.add(ab.build());
         // Create an Apply Action
@@ -317,7 +321,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         ActionBuilder ab = new ActionBuilder();
 
         SetVlanIdActionBuilder vl = new SetVlanIdActionBuilder();
-        VlanId vlanId = new VlanId(4012);
+        VlanId vlanId = new VlanId(Uint16.valueOf(4012));
         vl.setVlanId(vlanId);
         ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
         actionList.add(ab.build());
@@ -514,12 +518,11 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             flow.setBarrier(Boolean.FALSE);
         }
         // flow.setBufferId(12L);
-        BigInteger value = BigInteger.valueOf(10);
         BigInteger outputPort = BigInteger.valueOf(4294967295L);
-        flow.setCookie(new FlowCookie(value));
-        flow.setCookieMask(new FlowCookie(value));
-        flow.setHardTimeout(0);
-        flow.setIdleTimeout(0);
+        flow.setCookie(new FlowCookie(Uint64.TEN));
+        flow.setCookieMask(new FlowCookie(Uint64.TEN));
+        flow.setHardTimeout(Uint16.ZERO);
+        flow.setIdleTimeout(Uint16.ZERO);
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
@@ -532,20 +535,20 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         flow.setOutPort(outputPort);
 
         flow.withKey(key);
-        flow.setPriority(2);
+        flow.setPriority(Uint16.TWO);
         flow.setFlowName(originalFlowName + "X" + flowType);
         return flow;
     }
 
-    private short getTableId(String tableId) {
-        short table = 2;
+    private static Uint8 getTableId(String tableId) {
+        Uint8 table = Uint8.TWO;
         if (tableId == null) {
             return table;
         }
 
         try {
-            table = Short.parseShort(tableId);
-        } catch (NumberFormatException ex) {
+            table = Uint8.valueOf(tableId);
+        } catch (IllegalArgumentException ex) {
             // ignore exception and continue with default value
         }
 
@@ -715,7 +718,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12),
                 testNode12);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, group1);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -740,7 +743,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 .child(Group.class, new GroupKey(group1.getGroupId()));
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -758,8 +761,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
-        bucket.setBucketId(new BucketId((long) 12));
-        bucket.withKey(new BucketKey(new BucketId((long) 12)));
+        bucket.withKey(new BucketKey(new BucketId(Uint32.valueOf(12))));
 
         if (groupType == null) {
             groupType = "g1";
@@ -825,20 +827,18 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
 
         if ("add".equals(groupmod)) {
-            bucket.setWatchGroup((long) 14);
-            bucket.setWatchPort((long) 1234);
-            bucket.setWeight(50);
+            bucket.setWatchGroup(Uint32.valueOf(14));
+            bucket.setWatchPort(Uint32.valueOf(1234));
+            bucket.setWeight(Uint16.valueOf(50));
         } else {
-            bucket.setWatchGroup((long) 13);
-            bucket.setWatchPort((long) 134);
-            bucket.setWeight(30);
+            bucket.setWatchGroup(Uint32.valueOf(13));
+            bucket.setWatchPort(Uint32.valueOf(134));
+            bucket.setWeight(Uint16.valueOf(30));
         }
 
-        long id = Long.parseLong(strId);
-        GroupKey key = new GroupKey(new GroupId(id));
+        GroupKey key = new GroupKey(new GroupId(Uint32.valueOf(strId)));
         group.withKey(key);
         // group.setInstall(false);
-        group.setGroupId(new GroupId(id));
         group.setGroupName(originalGroupName);
         group.setBarrier(false);
         BucketsBuilder value = new BucketsBuilder();
@@ -849,7 +849,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return group;
     }
 
-    private List<Action> createPopVlanAction() {
+    private static List<Action> createPopVlanAction() {
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
@@ -859,10 +859,10 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createPushVlanAction() {
+    private static List<Action> createPushVlanAction() {
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(0x8100);
-        VlanId vlanId = new VlanId(2);
+        vlan.setEthernetType(Uint16.valueOf(0x8100));
+        VlanId vlanId = new VlanId(Uint16.TWO);
         vlan.setVlanId(vlanId);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
@@ -871,9 +871,9 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createPushMplsAction() {
+    private static List<Action> createPushMplsAction() {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(0x8847);
+        push.setEthernetType(Uint16.valueOf(0x8847));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -881,9 +881,9 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createPopMplsAction() {
+    private static List<Action> createPopMplsAction() {
         PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
-        popMplsActionBuilder.setEthernetType(0XB);
+        popMplsActionBuilder.setEthernetType(Uint16.valueOf(0XB));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -891,7 +891,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createPopPbbAction() {
+    private static List<Action> createPopPbbAction() {
         PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
@@ -900,9 +900,9 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createPushPbbAction() {
+    private static List<Action> createPushPbbAction() {
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(0x88E7);
+        pbb.setEthernetType(Uint16.valueOf(0x88E7));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -910,7 +910,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createCopyTtlInAction() {
+    private static List<Action> createCopyTtlInAction() {
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
@@ -919,7 +919,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createCopyTtlOutAction() {
+    private static List<Action> createCopyTtlOutAction() {
         CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
@@ -928,7 +928,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createDecMplsTtlAction() {
+    private static List<Action> createDecMplsTtlAction() {
         DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
@@ -937,10 +937,10 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return actions;
     }
 
-    private List<Action> createGroupAction() {
+    private static List<Action> createGroupAction() {
 
         GroupActionBuilder groupActionB = new GroupActionBuilder();
-        groupActionB.setGroupId(1L);
+        groupActionB.setGroupId(Uint32.ONE);
         groupActionB.setGroup("0");
         ActionBuilder action = new ActionBuilder();
         action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
@@ -955,7 +955,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         ActionBuilder ab = new ActionBuilder();
 
         GroupActionBuilder groupActionB = new GroupActionBuilder();
-        groupActionB.setGroupId(1L);
+        groupActionB.setGroupId(Uint32.ONE);
         groupActionB.setGroup("0");
         ab.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
 

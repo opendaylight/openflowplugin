@@ -41,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,27 +122,26 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private MeterBuilder createTestMeter() {
         // Sample data , committing to DataStore
 
-        long id = 12;
-        MeterKey key = new MeterKey(new MeterId(id));
+        MeterKey key = new MeterKey(new MeterId(Uint32.valueOf(12)));
         MeterBuilder meter = new MeterBuilder();
         meter.setContainerName("abcd");
         meter.withKey(key);
-        meter.setMeterId(new MeterId(9L));
+        meter.setMeterId(new MeterId(Uint32.valueOf(9)));
         meter.setMeterName(originalMeterName);
         meter.setFlags(new MeterFlags(true, false, false, false));
         MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
-        bandHeader.setBandRate((long) 234);
-        bandHeader.setBandBurstSize((long) 444);
+        bandHeader.setBandRate(Uint32.valueOf(234));
+        bandHeader.setBandBurstSize(Uint32.valueOf(444));
         DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
-        dscpRemark.setDscpRemarkBurstSize((long) 5);
-        dscpRemark.setPrecLevel((short) 1);
-        dscpRemark.setDscpRemarkRate((long) 12);
+        dscpRemark.setDscpRemarkBurstSize(Uint32.valueOf(5));
+        dscpRemark.setPrecLevel(Uint8.ONE);
+        dscpRemark.setDscpRemarkRate(Uint32.valueOf(12));
         bandHeader.setBandType(dscpRemark.build());
         MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
         MeterBandType bandType = new MeterBandType(false, true, false);
         bandTypes.setFlags(bandType);
         bandHeader.setMeterBandTypes(bandTypes.build());
-        bandHeader.setBandId(new BandId(0L));
+        bandHeader.setBandId(new BandId(Uint32.ZERO));
 
         List<MeterBandHeader> bandHdr = new ArrayList<>();
         bandHdr.add(bandHeader.build());
@@ -155,33 +156,32 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private MeterBuilder createTestMeters(String s1, String s2) {
         // Sample data , committing to DataStore
-        long id = Integer.parseInt(s1);
-        MeterKey key = new MeterKey(new MeterId(id));
+        MeterKey key = new MeterKey(new MeterId(Uint32.valueOf(s1)));
         MeterBuilder meter = new MeterBuilder();
         meter.setContainerName("abcd");
         meter.withKey(key);
-        meter.setMeterId(new MeterId(9L));
+        meter.setMeterId(new MeterId(Uint32.valueOf(9)));
         MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
         if (s2.equalsIgnoreCase("modify")) {
             meter.setMeterName(updatedMeterName);
-            bandHeader.setBandRate((long) 234);
+            bandHeader.setBandRate(Uint32.valueOf(234));
         } else {
             meter.setMeterName(originalMeterName);
-            bandHeader.setBandRate((long) 123);
+            bandHeader.setBandRate(Uint32.valueOf(123));
         }
         meter.setFlags(new MeterFlags(true, false, false, false));
 
-        bandHeader.setBandBurstSize((long) 444);
+        bandHeader.setBandBurstSize(Uint32.valueOf(444));
         DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
-        dscpRemark.setDscpRemarkBurstSize((long) 5);
-        dscpRemark.setPrecLevel((short) 1);
-        dscpRemark.setDscpRemarkRate((long) 12);
+        dscpRemark.setDscpRemarkBurstSize(Uint32.valueOf(5));
+        dscpRemark.setPrecLevel(Uint8.ONE);
+        dscpRemark.setDscpRemarkRate(Uint32.valueOf(12));
         bandHeader.setBandType(dscpRemark.build());
         MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
         MeterBandType bandType = new MeterBandType(false, true, false);
         bandTypes.setFlags(bandType);
         bandHeader.setMeterBandTypes(bandTypes.build());
-        bandHeader.setBandId(new BandId(0L));
+        bandHeader.setBandId(new BandId(Uint32.ZERO));
 
         List<MeterBandHeader> bandHdr = new ArrayList<>();
         bandHdr.add(bandHeader.build());
@@ -226,7 +226,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -307,7 +307,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 break;
         }
 
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -380,7 +380,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -406,7 +406,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, meter1);
 
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");

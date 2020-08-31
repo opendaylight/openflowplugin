@@ -169,6 +169,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,7 +208,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         createTestFlow(createTestNode(null), null, null);
     }
 
-    private NodeBuilder createTestNode(final String nodeId) {
+    private static NodeBuilder createTestNode(final String nodeId) {
         String localNodeId;
 
         if (nodeId == null) {
@@ -219,11 +223,12 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return builder;
     }
 
-    private InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
+    private static InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    private FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg, final String tableId) {
+    private static FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg,
+            final String tableId) {
         final long TEST_ID = 123;
 
         final FlowBuilder flow = new FlowBuilder();
@@ -234,7 +239,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flowType = "f1";
         }
 
-        flow.setPriority(2);
+        flow.setPriority(Uint16.TWO);
 
         switch (flowType) {
             case "f1":
@@ -509,7 +514,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 id += 54;
                 flow.setMatch(new MatchBuilder().build());
                 flow.setInstructions(createSentToControllerInstructions().build());
-                flow.setPriority(0);
+                flow.setPriority(Uint16.ZERO);
                 break;
             case "f55":
                 id += 55;
@@ -519,37 +524,37 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             case "f56":
                 id += 56;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("INPORT", 10).build());
+                flow.setInstructions(createOutputInstructions("INPORT", Uint16.TEN).build());
                 break;
             case "f57":
                 id += 57;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("FLOOD", 20).build());
+                flow.setInstructions(createOutputInstructions("FLOOD", Uint16.valueOf(20)).build());
                 break;
             case "f58":
                 id += 58;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("ALL", 30).build());
+                flow.setInstructions(createOutputInstructions("ALL", Uint16.valueOf(30)).build());
                 break;
             case "f59":
                 id += 59;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("NORMAL", 40).build());
+                flow.setInstructions(createOutputInstructions("NORMAL", Uint16.valueOf(40)).build());
                 break;
             case "f60":
                 id += 60;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("LOCAL", 50).build());
+                flow.setInstructions(createOutputInstructions("LOCAL", Uint16.valueOf(50)).build());
                 break;
             case "f61":
                 id += 61;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("TABLE", 60).build());
+                flow.setInstructions(createOutputInstructions("TABLE", Uint16.valueOf(60)).build());
                 break;
             case "f62":
                 id += 62;
                 flow.setMatch(createToSMatch().build());
-                flow.setInstructions(createOutputInstructions("NONE", 70).build());
+                flow.setInstructions(createOutputInstructions("NONE", Uint16.valueOf(70)).build());
                 break;
             case "f63":
                 id += 63;
@@ -685,11 +690,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
-        final BigInteger value = BigInteger.valueOf(10);
-        flow.setCookie(new FlowCookie(value));
-        flow.setCookieMask(new FlowCookie(value));
-        flow.setHardTimeout(0);
-        flow.setIdleTimeout(0);
+        flow.setCookie(new FlowCookie(Uint64.TEN));
+        flow.setCookieMask(new FlowCookie(Uint64.TEN));
+        flow.setHardTimeout(Uint16.ZERO);
+        flow.setIdleTimeout(Uint16.ZERO);
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
@@ -703,7 +707,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
 
-    private FlowBuilder createTestFlowPerfTest(final String flowTypeArg, final String tableId, final int id) {
+    private static FlowBuilder createTestFlowPerfTest(final String flowTypeArg, final String tableId, final int id) {
         final FlowBuilder flow = new FlowBuilder();
         String flowType = flowTypeArg;
         int flowId = id;
@@ -728,11 +732,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         if (null == flow.isBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
-        final BigInteger value = BigInteger.valueOf(10);
-        flow.setCookie(new FlowCookie(value));
-        flow.setCookieMask(new FlowCookie(value));
-        flow.setHardTimeout(0);
-        flow.setIdleTimeout(0);
+        flow.setCookie(new FlowCookie(Uint64.TEN));
+        flow.setCookieMask(new FlowCookie(Uint64.TEN));
+        flow.setHardTimeout(Uint16.ZERO);
+        flow.setIdleTimeout(Uint16.ZERO);
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
@@ -745,29 +748,28 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return flow;
     }
 
-    private FlowBuilder createtablemiss() {
+    private static FlowBuilder createtablemiss() {
         final FlowBuilder flow = new FlowBuilder();
         final long id = 456;
         final MatchBuilder matchBuilder = new MatchBuilder();
         flow.setMatch(matchBuilder.build());
         flow.setInstructions(createSentToControllerInstructions().build());
-        flow.setPriority(0);
-        flow.setTableId((short) 0);
+        flow.setPriority(Uint16.ZERO);
+        flow.setTableId(Uint8.ZERO);
         final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
         flow.withKey(key);
         return flow;
     }
 
-    private short getTableId(final String tableId) {
-        final short TABLE_ID = 2;
-        short table = TABLE_ID;
+    private static Uint8 getTableId(final String tableId) {
+        Uint8 table = Uint8.TWO;
 
         if (tableId == null) {
             return table;
         }
 
         try {
-            table = Short.parseShort(tableId);
+            table = Uint8.valueOf(tableId);
         } catch (NumberFormatException ex) {
             LOG.info("Parsing String tableId {} failed. Continuing with default tableId {}.",
                     tableId, table);
@@ -807,7 +809,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createMeterInstructions() {
 
         final MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(1L));
+        aab.setMeterId(new MeterId(Uint32.ONE));
 
         final InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
@@ -824,8 +826,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createMetadataInstructions() {
 
         final WriteMetadataBuilder aab = new WriteMetadataBuilder();
-        aab.setMetadata(BigInteger.valueOf(10));
-        aab.setMetadataMask(BigInteger.valueOf(10));
+        aab.setMetadata(Uint64.valueOf(10));
+        aab.setMetadataMask(Uint64.valueOf(10));
 
         final InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(aab.build()).build());
@@ -842,7 +844,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static InstructionsBuilder createGotoTableInstructions() {
 
         final GoToTableBuilder aab = new GoToTableBuilder();
-        aab.setTableId((short) 5);
+        aab.setTableId(Uint8.valueOf(5));
 
         final InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(aab.build()).build());
@@ -888,7 +890,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
         final ControllerActionBuilder controller = new ControllerActionBuilder();
-        controller.setMaxLength(5);
+        controller.setMaxLength(Uint16.valueOf(5));
         ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
         ab.withKey(new ActionKey(0));
         actionList.add(ab.build());
@@ -915,7 +917,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ActionBuilder ab = new ActionBuilder();
 
         final OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(56);
+        output.setMaxLength(Uint16.valueOf(56));
         final Uri value = new Uri("PCEP");
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -971,7 +973,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return isb;
     }
 
-    private static InstructionsBuilder createOutputInstructions(final String outputType, final int outputValue) {
+    private static InstructionsBuilder createOutputInstructions(final String outputType, final Uint16 outputValue) {
         final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
 
@@ -1006,7 +1008,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ActionBuilder ab = new ActionBuilder();
 
         final OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(Integer.valueOf(0xffff));
+        output.setMaxLength(Uint16.MAX_VALUE);
         final Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -1202,7 +1204,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ActionBuilder ab = new ActionBuilder();
 
         final SetVlanIdActionBuilder vl = new SetVlanIdActionBuilder();
-        final VlanId a = new VlanId(4000);
+        final VlanId a = new VlanId(Uint16.valueOf(4000));
         vl.setVlanId(a);
         ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
         ab.withKey(new ActionKey(0));
@@ -1634,7 +1636,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ActionBuilder ab = new ActionBuilder();
 
         final SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
-        setDlTypeActionBuilder.setDlType(new EtherType(8L));
+        setDlTypeActionBuilder.setDlType(new EtherType(Uint32.valueOf(8)));
         ab.setAction(new SetDlTypeActionCaseBuilder().setSetDlTypeAction(setDlTypeActionBuilder.build()).build());
         ab.withKey(new ActionKey(0));
         actionList.add(ab.build());
@@ -1890,7 +1892,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ActionBuilder ab = new ActionBuilder();
 
         final SetTpDstActionBuilder setTpDstActionBuilder = new SetTpDstActionBuilder();
-        setTpDstActionBuilder.setPort(new PortNumber(109));
+        setTpDstActionBuilder.setPort(new PortNumber(Uint16.valueOf(109)));
 
         ab.setAction(new SetTpDstActionCaseBuilder().setSetTpDstAction(setTpDstActionBuilder.build()).build());
         ab.withKey(new ActionKey(0));
@@ -1918,7 +1920,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ActionBuilder ab = new ActionBuilder();
 
         final SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
-        setTpSrcActionBuilder.setPort(new PortNumber(109));
+        setTpSrcActionBuilder.setPort(new PortNumber(Uint16.valueOf(109)));
         ab.setAction(new SetTpSrcActionCaseBuilder().setSetTpSrcAction(setTpSrcActionBuilder.build()).build());
         ab.withKey(new ActionKey(0));
         actionList.add(ab.build());
@@ -2015,7 +2017,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         ethDestBuilder.setAddress(new MacAddress("00:00:00:00:00:02"));
         final EthernetMatchBuilder ethernetMatch2 = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
 
         ethernetMatch.setEthernetSource(ethSourceBuilder.build());
         ethernetMatch1.setEthernetDestination(ethDestBuilder.build());
@@ -2064,8 +2066,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
         final VlanMatchBuilder vlanBuilder1 = new VlanMatchBuilder();
         final VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-        final VlanId vlanId = new VlanId(10);
-        final VlanPcp vpcp = new VlanPcp((short) 3);
+        final VlanId vlanId = new VlanId(Uint16.TEN);
+        final VlanPcp vpcp = new VlanPcp(Uint8.valueOf(3));
         vlanBuilder.setVlanPcp(vpcp);
         vlanBuilder1.setVlanId(vlanIdBuilder.setVlanId(vlanId).setVlanIdPresent(true).build());
         setFieldBuilder.setVlanMatch(vlanBuilder.build());
@@ -2106,10 +2108,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final IpMatchBuilder ipmatch = new IpMatchBuilder();
         final IpMatchBuilder ipmatch1 = new IpMatchBuilder();
         final IpMatchBuilder ipmatch2 = new IpMatchBuilder();
-        final Dscp dscp = new Dscp((short) 3);
+        final Dscp dscp = new Dscp(Uint8.valueOf(3));
         ipmatch.setIpDscp(dscp);
-        ipmatch1.setIpEcn((short) 2);
-        ipmatch2.setIpProtocol((short) 120);
+        ipmatch1.setIpEcn(Uint8.TWO);
+        ipmatch2.setIpProtocol(Uint8.valueOf(120));
         setFieldBuilder.setIpMatch(ipmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         ab.withKey(new ActionKey(0));
@@ -2190,8 +2192,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
 
         // Tcp
-        final PortNumber tcpsrcport = new PortNumber(1213);
-        final PortNumber tcpdstport = new PortNumber(646);
+        final PortNumber tcpsrcport = new PortNumber(Uint16.valueOf(1213));
+        final PortNumber tcpdstport = new PortNumber(Uint16.valueOf(646));
         final TcpMatchBuilder tcpmatch = new TcpMatchBuilder();
         final TcpMatchBuilder tcpmatch1 = new TcpMatchBuilder();
         tcpmatch.setTcpSourcePort(tcpsrcport);
@@ -2231,8 +2233,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
 
         // Udp
-        final PortNumber udpsrcport = new PortNumber(1325);
-        final PortNumber udpdstport = new PortNumber(42);
+        final PortNumber udpsrcport = new PortNumber(Uint16.valueOf(1325));
+        final PortNumber udpdstport = new PortNumber(Uint16.valueOf(42));
         final UdpMatchBuilder udpmatch = new UdpMatchBuilder();
         final UdpMatchBuilder udpmatch1 = new UdpMatchBuilder();
         udpmatch.setUdpDestinationPort(udpdstport);
@@ -2274,8 +2276,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Sctp
         final SctpMatchBuilder sctpmatch = new SctpMatchBuilder();
         final SctpMatchBuilder sctpmatch1 = new SctpMatchBuilder();
-        final PortNumber srcport = new PortNumber(1435);
-        final PortNumber dstport = new PortNumber(22);
+        final PortNumber srcport = new PortNumber(Uint16.valueOf(1435));
+        final PortNumber dstport = new PortNumber(Uint16.valueOf(22));
         sctpmatch.setSctpSourcePort(srcport);
         sctpmatch1.setSctpDestinationPort(dstport);
         setFieldBuilder.setLayer4Match(sctpmatch.build());
@@ -2371,7 +2373,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         arpsrc.setAddress(macsrc);
         final ArpTargetHardwareAddressBuilder arpdst = new ArpTargetHardwareAddressBuilder();
         arpdst.setAddress(macdest);
-        arpmatch.setArpOp(2);
+        arpmatch.setArpOp(Uint16.TWO);
         arpmatch1.setArpSourceHardwareAddress(arpsrc.build());
         arpmatch2.setArpTargetHardwareAddress(arpdst.build());
         arpmatch3.setArpSourceTransportAddress(srciparp);
@@ -2437,9 +2439,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final Ipv6Prefix dstip6 = new Ipv6Prefix("2002::2/128");
         final Ipv6Prefix srcip6 = new Ipv6Prefix("2001:0:0:0:0:0:0:1/128");
         final Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
-        nextheader.setIpv6Exthdr(58);
+        nextheader.setIpv6Exthdr(Uint16.valueOf(58));
         final Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
-        final Ipv6FlowLabel label = new Ipv6FlowLabel(10028L);
+        final Ipv6FlowLabel label = new Ipv6FlowLabel(Uint32.valueOf(10028));
         ipv6label.setIpv6Flabel(label);
 
         ipv6Builder.setIpv6Source(srcip6);
@@ -2493,8 +2495,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Icmpv6
         final Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder();
         final Icmpv6MatchBuilder icmpv6match1 = new Icmpv6MatchBuilder();
-        icmpv6match.setIcmpv6Type((short) 135);
-        icmpv6match1.setIcmpv6Code((short) 0);
+        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
+        icmpv6match1.setIcmpv6Code(Uint8.ZERO);
         setFieldBuilder.setIcmpv6Match(icmpv6match.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         ab.withKey(new ActionKey(0));
@@ -2534,9 +2536,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
         final ProtocolMatchFieldsBuilder protomatch1 = new ProtocolMatchFieldsBuilder();
         final ProtocolMatchFieldsBuilder protomatch2 = new ProtocolMatchFieldsBuilder();
-        protomatch.setMplsLabel((long) 36008);
-        protomatch1.setMplsTc((short) 4);
-        protomatch2.setMplsBos((short) 1);
+        protomatch.setMplsLabel(Uint32.valueOf(36008));
+        protomatch1.setMplsTc(Uint8.valueOf(4));
+        protomatch2.setMplsBos(Uint8.ONE);
         setFieldBuilder.setProtocolMatchFields(protomatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         ab.withKey(new ActionKey(0));
@@ -2602,7 +2604,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         // Tunnel
         final TunnelBuilder tunnel = new TunnelBuilder();
-        tunnel.setTunnelId(BigInteger.valueOf(10668));
+        tunnel.setTunnelId(Uint64.valueOf(10668));
         setFieldBuilder.setTunnel(tunnel.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
         ab.withKey(new ActionKey(0));
@@ -2691,7 +2693,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MatchBuilder match = new MatchBuilder();
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x88ccL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x88cc)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -2707,7 +2709,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -2723,7 +2725,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -2745,7 +2747,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MatchBuilder match = new MatchBuilder();
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
@@ -2758,8 +2760,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder();
 
         // match
-        icmpv6match.setIcmpv6Type((short) 135);
-        icmpv6match.setIcmpv6Code((short) 1);
+        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
+        icmpv6match.setIcmpv6Code(Uint8.ONE);
         match.setIcmpv6Match(icmpv6match.build());
 
         return match;
@@ -2776,7 +2778,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0xfffeL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0xfffe)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -2794,7 +2796,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
         // match
         final EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-        final EtherType type = new EtherType(0x0800L);
+        final EtherType type = new EtherType(Uint32.valueOf(0x0800));
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         final EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
@@ -2822,8 +2824,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // vlan match
         final VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
         final VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-        final VlanId vlanId = new VlanId(10);
-        final VlanPcp vpcp = new VlanPcp((short) 3);
+        final VlanId vlanId = new VlanId(Uint16.TEN);
+        final VlanPcp vpcp = new VlanPcp(Uint8.valueOf(3));
         vlanBuilder.setVlanPcp(vpcp);
         vlanIdBuilder.setVlanId(vlanId);
         vlanIdBuilder.setVlanIdPresent(true);
@@ -2840,7 +2842,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MacAddress macsrc = new MacAddress(SRC_MAC_ADDRESS);
 
         final EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-        final EtherType type = new EtherType(0x0806L);
+        final EtherType type = new EtherType(Uint32.valueOf(0x0806));
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         // ipv4 match
@@ -2855,7 +2857,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final ArpTargetHardwareAddressBuilder arpdst = new ArpTargetHardwareAddressBuilder();
         arpdst.setAddress(macdest);
         arpdst.setMask(new MacAddress("ff:ff:00:00:00:00"));
-        arpmatch.setArpOp(2);
+        arpmatch.setArpOp(Uint16.TWO);
         arpmatch.setArpSourceHardwareAddress(arpsrc.build());
         arpmatch.setArpTargetHardwareAddress(arpdst.build());
         arpmatch.setArpSourceTransportAddress(srcip);
@@ -2872,23 +2874,23 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final MacAddress ndsll = new MacAddress("c2:00:54:f5:00:00");
         final MacAddress ndtll = new MacAddress("00:0c:29:0e:4c:67");
         final Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
-        nextheader.setIpv6Exthdr(58);
+        nextheader.setIpv6Exthdr(Uint16.valueOf(58));
         final Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
-        final Ipv6FlowLabel label = new Ipv6FlowLabel(10028L);
+        final Ipv6FlowLabel label = new Ipv6FlowLabel(Uint32.valueOf(10028));
         ipv6label.setIpv6Flabel(label);
-        ipv6label.setFlabelMask(new Ipv6FlowLabel(1L));
+        ipv6label.setFlabelMask(new Ipv6FlowLabel(Uint32.ONE));
 
         final Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
         // match
-        icmpv6match.setIcmpv6Type((short) 135);
-        icmpv6match.setIcmpv6Code((short) 0);
+        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
+        icmpv6match.setIcmpv6Code(Uint8.ZERO);
         match.setIcmpv6Match(icmpv6match.build());
 
         final Ipv6MatchBuilder ipv6match = new Ipv6MatchBuilder();
@@ -2909,18 +2911,18 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MatchBuilder match = new MatchBuilder();
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 1);
+        ipmatch.setIpProtocol(Uint8.ONE);
         match.setIpMatch(ipmatch.build());
 
         final Icmpv4MatchBuilder icmpv4match = new Icmpv4MatchBuilder(); // icmpv4
         // match
-        icmpv4match.setIcmpv4Type((short) 8);
-        icmpv4match.setIcmpv4Code((short) 0);
+        icmpv4match.setIcmpv4Type(Uint8.valueOf(8));
+        icmpv4match.setIcmpv4Code(Uint8.ZERO);
         match.setIcmpv4Match(icmpv4match.build());
         return match;
     }
@@ -2930,18 +2932,18 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MatchBuilder match = new MatchBuilder();
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 58);
+        ipmatch.setIpProtocol(Uint8.valueOf(58));
         match.setIpMatch(ipmatch.build());
 
         final Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
         // match
-        icmpv6match.setIcmpv6Type((short) 135);
-        icmpv6match.setIcmpv6Code((short) 1);
+        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
+        icmpv6match.setIcmpv6Code(Uint8.ONE);
         match.setIcmpv6Match(icmpv6match.build());
 
         return match;
@@ -2951,13 +2953,13 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MatchBuilder match = new MatchBuilder();
         final EthernetMatchBuilder ethmatch = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-        final EtherType type = new EtherType(0x0800L);
+        final EtherType type = new EtherType(Uint32.valueOf(0x0800));
         ethmatch.setEthernetType(ethtype.setType(type).build());
         match.setEthernetMatch(ethmatch.build());
 
         final IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 6);
-        final Dscp dscp = new Dscp((short) 8);
+        ipmatch.setIpProtocol(Uint8.valueOf(6));
+        final Dscp dscp = new Dscp(Uint8.valueOf(8));
         ipmatch.setIpDscp(dscp);
         match.setIpMatch(ipmatch.build());
         return match;
@@ -2968,16 +2970,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 6);
+        ipmatch.setIpProtocol(Uint8.valueOf(6));
         match.setIpMatch(ipmatch.build());
 
-        final PortNumber srcport = new PortNumber(1213);
-        final PortNumber dstport = new PortNumber(646);
+        final PortNumber srcport = new PortNumber(Uint16.valueOf(1213));
+        final PortNumber dstport = new PortNumber(Uint16.valueOf(646));
         final TcpMatchBuilder tcpmatch = new TcpMatchBuilder(); // tcp match
         tcpmatch.setTcpSourcePort(srcport);
         tcpmatch.setTcpDestinationPort(dstport);
@@ -2991,16 +2993,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 17);
+        ipmatch.setIpProtocol(Uint8.valueOf(17));
         match.setIpMatch(ipmatch.build());
 
-        final PortNumber srcport = new PortNumber(1325);
-        final PortNumber dstport = new PortNumber(42);
+        final PortNumber srcport = new PortNumber(Uint16.valueOf(1325));
+        final PortNumber dstport = new PortNumber(Uint16.valueOf(42));
         final UdpMatchBuilder udpmatch = new UdpMatchBuilder(); // udp match
         udpmatch.setUdpDestinationPort(dstport);
         udpmatch.setUdpSourcePort(srcport);
@@ -3014,17 +3016,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 132);
+        ipmatch.setIpProtocol(Uint8.valueOf(132));
         match.setIpMatch(ipmatch.build());
 
         final SctpMatchBuilder sctpmatch = new SctpMatchBuilder();
-        final PortNumber srcport = new PortNumber(1435);
-        final PortNumber dstport = new PortNumber(22);
+        final PortNumber srcport = new PortNumber(Uint16.valueOf(1435));
+        final PortNumber dstport = new PortNumber(Uint16.valueOf(22));
         sctpmatch.setSctpSourcePort(srcport);
         sctpmatch.setSctpDestinationPort(dstport);
         match.setLayer4Match(sctpmatch.build());
@@ -3036,7 +3038,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         final MatchBuilder match = new MatchBuilder();
         final byte[] metamask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         final MetadataBuilder metadata = new MetadataBuilder(); // metadata match
-        metadata.setMetadata(BigInteger.valueOf(500L));
+        metadata.setMetadata(Uint64.valueOf(500));
         metadata.setMetadataMask(new BigInteger(1, metamask));
         match.setMetadata(metadata.build());
 
@@ -3048,15 +3050,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x8847L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x8847)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         final ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder(); // mpls
         // match
-        protomatch.setMplsLabel((long) 36008);
-        protomatch.setMplsTc((short) 4);
-        protomatch.setMplsBos((short) 1);
+        protomatch.setMplsLabel(Uint32.valueOf(36008));
+        protomatch.setMplsTc(Uint8.valueOf(4));
+        protomatch.setMplsBos(Uint8.ONE);
         match.setProtocolMatchFields(protomatch.build());
 
         return match;
@@ -3068,7 +3070,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         final EthernetMatchBuilder eth = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x88E7L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x88E7)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
@@ -3085,7 +3087,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static MatchBuilder createTunnelIDMatch() {
         final MatchBuilder match = new MatchBuilder();
         final TunnelBuilder tunnel = new TunnelBuilder(); // tunnel id match
-        tunnel.setTunnelId(BigInteger.valueOf(10668));
+        tunnel.setTunnelId(Uint64.valueOf(10668));
         final byte[] mask = new byte[]{(byte) -1, (byte) -1, (byte) -1, 0, 0, 0, (byte) 1, (byte) 1};
         tunnel.setTunnelMask(new BigInteger(1, mask));
         match.setTunnel(tunnel.build());
@@ -3105,17 +3107,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         // Ethertype match
         final EthernetMatchBuilder ethernetType = new EthernetMatchBuilder();
         final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         ethernetType.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(ethernetType.build());
 
         // TCP Protocol Match
         final IpMatchBuilder ipMatch = new IpMatchBuilder(); // ipv4 version
-        ipMatch.setIpProtocol((short) 6);
+        ipMatch.setIpProtocol(Uint8.valueOf(6));
         match.setIpMatch(ipMatch.build());
 
         // TCP Port Match
-        final PortNumber dstPort = new PortNumber(80);
+        final PortNumber dstPort = new PortNumber(Uint16.valueOf(80));
         final TcpMatchBuilder tcpMatch = new TcpMatchBuilder();
         tcpMatch.setTcpDestinationPort(dstPort);
         match.setLayer4Match(tcpMatch.build());
@@ -3126,7 +3128,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
          * TCP_ECE 0x040 / TCP_CWR 0x080 / TCP_NS  0x100
          */
         final TcpFlagsMatchBuilder tcpFlagsMatch = new TcpFlagsMatchBuilder();
-        tcpFlagsMatch.setTcpFlags(0x002);
+        tcpFlagsMatch.setTcpFlags(Uint16.valueOf(0x002));
         match.setTcpFlagsMatch(tcpFlagsMatch.build());
 
         return match;
@@ -3146,7 +3148,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
                 .child(Flow.class, tf.key());
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(final Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -3185,7 +3187,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION,
                 nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(final Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
