@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
-import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
@@ -28,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DropTestCommiter extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
-    private static final TableKey ZERO_TABLE = new TableKey((short) 0);
+    private static final TableKey ZERO_TABLE = new TableKey(Uint8.ZERO);
     private DataBroker dataService;
 
     private static final AtomicLong ID_COUNTER = new AtomicLong();
@@ -47,7 +48,7 @@ public class DropTestCommiter extends AbstractDropTest {
 
         fb.setPriority(PRIORITY);
         fb.setBufferId(BUFFER_ID);
-        final FlowCookie cookie = new FlowCookie(BigInteger.TEN);
+        final FlowCookie cookie = new FlowCookie(Uint64.TEN);
         fb.setCookie(cookie);
         fb.setCookieMask(cookie);
 

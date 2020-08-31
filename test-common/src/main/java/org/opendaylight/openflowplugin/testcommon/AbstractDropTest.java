@@ -40,17 +40,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDropTest.class);
 
-    protected static final Integer PRIORITY = 4;
-    protected static final Long BUFFER_ID = 0L;
-    protected static final Integer HARD_TIMEOUT = 300;
-    protected static final Integer IDLE_TIMEOUT = 240;
-    protected static final short TABLE_ID = 0;
+    protected static final Uint16 PRIORITY = Uint16.valueOf(4);
+    protected static final Uint32 BUFFER_ID = Uint32.ZERO;
+    protected static final Uint16 HARD_TIMEOUT = Uint16.valueOf(300);
+    protected static final Uint16 IDLE_TIMEOUT = Uint16.valueOf(240);
+    protected static final Uint8 TABLE_ID = Uint8.ZERO;
 
     static final long STARTUP_LOOP_TICK = 500L;
     static final int STARTUP_LOOP_MAX_RETRIES = 8;
@@ -154,12 +157,12 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
         // Create an Action
         final Action ab = new ActionBuilder().setOrder(0).setAction(dropAction).build();
         // Create an Apply Action
-        final ApplyActions aab = new ApplyActionsBuilder().setAction(Collections.singletonList(ab)).build();
+        final ApplyActions aab = new ApplyActionsBuilder().setAction(Collections.singletonMap(ab.key(), ab)).build();
         // Wrap our Apply Action in an Instruction
         final Instruction ib = new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab).build()).setOrder(0).build();
         // Put our Instruction in a list of Instructions
-        return new InstructionsBuilder().setInstruction(Collections.singletonList(ib)).build();
+        return new InstructionsBuilder().setInstruction(Collections.singletonMap(ib.key(), ib)).build();
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
