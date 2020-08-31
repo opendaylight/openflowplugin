@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg2.grouping.NxActionOutputReg2Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class OutputReg2CodecTest {
@@ -31,9 +32,9 @@ public class OutputReg2CodecTest {
     private static final int LENGTH = 24;
     private static final byte SUBTYPE = 32;
 
-    private static final int OFS_N_BITS = 1;
+    private static final Uint16 OFS_N_BITS = Uint16.ONE;
     private static final int SRC = 2;
-    private static final int MAX_LEN = 2;
+    private static final Uint16 MAX_LEN = Uint16.TWO;
     private static final long SRC_EXP = 0xFFFF000000000000L | SRC;
     private static final Uint64 SRC_EXP_BIGINT = Uint64.valueOf(new BigInteger(1, Longs.toByteArray(SRC_EXP)));
 
@@ -54,8 +55,8 @@ public class OutputReg2CodecTest {
 
         ActionOutputReg2 result = (ActionOutputReg2) action.getActionChoice();
 
-        assertEquals(OFS_N_BITS, result.getNxActionOutputReg2().getNBits().shortValue());
-        assertEquals(MAX_LEN, result.getNxActionOutputReg2().getMaxLen().shortValue());
+        assertEquals(OFS_N_BITS, result.getNxActionOutputReg2().getNBits());
+        assertEquals(MAX_LEN, result.getNxActionOutputReg2().getMaxLen());
         assertEquals(Uint64.valueOf(SRC), result.getNxActionOutputReg2().getSrc());
         assertFalse(buffer.isReadable());
     }
@@ -68,8 +69,8 @@ public class OutputReg2CodecTest {
 
         ActionOutputReg2 result = (ActionOutputReg2) action.getActionChoice();
 
-        assertEquals(OFS_N_BITS, result.getNxActionOutputReg2().getNBits().shortValue());
-        assertEquals(MAX_LEN, result.getNxActionOutputReg2().getMaxLen().shortValue());
+        assertEquals(OFS_N_BITS, result.getNxActionOutputReg2().getNBits());
+        assertEquals(MAX_LEN, result.getNxActionOutputReg2().getMaxLen());
         assertEquals(SRC_EXP_BIGINT, result.getNxActionOutputReg2().getSrc());
         assertFalse(buffer.isReadable());
     }
@@ -86,8 +87,8 @@ public class OutputReg2CodecTest {
         assertEquals(SUBTYPE, buffer.readUnsignedShort());
 
         //Serialize part
-        assertEquals(OFS_N_BITS, buffer.readUnsignedShort());
-        assertEquals(MAX_LEN, buffer.readUnsignedShort());
+        assertEquals(OFS_N_BITS.shortValue(), buffer.readUnsignedShort());
+        assertEquals(MAX_LEN.shortValue(), buffer.readUnsignedShort());
         assertEquals(SRC, buffer.readUnsignedInt());
 
         // padding
@@ -109,8 +110,8 @@ public class OutputReg2CodecTest {
         assertEquals(SUBTYPE, buffer.readUnsignedShort());
 
         //Serialize part
-        assertEquals(OFS_N_BITS, buffer.readUnsignedShort());
-        assertEquals(MAX_LEN, buffer.readUnsignedShort());
+        assertEquals(OFS_N_BITS.shortValue(), buffer.readUnsignedShort());
+        assertEquals(MAX_LEN.shortValue(), buffer.readUnsignedShort());
         assertEquals(SRC_EXP, buffer.readLong());
 
         // padding
@@ -141,8 +142,8 @@ public class OutputReg2CodecTest {
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(SUBTYPE);
-        message.writeShort(OFS_N_BITS);
-        message.writeShort(MAX_LEN);
+        message.writeShort(OFS_N_BITS.shortValue());
+        message.writeShort(MAX_LEN.shortValue());
         if (withExpSrc) {
             message.writeLong(SRC_EXP);
             message.writeZero(2);

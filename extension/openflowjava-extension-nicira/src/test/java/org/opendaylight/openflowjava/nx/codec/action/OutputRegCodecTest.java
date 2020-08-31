@@ -21,6 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputRegBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputRegBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OutputRegCodecTest {
     private static final int LENGTH = 24;
@@ -78,9 +80,9 @@ public class OutputRegCodecTest {
         final ActionOutputRegBuilder actionOutputRegBuilder = new ActionOutputRegBuilder();
         NxActionOutputRegBuilder nxActionOutputBuilder = new NxActionOutputRegBuilder();
 
-        nxActionOutputBuilder.setNBits(1);
-        nxActionOutputBuilder.setSrc((long)2);
-        nxActionOutputBuilder.setMaxLen(3);
+        nxActionOutputBuilder.setNBits(Uint16.ONE);
+        nxActionOutputBuilder.setSrc(Uint32.TWO);
+        nxActionOutputBuilder.setMaxLen(Uint16.valueOf(3));
 
         actionOutputRegBuilder.setNxActionOutputReg(nxActionOutputBuilder.build());
         actionBuilder.setActionChoice(actionOutputRegBuilder.build());

@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.tcp.dst.grouping.TcpDstValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpDstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpDstCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class TcpDstCodecTest {
 
@@ -76,8 +77,8 @@ public class TcpDstCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmOfTcpDst.class);
         matchEntryBuilder.setHasMask(true);
 
-        valuesBuilder.setPort(new PortNumber(1));
-        valuesBuilder.setMask(0xffff);
+        valuesBuilder.setPort(new PortNumber(Uint16.ONE));
+        valuesBuilder.setMask(Uint16.MAX_VALUE);
 
         caseBuilder.setTcpDstValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

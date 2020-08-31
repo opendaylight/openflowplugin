@@ -26,8 +26,8 @@ public class NshTtlCodecTest {
     private NshTtlCodec nshTtlCodec;
     private ByteBuf buffer;
 
-    private static final Short TTL_VALUE = (short) 0xD8;
-    private static final Short TTL_MASK = (short) 0xFFL;
+    private static final Uint8 TTL_VALUE = Uint8.valueOf(0xD8);
+    private static final Uint8 TTL_MASK = Uint8.MAX_VALUE;
 
     @Before
     public void setUp() {
@@ -62,7 +62,7 @@ public class NshTtlCodecTest {
 
         NxExpMatchEntryValue value = nshTtlCodec.deserializeValue(buffer, false);
 
-        assertEquals(Uint8.valueOf(TTL_VALUE), ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
+        assertEquals(TTL_VALUE, ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
         assertFalse(buffer.isReadable());
     }
 
@@ -72,17 +72,17 @@ public class NshTtlCodecTest {
 
         NxExpMatchEntryValue value = nshTtlCodec.deserializeValue(buffer, true);
 
-        assertEquals(Uint8.valueOf(TTL_VALUE), ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
-        assertEquals(Uint8.valueOf(TTL_MASK), ((NshTtlCaseValue) value).getNshTtlValues().getMask());
+        assertEquals(TTL_VALUE, ((NshTtlCaseValue) value).getNshTtlValues().getNshTtl());
+        assertEquals(TTL_MASK, ((NshTtlCaseValue) value).getNshTtlValues().getMask());
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(final Short value, final Short mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(final Uint8 value, final Uint8 mask) {
         NshTtlValues nshTtlValues = new NshTtlValuesBuilder().setNshTtl(value).setMask(mask).build();
         return new NshTtlCaseValueBuilder().setNshTtlValues(nshTtlValues).build();
     }
 
-    private static void writeBuffer(final ByteBuf message, final Short value, final Short mask) {
+    private static void writeBuffer(final ByteBuf message, final Uint8 value, final Uint8 mask) {
         message.writeByte(value.intValue());
         if (mask != null) {
             message.writeByte(mask.intValue());

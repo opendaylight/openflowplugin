@@ -26,7 +26,7 @@ public class NshMdtypeCodecTest {
     private NshMdtypeCodec nshMdtypeCodec;
     private ByteBuf buffer;
 
-    private static final Short MDTYPE_VALUE = (short) 1;
+    private static final Uint8 MDTYPE_VALUE = Uint8.ONE;
 
     @Before
     public void setUp() {
@@ -50,16 +50,16 @@ public class NshMdtypeCodecTest {
 
         NxExpMatchEntryValue value = nshMdtypeCodec.deserializeValue(buffer, false);
 
-        assertEquals(Uint8.valueOf(MDTYPE_VALUE), ((NshMdtypeCaseValue) value).getNshMdtypeValues().getValue());
+        assertEquals(MDTYPE_VALUE, ((NshMdtypeCaseValue) value).getNshMdtypeValues().getValue());
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(Short value) {
+    private static NxExpMatchEntryValue createMatchEntryValue(Uint8 value) {
         NshMdtypeValues nshMdtypeValues = new NshMdtypeValuesBuilder().setValue(value).build();
         return new NshMdtypeCaseValueBuilder().setNshMdtypeValues(nshMdtypeValues).build();
     }
 
-    private static void writeBuffer(ByteBuf message, Short value) {
+    private static void writeBuffer(ByteBuf message, Uint8 value) {
         message.writeByte(value.intValue());
     }
 }

@@ -23,12 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionDecap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionDecapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.decap.grouping.NxActionDecapBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class DecapCodecTest {
 
     private static final int LENGTH = 16;
     private static final int SUBTYPE = 47;
-    private static final long PACKET_TYPE = 0xFFFEL;
+    private static final Uint32 PACKET_TYPE = Uint32.valueOf(0xFFFEL);
 
     DecapCodec decapCodec;
     ByteBuf buffer;
@@ -48,7 +49,7 @@ public class DecapCodecTest {
 
         ActionDecap result = (ActionDecap) action.getActionChoice();
 
-        assertEquals(PACKET_TYPE, result.getNxActionDecap().getPacketType().longValue());
+        assertEquals(PACKET_TYPE, result.getNxActionDecap().getPacketType());
         assertFalse(buffer.isReadable());
     }
 
@@ -65,7 +66,7 @@ public class DecapCodecTest {
         assertEquals(SUBTYPE, buffer.readUnsignedShort());
         //Serialize part
         assertEquals(0, buffer.readUnsignedShort());
-        assertEquals(PACKET_TYPE, buffer.readUnsignedInt());
+        assertEquals(PACKET_TYPE.longValue(), buffer.readUnsignedInt());
         assertFalse(buffer.isReadable());
     }
 
@@ -75,7 +76,7 @@ public class DecapCodecTest {
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());
         message.writeShort(SUBTYPE);
         message.writeZero(2);
-        message.writeInt((int) PACKET_TYPE);
+        message.writeInt(PACKET_TYPE.intValue());
     }
 
     private static Action createAction() {

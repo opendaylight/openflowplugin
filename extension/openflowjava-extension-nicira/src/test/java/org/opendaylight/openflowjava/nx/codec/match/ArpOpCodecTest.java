@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.arp.op.grouping.ArpOpValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpOpCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.ArpOpCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class ArpOpCodecTest {
 
@@ -74,7 +75,7 @@ public class ArpOpCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmOfArpOp.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setValue(1);
+        valuesBuilder.setValue(Uint16.ONE);
 
         caseBuilder.setArpOpValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class RegMoveCodecTest {
@@ -162,9 +163,9 @@ public class RegMoveCodecTest {
         final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
         NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
 
-        nxActionRegMoveBuilder.setNBits(1);
-        nxActionRegMoveBuilder.setSrcOfs(2);
-        nxActionRegMoveBuilder.setDstOfs(3);
+        nxActionRegMoveBuilder.setNBits(Uint16.ONE);
+        nxActionRegMoveBuilder.setSrcOfs(Uint16.TWO);
+        nxActionRegMoveBuilder.setDstOfs(Uint16.valueOf(3));
         nxActionRegMoveBuilder.setSrc(src);
         nxActionRegMoveBuilder.setDst(dst);
 

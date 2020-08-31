@@ -26,7 +26,7 @@ public class NshNpCodecTest {
     private NshNpCodec nshNpCodec;
     private ByteBuf buffer;
 
-    private static final Short NP_VALUE = (short) 3;
+    private static final Uint8 NP_VALUE = Uint8.valueOf(3);
 
     @Before
     public void setUp() {
@@ -50,16 +50,16 @@ public class NshNpCodecTest {
 
         NxExpMatchEntryValue value = nshNpCodec.deserializeValue(buffer, false);
 
-        assertEquals(Uint8.valueOf(NP_VALUE), ((NshNpCaseValue) value).getNshNpValues().getValue());
+        assertEquals(NP_VALUE, ((NshNpCaseValue) value).getNshNpValues().getValue());
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(Short value) {
+    private static NxExpMatchEntryValue createMatchEntryValue(Uint8 value) {
         NshNpValues nshNpValues = new NshNpValuesBuilder().setValue(value).build();
         return new NshNpCaseValueBuilder().setNshNpValues(nshNpValues).build();
     }
 
-    private static void writeBuffer(ByteBuf message, Short value) {
+    private static void writeBuffer(ByteBuf message, Uint8 value) {
         message.writeByte(value.intValue());
     }
 }

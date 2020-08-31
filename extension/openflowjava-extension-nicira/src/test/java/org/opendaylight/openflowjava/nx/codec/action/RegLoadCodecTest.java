@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import java.math.BigInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -22,6 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.NxActionRegLoadBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class RegLoadCodecTest {
     private static final int LENGTH = 24;
@@ -75,9 +77,9 @@ public class RegLoadCodecTest {
         final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
         NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
 
-        nxActionRegLoadBuilder.setOfsNbits(1);
-        nxActionRegLoadBuilder.setDst((long)2);
-        nxActionRegLoadBuilder.setValue(BigInteger.valueOf(3));
+        nxActionRegLoadBuilder.setOfsNbits(Uint16.ONE);
+        nxActionRegLoadBuilder.setDst(Uint32.TWO);
+        nxActionRegLoadBuilder.setValue(Uint64.valueOf(3));
 
         actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
         actionBuilder.setActionChoice(actionRegLoadBuilder.build());

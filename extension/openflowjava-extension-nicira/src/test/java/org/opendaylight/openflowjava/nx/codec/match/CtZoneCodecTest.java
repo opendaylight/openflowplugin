@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.zone.grouping.CtZoneValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtZoneCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtZoneCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class CtZoneCodecTest {
 
@@ -75,7 +76,7 @@ public class CtZoneCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxCtZone.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setCtZone(1);
+        valuesBuilder.setCtZone(Uint16.ONE);
 
         caseBuilder.setCtZoneValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

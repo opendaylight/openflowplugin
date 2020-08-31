@@ -21,6 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmitBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmitBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class ResubmitCodecTest {
     private static final int LENGTH = 16;
@@ -61,7 +63,7 @@ public class ResubmitCodecTest {
      */
     @Test
     public void getSubTypeTest2() {
-        action = createAction(null, (byte)1);
+        action = createAction(null, Uint8.ONE);
         ActionResubmit actionResubmit = (ActionResubmit) action.getActionChoice();
 
         byte result = resubmitCodec.getSubType(actionResubmit);
@@ -75,7 +77,7 @@ public class ResubmitCodecTest {
      */
     @Test
     public void serializeTest1() {
-        action = createAction((short)1, (byte)2);
+        action = createAction(Uint16.ONE, Uint8.TWO);
         resubmitCodec.serialize(action, buffer);
 
         assertEquals(LENGTH, buffer.readableBytes());
@@ -123,7 +125,7 @@ public class ResubmitCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private static Action createAction(Short inPort, Byte table) {
+    private static Action createAction(Uint16 inPort, Uint8 table) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -131,10 +133,10 @@ public class ResubmitCodecTest {
         NxActionResubmitBuilder nxActionResubmitBuilder = new NxActionResubmitBuilder();
 
         if (inPort != null) {
-            nxActionResubmitBuilder.setInPort(inPort.intValue());
+            nxActionResubmitBuilder.setInPort(inPort);
         }
         if (table != null) {
-            nxActionResubmitBuilder.setTable(table.shortValue());
+            nxActionResubmitBuilder.setTable(table);
         }
 
         actionResubmitBuilder.setNxActionResubmit(nxActionResubmitBuilder.build());

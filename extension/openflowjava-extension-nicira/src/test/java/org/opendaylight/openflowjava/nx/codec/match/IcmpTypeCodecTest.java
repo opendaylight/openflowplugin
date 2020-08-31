@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.icmp.type.grouping.IcmpTypeValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IcmpTypeCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IcmpTypeCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class IcmpTypeCodecTest {
 
@@ -73,7 +74,7 @@ public class IcmpTypeCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmOfIcmpType.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setValue((short)1);
+        valuesBuilder.setValue(Uint8.ONE);
 
         caseBuilder.setIcmpTypeValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

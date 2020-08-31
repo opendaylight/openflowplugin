@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.tp.dst.grouping.CtTpDstValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpDstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpDstCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class CtTpDstCodecTest {
     private CtTpDstCodec ctTpDstCodec;
@@ -72,7 +73,7 @@ public class CtTpDstCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxCtTpDst.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setCtTpDst(1);
+        valuesBuilder.setCtTpDst(Uint16.ONE);
 
         caseBuilder.setCtTpDstValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

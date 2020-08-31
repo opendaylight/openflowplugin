@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.eth.type.grouping.EthTypeValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthTypeCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthTypeCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class EthTypeCodecTest {
 
@@ -73,7 +74,7 @@ public class EthTypeCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmOfEthType.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setValue(1);
+        valuesBuilder.setValue(Uint16.ONE);
 
         caseBuilder.setEthTypeValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

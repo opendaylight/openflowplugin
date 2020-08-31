@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.tun.id.grouping.TunIdValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIdCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIdCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class TunIdCodecTest {
 
@@ -74,8 +75,7 @@ public class TunIdCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxTunId.class);
         matchEntryBuilder.setHasMask(false);
 
-        byte[] value = new byte[VALUE_LENGTH];
-        valuesBuilder.setValue(new BigInteger(value));
+        valuesBuilder.setValue(Uint64.ZERO);
 
         caseBuilder.setTunIdValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

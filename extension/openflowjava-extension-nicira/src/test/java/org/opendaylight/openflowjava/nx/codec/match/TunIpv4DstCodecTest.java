@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.tun.ipv4.dst.grouping.TunIpv4DstValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIpv4DstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIpv4DstCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class TunIpv4DstCodecTest {
 
@@ -73,7 +74,7 @@ public class TunIpv4DstCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxTunIpv4Dst.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setValue((long)1);
+        valuesBuilder.setValue(Uint32.ONE);
 
         caseBuilder.setTunIpv4DstValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
