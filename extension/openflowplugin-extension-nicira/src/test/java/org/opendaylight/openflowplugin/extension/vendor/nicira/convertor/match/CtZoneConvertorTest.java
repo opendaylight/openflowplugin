@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtZoneKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.ct.zone.grouping.NxmNxCtZoneBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link CtZoneConvertor}.
@@ -49,7 +50,7 @@ public class CtZoneConvertorTest {
     public void setUp() {
 
         final NxmNxCtZoneBuilder nxmNxCtZoneBuilder = new NxmNxCtZoneBuilder()
-                .setCtZone(1);
+                .setCtZone(Uint16.ONE);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxCtZone(nxmNxCtZoneBuilder.build());
@@ -72,7 +73,7 @@ public class CtZoneConvertorTest {
     @Test
     public void testConvert1() {
         final CtZoneValuesBuilder ctZoneValuesBuilder = new CtZoneValuesBuilder()
-                .setCtZone(2);
+                .setCtZone(Uint16.TWO);
         final CtZoneCaseValueBuilder ctZoneCaseValueBuilder = new CtZoneCaseValueBuilder()
                 .setCtZoneValues(ctZoneValuesBuilder.build());
 

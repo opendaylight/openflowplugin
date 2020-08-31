@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.type.grouping.NxmOfEthTypeBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link EthTypeConvertor}.
@@ -49,7 +50,7 @@ public class EthTypeConvertorTest {
     public void setUp() {
 
         final NxmOfEthTypeBuilder nxmOfEthTypeBuilder = new NxmOfEthTypeBuilder()
-                .setValue(1);
+                .setValue(Uint16.ONE);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfEthType(nxmOfEthTypeBuilder.build());
@@ -72,7 +73,7 @@ public class EthTypeConvertorTest {
     @Test
     public void testConvert1() {
         final EthTypeValuesBuilder ethTypeValuesBuilder = new EthTypeValuesBuilder()
-                .setValue(Integer.valueOf(1));
+                .setValue(Uint16.ONE);
         final EthTypeCaseValueBuilder ethTypeCaseValueBuilder = new EthTypeCaseValueBuilder()
                 .setEthTypeValues(ethTypeValuesBuilder.build());
 

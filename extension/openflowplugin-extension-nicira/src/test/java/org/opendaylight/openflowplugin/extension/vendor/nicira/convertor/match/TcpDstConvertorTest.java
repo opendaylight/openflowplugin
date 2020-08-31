@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.tcp.dst.grouping.NxmOfTcpDstBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link TcpDstConvertor}.
@@ -43,14 +44,14 @@ public class TcpDstConvertorTest {
     @Mock
     private MatchEntry matchEntry;
 
-    private static final PortNumber DEFAULT_PORT = new PortNumber(9999);
+    private static final PortNumber DEFAULT_PORT = new PortNumber(Uint16.valueOf(9999));
 
     private TcpDstConvertor tcpDstConvertor;
 
     @Before
     public void setUp() {
         final NxmOfTcpDstBuilder nxmOfTcpDstBuilder = new NxmOfTcpDstBuilder()
-                .setMask(1)
+                .setMask(Uint16.ONE)
                 .setPort(DEFAULT_PORT);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
                 new NxAugMatchNodesNodeTableFlowBuilder();
@@ -75,7 +76,7 @@ public class TcpDstConvertorTest {
     @Test
     public void testConvert1() {
         final TcpDstValuesBuilder tcpDstValuesBuilder = new TcpDstValuesBuilder()
-                .setMask(2)
+                .setMask(Uint16.TWO)
                 .setPort(DEFAULT_PORT);
         final TcpDstCaseValueBuilder tcpDstCaseValueBuilder = new TcpDstCaseValueBuilder()
                 .setTcpDstValues(tcpDstValuesBuilder.build());

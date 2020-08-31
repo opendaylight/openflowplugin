@@ -44,14 +44,14 @@ public class UdpDstConvertorTest {
     @Mock
     private MatchEntry matchEntry;
 
-    private static final PortNumber DEFAULT_PORT = new PortNumber(9999);
+    private static final PortNumber DEFAULT_PORT = new PortNumber(Uint16.valueOf(9999));
 
     private UdpDstConvertor udpDstConvertor;
 
     @Before
     public void setUp() {
         final NxmOfUdpDstBuilder nxmOfUdpDstBuilder = new NxmOfUdpDstBuilder()
-                .setMask(1)
+                .setMask(Uint16.ONE)
                 .setPort(DEFAULT_PORT);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
                 new NxAugMatchNodesNodeTableFlowBuilder();
@@ -76,7 +76,7 @@ public class UdpDstConvertorTest {
     @Test
     public void testConvert1() {
         final UdpDstValuesBuilder udpDstValuesBuilder = new UdpDstValuesBuilder()
-                .setMask(2)
+                .setMask(Uint16.TWO)
                 .setPort(DEFAULT_PORT);
         final UdpDstCaseValueBuilder udpDstCaseValueBuilder = new UdpDstCaseValueBuilder()
                 .setUdpDstValues(udpDstValuesBuilder.build());
