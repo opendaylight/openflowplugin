@@ -5,15 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.eric.api.EricConstants;
 import org.opendaylight.openflowjava.eric.api.EricExtensionCodecRegistrator;
@@ -41,41 +42,40 @@ public class EricExtensionsRegistratorTest {
 
     @Test
     public void registerEricExtensionsTest() {
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
-                        Icmpv6NdReserved.class)), Matchers.any(Icmpv6NDReservedCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        verify(registrator).registerMatchEntrySerializer(
+                eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
+                        Icmpv6NdReserved.class)), any(Icmpv6NDReservedCodec.class));
+        verify(registrator).registerMatchEntryDeserializer(
+                eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
                         EricConstants.ERICOXM_OF_EXPERIMENTER_ID, EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED)),
-                Matchers.any(Icmpv6NDReservedCodec.class));
+                any(Icmpv6NDReservedCodec.class));
 
-        Mockito.verify(registrator).registerMatchEntrySerializer(Matchers
-                        .eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
-                                Icmpv6NdOptionsType.class)), Matchers.any(Icmpv6NDOptionsTypeCodec.class));
-        Mockito.verify(registrator).registerMatchEntryDeserializer(Matchers
-                        .eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        verify(registrator).registerMatchEntrySerializer(
+                        eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
+                                Icmpv6NdOptionsType.class)), any(Icmpv6NDOptionsTypeCodec.class));
+        verify(registrator).registerMatchEntryDeserializer(
+                        eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
                                 EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                                 EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE)),
-                Matchers.any(Icmpv6NDOptionsTypeCodec.class));
+                any(Icmpv6NDOptionsTypeCodec.class));
     }
 
     @Test
     public void unregisterExtensionsTest() {
         ericExtensionsRegistrator.close();
 
-        Mockito.verify(registrator).unregisterMatchEntrySerializer(
+        verify(registrator).unregisterMatchEntrySerializer(
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
                         Icmpv6NdReserved.class));
-        Mockito.verify(registrator).unregisterMatchEntryDeserializer(
+        verify(registrator).unregisterMatchEntryDeserializer(
                 new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                         EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED));
 
-        Mockito.verify(registrator).unregisterMatchEntrySerializer(
+        verify(registrator).unregisterMatchEntrySerializer(
                 new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
                         Icmpv6NdOptionsType.class));
-        Mockito.verify(registrator).unregisterMatchEntryDeserializer(
+        verify(registrator).unregisterMatchEntryDeserializer(
                 new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                          EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE));
     }
-
 }
