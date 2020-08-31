@@ -17,6 +17,7 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
@@ -70,6 +71,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 
 @SuppressWarnings("checkstyle:MethodName")
@@ -113,9 +117,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         // Sample data , committing to DataStore
 
         GroupBuilder group = new GroupBuilder();
-        BucketBuilder bucket = new BucketBuilder();
-        bucket.setBucketId(new BucketId((long) 12));
-        bucket.withKey(new BucketKey(new BucketId((long) 12)));
+        BucketBuilder bucket = new BucketBuilder().withKey(new BucketKey(new BucketId(Uint32.valueOf(12))));
 
         if (groupType == null) {
             groupType = "g1";
@@ -210,7 +212,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 bucket.setAction(createInportOutputAction());
                 break;
             case "a24":
-                bucket.setAction(Collections.EMPTY_LIST);
+                bucket.setAction(Collections.emptyList());
                 break;
             case "a25":
                 bucket.setAction(createNonAppyOutputAction());
@@ -229,20 +231,18 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         }
 
         if ("add".equals(groupMod)) {
-            bucket.setWatchGroup((long) 14);
-            bucket.setWatchPort((long) 1234);
-            bucket.setWeight(50);
+            bucket.setWatchGroup(Uint32.valueOf(14));
+            bucket.setWatchPort(Uint32.valueOf(1234));
+            bucket.setWeight(Uint16.valueOf(50));
         } else {
-            bucket.setWatchGroup((long) 13);
-            bucket.setWatchPort((long) 134);
-            bucket.setWeight(30);
+            bucket.setWatchGroup(Uint32.valueOf(13));
+            bucket.setWatchPort(Uint32.valueOf(134));
+            bucket.setWeight(Uint16.valueOf(30));
         }
 
-        long id = 1;
-        GroupKey key = new GroupKey(new GroupId(id));
+        GroupKey key = new GroupKey(new GroupId(Uint32.ONE));
         group.withKey(key);
         // group.setInstall(false);
-        group.setGroupId(new GroupId(id));
         group.setGroupName(ORIGINAL_GROUP_NAME);
         group.setBarrier(false);
         BucketsBuilder value = new BucketsBuilder();
@@ -255,7 +255,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     }
 
 
-    private List<Action> createPopVlanAction() {
+    private static List<Action> createPopVlanAction() {
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
@@ -265,9 +265,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createPushVlanAction() {
+    private static List<Action> createPushVlanAction() {
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(0x8100);
+        vlan.setEthernetType(Uint16.valueOf(0x8100));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -275,9 +275,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createPushMplsAction() {
+    private static List<Action> createPushMplsAction() {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(0x8847);
+        push.setEthernetType(Uint16.valueOf(0x8847));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -285,9 +285,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createPopMplsAction() {
+    private static List<Action> createPopMplsAction() {
         PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
-        popMplsActionBuilder.setEthernetType(0XB);
+        popMplsActionBuilder.setEthernetType(Uint16.valueOf(0XB));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -295,7 +295,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createPopPbbAction() {
+    private static List<Action> createPopPbbAction() {
         PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
@@ -304,9 +304,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createPushPbbAction() {
+    private static List<Action> createPushPbbAction() {
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(0x88E7);
+        pbb.setEthernetType(Uint16.valueOf(0x88E7));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -314,9 +314,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createSetMplsTtlAction() {
+    private static List<Action> createSetMplsTtlAction() {
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
+        setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(
                 setMplsTtlActionBuilder.build()).build());
@@ -325,9 +325,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createSetNwTtlAction() {
+    private static List<Action> createSetNwTtlAction() {
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
-        setNwTtlActionBuilder.setNwTtl((short) 1);
+        setNwTtlActionBuilder.setNwTtl(Uint8.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
         List<Action> actions = new ArrayList<>();
@@ -335,9 +335,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createSetQueueAction() {
+    private static List<Action> createSetQueueAction() {
         SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
-        setQueueActionBuilder.setQueueId(1L);
+        setQueueActionBuilder.setQueueId(Uint32.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
         action.withKey(new ActionKey(0));
@@ -347,7 +347,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     }
 
 
-    private List<Action> createCopyTtlInAction() {
+    private static List<Action> createCopyTtlInAction() {
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
@@ -356,7 +356,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createCopyTtlOutAction() {
+    private static List<Action> createCopyTtlOutAction() {
         CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
@@ -365,7 +365,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createDecMplsTtlAction() {
+    private static List<Action> createDecMplsTtlAction() {
         DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
@@ -374,7 +374,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createDecNwTtlAction() {
+    private static List<Action> createDecNwTtlAction() {
         DecNwTtlBuilder nwttl = new DecNwTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(nwttl.build()).build());
@@ -394,10 +394,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createFloodOutputAction() {
+    private static List<Action> createFloodOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.FLOOD.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -408,10 +408,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createAllOutputAction() {
+    private static List<Action> createAllOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.ALL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -422,10 +422,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createAnyOutputAction() {
+    private static List<Action> createAnyOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.ANY.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -436,10 +436,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createNormalOutputAction() {
+    private static List<Action> createNormalOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.NORMAL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -450,10 +450,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createInportOutputAction() {
+    private static List<Action> createInportOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.INPORT.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -464,10 +464,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> creatTableOutputAction() {
+    private static List<Action> creatTableOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.TABLE.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -478,10 +478,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createControllerAction() {
+    private static List<Action> createControllerAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -492,10 +492,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createLocalOutputAction() {
+    private static List<Action> createLocalOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(30);
+        output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.LOCAL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -506,9 +506,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         return actions;
     }
 
-    private List<Action> createGroupAction() {
+    private static List<Action> createGroupAction() {
         GroupActionBuilder groupActionB = new GroupActionBuilder();
-        groupActionB.setGroupId(1L);
+        groupActionB.setGroupId(Uint32.ONE);
         groupActionB.setGroup("0");
         ActionBuilder action = new ActionBuilder();
         action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
@@ -524,7 +524,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         //output.setMaxLength(null);
-        output.setMaxLength(66000);
+        output.setMaxLength(Uint16.valueOf(66000));
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
 
         List<Action> actionList = new ArrayList<>();
@@ -533,35 +533,30 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     }
 
     private static List<Action> createNonAppyPushMplsAction() {
-
         List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(0x8849);
+        push.setEthernetType(Uint16.valueOf(0x8849));
         ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
         actionList.add(ab.build());
         return actionList;
     }
 
     private static List<Action> createNonAppyPushPbbAction() {
-
         List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(0x88E8);
+        pbb.setEthernetType(Uint16.valueOf(0x88E8));
         ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
         actionList.add(ab.build());
         return actionList;
-
     }
 
-
     private static List<Action> createNonAppyPushVlanAction() {
-
         List<Action> actionList = new ArrayList<>();
         ActionBuilder ab = new ActionBuilder();
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(0x8101);
+        vlan.setEthernetType(Uint16.valueOf(0x8101));
         ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
         actionList.add(ab.build());
         return actionList;
@@ -582,9 +577,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(Object notUsed) {
+            public void onSuccess(CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
@@ -617,9 +612,9 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(Object notUsed) {
+            public void onSuccess(CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
