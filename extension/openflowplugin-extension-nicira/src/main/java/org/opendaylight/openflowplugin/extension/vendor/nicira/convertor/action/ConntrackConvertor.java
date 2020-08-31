@@ -108,8 +108,8 @@ public class ConntrackConvertor implements
         }
     }
 
-    private List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack
-                                .grouping.nx.action.conntrack.CtActions> getCtAction(final NxConntrack action) {
+    private static List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action
+                        .conntrack.grouping.nx.action.conntrack.CtActions> getCtAction(final NxConntrack action) {
         if (action.getCtActions() == null) {
             return null;
         }
@@ -162,7 +162,7 @@ public class ConntrackConvertor implements
         return ctActions;
     }
 
-    private List<CtActions> getCtAction(final NxActionConntrack action) {
+    private static List<CtActions> getCtAction(final NxActionConntrack action) {
         if (action.getCtActions() == null) {
             return null;
         }
