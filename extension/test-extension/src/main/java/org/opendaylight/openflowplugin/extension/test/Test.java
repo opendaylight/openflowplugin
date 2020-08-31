@@ -53,6 +53,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,20 +74,19 @@ public class Test implements TestService {
     @Override
     public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(TestFlowInput input) {
         AddFlowInputBuilder flow = new AddFlowInputBuilder();
-        flow.setPriority(2);
+        flow.setPriority(Uint16.TWO);
         flow.setMatch(createMatchBld().build());
         flow.setInstructions(createDecNwTtlInstructionsBld().build());
         flow.setBarrier(Boolean.FALSE);
-        BigInteger value = BigInteger.valueOf(10L);
-        flow.setCookie(new FlowCookie(value));
-        flow.setCookieMask(new FlowCookie(value));
-        flow.setHardTimeout(0);
-        flow.setIdleTimeout(0);
+        flow.setCookie(new FlowCookie(Uint64.TEN));
+        flow.setCookieMask(new FlowCookie(Uint64.TEN));
+        flow.setHardTimeout(Uint16.ZERO);
+        flow.setIdleTimeout(Uint16.ZERO);
         flow.setInstallHw(false);
         flow.setStrict(false);
         flow.setContainerName(null);
         flow.setFlags(new FlowModFlags(false, false, false, false, true));
-        flow.setTableId((short) 0);
+        flow.setTableId(Uint8.ZERO);
 
         flow.setFlowName("NiciraFLOW");
 
@@ -119,7 +122,7 @@ public class Test implements TestService {
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
@@ -168,8 +171,8 @@ public class Test implements TestService {
         DstNxRegCaseBuilder nxRegCaseBld = new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class);
         DstBuilder dstBld = new DstBuilder()
             .setDstChoice(nxRegCaseBld.build())
-            .setStart(0)
-            .setEnd(5);
+            .setStart(Uint16.ZERO)
+            .setEnd(Uint16.valueOf(5));
         NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
         nxRegLoadBuilder.setDst(dstBld.build());
         nxRegLoadBuilder.setValue(BigInteger.valueOf(55L));
