@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
 import com.google.common.base.Preconditions;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +49,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    private static final short TABLE_ID = (short) 0;
+    private static final Uint8 TABLE_ID = Uint8.ZERO;
     private static final String LLDP_PUNT_WHOLE_PACKET_FLOW = "LLDP_PUNT_WHOLE_PACKET_FLOW";
     private static final String DEFAULT_FLOW_ID = "42";
     private final SalFlowService flowService;
@@ -108,10 +109,8 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
                             .getRootIdentifier().firstIdentifierOf(Node.class)));
                     LoggingFutures.addErrorLogging(this.flowService.addFlow(addFlowInput.build()), LOG, "addFlow");
                 } else {
-                    LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow",
-                            nodeId);
+                    LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);
                 }
-
             }
         }
     }
@@ -120,16 +119,15 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         FlowBuilder flowBuilder = new FlowBuilder();
         flowBuilder.setMatch(new MatchBuilder().build());
         flowBuilder.setInstructions(createSendToControllerInstructions().build());
-        flowBuilder.setPriority(0);
+        flowBuilder.setPriority(Uint16.ZERO);
 
         FlowKey key = new FlowKey(new FlowId(DEFAULT_FLOW_ID));
         flowBuilder.setBarrier(Boolean.FALSE);
         flowBuilder.setBufferId(OFConstants.OFP_NO_BUFFER);
-        BigInteger value = BigInteger.valueOf(10L);
-        flowBuilder.setCookie(new FlowCookie(value));
-        flowBuilder.setCookieMask(new FlowCookie(value));
-        flowBuilder.setHardTimeout(0);
-        flowBuilder.setIdleTimeout(0);
+        flowBuilder.setCookie(new FlowCookie(Uint64.TEN));
+        flowBuilder.setCookieMask(new FlowCookie(Uint64.TEN));
+        flowBuilder.setHardTimeout(Uint16.ZERO);
+        flowBuilder.setIdleTimeout(Uint16.ZERO);
         flowBuilder.setInstallHw(false);
         flowBuilder.setStrict(false);
         flowBuilder.setContainerName(null);
