@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.converter;
 
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.converter.BundleControlConverter}.
@@ -38,7 +38,8 @@ public class BundleControlConverterTest {
 
     @Test
     public void testGetExperimenterId() {
-        Assert.assertEquals("Wrong ExperimenterId.", new ExperimenterId(0x4F4E4600L), converter.getExperimenterId());
+        Assert.assertEquals("Wrong ExperimenterId.", new ExperimenterId(Uint32.valueOf(0x4F4E4600)),
+            converter.getExperimenterId());
     }
 
     @Test
@@ -125,7 +126,7 @@ public class BundleControlConverterTest {
 
     private static BundleControlSal createOFPMessage(final boolean withProperty) {
         final SalControlDataBuilder dataBuilder = new SalControlDataBuilder();
-        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setBundleId(new BundleId(Uint32.ONE));
         dataBuilder.setType(BundleControlType.ONFBCTOPENREQUEST);
         dataBuilder.setFlags(new BundleFlags(true, false));
         List<BundleProperty> properties = new ArrayList<>();
@@ -140,7 +141,7 @@ public class BundleControlConverterTest {
     private static BundleControlOnf createOFJMessage(final boolean withProperty) {
         final BundleControlOnfBuilder builder = new BundleControlOnfBuilder();
         final OnfControlGroupingDataBuilder dataBuilder = new OnfControlGroupingDataBuilder();
-        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setBundleId(new BundleId(Uint32.ONE));
         dataBuilder.setType(BundleControlType.ONFBCTOPENREPLY);
         dataBuilder.setFlags(new BundleFlags(false, false));
         List<BundleProperty> properties = new ArrayList<>();

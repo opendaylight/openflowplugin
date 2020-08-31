@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.converter;
 
 import static org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil.extractDatapathId;
@@ -73,7 +72,7 @@ public class BundleAddMessageConverterTest {
     private final BundleAddMessageConverter converter = new BundleAddMessageConverter();
     private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("openflow:1"))));
-    private static final GroupId GROUP_ID = new GroupId(1L);
+    private static final GroupId GROUP_ID = new GroupId(Uint32.ONE);
 
     @Before
     public void setUp() {
@@ -81,7 +80,8 @@ public class BundleAddMessageConverterTest {
 
     @Test
     public void testGetExperimenterId() {
-        Assert.assertEquals("Wrong ExperimenterId.", new ExperimenterId(0x4F4E4600L), converter.getExperimenterId());
+        Assert.assertEquals("Wrong ExperimenterId.", new ExperimenterId(Uint32.valueOf(0x4F4E4600)),
+            converter.getExperimenterId());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class BundleAddMessageConverterTest {
     private static BundleAddMessageSal createMessage(final boolean withProperty,
             final BundleInnerMessage innerMessage) {
         final SalAddMessageDataBuilder dataBuilder = new SalAddMessageDataBuilder();
-        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setBundleId(new BundleId(Uint32.ONE));
         dataBuilder.setFlags(new BundleFlags(true, false));
         List<BundleProperty> properties = new ArrayList<>();
         if (withProperty) {
