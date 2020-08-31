@@ -41,13 +41,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 
 @RunWith(MockitoJUnitRunner.class)
 public class NiciraExtensionCodecRegistratorImplTest {
-
-
     NiciraExtensionCodecRegistratorImpl niciraExtensionCodecRegistrator;
     List<SwitchConnectionProvider> providers = new LinkedList<>();
     NiciraActionSerializerKey actionSerializerKey;
     NiciraActionDeserializerKey actionDeserializerKey;
-    MatchEntrySerializerKey matchSerializerKey;
+    MatchEntrySerializerKey<?, ?> matchSerializerKey;
     MatchEntryDeserializerKey matchDeserializerKey;
 
     @Mock
@@ -59,12 +57,9 @@ public class NiciraExtensionCodecRegistratorImplTest {
     @Mock
     OFDeserializer<MatchEntry> matchDeserializer;
 
-
     public static final short VERSION = 4;
     public static final byte VERSION1 = EncodeConstants.OF10_VERSION_ID;
     public static final byte VERSION2 = EncodeConstants.OF13_VERSION_ID;
-
-
 
     @Mock
     SwitchConnectionProvider provider;
@@ -75,7 +70,7 @@ public class NiciraExtensionCodecRegistratorImplTest {
         actionSerializerKey = new NiciraActionSerializerKey(VERSION, PopVlanCase.class);
         //subtype = 10
         actionDeserializerKey = new NiciraActionDeserializerKey(VERSION, 10);
-        matchSerializerKey = new MatchEntrySerializerKey(VERSION, Nxm0Class.class, MatchField.class);
+        matchSerializerKey = new MatchEntrySerializerKey<>(VERSION, Nxm0Class.class, MatchField.class);
         //OxmClass 1, OxmField 2
         matchDeserializerKey = new MatchEntryDeserializerKey(VERSION, 1, 2);
 
@@ -93,14 +88,14 @@ public class NiciraExtensionCodecRegistratorImplTest {
     @Test
     public void registerActionSerializerTest() {
         niciraExtensionCodecRegistrator.registerActionSerializer(actionSerializerKey, actionSerializer);
-        ActionSerializerKey key1 = NiciraUtil.createOfJavaKeyFrom(actionSerializerKey);
+        ActionSerializerKey<?> key1 = NiciraUtil.createOfJavaKeyFrom(actionSerializerKey);
         Mockito.verify(provider).registerActionSerializer(eq(key1), any(OFGeneralSerializer.class));
     }
 
     @Test
     public void unregisterActionSerializerTest() {
         niciraExtensionCodecRegistrator.registerActionSerializer(actionSerializerKey, actionSerializer);
-        ActionSerializerKey key1 = NiciraUtil.createOfJavaKeyFrom(actionSerializerKey);
+        ActionSerializerKey<?> key1 = NiciraUtil.createOfJavaKeyFrom(actionSerializerKey);
         niciraExtensionCodecRegistrator.unregisterActionSerializer(actionSerializerKey);
         Mockito.verify(provider).unregisterSerializer(eq(key1));
     }
