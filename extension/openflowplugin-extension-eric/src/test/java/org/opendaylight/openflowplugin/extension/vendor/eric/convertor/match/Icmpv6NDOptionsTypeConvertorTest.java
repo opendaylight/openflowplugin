@@ -5,18 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -42,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link Icmpv6NDOptionsTypeConvertor}.
@@ -59,13 +58,13 @@ public class Icmpv6NDOptionsTypeConvertorTest {
     @Before
     public void setUp()  {
         final EricOfIcmpv6NdOptionsTypeBuilder ericOfIcmpv6NdOptionsTypeBuilder = new EricOfIcmpv6NdOptionsTypeBuilder()
-                .setIcmpv6NdOptionsType((short)1);
+                .setIcmpv6NdOptionsType(Uint8.ONE);
         final EricAugMatchNodesNodeTableFlowBuilder ericAugMatchNotifUpdateFlowStatsBuilder =
                 new EricAugMatchNodesNodeTableFlowBuilder();
         ericAugMatchNotifUpdateFlowStatsBuilder.setEricOfIcmpv6NdOptionsType(ericOfIcmpv6NdOptionsTypeBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = ericAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(Matchers.any()))
+        when(extension.augmentation(any()))
                 .thenReturn(extensionAugmentation);
 
         icmpv6NDOptionsTypeConvertor = new Icmpv6NDOptionsTypeConvertor();
@@ -81,7 +80,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
     @Test
     public void testConvert1()  {
         final Icmpv6NdOptionsTypeValuesBuilder icmpv6NdOptionsTypeValuesBuilder = new Icmpv6NdOptionsTypeValuesBuilder()
-                .setIcmpv6NdOptionsType((short)10);
+                .setIcmpv6NdOptionsType(Uint8.TEN);
         final Icmpv6NdOptionsTypeCaseValueBuilder icmpv6NdOptionsTypeCaseValueBuilder
                 = new Icmpv6NdOptionsTypeCaseValueBuilder()
                 .setIcmpv6NdOptionsTypeValues(icmpv6NdOptionsTypeValuesBuilder.build());
@@ -123,7 +122,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
         ExtensionAugment<? extends Augmentation<Extension>> extensionMatch
                 =  new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(
-                        new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType((short)1).build()).build(),
+                        new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType(Uint8.ONE).build()).build(),
                 Icmpv6NdOptionsTypeKey.class);
 
         ExtensionListBuilder extListBld = null;
@@ -139,7 +138,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
                     .setExtensionList(Collections.singletonList(extListBld.build())).build())
                 .build();
 
-        Assert.assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
+        assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
                  .values().iterator().next().getExtensionKey());
     }
 
