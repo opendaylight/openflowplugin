@@ -33,6 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.NxActionNatCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link ConntrackConvertor}.
@@ -50,21 +53,21 @@ public class ConntrackConvertorTest {
     public void testConvertToOfJava() {
 
         final NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder()
-                .setFlags(1)
-                .setRangePresent(2)
+                .setFlags(Uint16.ONE)
+                .setRangePresent(Uint16.TWO)
                 .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"))
                 .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.10.0"))
-                .setPortMin(3000)
-                .setPortMax(4000);
+                .setPortMin(Uint16.valueOf(3000))
+                .setPortMax(Uint16.valueOf(4000));
         final CtActionsBuilder ctActionsBuilder = new CtActionsBuilder().setOfpactActions(new NxActionNatCaseBuilder()
                 .setNxActionNat(nxActionNatBuilder.build()).build());
         List<CtActions> ctAction = new ArrayList<>();
         ctAction.add(ctActionsBuilder.build());
         final NxConntrackBuilder nxConntrackBuilder = new NxConntrackBuilder()
-                .setConntrackZone(1)
-                .setFlags(1)
-                .setRecircTable((short) 1)
-                .setZoneSrc(1L)
+                .setConntrackZone(Uint16.ONE)
+                .setFlags(Uint16.ONE)
+                .setRecircTable(Uint8.ONE)
+                .setZoneSrc(Uint32.ONE)
                 .setCtActions(ctAction);
 
         final NxActionConntrackNodesNodeTableFlowWriteActionsCaseBuilder nxActionConntrackBuilder =
@@ -108,12 +111,12 @@ public class ConntrackConvertorTest {
             .nx.action.nat._case.NxActionNatBuilder nxActionNatBuilder = new org.opendaylight.yang.gen.v1.urn
             .opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case
             .NxActionNatBuilder()
-            .setFlags(1)
-            .setRangePresent(2)
+            .setFlags(Uint16.ONE)
+            .setRangePresent(Uint16.TWO)
             .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"))
             .setIpAddressMax(IpAddressBuilder.getDefaultInstance("192.168.10.0"))
-            .setPortMin(3000)
-            .setPortMax(4000);
+            .setPortMin(Uint16.valueOf(3000))
+            .setPortMax(Uint16.valueOf(4000));
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping
             .nx.action.conntrack.CtActionsBuilder ctActionsBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
             .openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping.nx.action.conntrack.CtActionsBuilder()
@@ -124,10 +127,10 @@ public class ConntrackConvertorTest {
             .grouping.nx.action.conntrack.CtActions> ctActions = new ArrayList<>();
         ctActions.add(ctActionsBuilder.build());
         final NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder()
-                .setConntrackZone(1)
-                .setFlags(1)
-                .setRecircTable((short) 1)
-                .setZoneSrc(1L)
+                .setConntrackZone(Uint16.ONE)
+                .setFlags(Uint16.ONE)
+                .setRecircTable(Uint8.ONE)
+                .setZoneSrc(Uint32.ONE)
                 .setCtActions(ctActions);
 
         final ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder()

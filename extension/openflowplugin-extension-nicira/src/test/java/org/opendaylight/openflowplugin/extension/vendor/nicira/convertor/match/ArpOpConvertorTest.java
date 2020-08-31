@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpOpKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.op.grouping.NxmOfArpOpBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class ArpOpConvertorTest {
     @Test
     public void testConvertToOFJava() {
         final NxmOfArpOpBuilder nxmOfArpOpBuilder = new NxmOfArpOpBuilder()
-                .setValue(2);
+                .setValue(Uint16.TWO);
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder();
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpOp(nxmOfArpOpBuilder.build());
 
@@ -74,7 +75,7 @@ public class ArpOpConvertorTest {
     @Test
     public void testConvertFromOFJava() {
         final ArpOpBuilder arpOpBuilder = new ArpOpBuilder()
-                .setOpCode(2);
+                .setOpCode(Uint16.TWO);
         final ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder()
                 .setArpOp(arpOpBuilder.build());
         final ArpOpCase arpOpCase = arpOpCaseBuilder.build();

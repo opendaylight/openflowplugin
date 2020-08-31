@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.ct.state.grouping.NxmNxCtStateBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link CtStateConvertor}.
@@ -49,8 +50,8 @@ public class CtStateConvertorTest {
     public void setUp() {
 
         final NxmNxCtStateBuilder nxmNxCtStateBuilder = new NxmNxCtStateBuilder()
-                .setCtState(1L)
-                .setMask(2L);
+                .setCtState(Uint32.ONE)
+                .setMask(Uint32.TWO);
         final NxAugMatchNodesNodeTableFlowBuilder nxAugMatchNotifUpdateFlowStatsBuilder =
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxCtState(nxmNxCtStateBuilder.build());
@@ -75,8 +76,8 @@ public class CtStateConvertorTest {
     public void testConvert1() {
 
         final CtStateValuesBuilder ctStateValuesBuilder = new CtStateValuesBuilder()
-                .setCtState(3L)
-                .setMask(4L);
+                .setCtState(Uint32.valueOf(3))
+                .setMask(Uint32.valueOf(4));
         final CtStateCaseValueBuilder ctStateCaseValueBuilder = new CtStateCaseValueBuilder()
                 .setCtStateValues(ctStateValuesBuilder.build());
 
