@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import static org.junit.Assert.assertEquals;
@@ -41,12 +40,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowStatNotificationSupplierImplTest {
-
     private static final String FLOW_NODE_ID = "openflow:111";
-    private static final Short FLOW_TABLE_ID = 111;
+    private static final Uint8 FLOW_TABLE_ID = Uint8.valueOf(111);
     private static final String FLOW_ID = "test-flow-111";
+
     private FlowStatNotificationSupplierImpl notifSupplierImpl;
     private NotificationPublishService notifProviderService;
     private DataBroker dataBroker;

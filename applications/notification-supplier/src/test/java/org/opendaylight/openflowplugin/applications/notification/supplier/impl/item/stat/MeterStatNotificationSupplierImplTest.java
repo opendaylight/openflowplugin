@@ -38,11 +38,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterStatNotificationSupplierImplTest {
-
     private static final String FLOW_NODE_ID = "openflow:111";
-    private static final Long FLOW_METER_ID = 111L;
+    private static final Uint32 FLOW_METER_ID = Uint32.valueOf(111);
+
     private MeterStatNotificationSupplierImpl notifSupplierImpl;
     private NotificationPublishService notifProviderService;
     private DataBroker dataBroker;
