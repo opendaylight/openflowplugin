@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.serializer;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.add.message.onf.OnfAddMessageGroupingDataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleAddMessageFactory}.
@@ -79,7 +79,7 @@ public class BundleAddMessageFactoryTest extends AbstractBundleMessageFactoryTes
     private void testSerialize(final boolean withProperty, final BundleInnerMessage innerMessage) {
         final BundleAddMessageOnfBuilder builder = new BundleAddMessageOnfBuilder();
         final OnfAddMessageGroupingDataBuilder dataBuilder = new OnfAddMessageGroupingDataBuilder();
-        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setBundleId(new BundleId(Uint32.ONE));
         dataBuilder.setFlags(new BundleFlags(true, false));
 
         dataBuilder.setBundleInnerMessage(innerMessage);

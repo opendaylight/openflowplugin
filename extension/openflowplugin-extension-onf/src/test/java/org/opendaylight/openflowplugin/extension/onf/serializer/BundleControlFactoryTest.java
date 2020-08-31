@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.serializer.BundleControlFactory}.
@@ -50,7 +51,7 @@ public class BundleControlFactoryTest extends AbstractBundleMessageFactoryTest {
 
     private void testSerialize(final boolean withProperty) {
         final OnfControlGroupingDataBuilder dataBuilder = new OnfControlGroupingDataBuilder();
-        dataBuilder.setBundleId(new BundleId(1L));
+        dataBuilder.setBundleId(new BundleId(Uint32.ONE));
         dataBuilder.setType(BundleControlType.ONFBCTOPENREQUEST);
         dataBuilder.setFlags(new BundleFlags(true, true));
 
