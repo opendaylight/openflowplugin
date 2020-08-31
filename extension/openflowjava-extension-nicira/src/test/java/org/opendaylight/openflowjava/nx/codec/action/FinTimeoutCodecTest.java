@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionFinTimeout;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionFinTimeoutBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.fin.timeout.grouping.NxActionFinTimeoutBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class FinTimeoutCodecTest {
 
@@ -43,7 +44,7 @@ public class FinTimeoutCodecTest {
 
     @Test
     public void serializeTestWithValues() {
-        action = createAction((short) 1, (short) 2);
+        action = createAction(Uint16.ONE, Uint16.TWO);
         finTimeoutCodec.serialize(action, buffer);
 
         assertEquals(LENGTH, buffer.readableBytes());
@@ -83,12 +84,12 @@ public class FinTimeoutCodecTest {
 
         ActionFinTimeout result = (ActionFinTimeout) action.getActionChoice();
 
-        assertEquals(1, result.getNxActionFinTimeout().getFinIdleTimeout().intValue());
-        assertEquals(2, result.getNxActionFinTimeout().getFinHardTimeout().intValue());
+        assertEquals(Uint16.ONE, result.getNxActionFinTimeout().getFinIdleTimeout());
+        assertEquals(Uint16.TWO, result.getNxActionFinTimeout().getFinHardTimeout());
         assertEquals(0, buffer.readableBytes());
     }
 
-    private static Action createAction(Short idleTimeout, Short hardTimeout) {
+    private static Action createAction(Uint16 idleTimeout, Uint16 hardTimeout) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -96,10 +97,10 @@ public class FinTimeoutCodecTest {
         NxActionFinTimeoutBuilder nxActionFinTimeoutBuilder = new NxActionFinTimeoutBuilder();
 
         if (idleTimeout != null) {
-            nxActionFinTimeoutBuilder.setFinIdleTimeout(idleTimeout.intValue());
+            nxActionFinTimeoutBuilder.setFinIdleTimeout(idleTimeout);
         }
         if (hardTimeout != null) {
-            nxActionFinTimeoutBuilder.setFinHardTimeout(hardTimeout.intValue());
+            nxActionFinTimeoutBuilder.setFinHardTimeout(hardTimeout);
         }
 
         actionFinTimeoutBuilder.setNxActionFinTimeout(nxActionFinTimeoutBuilder.build());

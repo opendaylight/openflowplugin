@@ -35,6 +35,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class ConntrackCodecTest {
 
@@ -169,18 +172,18 @@ public class ConntrackCodecTest {
     private static Action createAction() {
 
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
-        nxActionConntrackBuilder.setFlags(1);
-        nxActionConntrackBuilder.setZoneSrc((long) 2);
-        nxActionConntrackBuilder.setConntrackZone(3);
-        nxActionConntrackBuilder.setRecircTable((short) 4);
+        nxActionConntrackBuilder.setFlags(Uint16.ONE);
+        nxActionConntrackBuilder.setZoneSrc(Uint32.TWO);
+        nxActionConntrackBuilder.setConntrackZone(Uint16.valueOf(3));
+        nxActionConntrackBuilder.setRecircTable(Uint8.valueOf(4));
 
         NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
-        nxActionNatBuilder.setFlags(5);
-        nxActionNatBuilder.setRangePresent(0x3F);
+        nxActionNatBuilder.setFlags(Uint16.valueOf(5));
+        nxActionNatBuilder.setRangePresent(Uint16.valueOf(0x3F));
         nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"));
         nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance("192.168.10.0"));
-        nxActionNatBuilder.setPortMin(3000);
-        nxActionNatBuilder.setPortMax(4000);
+        nxActionNatBuilder.setPortMin(Uint16.valueOf(3000));
+        nxActionNatBuilder.setPortMax(Uint16.valueOf(4000));
         NxActionNatCaseBuilder nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
         nxActionNatCaseBuilder.setNxActionNat(nxActionNatBuilder.build());
         CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
@@ -188,10 +191,10 @@ public class ConntrackCodecTest {
         List<CtActions> ctActionsList = new  ArrayList<>();
         ctActionsList.add(ctActionsBuilder.build());
         nxActionNatBuilder = new NxActionNatBuilder();
-        nxActionNatBuilder.setFlags(5);
-        nxActionNatBuilder.setRangePresent(0x21);
+        nxActionNatBuilder.setFlags(Uint16.valueOf(5));
+        nxActionNatBuilder.setRangePresent(Uint16.valueOf(0x21));
         nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"));
-        nxActionNatBuilder.setPortMax(4000);
+        nxActionNatBuilder.setPortMax(Uint16.valueOf(4000));
         nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
         nxActionNatCaseBuilder.setNxActionNat(nxActionNatBuilder.build());
         ctActionsBuilder = new CtActionsBuilder();
@@ -200,7 +203,7 @@ public class ConntrackCodecTest {
         nxActionConntrackBuilder.setCtActions(ctActionsList);
 
         NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
-        nxActionCtMarkBuilder.setCtMark((long) 36);
+        nxActionCtMarkBuilder.setCtMark(Uint32.valueOf(36));
         NxActionCtMarkCaseBuilder nxActionCtMarkCaseBuilder = new NxActionCtMarkCaseBuilder();
         nxActionCtMarkCaseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
         ctActionsBuilder = new CtActionsBuilder();
@@ -221,10 +224,10 @@ public class ConntrackCodecTest {
     private static Action createActionWithoutCtAction() {
 
         NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
-        nxActionConntrackBuilder.setFlags(1);
-        nxActionConntrackBuilder.setZoneSrc((long) 2);
-        nxActionConntrackBuilder.setConntrackZone(3);
-        nxActionConntrackBuilder.setRecircTable((short) 4);
+        nxActionConntrackBuilder.setFlags(Uint16.ONE);
+        nxActionConntrackBuilder.setZoneSrc(Uint32.TWO);
+        nxActionConntrackBuilder.setConntrackZone(Uint16.valueOf(3));
+        nxActionConntrackBuilder.setRecircTable(Uint8.valueOf(4));
 
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();

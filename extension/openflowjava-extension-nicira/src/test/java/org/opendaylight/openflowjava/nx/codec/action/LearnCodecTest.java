@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -35,6 +34,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.NxActionLearnBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowMods;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowModsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class LearnCodecTest {
 
@@ -128,14 +131,14 @@ public class LearnCodecTest {
         final ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
 
         NxActionLearnBuilder nxActionLearnBuilder = new NxActionLearnBuilder();
-        nxActionLearnBuilder.setIdleTimeout(1);
-        nxActionLearnBuilder.setHardTimeout(2);
-        nxActionLearnBuilder.setPriority(3);
-        nxActionLearnBuilder.setCookie(BigInteger.valueOf(4));
-        nxActionLearnBuilder.setFlags(5);
-        nxActionLearnBuilder.setTableId((short)6);
-        nxActionLearnBuilder.setFinIdleTimeout(7);
-        nxActionLearnBuilder.setFinHardTimeout(8);
+        nxActionLearnBuilder.setIdleTimeout(Uint16.ONE);
+        nxActionLearnBuilder.setHardTimeout(Uint16.TWO);
+        nxActionLearnBuilder.setPriority(Uint16.valueOf(3));
+        nxActionLearnBuilder.setCookie(Uint64.valueOf(4));
+        nxActionLearnBuilder.setFlags(Uint16.valueOf(5));
+        nxActionLearnBuilder.setTableId(Uint8.valueOf(6));
+        nxActionLearnBuilder.setFinIdleTimeout(Uint16.valueOf(7));
+        nxActionLearnBuilder.setFinHardTimeout(Uint16.valueOf(8));
         nxActionLearnBuilder.setFlowMods(createFlowMods());
         actionLearnBuilder.setNxActionLearn(nxActionLearnBuilder.build());
         actionBuilder.setActionChoice(actionLearnBuilder.build());
@@ -149,11 +152,11 @@ public class LearnCodecTest {
         //length = 14
         final FlowModsBuilder flowMod = new FlowModsBuilder();
         FlowModAddMatchFromFieldBuilder spec = new FlowModAddMatchFromFieldBuilder();
-        spec.setFlowModNumBits(48);
-        spec.setSrcField((long)9);
-        spec.setSrcOfs(10);
-        spec.setDstField((long) 11);
-        spec.setDstOfs(12);
+        spec.setFlowModNumBits(Uint16.valueOf(48));
+        spec.setSrcField(Uint32.valueOf(9));
+        spec.setSrcOfs(Uint16.TEN);
+        spec.setDstField(Uint32.valueOf(11));
+        spec.setDstOfs(Uint16.valueOf(12));
         FlowModAddMatchFromFieldCaseBuilder caseBuilder = new FlowModAddMatchFromFieldCaseBuilder();
         caseBuilder.setFlowModAddMatchFromField(spec.build());
         flowMod.setFlowModSpec(caseBuilder.build());
@@ -162,11 +165,11 @@ public class LearnCodecTest {
         //length = 14
         final FlowModsBuilder flowMod2 = new FlowModsBuilder();
         FlowModCopyFieldIntoFieldBuilder spec2 = new FlowModCopyFieldIntoFieldBuilder();
-        spec2.setFlowModNumBits(48);
-        spec2.setSrcField((long)9);
-        spec2.setSrcOfs(10);
-        spec2.setDstField((long) 11);
-        spec2.setDstOfs(12);
+        spec2.setFlowModNumBits(Uint16.valueOf(48));
+        spec2.setSrcField(Uint32.valueOf(9));
+        spec2.setSrcOfs(Uint16.TEN);
+        spec2.setDstField(Uint32.valueOf(11));
+        spec2.setDstOfs(Uint16.valueOf(12));
         FlowModCopyFieldIntoFieldCaseBuilder caseBuilder2 = new FlowModCopyFieldIntoFieldCaseBuilder();
         caseBuilder2.setFlowModCopyFieldIntoField(spec2.build());
         flowMod2.setFlowModSpec(caseBuilder2.build());
@@ -175,10 +178,10 @@ public class LearnCodecTest {
         //length = 10
         final FlowModsBuilder flowMod3 = new FlowModsBuilder();
         FlowModCopyValueIntoFieldBuilder spec3 = new FlowModCopyValueIntoFieldBuilder();
-        spec3.setFlowModNumBits(48);
-        spec3.setValue(9);
-        spec3.setDstField((long) 10);
-        spec3.setDstOfs(11);
+        spec3.setFlowModNumBits(Uint16.valueOf(48));
+        spec3.setValue(Uint16.valueOf(9));
+        spec3.setDstField(Uint32.TEN);
+        spec3.setDstOfs(Uint16.valueOf(11));
         FlowModCopyValueIntoFieldCaseBuilder caseBuilder3 = new FlowModCopyValueIntoFieldCaseBuilder();
         caseBuilder3.setFlowModCopyValueIntoField(spec3.build());
         flowMod3.setFlowModSpec(caseBuilder3.build());
@@ -187,10 +190,10 @@ public class LearnCodecTest {
         //length = 10
         final FlowModsBuilder flowMod4 = new FlowModsBuilder();
         FlowModAddMatchFromValueBuilder spec4 = new FlowModAddMatchFromValueBuilder();
-        spec4.setFlowModNumBits(48);
-        spec4.setValue(9);
-        spec4.setSrcField((long) 10);
-        spec4.setSrcOfs(11);
+        spec4.setFlowModNumBits(Uint16.valueOf(48));
+        spec4.setValue(Uint16.valueOf(9));
+        spec4.setSrcField(Uint32.TEN);
+        spec4.setSrcOfs(Uint16.valueOf(11));
         FlowModAddMatchFromValueCaseBuilder caseBuilder4 = new FlowModAddMatchFromValueCaseBuilder();
         caseBuilder4.setFlowModAddMatchFromValue(spec4.build());
         flowMod4.setFlowModSpec(caseBuilder4.build());
@@ -199,9 +202,9 @@ public class LearnCodecTest {
         //length = 8
         final FlowModsBuilder flowMod5 = new FlowModsBuilder();
         FlowModOutputToPortBuilder spec5 = new FlowModOutputToPortBuilder();
-        spec5.setFlowModNumBits(48);
-        spec5.setSrcField((long) 9);
-        spec5.setSrcOfs(10);
+        spec5.setFlowModNumBits(Uint16.valueOf(48));
+        spec5.setSrcField(Uint32.valueOf(9));
+        spec5.setSrcOfs(Uint16.valueOf(10));
         FlowModOutputToPortCaseBuilder caseBuilder5 = new FlowModOutputToPortCaseBuilder();
         caseBuilder5.setFlowModOutputToPort(spec5.build());
         flowMod5.setFlowModSpec(caseBuilder5.build());

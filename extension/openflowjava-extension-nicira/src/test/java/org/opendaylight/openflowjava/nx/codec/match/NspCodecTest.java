@@ -26,8 +26,8 @@ public class NspCodecTest {
     private NspCodec nspCodec;
     private ByteBuf buffer;
 
-    private static final Long NSP_VALUE = 10L;
-    private static final Long NSP_MASK = 0xFL;
+    private static final Uint32 NSP_VALUE = Uint32.TEN;
+    private static final Uint32 NSP_MASK = Uint32.valueOf(0xF);
 
     @Before
     public void setUp() {
@@ -62,7 +62,7 @@ public class NspCodecTest {
 
         NxExpMatchEntryValue value = nspCodec.deserializeValue(buffer, false);
 
-        assertEquals(Uint32.valueOf(NSP_VALUE), ((NspCaseValue) value).getNspValues().getNsp());
+        assertEquals(NSP_VALUE, ((NspCaseValue) value).getNspValues().getNsp());
         assertFalse(buffer.isReadable());
     }
 
@@ -72,17 +72,17 @@ public class NspCodecTest {
 
         NxExpMatchEntryValue value = nspCodec.deserializeValue(buffer, true);
 
-        assertEquals(Uint32.valueOf(NSP_VALUE), ((NspCaseValue) value).getNspValues().getNsp());
-        assertEquals(Uint32.valueOf(NSP_MASK), ((NspCaseValue) value).getNspValues().getMask());
+        assertEquals(NSP_VALUE, ((NspCaseValue) value).getNspValues().getNsp());
+        assertEquals(NSP_MASK, ((NspCaseValue) value).getNspValues().getMask());
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(final Long value, final Long mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(final Uint32 value, final Uint32 mask) {
         NspValues nspValues = new NspValuesBuilder().setNsp(value).setMask(mask).build();
         return new NspCaseValueBuilder().setNspValues(nspValues).build();
     }
 
-    private static void writeBuffer(final ByteBuf message, final Long value, final Long mask) {
+    private static void writeBuffer(final ByteBuf message, final Uint32 value, final Uint32 mask) {
         message.writeInt(value.intValue());
         if (mask != null) {
             message.writeInt(mask.intValue());

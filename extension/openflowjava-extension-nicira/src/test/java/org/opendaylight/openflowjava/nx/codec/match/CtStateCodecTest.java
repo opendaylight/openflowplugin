@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.state.grouping.CtStateValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtStateCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtStateCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class CtStateCodecTest {
 
@@ -74,8 +75,8 @@ public class CtStateCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxCtState.class);
         matchEntryBuilder.setHasMask(true);
 
-        valuesBuilder.setCtState((long)1);
-        valuesBuilder.setMask((long)2);
+        valuesBuilder.setCtState(Uint32.ONE);
+        valuesBuilder.setMask(Uint32.TWO);
 
         caseBuilder.setCtStateValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.ip.dst.grouping.IpDstValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IpDstCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.IpDstCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class IpDstCodecTest {
 
@@ -73,7 +74,7 @@ public class IpDstCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmOfIpDst.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setValue((long)1);
+        valuesBuilder.setValue(Uint32.ONE);
 
         caseBuilder.setIpDstValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

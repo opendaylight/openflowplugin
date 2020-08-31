@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.pkt.mark.grouping.PktMarkValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PktMarkCodecTest {
 
@@ -71,7 +72,7 @@ public class PktMarkCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxPktMark.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setPktMark(1L);
+        valuesBuilder.setPktMark(Uint32.ONE);
 
         caseBuilder.setPktMarkValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

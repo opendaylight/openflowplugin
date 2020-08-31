@@ -38,8 +38,8 @@ public class AbstractNshcCodecTest {
     private AbstractNshcCodec testCodec;
     private ByteBuf buffer;
 
-    private static final Long NSHC_VALUE = 10L;
-    private static final Long NSHC_MASK = 0xFL;
+    private static final Uint32 NSHC_VALUE = Uint32.TEN;
+    private static final Uint32 NSHC_MASK = Uint32.valueOf(0xF);
 
     @Before
     public void setUp() {
@@ -74,7 +74,7 @@ public class AbstractNshcCodecTest {
 
         NxExpMatchEntryValue value = testCodec.deserializeValue(buffer, false);
 
-        assertEquals(Uint32.valueOf(NSHC_VALUE), ((NshcCaseValue) value).getNshc());
+        assertEquals(NSHC_VALUE, ((NshcCaseValue) value).getNshc());
         assertFalse(buffer.isReadable());
     }
 
@@ -84,16 +84,16 @@ public class AbstractNshcCodecTest {
 
         NxExpMatchEntryValue value = testCodec.deserializeValue(buffer, true);
 
-        assertEquals(Uint32.valueOf(NSHC_VALUE), ((NshcCaseValue) value).getNshc());
-        assertEquals(Uint32.valueOf(NSHC_MASK), ((NshcCaseValue) value).getMask());
+        assertEquals(NSHC_VALUE, ((NshcCaseValue) value).getNshc());
+        assertEquals(NSHC_MASK, ((NshcCaseValue) value).getMask());
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(final Long value, final Long mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(final Uint32 value, final Uint32 mask) {
         return new NshcCaseValueBuilder().setNshc(value).setMask(mask).build();
     }
 
-    private static void writeBuffer(final ByteBuf message, final Long value, final Long mask) {
+    private static void writeBuffer(final ByteBuf message, final Uint32 value, final Uint32 mask) {
         message.writeInt(value.intValue());
         if (mask != null) {
             message.writeInt(mask.intValue());

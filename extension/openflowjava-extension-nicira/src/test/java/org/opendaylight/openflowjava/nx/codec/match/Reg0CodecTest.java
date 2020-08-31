@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.reg.grouping.RegValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.RegCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.RegCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class Reg0CodecTest {
 
@@ -73,7 +74,7 @@ public class Reg0CodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxReg0.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setValue((long)1);
+        valuesBuilder.setValue(Uint32.ONE);
 
         caseBuilder.setRegValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

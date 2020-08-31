@@ -26,8 +26,8 @@ public class NsiCodecTest {
     NsiCodec nsiCodec;
     ByteBuf buffer;
 
-    private static final Short NSI_VALUE = (short) 255;
-    private static final Short NSI_MASK = 0xF0;
+    private static final Uint8 NSI_VALUE = Uint8.MAX_VALUE;
+    private static final Uint8 NSI_MASK = Uint8.valueOf(0xF0);
 
     @Before
     public void setUp() {
@@ -62,7 +62,7 @@ public class NsiCodecTest {
 
         NxExpMatchEntryValue value = nsiCodec.deserializeValue(buffer, false);
 
-        assertEquals(Uint8.valueOf(NSI_VALUE), ((NsiCaseValue) value).getNsiValues().getNsi());
+        assertEquals(NSI_VALUE, ((NsiCaseValue) value).getNsiValues().getNsi());
         assertFalse(buffer.isReadable());
     }
 
@@ -72,17 +72,17 @@ public class NsiCodecTest {
 
         NxExpMatchEntryValue value = nsiCodec.deserializeValue(buffer, true);
 
-        assertEquals(Uint8.valueOf(NSI_VALUE), ((NsiCaseValue) value).getNsiValues().getNsi());
-        assertEquals(Uint8.valueOf(NSI_MASK), ((NsiCaseValue) value).getNsiValues().getMask());
+        assertEquals(NSI_VALUE, ((NsiCaseValue) value).getNsiValues().getNsi());
+        assertEquals(NSI_MASK, ((NsiCaseValue) value).getNsiValues().getMask());
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(Short value, Short mask) {
+    private static NxExpMatchEntryValue createMatchEntryValue(Uint8 value, Uint8 mask) {
         NsiValues nsiValues = new NsiValuesBuilder().setNsi(value).setMask(mask).build();
         return new NsiCaseValueBuilder().setNsiValues(nsiValues).build();
     }
 
-    private static void writeBuffer(ByteBuf message, Short value, Short mask) {
+    private static void writeBuffer(ByteBuf message, Uint8 value, Uint8 mask) {
         message.writeByte(value.intValue());
         if (mask != null) {
             message.writeByte(mask.intValue());

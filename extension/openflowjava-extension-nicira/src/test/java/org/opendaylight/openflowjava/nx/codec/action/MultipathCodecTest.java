@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipathBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipathCodecTest {
     private static final int LENGTH = 32;
@@ -87,15 +89,15 @@ public class MultipathCodecTest {
         NxActionMultipathBuilder nxActionMultipathBuilder = new NxActionMultipathBuilder();
 
         nxActionMultipathBuilder.setFields(OfjNxHashFields.NXHASHFIELDSETHSRC);
-        nxActionMultipathBuilder.setBasis(2);
+        nxActionMultipathBuilder.setBasis(Uint16.TWO);
 
         nxActionMultipathBuilder.setAlgorithm(OfjNxMpAlgorithm.NXMPALGMODULON);
-        nxActionMultipathBuilder.setMaxLink(4);
-        nxActionMultipathBuilder.setArg((long)5);
+        nxActionMultipathBuilder.setMaxLink(Uint16.valueOf(4));
+        nxActionMultipathBuilder.setArg(Uint32.valueOf(5));
 
 
-        nxActionMultipathBuilder.setOfsNbits(6);
-        nxActionMultipathBuilder.setDst((long)7);
+        nxActionMultipathBuilder.setOfsNbits(Uint16.valueOf(6));
+        nxActionMultipathBuilder.setDst(Uint32.valueOf(7));
 
 
         actionMultipathBuilder.setNxActionMultipath(nxActionMultipathBuilder.build());
