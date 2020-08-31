@@ -106,10 +106,10 @@ public class BundleAddMessageConverter implements
                 .build();
     }
 
-    private BundleFlowModCase convertBundleFlowCase(final BundleInnerMessage messageCase,
+    private static BundleFlowModCase convertBundleFlowCase(final BundleInnerMessage messageCase,
             final XidConvertorData data) throws ConversionException {
-        Optional<List<FlowModInputBuilder>> flowModInputs = Optional.empty();
-        final Class clazz = messageCase.implementedInterface();
+        final Optional<List<FlowModInputBuilder>> flowModInputs;
+        final Class<?> clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleAddFlowCase.class)) {
             flowModInputs = CONVERTER_EXECUTOR.convert(
                     new AddFlowInputBuilder(((BundleAddFlowCase) messageCase).getAddFlowCaseData()).build(), data);
@@ -120,33 +120,28 @@ public class BundleAddMessageConverter implements
             flowModInputs = CONVERTER_EXECUTOR.convert(
                     new RemoveFlowInputBuilder(((BundleRemoveFlowCase) messageCase).getRemoveFlowCaseData()).build(),
                     data);
+        } else {
+            flowModInputs = Optional.empty();
         }
 
-        if (flowModInputs.isPresent()) {
-            if (flowModInputs.get().size() == 1) {
-                return new BundleFlowModCaseBuilder()
-                        .setFlowModCaseData(
-                                new FlowModCaseDataBuilder(
-                                        flowModInputs
-                                                .get()
-                                                .get(0)
-                                                .setXid(data.getXid())
-                                                .build())
-                                        .build())
-                        .build();
-            } else {
-                throw new ConversionException(
-                        "BundleFlowCase conversion unsuccessful - not able to convert to multiple flows.");
-            }
-        } else {
+        if (!flowModInputs.isPresent()) {
             throw new ConversionException("BundleFlowCase conversion unsuccessful.");
         }
+        final List<FlowModInputBuilder> inputs = flowModInputs.get();
+        if (inputs.size() != 1) {
+            throw new ConversionException(
+                "BundleFlowCase conversion unsuccessful - not able to convert to multiple flows.");
+        }
+
+        return new BundleFlowModCaseBuilder()
+                .setFlowModCaseData(new FlowModCaseDataBuilder(inputs.get(0).setXid(data.getXid()).build()).build())
+                .build();
     }
 
-    private BundleGroupModCase convertBundleGroupCase(final BundleInnerMessage messageCase,
+    private static BundleGroupModCase convertBundleGroupCase(final BundleInnerMessage messageCase,
             final XidConvertorData data) throws ConversionException {
-        Optional<GroupModInputBuilder> groupModInput = Optional.empty();
-        final Class clazz = messageCase.implementedInterface();
+        final Optional<GroupModInputBuilder> groupModInput;
+        final Class<?> clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleAddGroupCase.class)) {
             groupModInput = CONVERTER_EXECUTOR.convert(
                     new AddGroupInputBuilder(((BundleAddGroupCase) messageCase).getAddGroupCaseData()).build(), data);
@@ -158,44 +153,39 @@ public class BundleAddMessageConverter implements
             groupModInput = CONVERTER_EXECUTOR.convert(
                     new RemoveGroupInputBuilder(((BundleRemoveGroupCase) messageCase).getRemoveGroupCaseData()).build(),
                     data);
+        } else {
+            groupModInput = Optional.empty();
         }
 
-        if (groupModInput.isPresent()) {
-            return new BundleGroupModCaseBuilder()
-                    .setGroupModCaseData(
-                            new GroupModCaseDataBuilder(groupModInput.get()
-                                    .setXid(data.getXid())
-                                    .build())
-                            .build()
-                    )
-                    .build();
-        } else {
+        if (!groupModInput.isPresent()) {
             throw new ConversionException("BundleGroupCase conversion unsuccessful.");
         }
+
+        return new BundleGroupModCaseBuilder()
+                .setGroupModCaseData(new GroupModCaseDataBuilder(groupModInput.get().setXid(data.getXid()).build())
+                    .build())
+                .build();
     }
 
-    private BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase,
+    private static BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase,
             final XidConvertorData data) throws ConversionException {
-        Optional<PortModInput> portModInput = Optional.empty();
+        final Optional<PortModInput> portModInput;
         final Class<?> clazz = messageCase.implementedInterface();
         if (clazz.equals(BundleUpdatePortCase.class)) {
             Collection<Port> ports
                     = ((BundleUpdatePortCase) messageCase).getUpdatePortCaseData().getPort().nonnullPort().values();
             Port port = ports.iterator().next();
             portModInput = CONVERTER_EXECUTOR.convert(port, data);
+        } else {
+            portModInput = Optional.empty();
         }
 
-        if (portModInput.isPresent()) {
-            return new BundlePortModCaseBuilder()
-                    .setPortModCaseData(
-                            new PortModCaseDataBuilder(portModInput.get())
-                                    .setXid(data.getXid())
-                                    .build()
-                    )
-                    .build();
-        } else {
+        if (!portModInput.isPresent()) {
             throw new ConversionException("BundlePortCase conversion unsuccessful.");
         }
+        return new BundlePortModCaseBuilder()
+                .setPortModCaseData(new PortModCaseDataBuilder(portModInput.get()).setXid(data.getXid()).build())
+                .build();
     }
 
     @Override

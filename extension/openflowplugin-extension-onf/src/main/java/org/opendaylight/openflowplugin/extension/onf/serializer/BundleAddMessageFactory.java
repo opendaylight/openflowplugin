@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.serializer;
 
 import io.netty.buffer.ByteBuf;
@@ -50,7 +49,7 @@ public class BundleAddMessageFactory extends AbstractBundleMessageFactory<Bundle
     }
 
     private void serializeInnerMessage(final BundleInnerMessage message, final ByteBuf outBuffer) {
-        final Class clazz = message.implementedInterface();
+        final Class<?> clazz = message.implementedInterface();
         if (clazz.equals(BundleFlowModCase.class)) {
             OFSerializer<FlowMod> serializer = serializerRegistry.getSerializer(
                     new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowModInput.class));
