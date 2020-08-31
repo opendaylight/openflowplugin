@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.test;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlOutCaseBuilder;
@@ -66,6 +66,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 
@@ -117,13 +119,13 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         if (!tableFeatureType.equals("t1")) {
 
 
-            tableFeature.setTableId((short) 0);
+            tableFeature.setTableId(Uint8.ZERO);
             tableFeature.setName("Table 0");
 
 
-            tableFeature.setMetadataMatch(BigInteger.valueOf(10));
-            tableFeature.setMetadataWrite(BigInteger.valueOf(10));
-            tableFeature.setMaxEntries(10000L);
+            tableFeature.setMetadataMatch(Uint64.TEN);
+            tableFeature.setMetadataWrite(Uint64.TEN);
+            tableFeature.setMaxEntries(Uint32.valueOf(10000));
 
             tableFeature.setConfig(new TableConfig(false));
 
@@ -580,9 +582,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, tableFeatures);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(Object notUsed) {
+            public void onSuccess(CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 

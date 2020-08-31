@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.test;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.errors.rev131116.ErrorType;
@@ -129,7 +128,7 @@ public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
                 notification.getTransactionId().getValue()));
     }
 
-    private String toStr(ErrorType type, Uint16 code, Uint64 xid) {
+    private static String toStr(ErrorType type, Uint16 code, Uint64 xid) {
         return "[Type=" + type + ", Code=" + code + ", Xid =" + xid + "]";
     }
 }
