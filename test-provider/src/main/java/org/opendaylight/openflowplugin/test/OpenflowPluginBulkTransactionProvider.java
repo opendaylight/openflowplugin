@@ -105,6 +105,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -647,7 +650,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.delete(LogicalDatastoreType.OPERATIONAL, path4);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -703,7 +706,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path4, flow3.build());
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -1173,7 +1176,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         MatchBuilder match = new MatchBuilder();
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x88ccL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x88cc)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -1189,7 +1192,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -1205,7 +1208,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -1221,7 +1224,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x0800L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
         return match;
@@ -1249,7 +1252,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
         // match
         EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-        EtherType type = new EtherType(0x0800L);
+        EtherType type = new EtherType(Uint32.valueOf(0x0800));
         ethmatch.setEthernetType(ethtype.setType(type).build());
 
         EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
@@ -1279,21 +1282,21 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         Ipv6ExtHeaderBuilder nextheader = new Ipv6ExtHeaderBuilder();
         nextheader.setIpv6Exthdr(58);
         Ipv6LabelBuilder ipv6label = new Ipv6LabelBuilder();
-        Ipv6FlowLabel label = new Ipv6FlowLabel(10028L);
+        Ipv6FlowLabel label = new Ipv6FlowLabel(Uint32.valueOf(10028));
         ipv6label.setIpv6Flabel(label);
         // ipv6label.setFlabelMask(new byte[] { 0, 1, -1, -1 });
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
         // match
-        icmpv6match.setIcmpv6Type((short) 135);
-        icmpv6match.setIcmpv6Code((short) 0);
+        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
+        icmpv6match.setIcmpv6Code(Uint8.ZERO);
         match.setIcmpv6Match(icmpv6match.build());
 
         Ipv6MatchBuilder ipv6match = new Ipv6MatchBuilder();
@@ -1316,18 +1319,18 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         MatchBuilder match = new MatchBuilder();
         EthernetMatchBuilder eth = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(0x86ddL));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
         eth.setEthernetType(ethTypeBuilder.build());
         match.setEthernetMatch(eth.build());
 
         IpMatchBuilder ipmatch = new IpMatchBuilder(); // ipv4 version
-        ipmatch.setIpProtocol((short) 58);
+        ipmatch.setIpProtocol(Uint8.valueOf(58));
         match.setIpMatch(ipmatch.build());
 
         Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder(); // icmpv6
         // match
-        icmpv6match.setIcmpv6Type((short) 135);
-        icmpv6match.setIcmpv6Code((short) 1);
+        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
+        icmpv6match.setIcmpv6Code(Uint8.ONE);
         match.setIcmpv6Match(icmpv6match.build());
 
         return match;
@@ -1336,7 +1339,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private static MatchBuilder createMetadataMatch() {
         MatchBuilder match = new MatchBuilder();
         MetadataBuilder metadata = new MetadataBuilder(); // metadata match
-        metadata.setMetadata(BigInteger.valueOf(500L));
+        metadata.setMetadata(Uint64.valueOf(500));
         // metadata.setMetadataMask(metamask);
         match.setMetadata(metadata.build());
 

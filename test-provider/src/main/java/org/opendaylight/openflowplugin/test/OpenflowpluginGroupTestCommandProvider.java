@@ -70,6 +70,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.osgi.framework.BundleContext;
 
 @SuppressWarnings("checkstyle:MethodName")
@@ -113,9 +114,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         // Sample data , committing to DataStore
 
         GroupBuilder group = new GroupBuilder();
-        BucketBuilder bucket = new BucketBuilder();
-        bucket.setBucketId(new BucketId((long) 12));
-        bucket.withKey(new BucketKey(new BucketId((long) 12)));
+        BucketBuilder bucket = new BucketBuilder().withKey(new BucketKey(new BucketId(Uint32.valueOf(12))));
 
         if (groupType == null) {
             groupType = "g1";
@@ -582,7 +581,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
@@ -617,7 +616,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
-        modification.commit().addCallback(new FutureCallback<Object>() {
+        modification.commit().addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(Object notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
