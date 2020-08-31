@@ -8,14 +8,13 @@
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -65,7 +64,7 @@ public class Icmpv6NDReservedConvertorTest {
         ericAugMatchNotifUpdateFlowStatsBuilder.setEricOfIcmpv6NdReserved(ericOfIcmpv6NdReservedBuilder.build());
 
         final Augmentation<Extension> extensionAugmentation = ericAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(Matchers.any()))
+        when(extension.augmentation(any()))
             .thenReturn(extensionAugmentation);
 
         icmpv6NDReservedConvertor = new Icmpv6NDReservedConvertor();
@@ -139,7 +138,7 @@ public class Icmpv6NDReservedConvertorTest {
                     .build())
                 .build();
 
-        Assert.assertEquals(Icmpv6NdReservedKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
+        assertEquals(Icmpv6NdReservedKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
                 .values().iterator().next().getExtensionKey());
     }
 
