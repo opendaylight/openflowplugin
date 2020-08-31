@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import java.util.HashSet;
 import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.GroupingResolver;
@@ -34,8 +32,6 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
  * Match utilities.
  */
 public final class MatchUtil {
-    private static final Splitter SPLITTER = Splitter.on('.');
-    private static final Joiner JOINER = Joiner.on('.');
     private static final Set<Class<? extends Augmentation<Extension>>> AUGMENTATIONS_OF_EXTENSION = new HashSet<>();
     public static final GroupingResolver<EricOfIcmpv6NdReservedGrouping, Extension> ICMPV6_ND_RESERVED_RESOLVER
             = new GroupingResolver<>(EricOfIcmpv6NdReservedGrouping.class);
