@@ -7,20 +7,26 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
- * Base serializer for empty action types.
+ * Shared serializer for empty action types.
  */
-public abstract class AbstractEmptyActionSerializer extends AbstractActionSerializer {
-    protected AbstractEmptyActionSerializer(final short type) {
+public final class EmptyActionSerializer extends AbstractActionSerializer {
+    public EmptyActionSerializer(final short type) {
         super(type, ActionConstants.GENERAL_ACTION_LENGTH);
     }
 
     @Override
-    protected final void serializeBody(final Action action, final ByteBuf outBuffer) {
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
         outBuffer.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("type", type()).toString();
     }
 }
