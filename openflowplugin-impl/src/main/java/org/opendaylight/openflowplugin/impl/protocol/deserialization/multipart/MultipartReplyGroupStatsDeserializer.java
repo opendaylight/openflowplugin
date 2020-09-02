@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -13,7 +12,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyGroupStatsBuilder;
@@ -30,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
 public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
-
     private static final byte PADDING_IN_GROUP_HEADER_01 = 2;
     private static final byte PADDING_IN_GROUP_HEADER_02 = 4;
     private static final byte GROUP_BODY_LENGTH = 40;
@@ -51,9 +48,9 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
 
             message.skipBytes(PADDING_IN_GROUP_HEADER_02);
 
-            final byte[] packetCountg = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetCountg = new byte[Long.BYTES];
             message.readBytes(packetCountg);
-            final byte[] byteCountg = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] byteCountg = new byte[Long.BYTES];
             message.readBytes(byteCountg);
 
             itemBuilder
@@ -70,9 +67,9 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
             long bucketKey = 0;
 
             while (actualLength < itemLength) {
-                final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] packetCount = new byte[Long.BYTES];
                 message.readBytes(packetCount);
-                final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] byteCount = new byte[Long.BYTES];
                 message.readBytes(byteCount);
 
                 subItems.add(new BucketCounterBuilder()
@@ -97,5 +94,4 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
             .setGroupStats(items)
             .build();
     }
-
 }

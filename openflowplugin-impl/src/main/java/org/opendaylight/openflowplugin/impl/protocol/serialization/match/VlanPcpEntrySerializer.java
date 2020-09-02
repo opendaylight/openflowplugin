@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -16,8 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 public class VlanPcpEntrySerializer extends AbstractPrimitiveEntrySerializer<VlanPcp> {
     public VlanPcpEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_PCP,
-            EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_PCP, Byte.BYTES);
     }
 
     @Override

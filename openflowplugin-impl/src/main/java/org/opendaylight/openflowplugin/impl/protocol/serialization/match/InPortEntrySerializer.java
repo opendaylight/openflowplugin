@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -18,7 +17,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class InPortEntrySerializer extends AbstractPrimitiveEntrySerializer<NodeConnectorId> {
     public InPortEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PORT,EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PORT,Integer.BYTES);
     }
 
     @Override

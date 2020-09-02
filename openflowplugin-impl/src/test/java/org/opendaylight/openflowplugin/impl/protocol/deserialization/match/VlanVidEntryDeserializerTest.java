@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -15,12 +14,10 @@ import static org.junit.Assert.assertTrue;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 
 public class VlanVidEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
-
     @Test
     public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -65,6 +62,6 @@ public class VlanVidEntryDeserializerTest extends AbstractMatchEntryDeserializer
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        return Short.BYTES;
     }
 }

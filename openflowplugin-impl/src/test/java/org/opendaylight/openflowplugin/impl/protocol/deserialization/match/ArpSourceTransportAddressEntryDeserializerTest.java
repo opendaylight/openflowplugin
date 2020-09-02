@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -14,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.Iterator;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
@@ -24,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
 
 public class ArpSourceTransportAddressEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
-
     @Test
     public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -62,6 +59,6 @@ public class ArpSourceTransportAddressEntryDeserializerTest extends AbstractMatc
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 }
