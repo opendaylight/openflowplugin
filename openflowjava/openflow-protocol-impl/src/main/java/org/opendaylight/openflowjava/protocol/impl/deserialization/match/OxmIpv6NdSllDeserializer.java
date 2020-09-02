@@ -9,10 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdSll;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6NdSllCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.nd.sll._case.Ipv6NdSllBuilder;
@@ -23,29 +19,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author michal.polkorab
  */
 public class OxmIpv6NdSllDeserializer extends AbstractOxmMatchEntryDeserializer {
-
-    @Override
-    public MatchEntry deserialize(final ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addIpv6NdSllValue(input, builder);
-        return builder.build();
-    }
-
-    private static void addIpv6NdSllValue(final ByteBuf input, final MatchEntryBuilder builder) {
-        Ipv6NdSllCaseBuilder caseBuilder = new Ipv6NdSllCaseBuilder();
-        Ipv6NdSllBuilder ndBuilder = new Ipv6NdSllBuilder();
-        ndBuilder.setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
-        caseBuilder.setIpv6NdSll(ndBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+    public OxmIpv6NdSllDeserializer() {
+        super(Ipv6NdSll.class);
     }
 
     @Override
-    protected Class<? extends MatchField> getOxmField() {
-        return Ipv6NdSll.class;
-    }
-
-    @Override
-    protected Class<? extends OxmClassBase> getOxmClass() {
-        return OpenflowBasicClass.class;
+    protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
+        builder.setMatchEntryValue(new Ipv6NdSllCaseBuilder()
+            .setIpv6NdSll(new Ipv6NdSllBuilder().setMacAddress(OxmDeserializerHelper.convertMacAddress(input)).build())
+            .build());
     }
 }
