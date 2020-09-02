@@ -30,18 +30,18 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
         final BigInteger metadataMask = BigInteger.valueOf(9876L);
         writeHeader(in);
         in.writeZero(InstructionConstants.PADDING_IN_WRITE_METADATA);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, Long.BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadataMask, Long.BYTES));
 
         final Instruction instruction = deserializeInstruction(in);
         assertEquals(WriteMetadataCase.class, instruction.implementedInterface());
 
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(metadata, Long.BYTES),
                 ByteUtil.uint64toBytes(((WriteMetadataCase) instruction).getWriteMetadata().getMetadata()));
 
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(metadataMask, Long.BYTES),
                 ByteUtil.uint64toBytes(((WriteMetadataCase) instruction).getWriteMetadata().getMetadataMask()));
 
         assertEquals(0, in.readableBytes());

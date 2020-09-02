@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class InPhyPortEntrySerializer extends AbstractPrimitiveEntrySerializer<NodeConnectorId> {
     public InPhyPortEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PHY_PORT,
-            EncodeConstants.SIZE_OF_INT_IN_BYTES);
+            Integer.BYTES);
     }
 
     @Override

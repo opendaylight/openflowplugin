@@ -51,9 +51,9 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
                 .withKey(new MeterStatsKey(itemBuilder.getMeterId()))
                 .setFlowCount(new Counter32(message.readUnsignedInt()));
 
-            final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetCount = new byte[Long.BYTES];
             message.readBytes(packetCount);
-            final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] byteCount = new byte[Long.BYTES];
             message.readBytes(byteCount);
 
             itemBuilder
@@ -69,9 +69,9 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
             long bandKey = 0;
 
             while (actualLength < itemLength) {
-                final byte[] packetCountB = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] packetCountB = new byte[Long.BYTES];
                 message.readBytes(packetCountB);
-                final byte[] byteCountB = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] byteCountB = new byte[Long.BYTES];
                 message.readBytes(byteCountB);
 
                 subItems.add(new BandStatBuilder()

@@ -20,7 +20,7 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer<Ipv6ExtHeader, Uint16> {
     public Ipv6ExtHeaderEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_EXTHDR,
-            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            Short.BYTES);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer<I
     protected void serializeEntry(final Ipv6ExtHeader entry, final Uint16 mask, final ByteBuf outBuffer) {
         outBuffer.writeShort(entry.getIpv6Exthdr().shortValue());
         if (mask != null) {
-            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, Short.BYTES);
         }
     }
 }

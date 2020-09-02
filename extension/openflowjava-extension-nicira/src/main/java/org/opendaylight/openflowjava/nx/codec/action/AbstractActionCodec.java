@@ -40,13 +40,13 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
 
     protected static final ActionBuilder deserializeHeader(final ByteBuf message) {
         // size of experimenter type
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         // size of length
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         // vendor id
-        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        message.skipBytes(Integer.BYTES);
         // subtype
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(getExperimenterId());
         return actionBuilder;
@@ -69,7 +69,7 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
     protected static final void writePaddingAndSetLength(ByteBuf outBuffer, int startIndex) {
         int nonPaddedSize = outBuffer.writerIndex() - startIndex;
         outBuffer.writeZero(getPaddingRemainder(nonPaddedSize));
-        outBuffer.setShort(startIndex + EncodeConstants.SIZE_OF_SHORT_IN_BYTES, outBuffer.writerIndex() - startIndex);
+        outBuffer.setShort(startIndex + Short.BYTES, outBuffer.writerIndex() - startIndex);
     }
 
     protected static void writeNxmHeader(final Uint64 value, final ByteBuf outBuffer) {
@@ -82,9 +82,7 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
 
     protected static BigInteger readNxmHeader(final ByteBuf message) {
         int value = message.getUnsignedShort(message.readerIndex());
-        byte[] bytes = new byte[value == EncodeConstants.EXPERIMENTER_VALUE
-                ? EncodeConstants.SIZE_OF_LONG_IN_BYTES
-                : EncodeConstants.SIZE_OF_INT_IN_BYTES];
+        byte[] bytes = new byte[value == EncodeConstants.EXPERIMENTER_VALUE ? Long.BYTES : Integer.BYTES];
         message.readBytes(bytes);
         return new BigInteger(1, bytes);
     }

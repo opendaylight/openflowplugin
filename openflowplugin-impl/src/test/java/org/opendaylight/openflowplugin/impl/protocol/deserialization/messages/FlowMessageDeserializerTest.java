@@ -94,7 +94,7 @@ public class FlowMessageDeserializerTest extends AbstractDeserializerTest {
         // MplsLabel match
         buffer.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         buffer.writeByte(OxmMatchConstants.MPLS_LABEL << 1);
-        buffer.writeByte(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        buffer.writeByte(Integer.BYTES);
         buffer.writeInt(MPLS_LABEL);
 
         // Match footer

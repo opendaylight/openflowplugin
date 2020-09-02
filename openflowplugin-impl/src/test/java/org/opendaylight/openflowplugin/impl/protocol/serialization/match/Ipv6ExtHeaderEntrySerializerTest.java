@@ -57,7 +57,7 @@ public class Ipv6ExtHeaderEntrySerializerTest extends AbstractMatchEntrySerializ
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        return Short.BYTES;
     }
 
     @Override

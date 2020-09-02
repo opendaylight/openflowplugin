@@ -42,9 +42,9 @@ public class MultipartReplyFlowTableStatsDeserializer implements OFDeserializer<
                 .withKey(new FlowTableAndStatisticsMapKey(itemBuilder.getTableId()))
                 .setActiveFlows(new Counter32(message.readUnsignedInt()));
 
-            final byte[] packetsLooked = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetsLooked = new byte[Long.BYTES];
             message.readBytes(packetsLooked);
-            final byte[] packetsMatched = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetsMatched = new byte[Long.BYTES];
             message.readBytes(packetsMatched);
 
             items.add(itemBuilder

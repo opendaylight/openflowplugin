@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.match.ext;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -18,7 +17,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * Created by Anil Vishnoi (avishnoi@Brocade.com) on 7/25/16.
  */
 public abstract class AbstractOxmExperimenterMatchEntrySerializer extends AbstractOxmMatchEntrySerializer {
-
     @Override
     public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         serializeHeader(entry, outBuffer);
@@ -40,7 +38,7 @@ public abstract class AbstractOxmExperimenterMatchEntrySerializer extends Abstra
         }
 
         //Add experimenter-id lenge
-        length = length + EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        length = length + Integer.BYTES;
         out.writeByte(fieldAndMask);
         out.writeByte(length);
     }

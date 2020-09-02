@@ -23,9 +23,9 @@ public class WriteMetadataInstructionDeserializer extends AbstractInstructionDes
         processHeader(message);
         message.skipBytes(InstructionConstants.PADDING_IN_WRITE_METADATA);
 
-        final byte[] meta = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] meta = new byte[Long.BYTES];
         message.readBytes(meta);
-        final byte[] metaMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] metaMask = new byte[Long.BYTES];
         message.readBytes(metaMask);
 
         return new WriteMetadataCaseBuilder()
