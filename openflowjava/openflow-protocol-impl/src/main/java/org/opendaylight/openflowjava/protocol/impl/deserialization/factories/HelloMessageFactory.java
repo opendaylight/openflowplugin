@@ -13,7 +13,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
@@ -28,12 +27,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class HelloMessageFactory extends VersionAssignableFactory implements OFDeserializer<HelloMessage> {
-
+public class HelloMessageFactory extends VersionAssignableFactory<HelloMessage> {
     private static final byte HELLO_ELEMENT_HEADER_SIZE = 4;
 
     @Override
-    public HelloMessage deserialize(ByteBuf rawMessage) {
+    public HelloMessage deserialize(final ByteBuf rawMessage) {
         HelloMessageBuilder builder = new HelloMessageBuilder();
         builder.setVersion(getVersion());
         builder.setXid(readUint32(rawMessage));
@@ -43,7 +41,7 @@ public class HelloMessageFactory extends VersionAssignableFactory implements OFD
         return builder.build();
     }
 
-    private static List<Elements> readElement(ByteBuf input) {
+    private static List<Elements> readElement(final ByteBuf input) {
         List<Elements> elementsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             ElementsBuilder elementsBuilder = new ElementsBuilder();
@@ -68,7 +66,7 @@ public class HelloMessageFactory extends VersionAssignableFactory implements OFD
         return elementsList;
     }
 
-    private static List<Boolean> readVersionBitmap(int[] input) {
+    private static List<Boolean> readVersionBitmap(final int[] input) {
         List<Boolean> versionBitmapList = new ArrayList<>();
         for (int mask : input) {
             for (int j = 0; j < Integer.SIZE; j++) {
