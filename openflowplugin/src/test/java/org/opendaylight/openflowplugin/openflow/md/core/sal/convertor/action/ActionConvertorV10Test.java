@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.util.ArrayList;
@@ -72,7 +71,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanVidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for v1.0 action converters.
@@ -88,14 +90,14 @@ public class ActionConvertorV10Test {
     }
 
     /**
-     * Test {@link ActionConvertor#convert(List, ActionConvertorData)}}.
+     * Test {@link ActionConvertor#convert(java.util.Collection, ActionConvertorData)}}.
      */
     @Test
     public void testGetActions() {
         ActionBuilder actionBuilder = new ActionBuilder();
         SetVlanPcpActionCaseBuilder vlanPcpCaseBuilder = new SetVlanPcpActionCaseBuilder();
         SetVlanPcpActionBuilder pcpBuilder = new SetVlanPcpActionBuilder();
-        pcpBuilder.setVlanPcp(new VlanPcp((short) 7));
+        pcpBuilder.setVlanPcp(new VlanPcp(Uint8.valueOf(7)));
         vlanPcpCaseBuilder.setSetVlanPcpAction(pcpBuilder.build());
         actionBuilder.setAction(vlanPcpCaseBuilder.build());
         actionBuilder.setOrder(0);
@@ -156,7 +158,7 @@ public class ActionConvertorV10Test {
         actionBuilder = new ActionBuilder();
         SetTpSrcActionCaseBuilder tpSrcCaseBuilder = new SetTpSrcActionCaseBuilder();
         SetTpSrcActionBuilder tpSrcBuilder = new SetTpSrcActionBuilder();
-        tpSrcBuilder.setPort(new PortNumber(54));
+        tpSrcBuilder.setPort(new PortNumber(Uint16.valueOf(54)));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setAction(tpSrcCaseBuilder.build());
         actionBuilder.setOrder(6);
@@ -165,7 +167,7 @@ public class ActionConvertorV10Test {
         actionBuilder = new ActionBuilder();
         SetTpDstActionCaseBuilder tpDstCaseBuilder = new SetTpDstActionCaseBuilder();
         SetTpDstActionBuilder tpDstBuilder = new SetTpDstActionBuilder();
-        tpDstBuilder.setPort(new PortNumber(45));
+        tpDstBuilder.setPort(new PortNumber(Uint16.valueOf(45)));
         tpDstCaseBuilder.setSetTpDstAction(tpDstBuilder.build());
         actionBuilder.setAction(tpDstCaseBuilder.build());
         actionBuilder.setOrder(7);
@@ -183,7 +185,7 @@ public class ActionConvertorV10Test {
         actionBuilder = new ActionBuilder();
         SetVlanIdActionCaseBuilder vlanIdCaseBuilder = new SetVlanIdActionCaseBuilder();
         SetVlanIdActionBuilder vlanIdBuilder = new SetVlanIdActionBuilder();
-        vlanIdBuilder.setVlanId(new VlanId(22));
+        vlanIdBuilder.setVlanId(new VlanId(Uint16.valueOf(22)));
         vlanIdCaseBuilder.setSetVlanIdAction(vlanIdBuilder.build());
         actionBuilder.setAction(vlanIdCaseBuilder.build());
         actionBuilder.setOrder(9);
@@ -199,7 +201,7 @@ public class ActionConvertorV10Test {
         SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
         SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
-        vlanMatchBuilder.setVlanId(new VlanIdBuilder().setVlanId(new VlanId(22)).build());
+        vlanMatchBuilder.setVlanId(new VlanIdBuilder().setVlanId(new VlanId(Uint16.valueOf(22))).build());
         setFieldBuilder.setVlanMatch(vlanMatchBuilder.build());
         setFieldCaseBuilder.setSetField(setFieldBuilder.build());
         actionBuilder.setAction(setFieldCaseBuilder.build());
@@ -314,9 +316,9 @@ public class ActionConvertorV10Test {
     public void testToMDSalActions() {
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(14L));
-        outputBuilder.setMaxLength(555);
+        outputBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731
+            .PortNumber(Uint32.valueOf(14)));
+        outputBuilder.setMaxLength(Uint16.valueOf(555));
         caseBuilder.setOutputAction(outputBuilder.build());
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder

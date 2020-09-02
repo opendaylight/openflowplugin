@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.group.stats.BucketStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.group.stats.BucketStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Unit tests for GroupStats conversion.
@@ -58,12 +58,12 @@ public class GroupStatsResponseConvertorTest {
     @Test
     public void testSingleGroupStat() {
         GroupStatsBuilder statsBuilder = new GroupStatsBuilder();
-        statsBuilder.setByteCount(new BigInteger("12345"));
-        statsBuilder.setDurationNsec(1000000L);
-        statsBuilder.setDurationSec(5000L);
-        statsBuilder.setGroupId(new GroupId(42L));
-        statsBuilder.setPacketCount(new BigInteger("54321"));
-        statsBuilder.setRefCount(24L);
+        statsBuilder.setByteCount(Uint64.valueOf(12345));
+        statsBuilder.setDurationNsec(Uint32.valueOf(1000000));
+        statsBuilder.setDurationSec(Uint32.valueOf(5000));
+        statsBuilder.setGroupId(new GroupId(Uint32.valueOf(42)));
+        statsBuilder.setPacketCount(Uint64.valueOf(54321));
+        statsBuilder.setRefCount(Uint32.valueOf(24));
         statsBuilder.setBucketStats(new ArrayList<BucketStats>());
         List<GroupStats> groupStats = new ArrayList<>();
         groupStats.add(statsBuilder.build());
@@ -93,24 +93,24 @@ public class GroupStatsResponseConvertorTest {
     @Test
     public void testTwoGroupStats() {
         GroupStatsBuilder statsBuilder = new GroupStatsBuilder();
-        statsBuilder.setByteCount(new BigInteger("12345"));
-        statsBuilder.setDurationNsec(1000000L);
-        statsBuilder.setDurationSec(5000L);
-        statsBuilder.setGroupId(new GroupId(42L));
-        statsBuilder.setPacketCount(new BigInteger("54321"));
-        statsBuilder.setRefCount(24L);
+        statsBuilder.setByteCount(Uint64.valueOf(12345));
+        statsBuilder.setDurationNsec(Uint32.valueOf(1000000));
+        statsBuilder.setDurationSec(Uint32.valueOf(5000));
+        statsBuilder.setGroupId(new GroupId(Uint32.valueOf(42)));
+        statsBuilder.setPacketCount(Uint64.valueOf(54321));
+        statsBuilder.setRefCount(Uint32.valueOf(24));
         statsBuilder.setBucketStats(new ArrayList<BucketStats>());
 
         List<GroupStats> groupStats = new ArrayList<>();
         groupStats.add(statsBuilder.build());
         statsBuilder = new GroupStatsBuilder();
-        statsBuilder.setByteCount(new BigInteger("1"));
-        statsBuilder.setDurationNsec(2L);
-        statsBuilder.setDurationSec(3L);
-        statsBuilder.setGroupId(new GroupId(4L));
-        statsBuilder.setPacketCount(new BigInteger("5"));
-        statsBuilder.setRefCount(6L);
-        statsBuilder.setBucketStats(new ArrayList<BucketStats>());
+        statsBuilder.setByteCount(Uint64.ONE);
+        statsBuilder.setDurationNsec(Uint32.valueOf(2));
+        statsBuilder.setDurationSec(Uint32.valueOf(3));
+        statsBuilder.setGroupId(new GroupId(Uint32.valueOf(4)));
+        statsBuilder.setPacketCount(Uint64.valueOf(5));
+        statsBuilder.setRefCount(Uint32.valueOf(6));
+        statsBuilder.setBucketStats(new ArrayList<>());
         groupStats.add(statsBuilder.build());
 
         Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
@@ -148,20 +148,20 @@ public class GroupStatsResponseConvertorTest {
     @Test
     public void testGroupStatsWithBuckets() {
         GroupStatsBuilder statsBuilder = new GroupStatsBuilder();
-        statsBuilder.setByteCount(new BigInteger("12345"));
-        statsBuilder.setDurationNsec(1000000L);
-        statsBuilder.setDurationSec(5000L);
-        statsBuilder.setGroupId(new GroupId(42L));
-        statsBuilder.setPacketCount(new BigInteger("54321"));
-        statsBuilder.setRefCount(24L);
+        statsBuilder.setByteCount(Uint64.valueOf(12345));
+        statsBuilder.setDurationNsec(Uint32.valueOf(1000000));
+        statsBuilder.setDurationSec(Uint32.valueOf(5000));
+        statsBuilder.setGroupId(new GroupId(Uint32.valueOf(42)));
+        statsBuilder.setPacketCount(Uint64.valueOf(54321));
+        statsBuilder.setRefCount(Uint32.valueOf(24));
         List<BucketStats> bucketStats = new ArrayList<>();
         BucketStatsBuilder bucketStatsBuilder = new BucketStatsBuilder();
-        bucketStatsBuilder.setByteCount(new BigInteger("987"));
-        bucketStatsBuilder.setPacketCount(new BigInteger("654"));
+        bucketStatsBuilder.setByteCount(Uint64.valueOf(987));
+        bucketStatsBuilder.setPacketCount(Uint64.valueOf(654));
         bucketStats.add(bucketStatsBuilder.build());
         bucketStatsBuilder = new BucketStatsBuilder();
-        bucketStatsBuilder.setByteCount(new BigInteger("123"));
-        bucketStatsBuilder.setPacketCount(new BigInteger("456"));
+        bucketStatsBuilder.setByteCount(Uint64.valueOf(123));
+        bucketStatsBuilder.setPacketCount(Uint64.valueOf(456));
         bucketStats.add(bucketStatsBuilder.build());
         statsBuilder.setBucketStats(bucketStats);
 

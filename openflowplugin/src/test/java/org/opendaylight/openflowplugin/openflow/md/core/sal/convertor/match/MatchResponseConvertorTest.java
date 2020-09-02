@@ -54,26 +54,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit test for {@link MatchResponseConvertor}.
  */
 public class MatchResponseConvertorTest {
-    private static final Uint64 DPID = Uint64.valueOf(10);
-    private static final Long IN_PORT = 6L;
-    private static final String URI_IN_PORT =
-            "openflow:" + DPID + ":" + IN_PORT;
-    private static final MacAddress MAC_SRC =
-            MacAddress.getDefaultInstance("00:11:22:33:44:55");
-    private static final MacAddress MAC_DST =
-            MacAddress.getDefaultInstance("fa:fb:fc:fd:fe:ff");
-    private static final int ETHTYPE_IPV4 = 0x800;
-    private static final short VLAN_PCP = 7;
-    private static final Ipv4Address IPV4_SRC =
-            Ipv4Address.getDefaultInstance("192.168.10.254");
-    private static final Ipv4Address IPV4_DST =
-            Ipv4Address.getDefaultInstance("10.1.2.3");
+    private static final Uint64 DPID = Uint64.TEN;
+    private static final Uint32 IN_PORT = Uint32.valueOf(6);
+    private static final String URI_IN_PORT = "openflow:" + DPID + ":" + IN_PORT;
+    private static final MacAddress MAC_SRC = MacAddress.getDefaultInstance("00:11:22:33:44:55");
+    private static final MacAddress MAC_DST = MacAddress.getDefaultInstance("fa:fb:fc:fd:fe:ff");
+    private static final Uint16 ETHTYPE_IPV4 = Uint16.valueOf(0x800);
+    private static final Uint8 VLAN_PCP = Uint8.valueOf(7);
+    private static final Ipv4Address IPV4_SRC = Ipv4Address.getDefaultInstance("192.168.10.254");
+    private static final Ipv4Address IPV4_DST = Ipv4Address.getDefaultInstance("10.1.2.3");
 
     private static final int DL_VLAN_NONE = 0xffff;
     private ConvertorManager convertorManager;
@@ -137,11 +135,10 @@ public class MatchResponseConvertorTest {
         FlowWildcardsV10Builder wcBuilder = new FlowWildcardsV10Builder();
         for (int vid : vids) {
             for (short dscp : dscps) {
-                short tos = (short) (dscp << 2);
                 MatchV10Builder builder = new MatchV10Builder();
-                builder.setDlSrc(MAC_SRC).setDlDst(MAC_DST).setDlVlan(vid).setDlVlanPcp(VLAN_PCP)
-                        .setDlType(ETHTYPE_IPV4).setInPort(IN_PORT.intValue()).setNwSrc(IPV4_SRC).setNwDst(IPV4_DST)
-                        .setNwTos(tos);
+                builder.setDlSrc(MAC_SRC).setDlDst(MAC_DST).setDlVlan(Uint16.valueOf(vid)).setDlVlanPcp(VLAN_PCP)
+                        .setDlType(ETHTYPE_IPV4).setInPort(IN_PORT.toUint16()).setNwSrc(IPV4_SRC).setNwDst(IPV4_DST)
+                        .setNwTos(Uint8.valueOf(dscp << 2));
                 wcBuilder.setAll(false).setNwProto(true).setTpSrc(true).setTpDst(true);
                 if (vid == DL_VLAN_NONE) {
                     wcBuilder.setDlVlanPcp(true);
@@ -176,7 +173,7 @@ public class MatchResponseConvertorTest {
         assertEquals(null, ethMatch.getEthernetSource().getMask());
         assertEquals(MAC_DST, ethMatch.getEthernetDestination().getAddress());
         assertEquals(null, ethMatch.getEthernetDestination().getMask());
-        assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().getValue().intValue());
+        assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().getValue());
 
         NodeConnectorId inPort = builder.getInPort();
         assertEquals(URI_IN_PORT, inPort.getValue());
@@ -216,7 +213,7 @@ public class MatchResponseConvertorTest {
         return entries;
     }
 
-    private static MatchEntry toOfEthernetType(final int ethType) {
+    private static MatchEntry toOfEthernetType(final Uint16 ethType) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setHasMask(false);
@@ -231,7 +228,7 @@ public class MatchResponseConvertorTest {
     }
 
     private static MatchEntry toOfPort(final Class<? extends MatchField> field,
-                                final Long portNumber) {
+                                final Uint32 portNumber) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setHasMask(false);
@@ -247,17 +244,20 @@ public class MatchResponseConvertorTest {
     private static MatchEntry toOfVlanVid(final int vid) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         boolean cfi = true;
-        Integer vidValue = vid;
+        final Uint16 vidValue;
         byte[] mask = null;
         builder.setOxmClass(OpenflowBasicClass.class);
         builder.setOxmMatchField(VlanVid.class);
         if (vid == 0) {
             // Match untagged frame.
             cfi = false;
+            vidValue = Uint16.ZERO;
         } else if (vid < 0) {
             // Match packet with VLAN tag regardless of its value.
             mask = new byte[]{0x10, 0x00};
-            vidValue = 0;
+            vidValue = Uint16.ZERO;
+        } else {
+            vidValue = Uint16.valueOf(vid);
         }
 
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
@@ -301,13 +301,11 @@ public class MatchResponseConvertorTest {
             assertEquals(null, match.getLayer3Match());
         } else {
             assert ethMatch != null;
-            assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().getValue().intValue());
+            assertEquals(ETHTYPE_IPV4, ethMatch.getEthernetType().getType().getValue());
 
             Ipv4Match ipv4Match = (Ipv4Match) match.getLayer3Match();
-            assertEquals(IPV4_SRC.getValue() + "/32",
-                    ipv4Match.getIpv4Source().getValue());
-            assertEquals(IPV4_DST.getValue() + "/32",
-                    ipv4Match.getIpv4Destination().getValue());
+            assertEquals(IPV4_SRC.getValue() + "/32", ipv4Match.getIpv4Source().getValue());
+            assertEquals(IPV4_DST.getValue() + "/32", ipv4Match.getIpv4Destination().getValue());
         }
 
         VlanMatch vlanMatch = match.getVlanMatch();
@@ -329,8 +327,7 @@ public class MatchResponseConvertorTest {
             if (wc.isDLVLANPCP()) {
                 assertEquals(null, vlanMatch.getVlanPcp());
             } else {
-                assertEquals(VLAN_PCP,
-                        vlanMatch.getVlanPcp().getValue().shortValue());
+                assertEquals(VLAN_PCP, vlanMatch.getVlanPcp().getValue());
             }
         }
     }

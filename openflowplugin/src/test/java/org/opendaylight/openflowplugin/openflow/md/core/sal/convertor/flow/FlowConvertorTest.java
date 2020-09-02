@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,16 +93,16 @@ public class FlowConvertorTest {
     public void test() {
         RemoveFlowInputBuilder flowBuilder = new RemoveFlowInputBuilder();
         flowBuilder.setBarrier(false);
-        flowBuilder.setCookie(new FlowCookie(new BigInteger("4")));
-        flowBuilder.setCookieMask(new FlowCookie(new BigInteger("5")));
-        flowBuilder.setTableId((short) 6);
+        flowBuilder.setCookie(new FlowCookie(Uint64.valueOf(4)));
+        flowBuilder.setCookieMask(new FlowCookie(Uint64.valueOf(5)));
+        flowBuilder.setTableId(Uint8.valueOf(6));
         flowBuilder.setStrict(true);
-        flowBuilder.setIdleTimeout(50);
-        flowBuilder.setHardTimeout(500);
-        flowBuilder.setPriority(40);
-        flowBuilder.setBufferId(18L);
-        flowBuilder.setOutPort(new BigInteger("65535"));
-        flowBuilder.setOutGroup(5000L);
+        flowBuilder.setIdleTimeout(Uint16.valueOf(50));
+        flowBuilder.setHardTimeout(Uint16.valueOf(500));
+        flowBuilder.setPriority(Uint16.valueOf(40));
+        flowBuilder.setBufferId(Uint32.valueOf(18));
+        flowBuilder.setOutPort(Uint64.valueOf(65535));
+        flowBuilder.setOutGroup(Uint32.valueOf(5000));
         flowBuilder.setFlags(null);
         flowBuilder.setMatch(null);
         RemoveFlowInput flow = flowBuilder.build();
@@ -158,7 +157,7 @@ public class FlowConvertorTest {
         InstructionBuilder instructionBuilder = new InstructionBuilder();
         GoToTableCaseBuilder goToCaseBuilder = new GoToTableCaseBuilder();
         GoToTableBuilder goToBuilder = new GoToTableBuilder();
-        goToBuilder.setTableId((short) 1);
+        goToBuilder.setTableId(Uint8.ONE);
         goToCaseBuilder.setGoToTable(goToBuilder.build());
         instructionBuilder.setInstruction(goToCaseBuilder.build());
         instructionBuilder.setOrder(0);
@@ -168,8 +167,8 @@ public class FlowConvertorTest {
         instructionBuilder = new InstructionBuilder();
         WriteMetadataCaseBuilder metaCaseBuilder = new WriteMetadataCaseBuilder();
         WriteMetadataBuilder metaBuilder = new WriteMetadataBuilder();
-        metaBuilder.setMetadata(new BigInteger("2"));
-        metaBuilder.setMetadataMask(new BigInteger("3"));
+        metaBuilder.setMetadata(Uint64.valueOf(2));
+        metaBuilder.setMetadataMask(Uint64.valueOf(3));
         metaCaseBuilder.setWriteMetadata(metaBuilder.build());
         instructionBuilder.setInstruction(metaCaseBuilder.build());
         instructionBuilder.setOrder(1);
@@ -204,7 +203,7 @@ public class FlowConvertorTest {
         instructionBuilder = new InstructionBuilder();
         MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
         MeterBuilder meterBuilder = new MeterBuilder();
-        meterBuilder.setMeterId(new MeterId(5L));
+        meterBuilder.setMeterId(new MeterId(Uint32.valueOf(5)));
         meterCaseBuilder.setMeter(meterBuilder.build());
         instructionBuilder.setInstruction(meterCaseBuilder.build());
         instructionBuilder.setOrder(5);
@@ -270,7 +269,7 @@ public class FlowConvertorTest {
         MockFlow mockFlow = new MockFlow();
         Action action1 = createAction(
                 new SetVlanIdActionCaseBuilder().setSetVlanIdAction(
-                        new SetVlanIdActionBuilder().setVlanId(new VlanId(10)).build())
+                        new SetVlanIdActionBuilder().setVlanId(new VlanId(Uint16.TEN)).build())
                         .build(),
                 0);
 
@@ -300,9 +299,9 @@ public class FlowConvertorTest {
     }
 
     private static EthernetMatch createEthernetMatch() {
-        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
-        ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType(33024L)).build());
-        return ethernetMatchBuilder.build();
+        return new EthernetMatchBuilder()
+                .setEthernetType(new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(33024))).build())
+                .build();
     }
 
     private static Instructions toApplyInstruction(
