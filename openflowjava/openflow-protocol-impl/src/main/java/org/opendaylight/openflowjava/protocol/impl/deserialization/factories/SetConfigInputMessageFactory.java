@@ -11,7 +11,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
@@ -22,10 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * OF protocol versions: 1.0, 1.3, 1.4, 1.5.
  * @author giuseppex.petralia@intel.com
  */
-public class SetConfigInputMessageFactory extends VersionAssignableFactory implements OFDeserializer<SetConfigInput> {
-
+public class SetConfigInputMessageFactory extends VersionAssignableFactory<SetConfigInput> {
     @Override
-    public SetConfigInput deserialize(ByteBuf rawMessage) {
+    public SetConfigInput deserialize(final ByteBuf rawMessage) {
         SetConfigInputBuilder builder = new SetConfigInputBuilder();
         builder.setVersion(getVersion());
         builder.setXid(readUint32(rawMessage));
@@ -33,5 +31,4 @@ public class SetConfigInputMessageFactory extends VersionAssignableFactory imple
         builder.setMissSendLen(readUint16(rawMessage));
         return builder.build();
     }
-
 }
