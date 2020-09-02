@@ -5,12 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import io.netty.buffer.ByteBuf;
-import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
@@ -27,7 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultipartReplyGroupFeaturesTest {
 
-    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    private final MultipartReplyMessageFactory factory =
+            new MultipartReplyMessageFactory(mock(DeserializerRegistry.class));
 
     /**
      * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
@@ -49,27 +52,27 @@ public class MultipartReplyGroupFeaturesTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 8, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 8, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyGroupFeaturesCase messageCase =
                 (MultipartReplyGroupFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyGroupFeatures message = messageCase.getMultipartReplyGroupFeatures();
-        Assert.assertEquals("Wrong group types", new GroupTypes(true, true, true, true), message.getTypes());
-        Assert.assertEquals("Wrong capabilities", new GroupCapabilities(true, true, true, true),
+        assertEquals("Wrong group types", new GroupTypes(true, true, true, true), message.getTypes());
+        assertEquals("Wrong capabilities", new GroupCapabilities(true, true, true, true),
                 message.getCapabilities());
-        Assert.assertEquals("Wrong max groups", 1, message.getMaxGroups().get(0).intValue());
-        Assert.assertEquals("Wrong max groups", 2, message.getMaxGroups().get(1).intValue());
-        Assert.assertEquals("Wrong max groups", 3, message.getMaxGroups().get(2).intValue());
-        Assert.assertEquals("Wrong max groups", 4, message.getMaxGroups().get(3).intValue());
-        Assert.assertEquals("Wrong actions bitmap", new ActionType(true, true, true, true, false, true, true, true,
+        assertEquals("Wrong max groups", 1, message.getMaxGroups().get(0).intValue());
+        assertEquals("Wrong max groups", 2, message.getMaxGroups().get(1).intValue());
+        assertEquals("Wrong max groups", 3, message.getMaxGroups().get(2).intValue());
+        assertEquals("Wrong max groups", 4, message.getMaxGroups().get(3).intValue());
+        assertEquals("Wrong actions bitmap", new ActionType(true, true, true, true, false, true, true, true,
                 true, true, true, true, true, true, true, true, true), message.getActionsBitmap().get(0));
-        Assert.assertEquals("Wrong actions bitmap", new ActionType(false, false, false, false, false, false, false,
+        assertEquals("Wrong actions bitmap", new ActionType(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false, false),
                 message.getActionsBitmap().get(1));
-        Assert.assertEquals("Wrong actions bitmap", new ActionType(false, false, false, false, false, false, false,
+        assertEquals("Wrong actions bitmap", new ActionType(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false, false),
                 message.getActionsBitmap().get(2));
-        Assert.assertEquals("Wrong actions bitmap", new ActionType(false, false, false, false, false, false, false,
+        assertEquals("Wrong actions bitmap", new ActionType(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false, false),
                 message.getActionsBitmap().get(3));
     }
@@ -95,13 +98,13 @@ public class MultipartReplyGroupFeaturesTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 8, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 8, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyGroupFeaturesCase messageCase =
                 (MultipartReplyGroupFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyGroupFeatures message = messageCase.getMultipartReplyGroupFeatures();
-        Assert.assertEquals("Wrong group types", new GroupTypes(false, false, false, false), message.getTypes());
-        Assert.assertEquals("Wrong capabilities", new GroupCapabilities(false, false, false, false),
+        assertEquals("Wrong group types", new GroupTypes(false, false, false, false), message.getTypes());
+        assertEquals("Wrong capabilities", new GroupCapabilities(false, false, false, false),
                 message.getCapabilities());
     }
 }
