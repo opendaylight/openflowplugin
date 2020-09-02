@@ -8,11 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MplsBos;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.bos._case.MplsBosBuilder;
@@ -23,32 +19,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author michal.polkorab
  */
 public class OxmMplsBosDeserializer extends AbstractOxmMatchEntryDeserializer {
-    @Override
-    public MatchEntry deserialize(final ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addMplsBosValue(input, builder);
-        return builder.build();
-    }
-
-    private static void addMplsBosValue(final ByteBuf input, final MatchEntryBuilder builder) {
-        MplsBosCaseBuilder caseBuilder = new MplsBosCaseBuilder();
-        MplsBosBuilder bosBuilder = new MplsBosBuilder();
-        if (input.readUnsignedByte() != 0) {
-            bosBuilder.setBos(true);
-        } else {
-            bosBuilder.setBos(false);
-        }
-        caseBuilder.setMplsBos(bosBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+    public OxmMplsBosDeserializer() {
+        super(MplsBos.class);
     }
 
     @Override
-    protected Class<? extends MatchField> getOxmField() {
-        return MplsBos.class;
-    }
-
-    @Override
-    protected Class<? extends OxmClassBase> getOxmClass() {
-        return OpenflowBasicClass.class;
+    protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
+        builder.setMatchEntryValue(new MplsBosCaseBuilder()
+            .setMplsBos(new MplsBosBuilder().setBos(input.readUnsignedByte() != 0).build())
+            .build());
     }
 }
