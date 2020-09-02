@@ -32,7 +32,11 @@ public abstract class AbstractActionInstructionSerializer extends AbstractInstru
 
     private SerializerRegistry registry;
 
-    protected void writeActions(final List<Action> actions, final ByteBuf outBuffer, int startIndex) {
+    protected AbstractActionInstructionSerializer(final short type) {
+        super(type);
+    }
+
+    protected final void writeActions(final List<Action> actions, final ByteBuf outBuffer, final int startIndex) {
         final int lengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
@@ -41,12 +45,12 @@ public abstract class AbstractActionInstructionSerializer extends AbstractInstru
         outBuffer.setShort(lengthIndex, instructionLength);
     }
 
-    protected SerializerRegistry getRegistry() {
+    protected final SerializerRegistry getRegistry() {
         return registry;
     }
 
     @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
+    public final void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 }
