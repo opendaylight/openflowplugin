@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -20,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.packet.type._case.PacketTypeBuilder;
 
-public class OxmPacketTypeDeserializer extends AbstractOxmMatchEntryDeserializer implements OFDeserializer<MatchEntry> {
+public class OxmPacketTypeDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
     protected Class<? extends MatchField> getOxmField() {
         return PacketType.class;
@@ -32,7 +31,7 @@ public class OxmPacketTypeDeserializer extends AbstractOxmMatchEntryDeserializer
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         final MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), message);
         PacketTypeCaseBuilder caseBuilder = new PacketTypeCaseBuilder();
         PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
