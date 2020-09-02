@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -18,7 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -31,10 +30,13 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
-public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
+public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<SetFieldCase>
         implements DeserializerRegistryInjector {
-
     private DeserializerRegistry registry;
+
+    public OF13SetFieldActionDeserializer() {
+        super(new SetFieldCaseBuilder().build());
+    }
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
@@ -72,13 +74,7 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
     }
 
     @Override
-    protected ActionChoice getType() {
-        return new SetFieldCaseBuilder().build();
-    }
-
-    @Override
     public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         this.registry = deserializerRegistry;
     }
-
 }
