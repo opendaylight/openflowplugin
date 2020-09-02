@@ -12,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeKeyMakerFactory;
@@ -46,7 +47,8 @@ public final class ActionUtil {
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
-    public static void writeAction(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+    public static void writeAction(final Action action, final short version, final SerializerLookup registry,
+            final ByteBuf outBuffer) {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
@@ -85,7 +87,7 @@ public final class ActionUtil {
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
-    public static void writeActionHeader(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+    public static void writeActionHeader(final Action action, final short version, final SerializerRegistry registry, final ByteBuf outBuffer) {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->

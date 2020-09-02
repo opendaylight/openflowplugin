@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -26,22 +26,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultipartReplyExperimenterDeserializer implements OFDeserializer<MultipartReplyBody>,
-        DeserializerRegistryInjector {
+public class MultipartReplyExperimenterDeserializer implements OFDeserializer<MultipartReplyBody> {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyExperimenterDeserializer.class);
-    private DeserializerRegistry registry;
+
+    private final DeserializerRegistry registry;
+
+    public MultipartReplyExperimenterDeserializer(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyExperimenterBuilder builder = new MultipartReplyExperimenterBuilder();
         final long expId = message.readUnsignedInt();
         final long expType = message.readUnsignedInt();
 
         try {
-            final OFDeserializer<ExperimenterMessageOfChoice> deserializer = registry
-                    .getDeserializer(new ExperimenterIdTypeDeserializerKey(
-                            EncodeConstants.OF13_VERSION_ID, expId, expType, ExperimenterMessageOfChoice.class));
+            final OFDeserializer<ExperimenterMessageOfChoice> deserializer = registry.getDeserializer(
+                new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId, expType,
+                    ExperimenterMessageOfChoice.class));
 
             builder.setExperimenterMessageOfChoice(deserializer.deserialize(message));
         } catch (ClassCastException | IllegalStateException es) {
@@ -63,10 +66,4 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
 
         return builder.build();
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }

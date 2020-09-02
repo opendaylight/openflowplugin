@@ -69,10 +69,10 @@ public final class AdditionalMessageDeserializerInitializer {
         helper.registerDeserializer(5, GetFeaturesInput.class, new OF10FeaturesRequestMessageFactory());
         helper.registerDeserializer(7, GetConfigInput.class, new GetConfigInputMessageFactory());
         helper.registerDeserializer(9, SetConfigInput.class, new SetConfigInputMessageFactory());
-        helper.registerDeserializer(13, PacketOutInput.class, new OF10PacketOutInputMessageFactory());
-        helper.registerDeserializer(14, FlowModInput.class, new OF10FlowModInputMessageFactory());
+        helper.registerDeserializer(13, PacketOutInput.class, new OF10PacketOutInputMessageFactory(registry));
+        helper.registerDeserializer(14, FlowModInput.class, new OF10FlowModInputMessageFactory(registry));
         helper.registerDeserializer(15, PortModInput.class, new OF10PortModInputMessageFactory());
-        helper.registerDeserializer(16, MultipartRequestInput.class, new OF10StatsRequestInputFactory());
+        helper.registerDeserializer(16, MultipartRequestInput.class, new OF10StatsRequestInputFactory(registry));
         helper.registerDeserializer(18, BarrierInput.class, new BarrierInputMessageFactory());
         helper.registerDeserializer(20, GetQueueConfigInput.class, new OF10GetQueueConfigInputMessageFactory());
 
@@ -81,18 +81,18 @@ public final class AdditionalMessageDeserializerInitializer {
         helper.registerDeserializer(5, GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
         helper.registerDeserializer(7, GetConfigInput.class, new GetConfigInputMessageFactory());
         helper.registerDeserializer(9, SetConfigInput.class, new SetConfigInputMessageFactory());
-        helper.registerDeserializer(13, PacketOutInput.class, new PacketOutInputMessageFactory());
-        helper.registerDeserializer(14, FlowModInput.class, new FlowModInputMessageFactory());
-        helper.registerDeserializer(15, GroupModInput.class, new GroupModInputMessageFactory());
+        helper.registerDeserializer(13, PacketOutInput.class, new PacketOutInputMessageFactory(registry));
+        helper.registerDeserializer(14, FlowModInput.class, new FlowModInputMessageFactory(registry));
+        helper.registerDeserializer(15, GroupModInput.class, new GroupModInputMessageFactory(registry));
         helper.registerDeserializer(16, PortModInput.class, new PortModInputMessageFactory());
         helper.registerDeserializer(17, TableModInput.class, new TableModInputMessageFactory());
-        helper.registerDeserializer(18, MultipartRequestInput.class, new MultipartRequestInputMessageFactory());
+        helper.registerDeserializer(18, MultipartRequestInput.class, new MultipartRequestInputMessageFactory(registry));
         helper.registerDeserializer(20, BarrierInput.class, new BarrierInputMessageFactory());
         helper.registerDeserializer(22, GetQueueConfigInput.class, new GetQueueConfigInputMessageFactory());
         helper.registerDeserializer(24, RoleRequestInput.class, new RoleRequestInputMessageFactory());
         helper.registerDeserializer(26, GetAsyncInput.class, new GetAsyncRequestMessageFactory());
         helper.registerDeserializer(28, SetAsyncInput.class, new SetAsyncInputMessageFactory());
-        helper.registerDeserializer(29, MeterModInput.class, new MeterModInputMessageFactory());
+        helper.registerDeserializer(29, MeterModInput.class, new MeterModInputMessageFactory(registry));
 
         // register OF v1.4 message deserializers
         helper = new SimpleDeserializerRegistryHelper(EncodeConstants.OF14_VERSION_ID, registry);

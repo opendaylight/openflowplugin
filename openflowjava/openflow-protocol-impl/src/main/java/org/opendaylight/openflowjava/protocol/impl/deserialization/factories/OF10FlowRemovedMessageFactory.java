@@ -7,15 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -29,18 +27,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author michal.polkorab
  */
-public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMessage>,
-        DeserializerRegistryInjector {
+public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMessage> {
     private static final byte PADDING_IN_FLOW_REMOVED_MESSAGE = 1;
     private static final byte PADDING_IN_FLOW_REMOVED_MESSAGE_2 = 2;
 
-    private DeserializerRegistry registry;
+    private final DeserializerRegistry registry;
+
+    public OF10FlowRemovedMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public FlowRemovedMessage deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
-
+    public FlowRemovedMessage deserialize(final ByteBuf rawMessage) {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)
                 .setXid(readUint32(rawMessage));
@@ -58,10 +56,5 @@ public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemoved
         builder.setPacketCount(readUint64(rawMessage));
         builder.setByteCount(readUint64(rawMessage));
         return builder.build();
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
     }
 }
