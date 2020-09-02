@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
 import io.netty.buffer.ByteBuf;
-import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase;
@@ -26,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public class AbstractInstructionDeserializerTest {
-
     /**
      * Tests {@link AbstractInstructionDeserializer#deserializeHeader(ByteBuf)} with different
      * instruction types.
@@ -35,26 +37,28 @@ public class AbstractInstructionDeserializerTest {
     public void test() {
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("00 01 00 04");
         Instruction instruction = new GoToTableInstructionDeserializer().deserializeHeader(buffer);
-        Assert.assertTrue("Wrong type", instruction.getInstructionChoice() instanceof GotoTableCase);
+        assertThat("Wrong type", instruction.getInstructionChoice(), instanceOf(GotoTableCase.class));
 
         buffer = ByteBufUtils.hexStringToByteBuf("00 02 00 04");
         instruction = new WriteMetadataInstructionDeserializer().deserializeHeader(buffer);
-        Assert.assertTrue("Wrong type", instruction.getInstructionChoice() instanceof WriteMetadataCase);
+        assertThat("Wrong type", instruction.getInstructionChoice(), instanceOf(WriteMetadataCase.class));
 
         buffer = ByteBufUtils.hexStringToByteBuf("00 03 00 04");
-        instruction = new WriteActionsInstructionDeserializer().deserializeHeader(buffer);
-        Assert.assertTrue("Wrong type", instruction.getInstructionChoice() instanceof WriteActionsCase);
+        instruction = new WriteActionsInstructionDeserializer(mock(DeserializerRegistry.class))
+                .deserializeHeader(buffer);
+        assertThat("Wrong type", instruction.getInstructionChoice(), instanceOf(WriteActionsCase.class));
 
         buffer = ByteBufUtils.hexStringToByteBuf("00 04 00 04");
-        instruction = new ApplyActionsInstructionDeserializer().deserializeHeader(buffer);
-        Assert.assertTrue("Wrong type", instruction.getInstructionChoice() instanceof ApplyActionsCase);
+        instruction = new ApplyActionsInstructionDeserializer(mock(DeserializerRegistry.class))
+                .deserializeHeader(buffer);
+        assertThat("Wrong type", instruction.getInstructionChoice(), instanceOf(ApplyActionsCase.class));
 
         buffer = ByteBufUtils.hexStringToByteBuf("00 05 00 04");
         instruction = new ClearActionsInstructionDeserializer().deserializeHeader(buffer);
-        Assert.assertTrue("Wrong type", instruction.getInstructionChoice() instanceof ClearActionsCase);
+        assertThat("Wrong type", instruction.getInstructionChoice(), instanceOf(ClearActionsCase.class));
 
         buffer = ByteBufUtils.hexStringToByteBuf("00 06 00 04");
         instruction = new MeterInstructionDeserializer().deserializeHeader(buffer);
-        Assert.assertTrue("Wrong type", instruction.getInstructionChoice() instanceof MeterCase);
+        assertThat("Wrong type", instruction.getInstructionChoice(), instanceOf(MeterCase.class));
     }
 }

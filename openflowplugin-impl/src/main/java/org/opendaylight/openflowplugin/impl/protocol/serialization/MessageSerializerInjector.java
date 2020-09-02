@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -33,8 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * Util class for injecting new message serializers into OpenflowJava.
  */
 final class MessageSerializerInjector {
-
     private MessageSerializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -48,11 +47,11 @@ final class MessageSerializerInjector {
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
-        injector.apply(FlowMessage.class).accept(new FlowMessageSerializer());
-        injector.apply(MeterMessage.class).accept(new MeterMessageSerializer());
+        injector.apply(FlowMessage.class).accept(new FlowMessageSerializer(provider));
+        injector.apply(MeterMessage.class).accept(new MeterMessageSerializer(provider));
         injector.apply(PortMessage.class).accept(new PortMessageSerializer());
-        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer(isGroupAddModEnabled));
-        injector.apply(MultipartRequest.class).accept(new MultipartRequestMessageSerializer());
+        injector.apply(GroupMessage.class).accept(new GroupMessageSerializer(provider, isGroupAddModEnabled));
+        injector.apply(MultipartRequest.class).accept(new MultipartRequestMessageSerializer(provider));
         injector.apply(AsyncConfigMessage.class).accept(new AsyncConfigMessageSerializer());
     }
 
@@ -66,12 +65,7 @@ final class MessageSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
-        return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+            final SerializerExtensionProvider provider, final byte version) {
+        return type -> serializer -> provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
-
 }
