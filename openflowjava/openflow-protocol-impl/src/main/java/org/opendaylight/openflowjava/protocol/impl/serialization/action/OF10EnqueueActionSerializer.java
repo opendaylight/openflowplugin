@@ -19,9 +19,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10EnqueueActionSerializer extends AbstractActionSerializer {
+    public OF10EnqueueActionSerializer() {
+        super(ActionConstants.ENQUEUE_CODE, ActionConstants.LARGER_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((EnqueueCase) action.getActionChoice()).getEnqueueAction()
                 .getPort().getValue().intValue());
@@ -29,15 +32,4 @@ public class OF10EnqueueActionSerializer extends AbstractActionSerializer {
         outBuffer.writeInt(((EnqueueCase) action.getActionChoice()).getEnqueueAction()
                 .getQueueId().getValue().intValue());
     }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.ENQUEUE_CODE;
-    }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.LARGER_ACTION_LENGTH;
-    }
-
 }

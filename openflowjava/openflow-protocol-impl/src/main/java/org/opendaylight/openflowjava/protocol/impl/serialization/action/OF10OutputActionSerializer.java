@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
@@ -19,24 +19,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10OutputActionSerializer extends AbstractActionSerializer {
+    public OF10OutputActionSerializer() {
+        super(ActionConstants.OUTPUT_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeShort(((OutputActionCase) action.getActionChoice())
-                .getOutputAction().getPort().getValue().intValue());
-        outBuffer.writeShort(((OutputActionCase) action.getActionChoice())
-                .getOutputAction().getMaxLength().toJava());
-    }
 
-    @Override
-    protected int getType() {
-        return ActionConstants.OUTPUT_CODE;
+        final OutputAction outputAction = ((OutputActionCase) action.getActionChoice()).getOutputAction();
+        outBuffer.writeShort(outputAction.getPort().getValue().intValue());
+        outBuffer.writeShort(outputAction.getMaxLength().intValue());
     }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.GENERAL_ACTION_LENGTH;
-    }
-
 }

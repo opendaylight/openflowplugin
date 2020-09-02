@@ -19,23 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10SetTpSrcActionSerializer extends AbstractActionSerializer {
+    public OF10SetTpSrcActionSerializer() {
+        super(ActionConstants.SET_TP_SRC_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((SetTpSrcCase) action.getActionChoice()).getSetTpSrcAction()
                 .getPort().getValue().intValue());
         outBuffer.writeZero(ActionConstants.PADDING_IN_TP_PORT_ACTION);
     }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.SET_TP_SRC_CODE;
-    }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.GENERAL_ACTION_LENGTH;
-    }
-
 }
