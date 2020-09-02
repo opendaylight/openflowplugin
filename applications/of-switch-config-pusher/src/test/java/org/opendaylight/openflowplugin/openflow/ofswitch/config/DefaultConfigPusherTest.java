@@ -40,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.Set
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link DefaultConfigPusher}.
@@ -78,7 +77,7 @@ public class DefaultConfigPusherTest {
         Mockito.verify(nodeConfigService).setConfig(setConfigInputCaptor.capture());
         final SetConfigInput captured = setConfigInputCaptor.getValue();
         Assert.assertEquals(SwitchConfigFlag.FRAGNORMAL.toString(), captured.getFlag());
-        Assert.assertEquals(Uint16.valueOf(OFConstants.OFPCML_NO_BUFFER), captured.getMissSearchLength());
+        Assert.assertEquals(OFConstants.OFPCML_NO_BUFFER, captured.getMissSearchLength());
         Assert.assertEquals(NODE_IID, captured.getNode().getValue());
     }
 
