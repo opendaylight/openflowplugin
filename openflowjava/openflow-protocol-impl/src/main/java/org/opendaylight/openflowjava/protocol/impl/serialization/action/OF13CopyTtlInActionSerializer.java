@@ -5,25 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
-import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
  * Serializes OF 1.3 CopyTtlIn actions.
  *
  * @author michal.polkorab
  */
-public class OF13CopyTtlInActionSerializer extends AbstractActionSerializer {
+public class OF13CopyTtlInActionSerializer extends AbstractEmptyActionSerializer {
     public OF13CopyTtlInActionSerializer() {
-        super(ActionConstants.COPY_TTL_IN_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
-    }
-
-    @Override
-    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
-        outBuffer.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
+        super(ActionConstants.COPY_TTL_IN_CODE);
     }
 }
