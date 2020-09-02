@@ -191,22 +191,34 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         bandHeaders.setMeterBandHeader(bandHdr);
         meter.setMeterBandHeaders(bandHeaders.build());
 
-        if (Integer.parseInt(s1) == 1) {
-            testMeter1 = meter.build();
-        } else if (Integer.parseInt(s1) == 2) {
-            testMeter2 = meter.build();
-        } else if (Integer.parseInt(s1) == 3) {
-            testMeter1 = meter.build();
-        } else if (Integer.parseInt(s1) == 4) {
-            testMeter2 = meter.build();
-        } else if (Integer.parseInt(s1) == 5) {
-            testMeter1 = meter.build();
-        } else if (Integer.parseInt(s1) == 6) {
-            testMeter2 = meter.build();
-        } else if (Integer.parseInt(s1) == 7) {
-            testMeter1 = meter.build();
-        } else if (Integer.parseInt(s1) == 8) {
-            testMeter2 = meter.build();
+        int firstInt = Integer.parseInt(s1);
+        switch (firstInt) {
+            case 1:
+                testMeter1 = meter.build();
+                break;
+            case 2:
+                testMeter2 = meter.build();
+                break;
+            case 3:
+                testMeter1 = meter.build();
+                break;
+            case 4:
+                testMeter2 = meter.build();
+                break;
+            case 5:
+                testMeter1 = meter.build();
+                break;
+            case 6:
+                testMeter2 = meter.build();
+                break;
+            case 7:
+                testMeter1 = meter.build();
+                break;
+            case 8:
+                testMeter2 = meter.build();
+                break;
+            default:
+                // No-op?
         }
 
         return meter;
