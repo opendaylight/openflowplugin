@@ -29,7 +29,7 @@ public class GoToTableInstructionDeserializer  implements OFDeserializer<Instruc
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         final InstructionBuilder builder = new InstructionBuilder()
                 .setInstructionChoice(new GotoTableCaseBuilder()
                     .setGotoTable(new GotoTableBuilder().setTableId(readUint8(input)).build())
@@ -40,7 +40,7 @@ public class GoToTableInstructionDeserializer  implements OFDeserializer<Instruc
 
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         return new InstructionBuilder().setInstructionChoice(new GotoTableCaseBuilder().build()).build();
     }
 }

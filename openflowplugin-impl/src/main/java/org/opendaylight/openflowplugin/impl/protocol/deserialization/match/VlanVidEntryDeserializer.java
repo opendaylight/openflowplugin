@@ -23,7 +23,7 @@ public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
         final int vlanVidValue = message.readUnsignedShort();
 
         if (hasMask) {
-            message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // Skip mask
+            message.skipBytes(Short.BYTES); // Skip mask
             vlanIdBuilder
                     .setVlanId(new VlanId(0))
                     .setVlanIdPresent(true);

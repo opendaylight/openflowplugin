@@ -28,7 +28,7 @@ public class OF13PushMplsActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         PushMplsCaseBuilder caseBuilder = new PushMplsCaseBuilder();
         PushMplsActionBuilder mplsBuilder = new PushMplsActionBuilder();
         mplsBuilder.setEthertype(new EtherType(ByteBufUtils.readUint16(input)));

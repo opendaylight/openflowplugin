@@ -37,12 +37,12 @@ public class OxmMetadataDeserializer  extends AbstractOxmMatchEntryDeserializer
     private static void addMetadataValue(ByteBuf input, MatchEntryBuilder builder) {
         final MetadataCaseBuilder caseBuilder = new MetadataCaseBuilder();
         MetadataBuilder metadataBuilder = new MetadataBuilder();
-        byte[] metadataBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataBytes = new byte[Long.BYTES];
         input.readBytes(metadataBytes);
         metadataBuilder.setMetadata(metadataBytes);
         if (builder.isHasMask()) {
             metadataBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                    .convertMask(input, Long.BYTES));
         }
         caseBuilder.setMetadata(metadataBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

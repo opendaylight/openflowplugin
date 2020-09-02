@@ -44,6 +44,6 @@ public class PacketTypeEntryDeserializerTest extends AbstractMatchEntryDeseriali
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 }

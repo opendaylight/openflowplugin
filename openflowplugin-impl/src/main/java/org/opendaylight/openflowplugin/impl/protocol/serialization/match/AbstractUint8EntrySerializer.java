@@ -13,7 +13,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 public abstract class AbstractUint8EntrySerializer extends AbstractPrimitiveEntrySerializer<Uint8> {
     protected AbstractUint8EntrySerializer(final int oxmClassCode, final int oxmFieldCode) {
-        super(oxmClassCode, oxmFieldCode, EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        super(oxmClassCode, oxmFieldCode, Byte.BYTES);
     }
 
     @Override

@@ -131,14 +131,14 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
 
         // Action
         assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
-        assertEquals(out.readUnsignedShort(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES // Size of action type
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES // Size of action length
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES // Match entry OXM class
-                        + EncodeConstants.SIZE_OF_BYTE_IN_BYTES // Match entry field and mask
-                        + EncodeConstants.SIZE_OF_BYTE_IN_BYTES // Match entry length
+        assertEquals(out.readUnsignedShort(), Short.BYTES // Size of action type
+                        + Short.BYTES // Size of action length
+                        + Short.BYTES // Match entry OXM class
+                        + Byte.BYTES // Match entry field and mask
+                        + Byte.BYTES // Match entry length
                         + EncodeConstants.PADDING); // Size of set field (match entry)
         // Skip match entry header, we have tests for this elsewhere
-        out.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        out.skipBytes(Integer.BYTES);
 
         // Actual match body
         byte[] addressBytes = new byte[4];

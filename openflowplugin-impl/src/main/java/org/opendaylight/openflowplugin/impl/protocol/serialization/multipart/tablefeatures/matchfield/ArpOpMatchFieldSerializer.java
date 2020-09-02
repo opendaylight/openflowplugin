@@ -24,6 +24,6 @@ public class ArpOpMatchFieldSerializer extends AbstractMatchFieldSerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        return Short.BYTES;
     }
 }

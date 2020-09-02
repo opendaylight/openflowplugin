@@ -25,7 +25,7 @@ public abstract class AbstractExperimenterMatchEntrySerializer<E, M> extends Abs
     protected AbstractExperimenterMatchEntrySerializer(final int oxmFieldCode, final int valueLength,
             final long experimenterId) {
         this(new ConstantHeaderWriter<>(OxmMatchConstants.EXPERIMENTER_CLASS, oxmFieldCode, valueLength,
-                EncodeConstants.SIZE_OF_INT_IN_BYTES), experimenterId);
+                Integer.BYTES), experimenterId);
     }
 
     @Override

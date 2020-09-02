@@ -53,12 +53,12 @@ public abstract class AbstractOxmMatchEntryDeserializer implements HeaderDeseria
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(oxmClass);
         // skip oxm_class (provided)
-        input.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(Short.BYTES);
         builder.setOxmMatchField(oxmField);
         boolean hasMask = (input.readUnsignedByte() & 1) != 0;
         builder.setHasMask(hasMask);
         // skip match entry length - not needed
-        input.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        input.skipBytes(Byte.BYTES);
         return builder;
     }
 

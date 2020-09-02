@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer<Tunnel, Uint64> {
     public TunnelIdEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.TUNNEL_ID,
-            EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+            Long.BYTES);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class TunnelIdEntrySerializer extends AbstractMatchEntrySerializer<Tunnel
     protected void serializeEntry(Tunnel entry, Uint64 mask, ByteBuf outBuffer) {
         outBuffer.writeBytes(ByteUtil.uint64toBytes(entry.getTunnelId()));
         if (mask != null) {
-            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, Long.BYTES);
         }
     }
 }

@@ -81,7 +81,7 @@ public class OxmVlanPcpSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_BYTE_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareVlanPcpMatchEntry(short value) {
@@ -107,6 +107,6 @@ public class OxmVlanPcpSerializerTest {
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.VLAN_PCP, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
-        assertEquals("Wrong length", EncodeConstants.SIZE_OF_BYTE_IN_BYTES, buffer.readUnsignedByte());
+        assertEquals("Wrong length", Byte.BYTES, buffer.readUnsignedByte());
     }
 }

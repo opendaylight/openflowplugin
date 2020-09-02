@@ -28,7 +28,7 @@ public class OF10SetDlSrcActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(final ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetDlSrcCaseBuilder caseBuilder = new SetDlSrcCaseBuilder();
         SetDlSrcActionBuilder actionBuilder = new SetDlSrcActionBuilder();
         actionBuilder.setDlSrcAddress(ByteBufUtils.readIetfMacAddress(input));

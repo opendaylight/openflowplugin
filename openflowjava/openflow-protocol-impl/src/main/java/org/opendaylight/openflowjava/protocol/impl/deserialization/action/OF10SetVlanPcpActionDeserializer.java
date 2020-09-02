@@ -28,7 +28,7 @@ public class OF10SetVlanPcpActionDeserializer extends AbstractActionDeserializer
     public Action deserialize(ByteBuf input) {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
             .ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetVlanPcpCaseBuilder caseBuilder = new SetVlanPcpCaseBuilder();
         SetVlanPcpActionBuilder actionBuilder = new SetVlanPcpActionBuilder();
         actionBuilder.setVlanPcp(readUint8(input));

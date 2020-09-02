@@ -26,7 +26,7 @@ public class OF13SetQueueActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetQueueCaseBuilder caseBuilder = new SetQueueCaseBuilder();
         SetQueueActionBuilder actionBuilder = new SetQueueActionBuilder();
         actionBuilder.setQueueId(readUint32(input));

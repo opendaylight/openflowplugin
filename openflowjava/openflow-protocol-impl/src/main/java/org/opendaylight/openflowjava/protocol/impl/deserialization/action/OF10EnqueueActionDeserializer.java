@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 public class OF10EnqueueActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         EnqueueActionBuilder actionBuilder = new EnqueueActionBuilder();
         actionBuilder.setPort(new PortNumber(readUint16(input).toUint32()));
         input.skipBytes(ActionConstants.PADDING_IN_ENQUEUE_ACTION);

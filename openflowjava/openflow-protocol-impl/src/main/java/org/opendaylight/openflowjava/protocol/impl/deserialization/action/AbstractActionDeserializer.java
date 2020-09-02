@@ -27,7 +27,7 @@ public abstract class AbstractActionDeserializer implements OFDeserializer<Actio
     @Override
     public Action deserializeHeader(ByteBuf input) {
         ActionBuilder actionBuilder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         actionBuilder.setActionChoice(getType());
         return actionBuilder.build();
     }

@@ -28,7 +28,7 @@ public class OF10SetTpSrcActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetTpSrcCaseBuilder caseBuilder = new SetTpSrcCaseBuilder();
         SetTpSrcActionBuilder actionBuilder = new SetTpSrcActionBuilder();
         actionBuilder.setPort(new PortNumber(readUint16(input).toUint32()));

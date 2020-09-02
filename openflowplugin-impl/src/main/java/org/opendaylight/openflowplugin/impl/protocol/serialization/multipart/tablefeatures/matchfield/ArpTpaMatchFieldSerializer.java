@@ -24,6 +24,6 @@ public class ArpTpaMatchFieldSerializer extends AbstractMatchFieldSerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 }

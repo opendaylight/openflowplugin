@@ -14,7 +14,6 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -158,7 +157,7 @@ public class PacketOutConvertorTest {
         final TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder.build();
 
         Short version = (short) 0x04;
-        byte[] datapathIdByte = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] datapathIdByte = new byte[Long.BYTES];
         for (int i = 0; i < datapathIdByte.length; i++) {
             datapathIdByte[i] = 1;
         }

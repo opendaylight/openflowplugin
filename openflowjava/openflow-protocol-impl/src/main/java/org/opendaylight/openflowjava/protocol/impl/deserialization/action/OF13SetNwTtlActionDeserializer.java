@@ -27,7 +27,7 @@ public class OF13SetNwTtlActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetNwTtlCaseBuilder caseBuilder = new SetNwTtlCaseBuilder();
         SetNwTtlActionBuilder actionBuilder = new SetNwTtlActionBuilder();
         actionBuilder.setNwTtl(readUint8(input));

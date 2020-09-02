@@ -28,7 +28,7 @@ public class MeterInstructionDeserializer implements OFDeserializer<Instruction>
 
     @Override
     public Instruction deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         return new InstructionBuilder()
                 .setInstructionChoice(new MeterCaseBuilder()
                     .setMeter(new MeterBuilder().setMeterId(readUint32(input)).build())
@@ -38,7 +38,7 @@ public class MeterInstructionDeserializer implements OFDeserializer<Instruction>
 
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         return new InstructionBuilder().setInstructionChoice(new MeterCaseBuilder().build()).build();
     }
 }

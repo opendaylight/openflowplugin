@@ -120,7 +120,7 @@ public class OxmIpv4DstSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_INT_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Integer.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, String value) {
@@ -150,9 +150,9 @@ public class OxmIpv4DstSerializerTest {
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV4_DST, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
         if (hasMask) {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_LONG_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Long.BYTES, buffer.readUnsignedByte());
         } else {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Integer.BYTES, buffer.readUnsignedByte());
         }
     }
 }

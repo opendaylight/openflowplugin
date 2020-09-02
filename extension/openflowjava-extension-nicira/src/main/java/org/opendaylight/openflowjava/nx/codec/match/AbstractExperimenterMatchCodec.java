@@ -65,7 +65,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
 
         // skip experimenter Id
-        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        message.skipBytes(Integer.BYTES);
 
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
@@ -100,7 +100,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         return new NxmHeader(
                 getNxmFieldCode(),
                 hasMask,
-                EncodeConstants.SIZE_OF_INT_IN_BYTES + (hasMask ? getValueLength() * 2 : getValueLength()),
+                Integer.BYTES + (hasMask ? getValueLength() * 2 : getValueLength()),
                 getExperimenterId().longValue());
     }
 

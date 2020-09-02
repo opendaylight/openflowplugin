@@ -31,9 +31,9 @@ public class SetFieldActionDeserializerTest extends AbstractActionDeserializerTe
         writeHeader(in);
         in.writeShort(OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         in.writeByte(OxmMatchConstants.IN_PORT << 1);
-        in.writeByte(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        in.writeByte(Integer.BYTES);
         in.writeInt(portNum);
-        in.writeZero(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        in.writeZero(Integer.BYTES);
 
         final Action action = deserializeAction(in);
         assertTrue(action instanceof SetFieldCase);

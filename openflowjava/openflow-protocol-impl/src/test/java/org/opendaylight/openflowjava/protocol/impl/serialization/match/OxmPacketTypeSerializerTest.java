@@ -45,7 +45,7 @@ public class OxmPacketTypeSerializerTest {
         short fieldMask = buffer.readUnsignedByte();
         assertEquals(OxmMatchConstants.PACKET_TYPE, fieldMask >> 1);
         assertEquals(0, fieldMask & 1);
-        assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+        assertEquals(Integer.BYTES, buffer.readUnsignedByte());
         assertEquals(packetType, buffer.readUnsignedInt());
     }
 

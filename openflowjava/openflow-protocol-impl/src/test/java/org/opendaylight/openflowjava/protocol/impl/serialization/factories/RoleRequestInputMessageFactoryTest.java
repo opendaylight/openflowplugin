@@ -68,7 +68,7 @@ public class RoleRequestInputMessageFactoryTest {
         Assert.assertEquals("Wrong role", message.getRole().getIntValue(),
                 ControllerRole.forValue((int) out.readUnsignedInt()).getIntValue());
         out.skipBytes(PADDING_IN_ROLE_REQUEST_MESSAGE);
-        byte[] genId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] genId = new byte[Long.BYTES];
         out.readBytes(genId);
         Assert.assertEquals("Wrong generation ID", message.getGenerationId(), Uint64.valueOf(new BigInteger(1, genId)));
     }

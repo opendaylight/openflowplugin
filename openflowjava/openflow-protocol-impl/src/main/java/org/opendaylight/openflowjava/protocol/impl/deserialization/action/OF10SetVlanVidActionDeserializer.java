@@ -27,7 +27,7 @@ public class OF10SetVlanVidActionDeserializer extends AbstractActionDeserializer
 
     @Override
     public Action deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         final ActionBuilder builder = new ActionBuilder()
                 .setActionChoice(new SetVlanVidCaseBuilder()
                     .setSetVlanVidAction(new SetVlanVidActionBuilder().setVlanVid(readUint16(input)).build())
