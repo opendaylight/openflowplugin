@@ -66,7 +66,7 @@ public final class AdditionalMessageFactoryInitializer {
      * @param serializerRegistry
      *            registry to be initialized with message serializers
      */
-    public static void registerMessageSerializers(SerializerRegistry serializerRegistry) {
+    public static void registerMessageSerializers(final SerializerRegistry serializerRegistry) {
         // register OF v1.0 message serializers
         short version = EncodeConstants.OF10_VERSION_ID;
         CommonMessageRegistryHelper registryHelper = new CommonMessageRegistryHelper(version, serializerRegistry);
@@ -76,9 +76,11 @@ public final class AdditionalMessageFactoryInitializer {
         registryHelper.registerSerializer(GetFeaturesOutput.class, new OF10FeaturesReplyMessageFactory());
         registryHelper.registerSerializer(GetConfigOutput.class, new GetConfigReplyMessageFactory());
         registryHelper.registerSerializer(PacketInMessage.class, new OF10PacketInMessageFactory());
-        registryHelper.registerSerializer(FlowRemovedMessage.class, new OF10FlowRemovedMessageFactory());
+        registryHelper.registerSerializer(FlowRemovedMessage.class,
+            new OF10FlowRemovedMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(PortStatusMessage.class, new OF10PortStatusMessageFactory());
-        registryHelper.registerSerializer(MultipartReplyMessage.class, new OF10StatsReplyMessageFactory());
+        registryHelper.registerSerializer(MultipartReplyMessage.class,
+            new OF10StatsReplyMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(BarrierOutput.class, new OF10BarrierReplyMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigOutput.class, new OF10QueueGetConfigReplyMessageFactory());
 
@@ -86,16 +88,17 @@ public final class AdditionalMessageFactoryInitializer {
         version = EncodeConstants.OF13_VERSION_ID;
         registryHelper = new CommonMessageRegistryHelper(version, serializerRegistry);
         registryHelper.registerSerializer(EchoOutput.class, new EchoOutputMessageFactory());
-        registryHelper.registerSerializer(PacketInMessage.class, new PacketInMessageFactory());
-        registryHelper.registerSerializer(PacketOutInput.class, new PacketOutInputMessageFactory());
+        registryHelper.registerSerializer(PacketInMessage.class, new PacketInMessageFactory(serializerRegistry));
+        registryHelper.registerSerializer(PacketOutInput.class, new PacketOutInputMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(GetFeaturesOutput.class, new GetFeaturesOutputFactory());
         registryHelper.registerSerializer(EchoRequestMessage.class, new EchoRequestMessageFactory());
-        registryHelper.registerSerializer(MultipartReplyMessage.class, new MultipartReplyMessageFactory());
+        registryHelper.registerSerializer(MultipartReplyMessage.class,
+            new MultipartReplyMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(HelloMessage.class, new HelloMessageFactory());
         registryHelper.registerSerializer(ErrorMessage.class, new ErrorMessageFactory());
         registryHelper.registerSerializer(ExperimenterMessage.class, new ExperimenterMessageFactory());
         registryHelper.registerSerializer(GetConfigOutput.class, new GetConfigReplyMessageFactory());
-        registryHelper.registerSerializer(FlowRemovedMessage.class, new FlowRemovedMessageFactory());
+        registryHelper.registerSerializer(FlowRemovedMessage.class, new FlowRemovedMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(PortStatusMessage.class, new PortStatusMessageFactory());
         registryHelper.registerSerializer(BarrierOutput.class, new BarrierReplyMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigOutput.class, new QueueGetConfigReplyMessageFactory());

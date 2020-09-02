@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import org.junit.After;
@@ -72,6 +71,11 @@ public abstract class AbstractDeserializerTest {
         DeserializerExtensionProviderImpl(final DeserializerRegistry registry, DeserializationFactory factory) {
             this.registry = registry;
             this.factory = factory;
+        }
+
+        @Override
+        public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+            return registry.getDeserializer(key);
         }
 
         @Override

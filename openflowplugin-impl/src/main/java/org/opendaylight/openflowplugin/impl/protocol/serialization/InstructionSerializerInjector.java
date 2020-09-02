@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -33,8 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
  * Util class for injecting new instruction serializers into OpenflowJava.
  */
 public final class  InstructionSerializerInjector {
-
     private InstructionSerializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -47,11 +46,11 @@ public final class  InstructionSerializerInjector {
         // Inject new instruction serializers here using injector created by createInjector method
         final Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
-        injector.apply(ApplyActionsCase.class).accept(new ApplyActionsInstructionSerializer());
+        injector.apply(ApplyActionsCase.class).accept(new ApplyActionsInstructionSerializer(provider));
         injector.apply(ClearActionsCase.class).accept(new ClearActionsInstructionSerializer());
         injector.apply(GoToTableCase.class).accept(new GoToTableInstructionSerializer());
         injector.apply(MeterCase.class).accept(new MeterInstructionSerializer());
-        injector.apply(WriteActionsCase.class).accept(new WriteActionsInstructionSerializer());
+        injector.apply(WriteActionsCase.class).accept(new WriteActionsInstructionSerializer(provider));
         injector.apply(WriteMetadataCase.class).accept(new WriteMetadataInstructionSerializer());
     }
 
@@ -65,11 +64,7 @@ public final class  InstructionSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
-        return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+            final SerializerExtensionProvider provider, final byte version) {
+        return type -> serializer -> provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
 }

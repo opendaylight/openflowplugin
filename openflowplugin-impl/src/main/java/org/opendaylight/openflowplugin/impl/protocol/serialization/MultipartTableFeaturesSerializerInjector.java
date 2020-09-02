@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -49,8 +48,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
  * Util class for injecting new multipart table features serializers into OpenflowJava.
  */
 final class MultipartTableFeaturesSerializerInjector {
-
     private MultipartTableFeaturesSerializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -64,20 +63,20 @@ final class MultipartTableFeaturesSerializerInjector {
         final Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
-        injector.apply(Instructions.class).accept(new InstructionsTablePropertySerializer());
-        injector.apply(InstructionsMiss.class).accept(new InstructionsMissTablePropertySerializer());
+        injector.apply(Instructions.class).accept(new InstructionsTablePropertySerializer(provider));
+        injector.apply(InstructionsMiss.class).accept(new InstructionsMissTablePropertySerializer(provider));
         injector.apply(NextTable.class).accept(new NextTableTablePropertySerializer());
         injector.apply(NextTableMiss.class).accept(new NextTableMissTablePropertySerializer());
-        injector.apply(ApplyActions.class).accept(new ApplyActionsTablePropertySerializer());
-        injector.apply(ApplyActionsMiss.class).accept(new ApplyActionsMissTablePropertySerializer());
-        injector.apply(WriteActions.class).accept(new WriteActionsTablePropertySerializer());
-        injector.apply(WriteActionsMiss.class).accept(new WriteActionsMissTablePropertySerializer());
-        injector.apply(Match.class).accept(new MatchTablePropertySerializer());
-        injector.apply(Wildcards.class).accept(new WildcardsTablePropertySerializer());
-        injector.apply(WriteSetfield.class).accept(new WriteSetfieldTablePropertySerializer());
-        injector.apply(WriteSetfieldMiss.class).accept(new WriteSetfieldMissTablePropertySerializer());
-        injector.apply(ApplySetfield.class).accept(new ApplySetfieldTablePropertySerializer());
-        injector.apply(ApplySetfieldMiss.class).accept(new ApplySetfieldMissTablePropertySerializer());
+        injector.apply(ApplyActions.class).accept(new ApplyActionsTablePropertySerializer(provider));
+        injector.apply(ApplyActionsMiss.class).accept(new ApplyActionsMissTablePropertySerializer(provider));
+        injector.apply(WriteActions.class).accept(new WriteActionsTablePropertySerializer(provider));
+        injector.apply(WriteActionsMiss.class).accept(new WriteActionsMissTablePropertySerializer(provider));
+        injector.apply(Match.class).accept(new MatchTablePropertySerializer(provider));
+        injector.apply(Wildcards.class).accept(new WildcardsTablePropertySerializer(provider));
+        injector.apply(WriteSetfield.class).accept(new WriteSetfieldTablePropertySerializer(provider));
+        injector.apply(WriteSetfieldMiss.class).accept(new WriteSetfieldMissTablePropertySerializer(provider));
+        injector.apply(ApplySetfield.class).accept(new ApplySetfieldTablePropertySerializer(provider));
+        injector.apply(ApplySetfieldMiss.class).accept(new ApplySetfieldMissTablePropertySerializer(provider));
         // TODO: Add support for experimenters
     }
 
@@ -91,12 +90,7 @@ final class MultipartTableFeaturesSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
-        return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+            final SerializerExtensionProvider provider, final byte version) {
+        return type -> serializer -> provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
-
 }

@@ -81,7 +81,7 @@ public final class MatchDeserializerInjector {
      */
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
         for (MatchPath path : MatchPath.values()) {
-            final MatchDeserializer deserializer = new MatchDeserializer(path);
+            final MatchDeserializer deserializer = new MatchDeserializer(provider, path);
             provider.registerDeserializer(
                     new MessageCodeMatchKey(
                             EncodeConstants.OF13_VERSION_ID,

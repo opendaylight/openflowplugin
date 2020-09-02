@@ -5,16 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
@@ -29,16 +27,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
-        HeaderSerializer<Action>, SerializerRegistryInjector {
+public class OF13SetFieldActionSerializer implements OFSerializer<Action>, HeaderSerializer<Action> {
+    private final SerializerLookup registry;
 
-    private SerializerRegistry registry;
+    public OF13SetFieldActionSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public void serialize(final Action action, final ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
         final int startIndex = outBuffer.writerIndex();
         outBuffer.writeShort(ActionConstants.SET_FIELD_CODE);
         final int lengthIndex = outBuffer.writerIndex();
@@ -67,10 +64,4 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
         outBuffer.writeShort(ActionConstants.SET_FIELD_CODE);
         outBuffer.writeShort(ActionConstants.ACTION_IDS_LENGTH);
     }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
-    }
-
 }
