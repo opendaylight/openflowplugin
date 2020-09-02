@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
@@ -22,10 +20,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class EchoRequestMessageFactory extends VersionAssignableFactory implements OFDeserializer<EchoRequestMessage> {
-
+public class EchoRequestMessageFactory extends VersionAssignableFactory<EchoRequestMessage> {
     @Override
-    public EchoRequestMessage deserialize(ByteBuf rawMessage) {
+    public EchoRequestMessage deserialize(final ByteBuf rawMessage) {
         EchoRequestMessageBuilder builder = new EchoRequestMessageBuilder();
         builder.setVersion(getVersion());
         builder.setXid(readUint32(rawMessage));
