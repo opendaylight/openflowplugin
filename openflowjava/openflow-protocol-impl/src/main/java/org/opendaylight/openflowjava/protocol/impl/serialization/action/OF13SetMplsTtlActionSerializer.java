@@ -23,8 +23,7 @@ public class OF13SetMplsTtlActionSerializer extends AbstractActionSerializer {
     }
 
     @Override
-    public void serialize(final Action action, final ByteBuf outBuffer) {
-        super.serialize(action, outBuffer);
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
         outBuffer.writeByte(((SetMplsTtlCase) action.getActionChoice()).getSetMplsTtlAction().getMplsTtl().intValue());
         outBuffer.writeZero(ActionConstants.SET_MPLS_TTL_PADDING);
     }

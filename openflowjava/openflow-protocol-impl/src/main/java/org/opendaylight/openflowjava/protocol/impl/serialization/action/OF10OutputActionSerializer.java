@@ -24,9 +24,7 @@ public class OF10OutputActionSerializer extends AbstractActionSerializer {
     }
 
     @Override
-    public void serialize(final Action action, final ByteBuf outBuffer) {
-        super.serialize(action, outBuffer);
-
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
         final OutputAction outputAction = ((OutputActionCase) action.getActionChoice()).getOutputAction();
         outBuffer.writeShort(outputAction.getPort().getValue().intValue());
         outBuffer.writeShort(outputAction.getMaxLength().intValue());
