@@ -7,10 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MatchEntryDeserializer;
@@ -23,19 +24,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public class SetFieldActionDeserializer extends AbstractActionDeserializer
-        implements DeserializerRegistryInjector {
-
+public class SetFieldActionDeserializer extends AbstractActionDeserializer {
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(
             EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_LENGTH,
             Match.class,
             MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
 
-    private DeserializerRegistry registry;
+    private final DeserializerLookup registry;
+
+    public SetFieldActionDeserializer(final DeserializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         final MatchEntryDeserializer deserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
         final MatchBuilder builder = new MatchBuilder();
 
@@ -54,14 +57,8 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
     }
 
     @Override
-    public Action deserializeHeader(ByteBuf message) {
+    public Action deserializeHeader(final ByteBuf message) {
         processHeader(message);
         return new SetFieldCaseBuilder().build();
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }

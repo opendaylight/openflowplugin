@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -32,17 +32,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
-public class MultipartReplyGroupDescDeserializer implements OFDeserializer<MultipartReplyBody>,
-        DeserializerRegistryInjector {
-
+public class MultipartReplyGroupDescDeserializer implements OFDeserializer<MultipartReplyBody> {
     private static final byte PADDING_IN_GROUP_DESC_HEADER = 1;
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
     private static final byte GROUP_DESC_HEADER_LENGTH = 8;
     private static final byte BUCKETS_HEADER_LENGTH = 16;
-    private DeserializerRegistry registry;
+
+    private final DeserializerLookup registry;
+
+    public MultipartReplyGroupDescDeserializer(final DeserializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyGroupDescBuilder builder = new MultipartReplyGroupDescBuilder();
         final List<GroupDescStats> items = new ArrayList<>();
 
@@ -105,10 +108,4 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                 .setGroupDescStats(items)
                 .build();
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }

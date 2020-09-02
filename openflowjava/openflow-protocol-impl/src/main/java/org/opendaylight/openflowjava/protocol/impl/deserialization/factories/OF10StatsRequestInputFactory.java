@@ -7,15 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -52,17 +50,18 @@ import org.opendaylight.yangtools.yang.common.Empty;
  *
  * @author giuseppex.petralia@intel.com
  */
-@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-public class OF10StatsRequestInputFactory
-        implements OFDeserializer<MultipartRequestInput>, DeserializerRegistryInjector {
-    private DeserializerRegistry registry;
+public class OF10StatsRequestInputFactory implements OFDeserializer<MultipartRequestInput> {
     private static final byte FLOW_PADDING_1 = 1;
     private static final byte AGGREGATE_PADDING_1 = 1;
 
-    @Override
-    public MultipartRequestInput deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
+    private final DeserializerRegistry registry;
 
+    public OF10StatsRequestInputFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
+
+    @Override
+    public MultipartRequestInput deserialize(final ByteBuf rawMessage) {
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)
                 .setXid(readUint32(rawMessage));
@@ -98,14 +97,14 @@ public class OF10StatsRequestInputFactory
         return builder.build();
     }
 
-    private static MultipartRequestExperimenterCase setExperimenter(ByteBuf input) {
+    private static MultipartRequestExperimenterCase setExperimenter(final ByteBuf input) {
         MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
         MultipartRequestExperimenterBuilder experimenterBuilder = new MultipartRequestExperimenterBuilder();
         caseBuilder.setMultipartRequestExperimenter(experimenterBuilder.build());
         return caseBuilder.build();
     }
 
-    private static MultipartRequestQueueCase setQueue(ByteBuf input) {
+    private static MultipartRequestQueueCase setQueue(final ByteBuf input) {
         final MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
         queueBuilder.setPortNo(readUint16(input).toUint32());
@@ -115,7 +114,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestPortStatsCase setPortStats(ByteBuf input) {
+    private static MultipartRequestPortStatsCase setPortStats(final ByteBuf input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
         portBuilder.setPortNo(readUint16(input).toUint32());
@@ -123,7 +122,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestTableCase setTable(ByteBuf input) {
+    private static MultipartRequestTableCase setTable(final ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
         tableBuilder.setEmpty(Empty.getInstance());
@@ -131,7 +130,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private MultipartRequestAggregateCase setAggregate(ByteBuf input) {
+    private MultipartRequestAggregateCase setAggregate(final ByteBuf input) {
         final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
@@ -144,7 +143,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private MultipartRequestFlowCase setFlow(ByteBuf input) {
+    private MultipartRequestFlowCase setFlow(final ByteBuf input) {
         final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
@@ -157,7 +156,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestDescCase setDesc(ByteBuf input) {
+    private static MultipartRequestDescCase setDesc(final ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
         descBuilder.setEmpty(Empty.getInstance());
@@ -166,18 +165,13 @@ public class OF10StatsRequestInputFactory
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static MultipartRequestFlags getMultipartRequestFlags(int input) {
+    private static MultipartRequestFlags getMultipartRequestFlags(final int input) {
         final Boolean _oFPMPFREQMORE = (input & 1 << 0) != 0;
         MultipartRequestFlags flag = new MultipartRequestFlags(_oFPMPFREQMORE);
         return flag;
     }
 
-    private static MultipartType getMultipartType(int input) {
+    private static MultipartType getMultipartType(final int input) {
         return MultipartType.forValue(input);
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -69,8 +68,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
  * Util class for injecting new match serializers into OpenflowJava.
  */
 public final class MatchSerializerInjector {
-
     private MatchSerializerInjector() {
+        // Hidden in purpose
     }
 
     /**
@@ -80,7 +79,7 @@ public final class MatchSerializerInjector {
      * @param provider OpenflowJava serializer extension provider
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
-        final MatchSerializer serializer = new MatchSerializer();
+        final MatchSerializer serializer = new MatchSerializer(provider);
         provider.registerSerializer(
                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class),
                 serializer);
@@ -151,11 +150,8 @@ public final class MatchSerializerInjector {
      */
     @VisibleForTesting
     static Function<Integer, Function<Integer, Consumer<MatchEntrySerializer>>> createInjector(
-            final MatchEntrySerializerRegistry registry,
-            final byte version) {
+            final MatchEntrySerializerRegistry registry, final byte version) {
         return oxmClass -> oxmField -> serializer ->
-                registry.registerEntrySerializer(
-                        new MatchEntrySerializerKeyImpl(version, oxmClass, oxmField),
-                        serializer);
+            registry.registerEntrySerializer(new MatchEntrySerializerKeyImpl(version, oxmClass, oxmField), serializer);
     }
 }

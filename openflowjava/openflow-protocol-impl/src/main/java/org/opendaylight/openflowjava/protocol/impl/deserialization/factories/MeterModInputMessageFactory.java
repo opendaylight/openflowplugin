@@ -7,16 +7,14 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
@@ -39,22 +37,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author giuseppex.petralia@intel.com
  */
-public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput>, DeserializerRegistryInjector {
-
-    private DeserializerRegistry registry;
+public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput> {
     private static final byte PADDING_IN_METER_BAND_DROP_HEADER = 4;
     private static final byte PADDING_IN_METER_BAND_DSCP_HEADER = 3;
 
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
+    private final DeserializerRegistry registry;
+
+    public MeterModInputMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
     }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public MeterModInput deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
-
+    public MeterModInput deserialize(final ByteBuf rawMessage) {
         MeterModInputBuilder builder = new MeterModInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
@@ -110,7 +104,7 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static MeterFlags createMeterFlags(int input) {
+    private static MeterFlags createMeterFlags(final int input) {
         final Boolean mfKBPS = (input & 1 << 0) != 0;
         final Boolean mfPKTPS = (input & 1 << 1) != 0;
         final Boolean mfBURST = (input & 1 << 2) != 0;
