@@ -5,20 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 
 public class Icmpv6CodeEntrySerializerTest extends AbstractMatchEntrySerializerTest {
-
     @Test
     public void testSerialize() {
         final short code = 101;
@@ -34,7 +31,7 @@ public class Icmpv6CodeEntrySerializerTest extends AbstractMatchEntrySerializerT
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+        return Byte.BYTES;
     }
 
     @Override
@@ -46,5 +43,4 @@ public class Icmpv6CodeEntrySerializerTest extends AbstractMatchEntrySerializerT
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
     }
-
 }

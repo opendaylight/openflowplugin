@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -16,7 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 public class IpDscpEntrySerializer extends AbstractPrimitiveEntrySerializer<Dscp> {
     public IpDscpEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_DSCP, EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_DSCP, Byte.BYTES);
     }
 
     @Override

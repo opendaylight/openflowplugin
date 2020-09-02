@@ -242,167 +242,167 @@ public class MatchFieldSerializerTest extends AbstractTablePropertySerializerTes
         assertProperty(property, out -> {
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ARP_OP << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ARP_SHA << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ARP_SPA << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ARP_THA << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ARP_TPA << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ETH_DST << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ETH_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ETH_TYPE << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ICMPV4_CODE << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ICMPV4_TYPE << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ICMPV6_CODE << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ICMPV6_TYPE << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IN_PHY_PORT << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IN_PORT << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IP_DSCP << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IP_ECN << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IP_PROTO << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV4_DST << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV4_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_DST << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_EXTHDR << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_FLABEL << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_ND_SLL << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_ND_TARGET << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_ND_TLL << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV6_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.METADATA << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.MPLS_BOS << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.MPLS_LABEL << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.MPLS_TC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.PBB_ISID << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.SCTP_DST << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.SCTP_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.TCP_DST << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.EXPERIMENTER_CLASS);
             assertEquals(out.readUnsignedByte(), EncodeConstants.ONFOXM_ET_TCP_FLAGS << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte() >>> 1, OxmMatchConstants.TCP_SRC);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.TUNNEL_ID << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.UDP_DST << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.UDP_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_PCP << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
 
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            out.skipBytes(Byte.BYTES);
         });
     }
 

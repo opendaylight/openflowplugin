@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import io.netty.buffer.ByteBuf;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
@@ -65,7 +63,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
 
         // skip experimenter Id
-        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        message.skipBytes(Integer.BYTES);
 
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
@@ -100,7 +98,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         return new NxmHeader(
                 getNxmFieldCode(),
                 hasMask,
-                EncodeConstants.SIZE_OF_INT_IN_BYTES + (hasMask ? getValueLength() * 2 : getValueLength()),
+                Integer.BYTES + (hasMask ? getValueLength() * 2 : getValueLength()),
                 getExperimenterId().longValue());
     }
 

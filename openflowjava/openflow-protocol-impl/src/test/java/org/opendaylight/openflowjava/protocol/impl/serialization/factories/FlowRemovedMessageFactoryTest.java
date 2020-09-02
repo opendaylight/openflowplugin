@@ -121,18 +121,18 @@ public class FlowRemovedMessageFactoryTest {
         Assert.assertEquals("Wrong Packet count", message.getPacketCount().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong Byte count", message.getByteCount().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong match type", 1, serializedBuffer.readUnsignedShort());
-        serializedBuffer.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        serializedBuffer.skipBytes(Short.BYTES);
         Assert.assertEquals("Wrong oxm class", 0x8000, serializedBuffer.readUnsignedShort());
         short fieldAndMask = serializedBuffer.readUnsignedByte();
         Assert.assertEquals("Wrong oxm hasMask", 0, fieldAndMask & 1);
         Assert.assertEquals("Wrong oxm field", 1, fieldAndMask >> 1);
-        serializedBuffer.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        serializedBuffer.skipBytes(Byte.BYTES);
         Assert.assertEquals("Wrong oxm value", 42, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong oxm class", 0x8000, serializedBuffer.readUnsignedShort());
         fieldAndMask = serializedBuffer.readUnsignedByte();
         Assert.assertEquals("Wrong oxm hasMask", 0, fieldAndMask & 1);
         Assert.assertEquals("Wrong oxm field", 9, fieldAndMask >> 1);
-        serializedBuffer.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        serializedBuffer.skipBytes(Byte.BYTES);
         Assert.assertEquals("Wrong oxm value", 4, serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(7);
     }

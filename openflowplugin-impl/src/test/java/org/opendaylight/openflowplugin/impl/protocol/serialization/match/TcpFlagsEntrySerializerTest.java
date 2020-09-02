@@ -52,7 +52,7 @@ public class TcpFlagsEntrySerializerTest extends AbstractExperimenterMatchEntryS
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        return Short.BYTES;
     }
 
     @Override

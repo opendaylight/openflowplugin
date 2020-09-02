@@ -89,7 +89,7 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                 case OFPMBTEXPERIMENTER: {
                     // TODO: Finish meter band experimenter deserialization
                     long expId =
-                            message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                            message.getUnsignedInt(message.readerIndex() + 2 * Integer.BYTES);
                     message.readerIndex(bandStartIndex);
 
                     OFDeserializer<Experimenter> deserializer = registry.getDeserializer(
