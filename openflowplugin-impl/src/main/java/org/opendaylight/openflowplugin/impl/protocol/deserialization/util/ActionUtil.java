@@ -44,8 +44,7 @@ public final class ActionUtil {
         final Long expId;
 
         if (type == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = message.getUnsignedInt(message.readerIndex()
-                    + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
         } else {
             expId = null;
         }
@@ -83,8 +82,7 @@ public final class ActionUtil {
         final Long expId;
 
         if (type == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = message.getUnsignedInt(message.readerIndex()
-                    + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
         } else {
             expId = null;
         }

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFields;
@@ -16,8 +15,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MplsBosEntrySerializer extends AbstractPrimitiveEntrySerializer<Uint8> {
     public MplsBosEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_BOS,
-            EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_BOS, Byte.BYTES);
     }
 
     @Override

@@ -92,8 +92,7 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
                     bandsBuilder.setMeterBand(bandDscpRemarkCaseBuilder.build());
                     break;
                 case 0xFFFF:
-                    long expId = rawMessage.getUnsignedInt(rawMessage.readerIndex()
-                            + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                    long expId = rawMessage.getUnsignedInt(rawMessage.readerIndex() + 2 * Integer.BYTES);
                     rawMessage.readerIndex(bandStartIndex);
                     OFDeserializer<MeterBandExperimenterCase> deserializer = registry
                             .getDeserializer(ExperimenterDeserializerKeyFactory

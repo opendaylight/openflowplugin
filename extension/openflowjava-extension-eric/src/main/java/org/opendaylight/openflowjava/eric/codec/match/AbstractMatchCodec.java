@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import io.netty.buffer.ByteBuf;
@@ -13,7 +12,6 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializ
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -32,12 +30,12 @@ public abstract class AbstractMatchCodec implements
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         builder.setOxmMatchField(getEricField());
         boolean hasMask = (message.readUnsignedByte() & 1) != 0;
         builder.setHasMask(hasMask);
         // skip experimenter class, match length and experimenter id - not needed
-        message.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        message.skipBytes(Byte.BYTES);
         return builder;
     }
 

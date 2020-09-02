@@ -50,7 +50,7 @@ public class MatchDeserializer implements OFDeserializer<Match>,
             CodeKeyMaker keyMaker = CodeKeyMakerFactory
                     .createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
             List<MatchEntry> entries = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,
-                    length - 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES, input, keyMaker, registry);
+                    length - 2 * Short.BYTES, input, keyMaker, registry);
             builder.setMatchEntry(entries);
             int paddingRemainder = length % EncodeConstants.PADDING;
             if (paddingRemainder != 0) {

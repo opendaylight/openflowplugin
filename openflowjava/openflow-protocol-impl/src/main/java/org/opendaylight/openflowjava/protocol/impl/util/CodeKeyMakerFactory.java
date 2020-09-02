@@ -34,13 +34,11 @@ public final class CodeKeyMakerFactory {
             @Override
             public MessageCodeKey make(final ByteBuf input) {
                 int oxmClass = input.getUnsignedShort(input.readerIndex());
-                int oxmField = input.getUnsignedByte(input.readerIndex()
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+                int oxmField = input.getUnsignedByte(input.readerIndex() + Short.BYTES) >>> 1;
                 MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(getVersion(),
                         oxmClass, oxmField);
                 if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-                    long expId = input.getUnsignedInt(input.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                            + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+                    long expId = input.getUnsignedInt(input.readerIndex() + Short.BYTES + 2 * Byte.BYTES);
                     key.setExperimenterId(Uint32.valueOf(expId));
                     return key;
                 }
@@ -56,8 +54,7 @@ public final class CodeKeyMakerFactory {
             public MessageCodeKey make(final ByteBuf input) {
                 int type = input.getUnsignedShort(input.readerIndex());
                 if (type == EncodeConstants.EXPERIMENTER_VALUE) {
-                    Long expId = input.getUnsignedInt(input.readerIndex()
-                            + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                    Long expId = input.getUnsignedInt(input.readerIndex() + 2 * Short.BYTES);
                     return new ExperimenterActionDeserializerKey(getVersion(), expId);
                 }
                 ActionDeserializerKey actionDeserializerKey = new ActionDeserializerKey(getVersion(), type, null);
@@ -72,8 +69,7 @@ public final class CodeKeyMakerFactory {
             public MessageCodeKey make(final ByteBuf input) {
                 int type = input.getUnsignedShort(input.readerIndex());
                 if (type == EncodeConstants.EXPERIMENTER_VALUE) {
-                    Long expId = input.getUnsignedInt(input.readerIndex()
-                            + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                    Long expId = input.getUnsignedInt(input.readerIndex() + 2 * Short.BYTES);
                     return new ExperimenterInstructionDeserializerKey(getVersion(), expId);
                 }
                 return new InstructionDeserializerKey(getVersion(), type, null);

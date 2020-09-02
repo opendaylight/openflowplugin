@@ -44,18 +44,16 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer
         final  org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
             .ActionBuilder builder = new ActionBuilder();
         final int startIndex = input.readerIndex();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         final SetFieldCaseBuilder caseBuilder = new SetFieldCaseBuilder();
         SetFieldActionBuilder actionBuilder = new SetFieldActionBuilder();
         int oxmClass = input.getUnsignedShort(input.readerIndex());
         // get oxm_field & hasMask byte and extract the field value
-        int oxmField = input.getUnsignedByte(input.readerIndex()
-                + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        int oxmField = input.getUnsignedByte(input.readerIndex() + Short.BYTES) >>> 1;
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
                 oxmClass, oxmField);
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            long expId = input.getUnsignedInt(input.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                    + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            long expId = input.getUnsignedInt(input.readerIndex() + Short.BYTES + 2 * Byte.BYTES);
             key.setExperimenterId(Uint32.valueOf(expId));
         }
         OFDeserializer<MatchEntry> matchDeserializer = registry.getDeserializer(key);

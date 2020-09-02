@@ -237,9 +237,9 @@ public class TableFeaturesMatchFieldDeserializer {
      * @return SetFieldMatchBuilder with hasMask properly set
      */
     protected static SetFieldMatchBuilder processHeader(final ByteBuf in) {
-        in.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // skip oxm_class
+        in.skipBytes(Short.BYTES); // skip oxm_class
         boolean hasMask = (in.readUnsignedByte() & 1) != 0;
-        in.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // skip match entry length
+        in.skipBytes(Byte.BYTES); // skip match entry length
 
         return new SetFieldMatchBuilder()
                 .setHasMask(hasMask);
@@ -253,12 +253,11 @@ public class TableFeaturesMatchFieldDeserializer {
      */
     public Optional<SetFieldMatch> deserialize(final ByteBuf message) {
         int oxmClass = message.getUnsignedShort(message.readerIndex());
-        int oxmField = message.getUnsignedByte(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        int oxmField = message.getUnsignedByte(message.readerIndex() + Short.BYTES) >>> 1;
         Uint32 expId = null;
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = Uint32.valueOf(message.getUnsignedInt(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                    + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES));
+            expId = Uint32.valueOf(message.getUnsignedInt(message.readerIndex() + Short.BYTES + 2 * Byte.BYTES));
         }
 
         final MatchEntryDeserializerKey key =

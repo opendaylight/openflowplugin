@@ -100,8 +100,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                     Long expId = null;
 
                     if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                        expId = message.getUnsignedInt(message.readerIndex()
-                                + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                        expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
                     }
 
                     deserializer = Preconditions.checkNotNull(registry).getDeserializer(

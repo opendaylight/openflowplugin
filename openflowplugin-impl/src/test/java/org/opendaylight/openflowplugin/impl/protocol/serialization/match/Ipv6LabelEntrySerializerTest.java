@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
@@ -22,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 
 public class Ipv6LabelEntrySerializerTest extends AbstractMatchEntrySerializerTest {
-
     @Test
     public void testSerialize() {
         final long ipv6flowLabel = 358;
@@ -58,7 +55,7 @@ public class Ipv6LabelEntrySerializerTest extends AbstractMatchEntrySerializerTe
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 
     @Override
@@ -70,5 +67,4 @@ public class Ipv6LabelEntrySerializerTest extends AbstractMatchEntrySerializerTe
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
     }
-
 }

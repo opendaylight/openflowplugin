@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TunnelIdCase;
@@ -19,15 +18,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author michal.polkorab
  */
 public class OxmTunnelIdSerializer extends AbstractOxmMatchEntrySerializer {
-
     @Override
     public void serialize(MatchEntry entry, ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         TunnelIdCase entryValue = (TunnelIdCase) entry.getMatchEntryValue();
         outBuffer.writeBytes(entryValue.getTunnelId().getTunnelId());
         if (entry.isHasMask()) {
-            writeMask(entryValue.getTunnelId().getMask(), outBuffer,
-                    EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+            writeMask(entryValue.getTunnelId().getMask(), outBuffer, Long.BYTES);
         }
     }
 
@@ -43,6 +40,6 @@ public class OxmTunnelIdSerializer extends AbstractOxmMatchEntrySerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 }

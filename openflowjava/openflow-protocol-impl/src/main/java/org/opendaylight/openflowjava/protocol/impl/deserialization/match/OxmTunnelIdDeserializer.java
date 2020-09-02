@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -37,12 +36,11 @@ public class OxmTunnelIdDeserializer extends AbstractOxmMatchEntryDeserializer
     private static void addTunnelIdValue(ByteBuf input, MatchEntryBuilder builder) {
         final TunnelIdCaseBuilder caseBuilder = new TunnelIdCaseBuilder();
         TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
-        byte[] metadataBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataBytes = new byte[Long.BYTES];
         input.readBytes(metadataBytes);
         tunnelIdBuilder.setTunnelId(metadataBytes);
         if (builder.isHasMask()) {
-            tunnelIdBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+            tunnelIdBuilder.setMask(OxmDeserializerHelper.convertMask(input, Long.BYTES));
         }
         caseBuilder.setTunnelId(tunnelIdBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

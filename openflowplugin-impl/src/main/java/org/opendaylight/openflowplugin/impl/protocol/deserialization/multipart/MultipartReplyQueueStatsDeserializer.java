@@ -39,11 +39,11 @@ public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<Mult
                     .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port));
             final QueueId queueId = new QueueId(message.readUnsignedInt());
 
-            final byte[] txBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txBytes = new byte[Long.BYTES];
             message.readBytes(txBytes);
-            final byte[] txPackets = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txPackets = new byte[Long.BYTES];
             message.readBytes(txPackets);
-            final byte[] txErrors = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txErrors = new byte[Long.BYTES];
             message.readBytes(txErrors);
 
             items.add(new QueueIdAndStatisticsMapBuilder()

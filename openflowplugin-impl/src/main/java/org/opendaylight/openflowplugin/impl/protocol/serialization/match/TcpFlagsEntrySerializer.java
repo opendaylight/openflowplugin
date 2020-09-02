@@ -16,8 +16,7 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySerializer<TcpFlagsMatch, Uint16> {
     public TcpFlagsEntrySerializer() {
-        super(EncodeConstants.ONFOXM_ET_TCP_FLAGS, EncodeConstants.SIZE_OF_SHORT_IN_BYTES,
-            EncodeConstants.ONF_EXPERIMENTER_ID.toJava());
+        super(EncodeConstants.ONFOXM_ET_TCP_FLAGS, Short.BYTES, EncodeConstants.ONF_EXPERIMENTER_ID.toJava());
     }
 
     @Override
@@ -35,7 +34,7 @@ public class TcpFlagsEntrySerializer extends AbstractExperimenterMatchEntrySeria
     protected void serializeEntryContent(TcpFlagsMatch entry, Uint16 mask, ByteBuf outBuffer) {
         outBuffer.writeShort(entry.getTcpFlags().shortValue());
         if (mask != null) {
-            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, Short.BYTES);
         }
     }
 }

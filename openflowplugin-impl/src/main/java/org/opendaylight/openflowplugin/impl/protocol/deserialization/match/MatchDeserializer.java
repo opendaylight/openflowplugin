@@ -52,7 +52,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         final int length = inBuffer.readUnsignedShort();
 
         final int startIndex = inBuffer.readerIndex();
-        final int entriesLength = length - 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        final int entriesLength = length - 2 * Short.BYTES;
 
         while (inBuffer.readerIndex() - startIndex < entriesLength) {
             deserializeEntry(inBuffer, builder);
@@ -80,17 +80,13 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
             return;
         }
         int oxmClass = inBuffer.getUnsignedShort(inBuffer.readerIndex());
-        int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex()
-                + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex() + Short.BYTES) >>> 1;
 
         final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            long expId = inBuffer.getUnsignedInt(inBuffer.readerIndex()
-                    + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                    + 2 * EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
-
+            long expId = inBuffer.getUnsignedInt(inBuffer.readerIndex() + Short.BYTES + 2 * Byte.BYTES);
             key.setExperimenterId(Uint32.valueOf(expId));
         }
 
