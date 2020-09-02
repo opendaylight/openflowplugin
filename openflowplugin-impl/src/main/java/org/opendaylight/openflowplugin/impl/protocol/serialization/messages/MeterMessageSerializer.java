@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -30,14 +31,17 @@ import org.slf4j.LoggerFactory;
  * Translates MeterMod messages
  * OF protocol versions: 1.3.
  */
-public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessage> implements
-        SerializerRegistryInjector {
+public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessage> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterMessageSerializer.class);
     private static final short LENGTH_OF_METER_BANDS = 16;
     private static final short PADDING_IN_METER_BAND_DROP = 4;
     private static final short PADDING_IN_METER_BAND_DSCP_REMARK = 3;
 
-    private SerializerRegistry registry;
+    private final SerializerLookup registry;
+
+    public MeterMessageSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final MeterMessage message, final ByteBuf outBuffer) {
@@ -98,11 +102,6 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                 }
                             })));
         }
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 
     private static int createMeterFlagsBitMask(final MeterFlags flags) {

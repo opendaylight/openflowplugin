@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
@@ -20,21 +19,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Match
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplySetfield;
 
-public class ApplySetfieldTablePropertySerializer extends AbstractTablePropertySerializer<ApplySetfield> implements
-        SerializerRegistryInjector {
+public class ApplySetfieldTablePropertySerializer extends AbstractTablePropertySerializer<ApplySetfield> {
+    private final SerializerLookup registry;
 
-    private SerializerRegistry registry;
+    public ApplySetfieldTablePropertySerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     protected void serializeProperty(final ApplySetfield property, final ByteBuf byteBuf) {
-        property
-            .getApplySetfield()
+        property.getApplySetfield()
             .nonnullSetFieldMatch().values()
-            .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
-                .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
-                    new MessageTypeKey<>(
-                        EncodeConstants.OF13_VERSION_ID,
-                        setFieldMatch.getMatchType()))
+            .forEach(setFieldMatch -> registry.<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
+                    new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, setFieldMatch.getMatchType()))
                 .serialize(setFieldMatch, byteBuf));
     }
 
@@ -47,10 +44,4 @@ public class ApplySetfieldTablePropertySerializer extends AbstractTablePropertyS
     protected Class<ApplySetfield> getClazz() {
         return ApplySetfield.class;
     }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
-    }
-
 }

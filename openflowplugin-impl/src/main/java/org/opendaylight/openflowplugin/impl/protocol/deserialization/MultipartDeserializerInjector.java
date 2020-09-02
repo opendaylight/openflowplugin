@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import java.util.function.Consumer;
@@ -33,8 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 final class MultipartDeserializerInjector {
-
     private MultipartDeserializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -50,26 +49,27 @@ final class MultipartDeserializerInjector {
         final Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> injector =
                 createInjector(provider, version);
         injector.apply(MultipartType.OFPMPDESC.getIntValue()).accept(new MultipartReplyDescDeserializer());
-        injector.apply(MultipartType.OFPMPFLOW.getIntValue()).accept(new MultipartReplyFlowStatsDeserializer());
+        injector.apply(MultipartType.OFPMPFLOW.getIntValue()).accept(new MultipartReplyFlowStatsDeserializer(provider));
         injector.apply(MultipartType.OFPMPAGGREGATE.getIntValue())
                 .accept(new MultipartReplyFlowAggregateStatsDeserializer());
         injector.apply(MultipartType.OFPMPTABLE.getIntValue()).accept(new MultipartReplyFlowTableStatsDeserializer());
         injector.apply(MultipartType.OFPMPPORTSTATS.getIntValue()).accept(new MultipartReplyPortStatsDeserializer());
         injector.apply(MultipartType.OFPMPQUEUE.getIntValue()).accept(new MultipartReplyQueueStatsDeserializer());
         injector.apply(MultipartType.OFPMPGROUP.getIntValue()).accept(new MultipartReplyGroupStatsDeserializer());
-        injector.apply(MultipartType.OFPMPGROUPDESC.getIntValue()).accept(new MultipartReplyGroupDescDeserializer());
+        injector.apply(MultipartType.OFPMPGROUPDESC.getIntValue()).accept(
+                new MultipartReplyGroupDescDeserializer(provider));
         injector.apply(MultipartType.OFPMPGROUPFEATURES.getIntValue())
                 .accept(new MultipartReplyGroupFeaturesDeserializer());
         injector.apply(MultipartType.OFPMPMETER.getIntValue()).accept(new MultipartReplyMeterStatsDeserializer());
         injector.apply(MultipartType.OFPMPMETERCONFIG.getIntValue())
-                .accept(new MultipartReplyMeterConfigDeserializer());
+                .accept(new MultipartReplyMeterConfigDeserializer(provider));
         injector.apply(MultipartType.OFPMPMETERFEATURES.getIntValue())
                 .accept(new MultipartReplyMeterFeaturesDeserializer());
         injector.apply(MultipartType.OFPMPTABLEFEATURES.getIntValue())
-                .accept(new MultipartReplyTableFeaturesDeserializer());
+                .accept(new MultipartReplyTableFeaturesDeserializer(provider));
         injector.apply(MultipartType.OFPMPPORTDESC.getIntValue()).accept(new MultipartReplyPortDescDeserializer());
         injector.apply(MultipartType.OFPMPEXPERIMENTER.getIntValue())
-                .accept(new MultipartReplyExperimenterDeserializer());
+                .accept(new MultipartReplyExperimenterDeserializer(provider));
     }
 
     /**
@@ -81,11 +81,9 @@ final class MultipartDeserializerInjector {
      * @return injector
      */
     private static Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> createInjector(
-            final DeserializerExtensionProvider provider,
-            final short version) {
+            final DeserializerExtensionProvider provider, final short version) {
         return code -> deserializer -> provider.registerDeserializer(
-                new MessageCodeKey(version, code, MultipartReplyBody.class),
-                deserializer);
+            new MessageCodeKey(version, code, MultipartReplyBody.class), deserializer);
     }
 
 }
