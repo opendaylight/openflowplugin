@@ -9,6 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.action.EmptyActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10EnqueueActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10OutputActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10SetDlDstActionDeserializer;
@@ -20,16 +21,9 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10Se
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10SetTpSrcActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10SetVlanPcpActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10SetVlanVidActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF10StripVlanActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13CopyTtlInActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13CopyTtlOutActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13DecMplsTtlActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13DecNwTtlActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13GroupActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13OutputActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13PopMplsActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13PopPbbActionDeserializer;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13PopVlanActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13PushMplsActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13PushPbbActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13PushVlanActionDeserializer;
@@ -39,6 +33,13 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13Se
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13SetQueueActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionDeserializerRegistryHelper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecNwTtlCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopVlanCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.StripVlanCaseBuilder;
 
 /**
  * Helper for registering action deserializer initializers.
@@ -62,7 +63,8 @@ public final class ActionDeserializerInitializer {
         helper.registerDeserializer(ActionConstants.OUTPUT_CODE, new OF10OutputActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_VLAN_VID_CODE, new OF10SetVlanVidActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_VLAN_PCP_CODE, new OF10SetVlanPcpActionDeserializer());
-        helper.registerDeserializer(ActionConstants.STRIP_VLAN_CODE, new OF10StripVlanActionDeserializer());
+        helper.registerDeserializer(ActionConstants.STRIP_VLAN_CODE,
+            new EmptyActionDeserializer<>(new StripVlanCaseBuilder().build()));
         helper.registerDeserializer(ActionConstants.SET_DL_SRC_CODE, new OF10SetDlSrcActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_DL_DST_CODE, new OF10SetDlDstActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_NW_SRC_CODE, new OF10SetNwSrcActionDeserializer());
@@ -74,20 +76,26 @@ public final class ActionDeserializerInitializer {
         // register OF v1.3 action deserializers
         helper = new ActionDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
         helper.registerDeserializer(ActionConstants.OUTPUT_CODE, new OF13OutputActionDeserializer());
-        helper.registerDeserializer(ActionConstants.COPY_TTL_OUT_CODE, new OF13CopyTtlOutActionDeserializer());
-        helper.registerDeserializer(ActionConstants.COPY_TTL_IN_CODE, new OF13CopyTtlInActionDeserializer());
+        helper.registerDeserializer(ActionConstants.COPY_TTL_OUT_CODE,
+            new EmptyActionDeserializer<>(new CopyTtlOutCaseBuilder().build()));
+        helper.registerDeserializer(ActionConstants.COPY_TTL_IN_CODE,
+            new EmptyActionDeserializer<>(new CopyTtlInCaseBuilder().build()));
         helper.registerDeserializer(ActionConstants.SET_MPLS_TTL_CODE, new OF13SetMplsTtlActionDeserializer());
-        helper.registerDeserializer(ActionConstants.DEC_MPLS_TTL_CODE, new OF13DecMplsTtlActionDeserializer());
+        helper.registerDeserializer(ActionConstants.DEC_MPLS_TTL_CODE,
+            new EmptyActionDeserializer<>(new DecMplsTtlCaseBuilder().build()));
         helper.registerDeserializer(ActionConstants.PUSH_VLAN_CODE, new OF13PushVlanActionDeserializer());
-        helper.registerDeserializer(ActionConstants.POP_VLAN_CODE, new OF13PopVlanActionDeserializer());
+        helper.registerDeserializer(ActionConstants.POP_VLAN_CODE,
+            new EmptyActionDeserializer<>(new PopVlanCaseBuilder().build()));
         helper.registerDeserializer(ActionConstants.PUSH_MPLS_CODE, new OF13PushMplsActionDeserializer());
         helper.registerDeserializer(ActionConstants.POP_MPLS_CODE, new OF13PopMplsActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_QUEUE_CODE, new OF13SetQueueActionDeserializer());
         helper.registerDeserializer(ActionConstants.GROUP_CODE, new OF13GroupActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_NW_TTL_CODE, new OF13SetNwTtlActionDeserializer());
-        helper.registerDeserializer(ActionConstants.DEC_NW_TTL_CODE, new OF13DecNwTtlActionDeserializer());
+        helper.registerDeserializer(ActionConstants.DEC_NW_TTL_CODE,
+            new EmptyActionDeserializer<>(new DecNwTtlCaseBuilder().build()));
         helper.registerDeserializer(ActionConstants.SET_FIELD_CODE, new OF13SetFieldActionDeserializer());
         helper.registerDeserializer(ActionConstants.PUSH_PBB_CODE, new OF13PushPbbActionDeserializer());
-        helper.registerDeserializer(ActionConstants.POP_PBB_CODE, new OF13PopPbbActionDeserializer());
+        helper.registerDeserializer(ActionConstants.POP_PBB_CODE,
+            new EmptyActionDeserializer<>(new PopPbbCaseBuilder().build()));
     }
 }
