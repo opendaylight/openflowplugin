@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.MeterConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.Bands;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Converts list of OF library config meter stats to MD-SAL config meter stats.
@@ -92,7 +93,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
 
                     meterBandHeaderBuilder.setBandBurstSize(dropBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(dropBand.getRate());
-                    BandId bandId = new BandId((long) bandKey);
+                    BandId bandId = new BandId(Uint32.valueOf(bandKey));
                     meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
 
@@ -112,7 +113,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
 
                     meterBandHeaderBuilder.setBandBurstSize(dscpRemarkBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(dscpRemarkBand.getRate());
-                    BandId bandId = new BandId((long) bandKey);
+                    BandId bandId = new BandId(Uint32.valueOf(bandKey));
                     meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
 
@@ -132,7 +133,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
 
                     meterBandHeaderBuilder.setBandBurstSize(experimenterBand.getBurstSize());
                     meterBandHeaderBuilder.setBandRate(experimenterBand.getRate());
-                    BandId bandId = new BandId((long) bandKey);
+                    BandId bandId = new BandId(Uint32.valueOf(bandKey));
                     meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(bandId));
                     meterBandHeaderBuilder.setBandId(bandId);
 

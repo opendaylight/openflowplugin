@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.group.stats.BucketStats;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Converts group related statistics messages coming from switch to MD-SAL messages.
@@ -53,24 +55,20 @@ public class GroupStatsResponseConvertor extends Convertor<
                 .reply.group.GroupStats.class);
 
     private static Buckets toSALBuckets(List<BucketStats> bucketStats) {
-        BucketsBuilder salBuckets = new BucketsBuilder();
+        final ImmutableMap.Builder<BucketCounterKey, BucketCounter> allBucketStats =
+                ImmutableMap.builderWithExpectedSize(bucketStats.size());
 
-        List<BucketCounter> allBucketStats = new ArrayList<>();
         int bucketKey = 0;
-
         for (BucketStats bucketStat : bucketStats) {
-            BucketCounterBuilder bucketCounter = new BucketCounterBuilder();
-            bucketCounter.setByteCount(new Counter64(bucketStat.getByteCount()));
-            bucketCounter.setPacketCount(new Counter64(bucketStat.getPacketCount()));
-            BucketId bucketId = new BucketId((long) bucketKey);
-            bucketCounter.withKey(new BucketCounterKey(bucketId));
-            bucketCounter.setBucketId(bucketId);
-            bucketKey++;
-            allBucketStats.add(bucketCounter.build());
+            final BucketCounterKey key = new BucketCounterKey(new BucketId(Uint32.valueOf(bucketKey++)));
+            allBucketStats.put(key, new BucketCounterBuilder()
+                .withKey(key)
+                .setByteCount(new Counter64(bucketStat.getByteCount()))
+                .setPacketCount(new Counter64(bucketStat.getPacketCount()))
+                .build());
         }
 
-        salBuckets.setBucketCounter(allBucketStats);
-        return salBuckets.build();
+        return new BucketsBuilder().setBucketCounter(allBucketStats.build()).build();
     }
 
     @Override
@@ -86,21 +84,17 @@ public class GroupStatsResponseConvertor extends Convertor<
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply
                 .body.multipart.reply.group._case.multipart.reply.group.GroupStats groupStats : source) {
-            GroupStatsBuilder salGroupStats = new GroupStatsBuilder();
-
-            salGroupStats.setBuckets(toSALBuckets(groupStats.nonnullBucketStats()));
-            salGroupStats.setByteCount(new Counter64(groupStats.getByteCount()));
-
-            DurationBuilder time = new DurationBuilder();
-            time.setSecond(new Counter32(groupStats.getDurationSec()));
-            time.setNanosecond(new Counter32(groupStats.getDurationNsec()));
-
-            salGroupStats.setDuration(time.build());
-            salGroupStats.setGroupId(new GroupId(groupStats.getGroupId().getValue()));
-            salGroupStats.setPacketCount(new Counter64(groupStats.getPacketCount()));
-            salGroupStats.setRefCount(new Counter32(groupStats.getRefCount()));
-            salGroupStats.withKey(new GroupStatsKey(salGroupStats.getGroupId()));
-            convertedSALGroups.add(salGroupStats.build());
+            convertedSALGroups.add(new GroupStatsBuilder()
+                .withKey(new GroupStatsKey(new GroupId(groupStats.getGroupId().getValue())))
+                .setBuckets(toSALBuckets(groupStats.nonnullBucketStats()))
+                .setByteCount(new Counter64(groupStats.getByteCount()))
+                .setDuration(new DurationBuilder()
+                    .setSecond(new Counter32(groupStats.getDurationSec()))
+                    .setNanosecond(new Counter32(groupStats.getDurationNsec()))
+                    .build())
+                .setPacketCount(new Counter64(groupStats.getPacketCount()))
+                .setRefCount(new Counter32(groupStats.getRefCount()))
+                .build());
         }
 
         return convertedSALGroups;

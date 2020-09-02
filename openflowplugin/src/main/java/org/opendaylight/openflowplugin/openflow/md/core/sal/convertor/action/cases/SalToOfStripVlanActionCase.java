@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SalToOfStripVlanActionCase extends ConvertorCase<StripVlanActionCase, Action, ActionConvertorData> {
     public SalToOfStripVlanActionCase() {
@@ -44,7 +44,7 @@ public class SalToOfStripVlanActionCase extends ConvertorCase<StripVlanActionCas
         VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
         vlanVidBuilder.setCfiBit(true);
-        vlanVidBuilder.setVlanVid(0x0000);
+        vlanVidBuilder.setVlanVid(Uint16.ZERO);
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
         matchBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
         matchBuilder.setHasMask(false);
