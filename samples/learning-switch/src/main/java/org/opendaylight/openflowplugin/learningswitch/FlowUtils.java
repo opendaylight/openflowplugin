@@ -5,12 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.learningswitch;
 
-import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -49,8 +46,8 @@ public final class FlowUtils {
     /**
      * Returns a {@link FlowBuilder} forwarding all packets to controller port.
      */
-    public static FlowBuilder createDirectMacToMacFlow(final Uint8 tableId, final int priority, final MacAddress srcMac,
-            final MacAddress dstMac, final NodeConnectorRef dstPort) {
+    public static FlowBuilder createDirectMacToMacFlow(final Uint8 tableId, final Uint16 priority,
+            final MacAddress srcMac, final MacAddress dstMac, final NodeConnectorRef dstPort) {
         FlowBuilder macToMacFlow = new FlowBuilder()
                 .setTableId(tableId)
                 .setFlowName("mac2mac");
@@ -81,7 +78,8 @@ public final class FlowUtils {
                 .build();
 
         // Create an Apply Action
-        ApplyActions applyActions = new ApplyActionsBuilder().setAction(ImmutableList.of(outputToControllerAction))
+        ApplyActions applyActions = new ApplyActionsBuilder()
+                .setAction(Map.of(outputToControllerAction.key(), outputToControllerAction))
                 .build();
 
         // Wrap our Apply Action in an Instruction
@@ -99,12 +97,12 @@ public final class FlowUtils {
                         .setEthernetMatch(ethernetMatch)
                         .build())
                 .setInstructions(new InstructionsBuilder()
-                        .setInstruction(ImmutableList.of(applyActionsInstruction))
+                        .setInstruction(Map.of(applyActionsInstruction.key(), applyActionsInstruction))
                         .build())
                 .setPriority(priority)
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
-                .setHardTimeout(0)
-                .setIdleTimeout(0)
+                .setHardTimeout(Uint16.ZERO)
+                .setIdleTimeout(Uint16.ZERO)
                 .setFlags(new FlowModFlags(false, false, false, false, false));
 
         return macToMacFlow;
@@ -113,7 +111,7 @@ public final class FlowUtils {
     /**
      * Returns a{@link FlowBuilder} forwarding all packets to controller port.
      */
-    public static FlowBuilder createFwdAllToControllerFlow(final Uint8 tableId, final int priority,
+    public static FlowBuilder createFwdAllToControllerFlow(final Uint8 tableId, final Uint16 priority,
             final FlowId flowId) {
         // Create output action -> send to controller
         OutputActionBuilder output = new OutputActionBuilder();
@@ -121,29 +119,23 @@ public final class FlowUtils {
         Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(controllerPort);
 
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
+        Action action = new ActionBuilder()
+                .setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build())
+                .withKey(new ActionKey(0))
+                .build();
 
         // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
+        ApplyActionsBuilder aab = new ApplyActionsBuilder().setAction(Map.of(action.key(), action));
 
         // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
+        Instruction instruction = new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build())
+                .withKey(new InstructionKey(0))
+                .build();
 
         // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
+        InstructionsBuilder isb = new InstructionsBuilder()
+                .setInstruction(Map.of(instruction.key(), instruction));
 
         MatchBuilder matchBuilder = new MatchBuilder();
         FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)
@@ -153,8 +145,8 @@ public final class FlowUtils {
             .setInstructions(isb.build())
             .setPriority(priority)
             .setBufferId(OFConstants.OFP_NO_BUFFER)
-            .setHardTimeout(0)
-            .setIdleTimeout(0)
+            .setHardTimeout(Uint16.ZERO)
+            .setIdleTimeout(Uint16.ZERO)
             .setFlags(new FlowModFlags(false, false, false, false, false));
 
         return allToCtrlFlow;
