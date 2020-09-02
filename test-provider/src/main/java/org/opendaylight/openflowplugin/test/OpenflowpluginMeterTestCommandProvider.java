@@ -94,7 +94,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         testNode = builder.build();
     }
 
-    private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
