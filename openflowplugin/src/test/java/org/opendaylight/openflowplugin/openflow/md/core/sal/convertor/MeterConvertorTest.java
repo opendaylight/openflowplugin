@@ -138,8 +138,8 @@ public class MeterConvertorTest {
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
         // key).build();
 
-        addMeterFromSAL
-                .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
+        addMeterFromSAL.setMeterId(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(Uint32.TEN));
         MeterFlags flagV = new MeterFlags(true, true, true, true);
         addMeterFromSAL.setFlags(flagV);
 
@@ -190,8 +190,8 @@ public class MeterConvertorTest {
 
     @Test
     public void testMeterModCommandConvertorwithNoFlags() {
-        long burstSize = 10L;
-        long dropRate = 20L;
+        final Uint32 burstSize = Uint32.TEN;
+        final Uint32 dropRate = Uint32.valueOf(20);
         // / DROP Band
         MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
 
@@ -210,9 +210,9 @@ public class MeterConvertorTest {
         final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
 
         // DSCP Mark
-        final long dscpRemarkBurstSize = 11L;
-        final long dscpRemarkRate = 21L;
-        final short dscpPercLevel = 1;
+        final Uint32 dscpRemarkBurstSize = Uint32.valueOf(11);
+        final Uint32 dscpRemarkRate = Uint32.valueOf(21);
+        final Uint8 dscpPercLevel = Uint8.ONE;
 
         MeterBandTypesBuilder meterBandTypesB1 = new MeterBandTypesBuilder();
         MeterBandType bandFlag1 = new MeterBandType(false, true, false);
@@ -233,9 +233,9 @@ public class MeterConvertorTest {
         final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
 
         // Experimental
-        final long expBurstSize = 12L;
-        final long expRate = 22L;
-        final long expExperimenter = 23L;
+        final Uint32 expBurstSize = Uint32.valueOf(12);
+        final Uint32 expRate = Uint32.valueOf(22);
+        final Uint32 expExperimenter = Uint32.valueOf(23);
 
         MeterBandTypesBuilder meterBandTypesB2 = new MeterBandTypesBuilder();
         MeterBandType bandFlag2 = new MeterBandType(false, false, true);
@@ -274,9 +274,8 @@ public class MeterConvertorTest {
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
         // key).build();
 
-        addMeterFromSAL
-                .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
-
+        addMeterFromSAL.setMeterId(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(Uint32.TEN));
 
         AddMeterInput meterInputCommand = addMeterFromSAL.build();
         MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
@@ -284,7 +283,7 @@ public class MeterConvertorTest {
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         assertFalse(outMeterModInput.getFlags().isOFPMFBURST());
         assertTrue(outMeterModInput.getFlags().isOFPMFPKTPS());
-        assertEquals(Uint32.valueOf(10L), outMeterModInput.getMeterId().getValue());
+        assertEquals(Uint32.TEN, outMeterModInput.getMeterId().getValue());
         // BandInformation starts here:
 
         List<Bands> bands = outMeterModInput.getBands();
@@ -293,8 +292,8 @@ public class MeterConvertorTest {
             if (meterBand instanceof MeterBandDropCase) {
                 assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731
                     .MeterBandType.OFPMBTDROP, ((MeterBandDropCase) meterBand).getMeterBandDrop().getType());
-                assertEquals(burstSize, ((MeterBandDropCase) meterBand).getMeterBandDrop().getBurstSize().toJava());
-                assertEquals(dropRate, ((MeterBandDropCase) meterBand).getMeterBandDrop().getRate().toJava());
+                assertEquals(burstSize, ((MeterBandDropCase) meterBand).getMeterBandDrop().getBurstSize());
+                assertEquals(dropRate, ((MeterBandDropCase) meterBand).getMeterBandDrop().getRate());
 
             }
             if (meterBand instanceof MeterBandDscpRemarkCase) {
@@ -302,11 +301,11 @@ public class MeterConvertorTest {
                     .MeterBandType.OFPMBTDSCPREMARK,
                     ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getType());
                 assertEquals(dscpRemarkBurstSize,
-                        ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getBurstSize().toJava());
+                        ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getBurstSize());
                 assertEquals(dscpRemarkRate,
-                        ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getRate().toJava());
+                        ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getRate());
                 assertEquals(dscpPercLevel,
-                        ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getPrecLevel().toJava());
+                        ((MeterBandDscpRemarkCase) meterBand).getMeterBandDscpRemark().getPrecLevel());
 
             }
             if (meterBand instanceof MeterBandExperimenterCase) {
@@ -314,12 +313,12 @@ public class MeterConvertorTest {
                     .MeterBandType.OFPMBTEXPERIMENTER,
                      ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getType());
                 assertEquals(expBurstSize,
-                        ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getBurstSize().toJava());
+                        ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getBurstSize());
                 assertEquals(expRate,
-                        ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate().toJava());
+                        ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter().getRate());
                 ExperimenterIdMeterBand expBand = ((MeterBandExperimenterCase) meterBand).getMeterBandExperimenter()
                         .augmentation(ExperimenterIdMeterBand.class);
-                assertEquals(expExperimenter, expBand.getExperimenter().getValue().toJava());
+                assertEquals(expExperimenter, expBand.getExperimenter().getValue());
             }
         }
     }
@@ -333,8 +332,8 @@ public class MeterConvertorTest {
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
         // key).build();
 
-        addMeterFromSAL
-                .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
+        addMeterFromSAL.setMeterId(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(Uint32.TEN));
         MeterFlags flagV = new MeterFlags(true, true, true, true);
         addMeterFromSAL.setFlags(flagV);
 
@@ -367,9 +366,9 @@ public class MeterConvertorTest {
 
         meterBandTypesB1.setFlags(bandFlag1);
         DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-        dscp.setDscpRemarkBurstSize(11L);
-        dscp.setDscpRemarkRate(21L);
-        dscp.setPrecLevel((short) 1);
+        dscp.setDscpRemarkBurstSize(Uint32.valueOf(11));
+        dscp.setDscpRemarkRate(Uint32.valueOf(21));
+        dscp.setPrecLevel(Uint8.ONE);
         DscpRemark dscpRemark = dscp.build();
 
         MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
@@ -382,9 +381,9 @@ public class MeterConvertorTest {
         // Experimental
 
         ExperimenterBuilder exp = new ExperimenterBuilder();
-        exp.setExperimenterBurstSize(12L);
-        exp.setExperimenterRate(22L);
-        exp.setExperimenter(23L);
+        exp.setExperimenterBurstSize(Uint32.valueOf(12));
+        exp.setExperimenterRate(Uint32.valueOf(22));
+        exp.setExperimenter(Uint32.valueOf(23));
         Experimenter experimenter = exp.build();
 
         MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
@@ -415,8 +414,8 @@ public class MeterConvertorTest {
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
         // key).build();
 
-        addMeterFromSAL
-                .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(10L));
+        addMeterFromSAL.setMeterId(
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(Uint32.TEN));
         MeterFlags flagV = new MeterFlags(true, true, true, true);
         addMeterFromSAL.setFlags(flagV);
 

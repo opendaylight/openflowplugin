@@ -34,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.multipart.reply.group.desc.GroupDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.multipart.reply.group.desc.GroupDescBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for GroupDescStats conversion.
@@ -67,7 +69,7 @@ public class GroupDescStatsResponseConvertorTest {
     public void testSingleGroupDescStat() {
         GroupDescBuilder builder = new GroupDescBuilder();
         builder.setType(GroupType.OFPGTALL);
-        builder.setGroupId(new GroupId(42L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(42)));
         builder.setBucketsList(new ArrayList<>());
         List<GroupDesc> groupDescStats = new ArrayList<>();
         groupDescStats.add(builder.build());
@@ -94,13 +96,13 @@ public class GroupDescStatsResponseConvertorTest {
         // **********************************************
         GroupDescBuilder builder = new GroupDescBuilder();
         builder.setType(GroupType.OFPGTFF);
-        builder.setGroupId(new GroupId(42L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(42)));
 
         // Buckets for first group desc
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
-        bucketsBuilder.setWeight(16);
-        bucketsBuilder.setWatchPort(new PortNumber(84L));
-        bucketsBuilder.setWatchGroup(168L);
+        bucketsBuilder.setWeight(Uint16.valueOf(16));
+        bucketsBuilder.setWatchPort(new PortNumber(Uint32.valueOf(84)));
+        bucketsBuilder.setWatchGroup(Uint32.valueOf(168));
 
         // Actions for buckets for first group desc
         List<Action> actions = new ArrayList<>();
@@ -123,14 +125,14 @@ public class GroupDescStatsResponseConvertorTest {
         // **********************************************
         builder = new GroupDescBuilder();
         builder.setType(GroupType.OFPGTINDIRECT);
-        builder.setGroupId(new GroupId(50L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(50)));
 
         // First buckets for second group desc
         bucketsList = new ArrayList<>();
         bucketsBuilder = new BucketsListBuilder();
-        bucketsBuilder.setWeight(100);
-        bucketsBuilder.setWatchPort(new PortNumber(200L));
-        bucketsBuilder.setWatchGroup(400L);
+        bucketsBuilder.setWeight(Uint16.valueOf(100));
+        bucketsBuilder.setWatchPort(new PortNumber(Uint32.valueOf(200)));
+        bucketsBuilder.setWatchGroup(Uint32.valueOf(400));
 
         // Actions for first buckets for second group desc
         actions = new ArrayList<>();
@@ -153,9 +155,9 @@ public class GroupDescStatsResponseConvertorTest {
 
         // Second buckets for second group desc
         bucketsBuilder = new BucketsListBuilder();
-        bucketsBuilder.setWeight(5);
-        bucketsBuilder.setWatchPort(new PortNumber(10L));
-        bucketsBuilder.setWatchGroup(15L);
+        bucketsBuilder.setWeight(Uint16.valueOf(5));
+        bucketsBuilder.setWatchPort(new PortNumber(Uint32.TEN));
+        bucketsBuilder.setWatchGroup(Uint32.valueOf(15));
 
         // Actions for second buckets for second group desc
         actions = new ArrayList<>();

@@ -74,6 +74,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * test for {@link ActionConvertor}.
@@ -140,7 +141,7 @@ public class ActionConvertorTest {
 
     private void pbbActionData() {
         PushPbbActionBuilder pushpbb = new PushPbbActionBuilder();
-        pushpbb.setEthernetType(10);
+        pushpbb.setEthernetType(Uint16.TEN);
 
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setOrder(actionItem).setAction(new PushPbbActionCaseBuilder()
@@ -161,7 +162,7 @@ public class ActionConvertorTest {
     private void nwTtlAction() {
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
 
-        setNwTtlActionBuilder.setNwTtl((short) 1);
+        setNwTtlActionBuilder.setNwTtl(Uint8.ONE);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setOrder(actionItem).setAction(new SetNwTtlActionCaseBuilder()
                 .setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
@@ -201,7 +202,7 @@ public class ActionConvertorTest {
                 action : ofActionsList) {
             if (action.getActionChoice() instanceof OutputActionCase) {
                 OutputActionCase outputActionCase = (OutputActionCase) action.getActionChoice();
-                Assert.assertEquals(Uint16.valueOf(10), outputActionCase.getOutputAction().getMaxLength());
+                Assert.assertEquals(Uint16.TEN, outputActionCase.getOutputAction().getMaxLength());
                 Assert.assertEquals(Uint32.valueOf(4294967293L),
                     outputActionCase.getOutputAction().getPort().getValue());
             }
@@ -301,7 +302,7 @@ public class ActionConvertorTest {
 
     private void outputActionData() {
         OutputActionBuilder outputB = new OutputActionBuilder();
-        outputB.setMaxLength(10);
+        outputB.setMaxLength(Uint16.TEN);
         Uri uri = new Uri(OutputPortValues.CONTROLLER.toString());
         outputB.setOutputNodeConnector(uri);
 
@@ -335,7 +336,7 @@ public class ActionConvertorTest {
 
         SetMplsTtlActionBuilder setMplsTtlActionB = new SetMplsTtlActionBuilder();
 
-        setMplsTtlActionB.setMplsTtl((short) 10);
+        setMplsTtlActionB.setMplsTtl(Uint8.valueOf(10));
         ActionBuilder actionBuilder1 = new ActionBuilder();
         actionBuilder1.setOrder(actionItem).setAction(new SetMplsTtlActionCaseBuilder()
                 .setSetMplsTtlAction(setMplsTtlActionB.build()).build());
@@ -355,7 +356,7 @@ public class ActionConvertorTest {
     private void vlanActionData() {
         PushVlanActionBuilder pvB = new PushVlanActionBuilder();
 
-        pvB.setVlanId(new VlanId(10));
+        pvB.setVlanId(new VlanId(Uint16.TEN));
 
         ActionBuilder actionBuilder1 = new ActionBuilder();
         actionBuilder1.setOrder(actionItem).setAction(new PushVlanActionCaseBuilder()
@@ -376,7 +377,7 @@ public class ActionConvertorTest {
     private void mplsActionData() {
 
         PushMplsActionBuilder pushMB = new PushMplsActionBuilder();
-        pushMB.setEthernetType(10);
+        pushMB.setEthernetType(Uint16.TEN);
 
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setOrder(actionItem).setAction(new PushMplsActionCaseBuilder()
@@ -385,7 +386,7 @@ public class ActionConvertorTest {
         actions.add(actionItem++, actionBuilder.build());
 
         PopMplsActionBuilder popMB = new PopMplsActionBuilder();
-        popMB.setEthernetType(10);
+        popMB.setEthernetType(Uint16.TEN);
 
         ActionBuilder actionBuilder1 = new ActionBuilder();
         actionBuilder1.setOrder(actionItem).setAction(new PopMplsActionCaseBuilder()
