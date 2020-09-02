@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -24,17 +23,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmEthSrcDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
-
+public class OxmEthSrcDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addEthSrcValue(input, builder);
         return builder.build();
     }
 
-    private static void addEthSrcValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addEthSrcValue(final ByteBuf input, final MatchEntryBuilder builder) {
         EthSrcCaseBuilder caseBuilder = new EthSrcCaseBuilder();
         EthSrcBuilder ethBuilder = new EthSrcBuilder();
         ethBuilder.setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
@@ -54,5 +51,4 @@ public class OxmEthSrcDeserializer extends AbstractOxmMatchEntryDeserializer
     protected Class<? extends OxmClassBase> getOxmClass() {
         return OpenflowBasicClass.class;
     }
-
 }
