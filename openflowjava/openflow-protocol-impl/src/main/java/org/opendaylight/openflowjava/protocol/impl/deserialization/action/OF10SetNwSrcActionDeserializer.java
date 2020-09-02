@@ -9,7 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.src._case.SetNwSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -20,7 +20,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  *
  * @author michal.polkorab
  */
-public class OF10SetNwSrcActionDeserializer extends AbstractActionDeserializer {
+public class OF10SetNwSrcActionDeserializer extends AbstractActionDeserializer<SetNwSrcCase> {
+    public OF10SetNwSrcActionDeserializer() {
+        super(new SetNwSrcCaseBuilder().build());
+    }
+
     @Override
     public Action deserialize(final ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
@@ -31,10 +35,5 @@ public class OF10SetNwSrcActionDeserializer extends AbstractActionDeserializer {
         caseBuilder.setSetNwSrcAction(actionBuilder.build());
         builder.setActionChoice(caseBuilder.build());
         return builder.build();
-    }
-
-    @Override
-    protected ActionChoice getType() {
-        return new SetNwSrcCaseBuilder().build();
     }
 }
