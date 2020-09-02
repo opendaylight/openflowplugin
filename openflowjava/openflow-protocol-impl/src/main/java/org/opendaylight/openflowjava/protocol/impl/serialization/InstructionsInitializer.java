@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -30,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public final class InstructionsInitializer {
-
     private InstructionsInitializer() {
         throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
@@ -40,14 +38,14 @@ public final class InstructionsInitializer {
      *
      * @param serializerRegistry registry to be initialized with instruction serializers
      */
-    public static void registerInstructionSerializers(SerializerRegistry serializerRegistry) {
+    public static void registerInstructionSerializers(final SerializerRegistry serializerRegistry) {
         // register OF v1.3 instruction serializers
         InstructionSerializerRegistryHelper helper = new InstructionSerializerRegistryHelper(
                 EncodeConstants.OF13_VERSION_ID, serializerRegistry);
         helper.registerSerializer(GotoTableCase.class, new GoToTableInstructionSerializer());
         helper.registerSerializer(WriteMetadataCase.class, new WriteMetadataInstructionSerializer());
-        helper.registerSerializer(WriteActionsCase.class, new WriteActionsInstructionSerializer());
-        helper.registerSerializer(ApplyActionsCase.class, new ApplyActionsInstructionSerializer());
+        helper.registerSerializer(WriteActionsCase.class, new WriteActionsInstructionSerializer(serializerRegistry));
+        helper.registerSerializer(ApplyActionsCase.class, new ApplyActionsInstructionSerializer(serializerRegistry));
         helper.registerSerializer(ClearActionsCase.class, new ClearActionsInstructionSerializer());
         helper.registerSerializer(MeterCase.class, new MeterInstructionSerializer());
     }

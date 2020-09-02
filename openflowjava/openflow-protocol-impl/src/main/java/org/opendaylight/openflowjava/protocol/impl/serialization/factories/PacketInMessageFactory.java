@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -22,16 +21,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Translates PacketIn messages.
  */
-public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, SerializerRegistryInjector {
+public class PacketInMessageFactory implements OFSerializer<PacketInMessage> {
     private static final byte PADDING = 2;
     private static final byte MESSAGE_TYPE = 10;
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
+
+    public PacketInMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(PacketInMessage message, ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
+    public void serialize(final PacketInMessage message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeShort(message.getTotalLen().intValue());
@@ -50,10 +51,4 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
         }
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
-
 }

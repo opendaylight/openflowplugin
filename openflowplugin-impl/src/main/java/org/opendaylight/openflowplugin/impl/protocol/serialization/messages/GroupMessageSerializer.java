@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import java.util.Comparator;
 import java.util.Optional;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
@@ -26,8 +27,7 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  * Translates GroupMod messages.
  * OF protocol versions: 1.3.
  */
-public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessage> implements
-    SerializerRegistryInjector {
+public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessage> {
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
     private static final int OFPGC_ADD_OR_MOD = 32768;
@@ -40,10 +40,11 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private SerializerRegistry registry;
+    private final SerializerLookup registry;
 
-    public GroupMessageSerializer(final boolean isGroupAddModEnabled) {
-        this.isGroupAddModEnabled =  isGroupAddModEnabled;
+    public GroupMessageSerializer(final SerializerLookup registry, final boolean isGroupAddModEnabled) {
+        this.registry = requireNonNull(registry);
+        this.isGroupAddModEnabled = isGroupAddModEnabled;
     }
 
     @Override
@@ -96,10 +97,5 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
     @Override
     protected byte getMessageType() {
         return 15;
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 }
