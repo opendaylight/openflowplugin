@@ -7,30 +7,16 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
  * OF13CopyTtlOutActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF13CopyTtlOutActionDeserializer extends AbstractActionDeserializer {
-    @Override
-    public Action deserialize(ByteBuf input) {
-        ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * Short.BYTES);
-        builder.setActionChoice(getType());
-        input.skipBytes(ActionConstants.PADDING_IN_ACTION_HEADER);
-        return builder.build();
-    }
-
-    @Override
-    protected ActionChoice getType() {
-        return new CopyTtlOutCaseBuilder().build();
+public class OF13CopyTtlOutActionDeserializer extends AbstractEmptyActionDeserializer<CopyTtlOutCase> {
+    public OF13CopyTtlOutActionDeserializer() {
+        super(new CopyTtlOutCaseBuilder().build());
     }
 }
