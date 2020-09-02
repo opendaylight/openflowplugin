@@ -20,10 +20,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public class WriteMetadataInstructionSerializer extends AbstractInstructionSerializer {
+    public WriteMetadataInstructionSerializer() {
+        super(InstructionConstants.WRITE_METADATA_TYPE);
+    }
 
     @Override
-    public void serialize(Instruction instruction, ByteBuf outBuffer) {
-        outBuffer.writeShort(getType());
+    public void serialize(final Instruction instruction, final ByteBuf outBuffer) {
+        outBuffer.writeShort(InstructionConstants.WRITE_METADATA_TYPE);
         outBuffer.writeShort(InstructionConstants.WRITE_METADATA_LENGTH);
         outBuffer.writeZero(InstructionConstants.PADDING_IN_WRITE_METADATA);
         WriteMetadata metadata = ((WriteMetadataCase) instruction.getInstructionChoice())
@@ -31,10 +34,4 @@ public class WriteMetadataInstructionSerializer extends AbstractInstructionSeria
         outBuffer.writeBytes(metadata.getMetadata());
         outBuffer.writeBytes(metadata.getMetadataMask());
     }
-
-    @Override
-    protected int getType() {
-        return InstructionConstants.WRITE_METADATA_TYPE;
-    }
-
 }
