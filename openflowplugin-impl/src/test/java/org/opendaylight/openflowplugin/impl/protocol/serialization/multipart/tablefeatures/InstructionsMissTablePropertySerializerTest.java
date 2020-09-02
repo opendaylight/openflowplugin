@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
@@ -22,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.InstructionsMissBuilder;
 
 public class InstructionsMissTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
-
     @Test
     public void testSerialize() {
         final InstructionsMiss property = new InstructionsMissBuilder()
@@ -39,7 +36,7 @@ public class InstructionsMissTablePropertySerializerTest extends AbstractTablePr
 
         assertProperty(property, out -> {
             assertEquals(out.readUnsignedShort(), InstructionConstants.APPLY_ACTIONS_TYPE);
-            out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // Skip length of set field action
+            out.skipBytes(Short.BYTES); // Skip length of set field action
         });
     }
 
@@ -52,5 +49,4 @@ public class InstructionsMissTablePropertySerializerTest extends AbstractTablePr
     protected int getType() {
         return TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS.getIntValue();
     }
-
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -15,7 +14,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst;
@@ -120,7 +118,7 @@ public class OxmIpv4DstSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_INT_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Integer.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, String value) {
@@ -150,9 +148,9 @@ public class OxmIpv4DstSerializerTest {
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV4_DST, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
         if (hasMask) {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_LONG_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Long.BYTES, buffer.readUnsignedByte());
         } else {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Integer.BYTES, buffer.readUnsignedByte());
         }
     }
 }

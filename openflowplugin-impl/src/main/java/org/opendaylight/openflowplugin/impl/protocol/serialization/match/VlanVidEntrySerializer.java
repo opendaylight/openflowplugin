@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
@@ -19,8 +18,7 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId,
     private static final byte[] VLAN_VID_MASK = new byte[]{16, 0};
 
     public VlanVidEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_VID,
-            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_VID, Short.BYTES);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId,
         outBuffer.writeShort(vlanVidValue);
 
         if (mask != null) {
-            writeMask(VLAN_VID_MASK, outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            writeMask(VLAN_VID_MASK, outBuffer, Short.BYTES);
         }
     }
 }

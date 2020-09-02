@@ -56,7 +56,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
         while (message.readableBytes() > 0) {
             final FlowAndStatisticsMapListBuilder itemBuilder = new FlowAndStatisticsMapListBuilder();
             final int itemLength = message.readUnsignedShort();
-            final ByteBuf itemMessage = message.readSlice(itemLength - EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            final ByteBuf itemMessage = message.readSlice(itemLength - Short.BYTES);
 
             itemBuilder.setTableId(itemMessage.readUnsignedByte());
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_01);
@@ -73,11 +73,11 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
 
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
 
-            final byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] cookie = new byte[Long.BYTES];
             itemMessage.readBytes(cookie);
-            final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetCount = new byte[Long.BYTES];
             itemMessage.readBytes(packetCount);
-            final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] byteCount = new byte[Long.BYTES];
             itemMessage.readBytes(byteCount);
 
             itemBuilder
