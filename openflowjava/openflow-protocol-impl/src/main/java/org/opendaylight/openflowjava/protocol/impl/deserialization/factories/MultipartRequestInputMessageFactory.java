@@ -7,17 +7,16 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -100,9 +99,7 @@ import org.opendaylight.yangtools.yang.common.Empty;
  *
  * @author giuseppex.petralia@intel.com
  */
-@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-public class MultipartRequestInputMessageFactory
-        implements OFDeserializer<MultipartRequestInput>, DeserializerRegistryInjector {
+public class MultipartRequestInputMessageFactory implements OFDeserializer<MultipartRequestInput> {
     private static final byte PADDING = 4;
     private static final byte FLOW_PADDING_1 = 3;
     private static final byte FLOW_PADDING_2 = 4;
@@ -113,15 +110,14 @@ public class MultipartRequestInputMessageFactory
     private static final byte MULTIPART_REQUEST_TABLE_FEATURES_STRUCTURE_LENGTH = 64;
     private static final byte COMMON_PROPERTY_LENGTH = 4;
 
-    private DeserializerRegistry registry;
+    private final DeserializerRegistry registry;
 
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
+    public MultipartRequestInputMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
     }
 
     @Override
-    public MultipartRequestInput deserialize(ByteBuf rawMessage) {
+    public MultipartRequestInput deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder()
@@ -184,18 +180,18 @@ public class MultipartRequestInputMessageFactory
         return builder.build();
     }
 
-    private static MultipartType getMultipartType(int input) {
+    private static MultipartType getMultipartType(final int input) {
         return MultipartType.forValue(input);
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static MultipartRequestFlags getMultipartRequestFlags(int input) {
+    private static MultipartRequestFlags getMultipartRequestFlags(final int input) {
         final Boolean _oFPMPFREQMORE = (input & 1 << 0) != 0;
         MultipartRequestFlags flag = new MultipartRequestFlags(_oFPMPFREQMORE);
         return flag;
     }
 
-    private MultipartRequestTableFeaturesCase setTableFeatures(ByteBuf input) {
+    private MultipartRequestTableFeaturesCase setTableFeatures(final ByteBuf input) {
         MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesBuilder = new MultipartRequestTableFeaturesBuilder();
         List<TableFeatures> features = new ArrayList<>();
@@ -218,7 +214,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private List<TableFeatureProperties> createTableFeaturesProperties(ByteBuf input, int length) {
+    private List<TableFeatureProperties> createTableFeaturesProperties(final ByteBuf input, final int length) {
         List<TableFeatureProperties> properties = new ArrayList<>();
         int tableFeaturesLength = length;
         while (tableFeaturesLength > 0) {
@@ -286,12 +282,12 @@ public class MultipartRequestInputMessageFactory
         return properties;
     }
 
-    private static TableConfig createTableConfig(long input) {
+    private static TableConfig createTableConfig(final long input) {
         boolean deprecated = (input & 3) != 0;
         return new TableConfig(deprecated);
     }
 
-    private static MultipartRequestDescCase setDesc(ByteBuf input) {
+    private static MultipartRequestDescCase setDesc(final ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
         descBuilder.setEmpty(Empty.getInstance());
@@ -299,7 +295,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private MultipartRequestFlowCase setFlow(ByteBuf input) {
+    private MultipartRequestFlowCase setFlow(final ByteBuf input) {
         final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         flowBuilder.setTableId(readUint8(input));
@@ -316,7 +312,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private MultipartRequestAggregateCase setAggregate(ByteBuf input) {
+    private MultipartRequestAggregateCase setAggregate(final ByteBuf input) {
         final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
         aggregateBuilder.setTableId(readUint8(input));
@@ -333,7 +329,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestPortDescCase setPortDesc(ByteBuf input) {
+    private static MultipartRequestPortDescCase setPortDesc(final ByteBuf input) {
         MultipartRequestPortDescCaseBuilder caseBuilder = new MultipartRequestPortDescCaseBuilder();
         MultipartRequestPortDescBuilder portBuilder = new MultipartRequestPortDescBuilder();
         portBuilder.setEmpty(Empty.getInstance());
@@ -341,7 +337,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestPortStatsCase setPortStats(ByteBuf input) {
+    private static MultipartRequestPortStatsCase setPortStats(final ByteBuf input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
         portBuilder.setPortNo(readUint32(input));
@@ -349,7 +345,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestQueueCase setQueue(ByteBuf input) {
+    private static MultipartRequestQueueCase setQueue(final ByteBuf input) {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
         queueBuilder.setPortNo(readUint32(input));
@@ -358,7 +354,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestGroupCase setGroup(ByteBuf input) {
+    private static MultipartRequestGroupCase setGroup(final ByteBuf input) {
         MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder groupBuilder = new MultipartRequestGroupBuilder();
         groupBuilder.setGroupId(new GroupId(readUint32(input)));
@@ -366,7 +362,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestGroupDescCase setGroupDesc(ByteBuf input) {
+    private static MultipartRequestGroupDescCase setGroupDesc(final ByteBuf input) {
         MultipartRequestGroupDescCaseBuilder caseBuilder = new MultipartRequestGroupDescCaseBuilder();
         MultipartRequestGroupDescBuilder groupBuilder = new MultipartRequestGroupDescBuilder();
         groupBuilder.setEmpty(Empty.getInstance());
@@ -374,7 +370,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestGroupFeaturesCase setGroupFeatures(ByteBuf input) {
+    private static MultipartRequestGroupFeaturesCase setGroupFeatures(final ByteBuf input) {
         MultipartRequestGroupFeaturesCaseBuilder caseBuilder = new MultipartRequestGroupFeaturesCaseBuilder();
         MultipartRequestGroupFeaturesBuilder groupBuilder = new MultipartRequestGroupFeaturesBuilder();
         groupBuilder.setEmpty(Empty.getInstance());
@@ -382,7 +378,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestMeterCase setMeter(ByteBuf input) {
+    private static MultipartRequestMeterCase setMeter(final ByteBuf input) {
         MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder meterBuilder = new MultipartRequestMeterBuilder();
         meterBuilder.setMeterId(new MeterId(readUint32(input)));
@@ -390,7 +386,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestMeterConfigCase setMeterConfig(ByteBuf input) {
+    private static MultipartRequestMeterConfigCase setMeterConfig(final ByteBuf input) {
         MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder meterBuilder = new MultipartRequestMeterConfigBuilder();
         meterBuilder.setMeterId(new MeterId(readUint32(input)));
@@ -398,7 +394,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestMeterFeaturesCase setMeterFeatures(ByteBuf input) {
+    private static MultipartRequestMeterFeaturesCase setMeterFeatures(final ByteBuf input) {
         MultipartRequestMeterFeaturesCaseBuilder caseBuilder = new MultipartRequestMeterFeaturesCaseBuilder();
         MultipartRequestMeterFeaturesBuilder meterBuilder = new MultipartRequestMeterFeaturesBuilder();
         meterBuilder.setEmpty(Empty.getInstance());
@@ -406,7 +402,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestTableCase setTable(ByteBuf input) {
+    private static MultipartRequestTableCase setTable(final ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
         tableBuilder.setEmpty(Empty.getInstance());
@@ -414,7 +410,7 @@ public class MultipartRequestInputMessageFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestExperimenterCase setExperimenter(ByteBuf input) {
+    private static MultipartRequestExperimenterCase setExperimenter(final ByteBuf input) {
         MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
         MultipartRequestExperimenterBuilder experimenterBuilder = new MultipartRequestExperimenterBuilder();
         caseBuilder.setMultipartRequestExperimenter(experimenterBuilder.build());

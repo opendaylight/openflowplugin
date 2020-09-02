@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
@@ -17,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -146,8 +146,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class MultipartReplyMessageFactory implements OFDeserializer<MultipartReplyMessage>,
-        DeserializerRegistryInjector {
+public class MultipartReplyMessageFactory implements OFDeserializer<MultipartReplyMessage> {
 
     private static final byte PADDING_IN_MULTIPART_REPLY_HEADER = 4;
     private static final int DESC_STR_LEN = 256;
@@ -179,7 +178,12 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
     private static final byte GROUP_DESC_HEADER_LENGTH = 8;
     private static final byte BUCKETS_HEADER_LENGTH = 16;
-    private DeserializerRegistry registry;
+
+    private final DeserializerRegistry registry;
+
+    public MultipartReplyMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public MultipartReplyMessage deserialize(final ByteBuf rawMessage) {
@@ -819,11 +823,5 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         builder.setGroupDesc(groupDescsList);
         caseBuilder.setMultipartReplyGroupDesc(builder.build());
         return caseBuilder.build();
-    }
-
-    @Override
-    public void injectDeserializerRegistry(
-            final DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
     }
 }

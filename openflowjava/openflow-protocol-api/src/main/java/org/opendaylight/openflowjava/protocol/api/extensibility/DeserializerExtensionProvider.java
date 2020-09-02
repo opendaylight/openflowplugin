@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
@@ -25,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * In case of handling multiple multiple structures of same type (actions,
  * instructions, match entries, ... ) which are differentiated by
  * vendor / experimenter subtype, vendor has to switch / choose between
- * these subtypes.<br>
+ * these subtypes.
  *
  * <p>
  * This has to be done in this way because of experimenter headers, which
@@ -34,29 +33,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * handle it in his own implementations.
  * @author michal.polkorab
  */
-public interface DeserializerExtensionProvider {
-
+public interface DeserializerExtensionProvider extends DeserializerLookup {
     /**
      * Registers deserializer.
-     * Throws IllegalStateException when there is
-     * a deserializer already registered under given key.
-     *
-     * <p>
-     * If the deserializer implements {@link DeserializerRegistryInjector} interface,
-     * the deserializer is injected with DeserializerRegistry instance.
      *
      * @param key          used for deserializer lookup
      * @param deserializer deserializer instance
+     * @throws IllegalStateException when there is a deserializer already registered under given key.
      */
-    void registerDeserializer(MessageCodeKey key,
-                              OFGeneralDeserializer deserializer);
+    void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Unregisters custom deserializer.
      *
      * @param key used for deserializer lookup
-     * @return true if deserializer was removed,
-     *     false if no deserializer was found under specified key
+     * @return true if deserializer was removed, false if no deserializer was found under specified key
      */
     boolean unregisterDeserializer(ExperimenterDeserializerKey key);
 
@@ -66,8 +57,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerActionDeserializer(ExperimenterActionDeserializerKey key,
-            OFGeneralDeserializer deserializer);
+    void registerActionDeserializer(ExperimenterActionDeserializerKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Registers instruction deserializer.
@@ -84,8 +74,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMatchEntryDeserializer(MatchEntryDeserializerKey key,
-            OFGeneralDeserializer deserializer);
+    void registerMatchEntryDeserializer(MatchEntryDeserializerKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Registers error message deserializer.
@@ -93,8 +82,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerErrorDeserializer(ExperimenterIdDeserializerKey key,
-            OFDeserializer<ErrorMessage> deserializer);
+    void registerErrorDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<ErrorMessage> deserializer);
 
     /**
      * Registers experimenter (vendor) message deserializer.
@@ -120,8 +108,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key,
-            OFGeneralDeserializer deserializer);
+    void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Registers meter band deserializer (used in multipart-reply meter-config).

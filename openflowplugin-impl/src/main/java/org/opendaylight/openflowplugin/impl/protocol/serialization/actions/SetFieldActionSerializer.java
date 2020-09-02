@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
@@ -20,12 +19,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public class SetFieldActionSerializer extends AbstractActionSerializer<SetFieldCase>
-        implements SerializerRegistryInjector {
-    private SerializerRegistry registry;
+public class SetFieldActionSerializer extends AbstractActionSerializer<SetFieldCase> {
+    private final SerializerLookup registry;
+
+    public SetFieldActionSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public void serialize(SetFieldCase action, ByteBuf outBuffer) {
+    public void serialize(final SetFieldCase action, final ByteBuf outBuffer) {
         // Serialize field type and save position
         final int startIndex = outBuffer.writerIndex();
         outBuffer.writeShort(getType());
@@ -34,8 +36,8 @@ public class SetFieldActionSerializer extends AbstractActionSerializer<SetFieldC
 
         // Serialize match (using small workaround with serializeHeader method to serialize only match entries)
         final SetField setField = action.getSetField();
-        final HeaderSerializer<Match> serializer = Preconditions.checkNotNull(registry)
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class));
+        final HeaderSerializer<Match> serializer = registry.getSerializer(
+            new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class));
         serializer.serializeHeader(setField, outBuffer);
 
         // Serialize padding based on match length
@@ -54,10 +56,5 @@ public class SetFieldActionSerializer extends AbstractActionSerializer<SetFieldC
     @Override
     protected int getType() {
         return ActionConstants.SET_FIELD_CODE;
-    }
-
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 }

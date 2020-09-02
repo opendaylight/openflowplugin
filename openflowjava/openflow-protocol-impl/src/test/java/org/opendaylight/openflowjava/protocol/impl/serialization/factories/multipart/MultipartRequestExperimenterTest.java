@@ -53,8 +53,7 @@ public class MultipartRequestExperimenterTest {
         Mockito.when(mockRegistry.getSerializer(
                 ArgumentMatchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any()))
                 .thenReturn(serializer);
-        MultipartRequestInputFactory multipartFactory = new MultipartRequestInputFactory();
-        multipartFactory.injectSerializerRegistry(mockRegistry);
+        final MultipartRequestInputFactory multipartFactory = new MultipartRequestInputFactory(mockRegistry);
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setType(MultipartType.OFPMPEXPERIMENTER);

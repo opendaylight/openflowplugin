@@ -47,8 +47,7 @@ public class VendorInputMessageFactoryTest {
     public void test() {
         Mockito.when(registry.getSerializer(ArgumentMatchers.<MessageTypeKey<?>>any()))
             .thenReturn(serializer);
-        VendorInputMessageFactory factory = new VendorInputMessageFactory();
-        factory.injectSerializerRegistry(registry);
+        final VendorInputMessageFactory factory = new VendorInputMessageFactory(registry);
         final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         builder.setVersion(EncodeConstants.OF_VERSION_1_0);

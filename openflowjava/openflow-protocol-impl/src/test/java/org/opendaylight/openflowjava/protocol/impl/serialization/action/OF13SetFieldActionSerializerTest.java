@@ -59,8 +59,7 @@ public class OF13SetFieldActionSerializerTest {
      */
     @Test
     public void test() {
-        OF13SetFieldActionSerializer ser = new OF13SetFieldActionSerializer();
-        ser.injectSerializerRegistry(registry);
+        final OF13SetFieldActionSerializer ser = new OF13SetFieldActionSerializer(registry);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
             .ActionBuilder actionBuilder = new ActionBuilder();
         final Uint32 experimenterId = Uint32.valueOf(12L);

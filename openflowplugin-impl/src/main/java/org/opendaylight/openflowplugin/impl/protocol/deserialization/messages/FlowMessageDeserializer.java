@@ -7,17 +7,16 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -39,19 +38,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 
-public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, DeserializerRegistryInjector {
-
+public class FlowMessageDeserializer implements OFDeserializer<FlowMessage> {
     private static final byte PADDING = 2;
-
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
 
-    private DeserializerRegistry registry;
+    private final DeserializerLookup registry;
+
+    public FlowMessageDeserializer(final DeserializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressWarnings("checkstyle:LineLength")
-    public FlowMessage deserialize(ByteBuf message) {
+    public FlowMessage deserialize(final ByteBuf message) {
         final FlowMessageBuilder builder = new FlowMessageBuilder()
             .setVersion((short) EncodeConstants.OF13_VERSION_ID)
             .setXid(readUint32(message))
@@ -69,7 +69,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
         message.skipBytes(PADDING);
 
-        final OFDeserializer<Match> matchDeserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
         builder.setMatch(new MatchBuilder(matchDeserializer.deserialize(message)).build());
 
         final int length = message.readableBytes();
@@ -85,17 +85,13 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                 OFDeserializer<Instruction> deserializer = null;
 
                 if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
-                            new MessageCodeActionExperimenterKey(
-                                EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                                ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS,
-                                null));
+                    deserializer = registry.getDeserializer(new MessageCodeActionExperimenterKey(
+                        EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
+                        ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS, null));
                 } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
-                            new MessageCodeActionExperimenterKey(
-                                EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
-                                ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
-                                null));
+                    deserializer = registry.getDeserializer(new MessageCodeActionExperimenterKey(
+                        EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
+                        ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS, null));
                 } else {
                     Long expId = null;
 
@@ -103,9 +99,8 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                         expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
                     }
 
-                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
-                            new MessageCodeExperimenterKey(
-                                EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
+                    deserializer = registry.getDeserializer(new MessageCodeExperimenterKey(
+                        EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
                 }
 
                 instructions.add(new InstructionBuilder()
@@ -125,7 +120,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
         return builder.build();
     }
 
-    private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
+    private static FlowModFlags createFlowModFlagsFromBitmap(final int input) {
         final Boolean ofp_FF_SendFlowRem = (input & 1 << 0) != 0;
         final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) != 0;
         final Boolean ofp_FF_ResetCounts = (input & 1 << 2) != 0;
@@ -134,10 +129,4 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
         return new FlowModFlags(ofp_FF_CheckOverlap, ofp_FF_NoBytCounts, ofp_FF_NoPktCounts, ofp_FF_ResetCounts,
                 ofp_FF_SendFlowRem);
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }
