@@ -23,9 +23,7 @@ public class OF13SetQueueActionSerializer extends AbstractActionSerializer {
     }
 
     @Override
-    public void serialize(final Action action, final ByteBuf outBuffer) {
-        super.serialize(action, outBuffer);
-        outBuffer.writeInt(((SetQueueCase) action.getActionChoice()).getSetQueueAction()
-                .getQueueId().intValue());
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
+        outBuffer.writeInt(((SetQueueCase) action.getActionChoice()).getSetQueueAction().getQueueId().intValue());
     }
 }
