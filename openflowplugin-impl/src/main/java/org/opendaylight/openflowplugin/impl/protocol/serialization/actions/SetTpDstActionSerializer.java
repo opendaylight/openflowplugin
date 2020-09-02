@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IPProtocols;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -21,6 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 
 public class SetTpDstActionSerializer extends AbstractSetFieldActionSerializer {
+    public SetTpDstActionSerializer(final SerializerLookup registry) {
+        super(registry);
+    }
+
     @Override
     protected SetFieldCase buildAction(final Action input) {
         final SetTpDstAction setTpDstAction = ((SetTpDstActionCase) input).getSetTpDstAction();

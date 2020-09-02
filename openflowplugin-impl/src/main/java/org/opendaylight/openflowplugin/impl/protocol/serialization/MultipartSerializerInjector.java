@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -51,8 +50,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multi
  * Util class for injecting new multipart serializers into OpenflowJava.
  */
 final class MultipartSerializerInjector {
-
     private MultipartSerializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -81,11 +80,12 @@ final class MultipartSerializerInjector {
         injector.apply(MultipartRequestPortDesc.class).accept(new MultipartRequestPortDescSerializer());
         injector.apply(MultipartRequestPortStats.class).accept(new MultipartRequestPortStatsSerializer());
         injector.apply(MultipartRequestQueueStats.class).accept(new MultipartRequestQueueStatsSerializer());
-        injector.apply(MultipartRequestFlowStats.class).accept(new MultipartRequestFlowStatsSerializer());
+        injector.apply(MultipartRequestFlowStats.class).accept(new MultipartRequestFlowStatsSerializer(provider));
         injector.apply(MultipartRequestFlowAggregateStats.class)
-                .accept(new MultipartRequestFlowAggregateStatsSerializer());
-        injector.apply(MultipartRequestExperimenter.class).accept(new MultipartRequestExperimenterSerializer());
-        injector.apply(MultipartRequestTableFeatures.class).accept(new MultipartRequestTableFeaturesSerializer());
+                .accept(new MultipartRequestFlowAggregateStatsSerializer(provider));
+        injector.apply(MultipartRequestExperimenter.class).accept(new MultipartRequestExperimenterSerializer(provider));
+        injector.apply(MultipartRequestTableFeatures.class)
+                .accept(new MultipartRequestTableFeaturesSerializer(provider));
     }
 
     /**
@@ -100,10 +100,6 @@ final class MultipartSerializerInjector {
     static Function<Class<? extends MultipartRequestBody>,
             Consumer<OFSerializer<? extends MultipartRequestBody>>> createInjector(
                     final SerializerExtensionProvider provider, final byte version) {
-        return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+        return type -> serializer -> provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
-
 }
