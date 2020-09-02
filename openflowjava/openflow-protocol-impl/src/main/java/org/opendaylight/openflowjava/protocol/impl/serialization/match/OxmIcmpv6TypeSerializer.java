@@ -39,6 +39,6 @@ public class OxmIcmpv6TypeSerializer extends AbstractOxmMatchEntrySerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+        return Byte.BYTES;
     }
 }

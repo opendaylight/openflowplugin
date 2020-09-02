@@ -81,7 +81,7 @@ public class OxmMplsLabelSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_INT_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Integer.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareMplsLabelMatchEntry(long label) {
@@ -107,6 +107,6 @@ public class OxmMplsLabelSerializerTest {
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.MPLS_LABEL, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
-        assertEquals("Wrong length", EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+        assertEquals("Wrong length", Integer.BYTES, buffer.readUnsignedByte());
     }
 }

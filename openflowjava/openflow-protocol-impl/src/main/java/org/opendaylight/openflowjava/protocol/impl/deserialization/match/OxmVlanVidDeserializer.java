@@ -43,7 +43,7 @@ public class OxmVlanVidDeserializer extends AbstractOxmMatchEntryDeserializer
         vlanBuilder.setVlanVid(Uint16.valueOf(vidEntryValue & (1 << 12) - 1)); // value without 13-th bit
         if (builder.isHasMask()) {
             vlanBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_SHORT_IN_BYTES));
+                    .convertMask(input, Short.BYTES));
         }
         caseBuilder.setVlanVid(vlanBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

@@ -42,6 +42,6 @@ public class Icmpv4TypeEntryDeserializerTest extends AbstractMatchEntryDeseriali
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+        return Byte.BYTES;
     }
 }

@@ -36,11 +36,11 @@ public abstract class AbstractMatchEntrySerializerTest extends AbstractSerialize
 
         assertEquals(buffer.readShort(), 1); // OXM_MATCH_TYPE
         assertEquals(buffer.readShort(), // Total length of match
-                EncodeConstants.SIZE_OF_SHORT_IN_BYTES // OXM_MATCH_TYPE length
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES // LENGTH length
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES // OXM_CLASS_CODE length
-                        + EncodeConstants.SIZE_OF_BYTE_IN_BYTES // OXM field and mask length
-                        + EncodeConstants.SIZE_OF_BYTE_IN_BYTES // OXM field and mask length length
+                Short.BYTES // OXM_MATCH_TYPE length
+                        + Short.BYTES // LENGTH length
+                        + Short.BYTES // OXM_CLASS_CODE length
+                        + Byte.BYTES // OXM field and mask length
+                        + Byte.BYTES // OXM field and mask length length
                         + length // length of data in match entry
         );
 

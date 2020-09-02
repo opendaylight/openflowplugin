@@ -43,7 +43,7 @@ public class OxmIpv6FlabelDeserializer extends AbstractOxmMatchEntryDeserializer
         labelBuilder.setIpv6Flabel(new Ipv6FlowLabel(readUint32(input)));
         if (builder.isHasMask()) {
             labelBuilder.setMask(OxmDeserializerHelper.convertMask(input,
-                    EncodeConstants.SIZE_OF_INT_IN_BYTES));
+                    Integer.BYTES));
         }
         caseBuilder.setIpv6Flabel(labelBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

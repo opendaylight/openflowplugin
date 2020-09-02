@@ -77,7 +77,7 @@ public class MultipartRequestFlowStatsSerializerTest extends AbstractSerializerT
 
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.IP_PROTO << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Byte.BYTES);
         assertEquals(out.readUnsignedByte(), IP_PROTOCOL_MATCH.shortValue());
 
         int paddingRemainder = matchLength % EncodeConstants.PADDING;

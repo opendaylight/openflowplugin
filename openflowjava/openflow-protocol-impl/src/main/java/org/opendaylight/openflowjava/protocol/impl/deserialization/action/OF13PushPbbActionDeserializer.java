@@ -26,7 +26,7 @@ import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 public class OF13PushPbbActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         final ActionBuilder builder = new ActionBuilder()
                 .setActionChoice(new PushPbbCaseBuilder()
                     .setPushPbbAction(new PushPbbActionBuilder()

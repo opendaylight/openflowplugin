@@ -26,7 +26,7 @@ public class OxmIpv6FlabelSerializer extends AbstractOxmMatchEntrySerializer {
         Ipv6FlabelCase entryValue = (Ipv6FlabelCase) entry.getMatchEntryValue();
         outBuffer.writeInt(entryValue.getIpv6Flabel().getIpv6Flabel().getValue().intValue());
         if (entry.isHasMask()) {
-            writeMask(entryValue.getIpv6Flabel().getMask(), outBuffer, EncodeConstants.SIZE_OF_INT_IN_BYTES);
+            writeMask(entryValue.getIpv6Flabel().getMask(), outBuffer, Integer.BYTES);
         }
     }
 
@@ -42,6 +42,6 @@ public class OxmIpv6FlabelSerializer extends AbstractOxmMatchEntrySerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 }

@@ -82,7 +82,7 @@ public class OxmEthTypeSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_SHORT_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareEthTypeMatchEntry(int type) {
@@ -108,6 +108,6 @@ public class OxmEthTypeSerializerTest {
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ETH_TYPE, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
-        assertEquals("Wrong length", EncodeConstants.SIZE_OF_SHORT_IN_BYTES, buffer.readUnsignedByte());
+        assertEquals("Wrong length", Short.BYTES, buffer.readUnsignedByte());
     }
 }

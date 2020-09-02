@@ -51,7 +51,7 @@ public class DeserializationFactory {
         DataObject dataObject = null;
         int type = rawMessage.readUnsignedByte();
         Class<?> clazz = messageClassMap.get(new TypeToClassKey(version, type));
-        rawMessage.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        rawMessage.skipBytes(Short.BYTES);
         OFDeserializer<DataObject> deserializer = registry.getDeserializer(new MessageCodeKey(version, type, clazz));
         dataObject = deserializer.deserialize(rawMessage);
         return dataObject;

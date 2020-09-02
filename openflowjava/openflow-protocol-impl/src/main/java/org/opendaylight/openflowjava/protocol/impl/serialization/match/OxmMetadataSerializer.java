@@ -27,7 +27,7 @@ public class OxmMetadataSerializer extends AbstractOxmMatchEntrySerializer {
         outBuffer.writeBytes(entryValue.getMetadata().getMetadata());
         if (entry.isHasMask()) {
             writeMask(entryValue.getMetadata().getMask(), outBuffer,
-                    EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+                    Long.BYTES);
         }
     }
 
@@ -43,6 +43,6 @@ public class OxmMetadataSerializer extends AbstractOxmMatchEntrySerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 }

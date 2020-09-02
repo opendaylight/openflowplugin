@@ -41,7 +41,7 @@ public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer
         extHdrBuilder.setPseudoField(convertPseudofields(input));
         if (builder.isHasMask()) {
             extHdrBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_SHORT_IN_BYTES));
+                    .convertMask(input, Short.BYTES));
         }
         caseBuilder.setIpv6Exthdr(extHdrBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

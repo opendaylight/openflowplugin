@@ -43,7 +43,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
         TcpFlagsBuilder flagsBuilder = new TcpFlagsBuilder();
         flagsBuilder.setFlags(readUint16(input));
         if (hasMask) {
-            byte[] mask = new byte[EncodeConstants.SIZE_OF_SHORT_IN_BYTES];
+            byte[] mask = new byte[Short.BYTES];
             input.readBytes(mask);
             flagsBuilder.setMask(mask);
         }

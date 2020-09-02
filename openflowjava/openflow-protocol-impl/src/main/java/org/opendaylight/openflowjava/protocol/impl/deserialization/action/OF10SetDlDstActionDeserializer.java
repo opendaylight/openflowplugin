@@ -28,7 +28,7 @@ public class OF10SetDlDstActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(final ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetDlDstCaseBuilder caseBuilder = new SetDlDstCaseBuilder();
         SetDlDstActionBuilder actionBuilder = new SetDlDstActionBuilder();
         actionBuilder.setDlDstAddress(ByteBufUtils.readIetfMacAddress(input));

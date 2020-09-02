@@ -29,14 +29,14 @@ public class WriteMetadataInstructionDeserializer implements OFDeserializer<Inst
     @Override
     public Instruction deserialize(ByteBuf input) {
         final InstructionBuilder builder = new InstructionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         input.skipBytes(InstructionConstants.PADDING_IN_WRITE_METADATA);
         final WriteMetadataCaseBuilder caseBuilder = new WriteMetadataCaseBuilder();
         WriteMetadataBuilder metadataBuilder = new WriteMetadataBuilder();
-        byte[] metadata = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadata = new byte[Long.BYTES];
         input.readBytes(metadata);
         metadataBuilder.setMetadata(metadata);
-        byte[] metadataMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataMask = new byte[Long.BYTES];
         input.readBytes(metadataMask);
         metadataBuilder.setMetadataMask(metadataMask);
         caseBuilder.setWriteMetadata(metadataBuilder.build());
@@ -47,7 +47,7 @@ public class WriteMetadataInstructionDeserializer implements OFDeserializer<Inst
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
         InstructionBuilder builder = new InstructionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         builder.setInstructionChoice(new WriteMetadataCaseBuilder().build());
         return builder.build();
     }

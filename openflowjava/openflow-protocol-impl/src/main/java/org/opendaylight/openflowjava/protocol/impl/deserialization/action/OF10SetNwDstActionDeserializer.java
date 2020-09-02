@@ -27,7 +27,7 @@ public class OF10SetNwDstActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(final ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetNwDstCaseBuilder caseBuilder = new SetNwDstCaseBuilder();
         SetNwDstActionBuilder actionBuilder = new SetNwDstActionBuilder();
         actionBuilder.setIpAddress(ByteBufUtils.readIetfIpv4Address(input));

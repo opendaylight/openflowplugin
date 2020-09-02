@@ -27,7 +27,7 @@ public class OxmTunnelIdSerializer extends AbstractOxmMatchEntrySerializer {
         outBuffer.writeBytes(entryValue.getTunnelId().getTunnelId());
         if (entry.isHasMask()) {
             writeMask(entryValue.getTunnelId().getMask(), outBuffer,
-                    EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+                    Long.BYTES);
         }
     }
 
@@ -43,6 +43,6 @@ public class OxmTunnelIdSerializer extends AbstractOxmMatchEntrySerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 }

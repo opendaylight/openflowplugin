@@ -27,7 +27,7 @@ public class OF10SetNwTosActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetNwTosCaseBuilder caseBuilder = new SetNwTosCaseBuilder();
         SetNwTosActionBuilder tosBuilder = new SetNwTosActionBuilder();
         tosBuilder.setNwTos(readUint8(input));

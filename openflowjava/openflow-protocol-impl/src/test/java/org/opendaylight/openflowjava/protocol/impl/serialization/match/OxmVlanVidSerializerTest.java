@@ -114,7 +114,7 @@ public class OxmVlanVidSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_SHORT_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareVlanVidMatchEntry(boolean hasMask, boolean cfiBit) {
@@ -145,9 +145,9 @@ public class OxmVlanVidSerializerTest {
         assertEquals("Wrong oxm-field", OxmMatchConstants.VLAN_VID, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
         if (hasMask) {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Integer.BYTES, buffer.readUnsignedByte());
         } else {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_SHORT_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Short.BYTES, buffer.readUnsignedByte());
         }
     }
 }

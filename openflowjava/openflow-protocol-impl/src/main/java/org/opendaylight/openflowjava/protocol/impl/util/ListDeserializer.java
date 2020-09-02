@@ -95,7 +95,7 @@ public final class ListDeserializer {
                         }
                         exceptionLogged = true;
                     }
-                    input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                    input.skipBytes(2 * Short.BYTES);
                     continue;
                 }
                 E item = deserializer.deserializeHeader(input);

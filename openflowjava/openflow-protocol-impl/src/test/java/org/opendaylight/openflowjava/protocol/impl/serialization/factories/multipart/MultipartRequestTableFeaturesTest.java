@@ -258,11 +258,11 @@ public class MultipartRequestTableFeaturesTest {
         out.skipBytes(5);
         Assert.assertEquals("Wrong name", "AAAABBBBCCCCDDDDEEEEFFFFGGGG",
                 ByteBufUtils.decodeNullTerminatedString(out, 32));
-        byte[] metadataMatch = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataMatch = new byte[Long.BYTES];
         out.readBytes(metadataMatch);
         Assert.assertArrayEquals("Wrong metadata-match",
                 new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}, metadataMatch);
-        byte[] metadataWrite = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataWrite = new byte[Long.BYTES];
         out.readBytes(metadataWrite);
         Assert.assertArrayEquals("Wrong metadata-write",
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}, metadataWrite);
@@ -300,11 +300,11 @@ public class MultipartRequestTableFeaturesTest {
         out.skipBytes(5);
         Assert.assertEquals("Wrong name", "AAAABBBBCCCCDDDDEEEEFFFFGGGG",
                 ByteBufUtils.decodeNullTerminatedString(out, 32));
-        metadataMatch = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        metadataMatch = new byte[Long.BYTES];
         out.readBytes(metadataMatch);
         Assert.assertArrayEquals("Wrong metadata-match",
                 new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}, metadataMatch);
-        metadataWrite = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        metadataWrite = new byte[Long.BYTES];
         out.readBytes(metadataWrite);
         Assert.assertArrayEquals("Wrong metadata-write",
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}, metadataWrite);
@@ -411,11 +411,11 @@ public class MultipartRequestTableFeaturesTest {
         out.skipBytes(5);
         Assert.assertEquals("Wrong name", "AAAABBBBCCCCDDDDEEEEFFFFGGGG",
                 ByteBufUtils.decodeNullTerminatedString(out, 32));
-        byte[] metadataMatch = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataMatch = new byte[Long.BYTES];
         out.readBytes(metadataMatch);
         Assert.assertArrayEquals("Wrong metadata-match",
                 new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}, metadataMatch);
-        byte[] metadataWrite = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataWrite = new byte[Long.BYTES];
         out.readBytes(metadataWrite);
         Assert.assertArrayEquals("Wrong metadata-write",
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}, metadataWrite);

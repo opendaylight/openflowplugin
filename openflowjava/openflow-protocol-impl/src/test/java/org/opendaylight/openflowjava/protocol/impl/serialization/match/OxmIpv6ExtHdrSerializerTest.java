@@ -117,7 +117,7 @@ public class OxmIpv6ExtHdrSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_SHORT_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareIpv6ExtHdrMatchEntry(boolean hasMask, Ipv6ExthdrFlags flags) {
@@ -147,9 +147,9 @@ public class OxmIpv6ExtHdrSerializerTest {
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV6_EXTHDR, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
         if (hasMask) {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Integer.BYTES, buffer.readUnsignedByte());
         } else {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_SHORT_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Short.BYTES, buffer.readUnsignedByte());
         }
     }
 }

@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 public class OF13GroupActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         return new ActionBuilder()
                 .setActionChoice(new GroupCaseBuilder()
                     .setGroupAction(new GroupActionBuilder().setGroupId(readUint32(input)).build())

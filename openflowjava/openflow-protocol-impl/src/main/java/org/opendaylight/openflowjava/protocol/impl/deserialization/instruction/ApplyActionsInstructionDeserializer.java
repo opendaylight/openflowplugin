@@ -28,7 +28,7 @@ public class ApplyActionsInstructionDeserializer extends AbstractActionInstructi
     @Override
     public Instruction deserialize(ByteBuf input) {
         final InstructionBuilder builder = new InstructionBuilder();
-        input.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(Short.BYTES);
         int instructionLength = input.readUnsignedShort();
         input.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
         ApplyActionsCaseBuilder caseBuilder = new ApplyActionsCaseBuilder();
@@ -42,7 +42,7 @@ public class ApplyActionsInstructionDeserializer extends AbstractActionInstructi
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
         InstructionBuilder builder = new InstructionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         builder.setInstructionChoice(new ApplyActionsCaseBuilder().build());
         return builder.build();
     }

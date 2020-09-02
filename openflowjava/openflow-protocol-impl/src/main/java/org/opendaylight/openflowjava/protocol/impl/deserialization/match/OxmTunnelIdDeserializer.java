@@ -37,12 +37,12 @@ public class OxmTunnelIdDeserializer extends AbstractOxmMatchEntryDeserializer
     private static void addTunnelIdValue(ByteBuf input, MatchEntryBuilder builder) {
         final TunnelIdCaseBuilder caseBuilder = new TunnelIdCaseBuilder();
         TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
-        byte[] metadataBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataBytes = new byte[Long.BYTES];
         input.readBytes(metadataBytes);
         tunnelIdBuilder.setTunnelId(metadataBytes);
         if (builder.isHasMask()) {
             tunnelIdBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                    .convertMask(input, Long.BYTES));
         }
         caseBuilder.setTunnelId(tunnelIdBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

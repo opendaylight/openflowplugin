@@ -32,7 +32,7 @@ public class InPortEntrySerializerTest extends AbstractMatchEntrySerializerTest 
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class OF13DecMplsTtlActionDeserializer extends AbstractActionDeserializer
     @Override
     public Action deserialize(ByteBuf input) {
         ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         builder.setActionChoice(getType());
         input.skipBytes(ActionConstants.PADDING_IN_ACTION_HEADER);
         return builder.build();

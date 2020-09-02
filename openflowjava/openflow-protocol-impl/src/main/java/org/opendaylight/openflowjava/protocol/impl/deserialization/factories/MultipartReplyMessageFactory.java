@@ -278,7 +278,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         while (input.readableBytes() > 0) {
             FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder();
             int flowRecordLength = input.readUnsignedShort();
-            ByteBuf subInput = input.readSlice(flowRecordLength - EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            ByteBuf subInput = input.readSlice(flowRecordLength - Short.BYTES);
             flowStatsBuilder.setTableId(readUint8(subInput));
             subInput.skipBytes(PADDING_IN_FLOW_STATS_HEADER_01);
             flowStatsBuilder.setDurationSec(readUint32(subInput));
@@ -355,10 +355,10 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
             featuresBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
             featuresBuilder.setName(ByteBufUtils.decodeNullTerminatedString(input, MAX_TABLE_NAME_LENGTH));
-            byte[] metadataMatch = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            byte[] metadataMatch = new byte[Long.BYTES];
             input.readBytes(metadataMatch);
             featuresBuilder.setMetadataMatch(metadataMatch);
-            byte[] metadataWrite = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            byte[] metadataWrite = new byte[Long.BYTES];
             input.readBytes(metadataWrite);
             featuresBuilder.setMetadataWrite(metadataWrite);
             featuresBuilder.setConfig(createTableConfig(input.readUnsignedInt()));
@@ -629,7 +629,7 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
                     case 0xFFFF:
                         actualLength += input.readUnsignedShort();
                         final long expId = input.getUnsignedInt(input.readerIndex()
-                                + 2 * EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                                + 2 * Integer.BYTES);
                         input.readerIndex(bandStartIndex);
                         OFDeserializer<MeterBandExperimenterCase> deserializer = registry.getDeserializer(
                                 ExperimenterDeserializerKeyFactory.createMeterBandDeserializerKey(

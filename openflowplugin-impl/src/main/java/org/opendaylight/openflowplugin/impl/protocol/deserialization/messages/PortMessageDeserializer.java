@@ -36,7 +36,7 @@ public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
         builder.setHardwareAddress(ByteBufUtils.readIetfMacAddress(message));
         message.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_2);
         builder.setConfiguration(readPortConfig(message));
-        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES); // Skip mask
+        message.skipBytes(Integer.BYTES); // Skip mask
         builder.setAdvertisedFeatures(readPortFeatures(message));
         message.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_3);
         return builder.build();

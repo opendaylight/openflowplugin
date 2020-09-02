@@ -28,7 +28,7 @@ public class ClearActionsInstructionDeserializer implements OFDeserializer<Instr
     @Override
     public Instruction deserialize(ByteBuf input) {
         InstructionBuilder builder =  new InstructionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         input.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
         builder.setInstructionChoice(new ClearActionsCaseBuilder().build());
         return builder.build();
@@ -37,7 +37,7 @@ public class ClearActionsInstructionDeserializer implements OFDeserializer<Instr
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
         InstructionBuilder builder = new InstructionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         builder.setInstructionChoice(new ClearActionsCaseBuilder().build());
         return builder.build();
     }

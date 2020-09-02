@@ -40,7 +40,7 @@ public abstract class AbstractOxmExperimenterMatchEntrySerializer extends Abstra
         }
 
         //Add experimenter-id lenge
-        length = length + EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        length = length + Integer.BYTES;
         out.writeByte(fieldAndMask);
         out.writeByte(length);
     }
