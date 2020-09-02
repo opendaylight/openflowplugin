@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -48,18 +49,17 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 public class MatchConvertorV10Test {
 
-    private static final long ETH_TYPE_802_3 = 0x0000;
+    private static final Uint32 ETH_TYPE_802_3 = Uint32.ZERO;
     private static final MacAddress ZERO_MAC = MacAddress.getDefaultInstance("00:00:00:00:00:00");
     private static final MacAddress FF_MAC = MacAddress.getDefaultInstance("ff:ff:ff:ff:ff:ff");
     private static final String NODE_CONNECTOR_ID = "1234";
-    private static final short ZERO = 0;
     private static final String DSCP = "0";
-    private static final short IP_PROTOCOL = 6;
-    private static final PortNumber DEFAULT_PORT = new PortNumber(9999);
+    private static final Uint8 IP_PROTOCOL = Uint8.valueOf(6);
+    private static final PortNumber DEFAULT_PORT = new PortNumber(Uint16.valueOf(9999));
     private static final Ipv4Prefix IPV4_PREFIX = Ipv4Prefix.getDefaultInstance("10.0.0.1/24");
-    private static final VlanId DEFAULT_VLAN_ID = new VlanId(42);
+    private static final VlanId DEFAULT_VLAN_ID = new VlanId(Uint16.valueOf(42));
     private static final Ipv4Address DEFAULT_IPV4_ADDRESS = new Ipv4Address("10.0.0.1");
-    private static final short DEFAULT_MASK = 24;
+    private static final Uint8 DEFAULT_MASK = Uint8.valueOf(24);
     private ConvertorManager converterManager;
 
     @Before
@@ -76,28 +76,27 @@ public class MatchConvertorV10Test {
 
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
-        assertEquals(0, matchV10.getDlType().intValue());
-        assertEquals(0xffff, matchV10.getDlVlan().intValue());
-        assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpSrc().intValue());
-        assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpDst().intValue());
-        assertEquals(Integer.parseInt(NODE_CONNECTOR_ID), matchV10.getInPort().intValue());
+        assertEquals(Uint16.ZERO, matchV10.getDlType());
+        assertEquals(Uint16.MAX_VALUE, matchV10.getDlVlan());
+        assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpSrc());
+        assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpDst());
+        assertEquals(Uint16.valueOf(NODE_CONNECTOR_ID), matchV10.getInPort());
         assertEquals(DEFAULT_IPV4_ADDRESS.getValue(), matchV10.getNwDst().getValue());
-        assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
-        assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpSrc().intValue());
-        assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpDst().intValue());
+        assertEquals(DEFAULT_MASK, matchV10.getNwDstMask());
+        assertEquals(Uint8.ZERO, matchV10.getNwTos());
+        assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpSrc());
+        assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpDst());
 
         matchV10Optional = converterManager.convert(createL4TcpMatch().build(),
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
         matchV10 = matchV10Optional.get();
-        assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpSrc().intValue());
-        assertEquals(DEFAULT_PORT.getValue().intValue(), matchV10.getTpDst().intValue());
+        assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpSrc());
+        assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpDst());
 
         matchV10Optional = converterManager.convert(createVlanTcpMatch().build(),
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
         matchV10 = matchV10Optional.get();
-        assertEquals(DEFAULT_VLAN_ID.getValue().intValue(), matchV10.getDlVlan().intValue());
-
+        assertEquals(DEFAULT_VLAN_ID.getValue(), matchV10.getDlVlan());
     }
 
     @Test
@@ -110,16 +109,14 @@ public class MatchConvertorV10Test {
 
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
-        assertEquals(0, matchV10.getDlType().intValue());
-        assertEquals(0xffff, matchV10.getDlVlan().intValue());
-        assertEquals(Integer.parseInt(NODE_CONNECTOR_ID),
-                     matchV10.getInPort().intValue());
-        assertEquals(DEFAULT_IPV4_ADDRESS.getValue(),
-                     matchV10.getNwDst().getValue());
-        assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
-        assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(0, matchV10.getTpSrc().toJava());
-        assertEquals(0, matchV10.getTpDst().toJava());
+        assertEquals(Uint16.ZERO, matchV10.getDlType());
+        assertEquals(Uint16.MAX_VALUE, matchV10.getDlVlan());
+        assertEquals(Uint16.valueOf(NODE_CONNECTOR_ID), matchV10.getInPort());
+        assertEquals(DEFAULT_IPV4_ADDRESS.getValue(), matchV10.getNwDst().getValue());
+        assertEquals(DEFAULT_MASK, matchV10.getNwDstMask());
+        assertEquals(Uint8.ZERO, matchV10.getNwTos());
+        assertEquals(Uint16.ZERO, matchV10.getTpSrc());
+        assertEquals(Uint16.ZERO, matchV10.getTpDst());
 
         boolean wcTpSrc = true;
         boolean wcTpDst = true;
@@ -129,8 +126,8 @@ public class MatchConvertorV10Test {
         assertEquals(wc, matchV10.getWildcards());
 
         // Specify ICMP type only.
-        Integer icmpType = 55;
-        Icmpv4MatchBuilder icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type(icmpType.shortValue());
+        Uint8 icmpType = Uint8.valueOf(55);
+        Icmpv4MatchBuilder icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type(icmpType);
         wcTpSrc = false;
         wc = new FlowWildcardsV10(
             false, false, false, true, true, false, false, false,
@@ -154,8 +151,8 @@ public class MatchConvertorV10Test {
         assertEquals(wc, matchV10.getWildcards());
 
         // Specify ICMP code only.
-        Integer icmpCode = 31;
-        icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type((Uint8) null).setIcmpv4Code(icmpCode.shortValue());
+        Uint8 icmpCode = Uint8.valueOf(31);
+        icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type((Uint8) null).setIcmpv4Code(icmpCode);
         wcTpSrc = true;
         wcTpDst = false;
         wc = new FlowWildcardsV10(
@@ -167,44 +164,38 @@ public class MatchConvertorV10Test {
         matchV10 = matchV10Optional.get();
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
-        assertEquals(0, matchV10.getDlType().intValue());
-        assertEquals(0xffff, matchV10.getDlVlan().intValue());
-        assertEquals(Integer.parseInt(NODE_CONNECTOR_ID),
-                     matchV10.getInPort().intValue());
+        assertEquals(Uint16.ZERO, matchV10.getDlType());
+        assertEquals(Uint16.MAX_VALUE, matchV10.getDlVlan());
+        assertEquals(Uint16.valueOf(NODE_CONNECTOR_ID), matchV10.getInPort());
         assertEquals(DEFAULT_IPV4_ADDRESS.getValue(),
                      matchV10.getNwDst().getValue());
         assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
-        assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(0, matchV10.getTpSrc().toJava());
-        assertEquals(Uint16.valueOf(icmpCode), matchV10.getTpDst());
+        assertEquals(Uint8.ZERO, matchV10.getNwTos());
+        assertEquals(Uint16.ZERO, matchV10.getTpSrc());
+        assertEquals(icmpCode.toUint16(), matchV10.getTpDst());
         assertEquals(wc, matchV10.getWildcards());
 
         // Specify both ICMP type and code.
-        icmpType = 11;
-        icmpCode = 22;
-        icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type(icmpType.shortValue())
-                .setIcmpv4Code(icmpCode.shortValue());
+        icmpType = Uint8.valueOf(11);
+        icmpCode = Uint8.valueOf(22);
+        icmpv4MatchBuilder = new Icmpv4MatchBuilder().setIcmpv4Type(icmpType).setIcmpv4Code(icmpCode);
         wcTpSrc = false;
         wcTpDst = false;
-        wc = new FlowWildcardsV10(
-            false, false, false, true, true, false, false, false,
-            wcTpDst, wcTpSrc);
+        wc = new FlowWildcardsV10(false, false, false, true, true, false, false, false, wcTpDst, wcTpSrc);
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).build();
         matchV10Optional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
         matchV10 = matchV10Optional.get();
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
-        assertEquals(0, matchV10.getDlType().intValue());
-        assertEquals(0xffff, matchV10.getDlVlan().intValue());
-        assertEquals(Integer.parseInt(NODE_CONNECTOR_ID),
-                     matchV10.getInPort().intValue());
-        assertEquals(DEFAULT_IPV4_ADDRESS.getValue(),
-                     matchV10.getNwDst().getValue());
+        assertEquals(Uint16.ZERO, matchV10.getDlType());
+        assertEquals(Uint16.MAX_VALUE, matchV10.getDlVlan());
+        assertEquals(Uint16.valueOf(NODE_CONNECTOR_ID), matchV10.getInPort());
+        assertEquals(DEFAULT_IPV4_ADDRESS.getValue(), matchV10.getNwDst().getValue());
         assertEquals(DEFAULT_MASK, matchV10.getNwDstMask().shortValue());
-        assertEquals(0, matchV10.getNwTos().shortValue());
-        assertEquals(Uint16.valueOf(icmpType), matchV10.getTpSrc());
-        assertEquals(Uint16.valueOf(icmpCode), matchV10.getTpDst());
+        assertEquals(Uint8.ZERO, matchV10.getNwTos());
+        assertEquals(icmpType.toUint16(), matchV10.getTpSrc());
+        assertEquals(icmpCode.toUint16(), matchV10.getTpDst());
         assertEquals(wc, matchV10.getWildcards());
     }
 
@@ -271,7 +262,7 @@ public class MatchConvertorV10Test {
 
         IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
         ipMatchBuilder.setIpDscp(Dscp.getDefaultInstance(DSCP));
-        ipMatchBuilder.setIpEcn(ZERO);
+        ipMatchBuilder.setIpEcn(Uint8.ZERO);
         ipMatchBuilder.setIpProto(IpVersion.Ipv4);
         ipMatchBuilder.setIpProtocol(IP_PROTOCOL);
         matchBuilder.setIpMatch(ipMatchBuilder.build());

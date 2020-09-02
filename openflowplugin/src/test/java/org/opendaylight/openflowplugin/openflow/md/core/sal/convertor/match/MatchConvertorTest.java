@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
@@ -146,6 +144,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCase;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for match conversion.
@@ -170,11 +172,11 @@ public class MatchConvertorTest {
         builder.setInPort(new NodeConnectorId("openflow:42:1"));
         builder.setInPhyPort(new NodeConnectorId("openflow:42:2"));
         MetadataBuilder metadataBuilder = new MetadataBuilder();
-        metadataBuilder.setMetadata(new BigInteger("3"));
+        metadataBuilder.setMetadata(Uint64.valueOf(3));
         builder.setMetadata(metadataBuilder.build());
         EthernetMatchBuilder ethernetBuilder = new EthernetMatchBuilder();
         EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(4L));
+        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(4)));
         ethernetBuilder.setEthernetType(ethTypeBuilder.build());
         EthernetSourceBuilder ethSrcBuilder = new EthernetSourceBuilder();
         ethSrcBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
@@ -185,38 +187,38 @@ public class MatchConvertorTest {
         builder.setEthernetMatch(ethernetBuilder.build());
         VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-        vlanIdBuilder.setVlanId(new VlanId(7));
+        vlanIdBuilder.setVlanId(new VlanId(Uint16.valueOf(7)));
         vlanIdBuilder.setVlanIdPresent(true);
         vlanBuilder.setVlanId(vlanIdBuilder.build());
-        vlanBuilder.setVlanPcp(new VlanPcp((short) 7));
+        vlanBuilder.setVlanPcp(new VlanPcp(Uint8.valueOf(7)));
         builder.setVlanMatch(vlanBuilder.build());
         IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
-        ipMatchBuilder.setIpDscp(new Dscp((short) 8));
-        ipMatchBuilder.setIpEcn((short) 9);
-        ipMatchBuilder.setIpProtocol((short) 10);
+        ipMatchBuilder.setIpDscp(new Dscp(Uint8.valueOf(8)));
+        ipMatchBuilder.setIpEcn(Uint8.valueOf(9));
+        ipMatchBuilder.setIpProtocol(Uint8.valueOf(10));
         builder.setIpMatch(ipMatchBuilder.build());
         TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
-        tcpMatchBuilder.setTcpSourcePort(new PortNumber(11));
-        tcpMatchBuilder.setTcpDestinationPort(new PortNumber(12));
+        tcpMatchBuilder.setTcpSourcePort(new PortNumber(Uint16.valueOf(11)));
+        tcpMatchBuilder.setTcpDestinationPort(new PortNumber(Uint16.valueOf(12)));
         builder.setLayer4Match(tcpMatchBuilder.build());
         Icmpv4MatchBuilder icmpv4Builder = new Icmpv4MatchBuilder();
-        icmpv4Builder.setIcmpv4Type((short) 13);
-        icmpv4Builder.setIcmpv4Code((short) 14);
+        icmpv4Builder.setIcmpv4Type(Uint8.valueOf(13));
+        icmpv4Builder.setIcmpv4Code(Uint8.valueOf(14));
         builder.setIcmpv4Match(icmpv4Builder.build());
         Icmpv6MatchBuilder icmpv6Builder = new Icmpv6MatchBuilder();
-        icmpv6Builder.setIcmpv6Type((short) 15);
-        icmpv6Builder.setIcmpv6Code((short) 16);
+        icmpv6Builder.setIcmpv6Type(Uint8.valueOf(15));
+        icmpv6Builder.setIcmpv6Code(Uint8.valueOf(16));
         builder.setIcmpv6Match(icmpv6Builder.build());
         ProtocolMatchFieldsBuilder protoBuilder = new ProtocolMatchFieldsBuilder();
-        protoBuilder.setMplsLabel(17L);
-        protoBuilder.setMplsTc((short) 18);
-        protoBuilder.setMplsBos((short) 19);
+        protoBuilder.setMplsLabel(Uint32.valueOf(17));
+        protoBuilder.setMplsTc(Uint8.valueOf(18));
+        protoBuilder.setMplsBos(Uint8.valueOf(19));
         PbbBuilder pbbBuilder = new PbbBuilder();
-        pbbBuilder.setPbbIsid(20L);
+        pbbBuilder.setPbbIsid(Uint32.valueOf(20));
         protoBuilder.setPbb(pbbBuilder.build());
         builder.setProtocolMatchFields(protoBuilder.build());
         TunnelBuilder tunnelBuilder = new TunnelBuilder();
-        tunnelBuilder.setTunnelId(new BigInteger("21"));
+        tunnelBuilder.setTunnelId(Uint64.valueOf(21));
         builder.setTunnel(tunnelBuilder.build());
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
         ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.1/32"));
@@ -391,8 +393,8 @@ public class MatchConvertorTest {
     public void testUdpMatchConversion() {
         MatchBuilder builder = new MatchBuilder();
         UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
-        udpMatchBuilder.setUdpSourcePort(new PortNumber(11));
-        udpMatchBuilder.setUdpDestinationPort(new PortNumber(12));
+        udpMatchBuilder.setUdpSourcePort(new PortNumber(Uint16.valueOf(11)));
+        udpMatchBuilder.setUdpDestinationPort(new PortNumber(Uint16.valueOf(12)));
         builder.setLayer4Match(udpMatchBuilder.build());
         Match match = builder.build();
 
@@ -437,8 +439,8 @@ public class MatchConvertorTest {
     public void testSctpMatchConversion() {
         MatchBuilder builder = new MatchBuilder();
         SctpMatchBuilder sctpMatchBuilder = new SctpMatchBuilder();
-        sctpMatchBuilder.setSctpSourcePort(new PortNumber(11));
-        sctpMatchBuilder.setSctpDestinationPort(new PortNumber(12));
+        sctpMatchBuilder.setSctpSourcePort(new PortNumber(Uint16.valueOf(11)));
+        sctpMatchBuilder.setSctpDestinationPort(new PortNumber(Uint16.valueOf(12)));
         builder.setLayer4Match(sctpMatchBuilder.build());
         Match match = builder.build();
 
@@ -459,7 +461,7 @@ public class MatchConvertorTest {
     @Test
     public void testArpMatchConversion() {
         ArpMatchBuilder arpBuilder = new ArpMatchBuilder();
-        arpBuilder.setArpOp(5);
+        arpBuilder.setArpOp(Uint16.valueOf(5));
         arpBuilder.setArpSourceTransportAddress(new Ipv4Prefix("10.0.0.3/32"));
         arpBuilder.setArpTargetTransportAddress(new Ipv4Prefix("10.0.0.4/32"));
         ArpSourceHardwareAddressBuilder srcHwBuilder = new ArpSourceHardwareAddressBuilder();
@@ -555,13 +557,13 @@ public class MatchConvertorTest {
         ipv6Builder.setIpv6Source(new Ipv6Prefix("::1/128"));
         ipv6Builder.setIpv6Destination(new Ipv6Prefix("::2/128"));
         Ipv6LabelBuilder ipv6LabelBuilder = new Ipv6LabelBuilder();
-        ipv6LabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(3L));
+        ipv6LabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(Uint32.valueOf(3)));
         ipv6Builder.setIpv6Label(ipv6LabelBuilder.build());
         ipv6Builder.setIpv6NdTarget(new Ipv6Address("::4"));
         ipv6Builder.setIpv6NdSll(new MacAddress("00:00:00:00:00:05"));
         ipv6Builder.setIpv6NdTll(new MacAddress("00:00:00:00:00:06"));
         Ipv6ExtHeaderBuilder extHdrBuilder = new Ipv6ExtHeaderBuilder();
-        extHdrBuilder.setIpv6Exthdr(153);
+        extHdrBuilder.setIpv6Exthdr(Uint16.valueOf(153));
         ipv6Builder.setIpv6ExtHeader(extHdrBuilder.build());
 
         MatchBuilder builder = new MatchBuilder();
@@ -637,8 +639,8 @@ public class MatchConvertorTest {
     public void testIpv6ExtHeaderConversion() {
         Ipv6MatchBuilder ipv6Builder = new Ipv6MatchBuilder();
         Ipv6ExtHeaderBuilder extHdrBuilder = new Ipv6ExtHeaderBuilder();
-        extHdrBuilder.setIpv6Exthdr(358);
-        extHdrBuilder.setIpv6ExthdrMask(258);
+        extHdrBuilder.setIpv6Exthdr(Uint16.valueOf(358));
+        extHdrBuilder.setIpv6ExthdrMask(Uint16.valueOf(258));
         ipv6Builder.setIpv6ExtHeader(extHdrBuilder.build());
 
         MatchBuilder builder = new MatchBuilder();
@@ -661,8 +663,8 @@ public class MatchConvertorTest {
     public void testConversionWithMasks() {
         MatchBuilder builder = new MatchBuilder();
         MetadataBuilder metadataBuilder = new MetadataBuilder();
-        metadataBuilder.setMetadata(new BigInteger("3"));
-        metadataBuilder.setMetadataMask(new BigInteger("15"));
+        metadataBuilder.setMetadata(Uint64.valueOf(3));
+        metadataBuilder.setMetadataMask(Uint64.valueOf(15));
         builder.setMetadata(metadataBuilder.build());
         EthernetMatchBuilder ethernetBuilder = new EthernetMatchBuilder();
         EthernetSourceBuilder ethSrcBuilder = new EthernetSourceBuilder();
@@ -676,19 +678,19 @@ public class MatchConvertorTest {
         builder.setEthernetMatch(ethernetBuilder.build());
         VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-        vlanIdBuilder.setVlanId(new VlanId(0));
+        vlanIdBuilder.setVlanId(new VlanId(Uint16.ZERO));
         vlanIdBuilder.setVlanIdPresent(true);
         vlanBuilder.setVlanId(vlanIdBuilder.build());
         builder.setVlanMatch(vlanBuilder.build());
         ProtocolMatchFieldsBuilder protoBuilder = new ProtocolMatchFieldsBuilder();
         PbbBuilder pbbBuilder = new PbbBuilder();
-        pbbBuilder.setPbbIsid(20L);
-        pbbBuilder.setPbbMask(8L);
+        pbbBuilder.setPbbIsid(Uint32.valueOf(20));
+        pbbBuilder.setPbbMask(Uint32.valueOf(8));
         protoBuilder.setPbb(pbbBuilder.build());
         builder.setProtocolMatchFields(protoBuilder.build());
         TunnelBuilder tunnelBuilder = new TunnelBuilder();
-        tunnelBuilder.setTunnelId(new BigInteger("21"));
-        tunnelBuilder.setTunnelMask(new BigInteger("14"));
+        tunnelBuilder.setTunnelId(Uint64.valueOf(21));
+        tunnelBuilder.setTunnelMask(Uint64.valueOf(14));
         builder.setTunnel(tunnelBuilder.build());
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
         ipv4MatchBuilder.setIpv4Source(new Ipv4Prefix("10.0.0.0/24"));
@@ -786,7 +788,7 @@ public class MatchConvertorTest {
     @Test
     public void testPacketTypeConversion() {
         MatchBuilder builder = new MatchBuilder();
-        builder.setPacketTypeMatch(new PacketTypeMatchBuilder().setPacketType(0x1894fL).build());
+        builder.setPacketTypeMatch(new PacketTypeMatchBuilder().setPacketType(Uint32.valueOf(0x1894f)).build());
         Match match = builder.build();
 
         Optional<List<MatchEntry>> entriesOptional =

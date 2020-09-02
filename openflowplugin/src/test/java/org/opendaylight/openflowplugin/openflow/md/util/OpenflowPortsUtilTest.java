@@ -159,7 +159,7 @@ public class OpenflowPortsUtilTest {
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.0.
+     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Uint32)} - OF-1.0.
      */
     @Test
     public void testCheckPortValidity10() {
@@ -172,7 +172,7 @@ public class OpenflowPortsUtilTest {
     }
 
     /**
-     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Long)} - OF-1.3.
+     * test for method {@link OpenflowPortsUtil#checkPortValidity(OpenflowVersion, Uint32)} - OF-1.3.
      */
     @Test
     public void testCheckPortValidity13() {

@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,6 +85,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class TableFeaturesConvertorTest {
     private static final TablePropertiesBuilder TABLE_PROPERTIES_BUILDER = new TablePropertiesBuilder();
@@ -385,11 +387,11 @@ public class TableFeaturesConvertorTest {
             tableFeaturesBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                 .features.TableFeaturesBuilder();
         for (int i = 0; i < 10; i++) {
-            tableFeaturesBuilder.setTableId((short) i);
+            tableFeaturesBuilder.setTableId(Uint8.valueOf(i));
             tableFeaturesBuilder.setName(String.format("table:%d", i));
-            tableFeaturesBuilder.setMetadataMatch(BigInteger.ONE);
-            tableFeaturesBuilder.setMetadataWrite(BigInteger.ONE);
-            tableFeaturesBuilder.setMaxEntries((long) 1 + 10 * i);
+            tableFeaturesBuilder.setMetadataMatch(Uint64.ONE);
+            tableFeaturesBuilder.setMetadataWrite(Uint64.ONE);
+            tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(1 + 10 * i));
             tableFeaturesBuilder.setConfig(new TableConfig(false));
             tableFeaturesBuilder.setTableProperties(getTableProperties());
             tableFeaturesList.add(tableFeaturesBuilder.build());
