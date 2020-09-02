@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
@@ -42,18 +40,19 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
-        DeserializerRegistryInjector {
+public class ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
 
     private static final String UNKNOWN_CODE = "UNKNOWN_CODE";
     private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
-    private DeserializerRegistry registry;
+
+    private final DeserializerRegistry registry;
+
+    public ErrorMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public ErrorMessage deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
-
+    public ErrorMessage deserialize(final ByteBuf rawMessage) {
         int startIndex = rawMessage.readerIndex();
         ErrorMessageBuilder builder = new ErrorMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
@@ -79,7 +78,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         return builder.build();
     }
 
-    private static void decodeType(ErrorMessageBuilder builder, ErrorType type, int readValue) {
+    private static void decodeType(final ErrorMessageBuilder builder, final ErrorType type, final int readValue) {
         if (type != null) {
             builder.setType(Uint16.valueOf(type.getIntValue()));
             builder.setTypeString(type.name());
@@ -89,8 +88,8 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         }
     }
 
-    private static void decodeCode(ByteBuf rawMessage, ErrorMessageBuilder builder,
-            ErrorType type) {
+    private static void decodeCode(final ByteBuf rawMessage, final ErrorMessageBuilder builder,
+            final ErrorType type) {
         int code = rawMessage.readUnsignedShort();
         if (type != null) {
             switch (type) {
@@ -229,19 +228,11 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         }
     }
 
-    private static void setUnknownCode(ErrorMessageBuilder builder, int readValue) {
-        builder.setCode(Uint16.valueOf(readValue));
-        builder.setCodeString(UNKNOWN_CODE);
+    private static void setUnknownCode(final ErrorMessageBuilder builder, final int readValue) {
+        builder.setCode(Uint16.valueOf(readValue)).setCodeString(UNKNOWN_CODE);
     }
 
-    private static void setCode(ErrorMessageBuilder builder, int code, String codeString) {
-        builder.setCode(Uint16.valueOf(code));
-        builder.setCodeString(codeString);
+    private static void setCode(final ErrorMessageBuilder builder, final int code, final String codeString) {
+        builder.setCode(Uint16.valueOf(code)).setCodeString(codeString);
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        this.registry = deserializerRegistry;
-    }
-
 }

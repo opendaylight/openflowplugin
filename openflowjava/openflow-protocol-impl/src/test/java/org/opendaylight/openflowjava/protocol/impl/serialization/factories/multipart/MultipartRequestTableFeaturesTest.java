@@ -359,8 +359,7 @@ public class MultipartRequestTableFeaturesTest {
      */
     @Test
     public void testMultipartRequestTableFeaturesExperimenter() throws Exception {
-        MultipartRequestInputFactory factory = new MultipartRequestInputFactory();
-        factory.injectSerializerRegistry(mockRegistry);
+        final MultipartRequestInputFactory factory = new MultipartRequestInputFactory(mockRegistry);
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setType(MultipartType.forValue(12));

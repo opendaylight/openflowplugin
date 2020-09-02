@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -75,8 +74,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
  * Util class for injecting new action serializers into OpenflowJava.
  */
 public final class ActionSerializerInjector {
-
     private ActionSerializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -90,7 +89,7 @@ public final class ActionSerializerInjector {
         final Function<Class<? extends Action>, Consumer<OFSerializer<? extends Action>>> injector =
                 createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
-        injector.apply(SetFieldCase.class).accept(new SetFieldActionSerializer());
+        injector.apply(SetFieldCase.class).accept(new SetFieldActionSerializer(provider));
         injector.apply(CopyTtlInCase.class).accept(new CopyTtlInActionSerializer());
         injector.apply(CopyTtlOutCase.class).accept(new CopyTtlOutActionSerializer());
         injector.apply(DecMplsTtlCase.class).accept(new DecMplsTtlActionSerializer());
@@ -107,16 +106,16 @@ public final class ActionSerializerInjector {
         injector.apply(SetNwTtlActionCase.class).accept(new SetNwTtlActionSerializer());
         injector.apply(SetQueueActionCase.class).accept(new SetQueueActionSerializer());
         injector.apply(DropActionCase.class).accept(new DropActionSerializer());
-        injector.apply(SetVlanIdActionCase.class).accept(new SetVlanIdActionSerializer());
-        injector.apply(SetVlanPcpActionCase.class).accept(new SetVlanPcpActionSerializer());
-        injector.apply(StripVlanActionCase.class).accept(new StripVlanActionSerializer());
-        injector.apply(SetDlSrcActionCase.class).accept(new SetDlSrcActionSerializer());
-        injector.apply(SetDlDstActionCase.class).accept(new SetDlDstActionSerializer());
-        injector.apply(SetNwSrcActionCase.class).accept(new SetNwSrcActionSerializer());
-        injector.apply(SetNwDstActionCase.class).accept(new SetNwDstActionSerializer());
-        injector.apply(SetTpSrcActionCase.class).accept(new SetTpSrcActionSerializer());
-        injector.apply(SetTpDstActionCase.class).accept(new SetTpDstActionSerializer());
-        injector.apply(SetNwTosActionCase.class).accept(new SetNwTosActionSerializer());
+        injector.apply(SetVlanIdActionCase.class).accept(new SetVlanIdActionSerializer(provider));
+        injector.apply(SetVlanPcpActionCase.class).accept(new SetVlanPcpActionSerializer(provider));
+        injector.apply(StripVlanActionCase.class).accept(new StripVlanActionSerializer(provider));
+        injector.apply(SetDlSrcActionCase.class).accept(new SetDlSrcActionSerializer(provider));
+        injector.apply(SetDlDstActionCase.class).accept(new SetDlDstActionSerializer(provider));
+        injector.apply(SetNwSrcActionCase.class).accept(new SetNwSrcActionSerializer(provider));
+        injector.apply(SetNwDstActionCase.class).accept(new SetNwDstActionSerializer(provider));
+        injector.apply(SetTpSrcActionCase.class).accept(new SetTpSrcActionSerializer(provider));
+        injector.apply(SetTpDstActionCase.class).accept(new SetTpDstActionSerializer(provider));
+        injector.apply(SetNwTosActionCase.class).accept(new SetNwTosActionSerializer(provider));
     }
 
     /**
@@ -129,11 +128,7 @@ public final class ActionSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends Action>, Consumer<OFSerializer<? extends Action>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
-        return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+            final SerializerExtensionProvider provider, final byte version) {
+        return type -> serializer -> provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
 }

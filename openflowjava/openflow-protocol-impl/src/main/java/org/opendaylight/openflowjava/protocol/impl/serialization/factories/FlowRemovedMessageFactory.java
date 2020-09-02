@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -24,21 +23,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author giuseppex.petralia@intel.com
  */
-public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessage>, SerializerRegistryInjector {
-
+public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessage> {
     private static final byte MESSAGE_TYPE = 11;
-    private SerializerRegistry registry;
 
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
+    private final SerializerLookup registry;
+
+    public FlowRemovedMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
     }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(FlowRemovedMessage message, ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
+    public void serialize(final FlowRemovedMessage message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeLong(message.getCookie().longValue());
@@ -56,5 +51,4 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
         matchSerializer.serialize(message.getMatch(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }
-
 }

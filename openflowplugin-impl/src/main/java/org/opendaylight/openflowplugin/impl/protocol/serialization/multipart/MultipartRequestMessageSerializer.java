@@ -7,12 +7,11 @@
  */
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
+import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -37,10 +36,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
-public class MultipartRequestMessageSerializer extends AbstractMessageSerializer<MultipartRequest> implements
-        SerializerRegistryInjector {
+public class MultipartRequestMessageSerializer extends AbstractMessageSerializer<MultipartRequest> {
     private static final byte PADDING_IN_MULTIPART_REQUEST_MESSAGE = 4;
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
+
+    public MultipartRequestMessageSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final MultipartRequest message, final ByteBuf outBuffer) {
@@ -53,10 +56,8 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
         outBuffer.writeShort(ByteBufUtils.fillBitMask(0, message.isRequestMore()));
         outBuffer.writeZero(PADDING_IN_MULTIPART_REQUEST_MESSAGE);
 
-        final OFSerializer<MultipartRequestBody> serializer = Preconditions.checkNotNull(registry)
-            .getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF13_VERSION_ID,
-                multipartRequestBody.implementedInterface()));
+        final OFSerializer<MultipartRequestBody> serializer = registry.getSerializer(new MessageTypeKey<>(
+                EncodeConstants.OF13_VERSION_ID, multipartRequestBody.implementedInterface()));
 
         serializer.serialize(multipartRequestBody, outBuffer);
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
@@ -93,10 +94,4 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
 
         return multipartType;
     }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
-    }
-
 }
