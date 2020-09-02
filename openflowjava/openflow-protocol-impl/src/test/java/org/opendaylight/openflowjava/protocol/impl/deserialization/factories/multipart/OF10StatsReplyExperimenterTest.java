@@ -5,11 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+
 import io.netty.buffer.ByteBuf;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -30,9 +31,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OF10StatsReplyExperimenterTest {
-
-    @Mock DeserializerRegistry registry;
-    @Mock private OFDeserializer<ExperimenterDataOfChoice> vendorDeserializer;
+    @Mock
+    private DeserializerRegistry registry;
+    @Mock
+    private OFDeserializer<ExperimenterDataOfChoice> vendorDeserializer;
 
     /**
      * Tests {@link OF10StatsReplyMessageFactory} for experimenter body translation.
@@ -40,17 +42,16 @@ public class OF10StatsReplyExperimenterTest {
     @Test
     public void test() {
         Mockito.when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(vendorDeserializer);
-        OF10StatsReplyMessageFactory factory = new OF10StatsReplyMessageFactory();
-        factory.injectDeserializerRegistry(registry);
+        OF10StatsReplyMessageFactory factory = new OF10StatsReplyMessageFactory(registry);
 
         ByteBuf bb = BufferHelper.buildBuffer("FF FF 00 01 00 00 00 00 "
                                             + "00 00 00 01"); // expID
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV10(builtByFactory);
-        Assert.assertEquals("Wrong type", 65535, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 65535, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
 
-        Mockito.verify(vendorDeserializer).deserialize(bb);
+        verify(vendorDeserializer).deserialize(bb);
     }
 }

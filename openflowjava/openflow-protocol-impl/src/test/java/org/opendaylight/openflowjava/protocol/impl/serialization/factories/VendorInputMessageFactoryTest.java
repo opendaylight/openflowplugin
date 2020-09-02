@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -47,8 +46,7 @@ public class VendorInputMessageFactoryTest {
     public void test() {
         Mockito.when(registry.getSerializer(ArgumentMatchers.<MessageTypeKey<?>>any()))
             .thenReturn(serializer);
-        VendorInputMessageFactory factory = new VendorInputMessageFactory();
-        factory.injectSerializerRegistry(registry);
+        final VendorInputMessageFactory factory = new VendorInputMessageFactory(registry);
         final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);

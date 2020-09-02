@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.util;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionDeserializerKey;
@@ -38,8 +38,8 @@ public final class ActionUtil {
      * @param registry deserializer registry
      * @param path     Action path
      */
-    public static Action readAction(short version, ByteBuf message, DeserializerRegistry registry,
-                                    ActionPath path) {
+    public static Action readAction(final short version, final ByteBuf message, final DeserializerLookup registry,
+            final ActionPath path) {
         int type = message.getUnsignedShort(message.readerIndex());
         final Long expId;
 
@@ -77,14 +77,12 @@ public final class ActionUtil {
      * @param registry deserializer registry
      * @param path     Action path
      */
-    public static Action readActionHeader(short version, ByteBuf message, DeserializerRegistry registry,
-                                          ActionPath path) {
+    public static Action readActionHeader(final short version, final ByteBuf message, final DeserializerLookup registry,
+            final ActionPath path) {
         int type = message.getUnsignedShort(message.readerIndex());
         final Long expId;
-
         if (type == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = message.getUnsignedInt(message.readerIndex()
-                    + 2 * Short.BYTES);
+            expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
         } else {
             expId = null;
         }
@@ -107,7 +105,7 @@ public final class ActionUtil {
         }
     }
 
-    private static MessageCodeKey getCodeKey(short version, int type, Long expId) {
+    private static MessageCodeKey getCodeKey(final short version, final int type, final Long expId) {
         return expId != null ? new ExperimenterActionDeserializerKey(version, expId)
                 : new ActionDeserializerKey(version, type, null);
     }

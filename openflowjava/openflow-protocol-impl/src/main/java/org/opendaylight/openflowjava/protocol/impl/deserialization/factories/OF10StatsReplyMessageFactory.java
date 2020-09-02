@@ -7,19 +7,17 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -72,10 +70,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author michal.polkorab
  */
-@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartReplyMessage>,
-        DeserializerRegistryInjector {
-
+public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartReplyMessage> {
     private static final int DESC_STR_LEN = 256;
     private static final int SERIAL_NUM_LEN = 32;
     private static final byte PADDING_IN_FLOW_STATS_HEADER = 1;
@@ -87,12 +82,15 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     private static final byte PADDING_IN_QUEUE_HEADER = 2;
     private static final byte LENGTH_OF_FLOW_STATS = 88;
     private static final int TABLE_STATS_LENGTH = 64;
-    private DeserializerRegistry registry;
+
+    private final DeserializerRegistry registry;
+
+    public OF10StatsReplyMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public MultipartReplyMessage deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
-
+    public MultipartReplyMessage deserialize(final ByteBuf rawMessage) {
         MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)
                 .setXid(readUint32(rawMessage));
@@ -127,7 +125,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return builder.build();
     }
 
-    private static MultipartReplyDescCase setDesc(ByteBuf input) {
+    private static MultipartReplyDescCase setDesc(final ByteBuf input) {
         final MultipartReplyDescCaseBuilder caseBuilder = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder descBuilder = new MultipartReplyDescBuilder();
         byte[] mfrDescBytes = new byte[DESC_STR_LEN];
@@ -154,7 +152,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private MultipartReplyFlowCase setFlow(ByteBuf input) {
+    private MultipartReplyFlowCase setFlow(final ByteBuf input) {
         MultipartReplyFlowCaseBuilder caseBuilder = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder flowBuilder = new MultipartReplyFlowBuilder();
         List<FlowStats> flowStatsList = new ArrayList<>();
@@ -186,7 +184,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyAggregateCase setAggregate(ByteBuf input) {
+    private static MultipartReplyAggregateCase setAggregate(final ByteBuf input) {
         final MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder builder = new MultipartReplyAggregateBuilder();
         builder.setPacketCount(readUint64(input));
@@ -197,7 +195,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyTableCase setTable(ByteBuf input) {
+    private static MultipartReplyTableCase setTable(final ByteBuf input) {
         final MultipartReplyTableCaseBuilder caseBuilder = new MultipartReplyTableCaseBuilder();
         MultipartReplyTableBuilder builder = new MultipartReplyTableBuilder();
         List<TableStats> tableStatsList = new ArrayList<>();
@@ -223,7 +221,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyPortStatsCase setPortStats(ByteBuf input) {
+    private static MultipartReplyPortStatsCase setPortStats(final ByteBuf input) {
         MultipartReplyPortStatsCaseBuilder caseBuilder = new MultipartReplyPortStatsCaseBuilder();
         MultipartReplyPortStatsBuilder builder = new MultipartReplyPortStatsBuilder();
         List<PortStats> portStatsList = new ArrayList<>();
@@ -250,7 +248,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyQueueCase setQueue(ByteBuf input) {
+    private static MultipartReplyQueueCase setQueue(final ByteBuf input) {
         MultipartReplyQueueCaseBuilder caseBuilder = new MultipartReplyQueueCaseBuilder();
         MultipartReplyQueueBuilder builder = new MultipartReplyQueueBuilder();
         List<QueueStats> queueStatsList = new ArrayList<>();
@@ -269,7 +267,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private MultipartReplyExperimenterCase setExperimenter(ByteBuf input) {
+    private MultipartReplyExperimenterCase setExperimenter(final ByteBuf input) {
         final long expId = input.readUnsignedInt();
         final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createMultipartReplyVendorMessageDeserializerKey(
@@ -281,10 +279,5 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         final MultipartReplyExperimenterCaseBuilder mpReplyExperimenterCaseBld =
                 new MultipartReplyExperimenterCaseBuilder().setMultipartReplyExperimenter(mpExperimenterBld.build());
         return mpReplyExperimenterCaseBld.build();
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
     }
 }

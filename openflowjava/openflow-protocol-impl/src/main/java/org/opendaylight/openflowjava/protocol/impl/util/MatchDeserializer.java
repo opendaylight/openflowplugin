@@ -5,13 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.StandardMatchType;
@@ -26,13 +26,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class MatchDeserializer implements OFDeserializer<Match>,
-        DeserializerRegistryInjector {
+public class MatchDeserializer implements OFDeserializer<Match> {
+    private final DeserializerRegistry registry;
 
-    private DeserializerRegistry registry;
+    public MatchDeserializer(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public Match deserialize(ByteBuf input) {
+    public Match deserialize(final ByteBuf input) {
         if (input.readableBytes() > 0) {
             MatchBuilder builder = new MatchBuilder();
             int type = input.readUnsignedShort();
@@ -59,10 +61,5 @@ public class MatchDeserializer implements OFDeserializer<Match>,
             return builder.build();
         }
         return null;
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        this.registry = deserializerRegistry;
     }
 }
