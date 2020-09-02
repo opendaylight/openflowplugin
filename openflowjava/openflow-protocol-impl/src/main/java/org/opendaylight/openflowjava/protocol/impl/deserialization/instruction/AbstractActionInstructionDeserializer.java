@@ -8,10 +8,11 @@
 
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.CodeKeyMaker;
@@ -25,25 +26,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  *
  * @author michal.polkorab
  */
-public abstract class AbstractActionInstructionDeserializer implements OFDeserializer<Instruction>,
-        DeserializerRegistryInjector {
+public abstract class AbstractActionInstructionDeserializer implements OFDeserializer<Instruction> {
+    private final DeserializerRegistry registry;
 
-    private DeserializerRegistry registry;
+    protected AbstractActionInstructionDeserializer(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
-    protected List<Action> deserializeActions(ByteBuf input, int instructionLength) {
+    protected List<Action> deserializeActions(final ByteBuf input, final int instructionLength) {
         int length = instructionLength - InstructionConstants.STANDARD_INSTRUCTION_LENGTH;
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
-        List<Action> actions = ListDeserializer.deserializeList(
-                EncodeConstants.OF13_VERSION_ID, length, input, keyMaker, getRegistry());
-        return actions;
+        return ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID, length, input, keyMaker, registry);
     }
 
-    protected DeserializerRegistry getRegistry() {
+    protected final DeserializerRegistry getRegistry() {
         return registry;
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        this.registry = deserializerRegistry;
     }
 }
