@@ -57,7 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
- * Unit test for {@link MatchConvertorImpl}.
+ * Unit test for {@link MatchResponseConvertor}.
  */
 public class MatchResponseConvertorTest {
     private static final Uint64 DPID = Uint64.valueOf(10);
