@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions;
 
 import io.netty.buffer.ByteBuf;
@@ -14,9 +13,8 @@ import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 
 public class ApplyActionsInstructionSerializer extends AbstractActionInstructionSerializer<ApplyActionsCase> {
-
     @Override
-    public void serialize(ApplyActionsCase input, ByteBuf outBuffer) {
+    public void serialize(final ApplyActionsCase input, final ByteBuf outBuffer) {
         int index = outBuffer.writerIndex();
         super.serialize(input, outBuffer);
         writeActions(input.getApplyActions(), EncodeConstants.OF13_VERSION_ID, outBuffer,index);
@@ -31,5 +29,4 @@ public class ApplyActionsInstructionSerializer extends AbstractActionInstruction
     protected int getLength() {
         return InstructionConstants.STANDARD_INSTRUCTION_LENGTH;
     }
-
 }

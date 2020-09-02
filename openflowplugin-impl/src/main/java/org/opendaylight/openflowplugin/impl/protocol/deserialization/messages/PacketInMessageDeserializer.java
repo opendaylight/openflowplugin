@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -27,17 +26,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 
-public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessage>, DeserializerRegistryInjector {
+public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessage> {
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.PACKET_IN_MESSAGE_MATCH);
 
-    private DeserializerRegistry registry;
+    private final DeserializerRegistry registry;
 
-    @Override
-    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
+    public PacketInMessageDeserializer(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
     }
 
     @Override
@@ -62,7 +60,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
         packetInMessageBuilder
                 .setFlowCookie(new FlowCookie(new BigInteger(1, cookie)));
 
-        final OFDeserializer<Match> matchDeserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
 
         packetInMessageBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(message),
                 org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
