@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCaseBuilder;
@@ -22,8 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  */
 public class ApplyActionsInstructionDeserializer extends AbstractActionInstructionDeserializer
         implements HeaderDeserializer<Instruction> {
+    public ApplyActionsInstructionDeserializer(final DeserializerRegistry registry) {
+        super(registry);
+    }
+
     @Override
-    public Instruction deserialize(ByteBuf input) {
+    public Instruction deserialize(final ByteBuf input) {
         final InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(Short.BYTES);
         int instructionLength = input.readUnsignedShort();
@@ -37,7 +42,7 @@ public class ApplyActionsInstructionDeserializer extends AbstractActionInstructi
     }
 
     @Override
-    public Instruction deserializeHeader(ByteBuf input) {
+    public Instruction deserializeHeader(final ByteBuf input) {
         InstructionBuilder builder = new InstructionBuilder();
         input.skipBytes(2 * Short.BYTES);
         builder.setInstructionChoice(new ApplyActionsCaseBuilder().build());
