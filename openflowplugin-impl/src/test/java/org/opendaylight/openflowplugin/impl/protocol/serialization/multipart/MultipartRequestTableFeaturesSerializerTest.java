@@ -80,14 +80,14 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
         final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(BODY, out);
 
-        out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // skip length
+        out.skipBytes(Short.BYTES); // skip length
         assertEquals(TABLE_ID, out.readUnsignedByte());
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
         assertEquals(NAME, ByteBufUtils.decodeNullTerminatedString(out, MAX_TABLE_NAME_LENGTH));
-        final byte[] match = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] match = new byte[Long.BYTES];
         out.readBytes(match);
         assertEquals(METADATA_MATCH, new BigInteger(1, match));
-        final byte[] write = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] write = new byte[Long.BYTES];
         out.readBytes(write);
         assertEquals(METADATA_WRITE, new BigInteger(1, write));
         assertEquals(IS_DEPRECATED_MASK, (out.readUnsignedInt() & 3) != 0);

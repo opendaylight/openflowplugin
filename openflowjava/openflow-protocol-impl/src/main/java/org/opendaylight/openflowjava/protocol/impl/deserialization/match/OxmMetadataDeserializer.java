@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
@@ -37,12 +36,12 @@ public class OxmMetadataDeserializer  extends AbstractOxmMatchEntryDeserializer
     private static void addMetadataValue(ByteBuf input, MatchEntryBuilder builder) {
         final MetadataCaseBuilder caseBuilder = new MetadataCaseBuilder();
         MetadataBuilder metadataBuilder = new MetadataBuilder();
-        byte[] metadataBytes = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] metadataBytes = new byte[Long.BYTES];
         input.readBytes(metadataBytes);
         metadataBuilder.setMetadata(metadataBytes);
         if (builder.isHasMask()) {
             metadataBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+                    .convertMask(input, Long.BYTES));
         }
         caseBuilder.setMetadata(metadataBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

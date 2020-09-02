@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import io.netty.buffer.ByteBuf;
@@ -15,7 +14,6 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
@@ -26,7 +24,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author giuseppex.petralia@intel.com
  */
 public class DeserializationFactory {
-
     private final Map<TypeToClassKey, Class<?>> messageClassMap = new ConcurrentHashMap<>();
     private final DeserializerRegistry registry;
 
@@ -51,7 +48,7 @@ public class DeserializationFactory {
         DataObject dataObject = null;
         int type = rawMessage.readUnsignedByte();
         Class<?> clazz = messageClassMap.get(new TypeToClassKey(version, type));
-        rawMessage.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        rawMessage.skipBytes(Short.BYTES);
         OFDeserializer<DataObject> deserializer = registry.getDeserializer(new MessageCodeKey(version, type, clazz));
         dataObject = deserializer.deserialize(rawMessage);
         return dataObject;

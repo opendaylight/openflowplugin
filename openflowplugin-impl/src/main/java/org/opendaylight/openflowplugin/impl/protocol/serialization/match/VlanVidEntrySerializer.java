@@ -20,7 +20,7 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId,
 
     public VlanVidEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_VID,
-            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            Short.BYTES);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId,
         outBuffer.writeShort(vlanVidValue);
 
         if (mask != null) {
-            writeMask(VLAN_VID_MASK, outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            writeMask(VLAN_VID_MASK, outBuffer, Short.BYTES);
         }
     }
 }

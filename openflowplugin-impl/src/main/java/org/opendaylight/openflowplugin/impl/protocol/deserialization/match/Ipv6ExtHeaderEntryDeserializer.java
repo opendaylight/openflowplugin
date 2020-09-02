@@ -25,7 +25,7 @@ public class Ipv6ExtHeaderEntryDeserializer extends AbstractMatchEntryDeserializ
             .setIpv6Exthdr(message.readUnsignedShort());
 
         if (hasMask) {
-            final byte[] mask = OxmDeserializerHelper.convertMask(message, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            final byte[] mask = OxmDeserializerHelper.convertMask(message, Short.BYTES);
             extHeaderBuilder.setIpv6ExthdrMask(ByteUtil.bytesToUnsignedShort(mask));
         }
 

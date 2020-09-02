@@ -24,6 +24,6 @@ public class Icmpv4TypeMatchFieldSerializer extends AbstractMatchFieldSerializer
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+        return Byte.BYTES;
     }
 }

@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class Ipv6LabelEntrySerializer extends AbstractMatchEntrySerializer<Ipv6Label, Ipv6FlowLabel> {
     public Ipv6LabelEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_FLABEL,
-            EncodeConstants.SIZE_OF_INT_IN_BYTES);
+            Integer.BYTES);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Ipv6LabelEntrySerializer extends AbstractMatchEntrySerializer<Ipv6L
     protected void serializeEntry(final Ipv6Label entry, final Ipv6FlowLabel mask, final ByteBuf outBuffer) {
         outBuffer.writeInt(entry.getIpv6Flabel().getValue().intValue());
         if (mask != null) {
-            writeMask(ByteUtil.unsignedIntToBytes(mask.getValue()), outBuffer, EncodeConstants.SIZE_OF_INT_IN_BYTES);
+            writeMask(ByteUtil.unsignedIntToBytes(mask.getValue()), outBuffer, Integer.BYTES);
         }
     }
 }

@@ -24,6 +24,6 @@ public class MetadataMatchFieldSerializer extends AbstractMatchFieldSerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 }
