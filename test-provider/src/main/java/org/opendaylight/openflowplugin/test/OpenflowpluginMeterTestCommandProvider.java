@@ -251,7 +251,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             createUserNode(nref);
         }
 
-        Integer count = Integer.parseInt(ci.nextArgument());
+        int count = Integer.parseInt(ci.nextArgument());
 
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         switch (count) {
@@ -345,7 +345,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        Integer count = Integer.parseInt(ci.nextArgument());
+        int count = Integer.parseInt(ci.nextArgument());
         switch (count) {
             case 1:
                 createTestMeters("1", "add");
@@ -448,7 +448,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             createUserNode(nref);
         }
 
-        Integer count = Integer.parseInt(ci.nextArgument());
+        int count = Integer.parseInt(ci.nextArgument());
         switch (count) {
             case 1:
                 createTestMeters("1", "modify");
