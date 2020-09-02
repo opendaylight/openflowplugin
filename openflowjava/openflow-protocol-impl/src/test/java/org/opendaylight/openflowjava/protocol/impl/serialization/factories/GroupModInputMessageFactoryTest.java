@@ -48,7 +48,7 @@ public class GroupModInputMessageFactoryTest {
     public void startUp() {
         registry = new SerializerRegistryImpl();
         registry.init();
-        groupModFactory = new GroupModInputMessageFactory(false);
+        groupModFactory = new GroupModInputMessageFactory(registry, false);
     }
 
     /**
@@ -98,7 +98,7 @@ public class GroupModInputMessageFactoryTest {
         return bucketsList;
     }
 
-    private static List<BucketsList> createBucketsListFromBufer(ByteBuf out) {
+    private static List<BucketsList> createBucketsListFromBufer(final ByteBuf out) {
         final List<BucketsList> bucketsList = new ArrayList<>();
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
         out.skipBytes(Short.BYTES);

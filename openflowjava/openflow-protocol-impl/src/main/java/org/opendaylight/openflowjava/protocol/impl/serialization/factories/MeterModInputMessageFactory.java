@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowjava.util.ExperimenterSerializerKeyFactory;
@@ -38,16 +38,18 @@ import org.slf4j.LoggerFactory;
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
-        SerializerRegistryInjector {
-
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MeterModInputMessageFactory.class);
+public class MeterModInputMessageFactory implements OFSerializer<MeterModInput> {
+    private static final Logger LOG = LoggerFactory.getLogger(MeterModInputMessageFactory.class);
     private static final byte MESSAGE_TYPE = 29;
     private static final short LENGTH_OF_METER_BANDS = 16;
     private static final short PADDING_IN_METER_BAND_DROP = 4;
     private static final short PADDING_IN_METER_BAND_DSCP_REMARK = 3;
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
+
+    public MeterModInputMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final MeterModInput message, final ByteBuf outBuffer) {
@@ -111,10 +113,5 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
         outBuffer.writeShort(LENGTH_OF_METER_BANDS);
         outBuffer.writeInt(meterBand.getRate().intValue());
         outBuffer.writeInt(meterBand.getBurstSize().intValue());
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 }

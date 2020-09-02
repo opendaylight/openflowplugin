@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase;
@@ -21,8 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public class ApplyActionsInstructionSerializer extends AbstractActionInstructionSerializer {
-    public ApplyActionsInstructionSerializer() {
-        super(InstructionConstants.APPLY_ACTIONS_TYPE);
+    public ApplyActionsInstructionSerializer(final SerializerLookup registry) {
+        super(InstructionConstants.APPLY_ACTIONS_TYPE, registry);
     }
 
     @Override

@@ -53,8 +53,7 @@ public class OF10StatsRequestExperimenterTest {
         Mockito.when(mockRegistry.getSerializer(
                 ArgumentMatchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any()))
                 .thenReturn(serializer);
-        OF10StatsRequestInputFactory multipartFactory = new OF10StatsRequestInputFactory();
-        multipartFactory.injectSerializerRegistry(mockRegistry);
+        final OF10StatsRequestInputFactory multipartFactory = new OF10StatsRequestInputFactory(mockRegistry);
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setType(MultipartType.OFPMPEXPERIMENTER);

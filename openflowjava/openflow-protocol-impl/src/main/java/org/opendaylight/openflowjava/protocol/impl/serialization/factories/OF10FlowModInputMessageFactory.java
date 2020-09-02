@@ -5,15 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
@@ -30,18 +28,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author michal.polkorab
  */
-public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput>, SerializerRegistryInjector {
-
+public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput> {
     private static final byte MESSAGE_TYPE = 14;
     private static final TypeKeyMaker<Action> ACTION_KEY_MAKER =
             TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF10_VERSION_ID);
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
+
+    public OF10FlowModInputMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public void serialize(final FlowModInput message, final ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
                 message.getVersion().toJava(), MatchV10.class));
@@ -63,10 +62,5 @@ public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput
                 flags.isOFPFFSENDFLOWREM(),
                 flags.isOFPFFCHECKOVERLAP(),
                 flags.isOFPFFEMERG());
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
     }
 }

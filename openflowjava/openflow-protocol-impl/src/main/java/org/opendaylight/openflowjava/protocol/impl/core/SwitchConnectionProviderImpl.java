@@ -355,4 +355,14 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     public boolean unregisterDeserializerMapping(final TypeToClassKey key) {
         return deserializationFactory.unregisterMapping(key);
     }
+
+    @Override
+    public <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey) {
+        return serializerRegistry.getSerializer(msgTypeKey);
+    }
+
+    @Override
+    public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+        return deserializerRegistry.getDeserializer(key);
+    }
 }

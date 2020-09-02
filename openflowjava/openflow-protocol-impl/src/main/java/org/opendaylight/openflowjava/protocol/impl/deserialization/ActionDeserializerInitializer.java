@@ -93,7 +93,7 @@ public final class ActionDeserializerInitializer {
         helper.registerDeserializer(ActionConstants.SET_NW_TTL_CODE, new OF13SetNwTtlActionDeserializer());
         helper.registerDeserializer(ActionConstants.DEC_NW_TTL_CODE,
             new EmptyActionDeserializer<>(new DecNwTtlCaseBuilder().build()));
-        helper.registerDeserializer(ActionConstants.SET_FIELD_CODE, new OF13SetFieldActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_FIELD_CODE, new OF13SetFieldActionDeserializer(registry));
         helper.registerDeserializer(ActionConstants.PUSH_PBB_CODE, new OF13PushPbbActionDeserializer());
         helper.registerDeserializer(ActionConstants.POP_PBB_CODE,
             new EmptyActionDeserializer<>(new PopPbbCaseBuilder().build()));

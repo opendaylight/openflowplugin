@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,9 +41,8 @@ public class ErrorMessageFactoryTest {
      */
     @Before
     public void startUp() {
-        errorFactory = new ErrorMessageFactory();
+        errorFactory = new ErrorMessageFactory(registry);
         Mockito.when(registry.getDeserializer(any(MessageCodeKey.class))).thenReturn(deserializer);
-        errorFactory.injectDeserializerRegistry(registry);
     }
 
     /**

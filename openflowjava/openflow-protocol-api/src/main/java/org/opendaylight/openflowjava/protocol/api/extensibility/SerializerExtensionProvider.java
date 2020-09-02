@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
@@ -21,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 
-
 /**
  * Provides methods for serialization part of extensibility.
  * In case of handling multiple structures of same type (actions,
@@ -34,8 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * - that's why vendor has to handle it in his own implementations.
  * @author michal.polkorab
  */
-public interface SerializerExtensionProvider {
-
+public interface SerializerExtensionProvider extends SerializerLookup {
     /**
      * Registers a custom serializer.
      *
@@ -43,16 +40,11 @@ public interface SerializerExtensionProvider {
      * Throws IllegalStateException when there is
      * a serializer already registered under given key.
      *
-     * <p>
-     * If the serializer implements {@link SerializerRegistryInjector} interface,
-     * the serializer is injected with SerializerRegistry instance.
-     *
      * @param <K> serializer key type
      * @param key used for serializer lookup
      * @param serializer serializer implementation
      */
-    <K> void registerSerializer(MessageTypeKey<K> key,
-            OFGeneralSerializer serializer);
+    <K> void registerSerializer(MessageTypeKey<K> key, OFGeneralSerializer serializer);
 
     /**
      * Unregisters a custom serializer.

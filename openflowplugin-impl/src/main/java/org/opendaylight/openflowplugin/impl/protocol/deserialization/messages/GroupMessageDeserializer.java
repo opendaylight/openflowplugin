@@ -5,15 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -29,8 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 
-public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, DeserializerRegistryInjector {
-
+public class GroupMessageDeserializer implements OFDeserializer<GroupMessage> {
     private static final byte PADDING = 1;
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
     private static final byte BUCKETS_HEADER_LENGTH = 16;
@@ -42,10 +41,14 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private DeserializerRegistry registry;
+    private final DeserializerLookup registry;
+
+    public GroupMessageDeserializer(final DeserializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public GroupMessage deserialize(ByteBuf message) {
+    public GroupMessage deserialize(final ByteBuf message) {
         final GroupMessageBuilder builder = new GroupMessageBuilder()
             .setVersion((short) EncodeConstants.OF13_VERSION_ID)
             .setXid(message.readUnsignedInt())
@@ -98,10 +101,4 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
                 .build())
             .build();
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }

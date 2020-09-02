@@ -5,15 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterSerializerKeyFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterOfMessage;
@@ -24,16 +22,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author michal.polkorab
  */
-public class VendorInputMessageFactory implements OFSerializer<ExperimenterOfMessage>,
-        SerializerRegistryInjector {
+public class VendorInputMessageFactory implements OFSerializer<ExperimenterOfMessage> {
+    private final SerializerLookup registry;
 
-    private SerializerRegistry registry;
+    public VendorInputMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(ExperimenterOfMessage message, ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
+    public void serialize(final ExperimenterOfMessage message, final ByteBuf outBuffer) {
         long expId = message.getExperimenter().getValue().toJava();
         OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createExperimenterMessageSerializerKey(
@@ -43,10 +40,5 @@ public class VendorInputMessageFactory implements OFSerializer<ExperimenterOfMes
         outBuffer.writeInt(message.getExperimenter().getValue().intValue());
 
         serializer.serialize(message.getExperimenterDataOfChoice(), outBuffer);
-    }
-
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
     }
 }
