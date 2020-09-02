@@ -129,9 +129,10 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             } else if (message instanceof SwitchIdleEvent) {
                 systemListener.onSwitchIdleEvent((SwitchIdleEvent) message);
             } else if (message instanceof SslConnectionError) {
-                systemListener.onSslConnectionError((SslConnectionError) new SslConnectionErrorBuilder()
+                systemListener.onSslConnectionError(new SslConnectionErrorBuilder()
                         .setInfo(((SslConnectionError) message).getInfo())
-                        .setSwitchCertificate(buildSwitchCertificate()).build());
+                        .setSwitchCertificate(buildSwitchCertificate())
+                        .build());
             // OpenFlow messages
             } else if (message instanceof EchoRequestMessage) {
                 if (outputManager != null) {
@@ -215,7 +216,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     @Override
-    public void onSwitchCertificateIdentified(X509Certificate switchcertificate) {
+    public void onSwitchCertificateIdentified(final X509Certificate switchcertificate) {
         this.switchCertificate = switchcertificate;
     }
 
@@ -241,7 +242,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
         channel.pipeline().addBefore(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name(),
                 PipelineHandlers.CHANNEL_OUTBOUND_QUEUE_MANAGER.name(), outputManager);
 
-        return new OutboundQueueHandlerRegistrationImpl<T>(handler) {
+        return new OutboundQueueHandlerRegistrationImpl<>(handler) {
             @Override
             protected void removeRegistration() {
                 outputManager.close();
@@ -301,7 +302,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
                     switchCertificate.getSubjectAlternativeNames().forEach(generalName -> {
                         final Object value = generalName.get(1);
                         if (value instanceof String) {
-                            subjectAlternateNames.add(((String) value));
+                            subjectAlternateNames.add((String) value);
                         }
                     });
                     switchCertificateBuilder.setSubjectAlternateNames(subjectAlternateNames);
@@ -324,7 +325,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     @Override
-    public void setExecutorService(ExecutorService executorService) {
+    public void setExecutorService(final ExecutorService executorService) {
         this.executorService = executorService;
     }
 }
