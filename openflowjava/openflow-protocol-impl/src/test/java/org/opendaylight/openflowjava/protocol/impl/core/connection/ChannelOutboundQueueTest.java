@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.channel.Channel;
@@ -45,9 +44,9 @@ public class ChannelOutboundQueueTest {
     public void testEnqueue() {
         ChannelOutboundQueue queue = new ChannelOutboundQueue(channel, 1, null);
         boolean enqueued;
-        enqueued = queue.enqueue(new SimpleRpcListener("INPUT", "Failed to send INPUT"));
+        enqueued = queue.enqueue(new SimpleRpcListener<>("INPUT", "Failed to send INPUT"));
         Assert.assertTrue("Enqueue problem", enqueued);
-        enqueued = queue.enqueue(new SimpleRpcListener("INPUT", "Failed to send INPUT"));
+        enqueued = queue.enqueue(new SimpleRpcListener<>("INPUT", "Failed to send INPUT"));
         Assert.assertFalse("Enqueue problem", enqueued);
     }
 }
