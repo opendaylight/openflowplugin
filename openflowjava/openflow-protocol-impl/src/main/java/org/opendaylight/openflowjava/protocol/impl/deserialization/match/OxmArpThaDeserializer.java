@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -24,17 +23,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmArpThaDeserializer  extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
-
+public class OxmArpThaDeserializer  extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addArpThaValue(input, builder);
         return builder.build();
     }
 
-    private static void addArpThaValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addArpThaValue(final ByteBuf input, final MatchEntryBuilder builder) {
         ArpThaCaseBuilder caseBuilder = new ArpThaCaseBuilder();
         ArpThaBuilder thaBuilder = new ArpThaBuilder();
         thaBuilder.setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
