@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
@@ -30,11 +30,16 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegistryInjector {
+public class OF13MatchSerializer implements OFSerializer<Match> {
     private static final Logger LOG = LoggerFactory.getLogger(OF13MatchSerializer.class);
     private static final byte STANDARD_MATCH_TYPE_CODE = 0;
     private static final byte OXM_MATCH_TYPE_CODE = 1;
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
+
+    public OF13MatchSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final Match match, final ByteBuf outBuffer) {
@@ -76,7 +81,6 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
             return;
         }
         for (MatchEntry entry : matchEntries) {
-
             MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
                     EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
             if (entry.getOxmClass().equals(ExperimenterClass.class)) {
@@ -88,10 +92,5 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
             OFSerializer<MatchEntry> entrySerializer = registry.getSerializer(key);
             entrySerializer.serialize(entry, out);
         }
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
     }
 }
