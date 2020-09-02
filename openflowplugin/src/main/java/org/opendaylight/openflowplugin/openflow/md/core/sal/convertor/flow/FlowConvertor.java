@@ -283,7 +283,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
 
     private static void salToOFFlowTableId(final Flow flow, final FlowModInputBuilder flowMod) {
         if (flow.getTableId() != null) {
-            flowMod.setTableId(new TableId(flow.getTableId().longValue()));
+            flowMod.setTableId(new TableId(flow.getTableId().toUint32()));
         } else {
             flowMod.setTableId(DEFAULT_TABLE_ID);
         }
