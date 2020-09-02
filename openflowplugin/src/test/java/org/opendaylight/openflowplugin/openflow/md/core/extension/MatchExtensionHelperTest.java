@@ -69,7 +69,7 @@ public class MatchExtensionHelperTest {
     public void testProcessAllExtensions() {
 
         List<MatchEntry> matchEntries = createMatchEntrieses();
-        AugmentTuple augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13,
+        AugmentTuple<?> augmentTuple = MatchExtensionHelper.processAllExtensions(matchEntries, OpenflowVersion.OF13,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertNotNull(augmentTuple);
 
