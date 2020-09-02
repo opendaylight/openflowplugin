@@ -11,7 +11,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.util.VersionAssignableFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
@@ -23,10 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  * @author timotej.kubas
  */
-public class GetConfigReplyMessageFactory extends VersionAssignableFactory implements OFDeserializer<GetConfigOutput> {
+public class GetConfigReplyMessageFactory extends VersionAssignableFactory<GetConfigOutput> {
 
     @Override
-    public GetConfigOutput deserialize(ByteBuf rawMessage) {
+    public GetConfigOutput deserialize(final ByteBuf rawMessage) {
         GetConfigOutputBuilder builder = new GetConfigOutputBuilder();
         builder.setVersion(getVersion());
         builder.setXid(readUint32(rawMessage));
