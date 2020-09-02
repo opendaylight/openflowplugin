@@ -28,9 +28,10 @@ public abstract class AbstractActionSerializer implements OFSerializer<Action>, 
     }
 
     @Override
-    public void serialize(final Action input, final ByteBuf outBuffer) {
+    public final void serialize(final Action input, final ByteBuf outBuffer) {
         outBuffer.writeShort(type);
         outBuffer.writeShort(length);
+        serializeBody(input, outBuffer);
     }
 
     @Override
@@ -38,4 +39,6 @@ public abstract class AbstractActionSerializer implements OFSerializer<Action>, 
         outBuffer.writeShort(type);
         outBuffer.writeShort(ActionConstants.ACTION_IDS_LENGTH);
     }
+
+    protected abstract void serializeBody(Action input, ByteBuf outBuffer);
 }

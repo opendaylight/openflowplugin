@@ -24,8 +24,7 @@ public class OF10SetNwDstActionSerializer extends AbstractActionSerializer {
     }
 
     @Override
-    public void serialize(final Action action, final ByteBuf outBuffer) {
-        super.serialize(action, outBuffer);
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
         outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(
             ((SetNwDstCase) action.getActionChoice()).getSetNwDstAction().getIpAddress()));
     }
