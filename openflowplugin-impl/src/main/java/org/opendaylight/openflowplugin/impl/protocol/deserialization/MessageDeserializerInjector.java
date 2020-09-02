@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -39,8 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 
 final class MessageDeserializerInjector {
-
     private MessageDeserializerInjector() {
+        // Hidden on purpose
     }
 
     /**
@@ -55,8 +54,8 @@ final class MessageDeserializerInjector {
                 injector = createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
         injector.apply(10).apply(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709
-                .PacketInMessage.class).accept(new PacketInMessageDeserializer());
-        injector.apply(19).apply(MultipartReply.class).accept(new MultipartReplyMessageDeserializer());
+                .PacketInMessage.class).accept(new PacketInMessageDeserializer(provider));
+        injector.apply(19).apply(MultipartReply.class).accept(new MultipartReplyMessageDeserializer(provider));
         injector.apply(27).apply(AsyncConfigMessage.class).accept(new AsyncConfigMessageDeserializer());
     }
 
@@ -88,15 +87,11 @@ final class MessageDeserializerInjector {
      */
     @VisibleForTesting
     static Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
-        createInjector(
-            final DeserializerExtensionProvider provider,
-            final short version) {
+                createInjector(final DeserializerExtensionProvider provider, final short version) {
         return code -> retType -> deserializer -> {
             provider.unregisterDeserializerMapping(new TypeToClassKey(version, code));
             provider.registerDeserializerMapping(new TypeToClassKey(version, code), retType);
-            provider.registerDeserializer(
-                    new MessageCodeKey(version, code, retType),
-                    deserializer);
+            provider.registerDeserializer(new MessageCodeKey(version, code, retType), deserializer);
         };
     }
 
@@ -105,9 +100,9 @@ final class MessageDeserializerInjector {
         final Function<Integer, Function<Class<? extends OfHeader>, Consumer<OFDeserializer<? extends OfHeader>>>>
                 injector = createInjector(provider, EncodeConstants.OF13_VERSION_ID);
 
-        injector.apply(14).apply(FlowMessage.class).accept(new FlowMessageDeserializer());
-        injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer());
-        injector.apply(29).apply(MeterMessage.class).accept(new MeterMessageDeserializer());
+        injector.apply(14).apply(FlowMessage.class).accept(new FlowMessageDeserializer(provider));
+        injector.apply(15).apply(GroupMessage.class).accept(new GroupMessageDeserializer(provider));
+        injector.apply(29).apply(MeterMessage.class).accept(new MeterMessageDeserializer(provider));
         injector.apply(16).apply(PortMessage.class).accept(new PortMessageDeserializer());
     }
 
@@ -127,5 +122,4 @@ final class MessageDeserializerInjector {
                 PortModInput.class);
         provider.unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants.OF13_VERSION_ID, 19));
     }
-
 }
