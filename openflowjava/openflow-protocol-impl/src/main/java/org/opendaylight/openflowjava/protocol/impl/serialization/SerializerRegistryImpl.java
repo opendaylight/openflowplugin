@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.OF10MatchSerializer;
@@ -52,7 +51,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
 
         // match structure serializers
         registerSerializer(new MessageTypeKey<>(OF10, MatchV10.class), new OF10MatchSerializer());
-        registerSerializer(new MessageTypeKey<>(OF13, Match.class), new OF13MatchSerializer());
+        registerSerializer(new MessageTypeKey<>(OF13, Match.class), new OF13MatchSerializer(this));
 
         // match entry serializers
         MatchEntriesInitializer.registerMatchEntrySerializers(this);
@@ -62,7 +61,8 @@ public class SerializerRegistryImpl implements SerializerRegistry {
         InstructionsInitializer.registerInstructionSerializers(this);
     }
 
-    public void setGroupAddModConfig(boolean value) {
+    @Override
+    public void setGroupAddModConfig(final boolean value) {
         this.isGroupAddModEnabled = value;
     }
 
@@ -79,7 +79,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey) {
+    public <K, S extends OFGeneralSerializer> S getSerializer(final MessageTypeKey<K> msgTypeKey) {
         OFGeneralSerializer serializer = registry.get(msgTypeKey);
         if (serializer == null) {
             throw new IllegalStateException("Serializer for key: " + msgTypeKey
@@ -90,7 +90,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
     }
 
     @Override
-    public <K> void registerSerializer(MessageTypeKey<K> msgTypeKey, OFGeneralSerializer serializer) {
+    public <K> void registerSerializer(final MessageTypeKey<K> msgTypeKey, final OFGeneralSerializer serializer) {
         if (msgTypeKey == null || serializer == null) {
             throw new IllegalArgumentException("MessageTypeKey or Serializer is null");
         }
@@ -99,13 +99,10 @@ public class SerializerRegistryImpl implements SerializerRegistry {
             LOG.debug("Serializer for key {} overwritten. Old serializer: {}, new serializer: {}", msgTypeKey,
                     serInRegistry.getClass().getName(), serializer.getClass().getName());
         }
-        if (serializer instanceof SerializerRegistryInjector) {
-            ((SerializerRegistryInjector) serializer).injectSerializerRegistry(this);
-        }
     }
 
     @Override
-    public <K> boolean unregisterSerializer(MessageTypeKey<K> msgTypeKey) {
+    public <K> boolean unregisterSerializer(final MessageTypeKey<K> msgTypeKey) {
         if (msgTypeKey == null) {
             throw new IllegalArgumentException("MessageTypeKey is null");
         }

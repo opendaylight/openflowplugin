@@ -14,44 +14,26 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
  *
  * @author michal.polkorab
  */
-public interface DeserializerRegistry {
-
+public interface DeserializerRegistry extends DeserializerLookup {
     /**
      * Initializes deserializers.
      */
     void init();
 
     /**
-     * Gets the deserializer for the given key.
-     *
-     * @param <T> type of particular deserializer
-     * @param key used for deserializer lookup
-     * @return deserializer found
-     */
-    <T extends OFGeneralDeserializer>
-            T getDeserializer(MessageCodeKey key);
-
-    /**
      * Registers a deserializer.
-     * Throws IllegalStateException when there is
-     * a deserializer already registered under given key.
-     *
-     * <p>
-     * If the deserializer implements {@link DeserializerRegistryInjector} interface,
-     * the deserializer is injected with DeserializerRegistry instance.
      *
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
+     * @throws IllegalStateException if there is a deserializer already registered under given key.
      */
-    void registerDeserializer(MessageCodeKey key,
-            OFGeneralDeserializer deserializer);
+    void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Unregisters a deserializer.
      *
      * @param key used for deserializer lookup
-     * @return true if deserializer was removed,
-     *     false if no deserializer was found under specified key
+     * @return true if deserializer was removed, false if no deserializer was found under specified key
      */
     boolean unregisterDeserializer(MessageCodeKey key);
 }

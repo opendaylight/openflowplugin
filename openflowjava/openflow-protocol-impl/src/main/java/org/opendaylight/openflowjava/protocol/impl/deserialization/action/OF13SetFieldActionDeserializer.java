@@ -7,13 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -30,16 +30,15 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
-public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<SetFieldCase>
-        implements DeserializerRegistryInjector {
-    private DeserializerRegistry registry;
+public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<SetFieldCase> {
+    private final DeserializerRegistry registry;
 
-    public OF13SetFieldActionDeserializer() {
+    public OF13SetFieldActionDeserializer(final DeserializerRegistry registry) {
         super(new SetFieldCaseBuilder().build());
+        this.registry = requireNonNull(registry);
     }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public Action deserialize(final ByteBuf input) {
         Objects.requireNonNull(registry);
 
@@ -69,10 +68,5 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<S
             input.skipBytes(EncodeConstants.PADDING - paddingRemainder);
         }
         return builder.build();
-    }
-
-    @Override
-    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        this.registry = deserializerRegistry;
     }
 }

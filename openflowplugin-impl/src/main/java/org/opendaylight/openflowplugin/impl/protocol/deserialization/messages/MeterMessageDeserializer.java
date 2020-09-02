@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -34,17 +34,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, DeserializerRegistryInjector {
+public class MeterMessageDeserializer implements OFDeserializer<MeterMessage> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterMessageDeserializer.class);
     private static final int OFPMBTDROP = 1;
     private static final int OFPMBTDSCP = 2;
     private static final int OFPMBTEXPERIMENTER = 0xFFFF;
     private static final byte PADDING_IN_METER_BAND_DROP_HEADER = 4;
     private static final byte PADDING_IN_METER_BAND_DSCP_HEADER = 3;
-    private DeserializerRegistry registry;
+
+    private final DeserializerLookup registry;
+
+    public MeterMessageDeserializer(final DeserializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public MeterMessage deserialize(ByteBuf message) {
+    public MeterMessage deserialize(final ByteBuf message) {
         final MeterMessageBuilder builder = new MeterMessageBuilder()
                 .setVersion((short) EncodeConstants.OF13_VERSION_ID)
                 .setXid(message.readUnsignedInt())
@@ -116,19 +121,12 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                 .build();
     }
 
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
-    private static MeterFlags readMeterFlags(ByteBuf message) {
+    private static MeterFlags readMeterFlags(final ByteBuf message) {
         int input = message.readUnsignedShort();
-        final Boolean mfKbps = (input & (1)) != 0;
-        final Boolean mfPktps = (input & (1 << 1)) != 0;
-        final Boolean mfBurst = (input & (1 << 2)) != 0;
-        final Boolean mfStats = (input & (1 << 3)) != 0;
+        final Boolean mfKbps = (input & 1) != 0;
+        final Boolean mfPktps = (input & 1 << 1) != 0;
+        final Boolean mfBurst = (input & 1 << 2) != 0;
+        final Boolean mfStats = (input & 1 << 3) != 0;
         return new MeterFlags(mfBurst, mfKbps, mfPktps, mfStats);
     }
-
 }

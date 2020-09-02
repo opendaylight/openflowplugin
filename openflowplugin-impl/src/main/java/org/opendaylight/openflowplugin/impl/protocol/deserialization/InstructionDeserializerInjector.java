@@ -48,10 +48,10 @@ public final class InstructionDeserializerInjector {
         injector.apply(InstructionConstants.METER_TYPE).apply(null).accept(new MeterInstructionDeserializer());
 
         for (ActionPath path : ActionPath.values()) {
-            injector.apply(InstructionConstants.WRITE_ACTIONS_TYPE).apply(path).accept(new
-                    WriteActionsInstructionDeserializer(path));
-            injector.apply(InstructionConstants.APPLY_ACTIONS_TYPE).apply(path).accept(new
-                    ApplyActionsInstructionDeserializer(path));
+            injector.apply(InstructionConstants.WRITE_ACTIONS_TYPE).apply(path).accept(
+                new WriteActionsInstructionDeserializer(provider, path));
+            injector.apply(InstructionConstants.APPLY_ACTIONS_TYPE).apply(path).accept(
+                new ApplyActionsInstructionDeserializer(provider, path));
         }
     }
 
