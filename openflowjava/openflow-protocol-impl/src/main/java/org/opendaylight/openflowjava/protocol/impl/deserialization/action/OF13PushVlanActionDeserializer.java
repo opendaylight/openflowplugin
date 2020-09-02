@@ -9,7 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.vlan._case.PushVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -22,9 +22,13 @@ import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
  *
  * @author michal.polkorab
  */
-public class OF13PushVlanActionDeserializer extends AbstractActionDeserializer {
+public class OF13PushVlanActionDeserializer extends AbstractActionDeserializer<PushVlanCase> {
+    public OF13PushVlanActionDeserializer() {
+        super(new PushVlanCaseBuilder().build());
+    }
+
     @Override
-    public Action deserialize(ByteBuf input) {
+    public Action deserialize(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
         final ActionBuilder builder = new ActionBuilder()
                 .setActionChoice(new PushVlanCaseBuilder()
@@ -34,10 +38,5 @@ public class OF13PushVlanActionDeserializer extends AbstractActionDeserializer {
                     .build());
         input.skipBytes(ActionConstants.ETHERTYPE_ACTION_PADDING);
         return builder.build();
-    }
-
-    @Override
-    protected ActionChoice getType() {
-        return new PushVlanCaseBuilder().build();
     }
 }
