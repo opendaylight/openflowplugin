@@ -68,7 +68,7 @@ public final class OFConstants {
     public static final Uint32 OFP_NO_BUFFER = Uint32.valueOf(0xffffffffL).intern();
     /** enum ofp_controller_max_len: indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */
-    public static final Integer OFPCML_NO_BUFFER = 0xffff;
+    public static final Uint16 OFPCML_NO_BUFFER = Uint16.MAX_VALUE;
 
     public static final int MAC_ADDRESS_LENGTH = 6;
     public static final int SIZE_OF_LONG_IN_BYTES = 8;
