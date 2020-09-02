@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -38,6 +37,7 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13Se
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13SetMplsTtlActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13SetNwTtlActionDeserializer;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.action.OF13SetQueueActionDeserializer;
+import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionDeserializerRegistryHelper;
 
 /**
@@ -46,7 +46,6 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionDeserializerRegist
  * @author michal.polkorab
  */
 public final class ActionDeserializerInitializer {
-
     private ActionDeserializerInitializer() {
         throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
@@ -56,39 +55,39 @@ public final class ActionDeserializerInitializer {
      *
      * @param registry registry to be filled with deserializers
      */
-    public static void registerDeserializers(DeserializerRegistry registry) {
+    public static void registerDeserializers(final DeserializerRegistry registry) {
         // register OF v1.0 action deserializers
         ActionDeserializerRegistryHelper helper =
                 new ActionDeserializerRegistryHelper(EncodeConstants.OF10_VERSION_ID, registry);
-        helper.registerDeserializer(0, new OF10OutputActionDeserializer());
-        helper.registerDeserializer(1, new OF10SetVlanVidActionDeserializer());
-        helper.registerDeserializer(2, new OF10SetVlanPcpActionDeserializer());
-        helper.registerDeserializer(3, new OF10StripVlanActionDeserializer());
-        helper.registerDeserializer(4, new OF10SetDlSrcActionDeserializer());
-        helper.registerDeserializer(5, new OF10SetDlDstActionDeserializer());
-        helper.registerDeserializer(6, new OF10SetNwSrcActionDeserializer());
-        helper.registerDeserializer(7, new OF10SetNwDstActionDeserializer());
-        helper.registerDeserializer(8, new OF10SetNwTosActionDeserializer());
-        helper.registerDeserializer(9, new OF10SetTpSrcActionDeserializer());
-        helper.registerDeserializer(10, new OF10SetTpDstActionDeserializer());
-        helper.registerDeserializer(11, new OF10EnqueueActionDeserializer());
+        helper.registerDeserializer(ActionConstants.OUTPUT_CODE, new OF10OutputActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_VLAN_VID_CODE, new OF10SetVlanVidActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_VLAN_PCP_CODE, new OF10SetVlanPcpActionDeserializer());
+        helper.registerDeserializer(ActionConstants.STRIP_VLAN_CODE, new OF10StripVlanActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_DL_SRC_CODE, new OF10SetDlSrcActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_DL_DST_CODE, new OF10SetDlDstActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_NW_SRC_CODE, new OF10SetNwSrcActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_NW_DST_CODE, new OF10SetNwDstActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_NW_TOS_CODE, new OF10SetNwTosActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_TP_SRC_CODE, new OF10SetTpSrcActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_TP_DST_CODE, new OF10SetTpDstActionDeserializer());
+        helper.registerDeserializer(ActionConstants.ENQUEUE_CODE, new OF10EnqueueActionDeserializer());
         // register OF v1.3 action deserializers
         helper = new ActionDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
-        helper.registerDeserializer(0, new OF13OutputActionDeserializer());
-        helper.registerDeserializer(11, new OF13CopyTtlOutActionDeserializer());
-        helper.registerDeserializer(12, new OF13CopyTtlInActionDeserializer());
-        helper.registerDeserializer(15, new OF13SetMplsTtlActionDeserializer());
-        helper.registerDeserializer(16, new OF13DecMplsTtlActionDeserializer());
-        helper.registerDeserializer(17, new OF13PushVlanActionDeserializer());
-        helper.registerDeserializer(18, new OF13PopVlanActionDeserializer());
-        helper.registerDeserializer(19, new OF13PushMplsActionDeserializer());
-        helper.registerDeserializer(20, new OF13PopMplsActionDeserializer());
-        helper.registerDeserializer(21, new OF13SetQueueActionDeserializer());
-        helper.registerDeserializer(22, new OF13GroupActionDeserializer());
-        helper.registerDeserializer(23, new OF13SetNwTtlActionDeserializer());
-        helper.registerDeserializer(24, new OF13DecNwTtlActionDeserializer());
-        helper.registerDeserializer(25, new OF13SetFieldActionDeserializer());
-        helper.registerDeserializer(26, new OF13PushPbbActionDeserializer());
-        helper.registerDeserializer(27, new OF13PopPbbActionDeserializer());
+        helper.registerDeserializer(ActionConstants.OUTPUT_CODE, new OF13OutputActionDeserializer());
+        helper.registerDeserializer(ActionConstants.COPY_TTL_OUT_CODE, new OF13CopyTtlOutActionDeserializer());
+        helper.registerDeserializer(ActionConstants.COPY_TTL_IN_CODE, new OF13CopyTtlInActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_MPLS_TTL_CODE, new OF13SetMplsTtlActionDeserializer());
+        helper.registerDeserializer(ActionConstants.DEC_MPLS_TTL_CODE, new OF13DecMplsTtlActionDeserializer());
+        helper.registerDeserializer(ActionConstants.PUSH_VLAN_CODE, new OF13PushVlanActionDeserializer());
+        helper.registerDeserializer(ActionConstants.POP_VLAN_CODE, new OF13PopVlanActionDeserializer());
+        helper.registerDeserializer(ActionConstants.PUSH_MPLS_CODE, new OF13PushMplsActionDeserializer());
+        helper.registerDeserializer(ActionConstants.POP_MPLS_CODE, new OF13PopMplsActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_QUEUE_CODE, new OF13SetQueueActionDeserializer());
+        helper.registerDeserializer(ActionConstants.GROUP_CODE, new OF13GroupActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_NW_TTL_CODE, new OF13SetNwTtlActionDeserializer());
+        helper.registerDeserializer(ActionConstants.DEC_NW_TTL_CODE, new OF13DecNwTtlActionDeserializer());
+        helper.registerDeserializer(ActionConstants.SET_FIELD_CODE, new OF13SetFieldActionDeserializer());
+        helper.registerDeserializer(ActionConstants.PUSH_PBB_CODE, new OF13PushPbbActionDeserializer());
+        helper.registerDeserializer(ActionConstants.POP_PBB_CODE, new OF13PopPbbActionDeserializer());
     }
 }
