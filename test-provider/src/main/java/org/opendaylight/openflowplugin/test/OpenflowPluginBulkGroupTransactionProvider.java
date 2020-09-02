@@ -128,7 +128,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         createTestFlow(createTestNode(null), null, null);
     }
 
-    private NodeBuilder createTestNode(String nodeId) {
+    private static NodeBuilder createTestNode(String nodeId) {
         if (nodeId == null) {
             nodeId = OpenflowpluginTestActivator.NODE_ID;
         }
@@ -638,7 +638,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
