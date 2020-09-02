@@ -7,22 +7,15 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
-import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
  * Serializes OF 1.0 StripVlan actions.
  *
  * @author michal.polkorab
  */
-public class OF10StripVlanActionSerializer extends AbstractActionSerializer {
+public class OF10StripVlanActionSerializer extends AbstractEmptyActionSerializer {
     public OF10StripVlanActionSerializer() {
-        super(ActionConstants.STRIP_VLAN_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
-    }
-
-    @Override
-    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
-        outBuffer.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
+        super(ActionConstants.STRIP_VLAN_CODE);
     }
 }
