@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import org.junit.Test;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
@@ -74,14 +75,14 @@ public class ByteUtilTest {
 
     @Test
     public void testBytesToUnsignedInt() {
-        long unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTES);
-        assertEquals(BIG_INTEGER.longValue(), unsigned);
+        Uint32 unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTES);
+        assertEquals(BIG_INTEGER.longValue(), unsigned.toJava());
 
         unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTES00);
-        assertEquals(0, unsigned);
+        assertEquals(Uint32.ZERO, unsigned);
 
         unsigned = ByteUtil.bytesToUnsignedInt(TEST_BYTESFF);
-        assertEquals(BIG_INTFF.longValue(), unsigned);
+        assertEquals(BIG_INTFF.longValue(), unsigned.toJava());
     }
 
     @Test

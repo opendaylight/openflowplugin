@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
@@ -18,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsBosCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.bos._case.MplsBos;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class OfToSalMplsBosCase extends ConvertorCase<MplsBosCase, MatchBuilder, MatchResponseConvertorData> {
     public OfToSalMplsBosCase() {
@@ -33,7 +33,7 @@ public class OfToSalMplsBosCase extends ConvertorCase<MplsBosCase, MatchBuilder,
         MplsBos mplsBos = source.getMplsBos();
 
         if (mplsBos != null) {
-            protocolMatchFieldsBuilder.setMplsBos(mplsBos.isBos() ? (short) 1 : (short) 0);
+            protocolMatchFieldsBuilder.setMplsBos(mplsBos.isBos() ? Uint8.ONE : Uint8.ZERO);
             matchBuilder.setProtocolMatchFields(protocolMatchFieldsBuilder.build());
         }
 

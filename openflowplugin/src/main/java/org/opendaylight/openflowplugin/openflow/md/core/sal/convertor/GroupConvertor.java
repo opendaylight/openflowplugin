@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
@@ -36,7 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,18 +66,30 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
      *
      * @param version Openflow version
      * @return default empty group mod input builder
+     * @deprecated Use {@link #defaultResult(Uint8)} instead.
      */
+    @Deprecated
     public static GroupModInputBuilder defaultResult(final short version) {
-        return new GroupModInputBuilder()
-                .setVersion(version);
+        return defaultResult(Uint8.valueOf(version));
     }
 
+    /**
+     * Create default empty group mod input builder
+     * Use this method, if result from convertor is empty.
+     *
+     * @param version Openflow version
+     * @return default empty group mod input builder
+     * @throws NullPointerException if version is null
+     */
+    public static GroupModInputBuilder defaultResult(final Uint8 version) {
+        return new GroupModInputBuilder().setVersion(version);
+    }
+
+
     private static final Logger LOG = LoggerFactory.getLogger(GroupConvertor.class);
-    private static final Integer DEFAULT_WEIGHT = 0;
-    private static final Long OFPP_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_WATCH_PORT = OFPP_ANY;
-    private static final Long OFPG_ANY = Long.parseLong("ffffffff", 16);
-    private static final Long DEFAULT_WATCH_GROUP = OFPG_ANY;
+    private static final Uint16 DEFAULT_WEIGHT = Uint16.ZERO;
+    private static final PortNumber DEFAULT_WATCH_PORT = new PortNumber(Uint32.MAX_VALUE);
+    private static final Uint32 DEFAULT_WATCH_GROUP = Uint32.MAX_VALUE;
     private static final Comparator<Bucket> COMPARATOR = (bucket1, bucket2) -> {
         if (bucket1.getBucketId() == null || bucket2.getBucketId() == null) {
             return 0;
@@ -114,7 +128,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         if (null != groupBucket.getWatchPort()) {
             bucketBuilder.setWatchPort(new PortNumber(groupBucket.getWatchPort()));
         } else {
-            bucketBuilder.setWatchPort(new PortNumber(BinContent.intToUnsignedLong(DEFAULT_WATCH_PORT.intValue())));
+            bucketBuilder.setWatchPort(DEFAULT_WATCH_PORT);
             if (groupType == GroupType.OFPGTFF.getIntValue()) {
                 LOG.error("WatchPort required for this OFPGT_FF");
             }
@@ -126,7 +140,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         if (null != groupBucket.getWatchGroup()) {
             bucketBuilder.setWatchGroup(groupBucket.getWatchGroup());
         } else {
-            bucketBuilder.setWatchGroup(BinContent.intToUnsignedLong(DEFAULT_WATCH_GROUP.intValue()));
+            bucketBuilder.setWatchGroup(DEFAULT_WATCH_GROUP);
             if (groupType == GroupType.OFPGTFF.getIntValue()) {
                 LOG.error("WatchGroup required for this OFPGT_FF");
             }

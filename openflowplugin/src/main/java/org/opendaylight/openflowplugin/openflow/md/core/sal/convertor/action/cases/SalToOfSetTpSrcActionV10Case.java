@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
@@ -38,9 +37,7 @@ public class SalToOfSetTpSrcActionV10Case extends ConvertorCase<SetTpSrcActionCa
         SetTpSrcAction settpsrcaction = source.getSetTpSrcAction();
         SetTpSrcCaseBuilder setTpSrcCaseBuilder = new SetTpSrcCaseBuilder();
         SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
-        setTpSrcActionBuilder.setPort(new PortNumber(settpsrcaction.getPort()
-                .getValue()
-                .longValue()));
+        setTpSrcActionBuilder.setPort(new PortNumber(settpsrcaction.getPort().getValue().toUint32()));
         setTpSrcCaseBuilder.setSetTpSrcAction(setTpSrcActionBuilder.build());
 
         return Optional.of(new ActionBuilder()
