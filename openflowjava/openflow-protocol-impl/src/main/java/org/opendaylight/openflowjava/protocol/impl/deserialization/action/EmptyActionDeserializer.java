@@ -16,13 +16,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 /**
  * Common class for AbstractActionDeserializers which do not carry any data beyond the header.
  */
-public abstract class AbstractEmptyActionDeserializer<T extends ActionChoice> extends AbstractActionDeserializer<T> {
-    protected AbstractEmptyActionDeserializer(final @NonNull T emptyChoice) {
+public final class EmptyActionDeserializer<T extends ActionChoice> extends AbstractActionDeserializer<T> {
+    public EmptyActionDeserializer(final @NonNull T emptyChoice) {
         super(emptyChoice);
     }
 
     @Override
-    public final Action deserialize(final ByteBuf input) {
+    public Action deserialize(final ByteBuf input) {
         input.skipBytes(ActionConstants.PADDING_IN_ACTION_HEADER);
         return deserializeHeader(input);
     }
