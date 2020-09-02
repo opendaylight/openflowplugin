@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -23,17 +22,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmTunnelIdDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
-
+public class OxmTunnelIdDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addTunnelIdValue(input, builder);
         return builder.build();
     }
 
-    private static void addTunnelIdValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addTunnelIdValue(final ByteBuf input, final MatchEntryBuilder builder) {
         final TunnelIdCaseBuilder caseBuilder = new TunnelIdCaseBuilder();
         TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
         byte[] metadataBytes = new byte[Long.BYTES];
