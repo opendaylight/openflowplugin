@@ -295,8 +295,7 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
      */
     protected <O extends DataObject> ListenableFuture<RpcResult<O>> sendToSwitchFuture(final Object input,
                                                                                      final String failureInfo) {
-        SimpleRpcListener<O> listener = new SimpleRpcListener(input, failureInfo);
-        return enqueueMessage(listener);
+        return enqueueMessage(new SimpleRpcListener<>(input, failureInfo));
     }
 
     private <T> ListenableFuture<RpcResult<T>> enqueueMessage(final AbstractRpcListener<T> promise) {
