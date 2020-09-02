@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -17,8 +16,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MetadataEntrySerializer extends AbstractMatchEntrySerializer<Metadata, Uint64> {
     public MetadataEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.METADATA,
-            EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.METADATA, Long.BYTES);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class MetadataEntrySerializer extends AbstractMatchEntrySerializer<Metada
     protected void serializeEntry(Metadata entry, Uint64 mask, ByteBuf outBuffer) {
         outBuffer.writeBytes(ByteUtil.uint64toBytes(entry.getMetadata()));
         if (mask != null) {
-            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, Long.BYTES);
         }
     }
 }

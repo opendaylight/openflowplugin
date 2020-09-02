@@ -13,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PacketType;
@@ -24,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.packet.type._case.PacketTypeBuilder;
 
 public class OxmPacketTypeSerializerTest {
-
     private ByteBuf buffer;
     private OxmPacketTypeSerializer serializer;
 
@@ -45,7 +43,7 @@ public class OxmPacketTypeSerializerTest {
         short fieldMask = buffer.readUnsignedByte();
         assertEquals(OxmMatchConstants.PACKET_TYPE, fieldMask >> 1);
         assertEquals(0, fieldMask & 1);
-        assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES, buffer.readUnsignedByte());
+        assertEquals(Integer.BYTES, buffer.readUnsignedByte());
         assertEquals(packetType, buffer.readUnsignedInt());
     }
 

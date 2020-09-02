@@ -128,10 +128,10 @@ public class MultipartRequestInputFactoryTest {
         builder.setOutPort(output.readUnsignedInt());
         builder.setOutGroup(output.readUnsignedInt());
         output.skipBytes(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02);
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] cookie = new byte[Long.BYTES];
         output.readBytes(cookie);
         builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] cookieMask = new byte[Long.BYTES];
         output.readBytes(cookieMask);
         builder.setCookieMask(new BigInteger(1, cookieMask));
         caseBuilder.setMultipartRequestFlow(builder.build());
@@ -190,10 +190,10 @@ public class MultipartRequestInputFactoryTest {
         builder.setOutPort(output.readUnsignedInt());
         builder.setOutGroup(output.readUnsignedInt());
         output.skipBytes(PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY_02);
-        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] cookie = new byte[Long.BYTES];
         output.readBytes(cookie);
         builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookieMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] cookieMask = new byte[Long.BYTES];
         output.readBytes(cookieMask);
         builder.setCookieMask(new BigInteger(1, cookieMask));
         caseBuilder.setMultipartRequestAggregate(builder.build());

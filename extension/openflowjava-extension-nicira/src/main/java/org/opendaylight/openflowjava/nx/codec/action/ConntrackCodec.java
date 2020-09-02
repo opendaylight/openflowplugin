@@ -260,7 +260,7 @@ public class ConntrackCodec extends AbstractActionCodec {
                 ctActionsBuilder.setOfpactActions(caseBuilder.build());
                 ctActionsList.add(ctActionsBuilder.build());
                 // padding
-                message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                message.skipBytes(Integer.BYTES);
             }
         }
 
@@ -269,18 +269,18 @@ public class ConntrackCodec extends AbstractActionCodec {
 
     private static short deserializeCtHeaderWithoutSubtype(final ByteBuf message) {
         // size of experimenter type / size of set field code (in case of ct_mark)
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         // size of length
         short length = message.readShort();
         // vendor id / 00 01 d6 04 (in case of ct_mark)
-        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        message.skipBytes(Integer.BYTES);
         return length;
     }
 
     private static short deserializeCtHeader(final ByteBuf message) {
         short length = deserializeCtHeaderWithoutSubtype(message);
         // subtype
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         return length;
     }
 }

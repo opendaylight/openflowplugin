@@ -55,15 +55,15 @@ public class RegLoad2Codec
         ActionBuilder actionBuilder = deserializeHeader(message);
 
         int oxmClass = message.getUnsignedShort(message.readerIndex());
-        int oxmField = message.getUnsignedByte(message.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES) >>> 1;
+        int oxmField = message.getUnsignedByte(message.readerIndex() + Short.BYTES) >>> 1;
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 EncodeConstants.OF13_VERSION_ID,
                 oxmClass,
                 oxmField);
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
             long expId = message.getUnsignedInt(message.readerIndex()
-                    + EncodeConstants.SIZE_OF_SHORT_IN_BYTES
-                    + EncodeConstants.SIZE_OF_BYTE_IN_BYTES * 2);
+                    + Short.BYTES
+                    + Byte.BYTES * 2);
             key.setExperimenterId(Uint32.valueOf(expId));
         }
         OFDeserializer<MatchEntry> matchDeserializer = deserializerRegistry.getDeserializer(key);

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -19,8 +18,7 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer<Ipv6ExtHeader, Uint16> {
     public Ipv6ExtHeaderEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_EXTHDR,
-            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IPV6_EXTHDR, Short.BYTES);
     }
 
     @Override
@@ -38,7 +36,7 @@ public class Ipv6ExtHeaderEntrySerializer extends AbstractMatchEntrySerializer<I
     protected void serializeEntry(final Ipv6ExtHeader entry, final Uint16 mask, final ByteBuf outBuffer) {
         outBuffer.writeShort(entry.getIpv6Exthdr().shortValue());
         if (mask != null) {
-            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            writeMask(ByteUtil.unsignedShortToBytes(mask), outBuffer, Short.BYTES);
         }
     }
 }

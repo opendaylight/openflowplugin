@@ -32,12 +32,12 @@ public abstract class AbstractMatchCodec implements
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         builder.setOxmMatchField(getNxmField());
         boolean hasMask = (message.readUnsignedByte() & 1) != 0;
         builder.setHasMask(hasMask);
         // skip match entry length - not needed
-        message.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        message.skipBytes(Byte.BYTES);
         return builder;
     }
 

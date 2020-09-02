@@ -228,13 +228,13 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
          // Vlan false match
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), 0);
 
         // Ip proto match
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.IP_PROTO << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Byte.BYTES);
         assertEquals(out.readUnsignedByte(), IP_PROTOCOL_MATCH.shortValue());
 
         int paddingRemainder = matchLength % EncodeConstants.PADDING;
@@ -261,7 +261,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), setVlanIdLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), VLAN_ID | (1 << 12));
 
         paddingRemainder = (out.readerIndex() - setVlanStartIndex) % EncodeConstants.PADDING;
@@ -282,7 +282,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), setTpSrcLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.UDP_SRC << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), TP_SRC_PORT.intValue());
 
         paddingRemainder = (out.readerIndex() - setTpSrcStartIndex) % EncodeConstants.PADDING;
@@ -303,7 +303,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), setTpDstLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.UDP_DST << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), TP_DST_PORT.intValue());
 
         paddingRemainder = (out.readerIndex() - setTpDstStartIndex) % EncodeConstants.PADDING;
@@ -348,7 +348,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
          // Vlan false match
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1 | 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES * 2);
+        assertEquals(out.readUnsignedByte(), Short.BYTES * 2);
         assertEquals(out.readUnsignedShort(), (1 << 12));
         byte[] vlanMask = new byte[2];
         out.readBytes(vlanMask);
@@ -357,7 +357,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         // Ip proto match
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.IP_PROTO << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Byte.BYTES);
         assertEquals(out.readUnsignedByte(), IP_PROTOCOL_MATCH.shortValue());
 
         int paddingRemainder = matchLength % EncodeConstants.PADDING;
@@ -378,7 +378,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), setVlanIdLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), VLAN_ID | (1 << 12));
 
         paddingRemainder = (out.readerIndex() - setVlanStartIndex) % EncodeConstants.PADDING;
@@ -399,7 +399,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), setTpSrcLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.UDP_SRC << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), TP_SRC_PORT.intValue());
 
         paddingRemainder = (out.readerIndex() - setTpSrcStartIndex) % EncodeConstants.PADDING;
@@ -420,7 +420,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), setTpDstLength);
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.UDP_DST << 1);
-        assertEquals(out.readUnsignedByte(), EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        assertEquals(out.readUnsignedByte(), Short.BYTES);
         assertEquals(out.readUnsignedShort(), TP_DST_PORT.intValue());
 
         paddingRemainder = (out.readerIndex() - setTpDstStartIndex) % EncodeConstants.PADDING;

@@ -285,7 +285,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                     .deserialize(message)
                     .map(matchFields::add)
                     .orElseGet(() -> {
-                        message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                        message.skipBytes(2 * Short.BYTES);
                         return Boolean.FALSE;
                     });
         }
@@ -324,7 +324,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
-                message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                message.skipBytes(2 * Short.BYTES);
             }
         }
 
@@ -348,7 +348,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
-                message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                message.skipBytes(2 * Short.BYTES);
             }
         }
 

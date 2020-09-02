@@ -100,8 +100,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
 
                     case OFPMBTEXPERIMENTER:
                         // TODO: Finish meter band experimenter deserialization
-                        final long expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants
-                                .SIZE_OF_INT_IN_BYTES);
+                        final long expId = message.getUnsignedInt(message.readerIndex() + 2 * Integer.BYTES);
                         message.readerIndex(itemStartIndex);
 
                         final OFDeserializer<Experimenter> deserializer = registry.getDeserializer(
