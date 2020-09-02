@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.math.BigInteger;
@@ -43,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Co
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -50,7 +50,6 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * Created by Jakub Toth jatoth@cisco.com on 9/23/14.
  */
-
 public class PacketOutConvertorTest {
 
     private ConvertorManager convertorManager;
@@ -96,7 +95,7 @@ public class PacketOutConvertorTest {
         Assert.assertEquals(buildActionForNullTransmitPacketInputAction(nodeConnKey, version), message.getAction());
 
         Assert.assertEquals(OFConstants.OFP_NO_BUFFER, message.getBufferId());
-        Assert.assertEquals(new PortNumber(0xfffffffdL), message.getInPort());
+        Assert.assertEquals(new PortNumber(Uint32.valueOf(0xfffffffdL)), message.getInPort());
         Assert.assertEquals(Uint8.valueOf(version), message.getVersion());
         Assert.assertEquals(xid, message.getXid());
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
@@ -111,7 +110,7 @@ public class PacketOutConvertorTest {
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
+        output.setMaxLength(Uint16.valueOf(OFConstants.OFPCML_NO_BUFFER));
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(
@@ -123,9 +122,9 @@ public class PacketOutConvertorTest {
                 new ArrayList<>();
         actionList.add(ab.build());
 
-        Long bufferId = 0xfL;
+        final Uint32 bufferId = Uint32.valueOf(0xf);
 
-        Long valueForCookie = 0xeL;
+        final Uint32 valueForCookie = Uint32.valueOf(0xe);
         ConnectionCookie connCook = new ConnectionCookie(valueForCookie);
 
         String nodeId = "node:1";
@@ -202,7 +201,7 @@ public class PacketOutConvertorTest {
                     .action.choice.output.action._case.OutputActionBuilder();
 
         outputActionBuilder.setPort(outPort);
-        outputActionBuilder.setMaxLength(0xffff);
+        outputActionBuilder.setMaxLength(Uint16.MAX_VALUE);
         outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(outputActionCaseBuilder.build());

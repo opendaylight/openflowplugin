@@ -158,7 +158,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for match response conversions.
@@ -239,7 +242,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final InPortCaseBuilder caseBuilder = new InPortCaseBuilder();
         final InPortBuilder portBuilder = new InPortBuilder();
-        portBuilder.setPortNumber(new PortNumber(1L));
+        portBuilder.setPortNumber(new PortNumber(Uint32.ONE));
         caseBuilder.setInPort(portBuilder.build());
         entriesBuilder.setMatchEntryValue(caseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -251,7 +254,7 @@ public class MatchResponseConvertor2Test {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPhyPort.class);
         entriesBuilder.setHasMask(false);
         final InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(2L));
+        inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.TWO));
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -277,7 +280,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
         final PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
-        packetTypeBuilder.setPacketType(0x1894fL);
+        packetTypeBuilder.setPacketType(Uint32.valueOf(0x1894f));
         packetTypeCaseBuilder.setPacketType(packetTypeBuilder.build());
         entriesBuilder.setMatchEntryValue(packetTypeCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -312,7 +315,7 @@ public class MatchResponseConvertor2Test {
         final EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
 
         final EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
-        ethTypeBuilder.setEthType(new EtherType(3));
+        ethTypeBuilder.setEthType(new EtherType(Uint16.valueOf(3)));
         ethTypeCaseBuilder.setEthType(ethTypeBuilder.build());
         entriesBuilder.setMatchEntryValue(ethTypeCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -324,7 +327,7 @@ public class MatchResponseConvertor2Test {
         final VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         entriesBuilder.setHasMask(false);
         final VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
-        vlanVidBuilder.setVlanVid(4);
+        vlanVidBuilder.setVlanVid(Uint16.valueOf(4));
         vlanVidBuilder.setCfiBit(true);
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
         entriesBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
@@ -336,7 +339,7 @@ public class MatchResponseConvertor2Test {
         final VlanPcpCaseBuilder vlanPcpCaseBuilder = new VlanPcpCaseBuilder();
         entriesBuilder.setHasMask(false);
         final VlanPcpBuilder vlanPcpBuilder = new VlanPcpBuilder();
-        vlanPcpBuilder.setVlanPcp((short) 5);
+        vlanPcpBuilder.setVlanPcp(Uint8.valueOf(5));
         vlanPcpCaseBuilder.setVlanPcp(vlanPcpBuilder.build());
         entriesBuilder.setMatchEntryValue(vlanPcpCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -348,7 +351,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final IpDscpCaseBuilder ipDscpCaseBuilder = new IpDscpCaseBuilder();
         final IpDscpBuilder ipDscpBuilder = new IpDscpBuilder();
-        ipDscpBuilder.setDscp(new Dscp((short) 6));
+        ipDscpBuilder.setDscp(new Dscp(Uint8.valueOf(6)));
         ipDscpCaseBuilder.setIpDscp(ipDscpBuilder.build());
         entriesBuilder.setMatchEntryValue(ipDscpCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -360,7 +363,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         final IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn((short) 7);
+        ipEcnBuilder.setEcn(Uint8.valueOf(7));
         ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
         entriesBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -372,7 +375,7 @@ public class MatchResponseConvertor2Test {
         final IpProtoCaseBuilder ipProtoCaseBuilder = new IpProtoCaseBuilder();
         entriesBuilder.setHasMask(false);
         final IpProtoBuilder ipProtoBuilder = new IpProtoBuilder();
-        ipProtoBuilder.setProtocolNumber((short) 8);
+        ipProtoBuilder.setProtocolNumber(Uint8.valueOf(8));
         ipProtoCaseBuilder.setIpProto(ipProtoBuilder.build());
         entriesBuilder.setMatchEntryValue(ipProtoCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -407,7 +410,7 @@ public class MatchResponseConvertor2Test {
         final TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
         final TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
         tcpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev130715.PortNumber(9));
+                .inet.types.rev130715.PortNumber(Uint16.valueOf(9)));
         tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
         entriesBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -419,7 +422,7 @@ public class MatchResponseConvertor2Test {
         final TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
         final TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
         tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev130715.PortNumber(10));
+                .inet.types.rev130715.PortNumber(Uint16.valueOf(10)));
         tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
         entriesBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -430,7 +433,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
         final Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
-        icmpv4TypeBuilder.setIcmpv4Type((short) 15);
+        icmpv4TypeBuilder.setIcmpv4Type(Uint8.valueOf(15));
         icmpv4TypeCaseBuilder.setIcmpv4Type(icmpv4TypeBuilder.build());
         entriesBuilder.setMatchEntryValue(icmpv4TypeCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -441,7 +444,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
         final Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
-        icmpv4CodeBuilder.setIcmpv4Code((short) 16);
+        icmpv4CodeBuilder.setIcmpv4Code(Uint8.valueOf(16));
         icmpv4CodeCaseBuilder.setIcmpv4Code(icmpv4CodeBuilder.build());
         entriesBuilder.setMatchEntryValue(icmpv4CodeCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -452,7 +455,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
         final Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
-        icmpv6TypeBuilder.setIcmpv6Type((short) 19);
+        icmpv6TypeBuilder.setIcmpv6Type(Uint8.valueOf(19));
         icmpv6TypeCaseBuilder.setIcmpv6Type(icmpv6TypeBuilder.build());
         entriesBuilder.setMatchEntryValue(icmpv6TypeCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -463,7 +466,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
         final Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
-        icmpv6CodeBuilder.setIcmpv6Code((short) 20);
+        icmpv6CodeBuilder.setIcmpv6Code(Uint8.valueOf(20));
         icmpv6CodeCaseBuilder.setIcmpv6Code(icmpv6CodeBuilder.build());
         entriesBuilder.setMatchEntryValue(icmpv6CodeCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -475,7 +478,7 @@ public class MatchResponseConvertor2Test {
         final MplsLabelCaseBuilder mplsLabelCaseBuilder = new MplsLabelCaseBuilder();
 
         final MplsLabelBuilder mplsLabelBuilder = new MplsLabelBuilder();
-        mplsLabelBuilder.setMplsLabel(21L);
+        mplsLabelBuilder.setMplsLabel(Uint32.valueOf(21));
         mplsLabelCaseBuilder.setMplsLabel(mplsLabelBuilder.build());
         entriesBuilder.setMatchEntryValue(mplsLabelCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -486,7 +489,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final MplsTcCaseBuilder mplsTcCaseBuilder = new MplsTcCaseBuilder();
         final MplsTcBuilder mplsTcBuilder = new MplsTcBuilder();
-        mplsTcBuilder.setTc((short) 22);
+        mplsTcBuilder.setTc(Uint8.valueOf(22));
         mplsTcCaseBuilder.setMplsTc(mplsTcBuilder.build());
         entriesBuilder.setMatchEntryValue(mplsTcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -508,7 +511,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
         final PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
-        pbbIsidBuilder.setIsid(23L);
+        pbbIsidBuilder.setIsid(Uint32.valueOf(23));
         pbbIsidCaseBuilder.setPbbIsid(pbbIsidBuilder.build());
         entriesBuilder.setMatchEntryValue(pbbIsidCaseBuilder.build());
 
@@ -633,7 +636,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(true);
         final VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         final VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
-        vlanVidBuilder.setVlanVid(4);
+        vlanVidBuilder.setVlanVid(Uint16.valueOf(4));
         vlanVidBuilder.setCfiBit(true);
         vlanVidBuilder.setMask(new byte[]{0, 4});
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
@@ -671,7 +674,7 @@ public class MatchResponseConvertor2Test {
         final PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
 
         final PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
-        pbbIsidBuilder.setIsid(23L);
+        pbbIsidBuilder.setIsid(Uint32.valueOf(23));
         pbbIsidBuilder.setMask(new byte[]{0, 0, 7});
         pbbIsidCaseBuilder.setPbbIsid(pbbIsidBuilder.build());
         entriesBuilder.setMatchEntryValue(pbbIsidCaseBuilder.build());
@@ -1030,7 +1033,7 @@ public class MatchResponseConvertor2Test {
         final UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
         final UdpSrcBuilder portBuilder = new UdpSrcBuilder();
         portBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev130715.PortNumber(11));
+                .inet.types.rev130715.PortNumber(Uint16.valueOf(11)));
         udpSrcCaseBuilder.setUdpSrc(portBuilder.build());
         entriesBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1043,7 +1046,7 @@ public class MatchResponseConvertor2Test {
         final UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
         final UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
         udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev130715.PortNumber(12));
+                .inet.types.rev130715.PortNumber(Uint16.valueOf(12)));
         udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
         entriesBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1077,7 +1080,7 @@ public class MatchResponseConvertor2Test {
         final SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
         final SctpSrcBuilder portBuilder = new SctpSrcBuilder();
         portBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev130715.PortNumber(13));
+                .inet.types.rev130715.PortNumber(Uint16.valueOf(13)));
         sctpSrcCaseBuilder.setSctpSrc(portBuilder.build());
         entriesBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1090,7 +1093,7 @@ public class MatchResponseConvertor2Test {
         final SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
         final SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
         sctpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                .inet.types.rev130715.PortNumber(14));
+                .inet.types.rev130715.PortNumber(Uint16.valueOf(14)));
         sctpDstCaseBuilder.setSctpDst(sctpDstBuilder.build());
         entriesBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1146,7 +1149,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
         final Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
-        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(18L));
+        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(Uint32.valueOf(18)));
         ipv6FlabelCaseBuilder.setIpv6Flabel(ipv6FlabelBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6FlabelCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1269,7 +1272,7 @@ public class MatchResponseConvertor2Test {
         entriesBuilder.setHasMask(false);
         final ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder();
         final ArpOpBuilder arpOpBuilder = new ArpOpBuilder();
-        arpOpBuilder.setOpCode(17);
+        arpOpBuilder.setOpCode(Uint16.valueOf(17));
         arpOpCaseBuilder.setArpOp(arpOpBuilder.build());
         entriesBuilder.setMatchEntryValue(arpOpCaseBuilder.build());
         entries.add(entriesBuilder.build());

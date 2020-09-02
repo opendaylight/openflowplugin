@@ -48,8 +48,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class GroupConvertorTest {
     private ConvertorManager convertorManager;
@@ -67,7 +69,7 @@ public class GroupConvertorTest {
 
         final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
-        addGroupBuilder.setGroupId(new GroupId(10L));
+        addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
         final List<Bucket> bucketList = new ArrayList<>();
@@ -100,9 +102,9 @@ public class GroupConvertorTest {
         final BucketsBuilder bucketsB = new BucketsBuilder();
 
         final BucketBuilder bucketB = new BucketBuilder();
-        bucketB.setWeight(10);
-        bucketB.setWatchPort(20L);
-        bucketB.setWatchGroup(22L);
+        bucketB.setWeight(Uint16.TEN);
+        bucketB.setWatchPort(Uint32.valueOf(20));
+        bucketB.setWatchGroup(Uint32.valueOf(22));
         bucketB.withKey(new BucketKey(new BucketId(Uint32.ZERO)));
 
         bucketB.setAction(actionsList);
@@ -111,9 +113,9 @@ public class GroupConvertorTest {
         bucketList.add(bucket); // List of bucket
 
         final BucketBuilder bucketB1 = new BucketBuilder();
-        bucketB1.setWeight(50);
-        bucketB1.setWatchPort(60L);
-        bucketB1.setWatchGroup(70L);
+        bucketB1.setWeight(Uint16.valueOf(50));
+        bucketB1.setWatchPort(Uint32.valueOf(60));
+        bucketB1.setWatchGroup(Uint32.valueOf(70));
         bucketB1.withKey(new BucketKey(new BucketId(Uint32.ONE)));
 
         // Action1
@@ -124,7 +126,7 @@ public class GroupConvertorTest {
 
         // Action2:
         final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
+        setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
         final SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
         final ActionBuilder actionsB3 = new ActionBuilder();
 
@@ -163,11 +165,13 @@ public class GroupConvertorTest {
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
                     .rev150203.actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
-                        .action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build()).build(),
+                        .action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5)).build())
+                        .build()).build(),
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
                     .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build())
+                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5))
+                            .build()).build())
                     .build()), outActionList);
 
         assertEquals(50, outAddGroupInput.getBucketsList().get(1).getWeight().toJava());
@@ -178,11 +182,13 @@ public class GroupConvertorTest {
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
                     .rev150203.actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
-                        .action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build()).build(),
+                        .action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5)).build()).build())
+                    .build(),
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
                     .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build())
+                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5))
+                            .build()).build())
                     .build()), outActionList1);
     }
 
@@ -193,7 +199,7 @@ public class GroupConvertorTest {
     public void testGroupModConvertorNoBucket() {
         final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
-        addGroupBuilder.setGroupId(new GroupId(10L));
+        addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
 
@@ -215,7 +221,7 @@ public class GroupConvertorTest {
 
         final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
-        addGroupBuilder.setGroupId(new GroupId(10L));
+        addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupFf);
         final List<Bucket> bucketList = new ArrayList<>();
@@ -272,13 +278,14 @@ public class GroupConvertorTest {
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                     .actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build()).build())
+                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5L))
+                            .build()).build())
                     .build(),
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
                             .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
-                                    .action.grouping.action.choice.group._case.GroupActionBuilder().setGroupId(6L)
-                                    .build()).build()).build()), outActionList);
+                                    .action.grouping.action.choice.group._case.GroupActionBuilder()
+                                    .setGroupId(Uint32.valueOf(6)).build()).build()).build()), outActionList);
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
@@ -289,7 +296,7 @@ public class GroupConvertorTest {
                             .ActionBuilder().setActionChoice(new SetMplsTtlCaseBuilder().setSetMplsTtlAction(
                                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                                             .action.grouping.action.choice.set.mpls.ttl._case.SetMplsTtlActionBuilder()
-                                            .setMplsTtl((short) 1).build()).build()).build()), outActionList1);
+                                            .setMplsTtl(Uint8.ONE).build()).build()).build()), outActionList1);
     }
 
     /**
@@ -303,9 +310,9 @@ public class GroupConvertorTest {
         final ArrayList<Bucket> bucket = new ArrayList<>();
 
         bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId((long) 4))
-                .setWatchPort((long)2)
-                .setWatchGroup((long) 1)
+                .setBucketId(new BucketId(Uint32.valueOf(4)))
+                .setWatchPort(Uint32.TWO)
+                .setWatchGroup(Uint32.ONE)
                 .setAction(ImmutableList.of(new ActionBuilder()
                         .setOrder(0)
                         .setAction(new OutputActionCaseBuilder()
@@ -317,9 +324,9 @@ public class GroupConvertorTest {
                 .build());
 
         bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId((long) 3))
-                .setWatchPort((long)6)
-                .setWatchGroup((long) 1)
+                .setBucketId(new BucketId(Uint32.valueOf(3)))
+                .setWatchPort(Uint32.valueOf(6))
+                .setWatchGroup(Uint32.ONE)
                 .setAction(ImmutableList.of(new ActionBuilder()
                         .setOrder(0)
                         .setAction(new OutputActionCaseBuilder()
@@ -331,9 +338,9 @@ public class GroupConvertorTest {
                 .build());
 
         bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId((long) 2))
-                .setWatchPort((long)5)
-                .setWatchGroup((long) 1)
+                .setBucketId(new BucketId(Uint32.TWO))
+                .setWatchPort(Uint32.valueOf(5))
+                .setWatchGroup(Uint32.ONE)
                 .setAction(ImmutableList.of(new ActionBuilder()
                         .setOrder(0)
                         .setAction(new OutputActionCaseBuilder()
@@ -345,9 +352,9 @@ public class GroupConvertorTest {
                 .build());
 
         bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId((long) 1))
-                .setWatchPort((long)4)
-                .setWatchGroup((long) 1)
+                .setBucketId(new BucketId(Uint32.ONE))
+                .setWatchPort(Uint32.valueOf(4))
+                .setWatchGroup(Uint32.ONE)
                 .setAction(ImmutableList.of(new ActionBuilder()
                         .setOrder(0)
                         .setAction(new OutputActionCaseBuilder()
@@ -359,9 +366,9 @@ public class GroupConvertorTest {
                 .build());
 
         bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId((long) 0))
-                .setWatchPort((long)3)
-                .setWatchGroup((long) 1)
+                .setBucketId(new BucketId(Uint32.ZERO))
+                .setWatchPort(Uint32.valueOf(3))
+                .setWatchGroup(Uint32.ONE)
                 .setAction(ImmutableList.of(new ActionBuilder()
                         .setOrder(0)
                         .setAction(new OutputActionCaseBuilder()
@@ -374,7 +381,7 @@ public class GroupConvertorTest {
 
 
         final AddGroupInput input = new AddGroupInputBuilder()
-                .setGroupId(new GroupId((long) 1))
+                .setGroupId(new GroupId(Uint32.ONE))
                 .setGroupName("Foo")
                 .setGroupType(GroupTypes.GroupFf)
                 .setBuckets(new BucketsBuilder()
@@ -407,7 +414,7 @@ public class GroupConvertorTest {
 
     private static ActionBuilder assembleSetMplsTtlActionBuilder(final int actionOrder) {
         final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlActionBuilder.setMplsTtl((short) 0X1);
+        setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
         final SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
         setMplsTtlActionCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
         final ActionBuilder actionsB3 = new ActionBuilder();
@@ -444,7 +451,7 @@ public class GroupConvertorTest {
 
         final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
-        addGroupBuilder.setGroupId(new GroupId(10L));
+        addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
         final List<Bucket> bucketList = new ArrayList<>();
@@ -499,25 +506,27 @@ public class GroupConvertorTest {
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                     .actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                                    .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build())
+                                    .grouping.action.choice.group._case.GroupActionBuilder()
+                                    .setGroupId(Uint32.valueOf(5)).build())
                         .build()).build(),
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
                             .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                                             .action.grouping.action.choice.group._case.GroupActionBuilder()
-                                            .setGroupId(6L).build()).build()).build()), outActionList);
+                                            .setGroupId(Uint32.valueOf(6)).build()).build()).build()), outActionList);
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                     .actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                                    .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(5L).build())
+                                    .grouping.action.choice.group._case.GroupActionBuilder()
+                                        .setGroupId(Uint32.valueOf(5)).build())
                         .build()).build(),
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
                             .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                                     new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203
                                             .action.grouping.action.choice.group._case.GroupActionBuilder()
-                                            .setGroupId(6L).build()).build()).build()), outActionList1);
+                                            .setGroupId(Uint32.valueOf(6)).build()).build()).build()), outActionList1);
     }
 
     private GroupModInputBuilder convert(final Group group, final VersionDatapathIdConvertorData data) {

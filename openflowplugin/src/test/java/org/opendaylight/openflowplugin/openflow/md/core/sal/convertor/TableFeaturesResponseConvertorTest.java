@@ -102,6 +102,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -143,14 +145,14 @@ public class TableFeaturesResponseConvertorTest {
     @Test
     public void testWithMPTableFeature() {
         TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
-        featuresBuilder.setTableId((short) 5);
+        featuresBuilder.setTableId(Uint8.valueOf(5));
         featuresBuilder.setName("Aloha");
         byte[] metaMatch = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
         featuresBuilder.setMetadataMatch(metaMatch);
         byte[] metaWrite = new byte[]{8, 9, 10, 11, 12, 13, 14, 15};
         featuresBuilder.setMetadataWrite(metaWrite);
         featuresBuilder.setConfig(new TableConfig(false));
-        featuresBuilder.setMaxEntries(42L);
+        featuresBuilder.setMaxEntries(Uint32.valueOf(42));
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart
             .reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features
@@ -177,19 +179,19 @@ public class TableFeaturesResponseConvertorTest {
     @Test
     public void testWithMPTableFeatureWithProperties() {
         TableFeaturesBuilder featuresBuilder = new TableFeaturesBuilder();
-        featuresBuilder.setTableId((short) 5);
+        featuresBuilder.setTableId(Uint8.valueOf(5));
         featuresBuilder.setName("Aloha");
         featuresBuilder.setMetadataMatch(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
         featuresBuilder.setMetadataWrite(new byte[]{8, 9, 10, 11, 12, 13, 14, 15});
         featuresBuilder.setConfig(new TableConfig(false));
-        featuresBuilder.setMaxEntries(42L);
+        featuresBuilder.setMaxEntries(Uint32.valueOf(42));
 
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
 
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
         List<NextTableIds> nextIds = new ArrayList<>();
-        nextIds.add(new NextTableIdsBuilder().setTableId((short) 1).build());
-        nextIds.add(new NextTableIdsBuilder().setTableId((short) 2).build());
+        nextIds.add(new NextTableIdsBuilder().setTableId(Uint8.ONE).build());
+        nextIds.add(new NextTableIdsBuilder().setTableId(Uint8.TWO).build());
         propBuilder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder().setNextTableIds(nextIds).build());
 
         List<TableFeatureProperties> properties = new ArrayList<>();
@@ -198,7 +200,7 @@ public class TableFeaturesResponseConvertorTest {
 
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLESMISS);
         nextIds = new ArrayList<>();
-        nextIds.add(new NextTableIdsBuilder().setTableId((short) 3).build());
+        nextIds.add(new NextTableIdsBuilder().setTableId(Uint8.valueOf(3)).build());
         propBuilder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder().setNextTableIds(nextIds).build());
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
@@ -284,12 +286,12 @@ public class TableFeaturesResponseConvertorTest {
                 .TableFeatures> features = new ArrayList<>();
         features.add(featuresBuilder.build());
         featuresBuilder = new TableFeaturesBuilder();
-        featuresBuilder.setTableId((short) 6);
+        featuresBuilder.setTableId(Uint8.valueOf(6));
         featuresBuilder.setName("Mahalo");
         featuresBuilder.setMetadataMatch(new byte[]{8, 9, 10, 11, 12, 13, 14, 15});
         featuresBuilder.setMetadataWrite(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
         featuresBuilder.setConfig(new TableConfig(false));
-        featuresBuilder.setMaxEntries(24L);
+        featuresBuilder.setMaxEntries(Uint32.valueOf(24));
 
         /* -------------------------------------------------- */
 
@@ -767,7 +769,7 @@ public class TableFeaturesResponseConvertorTest {
     private static GroupCase createGroupAction() {
         final GroupCaseBuilder groupCaseBuilder = new GroupCaseBuilder();
         final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
-        groupActionBuilder.setGroupId(42L);
+        groupActionBuilder.setGroupId(Uint32.valueOf(42));
         groupCaseBuilder.setGroupAction(groupActionBuilder.build());
         return groupCaseBuilder.build();
     }
@@ -785,7 +787,7 @@ public class TableFeaturesResponseConvertorTest {
     private static SetMplsTtlCase createSetMplsTtlCase() {
         SetMplsTtlCaseBuilder setMplsTtlCaseBuilder = new SetMplsTtlCaseBuilder();
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlActionBuilder.setMplsTtl((short) 42);
+        setMplsTtlActionBuilder.setMplsTtl(Uint8.valueOf(42));
         setMplsTtlCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
         return setMplsTtlCaseBuilder.build();
     }
@@ -798,7 +800,7 @@ public class TableFeaturesResponseConvertorTest {
     private static PushVlanCase pushVlanCase() {
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanActionBuilder = new PushVlanActionBuilder();
-        pushVlanActionBuilder.setEthertype(new EtherType(1));
+        pushVlanActionBuilder.setEthertype(new EtherType(Uint16.ONE));
         pushVlanCaseBuilder.setPushVlanAction(pushVlanActionBuilder.build());
         return pushVlanCaseBuilder.build();
     }
@@ -811,7 +813,7 @@ public class TableFeaturesResponseConvertorTest {
     private static PushPbbCase createPushPbbCase() {
         PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
         PushPbbActionBuilder pushPbbActionBuilder = new PushPbbActionBuilder();
-        pushPbbActionBuilder.setEthertype(new EtherType(1));
+        pushPbbActionBuilder.setEthertype(new EtherType(Uint16.ONE));
         pushPbbCaseBuilder.setPushPbbAction(pushPbbActionBuilder.build());
         return pushPbbCaseBuilder.build();
     }
