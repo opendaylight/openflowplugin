@@ -19,13 +19,13 @@ public class TunnelIdEntryDeserializer extends AbstractMatchEntryDeserializer {
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
 
-        final byte[] tunnelId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] tunnelId = new byte[Long.BYTES];
         message.readBytes(tunnelId);
         final TunnelBuilder tunnelBuilder = new TunnelBuilder()
             .setTunnelId(new BigInteger(1, tunnelId));
 
         if (hasMask) {
-            final byte[] tunnelMask = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] tunnelMask = new byte[Long.BYTES];
             message.readBytes(tunnelMask);
             tunnelBuilder.setTunnelMask(new BigInteger(1, tunnelMask));
         }

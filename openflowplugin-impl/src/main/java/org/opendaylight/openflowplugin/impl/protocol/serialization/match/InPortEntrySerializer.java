@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class InPortEntrySerializer extends AbstractPrimitiveEntrySerializer<NodeConnectorId> {
     public InPortEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PORT,EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IN_PORT,Integer.BYTES);
     }
 
     @Override

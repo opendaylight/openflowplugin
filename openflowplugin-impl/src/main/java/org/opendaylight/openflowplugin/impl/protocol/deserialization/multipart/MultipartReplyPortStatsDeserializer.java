@@ -45,29 +45,29 @@ public class MultipartReplyPortStatsDeserializer implements OFDeserializer<Multi
 
             message.skipBytes(PADDING_IN_PORT_STATS_HEADER);
 
-            final byte[] recPack = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recPack = new byte[Long.BYTES];
             message.readBytes(recPack);
-            final byte[] txPack = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txPack = new byte[Long.BYTES];
             message.readBytes(txPack);
-            final byte[] recByt = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recByt = new byte[Long.BYTES];
             message.readBytes(recByt);
-            final byte[] txByt = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txByt = new byte[Long.BYTES];
             message.readBytes(txByt);
-            final byte[] recDrop = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recDrop = new byte[Long.BYTES];
             message.readBytes(recDrop);
-            final byte[] txDrop = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txDrop = new byte[Long.BYTES];
             message.readBytes(txDrop);
-            final byte[] recError = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recError = new byte[Long.BYTES];
             message.readBytes(recError);
-            final byte[] txError = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] txError = new byte[Long.BYTES];
             message.readBytes(txError);
-            final byte[] recFrameError = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recFrameError = new byte[Long.BYTES];
             message.readBytes(recFrameError);
-            final byte[] recOverRunError = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recOverRunError = new byte[Long.BYTES];
             message.readBytes(recOverRunError);
-            final byte[] recCrcError = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] recCrcError = new byte[Long.BYTES];
             message.readBytes(recCrcError);
-            final byte[] collisionCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] collisionCount = new byte[Long.BYTES];
             message.readBytes(collisionCount);
 
             items.add(itemBuilder

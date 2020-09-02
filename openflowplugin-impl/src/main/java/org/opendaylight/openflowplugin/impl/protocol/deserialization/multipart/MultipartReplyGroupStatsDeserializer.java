@@ -51,9 +51,9 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
 
             message.skipBytes(PADDING_IN_GROUP_HEADER_02);
 
-            final byte[] packetCountg = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetCountg = new byte[Long.BYTES];
             message.readBytes(packetCountg);
-            final byte[] byteCountg = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] byteCountg = new byte[Long.BYTES];
             message.readBytes(byteCountg);
 
             itemBuilder
@@ -70,9 +70,9 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
             long bucketKey = 0;
 
             while (actualLength < itemLength) {
-                final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] packetCount = new byte[Long.BYTES];
                 message.readBytes(packetCount);
-                final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] byteCount = new byte[Long.BYTES];
                 message.readBytes(byteCount);
 
                 subItems.add(new BucketCounterBuilder()

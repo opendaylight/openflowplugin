@@ -23,9 +23,9 @@ public class MultipartReplyFlowAggregateStatsDeserializer implements OFDeseriali
 
     @Override
     public MultipartReplyBody deserialize(ByteBuf message) {
-        final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] packetCount = new byte[Long.BYTES];
         message.readBytes(packetCount);
-        final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] byteCount = new byte[Long.BYTES];
         message.readBytes(byteCount);
 
         final MultipartReplyFlowAggregateStatsBuilder builder = new MultipartReplyFlowAggregateStatsBuilder()

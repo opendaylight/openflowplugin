@@ -63,7 +63,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
             OFDeserializer<ErrorMessage> deserializer = registry.getDeserializer(
                     ExperimenterDeserializerKeyFactory.createExperimenterErrorDeserializerKey(
                             EncodeConstants.OF13_VERSION_ID, rawMessage.getUnsignedInt(
-                                    rawMessage.readerIndex() + EncodeConstants.SIZE_OF_SHORT_IN_BYTES)));
+                                    rawMessage.readerIndex() + Short.BYTES)));
             rawMessage.readerIndex(startIndex);
             return deserializer.deserialize(rawMessage);
         }

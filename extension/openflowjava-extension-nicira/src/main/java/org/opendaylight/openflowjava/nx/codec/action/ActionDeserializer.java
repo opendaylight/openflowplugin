@@ -46,9 +46,9 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
     public Action deserialize(ByteBuf message) {
         final int startPosition = message.readerIndex();
         // size of experimenter type
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         // size of length
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         long experimenterId = message.readUnsignedInt();
         if (NiciraConstants.NX_VENDOR_ID.toJava() != experimenterId) {
             throw new IllegalStateException("Experimenter ID is not Nicira vendor id but is " + experimenterId);

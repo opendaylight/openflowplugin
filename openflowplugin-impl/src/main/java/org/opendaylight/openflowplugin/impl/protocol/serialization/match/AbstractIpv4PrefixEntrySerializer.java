@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 
 public abstract class AbstractIpv4PrefixEntrySerializer extends AbstractMatchEntrySerializer<Ipv4Prefix, Integer> {
     protected AbstractIpv4PrefixEntrySerializer(final int oxmClassCode, final int oxmFieldCode) {
-        super(new ConstantHeaderWriter<>(oxmClassCode, oxmFieldCode, EncodeConstants.SIZE_OF_INT_IN_BYTES));
+        super(new ConstantHeaderWriter<>(oxmClassCode, oxmFieldCode, Integer.BYTES));
     }
 
     @Override

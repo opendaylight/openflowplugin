@@ -34,7 +34,7 @@ public class Icmpv6CodeEntrySerializerTest extends AbstractMatchEntrySerializerT
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+        return Byte.BYTES;
     }
 
     @Override

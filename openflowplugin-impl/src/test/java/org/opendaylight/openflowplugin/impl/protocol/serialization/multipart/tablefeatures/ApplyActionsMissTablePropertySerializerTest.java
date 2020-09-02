@@ -39,7 +39,7 @@ public class ApplyActionsMissTablePropertySerializerTest extends AbstractTablePr
 
         assertProperty(property, out -> {
             assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
-            out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // Skip length of set field action
+            out.skipBytes(Short.BYTES); // Skip length of set field action
         });
     }
 

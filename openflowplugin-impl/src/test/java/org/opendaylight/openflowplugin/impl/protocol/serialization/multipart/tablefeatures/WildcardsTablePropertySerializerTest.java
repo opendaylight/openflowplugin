@@ -42,7 +42,7 @@ public class WildcardsTablePropertySerializerTest extends AbstractTablePropertyS
         assertProperty(property, out -> {
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.ARP_OP << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // Skip match entry length
+            out.skipBytes(Byte.BYTES); // Skip match entry length
         });
     }
 
