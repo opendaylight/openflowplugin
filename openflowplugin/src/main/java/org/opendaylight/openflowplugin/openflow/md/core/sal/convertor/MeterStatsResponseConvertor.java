@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.meter.stats.MeterBandStats;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Converts list of OF library meter stats to MD-SAL meter stats.
@@ -88,7 +89,7 @@ public class MeterStatsResponseConvertor extends Convertor<
                 BandStatBuilder bandStatBuilder = new BandStatBuilder();
                 bandStatBuilder.setByteBandCount(new Counter64(meterBandStats.getByteBandCount()));
                 bandStatBuilder.setPacketBandCount(new Counter64(meterBandStats.getPacketBandCount()));
-                BandId bandId = new BandId((long) bandKey);
+                BandId bandId = new BandId(Uint32.valueOf(bandKey));
                 bandStatBuilder.withKey(new BandStatKey(bandId));
                 bandStatBuilder.setBandId(bandId);
                 bandKey++;

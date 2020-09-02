@@ -91,9 +91,9 @@ public final class ByteUtil {
      * @param bytes an array of 4 unsigned bytes
      * @return a long representing the unsigned int
      */
-    public static long bytesToUnsignedInt(final byte[] bytes) {
+    public static Uint32 bytesToUnsignedInt(final byte[] bytes) {
         Preconditions.checkArgument(bytes.length == 4, "Input byte array must be exactly four bytes long.");
-        long unsignedInt = 0;
+        int unsignedInt = 0;
         unsignedInt |= bytes[0] & 0xFF;
         unsignedInt <<= 8;
         unsignedInt |= bytes[1] & 0xFF;
@@ -101,7 +101,7 @@ public final class ByteUtil {
         unsignedInt |= bytes[2] & 0xFF;
         unsignedInt <<= 8;
         unsignedInt |= bytes[3] & 0xFF;
-        return unsignedInt;
+        return Uint32.fromIntBits(unsignedInt);
     }
 
     /**
