@@ -7,10 +7,10 @@
  */
 package org.opendaylight.openflowplugin.samples.sample.bundles;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -82,6 +82,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +96,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
 
     private static final Logger LOG = LoggerFactory.getLogger(SampleFlowCapableNodeListener.class);
 
-    private static final BundleId BUNDLE_ID = new BundleId(1L);
+    private static final BundleId BUNDLE_ID = new BundleId(Uint32.ONE);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
@@ -194,37 +198,48 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         List<Message> messages  = new ArrayList<>();
 
 
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddGroupCaseBuilder()
-            .setAddGroupCaseData(new AddGroupCaseDataBuilder(createGroup(1L)).build()).build()).build());
+        messages.add(new MessageBuilder()
+            .setNode(nodeRef)
+            .setBundleInnerMessage(new BundleAddGroupCaseBuilder()
+                .setAddGroupCaseData(new AddGroupCaseDataBuilder(createGroup(Uint32.ONE)).build()).build())
+            .build());
 
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddFlowCaseBuilder()
-                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("42", 1L, 1, (short) 1)).build()).build())
-                .build());
+        messages.add(new MessageBuilder()
+            .setNode(nodeRef)
+            .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
+                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("42", Uint32.ONE, Uint16.ONE, Uint8.ONE))
+                    .build())
+                .build())
+            .build());
 
-        messages.add(new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(new BundleAddFlowCaseBuilder()
-                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("43", 1L, 2, (short) 2)).build()).build())
-                .build());
+        messages.add(new MessageBuilder()
+            .setNode(nodeRef)
+            .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
+                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("43", Uint32.ONE, Uint16.TWO, Uint8.TWO))
+                    .build())
+                .build())
+            .build());
 
         LOG.debug("createMessages() passing {}", messages);
 
         return messages;
     }
 
-    private static Flow createFlow(String flowId, long groupId, int priority, short tableId) {
+    private static Flow createFlow(String flowId, Uint32 groupId, Uint16 priority, Uint8 tableId) {
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setEthernetMatch(new EthernetMatchBuilder()
                 .setEthernetType(new EthernetTypeBuilder()
-                        .setType(new EtherType(2048L)).build()).build());
+                        .setType(new EtherType(Uint32.valueOf(2048))).build()).build());
 
         FlowBuilder flowBuilder = new FlowBuilder();
         flowBuilder.setMatch(matchBuilder.build());
         flowBuilder.setInstructions(createGroupInstructions(groupId).build());
         flowBuilder.setPriority(priority);
-        flowBuilder.setCookie(new FlowCookie(new BigInteger(flowId + "" + priority)));
+        flowBuilder.setCookie(new FlowCookie(Uint64.valueOf(flowId + "" + priority)));
 
         FlowKey key = new FlowKey(new FlowId(flowId));
-        flowBuilder.setHardTimeout(0);
-        flowBuilder.setIdleTimeout(0);
+        flowBuilder.setHardTimeout(Uint16.ZERO);
+        flowBuilder.setIdleTimeout(Uint16.ZERO);
         flowBuilder.setStrict(false);
         flowBuilder.setContainerName(null);
         flowBuilder.setId(new FlowId(flowId));
@@ -235,7 +250,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         return flowBuilder.build();
     }
 
-    private static Group createGroup(long groupId) {
+    private static Group createGroup(Uint32 groupId) {
         GroupBuilder groupBuilder = new GroupBuilder();
         GroupKey groupKey = new GroupKey(new GroupId(groupId));
         groupBuilder.withKey(groupKey);
@@ -258,9 +273,9 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
                         .setPopVlanAction(new PopVlanActionBuilder().build())
                         .build()).build());
 
-        BucketBuilder bucketBuilder = new BucketBuilder();
-        bucketBuilder.setBucketId(new BucketId(12L));
-        bucketBuilder.setAction(actionList);
+        BucketBuilder bucketBuilder = new BucketBuilder()
+                .setBucketId(new BucketId(Uint32.valueOf(12)))
+                .setAction(actionList);
 
         List<Bucket> bucketList = new ArrayList<>();
         bucketList.add(bucketBuilder.build());
@@ -291,7 +306,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
                 .build());
 
         bucketBuilder = new BucketBuilder();
-        bucketBuilder.setBucketId(new BucketId(13L));
+        bucketBuilder.setBucketId(new BucketId(Uint32.valueOf(13)));
         bucketBuilder.setAction(actionList);
 
         bucketList.add(bucketBuilder.build());
@@ -302,32 +317,23 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         return bucketsBuilder;
     }
 
-    private static InstructionsBuilder createGroupInstructions(long groupId) {
-        ActionBuilder actionBuilder = new ActionBuilder();
+    private static InstructionsBuilder createGroupInstructions(Uint32 groupId) {
 
-        GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
-        groupActionBuilder.setGroupId(groupId);
+        Action action = new ActionBuilder()
+                .setAction(new GroupActionCaseBuilder()
+                    .setGroupAction(new GroupActionBuilder().setGroupId(groupId).build())
+                    .build())
+                .setOrder(1)
+                .withKey(new ActionKey(0))
+                .build();
 
-        actionBuilder.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionBuilder.build()).build());
-        actionBuilder.setOrder(1);
-        actionBuilder.withKey(new ActionKey(0));
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(actionBuilder.build());
+        Instruction instruction = new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder().setAction(Map.of(action.key(), action)).build()).build())
+                .withKey(new InstructionKey(0))
+                .build();
 
-        ApplyActionsBuilder applyActionsBuilder = new ApplyActionsBuilder();
-        applyActionsBuilder.setAction(actionList);
-
-        InstructionBuilder instructionBuilder = new InstructionBuilder();
-        instructionBuilder.setInstruction(new ApplyActionsCaseBuilder()
-                .setApplyActions(applyActionsBuilder.build()).build());
-        instructionBuilder.setOrder(0);
-        instructionBuilder.withKey(new InstructionKey(0));
-
-        InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(instructionBuilder.build());
-        instructionsBuilder.setInstruction(instructions);
-
-        return instructionsBuilder;
+        return new InstructionsBuilder()
+                .setInstruction(Map.of(instruction.key(), instruction));
     }
 }
