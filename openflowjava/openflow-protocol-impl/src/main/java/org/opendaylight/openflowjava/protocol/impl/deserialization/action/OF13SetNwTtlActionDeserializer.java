@@ -11,7 +11,7 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.ttl._case.SetNwTtlActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -22,9 +22,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  *
  * @author michal.polkorab
  */
-public class OF13SetNwTtlActionDeserializer extends AbstractActionDeserializer {
+public class OF13SetNwTtlActionDeserializer extends AbstractActionDeserializer<SetNwTtlCase> {
+    public OF13SetNwTtlActionDeserializer() {
+        super(new SetNwTtlCaseBuilder().build());
+    }
+
     @Override
-    public Action deserialize(ByteBuf input) {
+    public Action deserialize(final ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * Short.BYTES);
         SetNwTtlCaseBuilder caseBuilder = new SetNwTtlCaseBuilder();
@@ -34,10 +38,5 @@ public class OF13SetNwTtlActionDeserializer extends AbstractActionDeserializer {
         builder.setActionChoice(caseBuilder.build());
         input.skipBytes(ActionConstants.SET_NW_TTL_PADDING);
         return builder.build();
-    }
-
-    @Override
-    protected ActionChoice getType() {
-        return new SetNwTtlCaseBuilder().build();
     }
 }

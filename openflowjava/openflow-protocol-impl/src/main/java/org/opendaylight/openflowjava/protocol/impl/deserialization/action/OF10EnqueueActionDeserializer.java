@@ -12,8 +12,8 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.EnqueueCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.enqueue._case.EnqueueActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -26,9 +26,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  *
  * @author michal.polkorab
  */
-public class OF10EnqueueActionDeserializer extends AbstractActionDeserializer {
+public class OF10EnqueueActionDeserializer extends AbstractActionDeserializer<OutputActionCase> {
+    public OF10EnqueueActionDeserializer() {
+        // FIXME: it looks this should be EnqueueCase instead
+        super(new OutputActionCaseBuilder().build());
+    }
+
     @Override
-    public Action deserialize(ByteBuf input) {
+    public Action deserialize(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
         EnqueueActionBuilder actionBuilder = new EnqueueActionBuilder();
         actionBuilder.setPort(new PortNumber(readUint16(input).toUint32()));
@@ -37,10 +42,5 @@ public class OF10EnqueueActionDeserializer extends AbstractActionDeserializer {
         return new ActionBuilder()
                 .setActionChoice(new EnqueueCaseBuilder().setEnqueueAction(actionBuilder.build()).build())
                 .build();
-    }
-
-    @Override
-    protected ActionChoice getType() {
-        return new OutputActionCaseBuilder().build();
     }
 }
