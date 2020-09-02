@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Exthdr;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -24,16 +23,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
+public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addIpv6ExtHdrValue(input, builder);
         return builder.build();
     }
 
-    private static void addIpv6ExtHdrValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addIpv6ExtHdrValue(final ByteBuf input, final MatchEntryBuilder builder) {
         Ipv6ExthdrCaseBuilder caseBuilder = new Ipv6ExthdrCaseBuilder();
         Ipv6ExthdrBuilder extHdrBuilder = new Ipv6ExthdrBuilder();
         extHdrBuilder.setPseudoField(convertPseudofields(input));
@@ -45,7 +43,7 @@ public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer
         builder.setMatchEntryValue(caseBuilder.build());
     }
 
-    private static Ipv6ExthdrFlags convertPseudofields(ByteBuf input) {
+    private static Ipv6ExthdrFlags convertPseudofields(final ByteBuf input) {
         int bitmap = input.readUnsignedShort();
         final Boolean nonext = (bitmap & 1 << 0) != 0;
         final Boolean esp = (bitmap & 1 << 1) != 0;

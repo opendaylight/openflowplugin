@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6FlowLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Flabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -26,16 +25,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmIpv6FlabelDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
+public class OxmIpv6FlabelDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addIpv6FlabelValue(input, builder);
         return builder.build();
     }
 
-    private static void addIpv6FlabelValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addIpv6FlabelValue(final ByteBuf input, final MatchEntryBuilder builder) {
         Ipv6FlabelCaseBuilder caseBuilder = new Ipv6FlabelCaseBuilder();
         Ipv6FlabelBuilder labelBuilder = new Ipv6FlabelBuilder();
         labelBuilder.setIpv6Flabel(new Ipv6FlowLabel(readUint32(input)));

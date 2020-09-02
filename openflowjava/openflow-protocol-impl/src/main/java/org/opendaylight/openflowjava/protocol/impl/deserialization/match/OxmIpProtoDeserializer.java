@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpProto;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
@@ -25,17 +24,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmIpProtoDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
-
+public class OxmIpProtoDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addIpProtoValue(input, builder);
         return builder.build();
     }
 
-    private static void addIpProtoValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addIpProtoValue(final ByteBuf input, final MatchEntryBuilder builder) {
         builder.setMatchEntryValue(new IpProtoCaseBuilder()
             .setIpProto(new IpProtoBuilder().setProtocolNumber(readUint8(input)).build())
             .build());

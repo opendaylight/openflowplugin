@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -26,17 +25,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmInPortDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
-
+public class OxmInPortDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addInPortValue(input, builder);
         return builder.build();
     }
 
-    private static void addInPortValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addInPortValue(final ByteBuf input, final MatchEntryBuilder builder) {
         builder.setMatchEntryValue(new InPortCaseBuilder()
             .setInPort(new InPortBuilder().setPortNumber(new PortNumber(readUint32(input))).build())
             .build());
