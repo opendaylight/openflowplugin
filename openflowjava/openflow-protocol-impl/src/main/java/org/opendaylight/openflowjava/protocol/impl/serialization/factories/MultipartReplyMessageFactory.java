@@ -7,17 +7,16 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
@@ -106,9 +105,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author giuseppex.petralia@intel.com
  */
-@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-public class MultipartReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector {
-
+public class MultipartReplyMessageFactory implements OFSerializer<MultipartReplyMessage> {
     private static final byte MESSAGE_TYPE = 19;
     private static final byte PADDING = 4;
     private static final byte PORT_DESC_PADDING_1 = 4;
@@ -148,17 +145,14 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     private static final byte APPLY_SETFIELD_CODE = 14;
     private static final byte APPLY_SETFIELD_MISS_CODE = 15;
 
-    private SerializerRegistry registry;
+    private final SerializerLookup registry;
 
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
+    public MultipartReplyMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
     }
 
     @Override
     public void serialize(final MultipartReplyMessage message, final ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getType().getIntValue());
         writeFlags(message.getFlags(), outBuffer);

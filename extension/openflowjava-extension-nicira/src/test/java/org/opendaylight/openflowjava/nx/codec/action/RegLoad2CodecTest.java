@@ -61,9 +61,7 @@ public class RegLoad2CodecTest {
 
     @Before
     public void setup() {
-        regLoad2Codec = new RegLoad2Codec();
-        regLoad2Codec.injectSerializerRegistry(serializerRegistry);
-        regLoad2Codec.injectDeserializerRegistry(deserializerRegistry);
+        regLoad2Codec = new RegLoad2Codec(serializerRegistry, deserializerRegistry);
     }
 
     @Test

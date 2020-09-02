@@ -5,15 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.NiciraExtensionCodecRegistratorImpl;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ActionDeserializer implements OFDeserializer<Action>, DeserializerRegistryInjector {
+public class ActionDeserializer implements OFDeserializer<Action> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActionDeserializer.class);
 
@@ -31,14 +31,16 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
             EncodeConstants.OF10_VERSION_ID, NiciraConstants.NX_VENDOR_ID.toJava());
 
     private final short version;
-    private DeserializerRegistry deserializerRegistry;
+
+    private final DeserializerLookup deserializerRegistry;
 
     /**
      * Constructor.
      *
      * @param version protocol wire version
      */
-    public ActionDeserializer(short version) {
+    public ActionDeserializer(DeserializerLookup deserializerRegistry, short version) {
+        this.deserializerRegistry = requireNonNull(deserializerRegistry);
         this.version = version;
     }
 
@@ -65,12 +67,7 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
         return actionDeserializer.deserialize(message);
     }
 
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
-        this.deserializerRegistry = registry;
-    }
-
-    public DeserializerRegistry getDeserializerRegistry() {
+    public DeserializerLookup getDeserializerRegistry() {
         return deserializerRegistry;
     }
 }

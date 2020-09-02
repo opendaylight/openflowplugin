@@ -11,12 +11,12 @@ import static org.mockito.ArgumentMatchers.any;
 
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
@@ -32,9 +32,10 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class ExperimenterInputMessageFactoryTest {
-
-    @Mock SerializerRegistry registry;
+    @Mock
+    private SerializerRegistry registry;
     @Mock
     private OFSerializer<ExperimenterDataOfChoice> serializer;
     private OFSerializer<ExperimenterOfMessage> expFactory;
@@ -47,15 +48,13 @@ public class ExperimenterInputMessageFactoryTest {
      * Sets up ExperimenterInputMessageFactory.
      * @param real true if setup should use real registry, false when mock is desired
      */
-    public void startUp(boolean real) {
-        MockitoAnnotations.initMocks(this);
-        expFactory = new ExperimenterInputMessageFactory();
+    public void startUp(final boolean real) {
         if (real) {
             SerializerRegistry realRegistry = new SerializerRegistryImpl();
             realRegistry.init();
-            ((SerializerRegistryInjector) expFactory).injectSerializerRegistry(realRegistry);
+            expFactory = new ExperimenterInputMessageFactory(realRegistry);
         } else {
-            ((SerializerRegistryInjector) expFactory).injectSerializerRegistry(registry);
+            expFactory = new ExperimenterInputMessageFactory(registry);
         }
     }
 
