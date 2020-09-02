@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6NdSll;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
@@ -23,17 +22,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public class OxmIpv6NdSllDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
+public class OxmIpv6NdSllDeserializer extends AbstractOxmMatchEntryDeserializer {
 
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addIpv6NdSllValue(input, builder);
         return builder.build();
     }
 
-    private static void addIpv6NdSllValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addIpv6NdSllValue(final ByteBuf input, final MatchEntryBuilder builder) {
         Ipv6NdSllCaseBuilder caseBuilder = new Ipv6NdSllCaseBuilder();
         Ipv6NdSllBuilder ndBuilder = new Ipv6NdSllBuilder();
         ndBuilder.setMacAddress(OxmDeserializerHelper.convertMacAddress(input));

@@ -9,6 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -19,9 +20,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public abstract class AbstractOxmMatchEntryDeserializer implements HeaderDeserializer<MatchEntry> {
+public abstract class AbstractOxmMatchEntryDeserializer
+        implements HeaderDeserializer<MatchEntry>, OFDeserializer<MatchEntry> {
     @Override
-    public MatchEntry deserializeHeader(ByteBuf input) {
+    public MatchEntry deserializeHeader(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         return builder.build();
     }
@@ -46,8 +48,8 @@ public abstract class AbstractOxmMatchEntryDeserializer implements HeaderDeseria
      * @param input input bytebuf
      * @return MatchEntriesBuilder which can be filled with MatchEntry augmentation
      */
-    protected MatchEntryBuilder processHeader(Class<? extends OxmClassBase> oxmClass,
-            Class<? extends MatchField> oxmField, ByteBuf input) {
+    protected MatchEntryBuilder processHeader(final Class<? extends OxmClassBase> oxmClass,
+            final Class<? extends MatchField> oxmField, final ByteBuf input) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(oxmClass);
         // skip oxm_class (provided)
