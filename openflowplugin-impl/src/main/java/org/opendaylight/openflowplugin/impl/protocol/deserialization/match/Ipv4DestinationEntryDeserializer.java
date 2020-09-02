@@ -21,9 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 
 public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserializer {
-
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
         final Ipv4Address address = ByteBufUtils.readIetfIpv4Address(message);
 
@@ -40,8 +39,8 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
         }
     }
 
-    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address, @Nullable final byte[]
-            mask) {
+    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address,
+            final byte @Nullable[] mask) {
         if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv4MatchBuilder()
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))
