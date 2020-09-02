@@ -19,6 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10SetDlDstActionSerializer extends AbstractActionSerializer {
+    public OF10SetDlDstActionSerializer() {
+        super(ActionConstants.SET_DL_DST_CODE, ActionConstants.LARGER_ACTION_LENGTH);
+    }
 
     @Override
     public void serialize(final Action action, final ByteBuf outBuffer) {
@@ -27,15 +30,4 @@ public class OF10SetDlDstActionSerializer extends AbstractActionSerializer {
                 .getSetDlDstAction().getDlDstAddress()));
         outBuffer.writeZero(ActionConstants.PADDING_IN_DL_ADDRESS_ACTION);
     }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.SET_DL_DST_CODE;
-    }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.LARGER_ACTION_LENGTH;
-    }
-
 }

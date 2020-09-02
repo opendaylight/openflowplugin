@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
@@ -19,23 +18,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF13PushPbbActionSerializer extends AbstractActionSerializer {
+    public OF13PushPbbActionSerializer() {
+        super(ActionConstants.PUSH_PBB_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeShort(((PushPbbCase) action.getActionChoice())
-                .getPushPbbAction().getEthertype().getValue().toJava());
+                .getPushPbbAction().getEthertype().getValue().intValue());
         outBuffer.writeZero(ActionConstants.ETHERTYPE_ACTION_PADDING);
     }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.GENERAL_ACTION_LENGTH;
-    }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.PUSH_PBB_CODE;
-    }
-
 }
