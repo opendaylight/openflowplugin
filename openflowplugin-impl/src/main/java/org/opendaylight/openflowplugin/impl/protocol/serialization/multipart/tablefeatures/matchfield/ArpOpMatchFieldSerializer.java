@@ -10,18 +10,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.ta
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 
 public class ArpOpMatchFieldSerializer extends AbstractMatchFieldSerializer {
-    @Override
-    protected int getOxmClassCode() {
-        return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
-    }
-
-    @Override
-    protected int getOxmFieldCode() {
-        return OxmMatchConstants.ARP_OP;
-    }
-
-    @Override
-    protected int getValueLength() {
-        return Short.BYTES;
+    public ArpOpMatchFieldSerializer() {
+        super(OxmMatchConstants.ARP_OP, Short.BYTES);
     }
 }
