@@ -18,21 +18,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF13CopyTtlInActionSerializer extends AbstractActionSerializer {
+    public OF13CopyTtlInActionSerializer() {
+        super(ActionConstants.COPY_TTL_IN_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
     }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.GENERAL_ACTION_LENGTH;
-    }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.COPY_TTL_IN_CODE;
-    }
-
 }
