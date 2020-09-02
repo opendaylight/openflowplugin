@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
@@ -19,22 +18,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10SetVlanPcpActionSerializer extends AbstractActionSerializer {
+    public OF10SetVlanPcpActionSerializer() {
+        super(ActionConstants.SET_VLAN_PCP_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeByte(((SetVlanPcpCase) action.getActionChoice()).getSetVlanPcpAction().getVlanPcp().toJava());
         outBuffer.writeZero(ActionConstants.PADDING_IN_SET_VLAN_PCP_ACTION);
     }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.SET_VLAN_PCP_CODE;
-    }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.GENERAL_ACTION_LENGTH;
-    }
-
 }
