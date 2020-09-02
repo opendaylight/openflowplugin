@@ -10,10 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.dst._case.EthDstBuilder;
@@ -24,32 +20,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * @author michal.polkorab
  */
 public class OxmEthDstDeserializer extends AbstractOxmMatchEntryDeserializer {
-    @Override
-    public MatchEntry deserialize(final ByteBuf input) {
-        MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
-        addEthDstValue(input, builder);
-        return builder.build();
+    public OxmEthDstDeserializer() {
+        super(EthDst.class);
     }
 
-    private static void addEthDstValue(final ByteBuf input, final MatchEntryBuilder builder) {
-        EthDstCaseBuilder caseBuilder = new EthDstCaseBuilder();
-        EthDstBuilder ethBuilder = new EthDstBuilder();
-        ethBuilder.setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
+    @Override
+    protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
+        final EthDstBuilder ethBuilder = new EthDstBuilder()
+                .setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
         if (builder.isHasMask()) {
             ethBuilder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.MAC_ADDRESS_LENGTH));
         }
-        caseBuilder.setEthDst(ethBuilder.build());
-        builder.setMatchEntryValue(caseBuilder.build());
+        builder.setMatchEntryValue(new EthDstCaseBuilder().setEthDst(ethBuilder.build()).build());
     }
-
-    @Override
-    protected Class<? extends MatchField> getOxmField() {
-        return EthDst.class;
-    }
-
-    @Override
-    protected Class<? extends OxmClassBase> getOxmClass() {
-        return OpenflowBasicClass.class;
-    }
-
 }

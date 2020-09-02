@@ -14,24 +14,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extension
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainerBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlagsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 
 /**
  * Created by Anil Vishnoi (avishnoi@Brocade.com) on 7/26/16.
  */
-public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntryDeserializer {
-    @Override
-    public MatchEntry deserialize(final ByteBuf input) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder(deserializeHeader(input));
-        ExperimenterIdCaseBuilder expCaseBuilder = createExperimenterIdCase(matchEntryBuilder, input);
-        addTcpFlagsAugmentation(input, expCaseBuilder, matchEntryBuilder.isHasMask());
-        matchEntryBuilder.setMatchEntryValue(expCaseBuilder.build());
-        return matchEntryBuilder.build();
+public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntryDeserializer<TcpFlags> {
+    public OnfOxmTcpFlagsDeserializer() {
+        super(TcpFlags.class);
+    }
 
+    @Override
+    protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
+        ExperimenterIdCaseBuilder expCaseBuilder = createExperimenterIdCase(builder, input);
+        addTcpFlagsAugmentation(input, expCaseBuilder, builder.isHasMask());
+        builder.setMatchEntryValue(expCaseBuilder.build());
     }
 
     private static void addTcpFlagsAugmentation(final ByteBuf input, final ExperimenterIdCaseBuilder expCaseBuilder,
@@ -44,21 +41,5 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
             flagsBuilder.setMask(mask);
         }
         expCaseBuilder.addAugmentation(new TcpFlagsContainerBuilder().setTcpFlags(flagsBuilder.build()).build());
-    }
-
-    /**
-     * Return the oxm_field class.
-     */
-    @Override
-    protected Class<? extends MatchField> getOxmField() {
-        return TcpFlags.class;
-    }
-
-    /**
-     * Return the oxm_class class.
-     */
-    @Override
-    protected Class<? extends OxmClassBase> getOxmClass() {
-        return ExperimenterClass.class;
     }
 }
