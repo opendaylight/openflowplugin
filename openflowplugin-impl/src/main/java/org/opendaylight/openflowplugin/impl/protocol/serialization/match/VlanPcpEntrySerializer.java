@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class VlanPcpEntrySerializer extends AbstractPrimitiveEntrySerializer<VlanPcp> {
     public VlanPcpEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.VLAN_PCP,
-            EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            Byte.BYTES);
     }
 
     @Override

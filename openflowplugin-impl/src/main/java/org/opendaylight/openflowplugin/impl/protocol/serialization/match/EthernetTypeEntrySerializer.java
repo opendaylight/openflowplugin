@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class EthernetTypeEntrySerializer extends AbstractPrimitiveEntrySerializer<EthernetType> {
     public EthernetTypeEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.ETH_TYPE,
-            EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+            Short.BYTES);
     }
 
     @Override

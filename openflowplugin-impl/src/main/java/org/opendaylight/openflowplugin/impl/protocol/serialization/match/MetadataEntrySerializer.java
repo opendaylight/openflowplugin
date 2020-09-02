@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 public class MetadataEntrySerializer extends AbstractMatchEntrySerializer<Metadata, Uint64> {
     public MetadataEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.METADATA,
-            EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+            Long.BYTES);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class MetadataEntrySerializer extends AbstractMatchEntrySerializer<Metada
     protected void serializeEntry(Metadata entry, Uint64 mask, ByteBuf outBuffer) {
         outBuffer.writeBytes(ByteUtil.uint64toBytes(entry.getMetadata()));
         if (mask != null) {
-            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, EncodeConstants.SIZE_OF_LONG_IN_BYTES);
+            writeMask(ByteUtil.uint64toBytes(mask), outBuffer, Long.BYTES);
         }
     }
 }

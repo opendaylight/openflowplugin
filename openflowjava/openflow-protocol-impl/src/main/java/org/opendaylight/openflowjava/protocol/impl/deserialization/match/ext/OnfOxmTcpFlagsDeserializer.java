@@ -11,7 +11,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainerBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlagsBuilder;
@@ -27,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
-
     @Override
     public MatchEntry deserialize(ByteBuf input) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder(deserializeHeader(input));
@@ -43,7 +41,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
         TcpFlagsBuilder flagsBuilder = new TcpFlagsBuilder();
         flagsBuilder.setFlags(readUint16(input));
         if (hasMask) {
-            byte[] mask = new byte[EncodeConstants.SIZE_OF_SHORT_IN_BYTES];
+            byte[] mask = new byte[Short.BYTES];
             input.readBytes(mask);
             flagsBuilder.setMask(mask);
         }

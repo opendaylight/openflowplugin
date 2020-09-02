@@ -54,10 +54,10 @@ public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSe
         assertInstruction(instruction, out -> {
             out.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
             assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
-            out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // Skip length of set field action
+            out.skipBytes(Short.BYTES); // Skip length of set field action
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV4_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // Skip match entry length
+            out.skipBytes(Byte.BYTES); // Skip match entry length
 
             byte[] addressBytes = new byte[4];
             out.readBytes(addressBytes);

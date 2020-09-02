@@ -26,7 +26,7 @@ public class Ipv6FlabelEntryDeserializer extends AbstractMatchEntryDeserializer 
             .setIpv6Flabel(new Ipv6FlowLabel(message.readUnsignedInt()));
 
         if (hasMask) {
-            final byte[] mask = OxmDeserializerHelper.convertMask(message, EncodeConstants.SIZE_OF_INT_IN_BYTES);
+            final byte[] mask = OxmDeserializerHelper.convertMask(message, Integer.BYTES);
             ipv6labelBuilder.setFlabelMask(new Ipv6FlowLabel(ByteUtil.bytesToUnsignedInt(mask)));
         }
 

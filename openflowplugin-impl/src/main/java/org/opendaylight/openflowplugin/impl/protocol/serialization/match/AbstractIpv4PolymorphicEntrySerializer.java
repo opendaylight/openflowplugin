@@ -21,7 +21,7 @@ abstract class AbstractIpv4PolymorphicEntrySerializer
         extends AbstractPolymorphicEntrySerializer<Ipv4MatchArbitraryBitMask, Ipv4Match, Ipv4Prefix, DottedQuad> {
 
     AbstractIpv4PolymorphicEntrySerializer(final int oxmClassCode, final int oxmFieldCode) {
-        super(oxmClassCode, oxmFieldCode, EncodeConstants.SIZE_OF_INT_IN_BYTES, Ipv4MatchArbitraryBitMask.class,
+        super(oxmClassCode, oxmFieldCode, Integer.BYTES, Ipv4MatchArbitraryBitMask.class,
             Ipv4Match.class, Ipv4Prefix.class, DottedQuad.class);
     }
 
@@ -41,7 +41,7 @@ abstract class AbstractIpv4PolymorphicEntrySerializer
         writeIpv4Address(extractArbitraryEntryAddress(arbitraryMatch), outBuffer);
         if (mask != null) {
             writeMask(IpConversionUtil.convertArbitraryMaskToByteArray(mask), outBuffer,
-                EncodeConstants.SIZE_OF_INT_IN_BYTES);
+                Integer.BYTES);
         }
     }
 

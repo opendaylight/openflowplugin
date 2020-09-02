@@ -35,7 +35,7 @@ public class EncapCodec extends AbstractActionCodec {
     public Action deserialize(ByteBuf message) {
         final ActionBuilder actionBuilder = deserializeHeader(message);
         // skip header size, not used
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         NxActionEncap nxActionEncap = new NxActionEncapBuilder().setPacketType(readUint32(message)).build();
         ActionEncap actionEncap = new ActionEncapBuilder().setNxActionEncap(nxActionEncap).build();
         actionBuilder.setActionChoice(actionEncap);

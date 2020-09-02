@@ -26,7 +26,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NshNpCodec extends AbstractExperimenterMatchCodec {
 
-    private static final int VALUE_LENGTH = EncodeConstants.SIZE_OF_BYTE_IN_BYTES;
+    private static final int VALUE_LENGTH = Byte.BYTES;
     private static final int NXM_FIELD_CODE = 3;
     public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNshNp> SERIALIZER_KEY =
             createSerializerKey(

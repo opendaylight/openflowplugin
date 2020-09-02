@@ -57,7 +57,7 @@ public class TunnelIdEntrySerializerTest extends AbstractMatchEntrySerializerTes
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 
     @Override

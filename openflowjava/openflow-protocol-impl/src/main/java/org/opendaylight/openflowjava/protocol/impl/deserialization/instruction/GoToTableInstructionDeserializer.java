@@ -12,7 +12,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice._goto.table._case.GotoTableBuilder;
@@ -26,10 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  */
 public class GoToTableInstructionDeserializer  implements OFDeserializer<Instruction>,
         HeaderDeserializer<Instruction> {
-
     @Override
     public Instruction deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         final InstructionBuilder builder = new InstructionBuilder()
                 .setInstructionChoice(new GotoTableCaseBuilder()
                     .setGotoTable(new GotoTableBuilder().setTableId(readUint8(input)).build())
@@ -40,7 +38,7 @@ public class GoToTableInstructionDeserializer  implements OFDeserializer<Instruc
 
     @Override
     public Instruction deserializeHeader(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         return new InstructionBuilder().setInstructionChoice(new GotoTableCaseBuilder().build()).build();
     }
 }
