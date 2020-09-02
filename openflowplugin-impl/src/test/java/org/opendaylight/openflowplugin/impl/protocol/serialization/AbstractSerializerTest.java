@@ -59,6 +59,11 @@ public abstract class AbstractSerializerTest {
         }
 
         @Override
+        public <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey) {
+            return registry.getSerializer(msgTypeKey);
+        }
+
+        @Override
         public <K> void registerSerializer(MessageTypeKey<K> messageTypeKey, OFGeneralSerializer ofGeneralSerializer) {
             registry.registerSerializer(messageTypeKey, ofGeneralSerializer);
         }

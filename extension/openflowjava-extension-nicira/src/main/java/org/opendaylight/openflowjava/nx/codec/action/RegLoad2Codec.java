@@ -5,21 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.util.Collections;
-import java.util.Objects;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -34,23 +31,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2Builder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class RegLoad2Codec
-        extends AbstractActionCodec
-        implements SerializerRegistryInjector, DeserializerRegistryInjector {
+public class RegLoad2Codec extends AbstractActionCodec {
 
     public static final byte SUBTYPE = 33; // NXAST_REG_LOAD2
     public static final NiciraActionSerializerKey SERIALIZER_KEY = new NiciraActionSerializerKey(
             EncodeConstants.OF13_VERSION_ID, ActionRegLoad2.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY = new NiciraActionDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, SUBTYPE);
-    private SerializerRegistry serializerRegistry;
-    private DeserializerRegistry deserializerRegistry;
+
+    private final SerializerRegistry serializerRegistry;
+    private final DeserializerRegistry deserializerRegistry;
+
+    public RegLoad2Codec(final SerializerRegistry serializerRegistry, final DeserializerRegistry deserializerRegistry) {
+        this.serializerRegistry = requireNonNull(serializerRegistry);
+        this.deserializerRegistry = requireNonNull(deserializerRegistry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public Action deserialize(ByteBuf message) {
-        Objects.requireNonNull(deserializerRegistry);
-
         final int startIndex = message.readerIndex();
         ActionBuilder actionBuilder = deserializeHeader(message);
 
@@ -77,10 +75,7 @@ public class RegLoad2Codec
     }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public void serialize(Action input, ByteBuf outBuffer) {
-        Objects.requireNonNull(serializerRegistry);
-
         final int startIndex = outBuffer.writerIndex();
         serializeHeader(EncodeConstants.EMPTY_LENGTH, SUBTYPE, outBuffer);
 
@@ -99,15 +94,5 @@ public class RegLoad2Codec
         serializer.serialize(matchEntry, outBuffer);
 
         writePaddingAndSetLength(outBuffer, startIndex);
-    }
-
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry registry) {
-        this.serializerRegistry = registry;
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
-        this.deserializerRegistry = registry;
     }
 }

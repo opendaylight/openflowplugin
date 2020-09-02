@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.util;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 
@@ -19,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
  * Utility class for instruction serialization.
  */
 public final class InstructionUtil {
-
     private InstructionUtil() {
     }
 
@@ -32,18 +30,12 @@ public final class InstructionUtil {
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
-    public static void writeInstruction(final Instruction instruction,
-                                        final short version,
-                                        final SerializerRegistry registry,
-                                        final ByteBuf outBuffer) {
-
+    public static void writeInstruction(final Instruction instruction, final short version,
+                                        final SerializerLookup registry, final ByteBuf outBuffer) {
         registry.<Instruction, OFSerializer<Instruction>>getSerializer(
-            new MessageTypeKey<>(
-                version,
-                (Class<Instruction>) instruction.implementedInterface()))
-            .serialize(instruction, outBuffer);
+            new MessageTypeKey<>(version, (Class<Instruction>) instruction.implementedInterface()))
+                .serialize(instruction, outBuffer);
     }
-
 
     /**
      * Serialize instruction header.
@@ -54,16 +46,10 @@ public final class InstructionUtil {
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
-    public static void writeInstructionHeader(final Instruction instruction,
-                                              final short version,
-                                              final SerializerRegistry registry,
-                                              final ByteBuf outBuffer) {
-
+    public static void writeInstructionHeader(final Instruction instruction, final short version,
+                                              final SerializerLookup registry, final ByteBuf outBuffer) {
         registry.<Instruction, HeaderSerializer<Instruction>>getSerializer(
-            new MessageTypeKey<>(
-                version,
-                (Class<Instruction>) instruction.implementedInterface()))
-            .serializeHeader(instruction, outBuffer);
+            new MessageTypeKey<>(version, (Class<Instruction>) instruction.implementedInterface()))
+                .serializeHeader(instruction, outBuffer);
     }
-
 }

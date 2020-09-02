@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeKeyMakerFactory;
@@ -27,20 +27,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, SerializerRegistryInjector {
+public class GroupModInputMessageFactory implements OFSerializer<GroupMod> {
     private static final byte MESSAGE_TYPE = 15;
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
     private static final int OFPGC_ADD_OR_MOD = 32768;
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
     private final boolean isGroupAddModEnaled;
 
-    public GroupModInputMessageFactory(final boolean isGroupAddModEnaled) {
+    public GroupModInputMessageFactory(final SerializerLookup registry, final boolean isGroupAddModEnaled) {
+        this.registry = requireNonNull(registry);
         this.isGroupAddModEnaled = isGroupAddModEnaled;
     }
 
     @Override
-    public void serialize(GroupMod message, ByteBuf outBuffer) {
+    public void serialize(final GroupMod message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         if (isGroupAddModEnaled) {
@@ -60,7 +62,7 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }
 
-    private void serializerBuckets(List<BucketsList> buckets, ByteBuf outBuffer) {
+    private void serializerBuckets(final List<BucketsList> buckets, final ByteBuf outBuffer) {
         if (buckets != null) {
             for (BucketsList currentBucket : buckets) {
                 final int bucketLengthIndex = outBuffer.writerIndex();
@@ -75,10 +77,4 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
             }
         }
     }
-
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
-
 }

@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -19,23 +18,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
-
-public class MultipartReplyMessageDeserializer implements OFDeserializer<MultipartReply>, DeserializerRegistryInjector {
-
+public class MultipartReplyMessageDeserializer implements OFDeserializer<MultipartReply> {
     private static final byte PADDING_IN_MULTIPART_REPLY_HEADER = 4;
 
-    private DeserializerRegistry registry;
+    private final DeserializerLookup registry;
+
+    public MultipartReplyMessageDeserializer(final DeserializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    public MultipartReply deserialize(ByteBuf message) {
+    public MultipartReply deserialize(final ByteBuf message) {
         final long xid = message.readUnsignedInt();
         final int type = message.readUnsignedShort();
         final boolean reqMore = (message.readUnsignedShort() & 0x01) != 0;
         message.skipBytes(PADDING_IN_MULTIPART_REPLY_HEADER);
 
-        final OFDeserializer<MultipartReplyBody> deserializer = Preconditions.checkNotNull(registry)
-            .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID,
-                        type, MultipartReplyBody.class));
+        final OFDeserializer<MultipartReplyBody> deserializer = registry.getDeserializer(new MessageCodeKey(
+            EncodeConstants.OF13_VERSION_ID, type, MultipartReplyBody.class));
 
         return new MultipartReplyBuilder()
             .setVersion((short) EncodeConstants.OF13_VERSION_ID)
@@ -44,10 +44,4 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
             .setMultipartReplyBody(deserializer.deserialize(message))
             .build();
     }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }

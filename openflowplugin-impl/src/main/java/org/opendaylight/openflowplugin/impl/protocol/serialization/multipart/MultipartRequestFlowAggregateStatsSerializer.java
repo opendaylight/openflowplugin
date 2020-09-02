@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -21,12 +21,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multip
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.aggregate.stats.FlowAggregateStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 
-public class MultipartRequestFlowAggregateStatsSerializer implements OFSerializer<MultipartRequestFlowAggregateStats>,
-        SerializerRegistryInjector {
-
+public class MultipartRequestFlowAggregateStatsSerializer implements OFSerializer<MultipartRequestFlowAggregateStats> {
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02 = 4;
-    private SerializerRegistry registry;
+
+    private final SerializerLookup registry;
+
+    public MultipartRequestFlowAggregateStatsSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final MultipartRequestFlowAggregateStats multipartRequestFlowAggregateStats,
@@ -42,13 +45,8 @@ public class MultipartRequestFlowAggregateStatsSerializer implements OFSerialize
         byteBuf.writeLong(MoreObjects.firstNonNull(stats.getCookieMask(),
                 new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
 
-        Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
+        registry.<Match, OFSerializer<Match>>getSerializer(
                 new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class))
                 .serialize(stats.getMatch(), byteBuf);
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 }

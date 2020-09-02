@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -14,8 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -33,14 +34,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Match>,
-        MatchEntrySerializerRegistry, SerializerRegistryInjector {
+public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Match>, MatchEntrySerializerRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(MatchSerializer.class);
     private static final byte OXM_MATCH_TYPE_CODE = 1;
+
     private final Map<org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey,
             MatchEntrySerializer> entryRegistry = new LinkedHashMap<>();
-    private SerializerRegistry registry;
+    private final SerializerLookup registry;
+
+    public MatchSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final Match match, final ByteBuf outBuffer) {
@@ -118,11 +123,6 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                         return null;
                     });
         });
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 
     @Override

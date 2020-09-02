@@ -5,16 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.netty.buffer.ByteBuf;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -30,28 +32,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartReplyExperimenterTest {
-
-    @Mock DeserializerRegistry registry;
-
-    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    @Mock
+    private DeserializerRegistry registry;
     @Mock
     private OFDeserializer<ExperimenterDataOfChoice> vendorDeserializer;
+
+    private MultipartReplyMessageFactory factory;
+
+    @Before
+    public void before() {
+        when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(vendorDeserializer);
+        factory = new MultipartReplyMessageFactory(registry);
+    }
 
     /**
      * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
      */
     @Test
     public void testMultipartReplyExperimenter() {
-        Mockito.when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(vendorDeserializer);
-        factory.injectDeserializerRegistry(registry);
         ByteBuf bb = BufferHelper.buildBuffer("FF FF 00 01 00 00 00 00 "
                                             + "00 00 00 01 00 00 00 02"); // expID, expType
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 65535, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 65535, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
 
-        Mockito.verify(vendorDeserializer).deserialize(bb);
+        verify(vendorDeserializer).deserialize(bb);
     }
 }
