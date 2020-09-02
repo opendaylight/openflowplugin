@@ -51,7 +51,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
                 new OF10MatchDeserializer());
         registerDeserializer(
                 new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class),
-                new MatchDeserializer());
+                new MatchDeserializer(this));
 
         // register match entry deserializers
         MatchEntryDeserializerInitializer.registerMatchEntryDeserializers(this);
@@ -63,7 +63,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+    public <T extends OFGeneralDeserializer> T getDeserializer(final MessageCodeKey key) {
         OFGeneralDeserializer deserializer = registry.get(key);
         if (deserializer == null) {
             throw new IllegalStateException("Deserializer for key: " + key
@@ -73,7 +73,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
+    public void registerDeserializer(final MessageCodeKey key, final OFGeneralDeserializer deserializer) {
         if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MessageCodeKey or Deserializer is null");
         }
@@ -88,7 +88,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public boolean unregisterDeserializer(MessageCodeKey key) {
+    public boolean unregisterDeserializer(final MessageCodeKey key) {
         if (key == null) {
             throw new IllegalArgumentException("MessageCodeKey is null");
         }

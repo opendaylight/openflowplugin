@@ -7,17 +7,15 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -36,16 +34,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Translates FlowModInput messages.
  */
-public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>, DeserializerRegistryInjector {
-
+public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput> {
     private static final byte PADDING = 2;
-    private DeserializerRegistry registry;
+
+    private final DeserializerRegistry registry;
+
+    public FlowModInputMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public FlowModInput deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
-
+    public FlowModInput deserialize(final ByteBuf rawMessage) {
         FlowModInputBuilder builder = new FlowModInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
@@ -72,7 +71,7 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
+    private static FlowModFlags createFlowModFlagsFromBitmap(final int input) {
         final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) != 0;
         final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) != 0;
         final Boolean _oFPFFRESETCOUNTS = (input & 1 << 2) != 0;
@@ -80,10 +79,5 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
         final Boolean _oFPFFNOBYTCOUNTS = (input & 1 << 4) != 0;
         return new FlowModFlags(_oFPFFCHECKOVERLAP, _oFPFFNOBYTCOUNTS, _oFPFFNOPKTCOUNTS, _oFPFFRESETCOUNTS,
                 _oFPFFSENDFLOWREM);
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
     }
 }

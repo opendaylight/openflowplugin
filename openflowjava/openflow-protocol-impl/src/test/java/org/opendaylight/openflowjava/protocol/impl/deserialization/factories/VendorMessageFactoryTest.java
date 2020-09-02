@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -26,9 +25,10 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class VendorMessageFactoryTest {
-
-    @Mock DeserializerRegistry registry;
-    @Mock ExperimenterMessageFactory deserializer;
+    @Mock
+    private DeserializerRegistry registry;
+    @Mock
+    private ExperimenterMessageFactory deserializer;
 
     /**
      * Tests {@link VendorMessageFactory#deserialize(ByteBuf)}.
@@ -37,8 +37,7 @@ public class VendorMessageFactoryTest {
     public void test() {
         Mockito.when(registry.getDeserializer(ArgumentMatchers.any())).thenReturn(deserializer);
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("01 02 03 04 FF FF FF FF 80 00 00 00");
-        VendorMessageFactory factory = new VendorMessageFactory();
-        factory.injectDeserializerRegistry(registry);
+        VendorMessageFactory factory = new VendorMessageFactory(registry);
         factory.deserialize(buffer);
 
         Mockito.verify(deserializer, Mockito.times(1)).deserialize(buffer);
