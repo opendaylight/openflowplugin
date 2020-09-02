@@ -565,7 +565,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        Integer count = Integer.parseInt(ci.nextArgument());
+        int count = Integer.parseInt(ci.nextArgument());
         switch (count) {
             case 1:
                 GroupBuilder group = createTestGroup("a7", "g1", "add", "1");
@@ -610,7 +610,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             ci.println("User node added" + nref);
             createUserNode(nref);
         }
-        Integer count = Integer.parseInt(ci.nextArgument());
+        int count = Integer.parseInt(ci.nextArgument());
         switch (count) {
             case 1:
                 GroupBuilder group = createTestGroup("a4", "g1", "modify", "1");
@@ -653,7 +653,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             createUserNode(nref);
         }
 
-        Integer count = Integer.parseInt(ci.nextArgument());
+        int count = Integer.parseInt(ci.nextArgument());
         switch (count) {
             case 1:
                 GroupBuilder group = createTestGroup("a2", "g1", "remove", "1");
