@@ -57,7 +57,7 @@ public final class InstructionUtil {
             Long expId = null;
 
             if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
             }
 
             deserializer = registry.getDeserializer(
@@ -98,7 +98,7 @@ public final class InstructionUtil {
             Long expId = null;
 
             if (EncodeConstants.EXPERIMENTER_VALUE == type) {
-                expId = message.getUnsignedInt(message.readerIndex() + 2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+                expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
             }
 
             deserializer = registry.getDeserializer(

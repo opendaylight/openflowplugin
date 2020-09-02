@@ -29,25 +29,25 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
         final BigInteger tunnelIdMask = BigInteger.valueOf(5);
 
         writeHeader(in, false);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES));
 
         Tunnel match = deserialize(in).getTunnel();
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES),
                 ByteUtil.uint64toBytes(match.getTunnelId()));
 
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, Long.BYTES));
 
         match = deserialize(in).getTunnel();
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES),
                 ByteUtil.uint64toBytes(match.getTunnelId()));
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, Long.BYTES),
                 ByteUtil.uint64toBytes(match.getTunnelMask()));
         assertEquals(0, in.readableBytes());
     }
@@ -64,7 +64,7 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 
 }

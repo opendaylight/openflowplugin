@@ -16,7 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 
 public class IpDscpEntrySerializer extends AbstractPrimitiveEntrySerializer<Dscp> {
     public IpDscpEntrySerializer() {
-        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_DSCP, EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.IP_DSCP, Byte.BYTES);
     }
 
     @Override

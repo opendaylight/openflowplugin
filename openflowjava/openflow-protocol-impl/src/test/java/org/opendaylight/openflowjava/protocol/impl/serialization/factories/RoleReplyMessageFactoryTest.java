@@ -56,7 +56,7 @@ public class RoleReplyMessageFactoryTest {
         Assert.assertEquals("Wrong role", message.getRole().getIntValue(),
                 ControllerRole.forValue((int) serializedBuffer.readUnsignedInt()).getIntValue());
         serializedBuffer.skipBytes(PADDING);
-        byte[] genId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        byte[] genId = new byte[Long.BYTES];
         serializedBuffer.readBytes(genId);
         Assert.assertEquals("Wrong generation ID", message.getGenerationId(), Uint64.valueOf(new BigInteger(1, genId)));
     }

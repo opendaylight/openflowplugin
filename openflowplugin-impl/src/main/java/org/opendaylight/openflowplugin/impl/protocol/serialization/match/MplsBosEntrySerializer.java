@@ -17,7 +17,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public class MplsBosEntrySerializer extends AbstractPrimitiveEntrySerializer<Uint8> {
     public MplsBosEntrySerializer() {
         super(OxmMatchConstants.OPENFLOW_BASIC_CLASS, OxmMatchConstants.MPLS_BOS,
-            EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+            Byte.BYTES);
     }
 
     @Override

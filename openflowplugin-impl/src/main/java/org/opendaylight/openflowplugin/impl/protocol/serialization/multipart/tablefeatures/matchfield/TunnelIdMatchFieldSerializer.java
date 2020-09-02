@@ -24,6 +24,6 @@ public class TunnelIdMatchFieldSerializer extends AbstractMatchFieldSerializer {
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
 }

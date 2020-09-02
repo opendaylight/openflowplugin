@@ -102,10 +102,10 @@ public class OF13MatchSerializerTest {
         matchSerializer.serialize(match, out);
 
         Assert.assertEquals("Wrong type", 1, out.readUnsignedShort());
-        out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        out.skipBytes(Short.BYTES);
         Assert.assertEquals("Wrong class", 0x8000, out.readUnsignedShort());
         Assert.assertEquals("Wrong field and mask", 22, out.readUnsignedByte());
-        out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        out.skipBytes(Byte.BYTES);
         Assert.assertEquals("Wrong ip address (first number)", 1, out.readUnsignedByte());
         Assert.assertEquals("Wrong ip address (second number)", 2, out.readUnsignedByte());
         Assert.assertEquals("Wrong ip address (third number)", 3, out.readUnsignedByte());
@@ -181,7 +181,7 @@ public class OF13MatchSerializerTest {
         matchSerializer.serialize(match, out);
 
         Assert.assertEquals("Wrong type", 1, out.readUnsignedShort());
-        out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        out.skipBytes(Short.BYTES);
         Assert.assertEquals("Wrong class", 0x8000, out.readUnsignedShort());
         Assert.assertEquals("Wrong field and mask", 52, out.readUnsignedByte());
         Assert.assertEquals("Wrong entry length", 16, out.readUnsignedByte());
@@ -275,10 +275,10 @@ public class OF13MatchSerializerTest {
         matchSerializer.serialize(match, out);
 
         Assert.assertEquals("Wrong type", 1, out.readUnsignedShort());
-        out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        out.skipBytes(Short.BYTES);
         Assert.assertEquals("Wrong class", 0x8000, out.readUnsignedShort());
         Assert.assertEquals("Wrong field and mask", 56, out.readUnsignedByte());
-        out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        out.skipBytes(Byte.BYTES);
         byte[] label = new byte[4];
         out.readBytes(label);
 
@@ -297,10 +297,10 @@ public class OF13MatchSerializerTest {
         matchSerializer.serialize(match, out);
 
         Assert.assertEquals("Wrong type", 1, out.readUnsignedShort());
-        out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        out.skipBytes(Short.BYTES);
         Assert.assertEquals("Wrong class", 0x8000, out.readUnsignedShort());
         Assert.assertEquals("Wrong field and mask", 57, out.readUnsignedByte());
-        out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES);
+        out.skipBytes(Byte.BYTES);
         byte[] label = new byte[4];
         out.readBytes(label);
         Assert.assertArrayEquals("Wrong ipv6FLabel", new byte[]{0, 0x0f, (byte) 0x9e, (byte) 0x8d}, label);

@@ -23,7 +23,7 @@ public abstract class AbstractInstructionDeserializer implements OFDeserializer<
      * @param message Openflow buffered message
      **/
     protected static void processHeader(ByteBuf message) {
-        message.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(2 * Short.BYTES);
     }
 
 }

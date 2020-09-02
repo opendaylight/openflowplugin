@@ -19,7 +19,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
 
-    private static final int VALUE_LENGTH = EncodeConstants.SIZE_OF_INT_IN_BYTES;
+    private static final int VALUE_LENGTH = Integer.BYTES;
 
     @Override
     protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
