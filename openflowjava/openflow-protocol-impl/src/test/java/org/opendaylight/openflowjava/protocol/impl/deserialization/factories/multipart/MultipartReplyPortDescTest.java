@@ -5,12 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import io.netty.buffer.ByteBuf;
-import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -28,8 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public class MultipartReplyPortDescTest {
-
-    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    private final MultipartReplyMessageFactory factory =
+            new MultipartReplyMessageFactory(mock(DeserializerRegistry.class));
 
     /**
      * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
@@ -40,11 +42,11 @@ public class MultipartReplyPortDescTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 13, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 13, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyPortDescCase messageCase = (MultipartReplyPortDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortDesc message = messageCase.getMultipartReplyPortDesc();
-        Assert.assertEquals("Wrong table features size", 0, message.nonnullPorts().size());
+        assertEquals("Wrong table features size", 0, message.nonnullPorts().size());
     }
 
     /**
@@ -81,43 +83,43 @@ public class MultipartReplyPortDescTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 13, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 13, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyPortDescCase messageCase = (MultipartReplyPortDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortDesc message = messageCase.getMultipartReplyPortDesc();
-        Assert.assertEquals("Wrong port desc size", 2, message.getPorts().size());
+        assertEquals("Wrong port desc size", 2, message.getPorts().size());
         Ports port = message.getPorts().get(0);
-        Assert.assertEquals("Wrong portNo", 66051L, port.getPortNo().longValue());
-        Assert.assertEquals("Wrong macAddress", new MacAddress("08:00:27:00:b0:eb"), port.getHwAddr());
-        Assert.assertEquals("Wrong portName", "Opendaylight", port.getName());
-        Assert.assertEquals("Wrong portConfig", new PortConfig(true, true, true, true), port.getConfig());
-        Assert.assertEquals("Wrong portState", new PortState(true, true, true), port.getState());
-        Assert.assertEquals("Wrong currentFeatures", new PortFeatures(false, false, false, false, false, true,
+        assertEquals("Wrong portNo", 66051L, port.getPortNo().longValue());
+        assertEquals("Wrong macAddress", new MacAddress("08:00:27:00:b0:eb"), port.getHwAddr());
+        assertEquals("Wrong portName", "Opendaylight", port.getName());
+        assertEquals("Wrong portConfig", new PortConfig(true, true, true, true), port.getConfig());
+        assertEquals("Wrong portState", new PortState(true, true, true), port.getState());
+        assertEquals("Wrong currentFeatures", new PortFeatures(false, false, false, false, false, true,
                 false, false, false, true, false, false, false, false, false, false), port.getCurrentFeatures());
-        Assert.assertEquals("Wrong advertisedFeatures",  new PortFeatures(true, true, true, true, true, true,
+        assertEquals("Wrong advertisedFeatures",  new PortFeatures(true, true, true, true, true, true,
                 true, true, true, true, true, true, true, true, true, true), port.getAdvertisedFeatures());
-        Assert.assertEquals("Wrong supportedFeatures", new PortFeatures(true, true, false, false, false, true,
+        assertEquals("Wrong supportedFeatures", new PortFeatures(true, true, false, false, false, true,
                 false, false, false, true, false, false, false, false, true, true), port.getSupportedFeatures());
-        Assert.assertEquals("Wrong peerFeatures", new PortFeatures(true, true, true, false, false, true, false,
+        assertEquals("Wrong peerFeatures", new PortFeatures(true, true, true, false, false, true, false,
                 false, false, true, false, false, false, true, true, true), port.getPeerFeatures());
-        Assert.assertEquals("Wrong currSpeed", 129L, port.getCurrSpeed().longValue());
-        Assert.assertEquals("Wrong maxSpeed", 128L, port.getMaxSpeed().longValue());
+        assertEquals("Wrong currSpeed", 129L, port.getCurrSpeed().longValue());
+        assertEquals("Wrong maxSpeed", 128L, port.getMaxSpeed().longValue());
         port = message.getPorts().get(1);
-        Assert.assertEquals("Wrong portNo", 1L, port.getPortNo().longValue());
-        Assert.assertEquals("Wrong macAddress", new MacAddress("08:00:27:00:b0:eb"), port.getHwAddr());
-        Assert.assertEquals("Wrong portName", "Opendaylight", port.getName());
-        Assert.assertEquals("Wrong portConfig", new PortConfig(false, false, false, false), port.getConfig());
-        Assert.assertEquals("Wrong portState", new PortState(false, false, false), port.getState());
-        Assert.assertEquals("Wrong currentFeatures", new PortFeatures(false, false, false, false, false, false, false,
+        assertEquals("Wrong portNo", 1L, port.getPortNo().longValue());
+        assertEquals("Wrong macAddress", new MacAddress("08:00:27:00:b0:eb"), port.getHwAddr());
+        assertEquals("Wrong portName", "Opendaylight", port.getName());
+        assertEquals("Wrong portConfig", new PortConfig(false, false, false, false), port.getConfig());
+        assertEquals("Wrong portState", new PortState(false, false, false), port.getState());
+        assertEquals("Wrong currentFeatures", new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getCurrentFeatures());
-        Assert.assertEquals("Wrong advertisedFeatures",
+        assertEquals("Wrong advertisedFeatures",
                 new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getAdvertisedFeatures());
-        Assert.assertEquals("Wrong supportedFeatures", new PortFeatures(false, false, false, false, false, false, false,
+        assertEquals("Wrong supportedFeatures", new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getSupportedFeatures());
-        Assert.assertEquals("Wrong peerFeatures", new PortFeatures(false, false, false, false, false, false, false,
+        assertEquals("Wrong peerFeatures", new PortFeatures(false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false, false), port.getPeerFeatures());
-        Assert.assertEquals("Wrong currSpeed", 5L, port.getCurrSpeed().longValue());
-        Assert.assertEquals("Wrong maxSpeed", 6L, port.getMaxSpeed().longValue());
+        assertEquals("Wrong currSpeed", 5L, port.getCurrSpeed().longValue());
+        assertEquals("Wrong maxSpeed", 6L, port.getMaxSpeed().longValue());
     }
 }

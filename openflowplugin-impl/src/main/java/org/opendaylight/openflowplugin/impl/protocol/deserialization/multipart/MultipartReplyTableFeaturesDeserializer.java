@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
@@ -15,7 +16,6 @@ import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -63,8 +63,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<MultipartReplyBody>,
-        DeserializerRegistryInjector {
+public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<MultipartReplyBody> {
     private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyTableFeaturesDeserializer.class);
     private static final byte PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES = 5;
     private static final byte MAX_TABLE_NAME_LENGTH = 32;
@@ -73,7 +72,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     private static final TableFeaturesMatchFieldDeserializer MATCH_FIELD_DESERIALIZER =
             new TableFeaturesMatchFieldDeserializer();
 
-    private DeserializerRegistry registry;
+    private final DeserializerRegistry registry;
+
+    public MultipartReplyTableFeaturesDeserializer(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
@@ -354,10 +357,4 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
         return actions;
     }
-
-    @Override
-    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
-
 }
