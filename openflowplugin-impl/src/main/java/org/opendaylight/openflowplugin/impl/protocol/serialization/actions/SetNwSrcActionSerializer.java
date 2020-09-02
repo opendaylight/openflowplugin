@@ -5,9 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCaseBuilder;
@@ -20,9 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 
 public class SetNwSrcActionSerializer extends AbstractSetFieldActionSerializer {
+    public SetNwSrcActionSerializer(final SerializerLookup registry) {
+        super(registry);
+    }
 
     @Override
-    protected SetFieldCase buildAction(Action input) {
+    protected SetFieldCase buildAction(final Action input) {
         final Address address = ((SetNwSrcActionCase) input).getSetNwSrcAction().getAddress();
         final SetFieldBuilder builder = new SetFieldBuilder();
 
@@ -38,5 +41,4 @@ public class SetNwSrcActionSerializer extends AbstractSetFieldActionSerializer {
 
         return new SetFieldCaseBuilder().setSetField(builder.build()).build();
     }
-
 }

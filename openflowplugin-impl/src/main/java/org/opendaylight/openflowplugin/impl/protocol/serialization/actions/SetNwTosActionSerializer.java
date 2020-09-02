@@ -5,9 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -18,18 +18,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 
 public class SetNwTosActionSerializer extends AbstractSetFieldActionSerializer {
-
-    @Override
-    protected SetFieldCase buildAction(Action input) {
-        return new SetFieldCaseBuilder()
-                .setSetField(new SetFieldBuilder()
-                        .setIpMatch(new IpMatchBuilder()
-                                .setIpDscp(new Dscp(
-                                        ActionUtil.tosToDscp(((SetNwTosActionCase) input)
-                                                .getSetNwTosAction().getTos().shortValue())))
-                                .build())
-                        .build())
-                .build();
+    public SetNwTosActionSerializer(final SerializerLookup registry) {
+        super(registry);
     }
 
+    @Override
+    protected SetFieldCase buildAction(final Action input) {
+        return new SetFieldCaseBuilder()
+                .setSetField(new SetFieldBuilder()
+                    .setIpMatch(new IpMatchBuilder()
+                        .setIpDscp(new Dscp(ActionUtil.tosToDscp(((SetNwTosActionCase) input).getSetNwTosAction()
+                            .getTos().shortValue())))
+                        .build())
+                    .build())
+                .build();
+    }
 }

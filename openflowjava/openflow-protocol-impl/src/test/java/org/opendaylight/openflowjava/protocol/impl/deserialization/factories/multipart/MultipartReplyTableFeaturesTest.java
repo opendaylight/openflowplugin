@@ -5,13 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
@@ -29,8 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public class MultipartReplyTableFeaturesTest {
-
-    private final MultipartReplyMessageFactory factory = new MultipartReplyMessageFactory();
+    private final MultipartReplyMessageFactory factory =
+            new MultipartReplyMessageFactory(mock(DeserializerRegistry.class));
 
     /**
      * Testing {@link MultipartReplyMessageFactory} for correct translation into POJO.
@@ -41,12 +44,12 @@ public class MultipartReplyTableFeaturesTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
-        Assert.assertEquals("Wrong table features size", 0, message.nonnullTableFeatures().size());
+        assertEquals("Wrong table features size", 0, message.nonnullTableFeatures().size());
     }
 
     /**
@@ -75,30 +78,26 @@ public class MultipartReplyTableFeaturesTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
-        Assert.assertEquals("Wrong table features size", 2, message.getTableFeatures().size());
+        assertEquals("Wrong table features size", 2, message.getTableFeatures().size());
         TableFeatures feature = message.getTableFeatures().get(0);
-        Assert.assertEquals("Wrong table id", 1, feature.getTableId().intValue());
-        Assert.assertEquals("Wrong name", "Opendaylight", feature.getName());
-        Assert.assertArrayEquals("Wrong metadata match",
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
-        Assert.assertArrayEquals("Wrong metadata write",
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
-        Assert.assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
+        assertEquals("Wrong table id", 1, feature.getTableId().intValue());
+        assertEquals("Wrong name", "Opendaylight", feature.getName());
+        assertArrayEquals("Wrong metadata match", new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
+        assertArrayEquals("Wrong metadata write", new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
+        assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
+        assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
         feature = message.getTableFeatures().get(1);
-        Assert.assertEquals("Wrong table id", 2, feature.getTableId().intValue());
-        Assert.assertEquals("Wrong name", "Opendaylight", feature.getName());
-        Assert.assertArrayEquals("Wrong metadata match",
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 3}, feature.getMetadataMatch());
-        Assert.assertArrayEquals("Wrong metadata write",
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 4}, feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", true, feature.getConfig().isOFPTCDEPRECATEDMASK());
-        Assert.assertEquals("Wrong max entries", 43, feature.getMaxEntries().intValue());
+        assertEquals("Wrong table id", 2, feature.getTableId().intValue());
+        assertEquals("Wrong name", "Opendaylight", feature.getName());
+        assertArrayEquals("Wrong metadata match", new byte[]{0, 0, 0, 0, 0, 0, 0, 3}, feature.getMetadataMatch());
+        assertArrayEquals("Wrong metadata write", new byte[]{0, 0, 0, 0, 0, 0, 0, 4}, feature.getMetadataWrite());
+        assertEquals("Wrong config", true, feature.getConfig().isOFPTCDEPRECATEDMASK());
+        assertEquals("Wrong max entries", 43, feature.getMaxEntries().intValue());
     }
 
     /**
@@ -132,64 +131,61 @@ public class MultipartReplyTableFeaturesTest {
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
+        assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
-        Assert.assertEquals("Wrong table features size", 1, message.getTableFeatures().size());
+        assertEquals("Wrong table features size", 1, message.getTableFeatures().size());
         TableFeatures feature = message.getTableFeatures().get(0);
-        Assert.assertEquals("Wrong table id", 1, feature.getTableId().intValue());
-        Assert.assertEquals("Wrong name", "Opendaylight", feature.getName());
-        Assert.assertArrayEquals("Wrong metadata match",
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
-        Assert.assertArrayEquals("Wrong metadata write",
-                new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
-        Assert.assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
-        Assert.assertEquals("Wrong properties size", 14, feature.getTableFeatureProperties().size());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTINSTRUCTIONS,
+        assertEquals("Wrong table id", 1, feature.getTableId().intValue());
+        assertEquals("Wrong name", "Opendaylight", feature.getName());
+        assertArrayEquals("Wrong metadata match", new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
+        assertArrayEquals("Wrong metadata write", new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
+        assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
+        assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
+        assertEquals("Wrong properties size", 14, feature.getTableFeatureProperties().size());
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTINSTRUCTIONS,
                 feature.getTableFeatureProperties().get(0).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS,
                 feature.getTableFeatureProperties().get(1).getType());
         TableFeatureProperties property = feature.getTableFeatureProperties().get(2);
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTNEXTTABLES,
-                property.getType());
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTNEXTTABLES, property.getType());
         List<NextTableIds> tableIds = property.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds();
-        Assert.assertEquals("Wrong next table id size", 4, tableIds.size());
-        Assert.assertEquals("Wrong next table id", 1, tableIds.get(0).getTableId().intValue());
-        Assert.assertEquals("Wrong next table id", 2, tableIds.get(1).getTableId().intValue());
-        Assert.assertEquals("Wrong next table id", 3, tableIds.get(2).getTableId().intValue());
-        Assert.assertEquals("Wrong next table id", 4, tableIds.get(3).getTableId().intValue());
+        assertEquals("Wrong next table id size", 4, tableIds.size());
+        assertEquals("Wrong next table id", 1, tableIds.get(0).getTableId().intValue());
+        assertEquals("Wrong next table id", 2, tableIds.get(1).getTableId().intValue());
+        assertEquals("Wrong next table id", 3, tableIds.get(2).getTableId().intValue());
+        assertEquals("Wrong next table id", 4, tableIds.get(3).getTableId().intValue());
         property = feature.getTableFeatureProperties().get(3);
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTNEXTTABLESMISS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTNEXTTABLESMISS,
                 property.getType());
         tableIds = property.augmentation(NextTableRelatedTableFeatureProperty.class)
                 .getNextTableIds();
-        Assert.assertEquals("Wrong next table id size", 3, tableIds.size());
-        Assert.assertEquals("Wrong next table id", 5, tableIds.get(0).getTableId().intValue());
-        Assert.assertEquals("Wrong next table id", 6, tableIds.get(1).getTableId().intValue());
-        Assert.assertEquals("Wrong next table id", 7, tableIds.get(2).getTableId().intValue());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITEACTIONS,
+        assertEquals("Wrong next table id size", 3, tableIds.size());
+        assertEquals("Wrong next table id", 5, tableIds.get(0).getTableId().intValue());
+        assertEquals("Wrong next table id", 6, tableIds.get(1).getTableId().intValue());
+        assertEquals("Wrong next table id", 7, tableIds.get(2).getTableId().intValue());
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITEACTIONS,
                 feature.getTableFeatureProperties().get(4).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
                 feature.getTableFeatureProperties().get(5).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
                 feature.getTableFeatureProperties().get(6).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
                 feature.getTableFeatureProperties().get(7).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTMATCH,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTMATCH,
                 feature.getTableFeatureProperties().get(8).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWILDCARDS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWILDCARDS,
                 feature.getTableFeatureProperties().get(9).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITESETFIELD,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITESETFIELD,
                 feature.getTableFeatureProperties().get(10).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS,
                 feature.getTableFeatureProperties().get(11).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYSETFIELD,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYSETFIELD,
                 feature.getTableFeatureProperties().get(12).getType());
-        Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS,
+        assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS,
                 feature.getTableFeatureProperties().get(13).getType());
     }
 }

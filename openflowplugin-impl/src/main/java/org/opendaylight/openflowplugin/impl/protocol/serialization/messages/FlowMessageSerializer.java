@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -64,8 +64,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Translates FlowMod messages.
  * OF protocol versions: 1.3
  */
-public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage> implements
-        SerializerRegistryInjector {
+public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage> {
     private static final FlowCookie DEFAULT_COOKIE = new FlowCookie(OFConstants.DEFAULT_COOKIE);
     private static final FlowCookie DEFAULT_COOKIE_MASK = new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK);
     private static final Uint8 DEFAULT_TABLE_ID = Uint8.ZERO;
@@ -95,7 +94,11 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                     .build())
             .build();
 
-    private SerializerRegistry registry;
+    private final SerializerLookup registry;
+
+    public FlowMessageSerializer(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
     public void serialize(final FlowMessage message, final ByteBuf outBuffer) {
@@ -169,7 +172,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
-        Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
+        registry.<Match, OFSerializer<Match>>getSerializer(
                 new MessageTypeKey<>(message.getVersion().toJava(), Match.class)).serialize(message.getMatch(),
                     outBuffer);
 
@@ -394,10 +397,5 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     @Override
     protected byte getMessageType() {
         return 14;
-    }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 }

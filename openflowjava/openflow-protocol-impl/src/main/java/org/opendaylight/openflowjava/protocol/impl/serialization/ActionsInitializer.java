@@ -110,7 +110,7 @@ public final class ActionsInitializer {
         helper.registerSerializer(GroupCase.class, new OF13GroupActionSerializer());
         helper.registerSerializer(SetNwTtlCase.class, new OF13SetNwTtlActionSerializer());
         helper.registerSerializer(DecNwTtlCase.class, new EmptyActionSerializer(ActionConstants.DEC_NW_TTL_CODE));
-        helper.registerSerializer(SetFieldCase.class, new OF13SetFieldActionSerializer());
+        helper.registerSerializer(SetFieldCase.class, new OF13SetFieldActionSerializer(serializerRegistry));
         helper.registerSerializer(PushPbbCase.class, new OF13PushPbbActionSerializer());
         helper.registerSerializer(PopPbbCase.class, new EmptyActionSerializer(ActionConstants.POP_PBB_CODE));
     }
