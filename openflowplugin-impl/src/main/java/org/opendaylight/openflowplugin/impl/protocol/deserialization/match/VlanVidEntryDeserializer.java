@@ -8,14 +8,12 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 
 public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
-
     @Override
     public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
@@ -23,7 +21,7 @@ public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
         final int vlanVidValue = message.readUnsignedShort();
 
         if (hasMask) {
-            message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // Skip mask
+            message.skipBytes(Short.BYTES); // Skip mask
             vlanIdBuilder
                     .setVlanId(new VlanId(0))
                     .setVlanIdPresent(true);

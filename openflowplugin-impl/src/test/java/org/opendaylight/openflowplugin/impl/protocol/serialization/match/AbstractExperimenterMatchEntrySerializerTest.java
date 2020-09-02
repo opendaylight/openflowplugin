@@ -25,15 +25,15 @@ public abstract class AbstractExperimenterMatchEntrySerializerTest extends Abstr
         getSerializer().serialize(match, buffer);
 
         final int length = (hasMask ? 2 : 1) * getLength();
-        final int lengthExp = length + EncodeConstants.SIZE_OF_INT_IN_BYTES; // add length of Experimenter ID
+        final int lengthExp = length + Integer.BYTES; // add length of Experimenter ID
 
         assertEquals(buffer.readShort(), 1); // OXM_MATCH_TYPE
         assertEquals(buffer.readShort(), // Total length of match
-                EncodeConstants.SIZE_OF_SHORT_IN_BYTES // OXM_MATCH_TYPE length
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES // LENGTH length
-                        + EncodeConstants.SIZE_OF_SHORT_IN_BYTES // OXM_CLASS_CODE length
-                        + EncodeConstants.SIZE_OF_BYTE_IN_BYTES // OXM field and mask length
-                        + EncodeConstants.SIZE_OF_BYTE_IN_BYTES // OXM field and mask length length
+                Short.BYTES // OXM_MATCH_TYPE length
+                        + Short.BYTES // LENGTH length
+                        + Short.BYTES // OXM_CLASS_CODE length
+                        + Byte.BYTES // OXM field and mask length
+                        + Byte.BYTES // OXM field and mask length length
                         + lengthExp // length of data in match entry
         );
 

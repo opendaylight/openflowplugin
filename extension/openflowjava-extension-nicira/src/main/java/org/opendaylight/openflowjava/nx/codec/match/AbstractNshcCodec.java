@@ -11,16 +11,12 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshcCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
-
-    private static final int VALUE_LENGTH = EncodeConstants.SIZE_OF_INT_IN_BYTES;
-
     @Override
     protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
         NshcCaseValue nshcCaseValue = (NshcCaseValue) value;
@@ -44,6 +40,6 @@ public abstract class AbstractNshcCodec extends AbstractExperimenterMatchCodec {
 
     @Override
     public int getValueLength() {
-        return VALUE_LENGTH;
+        return Integer.BYTES;
     }
 }

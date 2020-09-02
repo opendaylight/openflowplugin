@@ -92,7 +92,7 @@ public class AbstractExperimenterMatchCodecTest {
 
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
         assertEquals(FIELD_CODE << 1, buffer.readUnsignedByte());
-        assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES + VALUE_LENGTH, buffer.readUnsignedByte());
+        assertEquals(Integer.BYTES + VALUE_LENGTH, buffer.readUnsignedByte());
         assertEquals(EXPERIMENTER_ID.longValue(), buffer.readUnsignedInt());
         assertFalse(buffer.isReadable());
         verify(testCodec).serializeValue(null, false, buffer);
@@ -106,7 +106,7 @@ public class AbstractExperimenterMatchCodecTest {
 
         assertEquals(EncodeConstants.EXPERIMENTER_VALUE, buffer.readUnsignedShort());
         assertEquals(FIELD_CODE << 1 | 1, buffer.readUnsignedByte());
-        assertEquals(EncodeConstants.SIZE_OF_INT_IN_BYTES + VALUE_LENGTH * 2, buffer.readUnsignedByte());
+        assertEquals(Integer.BYTES + VALUE_LENGTH * 2, buffer.readUnsignedByte());
         assertEquals(EXPERIMENTER_ID.longValue(), buffer.readUnsignedInt());
         assertFalse(buffer.isReadable());
         verify(testCodec).serializeValue(null, true, buffer);
@@ -158,7 +158,7 @@ public class AbstractExperimenterMatchCodecTest {
 
     static void writeBuffer(ByteBuf message, boolean hasMask) {
         int fieldMask = FIELD_CODE << 1;
-        int length = EncodeConstants.SIZE_OF_INT_IN_BYTES + VALUE_LENGTH;
+        int length = Integer.BYTES + VALUE_LENGTH;
         if (hasMask) {
             fieldMask |= 1;
             length += VALUE_LENGTH;

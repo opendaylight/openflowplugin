@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCaseBuilder;
@@ -23,11 +21,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10SetNwDstActionDeserializer extends AbstractActionDeserializer {
-
     @Override
     public Action deserialize(final ByteBuf input) {
         final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         SetNwDstCaseBuilder caseBuilder = new SetNwDstCaseBuilder();
         SetNwDstActionBuilder actionBuilder = new SetNwDstActionBuilder();
         actionBuilder.setIpAddress(ByteBufUtils.readIetfIpv4Address(input));
@@ -40,5 +37,4 @@ public class OF10SetNwDstActionDeserializer extends AbstractActionDeserializer {
     protected ActionChoice getType() {
         return new SetNwDstCaseBuilder().build();
     }
-
 }

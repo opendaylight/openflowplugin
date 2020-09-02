@@ -72,18 +72,6 @@ public interface EncodeConstants {
     /** Length of ipv6 address in bytes. */
     byte SIZE_OF_IPV6_ADDRESS_IN_BYTES = 8 * Short.SIZE / Byte.SIZE;
 
-    /** Length of long in bytes. */
-    byte SIZE_OF_LONG_IN_BYTES = Long.SIZE / Byte.SIZE;
-
-    /** Length of int in bytes. */
-    byte SIZE_OF_INT_IN_BYTES = Integer.SIZE / Byte.SIZE;
-
-    /** Length of short in bytes. */
-    byte SIZE_OF_SHORT_IN_BYTES = Short.SIZE / Byte.SIZE;
-
-    /** Length of byte in bytes. */
-    byte SIZE_OF_BYTE_IN_BYTES = Byte.SIZE / Byte.SIZE;
-
     /** Length of 3 bytes. */
     byte SIZE_OF_3_BYTES = 3;
 

@@ -42,7 +42,7 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
      * @return instruction length
      **/
     protected static int readHeader(ByteBuf message) {
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         return message.readUnsignedShort();
     }
 

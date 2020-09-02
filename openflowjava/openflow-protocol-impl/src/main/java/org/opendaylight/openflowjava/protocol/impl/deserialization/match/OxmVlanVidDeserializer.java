@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -27,7 +26,6 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  */
 public class OxmVlanVidDeserializer extends AbstractOxmMatchEntryDeserializer
         implements OFDeserializer<MatchEntry> {
-
     @Override
     public MatchEntry deserialize(ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
@@ -43,7 +41,7 @@ public class OxmVlanVidDeserializer extends AbstractOxmMatchEntryDeserializer
         vlanBuilder.setVlanVid(Uint16.valueOf(vidEntryValue & (1 << 12) - 1)); // value without 13-th bit
         if (builder.isHasMask()) {
             vlanBuilder.setMask(OxmDeserializerHelper
-                    .convertMask(input, EncodeConstants.SIZE_OF_SHORT_IN_BYTES));
+                    .convertMask(input, Short.BYTES));
         }
         caseBuilder.setVlanVid(vlanBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());

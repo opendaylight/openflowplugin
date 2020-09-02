@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCaseBuilder;
@@ -26,7 +25,7 @@ import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 public class OF13PushPbbActionDeserializer extends AbstractActionDeserializer {
     @Override
     public Action deserialize(ByteBuf input) {
-        input.skipBytes(2 * EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        input.skipBytes(2 * Short.BYTES);
         final ActionBuilder builder = new ActionBuilder()
                 .setActionChoice(new PushPbbCaseBuilder()
                     .setPushPbbAction(new PushPbbActionBuilder()

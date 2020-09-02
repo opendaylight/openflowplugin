@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
@@ -21,7 +19,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 
 public class VlanVidEntrySerializerTest extends AbstractMatchEntrySerializerTest {
-
     @Test
     public void testSerialize() {
         final int vlan = (short) 1;
@@ -56,7 +53,7 @@ public class VlanVidEntrySerializerTest extends AbstractMatchEntrySerializerTest
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        return Short.BYTES;
     }
 
     @Override
@@ -68,5 +65,4 @@ public class VlanVidEntrySerializerTest extends AbstractMatchEntrySerializerTest
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
     }
-
 }

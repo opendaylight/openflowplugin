@@ -56,7 +56,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
                                 .forValue(message.readUnsignedByte())))
                 .setTableId(new TableId(message.readUnsignedByte()));
 
-        final byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        final byte[] cookie = new byte[Long.BYTES];
         message.readBytes(cookie);
 
         packetInMessageBuilder

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -15,14 +14,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.math.BigInteger;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 
 public class WriteMetadataInstructionDeserializerTest extends AbstractInstructionDeserializerTest {
-
     @Test
     public void testDeserialize() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -30,18 +27,18 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
         final BigInteger metadataMask = BigInteger.valueOf(9876L);
         writeHeader(in);
         in.writeZero(InstructionConstants.PADDING_IN_WRITE_METADATA);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadata, Long.BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(metadataMask, Long.BYTES));
 
         final Instruction instruction = deserializeInstruction(in);
         assertEquals(WriteMetadataCase.class, instruction.implementedInterface());
 
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(metadata, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(metadata, Long.BYTES),
                 ByteUtil.uint64toBytes(((WriteMetadataCase) instruction).getWriteMetadata().getMetadata()));
 
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(metadataMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(metadataMask, Long.BYTES),
                 ByteUtil.uint64toBytes(((WriteMetadataCase) instruction).getWriteMetadata().getMetadataMask()));
 
         assertEquals(0, in.readableBytes());
@@ -56,5 +53,4 @@ public class WriteMetadataInstructionDeserializerTest extends AbstractInstructio
     protected short getLength() {
         return InstructionConstants.STANDARD_INSTRUCTION_LENGTH;
     }
-
 }

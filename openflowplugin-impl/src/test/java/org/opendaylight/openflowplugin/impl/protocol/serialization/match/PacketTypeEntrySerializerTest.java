@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -19,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.PacketTypeMatchBuilder;
 
 public class PacketTypeEntrySerializerTest extends AbstractMatchEntrySerializerTest {
-
     @Test
     public void serializeTest() {
         final long packetType = 0x1894f;
@@ -42,6 +39,6 @@ public class PacketTypeEntrySerializerTest extends AbstractMatchEntrySerializerT
 
     @Override
     protected short getLength() {
-        return EncodeConstants.SIZE_OF_INT_IN_BYTES;
+        return Integer.BYTES;
     }
 }

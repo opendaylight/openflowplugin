@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -13,7 +12,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyMeterStatsBuilder;
@@ -30,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 
 public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
-
     private static final byte PADDING_IN_METER_STATS_HEADER = 6;
     private static final byte METER_BODY_LENGTH = 40;
     private static final byte METER_BAND_STATS_LENGTH = 16;
@@ -51,9 +48,9 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
                 .withKey(new MeterStatsKey(itemBuilder.getMeterId()))
                 .setFlowCount(new Counter32(message.readUnsignedInt()));
 
-            final byte[] packetCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] packetCount = new byte[Long.BYTES];
             message.readBytes(packetCount);
-            final byte[] byteCount = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+            final byte[] byteCount = new byte[Long.BYTES];
             message.readBytes(byteCount);
 
             itemBuilder
@@ -69,9 +66,9 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
             long bandKey = 0;
 
             while (actualLength < itemLength) {
-                final byte[] packetCountB = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] packetCountB = new byte[Long.BYTES];
                 message.readBytes(packetCountB);
-                final byte[] byteCountB = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+                final byte[] byteCountB = new byte[Long.BYTES];
                 message.readBytes(byteCountB);
 
                 subItems.add(new BandStatBuilder()
@@ -96,5 +93,4 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
             .setMeterStats(items)
             .build();
     }
-
 }

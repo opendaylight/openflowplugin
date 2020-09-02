@@ -262,7 +262,7 @@ public abstract class ByteBufUtils {
         try {
             int offset = 0;
             for (int i = 0; i < EncodeConstants.MAC_ADDRESS_LENGTH - 1; ++i) {
-                if (mac[offset + EncodeConstants.SIZE_OF_BYTE_IN_BYTES] == ':') {
+                if (mac[offset + Byte.BYTES] == ':') {
                     result[i] = UnsignedBytes.checkedCast(hexValue(mac[offset]));
                     offset++;
                 } else {
