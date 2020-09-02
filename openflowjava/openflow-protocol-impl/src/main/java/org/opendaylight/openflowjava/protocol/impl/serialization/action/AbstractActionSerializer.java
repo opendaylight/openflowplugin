@@ -40,5 +40,14 @@ public abstract class AbstractActionSerializer implements OFSerializer<Action>, 
         outBuffer.writeShort(ActionConstants.ACTION_IDS_LENGTH);
     }
 
+    /**
+     * Returns the numeric representation of action type.
+     *
+     * @return Numeric representation of action type.
+     */
+    protected final short type() {
+        return type;
+    }
+
     protected abstract void serializeBody(Action input, ByteBuf outBuffer);
 }
