@@ -136,7 +136,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         createTestFlow(createTestNode(null), null, null);
     }
 
-    private NodeBuilder createTestNode(String nodeId) {
+    private static NodeBuilder createTestNode(String nodeId) {
         if (nodeId == null) {
             nodeId = OpenflowpluginTestActivator.NODE_ID;
         }
@@ -482,7 +482,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
     }
 
-    private InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
+    private static InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
