@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import io.netty.buffer.ByteBuf;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +42,7 @@ public class ExperimenterMessageFactoryTest {
      */
     @Before
     public void startUp() {
-        factory = new ExperimenterMessageFactory();
+        factory = new ExperimenterMessageFactory(registry);
     }
 
     /**
@@ -55,9 +54,8 @@ public class ExperimenterMessageFactoryTest {
         when(deserializer.deserialize(any(ByteBuf.class))).thenReturn(message);
 
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("00 01 02 03 00 00 00 10 00 00 00 20");
-        factory.injectDeserializerRegistry(registry);
         ExperimenterMessage deserializedMessage = factory.deserialize(buffer);
-        Assert.assertEquals("Wrong return value", message, deserializedMessage.getExperimenterDataOfChoice());
-        Assert.assertEquals("ByteBuf index moved", 0, buffer.readableBytes());
+        assertEquals("Wrong return value", message, deserializedMessage.getExperimenterDataOfChoice());
+        assertEquals("ByteBuf index moved", 0, buffer.readableBytes());
     }
 }

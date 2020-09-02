@@ -11,7 +11,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -51,7 +50,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
                 new OF10MatchDeserializer());
         registerDeserializer(
                 new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class),
-                new MatchDeserializer());
+                new MatchDeserializer(this));
 
         // register match entry deserializers
         MatchEntryDeserializerInitializer.registerMatchEntryDeserializers(this);
@@ -63,7 +62,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+    public <T extends OFGeneralDeserializer> T getDeserializer(final MessageCodeKey key) {
         OFGeneralDeserializer deserializer = registry.get(key);
         if (deserializer == null) {
             throw new IllegalStateException("Deserializer for key: " + key
@@ -73,7 +72,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
+    public void registerDeserializer(final MessageCodeKey key, final OFGeneralDeserializer deserializer) {
         if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MessageCodeKey or Deserializer is null");
         }
@@ -82,13 +81,10 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
             LOG.debug("Deserializer for key {} overwritten. Old deserializer: {}, new deserializer: {}", key,
                     desInRegistry.getClass().getName(), deserializer.getClass().getName());
         }
-        if (deserializer instanceof DeserializerRegistryInjector) {
-            ((DeserializerRegistryInjector) deserializer).injectDeserializerRegistry(this);
-        }
     }
 
     @Override
-    public boolean unregisterDeserializer(MessageCodeKey key) {
+    public boolean unregisterDeserializer(final MessageCodeKey key) {
         if (key == null) {
             throw new IllegalArgumentException("MessageCodeKey is null");
         }

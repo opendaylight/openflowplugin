@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
 import io.netty.buffer.ByteBuf;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
@@ -16,13 +17,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 
 public class ApplyActionsInstructionDeserializer extends AbstractActionInstructionDeserializer {
-
-    public ApplyActionsInstructionDeserializer(ActionPath path) {
-        super(path);
+    public ApplyActionsInstructionDeserializer(final DeserializerRegistry registry, final ActionPath path) {
+        super(registry, path);
     }
 
     @Override
-    public Instruction deserialize(ByteBuf message) {
+    public Instruction deserialize(final ByteBuf message) {
         final int length = readHeader(message);
         message.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
 
@@ -34,9 +34,8 @@ public class ApplyActionsInstructionDeserializer extends AbstractActionInstructi
     }
 
     @Override
-    public Instruction deserializeHeader(ByteBuf message) {
+    public Instruction deserializeHeader(final ByteBuf message) {
         processHeader(message);
         return new ApplyActionsCaseBuilder().build();
     }
-
 }

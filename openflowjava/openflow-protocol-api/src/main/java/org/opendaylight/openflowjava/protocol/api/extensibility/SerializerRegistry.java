@@ -15,21 +15,12 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
  * S - returned serializer type
  * @author michal.polkorab
  */
-public interface SerializerRegistry {
+public interface SerializerRegistry extends SerializerLookup {
     /**
      * Serializer registry provisioning.
      */
     void init();
 
-    /**
-     * Gets the serializer for the given type.
-     *
-     * @param <K> input key type
-     * @param <S> type of resulting serializer
-     * @param msgTypeKey lookup key
-     * @return serializer or NullPointerException if no serializer was found
-     */
-    <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey);
 
     /**
      * Registers a serializer.

@@ -35,21 +35,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public interface DeserializerExtensionProvider {
-
     /**
      * Registers deserializer.
      * Throws IllegalStateException when there is
      * a deserializer already registered under given key.
      *
-     * <p>
-     * If the deserializer implements {@link DeserializerRegistryInjector} interface,
-     * the deserializer is injected with DeserializerRegistry instance.
-     *
      * @param key          used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerDeserializer(MessageCodeKey key,
-                              OFGeneralDeserializer deserializer);
+    void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Unregisters custom deserializer.
@@ -66,8 +60,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerActionDeserializer(ExperimenterActionDeserializerKey key,
-            OFGeneralDeserializer deserializer);
+    void registerActionDeserializer(ExperimenterActionDeserializerKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Registers instruction deserializer.
@@ -84,8 +77,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMatchEntryDeserializer(MatchEntryDeserializerKey key,
-            OFGeneralDeserializer deserializer);
+    void registerMatchEntryDeserializer(MatchEntryDeserializerKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Registers error message deserializer.
@@ -93,8 +85,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerErrorDeserializer(ExperimenterIdDeserializerKey key,
-            OFDeserializer<ErrorMessage> deserializer);
+    void registerErrorDeserializer(ExperimenterIdDeserializerKey key, OFDeserializer<ErrorMessage> deserializer);
 
     /**
      * Registers experimenter (vendor) message deserializer.
@@ -120,8 +111,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key,
-            OFGeneralDeserializer deserializer);
+    void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key, OFGeneralDeserializer deserializer);
 
     /**
      * Registers meter band deserializer (used in multipart-reply meter-config).

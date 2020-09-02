@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -53,8 +52,7 @@ public class MultipartRequestExperimenterTest {
         Mockito.when(mockRegistry.getSerializer(
                 ArgumentMatchers.<ExperimenterIdTypeSerializerKey<ExperimenterDataOfChoice>>any()))
                 .thenReturn(serializer);
-        MultipartRequestInputFactory multipartFactory = new MultipartRequestInputFactory();
-        multipartFactory.injectSerializerRegistry(mockRegistry);
+        MultipartRequestInputFactory multipartFactory = new MultipartRequestInputFactory(mockRegistry);
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setType(MultipartType.OFPMPEXPERIMENTER);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -34,14 +33,14 @@ public final class InstructionDeserializerInitializer {
      *
      * @param registry registry to be filled with deserializers
      */
-    public static void registerDeserializers(DeserializerRegistry registry) {
+    public static void registerDeserializers(final DeserializerRegistry registry) {
         // register OF v1.3 instruction deserializers
         InstructionDeserializerRegistryHelper helper =
                 new InstructionDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
         helper.registerDeserializer(1, new GoToTableInstructionDeserializer());
         helper.registerDeserializer(2, new WriteMetadataInstructionDeserializer());
-        helper.registerDeserializer(3, new WriteActionsInstructionDeserializer());
-        helper.registerDeserializer(4, new ApplyActionsInstructionDeserializer());
+        helper.registerDeserializer(3, new WriteActionsInstructionDeserializer(registry));
+        helper.registerDeserializer(4, new ApplyActionsInstructionDeserializer(registry));
         helper.registerDeserializer(5, new ClearActionsInstructionDeserializer());
         helper.registerDeserializer(6, new MeterInstructionDeserializer());
     }
