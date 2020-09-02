@@ -22,8 +22,7 @@ public class OF13DecNwTtlActionSerializer extends AbstractActionSerializer {
     }
 
     @Override
-    public void serialize(final Action action, final ByteBuf outBuffer) {
-        super.serialize(action, outBuffer);
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
         outBuffer.writeZero(ActionConstants.PADDING_IN_ACTION_HEADER);
     }
 }

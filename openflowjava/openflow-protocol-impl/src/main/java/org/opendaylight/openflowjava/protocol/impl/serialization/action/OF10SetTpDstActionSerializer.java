@@ -23,8 +23,7 @@ public class OF10SetTpDstActionSerializer extends AbstractActionSerializer {
     }
 
     @Override
-    public void serialize(final Action action, final ByteBuf outBuffer) {
-        super.serialize(action, outBuffer);
+    protected void serializeBody(final Action action, final ByteBuf outBuffer) {
         outBuffer.writeShort(((SetTpDstCase) action.getActionChoice()).getSetTpDstAction()
                 .getPort().getValue().intValue());
         outBuffer.writeZero(ActionConstants.PADDING_IN_TP_PORT_ACTION);
