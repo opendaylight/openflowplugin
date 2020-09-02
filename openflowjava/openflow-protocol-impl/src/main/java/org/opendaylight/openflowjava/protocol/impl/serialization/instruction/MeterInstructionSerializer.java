@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
 
 import io.netty.buffer.ByteBuf;
@@ -19,18 +18,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public class MeterInstructionSerializer extends AbstractInstructionSerializer {
+    public MeterInstructionSerializer() {
+        super(InstructionConstants.METER_TYPE);
+    }
 
     @Override
-    public void serialize(Instruction instruction, ByteBuf outBuffer) {
-        outBuffer.writeShort(getType());
+    public void serialize(final Instruction instruction, final ByteBuf outBuffer) {
+        outBuffer.writeShort(InstructionConstants.METER_TYPE);
         outBuffer.writeShort(InstructionConstants.STANDARD_INSTRUCTION_LENGTH);
-        outBuffer.writeInt(((MeterCase) instruction.getInstructionChoice())
-                .getMeter().getMeterId().intValue());
+        outBuffer.writeInt(((MeterCase) instruction.getInstructionChoice()).getMeter().getMeterId().intValue());
     }
-
-    @Override
-    protected int getType() {
-        return InstructionConstants.METER_TYPE;
-    }
-
 }

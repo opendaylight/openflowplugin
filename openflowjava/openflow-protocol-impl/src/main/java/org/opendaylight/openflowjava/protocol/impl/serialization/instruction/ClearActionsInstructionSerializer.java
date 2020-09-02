@@ -18,17 +18,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public class ClearActionsInstructionSerializer extends AbstractInstructionSerializer {
+    public ClearActionsInstructionSerializer() {
+        super(InstructionConstants.CLEAR_ACTIONS_TYPE);
+    }
 
     @Override
     public void serialize(final Instruction instruction, final ByteBuf outBuffer) {
-        outBuffer.writeShort(getType());
+        outBuffer.writeShort(InstructionConstants.CLEAR_ACTIONS_TYPE);
         outBuffer.writeShort(InstructionConstants.STANDARD_INSTRUCTION_LENGTH);
         outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
     }
-
-    @Override
-    protected int getType() {
-        return InstructionConstants.CLEAR_ACTIONS_TYPE;
-    }
-
 }
