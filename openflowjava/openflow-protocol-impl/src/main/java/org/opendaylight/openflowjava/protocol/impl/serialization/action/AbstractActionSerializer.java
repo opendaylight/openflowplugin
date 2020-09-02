@@ -40,5 +40,9 @@ public abstract class AbstractActionSerializer implements OFSerializer<Action>, 
         outBuffer.writeShort(ActionConstants.ACTION_IDS_LENGTH);
     }
 
+    protected final short type() {
+        return type;
+    }
+
     protected abstract void serializeBody(Action input, ByteBuf outBuffer);
 }
