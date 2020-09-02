@@ -36,8 +36,8 @@ public class ByteUtilTest {
     private static final BigInteger BIG_INTEGER = new BigInteger("1684367103");
     private static final BigInteger BIG_INTFF = new BigInteger("4294967295");
 
-    private static final Integer MEDIUM_INTEGER = new Integer("6579558");
-    private static final Integer MEDIUM_INTEGERFF = new Integer("16777215");
+    private static final long MEDIUM_INTEGER = 6579558;
+    private static final long MEDIUM_INTEGERFF = 16777215;
     private static final int INT00 = 0;
 
     private static final int SHORT_BYTE_LENGTH = 2;
@@ -103,13 +103,13 @@ public class ByteUtilTest {
     @Test
     public void testBytesToUnsignedMedium() {
         long unsigned = ByteUtil.bytesToUnsignedMedium(TEST3_BYTES);
-        assertEquals(MEDIUM_INTEGER.longValue(), unsigned);
+        assertEquals(MEDIUM_INTEGER, unsigned);
 
         unsigned = ByteUtil.bytesToUnsignedMedium(TEST3_BYTES00);
         assertEquals(0, unsigned);
 
         unsigned = ByteUtil.bytesToUnsignedMedium(TEST3_BYTESFF);
-        assertEquals(MEDIUM_INTEGERFF.longValue(), unsigned);
+        assertEquals(MEDIUM_INTEGERFF, unsigned);
     }
 
     @Test(expected = IllegalArgumentException.class)

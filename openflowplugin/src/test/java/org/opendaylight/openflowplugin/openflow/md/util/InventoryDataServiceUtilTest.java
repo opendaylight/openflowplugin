@@ -32,7 +32,7 @@ public class InventoryDataServiceUtilTest {
     private static final Uint64 PATH_ID = Uint64.valueOf(10);
 
     /**
-     * Test method for {@link InventoryDataServiceUtil#nodeUpdatedBuilderFromDataPathId(BigInteger datapathId)}.
+     * Test method for {@link InventoryDataServiceUtil#nodeUpdatedBuilderFromDataPathId(Uint64 datapathId)}.
      */
     @Test
     public void testNodeUpdatedBuilderFromDataPathId() {
@@ -41,8 +41,8 @@ public class InventoryDataServiceUtilTest {
     }
 
     /**
-     * Test method for {@link InventoryDataServiceUtil#nodeConnectorBuilderFromDatapathIdPortNo(BigInteger datapathId,
-     * Long portNo, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion ofVersion)}.
+     * Test method for {@link InventoryDataServiceUtil#nodeConnectorBuilderFromDatapathIdPortNo(Uint64 datapathId,
+     * Uint32 portNo, org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorBuilderFromDatapathIdPortNo() {
@@ -61,7 +61,7 @@ public class InventoryDataServiceUtilTest {
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeConnectorUpdatedBuilderFromDatapathIdPortNo(
-     * BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}.
+     * Uint64 datapathId, Uint32 portNo, OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorUpdatedBuilderFromDatapathIdPortNo() {
@@ -80,7 +80,7 @@ public class InventoryDataServiceUtilTest {
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeConnectorInstanceIdentifierFromDatapathIdPortno(
-     * BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}.
+     * Uint64 datapathId, Uint32 portNo, OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorInstanceIdentifierFromDatapathIdPortno() {
@@ -91,7 +91,7 @@ public class InventoryDataServiceUtilTest {
 
     /**
      * Test method for {@link InventoryDataServiceUtil#nodeConnectorRefFromDatapathIdPortno(
-     * BigInteger datapathId, Long portNo, OpenflowVersion ofVersion)}.
+     * Uint64 datapathId, Uint32 portNo, OpenflowVersion ofVersion)}.
      */
     @Test
     public void testNodeConnectorRefFromDatapathIdPortno() {

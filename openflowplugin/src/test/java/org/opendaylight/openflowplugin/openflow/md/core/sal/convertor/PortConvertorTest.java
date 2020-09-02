@@ -76,8 +76,8 @@ public class PortConvertorTest {
 
         portModInputBld.setConfig(config31);
         portModInputBld.setMask(configMask31);
-        portModInputBld.setPortNo(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber(42L));
+        portModInputBld.setPortNo(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731
+            .PortNumber(Uint32.valueOf(42)));
         portModInputBld.setHwAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
         portModInputBld.setAdvertise(portf31);
 
@@ -86,7 +86,7 @@ public class PortConvertorTest {
         portModInputBld.setAdvertiseV10(
                 new PortFeaturesV10(null, null, null, null, null, null, null, true, null, null, null, null));
 
-        portModInputBld.setVersion((short) EncodeConstants.OF13_VERSION_ID);
+        portModInputBld.setVersion(EncodeConstants.OF_VERSION_1_3);
 
         Assert.assertEquals(portModInputBld.build(), portOut);
     }
@@ -126,7 +126,7 @@ public class PortConvertorTest {
         portsB.setMaxSpeed((Uint32) null);
         portsB.setName("foo");
         portsB.setPeerFeatures(portf31);
-        portsB.setPortNo(42L);
+        portsB.setPortNo(Uint32.valueOf(42));
         portsB.setState(new PortState(false, false, false));
         portsB.setSupportedFeatures(portf31);
 

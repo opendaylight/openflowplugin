@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,20 +37,20 @@ public class MeterStatsResponseConvertorTest {
                 allMeterStats = new ArrayList<>();
         MeterStatsBuilder meterStatsBuilder = new MeterStatsBuilder();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            meterStatsBuilder.setByteInCount(BigInteger.valueOf(i));
-            meterStatsBuilder.setDurationNsec((long) 1000 * i);
-            meterStatsBuilder.setDurationSec((long) 10 * i);
-            meterStatsBuilder.setFlowCount((long) i);
+            meterStatsBuilder.setByteInCount(Uint64.valueOf(i));
+            meterStatsBuilder.setDurationNsec(Uint32.valueOf(1000 * i));
+            meterStatsBuilder.setDurationSec(Uint32.valueOf(10 * i));
+            meterStatsBuilder.setFlowCount(Uint32.valueOf(i));
             MeterBandStatsBuilder meterBandStatsBuilder = new MeterBandStatsBuilder();
             List<MeterBandStats> meterBandStatses = new ArrayList<>();
             for (int j = 0; j < PRESET_COUNT; j++) {
-                meterBandStatsBuilder.setByteBandCount(BigInteger.valueOf(j));
-                meterBandStatsBuilder.setPacketBandCount(BigInteger.valueOf(j));
+                meterBandStatsBuilder.setByteBandCount(Uint64.valueOf(j));
+                meterBandStatsBuilder.setPacketBandCount(Uint64.valueOf(j));
                 meterBandStatses.add(meterBandStatsBuilder.build());
             }
             meterStatsBuilder.setMeterBandStats(meterBandStatses);
-            meterStatsBuilder.setMeterId(new MeterId((long) i));
-            meterStatsBuilder.setPacketInCount(BigInteger.valueOf(i));
+            meterStatsBuilder.setMeterId(new MeterId(Uint32.valueOf(i)));
+            meterStatsBuilder.setPacketInCount(Uint64.valueOf(i));
 
             allMeterStats.add(meterStatsBuilder.build());
         }

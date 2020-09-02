@@ -24,6 +24,7 @@ import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * {@link ExtensionConverterManagerImpl} test.
@@ -49,7 +50,7 @@ public class ExtensionConverterManagerImplTest {
     @Before
     public void setUp() {
         manager = new ExtensionConverterManagerImpl();
-        keyFromOFJava = new ExperimenterActionSerializerKey((short) 1, 42L, ExpSubType.class);
+        keyFromOFJava = new ExperimenterActionSerializerKey((short) 1, Uint32.valueOf(42), ExpSubType.class);
         regFromOFJava = manager.registerActionConvertor(keyFromOFJava, extConvertorFromOFJava);
 
         keyToOFJava = new TypeVersionKey<>(ActionExpCase.class, (short) 1);
