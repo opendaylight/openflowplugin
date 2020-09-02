@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ExperimenterDeserializerKeyFactory;
@@ -28,21 +26,20 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
-public class ExperimenterMessageFactory implements OFDeserializer<ExperimenterMessage>,
-        DeserializerRegistryInjector {
+public class ExperimenterMessageFactory implements OFDeserializer<ExperimenterMessage> {
+    private final DeserializerRegistry registry;
 
-    private DeserializerRegistry deserializerRegistry;
+    public ExperimenterMessageFactory(final DeserializerRegistry registry) {
+        this.registry = requireNonNull(registry);
+    }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public ExperimenterMessage deserialize(ByteBuf message) {
-        Objects.requireNonNull(deserializerRegistry);
-
+    public ExperimenterMessage deserialize(final ByteBuf message) {
         final Uint32 xid = readUint32(message);
         final long expId = message.readUnsignedInt();
         final long expType = message.readUnsignedInt();
 
-        OFDeserializer<ExperimenterDataOfChoice> deserializer = deserializerRegistry.getDeserializer(
+        OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createExperimenterMessageDeserializerKey(
                         EncodeConstants.OF13_VERSION_ID, expId, expType));
         final ExperimenterDataOfChoice vendorData = deserializer.deserialize(message);
@@ -54,10 +51,5 @@ public class ExperimenterMessageFactory implements OFDeserializer<ExperimenterMe
                 .setExpType(expType)
                 .setExperimenterDataOfChoice(vendorData);
         return messageBld.build();
-    }
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
-        this.deserializerRegistry = registry;
     }
 }

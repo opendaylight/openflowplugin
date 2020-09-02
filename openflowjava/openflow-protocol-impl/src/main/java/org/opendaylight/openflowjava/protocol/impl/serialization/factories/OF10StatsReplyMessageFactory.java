@@ -7,16 +7,15 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
@@ -51,10 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author giuseppex.petralia@intel.com
  */
-@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector {
-
-    private SerializerRegistry registry;
+public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReplyMessage> {
     private static final byte MESSAGE_TYPE = 17;
     private static final byte FLOW_STATS_PADDING_1 = 1;
     private static final byte FLOW_STATS_PADDING_2 = 6;
@@ -67,15 +63,14 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     private static final byte QUEUE_PADDING = 2;
     private static final byte PORT_STATS_PADDING = 6;
 
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
+    private final SerializerLookup registry;
+
+    public OF10StatsReplyMessageFactory(final SerializerLookup registry) {
+        this.registry = requireNonNull(registry);
     }
 
     @Override
-    public void serialize(MultipartReplyMessage message, ByteBuf outBuffer) {
-        Objects.requireNonNull(registry);
-
+    public void serialize(final MultipartReplyMessage message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getType().getIntValue());
         writeFlags(message.getFlags(), outBuffer);
@@ -107,13 +102,13 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 
-    private void serializeExperimenterBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private void serializeExperimenterBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
 //        MultipartReplyExperimenterCase experimenterCase = (MultipartReplyExperimenterCase) body;
 //        MultipartReplyExperimenter experimenterBody = experimenterCase.getMultipartReplyExperimenter();
         // TODO: experimenterBody does not have get methods
     }
 
-    private static void serializeQueueBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeQueueBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
         MultipartReplyQueueCase queueCase = (MultipartReplyQueueCase) body;
         MultipartReplyQueue queue = queueCase.getMultipartReplyQueue();
         for (QueueStats queueStats : queue.getQueueStats()) {
@@ -129,7 +124,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private static void serializePortStatsBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializePortStatsBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
         MultipartReplyPortStatsCase portStatsCase = (MultipartReplyPortStatsCase) body;
         MultipartReplyPortStats portStats = portStatsCase.getMultipartReplyPortStats();
         for (PortStats portStat : portStats.getPortStats()) {
@@ -150,7 +145,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private static void serializeTableBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeTableBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
         MultipartReplyTableCase tableCase = (MultipartReplyTableCase) body;
         MultipartReplyTable table = tableCase.getMultipartReplyTable();
         for (TableStats tableStats : table.getTableStats()) {
@@ -165,7 +160,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private static void writeFlowWildcardsV10(FlowWildcardsV10 feature, ByteBuf outBuffer) {
+    private static void writeFlowWildcardsV10(final FlowWildcardsV10 feature, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, feature.isINPORT());
         map.put(1, feature.isDLVLAN());
@@ -181,7 +176,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeInt(bitmap);
     }
 
-    private static void serializeAggregateBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeAggregateBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
         MultipartReplyAggregateCase aggregateCase = (MultipartReplyAggregateCase) body;
         MultipartReplyAggregate aggregate = aggregateCase.getMultipartReplyAggregate();
         outBuffer.writeLong(aggregate.getPacketCount().longValue());
@@ -190,7 +185,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeZero(AGGREGATE_PADDING);
     }
 
-    private void serializeFlowBody(MultipartReplyBody body, ByteBuf outBuffer, MultipartReplyMessage message) {
+    private void serializeFlowBody(final MultipartReplyBody body, final ByteBuf outBuffer, final MultipartReplyMessage message) {
         MultipartReplyFlowCase flowCase = (MultipartReplyFlowCase) body;
         MultipartReplyFlow flow = flowCase.getMultipartReplyFlow();
         for (FlowStats flowStats : flow.getFlowStats()) {
@@ -216,14 +211,14 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private static void writeFlags(MultipartRequestFlags flags, ByteBuf outBuffer) {
+    private static void writeFlags(final MultipartRequestFlags flags, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, flags.isOFPMPFREQMORE());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeShort(bitmap);
     }
 
-    private static void serializeDescBody(MultipartReplyBody body, ByteBuf outBuffer) {
+    private static void serializeDescBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
         MultipartReplyDescCase descCase = (MultipartReplyDescCase) body;
         MultipartReplyDesc desc = descCase.getMultipartReplyDesc();
         write256String(desc.getMfrDesc(), outBuffer);
@@ -233,7 +228,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         write256String(desc.getDpDesc(), outBuffer);
     }
 
-    private static void write256String(String toWrite, ByteBuf outBuffer) {
+    private static void write256String(final String toWrite, final ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 256) {
             byte[] nameBytesPadding = new byte[256];
@@ -251,7 +246,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private static void write16String(String toWrite, ByteBuf outBuffer) {
+    private static void write16String(final String toWrite, final ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
@@ -269,7 +264,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         }
     }
 
-    private static void write32String(String toWrite, ByteBuf outBuffer) {
+    private static void write32String(final String toWrite, final ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes(StandardCharsets.UTF_8);
         if (nameBytes.length < 32) {
             byte[] nameBytesPadding = new byte[32];

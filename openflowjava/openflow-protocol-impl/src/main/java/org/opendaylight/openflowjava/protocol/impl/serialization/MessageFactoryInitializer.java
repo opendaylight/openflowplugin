@@ -62,7 +62,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public final class MessageFactoryInitializer {
-
     private MessageFactoryInitializer() {
         throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
@@ -71,7 +70,7 @@ public final class MessageFactoryInitializer {
      * Registers message serializers into provided registry.
      * @param serializerRegistry registry to be initialized with message serializers
      */
-    public static void registerMessageSerializers(SerializerRegistry serializerRegistry) {
+    public static void registerMessageSerializers(final SerializerRegistry serializerRegistry) {
         CommonMessageRegistryHelper registryHelper;
 
         // register OF v1.0 message serializers
@@ -79,14 +78,17 @@ public final class MessageFactoryInitializer {
         registryHelper.registerSerializer(BarrierInput.class, new OF10BarrierInputMessageFactory());
         registryHelper.registerSerializer(EchoInput.class, new EchoInputMessageFactory());
         registryHelper.registerSerializer(EchoReplyInput.class, new EchoReplyInputMessageFactory());
-        registryHelper.registerSerializer(ExperimenterInput.class, new VendorInputMessageFactory());
-        registryHelper.registerSerializer(FlowModInput.class, new OF10FlowModInputMessageFactory());
+        registryHelper.registerSerializer(ExperimenterInput.class,
+            new VendorInputMessageFactory(serializerRegistry));
+        registryHelper.registerSerializer(FlowModInput.class, new OF10FlowModInputMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(GetConfigInput.class, new GetConfigInputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigInput.class, new OF10QueueGetConfigInputMessageFactory());
         registryHelper.registerSerializer(HelloInput.class, new OF10HelloInputMessageFactory());
-        registryHelper.registerSerializer(MultipartRequestInput.class, new OF10StatsRequestInputFactory());
-        registryHelper.registerSerializer(PacketOutInput.class, new OF10PacketOutInputMessageFactory());
+        registryHelper.registerSerializer(MultipartRequestInput.class,
+            new OF10StatsRequestInputFactory(serializerRegistry));
+        registryHelper.registerSerializer(PacketOutInput.class,
+            new OF10PacketOutInputMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(PortModInput.class, new OF10PortModInputMessageFactory());
         registryHelper.registerSerializer(SetConfigInput.class, new SetConfigMessageFactory());
 
@@ -95,18 +97,20 @@ public final class MessageFactoryInitializer {
         registryHelper.registerSerializer(BarrierInput.class, new BarrierInputMessageFactory());
         registryHelper.registerSerializer(EchoInput.class, new EchoInputMessageFactory());
         registryHelper.registerSerializer(EchoReplyInput.class, new EchoReplyInputMessageFactory());
-        registryHelper.registerSerializer(ExperimenterInput.class, new ExperimenterInputMessageFactory());
-        registryHelper.registerSerializer(FlowModInput.class, new FlowModInputMessageFactory());
+        registryHelper.registerSerializer(ExperimenterInput.class,
+            new ExperimenterInputMessageFactory(serializerRegistry));
+        registryHelper.registerSerializer(FlowModInput.class, new FlowModInputMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(GetAsyncInput.class, new GetAsyncRequestMessageFactory());
         registryHelper.registerSerializer(GetConfigInput.class, new GetConfigInputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigInput.class, new GetQueueConfigInputMessageFactory());
         registryHelper.registerSerializer(GroupModInput.class,
-                new GroupModInputMessageFactory(serializerRegistry.isGroupAddModEnabled()));
+                new GroupModInputMessageFactory(serializerRegistry, serializerRegistry.isGroupAddModEnabled()));
         registryHelper.registerSerializer(HelloInput.class, new HelloInputMessageFactory());
-        registryHelper.registerSerializer(MeterModInput.class, new MeterModInputMessageFactory());
-        registryHelper.registerSerializer(MultipartRequestInput.class, new MultipartRequestInputFactory());
-        registryHelper.registerSerializer(PacketOutInput.class, new PacketOutInputMessageFactory());
+        registryHelper.registerSerializer(MeterModInput.class, new MeterModInputMessageFactory(serializerRegistry));
+        registryHelper.registerSerializer(MultipartRequestInput.class,
+            new MultipartRequestInputFactory(serializerRegistry));
+        registryHelper.registerSerializer(PacketOutInput.class, new PacketOutInputMessageFactory(serializerRegistry));
         registryHelper.registerSerializer(PortModInput.class, new PortModInputMessageFactory());
         registryHelper.registerSerializer(RoleRequestInput.class, new RoleRequestInputMessageFactory());
         registryHelper.registerSerializer(SetAsyncInput.class, new SetAsyncInputMessageFactory());

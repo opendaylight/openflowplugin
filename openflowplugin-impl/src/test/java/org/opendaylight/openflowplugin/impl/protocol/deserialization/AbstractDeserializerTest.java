@@ -14,12 +14,14 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerExte
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterInstructionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
@@ -72,6 +74,11 @@ public abstract class AbstractDeserializerTest {
         DeserializerExtensionProviderImpl(final DeserializerRegistry registry, DeserializationFactory factory) {
             this.registry = registry;
             this.factory = factory;
+        }
+
+        @Override
+        public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+            return registry.getDeserializer(key);
         }
 
         @Override
