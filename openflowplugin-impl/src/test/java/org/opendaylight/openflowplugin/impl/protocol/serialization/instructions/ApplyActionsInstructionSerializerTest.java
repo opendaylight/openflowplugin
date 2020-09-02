@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -13,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
@@ -29,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 
 public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSerializerTest {
-
     @Test
     public void testSerialize() {
         final int order = 0;
@@ -54,10 +51,10 @@ public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSe
         assertInstruction(instruction, out -> {
             out.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
             assertEquals(out.readUnsignedShort(), ActionConstants.SET_FIELD_CODE);
-            out.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // Skip length of set field action
+            out.skipBytes(Short.BYTES); // Skip length of set field action
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
             assertEquals(out.readUnsignedByte(), OxmMatchConstants.IPV4_SRC << 1);
-            out.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // Skip match entry length
+            out.skipBytes(Byte.BYTES); // Skip match entry length
 
             byte[] addressBytes = new byte[4];
             out.readBytes(addressBytes);
@@ -81,5 +78,4 @@ public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSe
     protected int getLength() {
         return 24;
     }
-
 }

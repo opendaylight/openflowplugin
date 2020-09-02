@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -15,7 +14,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TunnelId;
@@ -119,7 +117,7 @@ public class OxmTunnelIdSerializerTest {
      */
     @Test
     public void testGetValueLength() {
-        assertEquals("Wrong value length", EncodeConstants.SIZE_OF_LONG_IN_BYTES, serializer.getValueLength());
+        assertEquals("Wrong value length", Long.BYTES, serializer.getValueLength());
     }
 
     private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, byte[] value) {
@@ -149,9 +147,9 @@ public class OxmTunnelIdSerializerTest {
         assertEquals("Wrong oxm-field", OxmMatchConstants.TUNNEL_ID, fieldAndMask >>> 1);
         assertEquals("Wrong hasMask", hasMask, (fieldAndMask & 1) != 0);
         if (hasMask) {
-            assertEquals("Wrong length", 2 * EncodeConstants.SIZE_OF_LONG_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", 2 * Long.BYTES, buffer.readUnsignedByte());
         } else {
-            assertEquals("Wrong length", EncodeConstants.SIZE_OF_LONG_IN_BYTES, buffer.readUnsignedByte());
+            assertEquals("Wrong length", Long.BYTES, buffer.readUnsignedByte());
         }
     }
 }

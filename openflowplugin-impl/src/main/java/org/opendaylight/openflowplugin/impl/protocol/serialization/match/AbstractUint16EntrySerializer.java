@@ -8,12 +8,11 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 public abstract class AbstractUint16EntrySerializer extends AbstractPrimitiveEntrySerializer<Uint16> {
     protected AbstractUint16EntrySerializer(final int oxmClassCode, final int oxmFieldCode) {
-        super(oxmClassCode, oxmFieldCode, EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        super(oxmClassCode, oxmFieldCode, Short.BYTES);
     }
 
     @Override

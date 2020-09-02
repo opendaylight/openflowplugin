@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -15,13 +14,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.math.BigInteger;
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Tunnel;
 
 public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserializerTest {
-
     @Test
     public void deserializeEntry() {
         final ByteBuf in = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -29,25 +26,25 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
         final BigInteger tunnelIdMask = BigInteger.valueOf(5);
 
         writeHeader(in, false);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES));
 
         Tunnel match = deserialize(in).getTunnel();
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES),
                 ByteUtil.uint64toBytes(match.getTunnelId()));
 
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
-        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES));
+        in.writeBytes(ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, Long.BYTES));
 
         match = deserialize(in).getTunnel();
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(tunnelId, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(tunnelId, Long.BYTES),
                 ByteUtil.uint64toBytes(match.getTunnelId()));
         assertArrayEquals(
-                ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, EncodeConstants.SIZE_OF_LONG_IN_BYTES),
+                ByteUtil.convertBigIntegerToNBytes(tunnelIdMask, Long.BYTES),
                 ByteUtil.uint64toBytes(match.getTunnelMask()));
         assertEquals(0, in.readableBytes());
     }
@@ -64,7 +61,6 @@ public class TunnelIdEntryDeserializerTest extends AbstractMatchEntryDeserialize
 
     @Override
     protected int getValueLength() {
-        return EncodeConstants.SIZE_OF_LONG_IN_BYTES;
+        return Long.BYTES;
     }
-
 }

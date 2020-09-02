@@ -8,13 +8,12 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 
 public abstract class AbstractIpv4PrefixEntrySerializer extends AbstractMatchEntrySerializer<Ipv4Prefix, Integer> {
     protected AbstractIpv4PrefixEntrySerializer(final int oxmClassCode, final int oxmFieldCode) {
-        super(new ConstantHeaderWriter<>(oxmClassCode, oxmFieldCode, EncodeConstants.SIZE_OF_INT_IN_BYTES));
+        super(new ConstantHeaderWriter<>(oxmClassCode, oxmFieldCode, Integer.BYTES));
     }
 
     @Override

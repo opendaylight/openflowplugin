@@ -26,9 +26,9 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
      * @return true if match entry has mask, false otherwise
      */
     protected static boolean processHeader(ByteBuf in) {
-        in.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES); // skip oxm_class
+        in.skipBytes(Short.BYTES); // skip oxm_class
         boolean hasMask = (in.readUnsignedByte() & 1) != 0;
-        in.skipBytes(EncodeConstants.SIZE_OF_BYTE_IN_BYTES); // skip match entry length
+        in.skipBytes(Byte.BYTES); // skip match entry length
         return hasMask;
     }
 

@@ -15,7 +15,6 @@ import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModAddMatchFromFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.flow.mod.spec.flow.mod.spec.FlowModAddMatchFromFieldCaseBuilder;
@@ -44,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class LearnCodecUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(LearnCodecUtil.class);
     public static final int HEADER_LENGTH = 32;
     private static final short SRC_MASK = 0x2000;
@@ -63,13 +61,13 @@ public final class LearnCodecUtil {
 
     static short deserializeHeader(ByteBuf message) {
         // size of experimenter type
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         // size of length
         short messageLength = message.readShort();
         // vendor id
-        message.skipBytes(EncodeConstants.SIZE_OF_INT_IN_BYTES);
+        message.skipBytes(Integer.BYTES);
         // subtype
-        message.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
+        message.skipBytes(Short.BYTES);
         return messageLength;
     }
 
@@ -226,7 +224,7 @@ public final class LearnCodecUtil {
 
     private static FlowMods readFlowMod(ByteBuf message) {
         short header = message.readShort();
-        length -= EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        length -= Short.BYTES;
         if (header == 0) {
             return null;
         }
@@ -261,7 +259,7 @@ public final class LearnCodecUtil {
         builder.setDstField(readUint32(message));
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
-        length -= FROM_FIELD_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        length -= FROM_FIELD_LENGTH - Short.BYTES;
 
         FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
         FlowModAddMatchFromFieldCaseBuilder caseBuilder = new FlowModAddMatchFromFieldCaseBuilder();
@@ -276,7 +274,7 @@ public final class LearnCodecUtil {
         builder.setSrcField(readUint32(message));
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
-        length -= FROM_VALUE_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        length -= FROM_VALUE_LENGTH - Short.BYTES;
 
         FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
         FlowModAddMatchFromValueCaseBuilder caseBuilder = new FlowModAddMatchFromValueCaseBuilder();
@@ -292,7 +290,7 @@ public final class LearnCodecUtil {
         builder.setDstField(readUint32(message));
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
-        length -= FROM_FIELD_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        length -= FROM_FIELD_LENGTH - Short.BYTES;
 
         FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
         FlowModCopyFieldIntoFieldCaseBuilder caseBuilder = new FlowModCopyFieldIntoFieldCaseBuilder();
@@ -307,7 +305,7 @@ public final class LearnCodecUtil {
         builder.setDstField(readUint32(message));
         builder.setDstOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
-        length -= FROM_VALUE_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        length -= FROM_VALUE_LENGTH - Short.BYTES;
 
         FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
         FlowModCopyValueIntoFieldCaseBuilder caseBuilder = new FlowModCopyValueIntoFieldCaseBuilder();
@@ -321,7 +319,7 @@ public final class LearnCodecUtil {
         builder.setSrcField(readUint32(message));
         builder.setSrcOfs((int) message.readShort());
         builder.setFlowModNumBits((int) numBits);
-        length -= TO_PORT_LENGTH - EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
+        length -= TO_PORT_LENGTH - Short.BYTES;
 
         FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
         FlowModOutputToPortCaseBuilder caseBuilder = new FlowModOutputToPortCaseBuilder();
