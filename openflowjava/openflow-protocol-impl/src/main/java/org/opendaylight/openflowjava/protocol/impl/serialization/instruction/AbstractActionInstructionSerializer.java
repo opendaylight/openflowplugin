@@ -5,13 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
+
+import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerLookup;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
@@ -24,33 +24,29 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  *
  * @author michal.polkorab
  */
-public abstract class AbstractActionInstructionSerializer extends AbstractInstructionSerializer
-        implements SerializerRegistryInjector {
+public abstract class AbstractActionInstructionSerializer extends AbstractInstructionSerializer {
 
     private static final TypeKeyMaker<Action> ACTION_KEY_MAKER =
             TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF13_VERSION_ID);
 
-    private SerializerRegistry registry;
+    private final SerializerLookup registry;
 
-    protected AbstractActionInstructionSerializer(final short type) {
+    protected AbstractActionInstructionSerializer(final short type, final SerializerLookup registry) {
         super(type);
+        this.registry = requireNonNull(registry);
+
     }
 
     protected final void writeActions(final List<Action> actions, final ByteBuf outBuffer, final int startIndex) {
         final int lengthIndex = outBuffer.writerIndex();
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
-        ListSerializer.serializeList(actions, ACTION_KEY_MAKER, getRegistry(), outBuffer);
+        ListSerializer.serializeList(actions, ACTION_KEY_MAKER, registry, outBuffer);
         int instructionLength = outBuffer.writerIndex() - startIndex;
         outBuffer.setShort(lengthIndex, instructionLength);
     }
 
-    protected final SerializerRegistry getRegistry() {
+    protected final SerializerLookup getRegistry() {
         return registry;
-    }
-
-    @Override
-    public final void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
     }
 }

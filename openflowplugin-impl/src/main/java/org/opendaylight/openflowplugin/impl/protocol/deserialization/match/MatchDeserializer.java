@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.util.HashMap;
 import java.util.Map;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerLookup;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -28,14 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeserializer<Match>,
-        MatchEntryDeserializerRegistry, MatchEntryDeserializer, DeserializerRegistryInjector {
-
+        MatchEntryDeserializerRegistry, MatchEntryDeserializer {
     private static final Logger LOG = LoggerFactory.getLogger(MatchDeserializer.class);
-    private final Map<MatchEntryDeserializerKey, MatchEntryDeserializer> entryRegistry = new HashMap<>();
-    private final MatchPath matchPath;
-    private DeserializerRegistry registry;
 
-    public MatchDeserializer(final MatchPath matchPath) {
+    private final Map<MatchEntryDeserializerKey, MatchEntryDeserializer> entryRegistry = new HashMap<>();
+    private final DeserializerLookup registry;
+    private final MatchPath matchPath;
+
+    public MatchDeserializer(final DeserializerLookup registry, final MatchPath matchPath) {
+        this.registry = requireNonNull(registry);
         this.matchPath = matchPath;
     }
 
@@ -123,10 +125,5 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         }
 
         return entryRegistry.remove(key) != null;
-    }
-
-    @Override
-    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
     }
 }
