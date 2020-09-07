@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric;
 
 import java.util.LinkedList;
@@ -34,8 +33,8 @@ public class EricExtensionCodecRegistratorImplTest {
     public static final byte VERSION2 = EncodeConstants.OF13_VERSION_ID;
 
     private EricExtensionCodecRegistratorImpl ericExtensionCodecRegistrator;
-    private List<SwitchConnectionProvider> providers = new LinkedList<>();
-    private MatchEntrySerializerKey matchSerializerKey;
+    private final List<SwitchConnectionProvider> providers = new LinkedList<>();
+    private MatchEntrySerializerKey<EricExpClass, MatchField> matchSerializerKey;
     private MatchEntryDeserializerKey matchDeserializerKey;
 
     @Mock
@@ -48,7 +47,7 @@ public class EricExtensionCodecRegistratorImplTest {
     @Before
     public void setUp() {
         providers.add(provider);
-        matchSerializerKey = new MatchEntrySerializerKey(VERSION, EricExpClass.class, MatchField.class);
+        matchSerializerKey = new MatchEntrySerializerKey<>(VERSION, EricExpClass.class, MatchField.class);
         //OxmClass 1, OxmField 2
         matchDeserializerKey = new MatchEntryDeserializerKey(VERSION, 1, 2);
 
