@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import test.mock.util.FRMTest;
 import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalTableServiceMock;
@@ -81,7 +82,7 @@ public class TableFeaturesListenerTest extends FRMTest {
 
     @Test
     public void updateFlowTest() {
-        TableKey tableKey = new TableKey((short) 2);
+        TableKey tableKey = new TableKey(Uint8.TWO);
         TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
 
         addTable(tableKey, NODE_KEY);
