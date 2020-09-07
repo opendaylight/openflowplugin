@@ -155,10 +155,9 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         return resultVehicle;
     }
 
-    private FutureCallback<RpcResult<ProcessFlatBatchOutput>> createCounterCallback(final List<Batch> inputBatchBag,
-                                                                                    final int failureIndexLimit,
-                                                                                    final SyncCrudCounters counters) {
-        return new FutureCallback<RpcResult<ProcessFlatBatchOutput>>() {
+    private static FutureCallback<RpcResult<ProcessFlatBatchOutput>> createCounterCallback(
+            final List<Batch> inputBatchBag, final int failureIndexLimit, final SyncCrudCounters counters) {
+        return new FutureCallback<>() {
             @Override
             public void onSuccess(final RpcResult<ProcessFlatBatchOutput> result) {
                 if (!result.isSuccessful() && result.getResult() != null

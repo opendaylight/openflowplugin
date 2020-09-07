@@ -63,7 +63,7 @@ public class SyncReactorGuardDecorator implements SyncReactor {
                                                          final long stampBeforeGuard,
                                                          final long stampAfterGuard,
                                                          final NodeId nodeId) {
-        return new FutureCallback<Boolean>() {
+        return new FutureCallback<>() {
             @Override
             public void onSuccess(final Boolean result) {
                 if (LOG.isDebugEnabled()) {
