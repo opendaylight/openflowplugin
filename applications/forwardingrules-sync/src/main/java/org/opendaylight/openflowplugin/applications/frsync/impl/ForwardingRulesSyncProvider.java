@@ -62,8 +62,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     private final DataTreeIdentifier<FlowCapableNode> nodeConfigDataTreePath;
     private final DataTreeIdentifier<Node> nodeOperationalDataTreePath;
 
-    private ListenerRegistration<NodeListener> dataTreeConfigChangeListener;
-    private ListenerRegistration<NodeListener> dataTreeOperationalChangeListener;
+    private ListenerRegistration<?> dataTreeConfigChangeListener;
+    private ListenerRegistration<?> dataTreeOperationalChangeListener;
 
     private final ListeningExecutorService syncThreadPool;
 

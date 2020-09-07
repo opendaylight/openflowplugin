@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.math.BigInteger;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
@@ -45,6 +43,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test for {@link MeterForwarder}.
@@ -53,7 +53,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class MeterForwarderTest {
 
     private final NodeKey s1Key = new NodeKey(new NodeId("S1"));
-    private final MeterId meterId = new MeterId(42L);
+    private final MeterId meterId = new MeterId(Uint32.valueOf(42));
     private final MeterKey meterKey = new MeterKey(meterId);
     private final Meter meter = new MeterBuilder()
             .setMeterId(meterId)
@@ -82,7 +82,7 @@ public class MeterForwarderTest {
     @Before
     public void setUp() {
         meterForwarder = new MeterForwarder(salMeterService);
-        txId = new TransactionId(BigInteger.ONE);
+        txId = new TransactionId(Uint64.ONE);
     }
 
     @Test
