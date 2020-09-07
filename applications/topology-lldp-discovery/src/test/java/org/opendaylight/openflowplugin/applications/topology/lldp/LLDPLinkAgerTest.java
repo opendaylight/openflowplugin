@@ -36,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,8 @@ public class LLDPLinkAgerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAgerTest.class);
 
-    private static final long LLDP_INTERVAL = 5L;
-    private static final long LINK_EXPIRATION_TIME = 10L;
+    private static final Uint32 LLDP_INTERVAL = Uint32.valueOf(5);
+    private static final Uint32 LINK_EXPIRATION_TIME = Uint32.TEN;
 
     /**
      * We need to wait while other tasks are finished before we can check anything in LLDPAgingTask.
@@ -101,14 +102,14 @@ public class LLDPLinkAgerTest {
         verify(notificationService).putNotification(any(LinkRemoved.class));
     }
 
-    private TopologyLldpDiscoveryConfig getConfig() {
+    private static TopologyLldpDiscoveryConfig getConfig() {
         TopologyLldpDiscoveryConfigBuilder cfgBuilder = new TopologyLldpDiscoveryConfigBuilder();
         cfgBuilder.setTopologyLldpInterval(new NonZeroUint32Type(LLDP_INTERVAL));
         cfgBuilder.setTopologyLldpExpirationInterval(new NonZeroUint32Type(LINK_EXPIRATION_TIME));
         return cfgBuilder.build();
     }
 
-    private ConfigurationService getConfigurationService() {
+    private static ConfigurationService getConfigurationService() {
         final ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
         final TopologyLldpDiscoveryConfig config = getConfig();
 
