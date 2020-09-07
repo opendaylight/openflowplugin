@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.icmpv6.nd.options.type.grouping.Icmpv6NdOptionsTypeValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class Icmpv6NDOptionsTypeCodecTest {
 
@@ -73,7 +74,7 @@ public class Icmpv6NDOptionsTypeCodecTest {
         matchEntryBuilder.setOxmMatchField(Icmpv6NdOptionsType.class);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setIcmpv6NdOptionsType((short)1);
+        valuesBuilder.setIcmpv6NdOptionsType(Uint8.ONE);
 
         caseBuilder.setIcmpv6NdOptionsTypeValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
