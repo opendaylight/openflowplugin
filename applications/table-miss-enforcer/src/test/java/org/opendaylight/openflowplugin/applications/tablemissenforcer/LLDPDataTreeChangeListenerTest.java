@@ -5,25 +5,27 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.Map;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
@@ -32,8 +34,8 @@ import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -41,12 +43,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link LLDPPacketPuntEnforcer}.
@@ -68,28 +72,14 @@ public class LLDPDataTreeChangeListenerTest {
     @Before
     public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(flowService).addFlow(any());
-        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, Mockito.mock(DataBroker.class),
+        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, mock(DataBroker.class),
                 deviceOwnershipService);
         final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
                 LogicalDatastoreType.OPERATIONAL, NODE_IID.augmentation(FlowCapableNode.class));
-        Mockito.when(dataTreeModification.getRootPath()).thenReturn(identifier);
-        Mockito.when(dataTreeModification.getRootNode()).thenReturn(Mockito.mock(DataObjectModification.class));
-        Mockito.when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
+        when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
+        when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
-    }
-
-    @Test
-    public void testOnDataTreeChanged() {
-        lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        Mockito.verify(flowService).addFlow(addFlowInputCaptor.capture());
-        AddFlowInput captured = addFlowInputCaptor.getValue();
-        Assert.assertEquals(NODE_IID, captured.getNode().getValue());
-    }
-
-    @Test
-    public void testCreateFlow() {
-        final Flow flow = lldpPacketPuntEnforcer.createFlow();
-        evaluateInstructions(flow.getInstructions());
     }
 
     @After
@@ -97,28 +87,35 @@ public class LLDPDataTreeChangeListenerTest {
         lldpPacketPuntEnforcer.close();
     }
 
-    private static void evaluateInstructions(final Instructions instructions) {
-        assertNotNull(instructions.getInstruction());
-        assertEquals(1, instructions.getInstruction().size());
-        Instruction instruction = instructions.getInstruction().get(0);
-        evaluateInstruction(instruction);
+    @Test
+    public void testOnDataTreeChanged() {
+        lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        verify(flowService).addFlow(addFlowInputCaptor.capture());
+        AddFlowInput captured = addFlowInputCaptor.getValue();
+        assertEquals(NODE_IID, captured.getNode().getValue());
     }
 
-    private static void evaluateInstruction(final Instruction instruction) {
-        if (instruction != null && instruction.getInstruction() instanceof ApplyActionsCase) {
-            ApplyActionsCase applyActionsCase = (ApplyActionsCase) instruction.getInstruction();
-            assertNotNull(applyActionsCase.getApplyActions().getAction());
-            assertEquals(1, applyActionsCase.getApplyActions().getAction().size());
-            Action action = applyActionsCase.getApplyActions().getAction().get(0);
-            evaluateAction(action);
-        }
-    }
+    @Test
+    public void testCreateFlow() {
+        final Flow flow = LLDPPacketPuntEnforcer.createFlow();
+        final Instructions instructions = flow.getInstructions();
+        final Map<InstructionKey, Instruction> insns = instructions.getInstruction();
+        assertNotNull(insns);
+        assertEquals(1, insns.size());
 
-    private static void evaluateAction(final Action action) {
-        if (action.getAction() instanceof OutputActionCase) {
-            OutputActionCase outputActionCase = (OutputActionCase) action.getAction();
-            assertEquals("CONTROLLER", outputActionCase.getOutputAction().getOutputNodeConnector().getValue());
-            assertEquals(new Integer(0xffff).intValue(), outputActionCase.getOutputAction().getMaxLength().intValue());
-        }
+        final Instruction instruction = insns.values().iterator().next();
+        assertNotNull(instruction);
+
+        final var insn = instruction.getInstruction();
+        assertThat(insn, instanceOf(ApplyActionsCase.class));
+        final ApplyActionsCase applyActionsCase = (ApplyActionsCase) insn;
+        assertNotNull(applyActionsCase.getApplyActions().getAction());
+        assertEquals(1, applyActionsCase.getApplyActions().getAction().size());
+
+        final Action action = applyActionsCase.getApplyActions().getAction().values().iterator().next().getAction();
+        assertThat(action, instanceOf(OutputActionCase.class));
+        final OutputActionCase outputActionCase = (OutputActionCase) action;
+        assertEquals("CONTROLLER", outputActionCase.getOutputAction().getOutputNodeConnector().getValue());
+        assertEquals(Uint16.MAX_VALUE, outputActionCase.getOutputAction().getMaxLength());
     }
 }
