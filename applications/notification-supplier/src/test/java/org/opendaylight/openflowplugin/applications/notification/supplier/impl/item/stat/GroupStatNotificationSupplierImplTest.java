@@ -38,11 +38,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupStatNotificationSupplierImplTest {
-
     private static final String FLOW_NODE_ID = "openflow:111";
-    private static final Long FLOW_TABLE_ID = 111L;
+    private static final Uint32 FLOW_TABLE_ID = Uint32.valueOf(111);
+
     private GroupStatNotificationSupplierImpl notifSupplierImpl;
     private NotificationPublishService notifProviderService;
     private DataBroker dataBroker;
