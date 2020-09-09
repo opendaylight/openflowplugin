@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,6 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
 
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandlerSimpleImpl.class);
     private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
-    private static final int DIRECT_FLOW_PRIORITY = 512;
+    private static final Uint16 DIRECT_FLOW_PRIORITY = Uint16.valueOf(512);
 
     private final DataTreeChangeListenerRegistrationHolder registrationPublisher;
     private final FlowCommitWrapper dataStoreAccessor;
@@ -104,7 +105,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
         FlowKey flowKey = new FlowKey(flowId);
         InstanceIdentifier<Flow> flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
 
-        int priority = 0;
+        Uint16 priority = Uint16.ZERO;
         // create flow in table with id = 0, priority = 4 (other params are
         // defaulted in OFDataStoreUtil)
         FlowBuilder allToCtrlFlow = FlowUtils.createFwdAllToControllerFlow(
@@ -194,7 +195,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
                 Uint8 tableId = InstanceIdentifierUtils.getTableId(tablePath);
                 FlowBuilder srcToDstFlow = FlowUtils.createDirectMacToMacFlow(tableId, DIRECT_FLOW_PRIORITY, srcMac,
                         dstMac, destNodeConnector);
-                srcToDstFlow.setCookie(new FlowCookie(BigInteger.valueOf(flowCookieInc.getAndIncrement())));
+                srcToDstFlow.setCookie(new FlowCookie(Uint64.valueOf(flowCookieInc.getAndIncrement())));
 
                 dataStoreAccessor.writeFlowToConfig(flowPath, srcToDstFlow.build());
             }
