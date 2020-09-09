@@ -103,11 +103,11 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         testNode = builder.build();
     }
 
-    private InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    private TableFeaturesBuilder createTestTableFeatures(String tableFeatureTypeArg) {
+    private static TableFeaturesBuilder createTestTableFeatures(String tableFeatureTypeArg) {
 
         String tableFeatureType = tableFeatureTypeArg;
         if (tableFeatureType == null) {
@@ -201,7 +201,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeature;
     }
 
-    private TableFeaturePropertiesBuilder createApplyActionsMissTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createApplyActionsMissTblFeatureProp() {
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
 
         //To set the ApplyActionsMiss
@@ -221,10 +221,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         tableFeatureProperty.setOrder(1);
 
         return tableFeatureProperty;
-
     }
 
-    private TableFeaturePropertiesBuilder createApplyActionsTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createApplyActionsTblFeatureProp() {
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         List<Action> actionListt5 = new ArrayList<>();
         ActionBuilder abt5 = new ActionBuilder();
@@ -244,7 +243,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createNextTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createNextTblFeatureProp() {
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         List<Uint8> nextTblIds = Arrays.asList(Uint8.valueOf(2), Uint8.valueOf(3));
         NextTableBuilder nextTblBld = new NextTableBuilder();
@@ -259,7 +258,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createNextTableMissTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createNextTableMissTblFeatureProp() {
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         List<Uint8> nextTblMissIds = Arrays.asList(Uint8.valueOf(23), Uint8.valueOf(24), Uint8.valueOf(25),
             Uint8.valueOf(27), Uint8.valueOf(28), Uint8.valueOf(29), Uint8.valueOf(30));
@@ -275,8 +274,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-
-    private TableFeaturePropertiesBuilder createInstructionsTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createInstructionsTblFeatureProp() {
         List<Instruction> instLst = new ArrayList<>();
         TableFeaturePropertiesBuilder tableFeatureProperty = new TableFeaturePropertiesBuilder();
         tableFeatureProperty.setTableFeaturePropType(
@@ -294,7 +292,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createInstructionsMissTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createInstructionsMissTblFeatureProp() {
         // To set the instructions miss -- "t7"
 
         List<Instruction> instLst = new ArrayList<>();
@@ -314,7 +312,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createWriteActionsTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createWriteActionsTblFeatureProp() {
         // t8
 
         List<Action> actionList = new ArrayList<>();
@@ -341,7 +339,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createWriteActionsMissTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createWriteActionsMissTblFeatureProp() {
         // t9
         List<Action> actionList = new ArrayList<>();
 
@@ -367,7 +365,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createMatchFieldTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createMatchFieldTblFeatureProp() {
         //t10
 
         List<SetFieldMatch> setFieldMatch = new ArrayList<>();
@@ -391,8 +389,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-
-    private TableFeaturePropertiesBuilder createWriteSetFieldTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createWriteSetFieldTblFeatureProp() {
         //t11
 
         SetFieldMatchBuilder setFieldMatchBld1 = new SetFieldMatchBuilder();
@@ -429,7 +426,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createWriteSetFieldMissTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createWriteSetFieldMissTblFeatureProp() {
         // t12
 
         SetFieldMatchBuilder setFieldMatchBld1 = new SetFieldMatchBuilder();
@@ -466,7 +463,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createApplySetFieldTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createApplySetFieldTblFeatureProp() {
         //t13
 
         SetFieldMatchBuilder setFieldMatchBld1 = new SetFieldMatchBuilder();
@@ -503,7 +500,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createApplySetFieldMissTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createApplySetFieldMissTblFeatureProp() {
         //t14
 
         SetFieldMatchBuilder setFieldMatchBld1 = new SetFieldMatchBuilder();
@@ -540,7 +537,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private TableFeaturePropertiesBuilder createWildCardsTblFeatureProp() {
+    private static TableFeaturePropertiesBuilder createWildCardsTblFeatureProp() {
         //t15
 
         SetFieldMatchBuilder setFieldMatchBld1 = new SetFieldMatchBuilder();
