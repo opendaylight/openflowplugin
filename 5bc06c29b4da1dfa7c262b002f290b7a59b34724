@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6dd72398_44e6bd3b",
+        "filename": "samples/sample-bundles/src/main/java/org/opendaylight/openflowplugin/samples/sample/bundles/SampleFlowCapableNodeListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-09T16:03:54Z",
+      "side": 1,
+      "message": "why some of them still remains as interger instead of Unit16.ONE?",
+      "range": {
+        "startLine": 326,
+        "startChar": 25,
+        "endLine": 326,
+        "endChar": 28
+      },
+      "revId": "5bc06c29b4da1dfa7c262b002f290b7a59b34724",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
