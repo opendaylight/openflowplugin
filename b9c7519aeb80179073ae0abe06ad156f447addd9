@@ -16,6 +16,24 @@
       "revId": "b9c7519aeb80179073ae0abe06ad156f447addd9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efa69714_6d20b2b4",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 8606
+      },
+      "writtenOn": "2020-09-09T09:42:30Z",
+      "side": 1,
+      "message": "Change Review https://git.opendaylight.org/gerrit/c/openflowplugin/+/92109 is already merged with master, new changes made on top of this change",
+      "parentUuid": "831114c7_8b2a3a43",
+      "revId": "b9c7519aeb80179073ae0abe06ad156f447addd9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
