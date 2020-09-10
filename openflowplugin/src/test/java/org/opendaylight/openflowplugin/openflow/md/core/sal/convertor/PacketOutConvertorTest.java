@@ -110,7 +110,7 @@ public class PacketOutConvertorTest {
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder();
 
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(Uint16.valueOf(OFConstants.OFPCML_NO_BUFFER));
+        output.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(
