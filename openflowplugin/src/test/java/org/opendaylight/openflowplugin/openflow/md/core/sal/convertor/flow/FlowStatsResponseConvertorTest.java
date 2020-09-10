@@ -39,6 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionBase;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/18/14.
@@ -85,7 +87,7 @@ public class FlowStatsResponseConvertorTest {
         for (int i = 0; i < PRESET_COUNT; i++) {
             GotoTableCaseBuilder gotoTableCaseBuilder = new GotoTableCaseBuilder();
             GotoTableBuilder gotoTableBuilder = new GotoTableBuilder();
-            gotoTableBuilder.setTableId((short) i);
+            gotoTableBuilder.setTableId(Uint8.valueOf(i));
             gotoTableCaseBuilder.setGotoTable(gotoTableBuilder.build());
             instructionBuilder.setInstructionChoice(gotoTableCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());
@@ -99,7 +101,7 @@ public class FlowStatsResponseConvertorTest {
         for (int i = 0; i < PRESET_COUNT; i++) {
             MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
             MeterBuilder meterBuilder = new MeterBuilder();
-            meterBuilder.setMeterId((long) i);
+            meterBuilder.setMeterId(Uint32.valueOf(i));
             meterCaseBuilder.setMeter(meterBuilder.build());
             instructionBuilder.setInstructionChoice(meterCaseBuilder.build());
             instructionsList.add(instructionBuilder.build());

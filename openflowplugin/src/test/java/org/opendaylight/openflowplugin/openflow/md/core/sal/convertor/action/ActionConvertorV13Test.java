@@ -113,7 +113,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPortBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for v1.3 action converters.
@@ -144,14 +147,14 @@ public class ActionConvertorV13Test {
     }
 
     /**
-     * Test {@link ActionConvertor#convert(List, ActionConvertorData)}}.
+     * Test {@link ActionConvertor#convert(java.util.Collection, ActionConvertorData)}}.
      */
     //@Test
     public void testToMDSalActions2() {
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
-        outputBuilder.setMaxLength(52);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
+        outputBuilder.setMaxLength(Uint16.valueOf(52));
         caseBuilder.setOutputAction(outputBuilder.build());
 
         ActionBuilder actionBuilder = new ActionBuilder();
@@ -171,7 +174,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         SetMplsTtlCaseBuilder setMplsTtlCaseBuilder = new SetMplsTtlCaseBuilder();
         SetMplsTtlActionBuilder setMplsTtlBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlBuilder.setMplsTtl((short) 4);
+        setMplsTtlBuilder.setMplsTtl(Uint8.valueOf(4));
         setMplsTtlCaseBuilder.setSetMplsTtlAction(setMplsTtlBuilder.build());
         actionBuilder.setActionChoice(setMplsTtlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -183,7 +186,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanBuilder = new PushVlanActionBuilder();
-        pushVlanBuilder.setEthertype(new EtherType(new EtherType(16)));
+        pushVlanBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(16))));
         pushVlanCaseBuilder.setPushVlanAction(pushVlanBuilder.build());
         actionBuilder.setActionChoice(pushVlanCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -195,7 +198,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         PushMplsCaseBuilder pushMplsCaseBuilder = new PushMplsCaseBuilder();
         PushMplsActionBuilder pushMplsBuilder = new PushMplsActionBuilder();
-        pushMplsBuilder.setEthertype(new EtherType(new EtherType(17)));
+        pushMplsBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(17))));
         pushMplsCaseBuilder.setPushMplsAction(pushMplsBuilder.build());
         actionBuilder.setActionChoice(pushMplsCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -203,7 +206,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         PopMplsCaseBuilder popMplsCaseBuilder = new PopMplsCaseBuilder();
         PopMplsActionBuilder popMplsBuilder = new PopMplsActionBuilder();
-        popMplsBuilder.setEthertype(new EtherType(new EtherType(18)));
+        popMplsBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(18))));
         popMplsCaseBuilder.setPopMplsAction(popMplsBuilder.build());
         actionBuilder.setActionChoice(popMplsCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -211,7 +214,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         SetQueueCaseBuilder setQueueCaseBuilder = new SetQueueCaseBuilder();
         SetQueueActionBuilder setQueueBuilder = new SetQueueActionBuilder();
-        setQueueBuilder.setQueueId(1234L);
+        setQueueBuilder.setQueueId(Uint32.valueOf(1234));
         setQueueCaseBuilder.setSetQueueAction(setQueueBuilder.build());
         actionBuilder.setActionChoice(setQueueCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -219,7 +222,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         GroupCaseBuilder groupCaseBuilder = new GroupCaseBuilder();
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
-        groupActionBuilder.setGroupId(555L);
+        groupActionBuilder.setGroupId(Uint32.valueOf(555));
         groupCaseBuilder.setGroupAction(groupActionBuilder.build());
         actionBuilder.setActionChoice(groupCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -227,7 +230,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder nwTtlCaseBuilder = new SetNwTtlCaseBuilder();
         SetNwTtlActionBuilder nwTtlBuilder = new SetNwTtlActionBuilder();
-        nwTtlBuilder.setNwTtl((short) 8);
+        nwTtlBuilder.setNwTtl(Uint8.valueOf(8));
         nwTtlCaseBuilder.setSetNwTtlAction(nwTtlBuilder.build());
         actionBuilder.setActionChoice(nwTtlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -243,7 +246,7 @@ public class ActionConvertorV13Test {
         matchBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
-        inPortBuilder.setPortNumber(new PortNumber(1L));
+        inPortBuilder.setPortNumber(new PortNumber(Uint32.ONE));
         inPortCaseBuilder.setInPort(inPortBuilder.build());
         matchBuilder.setMatchEntryValue(inPortCaseBuilder.build());
 
@@ -261,7 +264,7 @@ public class ActionConvertorV13Test {
         actionBuilder = new ActionBuilder();
         PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
         PushPbbActionBuilder pushPbbBuilder = new PushPbbActionBuilder();
-        pushPbbBuilder.setEthertype(new EtherType(new EtherType(19)));
+        pushPbbBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(19))));
         pushPbbCaseBuilder.setPushPbbAction(pushPbbBuilder.build());
         actionBuilder.setActionChoice(pushPbbCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -361,7 +364,7 @@ public class ActionConvertorV13Test {
     }
 
     /**
-     * Test {@link ActionConvertor#convert(List, ActionConvertorData)} }.
+     * Test {@link ActionConvertor#convert(java.util.Collection, ActionConvertorData)} }.
      */
     @Test
     public void testGetActions() {
@@ -371,7 +374,7 @@ public class ActionConvertorV13Test {
 
         SetVlanPcpActionCaseBuilder vlanPcpCaseBuilder = new SetVlanPcpActionCaseBuilder();
         SetVlanPcpActionBuilder pcpBuilder = new SetVlanPcpActionBuilder();
-        pcpBuilder.setVlanPcp(new VlanPcp((short) 7));
+        pcpBuilder.setVlanPcp(new VlanPcp(Uint8.valueOf(7)));
         vlanPcpCaseBuilder.setSetVlanPcpAction(pcpBuilder.build());
         actionBuilder.setAction(vlanPcpCaseBuilder.build());
         actionBuilder.setOrder(0);
@@ -440,7 +443,7 @@ public class ActionConvertorV13Test {
         SetTpSrcActionCaseBuilder tpSrcCaseBuilder = new SetTpSrcActionCaseBuilder();
         SetTpSrcActionBuilder tpSrcBuilder = new SetTpSrcActionBuilder();
         tpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
-                .rev130715.PortNumber(54));
+                .rev130715.PortNumber(Uint16.valueOf(54)));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setAction(tpSrcCaseBuilder.build());
         actionBuilder.setOrder(6);
@@ -451,7 +454,7 @@ public class ActionConvertorV13Test {
         SetTpDstActionCaseBuilder tpDstCaseBuilder = new SetTpDstActionCaseBuilder();
         SetTpDstActionBuilder tpDstBuilder = new SetTpDstActionBuilder();
         tpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
-                .rev130715.PortNumber(45));
+                .rev130715.PortNumber(Uint16.valueOf(45)));
         tpDstCaseBuilder.setSetTpDstAction(tpDstBuilder.build());
         actionBuilder.setAction(tpDstCaseBuilder.build());
         actionBuilder.setOrder(7);
@@ -471,7 +474,7 @@ public class ActionConvertorV13Test {
                 .action.list.ActionBuilder();
         SetVlanIdActionCaseBuilder vlanIdCaseBuilder = new SetVlanIdActionCaseBuilder();
         SetVlanIdActionBuilder vlanIdBuilder = new SetVlanIdActionBuilder();
-        vlanIdBuilder.setVlanId(new VlanId(22));
+        vlanIdBuilder.setVlanId(new VlanId(Uint16.valueOf(22)));
         vlanIdCaseBuilder.setSetVlanIdAction(vlanIdBuilder.build());
         actionBuilder.setAction(vlanIdCaseBuilder.build());
         actionBuilder.setOrder(9);
@@ -503,7 +506,7 @@ public class ActionConvertorV13Test {
         actionBuilder.setOrder(11);
         salActions.add(actionBuilder.build());
 
-        IpMatchBuilder ipMatchBld = new IpMatchBuilder().setIpProtocol((short) 6);
+        IpMatchBuilder ipMatchBld = new IpMatchBuilder().setIpProtocol(Uint8.valueOf(6));
         MatchBuilder matchBld = new MatchBuilder().setIpMatch(ipMatchBld.build());
         FlowBuilder flowBld = new FlowBuilder().setMatch(matchBld.build());
         Flow flow = flowBld.build();

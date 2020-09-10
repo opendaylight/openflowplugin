@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.extension;
 
 import static org.junit.Assert.assertEquals;
@@ -29,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/17/14.
@@ -53,7 +53,7 @@ public class ActionExtensionHelperTest {
 
         ExperimenterIdCaseBuilder experimenterIdCaseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
-        experimenterBuilder.setExperimenter(new ExperimenterId(42L));
+        experimenterBuilder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
         experimenterIdCaseBuilder.setExperimenter(experimenterBuilder.build());
         actionBuilder.setActionChoice(experimenterIdCaseBuilder.build());
         Action action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13,
@@ -70,5 +70,4 @@ public class ActionExtensionHelperTest {
             return MockAction.class;
         }
     }
-
 }

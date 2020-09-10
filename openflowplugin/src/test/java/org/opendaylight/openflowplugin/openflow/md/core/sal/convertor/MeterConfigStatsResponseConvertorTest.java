@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.BandsBuilder;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterConfigStatsResponseConvertorTest {
     private static final int PRESET_COUNT = 7;
@@ -40,7 +41,7 @@ public class MeterConfigStatsResponseConvertorTest {
         List<MeterConfig> meterConfigs = new ArrayList<>();
         MeterConfigBuilder meterConfigBuilder = new MeterConfigBuilder();
         for (int i = 0; i < PRESET_COUNT; i++) {
-            meterConfigBuilder.setMeterId(new MeterId((long) i));
+            meterConfigBuilder.setMeterId(new MeterId(Uint32.valueOf(i)));
             List<Bands> bandses = new ArrayList<>();
 
             BandsBuilder bandsBuilder = new BandsBuilder();

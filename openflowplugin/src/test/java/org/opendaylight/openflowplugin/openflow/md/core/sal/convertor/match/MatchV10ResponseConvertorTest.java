@@ -59,20 +59,20 @@ public class MatchV10ResponseConvertorTest {
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(false, false, false, false,
                 false, false, false, false, false, false));
-        builder.setNwSrcMask((short) 24);
-        builder.setNwDstMask((short) 16);
-        builder.setInPort(6653);
+        builder.setNwSrcMask(Uint8.valueOf(24));
+        builder.setNwDstMask(Uint8.valueOf(16));
+        builder.setInPort(Uint16.valueOf(6653));
         builder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         builder.setDlDst(new MacAddress("02:02:02:02:02:02"));
-        builder.setDlVlan(128);
-        builder.setDlVlanPcp((short) 2);
-        builder.setDlType(15);
-        builder.setNwTos((short) 16);
-        builder.setNwProto((short) 6);
+        builder.setDlVlan(Uint16.valueOf(128));
+        builder.setDlVlanPcp(Uint8.TWO);
+        builder.setDlType(Uint16.valueOf(15));
+        builder.setNwTos(Uint8.valueOf(16));
+        builder.setNwProto(Uint8.valueOf(6));
         builder.setNwSrc(new Ipv4Address("1.1.1.2"));
         builder.setNwDst(new Ipv4Address("32.16.8.1"));
-        builder.setTpSrc(2048);
-        builder.setTpDst(4096);
+        builder.setTpSrc(Uint16.valueOf(2048));
+        builder.setTpDst(Uint16.valueOf(4096));
         MatchV10 match = builder.build();
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
@@ -112,20 +112,20 @@ public class MatchV10ResponseConvertorTest {
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(true, true, true, true,
                 true, true, true, true, true, true));
-        builder.setNwSrcMask((short) 24);
-        builder.setNwDstMask((short) 16);
-        builder.setInPort(6653);
+        builder.setNwSrcMask(Uint8.valueOf(24));
+        builder.setNwDstMask(Uint8.valueOf(16));
+        builder.setInPort(Uint16.valueOf(6653));
         builder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         builder.setDlDst(new MacAddress("02:02:02:02:02:02"));
-        builder.setDlVlan(128);
-        builder.setDlVlanPcp((short) 2);
-        builder.setDlType(15);
-        builder.setNwTos((short) 14);
-        builder.setNwProto((short) 6);
+        builder.setDlVlan(Uint16.valueOf(128));
+        builder.setDlVlanPcp(Uint8.TWO);
+        builder.setDlType(Uint16.valueOf(15));
+        builder.setNwTos(Uint8.valueOf(14));
+        builder.setNwProto(Uint8.valueOf(6));
         builder.setNwSrc(new Ipv4Address("1.1.1.2"));
         builder.setNwDst(new Ipv4Address("32.16.8.1"));
-        builder.setTpSrc(2048);
-        builder.setTpDst(4096);
+        builder.setTpSrc(Uint16.valueOf(2048));
+        builder.setTpDst(Uint16.valueOf(4096));
         MatchV10 match = builder.build();
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
@@ -176,9 +176,9 @@ public class MatchV10ResponseConvertorTest {
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(false, false, false, false,
                 false, false, false, false, false, false));
-        builder.setNwProto((short) 17);
-        builder.setTpSrc(2048);
-        builder.setTpDst(4096);
+        builder.setNwProto(Uint8.valueOf(17));
+        builder.setTpSrc(Uint16.valueOf(2048));
+        builder.setTpDst(Uint16.valueOf(4096));
         MatchV10 match = builder.build();
 
         final VersionDatapathIdConvertorData datapathIdConvertorData =
@@ -221,7 +221,7 @@ public class MatchV10ResponseConvertorTest {
         Uint32 dlType = Uint32.valueOf(0x800L);
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, true, true, true, true);
-        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
+        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.toUint16());
         MatchV10 match = builder.build();
 
         Uint64 dpid = Uint64.valueOf(12345L);
@@ -269,7 +269,7 @@ public class MatchV10ResponseConvertorTest {
 
         // Specify ICMPv4 protocol.
         Uint8 ipProto = Uint8.ONE;
-        match = builder.setNwProto(ipProto.shortValue()).build();
+        match = builder.setNwProto(ipProto).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         IpMatch ipMatch = salMatch.getIpMatch();
@@ -317,8 +317,8 @@ public class MatchV10ResponseConvertorTest {
                             null, salMatch.getIcmpv4Match());
 
         // Specify ICMPv4 type.
-        Uint8 icmpType = Uint8.valueOf(10);
-        match = builder.setTpSrc(icmpType.intValue()).build();
+        Uint8 icmpType = Uint8.TEN;
+        match = builder.setTpSrc(icmpType.toUint16()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -373,7 +373,7 @@ public class MatchV10ResponseConvertorTest {
 
         // Specify ICMPv4 code only.
         Uint8 icmpCode = Uint8.valueOf(33);
-        match = builder.setTpSrc((Uint16) null).setTpDst(icmpCode.intValue()).build();
+        match = builder.setTpSrc((Uint16) null).setTpDst(icmpCode.toUint16()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -401,7 +401,7 @@ public class MatchV10ResponseConvertorTest {
         // Specify both ICMPv4 type and code.
         icmpType = Uint8.ZERO;
         icmpCode = Uint8.valueOf(8);
-        match = builder.setTpSrc(icmpType.intValue()).setTpDst(icmpCode.intValue()).build();
+        match = builder.setTpSrc(icmpType.toUint16()).setTpDst(icmpCode.toUint16()).build();
         salMatch = convert(match, datapathIdConvertorData).build();
         etherMatch = salMatch.getEthernetMatch();
         ipMatch = salMatch.getIpMatch();
@@ -437,7 +437,7 @@ public class MatchV10ResponseConvertorTest {
         Uint32 dlType = Uint32.valueOf(0x800L);
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, false, true, true, true);
-        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
+        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.toUint16());
         MatchV10 match = builder.build();
 
         Uint64 dpid = Uint64.valueOf(12345L);
@@ -635,7 +635,7 @@ public class MatchV10ResponseConvertorTest {
         Uint32 dlType = Uint32.valueOf(0x800L);
         FlowWildcardsV10 wc = new FlowWildcardsV10(
             true, true, false, true, true, true, false, true, true, true);
-        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.intValue());
+        MatchV10Builder builder = new MatchV10Builder().setWildcards(wc).setDlType(dlType.toUint16());
         MatchV10 match = builder.build();
 
         Uint64 dpid = Uint64.valueOf(12345L);
