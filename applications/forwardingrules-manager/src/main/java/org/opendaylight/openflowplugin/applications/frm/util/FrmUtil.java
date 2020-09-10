@@ -112,11 +112,11 @@ public final class FrmUtil {
                     actions = ((WriteActionsCase)instruction.getInstruction())
                             .getWriteActions().nonnullAction().values();
                 }
-                for (Action action : actions) {
-                    if (action.getAction().implementedInterface()
-                            .equals(ActionType.GROUP_ACTION.getActionType())) {
-                        return ((GroupActionCase) action.getAction()).getGroupAction()
-                                .getGroupId();
+                if (actions != null) {
+                    for (Action action : actions) {
+                        if (action.getAction().implementedInterface().equals(ActionType.GROUP_ACTION.getActionType())) {
+                            return ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                        }
                     }
                 }
             }

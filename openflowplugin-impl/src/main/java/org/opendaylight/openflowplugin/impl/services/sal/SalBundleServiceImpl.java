@@ -31,12 +31,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple bundle extension service.
  */
 public class SalBundleServiceImpl implements SalBundleService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(SalBundleServiceImpl.class);
     private final SalExperimenterMessageService experimenterMessageService;
 
     public SalBundleServiceImpl(final SalExperimenterMessageService experimenterMessageService) {
@@ -46,6 +48,7 @@ public class SalBundleServiceImpl implements SalBundleService {
 
     @Override
     public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(ControlBundleInput input) {
+        LOG.debug("Control message for device {} and bundle type {}", input.getNode(), input.getType());
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         experimenterInputBuilder.setNode(input.getNode());
         experimenterInputBuilder.setExperimenterMessageOfChoice(

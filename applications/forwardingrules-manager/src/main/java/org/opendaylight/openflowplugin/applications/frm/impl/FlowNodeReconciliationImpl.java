@@ -244,15 +244,19 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         = salBundleService.controlBundle(closeBundleInput);
 
                 /* Open a new bundle on the switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle =
-                        Futures.transformAsync(closeBundle,
-                            rpcResult -> salBundleService.controlBundle(openBundleInput),
-                                service);
+                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
+                        = Futures.transformAsync(closeBundle, rpcResult -> {
+                            if (rpcResult.isSuccessful()) {
+                                LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
+                            }
+                            return salBundleService.controlBundle(openBundleInput);
+                        }, service);
 
                     /* Push groups and flows via bundle add messages */
                 ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
                         = Futures.transformAsync(openBundle, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
+                                LOG.debug("Open bundle is successful for device {}", dpnId);
                                 return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
                             }
                             return Futures.immediateFuture(null);
