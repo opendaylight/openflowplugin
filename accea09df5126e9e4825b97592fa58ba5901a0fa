@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "055ad244_0ccbabc5",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/TcpDestinationPortEntryDeserializer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-14T11:14:53Z",
+      "side": 1,
+      "message": "final int portMask \u003d hashMask ? message.readUnShort() : 0;",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "accea09df5126e9e4825b97592fa58ba5901a0fa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5159c2e9_964009b8",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/TcpSourcePortEntryDeserializer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-14T11:14:53Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 25,
+        "endChar": 9
+      },
+      "revId": "accea09df5126e9e4825b97592fa58ba5901a0fa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed238b17_fdc814f3",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/UdpDestinationPortEntryDeserializer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-14T11:14:53Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 25,
+        "endChar": 9
+      },
+      "revId": "accea09df5126e9e4825b97592fa58ba5901a0fa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d088f48c_79808aa1",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/deserialization/match/UdpSourcePortEntryDeserializer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-14T11:14:53Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 22,
+        "startChar": 8,
+        "endLine": 25,
+        "endChar": 9
+      },
+      "revId": "accea09df5126e9e4825b97592fa58ba5901a0fa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4234918a_cd97fbef",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/protocol/serialization/match/AbstractPortNumberWithMaskEntrySerilizer.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-14T11:14:53Z",
+      "side": 1,
+      "message": "Short.BYTE\n\nhttps://git.opendaylight.org/gerrit/c/openflowplugin/+/92380",
+      "range": {
+        "startLine": 20,
+        "startChar": 42,
+        "endLine": 20,
+        "endChar": 80
+      },
+      "revId": "accea09df5126e9e4825b97592fa58ba5901a0fa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
