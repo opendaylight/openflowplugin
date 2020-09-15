@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c021064e_66acabcd",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-15T10:22:04Z",
+      "side": 1,
+      "message": "this should be local method variable",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 125,
+        "endChar": 70
+      },
+      "revId": "28ac8db28cac34b5dc24041f4c21df90c5db3a47",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e06cdde_a36a7b92",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 6130
+      },
+      "writtenOn": "2020-09-15T10:22:04Z",
+      "side": 1,
+      "message": "this is not needed as you are removing from the map",
+      "range": {
+        "startLine": 392,
+        "startChar": 11,
+        "endLine": 392,
+        "endChar": 35
+      },
+      "revId": "28ac8db28cac34b5dc24041f4c21df90c5db3a47",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
