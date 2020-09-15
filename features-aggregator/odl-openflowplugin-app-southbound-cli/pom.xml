@@ -11,7 +11,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-app-southbound-cli</artifactId>
     <packaging>feature</packaging>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.11.0</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Application - Southbound CLI</name>
 
