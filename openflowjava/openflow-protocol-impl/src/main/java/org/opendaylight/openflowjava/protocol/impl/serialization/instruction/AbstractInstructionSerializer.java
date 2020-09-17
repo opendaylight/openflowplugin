@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.instruction;
 
 import io.netty.buffer.ByteBuf;
@@ -21,16 +20,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  */
 public abstract class AbstractInstructionSerializer implements OFSerializer<Instruction>,
         HeaderSerializer<Instruction> {
+    private final short type;
 
-    @Override
-    public void serializeHeader(Instruction input, ByteBuf outBuffer) {
-        outBuffer.writeShort(getType());
-        outBuffer.writeShort(InstructionConstants.INSTRUCTION_IDS_LENGTH);
+    protected AbstractInstructionSerializer(final short type) {
+        this.type = type;
     }
 
-    /**
-     * Returns the numeric representation of action type.
-     */
-    protected abstract int getType();
-
+    @Override
+    public final void serializeHeader(final Instruction input, final ByteBuf outBuffer) {
+        outBuffer.writeShort(type);
+        outBuffer.writeShort(InstructionConstants.INSTRUCTION_IDS_LENGTH);
+    }
 }

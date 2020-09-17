@@ -21,11 +21,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  * @author michal.polkorab
  */
 public class WriteActionsInstructionSerializer extends AbstractActionInstructionSerializer {
+    public WriteActionsInstructionSerializer() {
+        super(InstructionConstants.WRITE_ACTIONS_TYPE);
+    }
 
     @Override
     public void serialize(final Instruction instruction, final ByteBuf outBuffer) {
-        int startIndex = outBuffer.writerIndex();
-        outBuffer.writeShort(getType());
+        final int startIndex = outBuffer.writerIndex();
+        outBuffer.writeShort(InstructionConstants.WRITE_ACTIONS_TYPE);
         WriteActionsCase actionsCase = (WriteActionsCase) instruction.getInstructionChoice();
         if (actionsCase != null) {
             List<Action> actions = actionsCase.getWriteActions().getAction();
@@ -35,10 +38,4 @@ public class WriteActionsInstructionSerializer extends AbstractActionInstruction
             outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
         }
     }
-
-    @Override
-    protected int getType() {
-        return InstructionConstants.WRITE_ACTIONS_TYPE;
-    }
-
 }
