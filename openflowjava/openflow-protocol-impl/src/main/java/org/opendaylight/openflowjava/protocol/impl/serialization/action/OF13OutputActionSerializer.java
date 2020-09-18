@@ -11,6 +11,7 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
@@ -19,24 +20,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF13OutputActionSerializer extends AbstractActionSerializer {
+    public OF13OutputActionSerializer() {
+        super(ActionConstants.OUTPUT_CODE, ActionConstants.LARGER_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
-        outBuffer.writeInt(((OutputActionCase) action.getActionChoice()).getOutputAction()
-                .getPort().getValue().intValue());
-        outBuffer.writeShort(((OutputActionCase) action.getActionChoice()).getOutputAction().getMaxLength().toJava());
+
+        final OutputAction outputAction = ((OutputActionCase) action.getActionChoice()).getOutputAction();
+        outBuffer.writeInt(outputAction.getPort().getValue().intValue());
+        outBuffer.writeShort(outputAction.getMaxLength().intValue());
         outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
     }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.OUTPUT_CODE;
-    }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.LARGER_ACTION_LENGTH;
-    }
-
 }

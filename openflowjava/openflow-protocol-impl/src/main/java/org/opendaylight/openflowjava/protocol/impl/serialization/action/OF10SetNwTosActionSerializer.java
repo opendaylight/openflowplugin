@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import io.netty.buffer.ByteBuf;
@@ -19,22 +18,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class OF10SetNwTosActionSerializer extends AbstractActionSerializer {
+    public OF10SetNwTosActionSerializer() {
+        super(ActionConstants.SET_NW_TOS_CODE, ActionConstants.GENERAL_ACTION_LENGTH);
+    }
 
     @Override
-    public void serialize(Action action, ByteBuf outBuffer) {
+    public void serialize(final Action action, final ByteBuf outBuffer) {
         super.serialize(action, outBuffer);
         outBuffer.writeByte(((SetNwTosCase) action.getActionChoice()).getSetNwTosAction().getNwTos().toJava());
         outBuffer.writeZero(ActionConstants.PADDING_IN_SET_NW_TOS_ACTION);
     }
-
-    @Override
-    protected int getType() {
-        return ActionConstants.SET_NW_TOS_CODE;
-    }
-
-    @Override
-    protected int getLength() {
-        return ActionConstants.GENERAL_ACTION_LENGTH;
-    }
-
 }
