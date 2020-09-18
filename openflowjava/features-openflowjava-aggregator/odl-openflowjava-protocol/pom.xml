@@ -11,7 +11,7 @@
 
     <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
     <artifactId>odl-openflowjava-protocol</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.11.1-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <!-- <name> formatting is used by autorelease to parse and notify projects on

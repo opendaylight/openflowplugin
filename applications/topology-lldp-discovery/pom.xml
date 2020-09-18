@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-parent</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.11.1-SNAPSHOT</version>
     <relativePath>../../parent</relativePath>
   </parent>
   <groupId>org.opendaylight.openflowplugin.applications</groupId>
   <artifactId>topology-lldp-discovery</artifactId>
-  <version>0.11.0-SNAPSHOT</version>
+  <version>0.11.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <dependencies>
