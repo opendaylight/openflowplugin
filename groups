@@ -1,4 +1,5 @@
 # UUID                                                                        	Group Name
 #
+5f625fde5faf551258040da2e6f7afbbdfc8a72e                                      	saml/odl-gerrit-openflowplugin-committers
 c9025ab9ddc1e3171919e085449f22c54f8f7b54                                      	GitHub Replication
 ldap:cn=odl-gerrit-openflowplugin-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-openflowplugin-committers
