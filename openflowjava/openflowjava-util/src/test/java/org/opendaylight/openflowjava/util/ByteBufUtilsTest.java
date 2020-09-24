@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for ByteBufUtils.
@@ -355,8 +356,8 @@ public class ByteBufUtilsTest {
     @Test
     public void testWriteHeader() {
         HelloInputBuilder helloBuilder = new HelloInputBuilder();
-        helloBuilder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        helloBuilder.setXid(12345L);
+        helloBuilder.setVersion(EncodeConstants.OF_VERSION_1_3);
+        helloBuilder.setXid(Uint32.valueOf(12345));
         helloBuilder.setElements(null);
         HelloInput helloInput = helloBuilder.build();
         ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer();
