@@ -216,11 +216,11 @@ public class FlatBatchUtilTest {
         }
     }
 
-    private Batch createBatch(BatchStepType type) {
+    private static Batch createBatch(BatchStepType type) {
         return createBatch(type, 1);
     }
 
-    private Batch createBatch(BatchStepType type, final int size) {
+    private static Batch createBatch(BatchStepType type, final int size) {
         final BatchChoice batchCase;
         switch (type) {
             case FLOW_ADD:

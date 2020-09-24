@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterMessageSerializerTest extends AbstractSerializerTest {
     // Meter message constants
@@ -38,10 +39,10 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
     private static final short LENGTH_OF_METER_BANDS = 16;
     private static final short PADDING_IN_METER_BAND_DROP = 4;
     private static final short PADDING_IN_METER_BAND_DSCP_REMARK = 3;
-    private static final Long XID = 42L;
+    private static final Uint32 XID = Uint32.valueOf(42);
     private static final String CONTAINER_NAME = "container";
     private static final String METER_NAME = "meter";
-    private static final Long METER_ID = 1L;
+    private static final Uint32 METER_ID = Uint32.ONE;
     private static final Boolean BARRIER = false;
     private static final short VERSION = EncodeConstants.OF13_VERSION_ID;
     private static final MeterModCommand COMMAND = MeterModCommand.OFPMCADD;
@@ -51,13 +52,13 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
     private static final Boolean IS_METER_PKTPS = false;
     private static final Boolean IS_METER_STATS = true;
     // Bands
-    private static final Long BAND_BURST_SIZE = 50L;
-    private static final Long BAND_ID = 8L;
-    private static final Long BAND_RATE = 25L;
-    private static final Long DROP_RATE = 12L;
-    private static final Long DROP_BURST_SIZE = 24L;
-    private static final Long DSCP_RATE = 13L;
-    private static final Long DSCP_BURST_SIZE = 26L;
+    private static final Uint32 BAND_BURST_SIZE = Uint32.valueOf(50);
+    private static final Uint32 BAND_ID = Uint32.valueOf(8);
+    private static final Uint32 BAND_RATE = Uint32.valueOf(25);
+    private static final Uint32 DROP_RATE = Uint32.valueOf(12);
+    private static final Uint32 DROP_BURST_SIZE = Uint32.valueOf(24);
+    private static final Uint32 DSCP_RATE = Uint32.valueOf(13);
+    private static final Uint32 DSCP_BURST_SIZE = Uint32.valueOf(26);
     private static final short DSCP_PREC_LEVEL = (short) 4;
 
     // Message
@@ -68,7 +69,7 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
             .setFlags(new MeterFlags(IS_METER_BURST, IS_METER_KBPS, IS_METER_PKTPS, IS_METER_STATS))
             .setMeterId(new MeterId(METER_ID))
             .setXid(XID)
-            .setVersion(VERSION)
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setMeterName(METER_NAME)
             .setMeterBandHeaders(new MeterBandHeadersBuilder()
                     .setMeterBandHeader(Arrays.asList(
@@ -91,7 +92,7 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
                                                     .meter.types.rev130918.MeterBandType(false, true, false))
                                             .build())
                                     .setBandBurstSize(BAND_BURST_SIZE)
-                                    .withKey(new MeterBandHeaderKey(new BandId(BAND_ID + 1)))
+                                    .withKey(new MeterBandHeaderKey(new BandId(Uint32.valueOf(9))))
                                     .setBandRate(BAND_RATE)
                                     .setBandType(new DscpRemarkBuilder()
                                             .setDscpRemarkBurstSize(DSCP_BURST_SIZE)

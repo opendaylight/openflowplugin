@@ -19,12 +19,12 @@ import org.opendaylight.openflowplugin.impl.protocol.serialization.AbstractSeria
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestGroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartRequestGroupStatsSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_MULTIPART_REQUEST_GROUP_BODY = 4;
-    private static final long GROUP_ID = 42;
     private static final MultipartRequestGroupStats BODY = new MultipartRequestGroupStatsBuilder()
-            .setGroupId(new GroupId(GROUP_ID))
+            .setGroupId(new GroupId(Uint32.valueOf(42)))
             .build();
 
     private MultipartRequestGroupStatsSerializer serializer;
@@ -40,7 +40,7 @@ public class MultipartRequestGroupStatsSerializerTest extends AbstractSerializer
         final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(BODY, out);
 
-        assertEquals(out.readUnsignedInt(), GROUP_ID);
+        assertEquals(out.readUnsignedInt(), 42);
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_GROUP_BODY);
         assertEquals(out.readableBytes(), 0);
     }

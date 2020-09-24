@@ -28,11 +28,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SalMeterServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_METER_ID = 15L;
-    private static final Long DUMMY_METTER_ID = 2000L;
+    private static final Uint32 DUMMY_METER_ID = Uint32.valueOf(15);
+    private static final Uint32 DUMMY_METTER_ID = Uint32.valueOf(2000);
 
     @Mock
     DeviceMeterRegistry mockedDeviceMeterRegistry;

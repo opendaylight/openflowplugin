@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.translator;
 
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.g
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.aggregate._case.MultipartReplyAggregateBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test of {@link AggregatedFlowStatisticsTranslator}.
@@ -39,9 +39,9 @@ public class AggregatedFlowStatisticsTranslatorTest {
     @Test
     public void testTranslate() {
         MultipartReplyAggregateBuilder aggregateStatsValueBld = new MultipartReplyAggregateBuilder()
-                .setByteCount(BigInteger.valueOf(1L))
-                .setFlowCount(2L)
-                .setPacketCount(BigInteger.valueOf(3L));
+                .setByteCount(Uint64.ONE)
+                .setFlowCount(Uint32.TWO)
+                .setPacketCount(Uint64.valueOf(3));
         MultipartReplyAggregateCaseBuilder inputBld = new MultipartReplyAggregateCaseBuilder()
                 .setMultipartReplyAggregate(aggregateStatsValueBld.build());
         MultipartReplyMessageBuilder mpInputBld = new MultipartReplyMessageBuilder()

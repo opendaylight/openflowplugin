@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -23,13 +22,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartRequestMessageSerializerTest extends AbstractSerializerTest {
     // Multipart request message constants
     private static final byte PADDING_IN_MULTIPART_REQUEST_MESSAGE = 4;
     private static final short LENGTH = 24;
-    private static final Long XID = 42L;
-    private static final short VERSION = EncodeConstants.OF13_VERSION_ID;
+    private static final Uint32 XID = Uint32.valueOf(42);
+    private static final Uint8 VERSION = EncodeConstants.OF_VERSION_1_3;
     private static final boolean IS_REQUEST_MORE = false;
     private static final MultipartType MULTIPART_TYPE = MultipartType.OFPMPQUEUE;
     private static final int MESSAGE_TYPE = 18;

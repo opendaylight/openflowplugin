@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * openflowplugin-impl
@@ -56,7 +57,7 @@ public class OpenflowProtocolListenerFullImplTest {
     @Mock
     private ConnectionAdapter connectionAdapter;
 
-    private final long xid = 42L;
+    private final Uint32 xid = Uint32.valueOf(42);
 
     @Before
     public void setUp() {

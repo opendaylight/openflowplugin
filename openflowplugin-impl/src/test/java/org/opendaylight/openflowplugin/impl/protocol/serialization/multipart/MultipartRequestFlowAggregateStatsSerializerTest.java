@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -25,16 +23,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multip
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.aggregate.stats.FlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartRequestFlowAggregateStatsSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02 = 4;
-    private static final short TABLE_ID = 42;
-    private static final BigInteger OUT_PORT = BigInteger.ONE;
-    private static final long OUT_GROUP = 10;
-    private static final FlowCookie COOKIE = new FlowCookie(BigInteger.valueOf(8));
-    private static final FlowCookie COOKIE_MASK = new FlowCookie(BigInteger.TEN);
-    private static final Short IP_PROTOCOL_MATCH = (short) 17;
+    private static final Uint8 TABLE_ID = Uint8.valueOf(42);
+    private static final Uint64 OUT_PORT = Uint64.ONE;
+    private static final Uint32 OUT_GROUP = Uint32.TEN;
+    private static final FlowCookie COOKIE = new FlowCookie(Uint64.valueOf(8));
+    private static final FlowCookie COOKIE_MASK = new FlowCookie(Uint64.TEN);
+    private static final Uint8 IP_PROTOCOL_MATCH = Uint8.valueOf(17);
     private static final Match MATCH = new MatchBuilder()
             .setIpMatch(new IpMatchBuilder()
                     .setIpProtocol(IP_PROTOCOL_MATCH)

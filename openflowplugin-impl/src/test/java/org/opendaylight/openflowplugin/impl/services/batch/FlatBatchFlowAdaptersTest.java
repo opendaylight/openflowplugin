@@ -42,6 +42,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Test for {@link FlatBatchFlowAdapters}.
@@ -130,8 +131,8 @@ public class FlatBatchFlowAdaptersTest {
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowError")
                 .withResult(new AddFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(Lists.newArrayList(
-                                createBatchFailedFlowsOutput(0, "f1"),
-                                createBatchFailedFlowsOutput(1, "f2")
+                                createBatchFailedFlowsOutput(Uint16.ZERO, "f1"),
+                                createBatchFailedFlowsOutput(Uint16.ONE, "f2")
                         ))
                         .build())
                 .build();
@@ -166,7 +167,7 @@ public class FlatBatchFlowAdaptersTest {
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
-    private static BatchFailedFlowsOutput createBatchFailedFlowsOutput(final Integer batchOrder,
+    private static BatchFailedFlowsOutput createBatchFailedFlowsOutput(final Uint16 batchOrder,
             final String flowIdValue) {
         return new BatchFailedFlowsOutputBuilder()
                 .setFlowId(new FlowId(flowIdValue))
@@ -174,7 +175,7 @@ public class FlatBatchFlowAdaptersTest {
                 .build();
     }
 
-    private static BatchFailure createChainFailure(final int batchOrder, final String flowIdValue) {
+    private static BatchFailure createChainFailure(final Uint16 batchOrder, final String flowIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()

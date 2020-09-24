@@ -40,6 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SalTableServiceImplTest extends ServiceMocking {
 
@@ -99,9 +101,9 @@ public class SalTableServiceImplTest extends ServiceMocking {
     public void testUpdateTableSuccess() {
         Mockito.doAnswer((Answer<Void>) invocation -> {
             TableFeaturesBuilder tableFeaturesBld = new TableFeaturesBuilder()
-                    .setTableId((short) 0)
+                    .setTableId(Uint8.ZERO)
                     .setName("Zafod")
-                    .setMaxEntries(42L)
+                    .setMaxEntries(Uint32.valueOf(42))
                     .setTableFeatureProperties(Collections.emptyList());
             MultipartReplyTableFeaturesBuilder mpTableFeaturesBld = new MultipartReplyTableFeaturesBuilder()
                     .setTableFeatures(Collections.singletonList(tableFeaturesBld.build()));
@@ -110,7 +112,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
             MultipartReplyMessageBuilder mpResultBld = new MultipartReplyMessageBuilder()
                     .setType(MultipartType.OFPMPTABLEFEATURES)
                     .setMultipartReplyBody(mpBodyBld.build())
-                    .setXid(21L);
+                    .setXid(Uint32.valueOf(21));
             final RpcResult<List<MultipartReply>> rpcResult = RpcResultBuilder
                     .success(Collections.singletonList((MultipartReply) mpResultBld.build()))
                     .build();
@@ -126,7 +128,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
     private static UpdateTableInput prepareUpdateTable() {
         UpdateTableInputBuilder updateTableInputBuilder = new UpdateTableInputBuilder();
         UpdatedTableBuilder updatedTableBuilder = new UpdatedTableBuilder();
-        updatedTableBuilder.setTableFeatures(Collections.emptyList());
+        updatedTableBuilder.setTableFeatures(Collections.emptyMap());
         updateTableInputBuilder.setUpdatedTable(updatedTableBuilder.build());
         return updateTableInputBuilder.build();
     }

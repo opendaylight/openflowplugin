@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -33,6 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class FlowCreatorUtilTest {
 
@@ -86,15 +88,15 @@ public class FlowCreatorUtilTest {
         final Short[] versions = {null, of10, of13};
         final Boolean[] bools = {null, Boolean.TRUE, Boolean.FALSE};
 
-        final Integer defPri = Integer.valueOf(0x8000);
-        final Integer defIdle = Integer.valueOf(0);
-        final Integer defHard = Integer.valueOf(0);
+        final Uint16 defPri = Uint16.valueOf(0x8000);
+        final Uint16 defIdle = Uint16.ZERO;
+        final Uint16 defHard = Uint16.ZERO;
         final FlowModFlags defFlags = FlowModFlags.getDefaultInstance("sENDFLOWREM");
         final FlowModFlags flags = new FlowModFlags(false, true, false, true, false);
-        final FlowCookie defCookie = new FlowCookie(BigInteger.ZERO);
-        final FlowCookie cookie = new FlowCookie(BigInteger.valueOf(0x12345L));
-        final FlowCookie cookie1 = new FlowCookie(BigInteger.valueOf(0x67890L));
-        final FlowCookie cookieMask = new FlowCookie(BigInteger.valueOf(0xffff00L));
+        final FlowCookie defCookie = new FlowCookie(Uint64.ZERO);
+        final FlowCookie cookie = new FlowCookie(Uint64.valueOf(0x12345));
+        final FlowCookie cookie1 = new FlowCookie(Uint64.valueOf(0x67890));
+        final FlowCookie cookieMask = new FlowCookie(Uint64.valueOf(0xffff00));
 
         for (final Short ver : versions) {
             final OriginalFlowBuilder originalBuilder = new OriginalFlowBuilder();
@@ -116,9 +118,12 @@ public class FlowCreatorUtilTest {
             // Set non-default values.
             canModifyFlowTest(true, originalBuilder.setMatch(createMatch(0x800L)),
                               updatedBuilder.setMatch(createMatch(0x800L)), ver);
-            canModifyFlowTest(true, originalBuilder.setIdleTimeout(600), updatedBuilder.setIdleTimeout(600), ver);
-            canModifyFlowTest(true, originalBuilder.setHardTimeout(1200), updatedBuilder.setHardTimeout(1200), ver);
-            canModifyFlowTest(true, originalBuilder.setPriority(100), updatedBuilder.setPriority(100), ver);
+            canModifyFlowTest(true, originalBuilder.setIdleTimeout(Uint16.valueOf(600)),
+                updatedBuilder.setIdleTimeout(Uint16.valueOf(600)), ver);
+            canModifyFlowTest(true, originalBuilder.setHardTimeout(Uint16.valueOf(1200)),
+                updatedBuilder.setHardTimeout(Uint16.valueOf(1200)), ver);
+            canModifyFlowTest(true, originalBuilder.setPriority(Uint16.valueOf(100)),
+                updatedBuilder.setPriority(Uint16.valueOf(100)), ver);
             canModifyFlowTest(true, originalBuilder.setFlags(flags), updatedBuilder.setFlags(flags), ver);
             canModifyFlowTest(true, originalBuilder.setCookie(cookie), updatedBuilder.setCookie(cookie), ver);
 
@@ -154,7 +159,7 @@ public class FlowCreatorUtilTest {
             }
 
             // Set different cookie.
-            final FlowCookie[] cookies = {null, defCookie, new FlowCookie(BigInteger.valueOf(0x123456L)),};
+            final FlowCookie[] cookies = {null, defCookie, new FlowCookie(Uint64.valueOf(0x123456L)),};
             for (final FlowCookie c : cookies) {
                 canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setCookie(c), ver);
                 canModifyFlowTest(false, new OriginalFlowBuilder(org).setCookie(c), updatedBuilder, ver);
@@ -171,7 +176,7 @@ public class FlowCreatorUtilTest {
                 canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
 
                 updatedBuilder.setCookieMask(cookieMask);
-                final boolean expected = (of13.equals(ver) && !Boolean.TRUE.equals(strict));
+                final boolean expected = of13.equals(ver) && !Boolean.TRUE.equals(strict);
                 canModifyFlowTest(expected, originalBuilder, updatedBuilder, ver);
             }
         }
@@ -213,11 +218,11 @@ public class FlowCreatorUtilTest {
                 assertEquals(expected, FlowCreatorUtil.equalsFlowModFlags(f, flags));
             }
 
-            final boolean overlap = (bit == 0);
-            final boolean noByte = (bit == 1);
-            final boolean noPacket = (bit == 2);
-            final boolean reset = (bit == 3);
-            final boolean flowRem = (bit == 4);
+            final boolean overlap = bit == 0;
+            final boolean noByte = bit == 1;
+            final boolean noPacket = bit == 2;
+            final boolean reset = bit == 3;
+            final boolean flowRem = bit == 4;
             FlowModFlags flowModFlags = new FlowModFlags(overlap, noByte, noPacket, reset, flowRem);
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flags, flowModFlags));
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flowModFlags, flags));
@@ -331,7 +336,7 @@ public class FlowCreatorUtilTest {
      */
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match createMatch(
             final long etherType) {
-        final EthernetTypeBuilder ethType = new EthernetTypeBuilder().setType(new EtherType(etherType));
+        final EthernetTypeBuilder ethType = new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(etherType)));
         final EthernetMatchBuilder ether = new EthernetMatchBuilder().setEthernetType(ethType.build());
         return new MatchBuilder().setEthernetMatch(ether.build()).build();
     }

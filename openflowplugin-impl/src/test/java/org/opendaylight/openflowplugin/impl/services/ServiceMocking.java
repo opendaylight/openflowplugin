@@ -58,7 +58,7 @@ public abstract class ServiceMocking {
     protected static final Uint8 DUMMY_VERSION = Uint8.valueOf(OFConstants.OFP_VERSION_1_3);
     protected static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(2121L);
     protected static final Xid DUMMY_XID = new Xid(DUMMY_XID_VALUE);
-    protected static final long DUMMY_EXPERIMENTER_ID = 42L;
+    protected static final Uint32 DUMMY_EXPERIMENTER_ID = Uint32.valueOf(42);
 
     protected static final String DUMMY_NODE_ID = "444";
     protected static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_II = InstanceIdentifier

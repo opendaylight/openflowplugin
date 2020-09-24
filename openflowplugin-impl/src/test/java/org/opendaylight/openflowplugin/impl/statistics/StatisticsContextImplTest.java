@@ -62,8 +62,8 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         Mockito.when(config.isIsMeterStatisticsPollingOn()).thenReturn(true);
         Mockito.when(config.isIsPortStatisticsPollingOn()).thenReturn(true);
         Mockito.when(config.isIsQueueStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(3000L));
-        Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(50000L));
+        Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(3000)));
+        Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(50000)));
 
         initStatisticsContext();
     }

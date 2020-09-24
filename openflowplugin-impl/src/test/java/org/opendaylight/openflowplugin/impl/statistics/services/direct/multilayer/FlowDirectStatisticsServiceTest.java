@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -40,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
@@ -78,11 +78,11 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         final MultipartReplyFlowCase flowCase = mock(MultipartReplyFlowCase.class);
         final MultipartReplyFlow flow = mock(MultipartReplyFlow.class);
         final FlowStats flowStat = new FlowStatsBuilder()
-                .setDurationSec(1L)
-                .setDurationNsec(1L)
+                .setDurationSec(Uint32.ONE)
+                .setDurationNsec(Uint32.ONE)
                 .setTableId(TABLE_NO)
-                .setByteCount(BigInteger.ONE)
-                .setPacketCount(BigInteger.ONE)
+                .setByteCount(Uint64.ONE)
+                .setPacketCount(Uint64.ONE)
                 .setFlags(mock(FlowModFlags.class))
                 .setMatch(new org.opendaylight.yang.gen.v1.urn
                         .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()

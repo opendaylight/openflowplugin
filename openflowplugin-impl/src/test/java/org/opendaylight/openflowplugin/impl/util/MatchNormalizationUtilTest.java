@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import static org.junit.Assert.assertEquals;
@@ -37,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.TunnelIpv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class MatchNormalizationUtilTest {
     @Test
@@ -70,7 +70,7 @@ public class MatchNormalizationUtilTest {
 
         final MatchBuilder matchBuilder = MatchNormalizationUtil.normalizeArpMatch(new MatchBuilder()
                 .setLayer3Match(new ArpMatchBuilder()
-                        .setArpOp(10)
+                        .setArpOp(Uint16.TEN)
                         .setArpSourceTransportAddress(new Ipv4Prefix(source))
                         .setArpTargetTransportAddress(new Ipv4Prefix(destination))
                         .setArpTargetHardwareAddress(new ArpTargetHardwareAddressBuilder()

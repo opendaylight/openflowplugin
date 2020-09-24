@@ -66,6 +66,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl}.
@@ -307,13 +308,13 @@ public class SalMetersBatchServiceImplTest {
 
     private static BatchAddMeters createEmptyBatchAddMeter(final long groupIdValue) {
         return new BatchAddMetersBuilder()
-                .setMeterId(new MeterId(groupIdValue))
+                .setMeterId(new MeterId(Uint32.valueOf(groupIdValue)))
                 .build();
     }
 
     private static BatchRemoveMeters createEmptyBatchRemoveMeter(final long groupIdValue) {
         return new BatchRemoveMetersBuilder()
-                .setMeterId(new MeterId(groupIdValue))
+                .setMeterId(new MeterId(Uint32.valueOf(groupIdValue)))
                 .build();
     }
 

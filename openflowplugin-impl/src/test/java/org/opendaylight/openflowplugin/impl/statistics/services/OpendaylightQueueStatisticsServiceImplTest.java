@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test for {@link OpendaylightQueueStatisticsServiceImpl}.
@@ -51,6 +51,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
     private OpendaylightQueueStatisticsServiceImpl queueStatisticsService;
 
+    @Override
     public void setUp() {
         queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -87,13 +88,13 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
                         .setMultipartReplyBody(new MultipartReplyQueueCaseBuilder()
                                 .setMultipartReplyQueue(new MultipartReplyQueueBuilder()
                                         .setQueueStats(Collections.singletonList(new QueueStatsBuilder()
-                                                .setDurationSec(41L)
-                                                .setDurationNsec(42L)
-                                                .setTxBytes(BigInteger.valueOf(43L))
-                                                .setTxErrors(BigInteger.valueOf(44L))
-                                                .setTxPackets(BigInteger.valueOf(45L))
-                                                .setPortNo(46L)
-                                                .setQueueId(47L)
+                                                .setDurationSec(Uint32.valueOf(41))
+                                                .setDurationNsec(Uint32.valueOf(42))
+                                                .setTxBytes(Uint64.valueOf(43))
+                                                .setTxErrors(Uint64.valueOf(44))
+                                                .setTxPackets(Uint64.valueOf(45))
+                                                .setPortNo(Uint32.valueOf(46))
+                                                .setQueueId(Uint32.valueOf(47))
                                                 .build()))
                                         .build())
                                 .build())
@@ -129,7 +130,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
         GetQueueStatisticsFromGivenPortInputBuilder input = new GetQueueStatisticsFromGivenPortInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setNodeConnectorId(new NodeConnectorId("unitProt:123:321"))
-                .setQueueId(new QueueId(21L));
+                .setQueueId(new QueueId(Uint32.valueOf(21)));
 
         rpcResult = buildQueueStatsReply();
 

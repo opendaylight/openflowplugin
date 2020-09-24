@@ -16,7 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +51,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -93,9 +94,9 @@ public class DeviceFlowRegistryImplTest {
         final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
 
         final Flow flow = new FlowBuilder()
-                .setTableId((short)1)
-                .setPriority(10)
-                .setCookie(new FlowCookie(BigInteger.TEN))
+                .setTableId(Uint8.ONE)
+                .setPriority(Uint16.TEN)
+                .setCookie(new FlowCookie(Uint64.TEN))
                 .setId(new FlowId("HELLO"))
                 .build();
 

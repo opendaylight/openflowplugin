@@ -15,13 +15,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.PacketTypeMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.PacketTypeMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PacketTypeEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void serializeTest() {
         final long packetType = 0x1894f;
 
-        PacketTypeMatch packetTypeMatch = new PacketTypeMatchBuilder().setPacketType(packetType).build();
+        PacketTypeMatch packetTypeMatch = new PacketTypeMatchBuilder()
+                .setPacketType(Uint32.valueOf(packetType))
+                .build();
         final Match match = new MatchBuilder().setPacketTypeMatch(packetTypeMatch).build();
 
         assertMatch(match, false, byteBuf -> assertEquals(packetType, byteBuf.readUnsignedInt()));

@@ -23,7 +23,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
-import java.math.BigInteger;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
@@ -110,6 +109,7 @@ import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -432,9 +432,9 @@ public class DeviceContextImplTest {
     public void testProcessFlowRemovedMessage() {
         // prepare translation result
         final FlowRemovedBuilder flowRemovedMdsalBld = new FlowRemovedBuilder()
-                .setTableId((short) 0)
-                .setPriority(42)
-                .setCookie(new FlowCookie(BigInteger.ONE))
+                .setTableId(Uint8.ZERO)
+                .setPriority(Uint16.valueOf(42))
+                .setCookie(new FlowCookie(Uint64.ONE))
                 .setMatch(new MatchBuilder().build());
         final NotificationPublishService mockedNotificationPublishService = mock(NotificationPublishService.class);
 
@@ -454,7 +454,7 @@ public class DeviceContextImplTest {
         // prepare path to flow to be removed
         final KeyedInstanceIdentifier<Flow, FlowKey> flowToBeRemovedPath = nodeKeyIdent
                 .augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey((short) 0))
+                .child(Table.class, new TableKey(Uint8.ZERO))
                 .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
 
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
