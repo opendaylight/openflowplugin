@@ -59,7 +59,7 @@ public class TypeKeyMakerFactoryTest {
 
         Assert.assertNotNull("Null key", key);
         Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
-                        OutputActionCase.class, (Uint32) null), key);
+                        OutputActionCase.class, null), key);
     }
 
     /**
@@ -72,14 +72,14 @@ public class TypeKeyMakerFactoryTest {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
             .ActionBuilder builder = new ActionBuilder();
-        builder.setExperimenterId(new ExperimenterId(42L));
+        builder.setExperimenterId(new ExperimenterId(Uint32.valueOf(42)));
         builder.setActionChoice(new CopyTtlInCaseBuilder().build());
         Action action = builder.build();
         MessageTypeKey<?> key = keyMaker.make(action);
 
         Assert.assertNotNull("Null key", key);
         Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
-                CopyTtlInCase.class, 42L), key);
+                CopyTtlInCase.class, Uint32.valueOf(42)), key);
     }
 
     /**
@@ -111,7 +111,7 @@ public class TypeKeyMakerFactoryTest {
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         InstructionBuilder builder = new InstructionBuilder();
-        builder.setExperimenterId(new ExperimenterId(42L));
+        builder.setExperimenterId(new ExperimenterId(Uint32.valueOf(42)));
         builder.setInstructionChoice(new ClearActionsCaseBuilder().build());
         Instruction instruction = builder.build();
         MessageTypeKey<?> key = keyMaker.make(instruction);
@@ -158,7 +158,7 @@ public class TypeKeyMakerFactoryTest {
         builder.setHasMask(true);
         ExperimenterIdCaseBuilder caseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
-        expBuilder.setExperimenter(new ExperimenterId(42L));
+        expBuilder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
         caseBuilder.setExperimenter(expBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());
         MatchEntry entry = builder.build();
