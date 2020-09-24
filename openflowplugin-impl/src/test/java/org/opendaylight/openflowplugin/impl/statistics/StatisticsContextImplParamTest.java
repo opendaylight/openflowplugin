@@ -36,12 +36,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(Parameterized.class)
 public class StatisticsContextImplParamTest extends StatisticsContextImpMockInitiation {
 
     @Mock
-    private OpenflowProviderConfig config = mock(OpenflowProviderConfig.class);
+    private final OpenflowProviderConfig config = mock(OpenflowProviderConfig.class);
 
     public StatisticsContextImplParamTest(final boolean isTable, final boolean isFlow,
                                           final boolean isGroup, final boolean isMeter,
@@ -75,8 +76,8 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         Mockito.when(config.isIsMeterStatisticsPollingOn()).thenReturn(true);
         Mockito.when(config.isIsPortStatisticsPollingOn()).thenReturn(true);
         Mockito.when(config.isIsQueueStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(3000L));
-        Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(50000L));
+        Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(3000)));
+        Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(50000)));
     }
 
     @Test

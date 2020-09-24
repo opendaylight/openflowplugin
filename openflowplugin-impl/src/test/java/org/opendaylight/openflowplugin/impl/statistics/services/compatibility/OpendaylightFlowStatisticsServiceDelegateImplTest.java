@@ -61,6 +61,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceDelegateImpl}.
@@ -97,13 +101,13 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setTableId(new TableId((short) 1));
+                .setTableId(new TableId(Uint8.ONE));
 
         Mockito.when(translator.translate(any(MultipartReply.class), eq(deviceInfo),any()))
                 .thenReturn(new AggregatedFlowStatisticsBuilder()
-                        .setByteCount(new Counter64(BigInteger.valueOf(50L)))
-                        .setPacketCount(new Counter64(BigInteger.valueOf(51L)))
-                        .setFlowCount(new Counter32(52L))
+                        .setByteCount(new Counter64(Uint64.valueOf(50)))
+                        .setPacketCount(new Counter64(Uint64.valueOf(51)))
+                        .setFlowCount(new Counter32(Uint32.valueOf(52)))
                         .build());
 
         rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(new MultipartReplyMessageBuilder()
@@ -112,9 +116,9 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .setFlags(new MultipartRequestFlags(false))
                 .setMultipartReplyBody(new MultipartReplyAggregateCaseBuilder()
                         .setMultipartReplyAggregate(new MultipartReplyAggregateBuilder()
-                                .setByteCount(BigInteger.valueOf(50L))
-                                .setPacketCount(BigInteger.valueOf(51L))
-                                .setFlowCount(52L)
+                                .setByteCount(Uint64.valueOf(50))
+                                .setPacketCount(Uint64.valueOf(51))
+                                .setFlowCount(Uint32.valueOf(52))
                                 .build())
                         .build())
                 .build()))
@@ -137,7 +141,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
     public void testGetAllFlowStatisticsFromFlowTable() throws Exception {
         GetAllFlowStatisticsFromFlowTableInputBuilder input = new GetAllFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setTableId(new TableId((short) 1));
+                .setTableId(new TableId(Uint8.ONE));
 
         rpcResult = buildFlowStatsReply();
 
@@ -159,39 +163,36 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .setVersion(OFConstants.OFP_VERSION_1_3)
                 .setFlags(new MultipartRequestFlags(false))
                 .setMultipartReplyBody(new MultipartReplyFlowCaseBuilder()
-                        .setMultipartReplyFlow(new MultipartReplyFlowBuilder()
-                                .setFlowStats(Collections.singletonList(new FlowStatsBuilder()
-                                        .setTableId((short) 123)
-                                        .setDurationSec(10L)
-                                        .setDurationNsec(11L)
-                                        .setByteCount(BigInteger.valueOf(12L))
-                                        .setPacketCount(BigInteger.valueOf(13L))
-                                        .setCookie(BigInteger.ZERO)
-                                        .setPriority(14)
-                                        .setMatch(new MatchBuilder()
-                                                .setMatchEntry(Collections.emptyList())
+                    .setMultipartReplyFlow(new MultipartReplyFlowBuilder()
+                        .setFlowStats(Collections.singletonList(new FlowStatsBuilder()
+                            .setTableId(Uint8.valueOf(123))
+                            .setDurationSec(Uint32.TEN)
+                            .setDurationNsec(Uint32.valueOf(11))
+                            .setByteCount(Uint64.valueOf(12))
+                            .setPacketCount(Uint64.valueOf(13))
+                            .setCookie(Uint64.ZERO)
+                            .setPriority(Uint16.valueOf(14))
+                            .setMatch(new MatchBuilder().setMatchEntry(Collections.emptyList()).build())
+                            .setHardTimeout(Uint16.valueOf(15))
+                            .setIdleTimeout(Uint16.valueOf(16))
+                            .setFlags(new FlowModFlags(true, false, false, false, false))
+                            .setInstruction(Collections.singletonList(new InstructionBuilder()
+                                .setInstructionChoice(new ApplyActionsCaseBuilder()
+                                    .setApplyActions(new ApplyActionsBuilder()
+                                        .setAction(Collections.singletonList(new ActionBuilder()
+                                            .setActionChoice(new OutputActionCaseBuilder()
+                                                .setOutputAction(new OutputActionBuilder()
+                                                    .setMaxLength(Uint16.valueOf(17))
+                                                    .setPort(new PortNumber(Uint32.valueOf(18)))
+                                                    .build())
                                                 .build())
-                                        .setHardTimeout(15)
-                                        .setIdleTimeout(16)
-                                        .setFlags(new FlowModFlags(true, false, false, false, false))
-                                        .setInstruction(Collections.singletonList(new InstructionBuilder()
-                                                .setInstructionChoice(new ApplyActionsCaseBuilder()
-                                                        .setApplyActions(new ApplyActionsBuilder()
-                                                                .setAction(Collections.singletonList(new ActionBuilder()
-                                                                        .setActionChoice(new OutputActionCaseBuilder()
-                                                                                .setOutputAction(
-                                                                                        new OutputActionBuilder()
-                                                                                        .setMaxLength(17)
-                                                                                        .setPort(new PortNumber(18L))
-                                                                                        .build())
-                                                                                .build())
-                                                                        .build()))
-                                                                .build())
-                                                        .build())
-                                                .build()))
-                                        .build()))
-                                .build())
+                                            .build()))
+                                        .build())
+                                    .build())
+                                .build()))
+                            .build()))
                         .build())
+                    .build())
                 .build()))
                 .build();
     }

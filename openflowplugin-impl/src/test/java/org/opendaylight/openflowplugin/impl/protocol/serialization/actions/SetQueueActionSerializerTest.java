@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -16,20 +15,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetQueueActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SetQueueActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final long queue = 10;
-
         final Action action = new SetQueueActionCaseBuilder()
-                .setSetQueueAction(new SetQueueActionBuilder()
-                        .setQueueId(queue)
-                        .build())
+                .setSetQueueAction(new SetQueueActionBuilder().setQueueId(Uint32.TEN).build())
                 .build();
 
-        assertAction(action, out -> assertEquals(out.readUnsignedInt(), queue));
+        assertAction(action, out -> assertEquals(out.readUnsignedInt(), 10));
     }
 
     @Override

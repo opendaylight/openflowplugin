@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.collect.Lists;
-import java.math.BigInteger;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +33,9 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
 
     private static final String PACKET_DATA = "Test_Data";
     private static final Uint32 PORT_NO = Uint32.valueOf(5L);
-    private static final Uint64 DATA_PATH_ID = Uint64.valueOf(10);
+    private static final Uint64 DATA_PATH_ID = Uint64.TEN;
     private static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
-    private static final Long TABLE_ID = 42L;
+    private static final Uint32 TABLE_ID = Uint32.valueOf(42);
 
     private static PacketIn createPacketIn(final Uint32 portNo) {
         InPortBuilder inPortBuilder = new InPortBuilder()
@@ -60,7 +59,7 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
                 .setReason(PacketInReason.OFPRACTION)
                 .setMatch(matchBuilder.build())
                 .setVersion(OFConstants.OFP_VERSION_1_3)
-                .setCookie(BigInteger.ZERO)
+                .setCookie(Uint64.ZERO)
                 .setTableId(new TableId(TABLE_ID))
                 .build();
     }

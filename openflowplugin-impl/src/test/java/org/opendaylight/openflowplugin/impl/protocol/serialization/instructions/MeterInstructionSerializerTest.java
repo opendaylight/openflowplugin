@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions;
 
 import static org.junit.Assert.assertEquals;
@@ -17,20 +16,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final long meter = 2;
-
         final Instruction instruction = new MeterCaseBuilder()
-                .setMeter(new MeterBuilder()
-                        .setMeterId(new MeterId(meter))
-                        .build())
+                .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.TWO)).build())
                 .build();
 
-        assertInstruction(instruction, out -> assertEquals(out.readUnsignedInt(), meter));
+        assertInstruction(instruction, out -> assertEquals(out.readUnsignedInt(), 2L));
     }
 
     @Override

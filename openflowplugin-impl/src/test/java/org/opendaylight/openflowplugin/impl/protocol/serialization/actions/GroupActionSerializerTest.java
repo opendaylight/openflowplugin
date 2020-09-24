@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -16,20 +15,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final long group = 10L;
-
         final Action action = new GroupActionCaseBuilder()
-                .setGroupAction(new GroupActionBuilder()
-                        .setGroupId(group)
-                        .build())
+                .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.TEN).build())
                 .build();
 
-        assertAction(action, out -> assertEquals(out.readUnsignedInt(), group));
+        assertAction(action, out -> assertEquals(out.readUnsignedInt(), 10));
     }
 
     @Override
@@ -46,5 +42,4 @@ public class GroupActionSerializerTest extends AbstractActionSerializerTest {
     protected int getLength() {
         return ActionConstants.GENERAL_ACTION_LENGTH;
     }
-
 }

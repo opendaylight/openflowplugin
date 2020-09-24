@@ -19,9 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SingleLayerGroupServiceTest extends ServiceMocking {
-    private static final long GROUP_ID = 42;
+    private static final Uint32 GROUP_ID = Uint32.valueOf(42);
     private SingleLayerGroupService<AddGroupOutput> service;
 
     @Override
@@ -42,6 +43,6 @@ public class SingleLayerGroupServiceTest extends ServiceMocking {
         final GroupMessage result = (GroupMessage) ofHeader;
 
         assertEquals(GroupModCommand.OFPGCADD, result.getCommand());
-        assertEquals(GROUP_ID, result.getGroupId().getValue().longValue());
+        assertEquals(GROUP_ID, result.getGroupId().getValue());
     }
 }

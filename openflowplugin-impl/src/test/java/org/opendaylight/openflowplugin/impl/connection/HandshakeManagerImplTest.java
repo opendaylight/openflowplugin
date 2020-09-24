@@ -43,6 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -519,7 +521,7 @@ public class HandshakeManagerImplTest {
      * @return builder
      */
     private static HelloMessageBuilder createHelloMessage(short ofpVersion10, long helloXid) {
-        return new HelloMessageBuilder().setVersion(ofpVersion10).setXid(helloXid);
+        return new HelloMessageBuilder().setVersion(Uint8.valueOf(ofpVersion10)).setXid(Uint32.valueOf(helloXid));
     }
 
     /**

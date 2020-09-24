@@ -15,19 +15,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class VlanPcpEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final short vlan = (short) 1;
-
         final Match vlanMatch = new MatchBuilder()
-                .setVlanMatch(new VlanMatchBuilder()
-                        .setVlanPcp(new VlanPcp(vlan))
-                        .build())
+                .setVlanMatch(new VlanMatchBuilder().setVlanPcp(new VlanPcp(Uint8.ONE)).build())
                 .build();
 
-        assertMatch(vlanMatch, false, (out) -> assertEquals(out.readUnsignedByte(), vlan));
+        assertMatch(vlanMatch, false, (out) -> assertEquals(out.readUnsignedByte(), 1));
     }
 
     @Override

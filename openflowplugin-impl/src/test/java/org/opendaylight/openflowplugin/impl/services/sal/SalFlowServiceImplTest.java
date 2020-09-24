@@ -73,6 +73,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -91,7 +92,7 @@ public class SalFlowServiceImplTest extends TestCase {
     private static final KeyedInstanceIdentifier<Table, TableKey> TABLE_II
             = NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
 
-    private NodeRef noderef = new NodeRef(NODE_II);
+    private final NodeRef noderef = new NodeRef(NODE_II);
     private static final String KEY = "0";
     private static FlowGroupCache flowcache =
             new FlowGroupCache("0","mock class", FlowGroupStatus.ADDED, LocalDateTime.MAX);
@@ -294,13 +295,13 @@ public class SalFlowServiceImplTest extends TestCase {
 
         UpdatedFlow mockedUpdateFlow = new UpdatedFlowBuilder()
                 .setMatch(match)
-                .setTableId((short)1)
+                .setTableId(Uint8.ONE)
                 .build();
 
         UpdatedFlow mockedUpdateFlow1 = new UpdatedFlowBuilder()
                 .setMatch(match)
-                .setTableId((short)1)
-                .setPriority(1)
+                .setTableId(Uint8.ONE)
+                .setPriority(Uint16.ONE)
                 .build();
 
         when(mockedUpdateFlowInput.getUpdatedFlow()).thenReturn(mockedUpdateFlow);
@@ -314,13 +315,13 @@ public class SalFlowServiceImplTest extends TestCase {
 
         OriginalFlow mockedOriginalFlow = new OriginalFlowBuilder()
                 .setMatch(match)
-                .setTableId((short)1)
+                .setTableId(Uint8.ONE)
                 .build();
 
         OriginalFlow mockedOriginalFlow1 = new OriginalFlowBuilder()
                 .setMatch(match)
-                .setTableId((short)1)
-                .setPriority(2)
+                .setTableId(Uint8.ONE)
+                .setPriority(Uint16.TWO)
                 .build();
 
         when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);

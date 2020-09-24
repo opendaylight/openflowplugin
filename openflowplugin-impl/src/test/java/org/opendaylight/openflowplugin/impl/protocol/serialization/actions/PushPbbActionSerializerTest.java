@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -16,21 +15,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushPbbActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.pbb.action._case.PushPbbActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class PushPbbActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final int ethType = 10;
-
-        final Action action = new PushPbbActionCaseBuilder()
-                .setPushPbbAction(new PushPbbActionBuilder()
-                        .setEthernetType(ethType)
-                        .build())
+            final Action action = new PushPbbActionCaseBuilder()
+                .setPushPbbAction(new PushPbbActionBuilder().setEthernetType(Uint16.TEN).build())
                 .build();
 
         assertAction(action, out -> {
-            assertEquals(out.readUnsignedShort(), ethType);
+            assertEquals(out.readUnsignedShort(), 10);
             out.skipBytes(ActionConstants.ETHERTYPE_ACTION_PADDING);
         });
     }

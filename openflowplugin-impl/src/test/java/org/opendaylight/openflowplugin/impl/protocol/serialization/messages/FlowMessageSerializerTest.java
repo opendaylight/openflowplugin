@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -13,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -48,27 +46,31 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowMessageSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
 
-    private static final Long XID = 42L;
-    private static final Short VERSION = EncodeConstants.OF13_VERSION_ID;
-    private static final Short TABLE_ID = 2;
+    private static final Uint32 XID = Uint32.valueOf(42);
+    private static final Uint8 VERSION = EncodeConstants.OF_VERSION_1_3;
+    private static final Uint8 TABLE_ID = Uint8.TWO;
     private static final Boolean STRICT = true;
-    private static final Integer PRIORITY = 10;
+    private static final Uint16 PRIORITY = Uint16.TEN;
     private static final FlowModCommand COMMAND = FlowModCommand.OFPFCADD;
     private static final Boolean BARRIER = false;
-    private static final Long BUFFER_ID = 12L;
+    private static final Uint32 BUFFER_ID = Uint32.valueOf(12);
     private static final String CONTAINER_NAME = "openflow:1";
-    private static final FlowCookie COOKIE = new FlowCookie(BigInteger.ONE);
-    private static final FlowCookie COOKIE_MASK = new FlowCookie(BigInteger.ZERO);
+    private static final FlowCookie COOKIE = new FlowCookie(Uint64.ONE);
+    private static final FlowCookie COOKIE_MASK = new FlowCookie(Uint64.ZERO);
     private static final String FLOW_NAME = "flowflow";
-    private static final Integer HARD_TIMEOUT = 10;
-    private static final Integer IDLE_TIMEOUT = 5;
+    private static final Uint16 HARD_TIMEOUT = Uint16.TEN;
+    private static final Uint16 IDLE_TIMEOUT = Uint16.valueOf(5);
     private static final Boolean INSTALL_HW = true;
-    private static final Long OUT_GROUP = 1L;
-    private static final BigInteger OUT_PORT = BigInteger.TEN;
+    private static final Uint32 OUT_GROUP = Uint32.ONE;
+    private static final Uint64 OUT_PORT = Uint64.TEN;
 
 
     private static final Boolean IS_CHECKOVERLAP = true;
@@ -84,10 +86,10 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
             IS_SENDFLOWREM);
 
     private static final Integer VLAN_ID = 1;
-    private static final Short IP_PROTOCOL = (short) 6; // TCP
+    private static final Uint8 IP_PROTOCOL = Uint8.valueOf(6); // TCP
 
-    private static final Integer TP_SRC_PORT = 22;
-    private static final Integer TP_DST_PORT = 23;
+    private static final Uint16 TP_SRC_PORT = Uint16.valueOf(22);
+    private static final Uint16 TP_DST_PORT = Uint16.valueOf(23);
     private static final Instructions INSTRUCTIONS = new InstructionsBuilder()
             .setInstruction(Arrays.asList(
                     new InstructionBuilder()
@@ -145,7 +147,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
                             .build()))
             .build();
 
-    private static final Short IP_PROTOCOL_MATCH = (short) 17;
+    private static final Uint8 IP_PROTOCOL_MATCH = Uint8.valueOf(17);
     private static final Match MATCH = new MatchBuilder()
             .setIpMatch(new IpMatchBuilder()
                     .setIpProtocol(IP_PROTOCOL_MATCH)
@@ -262,7 +264,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
         assertEquals(out.readUnsignedByte(), Short.BYTES);
-        assertEquals(out.readUnsignedShort(), VLAN_ID | (1 << 12));
+        assertEquals(out.readUnsignedShort(), VLAN_ID | 1 << 12);
 
         paddingRemainder = (out.readerIndex() - setVlanStartIndex) % EncodeConstants.PADDING;
         if (paddingRemainder != 0) {
@@ -349,7 +351,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1 | 1);
         assertEquals(out.readUnsignedByte(), Short.BYTES * 2);
-        assertEquals(out.readUnsignedShort(), (1 << 12));
+        assertEquals(out.readUnsignedShort(), 1 << 12);
         byte[] vlanMask = new byte[2];
         out.readBytes(vlanMask);
         assertArrayEquals(vlanMask, new byte[] { 16, 0 });
@@ -379,7 +381,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
         assertEquals(out.readUnsignedByte(), Short.BYTES);
-        assertEquals(out.readUnsignedShort(), VLAN_ID | (1 << 12));
+        assertEquals(out.readUnsignedShort(), VLAN_ID | 1 << 12);
 
         paddingRemainder = (out.readerIndex() - setVlanStartIndex) % EncodeConstants.PADDING;
         if (paddingRemainder != 0) {

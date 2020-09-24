@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class EthernetTypeEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
@@ -25,7 +26,7 @@ public class EthernetTypeEntrySerializerTest extends AbstractMatchEntrySerialize
         final Match match = new MatchBuilder()
                 .setEthernetMatch(new EthernetMatchBuilder()
                         .setEthernetType(new EthernetTypeBuilder()
-                                .setType(new EtherType(ethType))
+                                .setType(new EtherType(Uint32.valueOf(ethType)))
                                 .build())
                         .build())
                 .build();

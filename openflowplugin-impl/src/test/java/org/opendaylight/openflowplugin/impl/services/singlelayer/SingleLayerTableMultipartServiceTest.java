@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import static org.junit.Assert.assertEquals;
@@ -27,10 +26,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
-    private static final long MAX_ENTRIES = 42;
-    private static final long XID = 43;
+    private static final Uint32 MAX_ENTRIES = Uint32.valueOf(42);
+    private static final Uint32 XID = Uint32.valueOf(43);
     private SingleLayerTableMultipartService service;
 
     @Override
@@ -55,7 +55,7 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
         final MultipartRequestTableFeatures result = (MultipartRequestTableFeatures) ((MultipartRequest) ofHeader)
             .getMultipartRequestBody();
 
-        assertEquals(MAX_ENTRIES, result.nonnullTableFeatures().values().iterator().next().getMaxEntries().longValue());
+        assertEquals(MAX_ENTRIES, result.nonnullTableFeatures().values().iterator().next().getMaxEntries());
     }
 
     @Test
@@ -84,6 +84,6 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
                 rpcResultFuture.get();
 
         assertTrue(result.isSuccessful());
-        assertEquals(XID, result.getResult().getTransactionId().getValue().longValue());
+        assertEquals(XID, result.getResult().getTransactionId().getValue());
     }
 }

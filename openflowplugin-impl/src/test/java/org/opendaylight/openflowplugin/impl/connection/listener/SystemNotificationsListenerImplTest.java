@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEventBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -160,7 +161,7 @@ public class SystemNotificationsListenerImplTest {
     @Test
     public void testOnSwitchIdleEvent1() throws Exception {
         final ListenableFuture<RpcResult<EchoOutput>> echoReply =
-                Futures.immediateFuture(RpcResultBuilder.success(new EchoOutputBuilder().setXid(0L).build()).build());
+                RpcResultBuilder.success(new EchoOutputBuilder().setXid(Uint32.ZERO).build()).buildFuture();
 
         Mockito.when(connectionAdapter.echo(any(EchoInput.class))).thenReturn(echoReply);
 

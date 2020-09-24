@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import java.util.Collections;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
@@ -30,16 +28,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartRequestTableFeaturesSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY = 5;
     private static final byte MAX_TABLE_NAME_LENGTH = 32;
-    private static final short TABLE_ID = 42;
+    private static final Uint8 TABLE_ID = Uint8.valueOf(42);
     private static final String NAME = "table_prop";
-    private static final BigInteger METADATA_MATCH = BigInteger.ONE;
-    private static final BigInteger METADATA_WRITE = BigInteger.TEN;
-    private static final long MAX_ENTRIES = 12;
+    private static final Uint64 METADATA_MATCH = Uint64.ONE;
+    private static final Uint64 METADATA_WRITE = Uint64.TEN;
+    private static final Uint32 MAX_ENTRIES = Uint32.valueOf(12);
     private static final boolean IS_DEPRECATED_MASK = true;
     private static final Uint8 NEXT_TABLE_ID = Uint8.valueOf(43);
 
@@ -81,17 +81,13 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
         serializer.serialize(BODY, out);
 
         out.skipBytes(Short.BYTES); // skip length
-        assertEquals(TABLE_ID, out.readUnsignedByte());
+        assertEquals(TABLE_ID.shortValue(), out.readUnsignedByte());
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
         assertEquals(NAME, ByteBufUtils.decodeNullTerminatedString(out, MAX_TABLE_NAME_LENGTH));
-        final byte[] match = new byte[Long.BYTES];
-        out.readBytes(match);
-        assertEquals(METADATA_MATCH, new BigInteger(1, match));
-        final byte[] write = new byte[Long.BYTES];
-        out.readBytes(write);
-        assertEquals(METADATA_WRITE, new BigInteger(1, write));
+        assertEquals(METADATA_MATCH.longValue(), out.readLong());
+        assertEquals(METADATA_WRITE.longValue(), out.readLong());
         assertEquals(IS_DEPRECATED_MASK, (out.readUnsignedInt() & 3) != 0);
-        assertEquals(MAX_ENTRIES, out.readUnsignedInt());
+        assertEquals(MAX_ENTRIES.longValue(), out.readUnsignedInt());
         assertEquals(NEXT_TABLE_TYPE.getIntValue(), out.readUnsignedShort());
         final int propLength = out.readUnsignedShort();
         final int paddingRemainder = propLength % EncodeConstants.PADDING;
