@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for VendorInputMessageFactory.
@@ -51,10 +51,10 @@ public class VendorInputMessageFactoryTest {
         factory.injectSerializerRegistry(registry);
         final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
-        builder.setXid(12345L);
-        builder.setExperimenter(new ExperimenterId(42L));
-        builder.setExpType(84L);
+        builder.setVersion(EncodeConstants.OF_VERSION_1_0);
+        builder.setXid(Uint32.valueOf(12345));
+        builder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
+        builder.setExpType(Uint32.valueOf(84));
         builder.setExperimenterDataOfChoice(vendorData);
         ExperimenterInput experimenterInput = builder.build();
 

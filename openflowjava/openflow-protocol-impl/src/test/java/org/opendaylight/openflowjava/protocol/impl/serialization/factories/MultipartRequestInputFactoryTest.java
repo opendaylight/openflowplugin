@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -50,6 +49,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for MultipartRequestInputFactory.
@@ -108,9 +109,9 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestFlowCase createRequestFlow() {
         final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder builder = new MultipartRequestFlowBuilder();
-        builder.setTableId((short) 8);
-        builder.setOutPort(85L);
-        builder.setOutGroup(95L);
+        builder.setTableId(Uint8.valueOf(8));
+        builder.setOutPort(Uint32.valueOf(85));
+        builder.setOutGroup(Uint32.valueOf(95));
         byte[] cookie = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
         builder.setCookie(new BigInteger(1, cookie));
         byte[] cookieMask = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
@@ -170,9 +171,9 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestAggregateCase createRequestAggregate() {
         final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder builder = new MultipartRequestAggregateBuilder();
-        builder.setTableId((short) 8);
-        builder.setOutPort(85L);
-        builder.setOutGroup(95L);
+        builder.setTableId(Uint8.valueOf(8));
+        builder.setOutPort(Uint32.valueOf(85));
+        builder.setOutGroup(Uint32.valueOf(95));
         byte[] cookie = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
         builder.setCookie(new BigInteger(1, cookie));
         byte[] cookieMask = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
@@ -246,7 +247,7 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestPortStatsCase createRequestPortStats() {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder builder = new MultipartRequestPortStatsBuilder();
-        builder.setPortNo(2251L);
+        builder.setPortNo(Uint32.valueOf(2251));
         caseBuilder.setMultipartRequestPortStats(builder.build());
         return caseBuilder.build();
     }
@@ -285,8 +286,8 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestQueueCase createRequestQueue() {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder builder = new MultipartRequestQueueBuilder();
-        builder.setPortNo(2256L);
-        builder.setQueueId(2211L);
+        builder.setPortNo(Uint32.valueOf(2256));
+        builder.setQueueId(Uint32.valueOf(2211));
         caseBuilder.setMultipartRequestQueue(builder.build());
         return caseBuilder.build();
     }
@@ -325,7 +326,7 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestGroupCase createRequestGroup() {
         MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder builder = new MultipartRequestGroupBuilder();
-        builder.setGroupId(new GroupId(2258L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(2258)));
         caseBuilder.setMultipartRequestGroup(builder.build());
         return caseBuilder.build();
     }
@@ -364,7 +365,7 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestMeterCase createRequestMeter() {
         MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder builder = new MultipartRequestMeterBuilder();
-        builder.setMeterId(new MeterId(1121L));
+        builder.setMeterId(new MeterId(Uint32.valueOf(1121)));
         caseBuilder.setMultipartRequestMeter(builder.build());
         return caseBuilder.build();
     }
@@ -403,7 +404,7 @@ public class MultipartRequestInputFactoryTest {
     private static MultipartRequestMeterConfigCase createRequestMeterConfig() {
         MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder builder = new MultipartRequestMeterConfigBuilder();
-        builder.setMeterId(new MeterId(1133L));
+        builder.setMeterId(new MeterId(Uint32.valueOf(1133)));
         caseBuilder.setMultipartRequestMeterConfig(builder.build());
         return caseBuilder.build();
     }

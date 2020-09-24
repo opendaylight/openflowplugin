@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterOfMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for ExperimenterInputMessageFactory.
@@ -68,8 +68,8 @@ public class ExperimenterInputMessageFactoryTest {
         startUp(true);
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setExperimenter(new ExperimenterId(42L));
-        builder.setExpType(21L);
+        builder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
+        builder.setExpType(Uint32.valueOf(21));
         builder.setExperimenterDataOfChoice(vendorData);
         ExperimenterInput input = builder.build();
 
@@ -85,8 +85,8 @@ public class ExperimenterInputMessageFactoryTest {
         startUp(true);
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setExperimenter(new ExperimenterId(42L));
-        builder.setExpType(22L);
+        builder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
+        builder.setExpType(Uint32.valueOf(22));
         builder.setExperimenterDataOfChoice(vendorData);
         ExperimenterInput input = builder.build();
 
@@ -102,8 +102,8 @@ public class ExperimenterInputMessageFactoryTest {
         startUp(false);
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setExperimenter(new ExperimenterId(42L));
-        builder.setExpType(21L);
+        builder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
+        builder.setExpType(Uint32.valueOf(21));
         builder.setExperimenterDataOfChoice(vendorData);
         ExperimenterInput input = builder.build();
 
@@ -123,8 +123,8 @@ public class ExperimenterInputMessageFactoryTest {
         startUp(false);
         ExperimenterInputBuilder builder = new ExperimenterInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setExperimenter(new ExperimenterId(42L));
-        builder.setExpType(21L);
+        builder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
+        builder.setExpType(Uint32.valueOf(21));
         builder.setExperimenterDataOfChoice(vendorData);
         ExperimenterInput input = builder.build();
 

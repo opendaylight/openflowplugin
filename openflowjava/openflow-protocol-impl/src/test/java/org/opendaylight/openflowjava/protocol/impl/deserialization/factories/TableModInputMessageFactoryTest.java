@@ -20,6 +20,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for TableModInputMessageFactory.
@@ -45,7 +46,7 @@ public class TableModInputMessageFactoryTest {
         TableModInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV13(deserializedMessage);
         // Test Message
-        Assert.assertEquals("Wrong table id ", new TableId(9L), deserializedMessage.getTableId());
+        Assert.assertEquals("Wrong table id ", new TableId(Uint32.valueOf(9)), deserializedMessage.getTableId());
         Assert.assertEquals("Wrong config ", new TableConfig(true), deserializedMessage.getConfig());
     }
 

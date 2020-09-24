@@ -42,6 +42,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF13InstructionsSerializer.
@@ -71,7 +74,7 @@ public class OF13InstructionsSerializerTest {
         InstructionBuilder builder = new InstructionBuilder();
         GotoTableCaseBuilder gotoCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder instructionBuilder = new GotoTableBuilder();
-        instructionBuilder.setTableId((short) 5);
+        instructionBuilder.setTableId(Uint8.valueOf(5));
         gotoCaseBuilder.setGotoTable(instructionBuilder.build());
         builder.setInstructionChoice(gotoCaseBuilder.build());
         instructions.add(builder.build());
@@ -92,7 +95,7 @@ public class OF13InstructionsSerializerTest {
         builder = new InstructionBuilder();
         MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
         MeterBuilder meterBuilder = new MeterBuilder();
-        meterBuilder.setMeterId(42L);
+        meterBuilder.setMeterId(Uint32.valueOf(42));
         meterCaseBuilder.setMeter(meterBuilder.build());
         builder.setInstructionChoice(meterCaseBuilder.build());
         instructions.add(builder.build());
@@ -102,8 +105,8 @@ public class OF13InstructionsSerializerTest {
         final WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(45L));
-        outputBuilder.setMaxLength(55);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(45)));
+        outputBuilder.setMaxLength(Uint16.valueOf(55));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
@@ -112,7 +115,7 @@ public class OF13InstructionsSerializerTest {
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder ttlCaseBuilder = new SetNwTtlCaseBuilder();
         SetNwTtlActionBuilder ttlActionBuilder = new SetNwTtlActionBuilder();
-        ttlActionBuilder.setNwTtl((short) 64);
+        ttlActionBuilder.setNwTtl(Uint8.valueOf(64));
         ttlCaseBuilder.setSetNwTtlAction(ttlActionBuilder.build());
         actionBuilder.setActionChoice(ttlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -128,7 +131,7 @@ public class OF13InstructionsSerializerTest {
         actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder vlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder vlanBuilder = new PushVlanActionBuilder();
-        vlanBuilder.setEthertype(new EtherType(new EtherType(14)));
+        vlanBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(14))));
         vlanCaseBuilder.setPushVlanAction(vlanBuilder.build());
         actionBuilder.setActionChoice(vlanCaseBuilder.build());
         actions.add(actionBuilder.build());

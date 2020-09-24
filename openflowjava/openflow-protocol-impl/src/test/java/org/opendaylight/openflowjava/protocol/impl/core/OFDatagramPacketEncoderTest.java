@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.Mockito.times;
@@ -26,6 +25,7 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.UdpMessageLis
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OFDatagramPacketEncoder.
@@ -47,7 +47,7 @@ public class OFDatagramPacketEncoderTest {
      *
      * @param version openflow protocol wire version
      */
-    public void startUp(Short version) {
+    public void startUp(Uint8 version) {
         MockitoAnnotations.initMocks(this);
         out = new ArrayList<>();
         HelloInputBuilder builder = new HelloInputBuilder();
@@ -61,7 +61,7 @@ public class OFDatagramPacketEncoderTest {
      */
     @Test
     public void testCorrectEncode() throws Exception {
-        startUp((short) EncodeConstants.OF13_VERSION_ID);
+        startUp(EncodeConstants.OF_VERSION_1_3);
         OFDatagramPacketEncoder encoder = new OFDatagramPacketEncoder();
         encoder.setSerializationFactory(factory);
         encoder.encode(ctx, wrapper, out);

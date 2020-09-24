@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10StatsRequestInputQueueFactory.
@@ -53,8 +54,8 @@ public class OF10StatsRequestInputQueueFactoryTest {
     private static MultipartRequestBody createMultipartRequestBody() {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
-        queueBuilder.setPortNo(15L);
-        queueBuilder.setQueueId(16L);
+        queueBuilder.setPortNo(Uint32.valueOf(15));
+        queueBuilder.setQueueId(Uint32.valueOf(16));
         caseBuilder.setMultipartRequestQueue(queueBuilder.build());
         return caseBuilder.build();
     }

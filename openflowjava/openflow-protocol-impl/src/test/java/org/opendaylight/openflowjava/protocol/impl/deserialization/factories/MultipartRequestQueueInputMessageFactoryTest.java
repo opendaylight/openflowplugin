@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MultipartRequestQueueInputMessageFactory.
@@ -54,8 +55,8 @@ public class MultipartRequestQueueInputMessageFactoryTest {
     private static MultipartRequestQueueCase createRequestQueue() {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder builder = new MultipartRequestQueueBuilder();
-        builder.setPortNo(2256L);
-        builder.setQueueId(2211L);
+        builder.setPortNo(Uint32.valueOf(2256));
+        builder.setQueueId(Uint32.valueOf(2211));
         caseBuilder.setMultipartRequestQueue(builder.build());
         return caseBuilder.build();
     }

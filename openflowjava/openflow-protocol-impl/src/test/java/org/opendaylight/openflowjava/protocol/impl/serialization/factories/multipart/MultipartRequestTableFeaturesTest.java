@@ -68,6 +68,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for MultipartRequestTableFeatures.
@@ -109,19 +111,19 @@ public class MultipartRequestTableFeaturesTest {
         final MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         final MultipartRequestTableFeaturesBuilder featuresBuilder = new MultipartRequestTableFeaturesBuilder();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
-        tableFeaturesBuilder.setTableId((short) 8);
+        tableFeaturesBuilder.setTableId(Uint8.valueOf(8));
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
         tableFeaturesBuilder.setMetadataMatch(new BigInteger(
                 new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
         tableFeaturesBuilder.setMetadataWrite(new BigInteger(
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
         tableFeaturesBuilder.setConfig(new TableConfig(true));
-        tableFeaturesBuilder.setMaxEntries(65L);
+        tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(65));
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
         List<NextTableIds> nextIds = new ArrayList<>();
-        nextIds.add(new NextTableIdsBuilder().setTableId((short) 1).build());
-        nextIds.add(new NextTableIdsBuilder().setTableId((short) 2).build());
+        nextIds.add(new NextTableIdsBuilder().setTableId(Uint8.ONE).build());
+        nextIds.add(new NextTableIdsBuilder().setTableId(Uint8.TWO).build());
         propBuilder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder().setNextTableIds(nextIds).build());
         List<TableFeatureProperties> properties = new ArrayList<>();
         properties.add(propBuilder.build());
@@ -164,14 +166,14 @@ public class MultipartRequestTableFeaturesTest {
         List<TableFeatures> tableFeaturesList = new ArrayList<>();
         tableFeaturesList.add(tableFeaturesBuilder.build());
         tableFeaturesBuilder = new TableFeaturesBuilder();
-        tableFeaturesBuilder.setTableId((short) 8);
+        tableFeaturesBuilder.setTableId(Uint8.valueOf(8));
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
         tableFeaturesBuilder.setMetadataMatch(new BigInteger(
                 new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
         tableFeaturesBuilder.setMetadataWrite(new BigInteger(
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
         tableFeaturesBuilder.setConfig(new TableConfig(true));
-        tableFeaturesBuilder.setMaxEntries(67L);
+        tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(67));
         properties = new ArrayList<>();
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITEACTIONS);
@@ -368,25 +370,25 @@ public class MultipartRequestTableFeaturesTest {
         builder.setType(MultipartType.forValue(12));
         builder.setFlags(new MultipartRequestFlags(true));
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
-        tableFeaturesBuilder.setTableId((short) 8);
+        tableFeaturesBuilder.setTableId(Uint8.valueOf(8));
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
         tableFeaturesBuilder.setMetadataMatch(new BigInteger(
                 new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}));
         tableFeaturesBuilder.setMetadataWrite(new BigInteger(
                 new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}));
         tableFeaturesBuilder.setConfig(new TableConfig(true));
-        tableFeaturesBuilder.setMaxEntries(65L);
+        tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(65));
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTER);
         propBuilder.addAugmentation(new ExperimenterIdTableFeaturePropertyBuilder()
-            .setExperimenter(new ExperimenterId(42L))
+            .setExperimenter(new ExperimenterId(Uint32.valueOf(42)))
             .build());
         List<TableFeatureProperties> properties = new ArrayList<>();
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS);
         propBuilder.addAugmentation(new ExperimenterIdTableFeaturePropertyBuilder()
-            .setExperimenter(new ExperimenterId(43L))
+            .setExperimenter(new ExperimenterId(Uint32.valueOf(43)))
             .build());
         properties.add(propBuilder.build());
         tableFeaturesBuilder.setTableFeatureProperties(properties);

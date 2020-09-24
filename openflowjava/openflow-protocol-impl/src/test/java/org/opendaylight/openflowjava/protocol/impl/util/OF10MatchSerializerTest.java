@@ -24,6 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF10MatchSerializer.
@@ -55,20 +57,20 @@ public class OF10MatchSerializerTest {
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(false, false, true, false,
                 false, true, false, true, true, true));
-        builder.setNwSrcMask((short) 24);
-        builder.setNwDstMask((short) 16);
-        builder.setInPort(6653);
+        builder.setNwSrcMask(Uint8.valueOf(24));
+        builder.setNwDstMask(Uint8.valueOf(16));
+        builder.setInPort(Uint16.valueOf(6653));
         builder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         builder.setDlDst(new MacAddress("02:02:02:02:02:02"));
-        builder.setDlVlan(128);
-        builder.setDlVlanPcp((short) 2);
-        builder.setDlType(15);
-        builder.setNwTos((short) 14);
-        builder.setNwProto((short) 85);
+        builder.setDlVlan(Uint16.valueOf(128));
+        builder.setDlVlanPcp(Uint8.TWO);
+        builder.setDlType(Uint16.valueOf(15));
+        builder.setNwTos(Uint8.valueOf(14));
+        builder.setNwProto(Uint8.valueOf(85));
         builder.setNwSrc(new Ipv4Address("1.1.1.2"));
         builder.setNwDst(new Ipv4Address("32.16.8.1"));
-        builder.setTpSrc(2048);
-        builder.setTpDst(4096);
+        builder.setTpSrc(Uint16.valueOf(2048));
+        builder.setTpDst(Uint16.valueOf(4096));
         MatchV10 match = builder.build();
         matchSerializer.serialize(match, out);
 
@@ -102,20 +104,20 @@ public class OF10MatchSerializerTest {
         MatchV10Builder builder = new MatchV10Builder();
         builder.setWildcards(new FlowWildcardsV10(true, true, true, true,
                 true, true, true, true, true, true));
-        builder.setNwSrcMask((short) 0);
-        builder.setNwDstMask((short) 0);
-        builder.setInPort(6653);
+        builder.setNwSrcMask(Uint8.ZERO);
+        builder.setNwDstMask(Uint8.ZERO);
+        builder.setInPort(Uint16.valueOf(6653));
         builder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         builder.setDlDst(new MacAddress("02:02:02:02:02:02"));
-        builder.setDlVlan(128);
-        builder.setDlVlanPcp((short) 2);
-        builder.setDlType(15);
-        builder.setNwTos((short) 14);
-        builder.setNwProto((short) 85);
+        builder.setDlVlan(Uint16.valueOf(128));
+        builder.setDlVlanPcp(Uint8.TWO);
+        builder.setDlType(Uint16.valueOf(15));
+        builder.setNwTos(Uint8.valueOf(14));
+        builder.setNwProto(Uint8.valueOf(85));
         builder.setNwSrc(new Ipv4Address("1.1.1.2"));
         builder.setNwDst(new Ipv4Address("32.16.8.1"));
-        builder.setTpSrc(2048);
-        builder.setTpDst(4096);
+        builder.setTpSrc(Uint16.valueOf(2048));
+        builder.setTpDst(Uint16.valueOf(4096));
         MatchV10 match = builder.build();
         matchSerializer.serialize(match, out);
 

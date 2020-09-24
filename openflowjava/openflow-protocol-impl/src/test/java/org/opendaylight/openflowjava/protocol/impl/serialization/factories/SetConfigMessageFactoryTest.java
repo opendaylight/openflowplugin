@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -22,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for SetConfigMessageFactory.
@@ -55,7 +55,7 @@ public class SetConfigMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         SwitchConfigFlag flag = SwitchConfigFlag.FRAGNORMAL;
         builder.setFlags(flag);
-        builder.setMissSendLen(10);
+        builder.setMissSendLen(Uint16.TEN);
         SetConfigInput message = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -75,7 +75,7 @@ public class SetConfigMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         SwitchConfigFlag flag = SwitchConfigFlag.OFPCFRAGDROP;
         builder.setFlags(flag);
-        builder.setMissSendLen(85);
+        builder.setMissSendLen(Uint16.valueOf(85));
         SetConfigInput message = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();

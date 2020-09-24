@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -37,6 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for FlowRemovedMessageFactory.
@@ -59,16 +62,16 @@ public class FlowRemovedMessageFactoryTest {
     public void testSerialize() throws Exception {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setCookie(BigInteger.valueOf(1234L));
-        builder.setPriority(1234);
+        builder.setCookie(Uint64.valueOf(1234));
+        builder.setPriority(Uint16.valueOf(1234));
         builder.setReason(FlowRemovedReason.forValue(2));
-        builder.setTableId(new TableId(65L));
-        builder.setDurationSec(1234L);
-        builder.setDurationNsec(1234L);
-        builder.setIdleTimeout(1234);
-        builder.setHardTimeout(1234);
-        builder.setPacketCount(BigInteger.valueOf(1234L));
-        builder.setByteCount(BigInteger.valueOf(1234L));
+        builder.setTableId(new TableId(Uint32.valueOf(65)));
+        builder.setDurationSec(Uint32.valueOf(1234));
+        builder.setDurationNsec(Uint32.valueOf(1234));
+        builder.setIdleTimeout(Uint16.valueOf(1234));
+        builder.setHardTimeout(Uint16.valueOf(1234));
+        builder.setPacketCount(Uint64.valueOf(1234));
+        builder.setByteCount(Uint64.valueOf(1234));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
         final List<MatchEntry> entries = new ArrayList<>();
@@ -78,7 +81,7 @@ public class FlowRemovedMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(42L));
+        inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.valueOf(42)));
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -87,7 +90,7 @@ public class FlowRemovedMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn((short) 4);
+        ipEcnBuilder.setEcn(Uint8.valueOf(4));
         ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
         entriesBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entriesBuilder.build());

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -22,6 +21,7 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for PacketInMessageFactory.
@@ -57,7 +57,7 @@ public class PacketInMessageFactoryTest {
         Assert.assertEquals("Wrong bufferID", 0x00010203L, builtByFactory.getBufferId().longValue());
         Assert.assertEquals("Wrong totalLength", 0x0102, builtByFactory.getTotalLen().intValue());
         Assert.assertEquals("Wrong reason", PacketInReason.OFPRACTION, builtByFactory.getReason());
-        Assert.assertEquals("Wrong tableID", new TableId(4L), builtByFactory.getTableId());
+        Assert.assertEquals("Wrong tableID", new TableId(Uint32.valueOf(4)), builtByFactory.getTableId());
         Assert.assertEquals("Wrong cookie", 0x0001020304050607L, builtByFactory.getCookie().longValue());
         Assert.assertArrayEquals("Wrong data", ByteBufUtils.hexStringToBytes("01 02 03 04"), builtByFactory.getData());
     }

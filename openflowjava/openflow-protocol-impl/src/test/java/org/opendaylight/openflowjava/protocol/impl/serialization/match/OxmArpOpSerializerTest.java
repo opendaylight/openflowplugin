@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpOpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.arp.op._case.ArpOpBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmArpOpSerializer.
@@ -34,7 +35,7 @@ public class OxmArpOpSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareArpOpMatchEntry(1402);
+        MatchEntryBuilder builder = prepareArpOpMatchEntry(Uint16.valueOf(1402));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmArpOpSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareArpOpMatchEntry(int value) {
+    private static MatchEntryBuilder prepareArpOpMatchEntry(Uint16 value) {
         MatchEntryBuilder builder = prepareArpOpHeader(false);
         ArpOpCaseBuilder casebuilder = new ArpOpCaseBuilder();
         ArpOpBuilder valueBuilder = new ArpOpBuilder();
