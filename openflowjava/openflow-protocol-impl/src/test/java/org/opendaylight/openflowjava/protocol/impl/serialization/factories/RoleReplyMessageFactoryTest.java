@@ -47,7 +47,7 @@ public class RoleReplyMessageFactoryTest {
         RoleRequestOutputBuilder builder = new RoleRequestOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setRole(ControllerRole.forValue(0));
-        builder.setGenerationId(BigInteger.valueOf(1L));
+        builder.setGenerationId(Uint64.ONE);
         RoleRequestOutput message = builder.build();
 
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();

@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4TypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv4.type._case.Icmpv4TypeBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OxmIcmpv4TypeSerializer.
@@ -34,7 +35,7 @@ public class OxmIcmpv4TypeSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareIcmpv4TypeMatchEntry((short) 128);
+        MatchEntryBuilder builder = prepareIcmpv4TypeMatchEntry(Uint8.valueOf(128));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmIcmpv4TypeSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIcmpv4TypeMatchEntry(short value) {
+    private static MatchEntryBuilder prepareIcmpv4TypeMatchEntry(Uint8 value) {
         MatchEntryBuilder builder = prepareIcmpv4TypeHeader(false);
         Icmpv4TypeCaseBuilder casebuilder = new Icmpv4TypeCaseBuilder();
         Icmpv4TypeBuilder valueBuilder = new Icmpv4TypeBuilder();

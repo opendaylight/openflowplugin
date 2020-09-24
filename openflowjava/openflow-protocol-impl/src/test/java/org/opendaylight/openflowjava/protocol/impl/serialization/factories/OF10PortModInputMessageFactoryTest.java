@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -26,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10PortModInputMessageFactory.
@@ -55,7 +55,7 @@ public class OF10PortModInputMessageFactoryTest {
     public void testPortModInput() throws Exception {
         PortModInputBuilder builder = new PortModInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setPortNo(new PortNumber(6633L));
+        builder.setPortNo(new PortNumber(Uint32.valueOf(6633)));
         builder.setHwAddress(new MacAddress("08:00:27:00:B0:EB"));
         builder.setConfigV10(new PortConfigV10(true, false, false, true, false, false, true));
         builder.setMaskV10(new PortConfigV10(false, true, true, false, false, true, false));
@@ -77,5 +77,4 @@ public class OF10PortModInputMessageFactoryTest {
         Assert.assertEquals("Wrong advertise", 652, out.readUnsignedInt());
         out.skipBytes(4);
     }
-
 }

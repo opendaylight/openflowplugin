@@ -156,7 +156,7 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     public List<NextTableIds> createNextTableIds() {
         List<NextTableIds> list = new ArrayList<>();
         NextTableIdsBuilder builder = new NextTableIdsBuilder();
-        builder.setTableId((short) 1);
+        builder.setTableId(Uint8.ONE);
         list.add(builder.build());
         return list;
     }

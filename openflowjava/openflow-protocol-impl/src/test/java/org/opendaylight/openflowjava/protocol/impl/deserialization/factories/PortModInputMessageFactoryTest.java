@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for PortModInputMessageFactory.
@@ -47,13 +48,11 @@ public class PortModInputMessageFactoryTest {
         BufferHelper.checkHeaderV13(deserializedMessage);
 
         // Test Message
-        Assert.assertEquals("Wrong port", new PortNumber(9L), deserializedMessage.getPortNo());
+        Assert.assertEquals("Wrong port", new PortNumber(Uint32.valueOf(9)), deserializedMessage.getPortNo());
         Assert.assertEquals("Wrong hwAddr", new MacAddress("08:00:27:00:b0:eb"), deserializedMessage.getHwAddress());
         Assert.assertEquals("Wrong config", new PortConfig(true, false, true, false), deserializedMessage.getConfig());
         Assert.assertEquals("Wrong mask", new PortConfig(false, true, false, true), deserializedMessage.getMask());
         Assert.assertEquals("Wrong advertise", new PortFeatures(true, false, false, false, false, false, false, true,
                 false, false, false, false, false, false, false, false), deserializedMessage.getAdvertise());
-
     }
-
 }

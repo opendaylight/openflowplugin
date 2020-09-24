@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmTcpDstSerializer.
@@ -87,7 +88,7 @@ public class OxmTcpDstSerializerTest {
         MatchEntryBuilder builder = prepareHeader(false);
         TcpDstCaseBuilder casebuilder = new TcpDstCaseBuilder();
         TcpDstBuilder valueBuilder = new TcpDstBuilder();
-        valueBuilder.setPort(new PortNumber(value));
+        valueBuilder.setPort(new PortNumber(Uint16.valueOf(value)));
         casebuilder.setTcpDst(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());
         return builder;

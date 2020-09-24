@@ -21,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for GetConfigReplyMessageFactory.
@@ -43,7 +44,7 @@ public class GetConfigReplyMessageFactoryTest {
         GetConfigOutputBuilder builder = new GetConfigOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(SwitchConfigFlag.forValue(2));
-        builder.setMissSendLen(20);
+        builder.setMissSendLen(Uint16.valueOf(20));
         GetConfigOutput message = builder.build();
 
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();

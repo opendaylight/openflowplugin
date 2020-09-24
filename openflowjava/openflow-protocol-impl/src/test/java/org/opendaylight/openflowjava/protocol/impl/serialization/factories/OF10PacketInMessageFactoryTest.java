@@ -22,6 +22,8 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10PacketInMessageFactory.
@@ -43,9 +45,9 @@ public class OF10PacketInMessageFactoryTest {
     public void testSerialize() throws Exception {
         PacketInMessageBuilder builder = new PacketInMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setBufferId(1L);
-        builder.setTotalLen(1);
-        builder.setInPort(1);
+        builder.setBufferId(Uint32.ONE);
+        builder.setTotalLen(Uint16.ONE);
+        builder.setInPort(Uint16.ONE);
         builder.setReason(PacketInReason.forValue(0));
         byte[] data = ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14");
         builder.setData(data);

@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpProtoCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ip.proto._case.IpProtoBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OxmIpProtoSerializer.
@@ -34,7 +35,7 @@ public class OxmIpProtoSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareMatchEntry((short) 123);
+        MatchEntryBuilder builder = prepareMatchEntry(Uint8.valueOf(123));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmIpProtoSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(short value) {
+    private static MatchEntryBuilder prepareMatchEntry(Uint8 value) {
         MatchEntryBuilder builder = prepareHeader(false);
         IpProtoCaseBuilder casebuilder = new IpProtoCaseBuilder();
         IpProtoBuilder protoBuilder = new IpProtoBuilder();

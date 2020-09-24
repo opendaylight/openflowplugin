@@ -51,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.src._case.Ipv6SrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -335,7 +336,7 @@ public class OF13MatchSerializerTest {
         entriesBuilder.setHasMask(hasMask);
         Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
         Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
-        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(labelValue));
+        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(Uint32.valueOf(labelValue)));
         ipv6FlabelBuilder.setMask(mask);
         ipv6FlabelCaseBuilder.setIpv6Flabel(ipv6FlabelBuilder.build());
         entriesBuilder.setMatchEntryValue(ipv6FlabelCaseBuilder.build());
@@ -376,7 +377,7 @@ public class OF13MatchSerializerTest {
         builder.setHasMask(true);
         ExperimenterIdCaseBuilder caseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
-        expBuilder.setExperimenter(new ExperimenterId(42L));
+        expBuilder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
         caseBuilder.setExperimenter(expBuilder.build());
         builder.setMatchEntryValue(caseBuilder.build());
         entries.add(builder.build());

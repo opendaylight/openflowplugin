@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -30,6 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10PacketOutInputMessageFactory.
@@ -59,13 +60,13 @@ public class OF10PacketOutInputMessageFactoryTest {
     public void testPacketOutInputMessage() throws Exception {
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setBufferId(256L);
-        builder.setInPort(new PortNumber(257L));
+        builder.setBufferId(Uint32.valueOf(256));
+        builder.setInPort(new PortNumber(Uint32.valueOf(257)));
         final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
-        outputBuilder.setMaxLength(50);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
+        outputBuilder.setMaxLength(Uint16.valueOf(50));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
@@ -105,8 +106,8 @@ public class OF10PacketOutInputMessageFactoryTest {
     public void testPacketOutInputWithNoData() throws Exception {
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setBufferId(256L);
-        builder.setInPort(new PortNumber(257L));
+        builder.setBufferId(Uint32.valueOf(256));
+        builder.setInPort(new PortNumber(Uint32.valueOf(257)));
         List<Action> actions = new ArrayList<>();
         builder.setAction(actions);
         builder.setData(null);

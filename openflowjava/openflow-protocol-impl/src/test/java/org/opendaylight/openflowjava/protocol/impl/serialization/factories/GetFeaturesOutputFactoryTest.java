@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +21,9 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class GetFeaturesOutputFactoryTest {
     private OFSerializer<GetFeaturesOutput> factory;
@@ -40,12 +42,12 @@ public class GetFeaturesOutputFactoryTest {
     public void testSerialize() throws Exception {
         GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setDatapathId(BigInteger.valueOf(1234L));
-        builder.setBuffers(1234L);
-        builder.setTables((short) 12);
-        builder.setAuxiliaryId((short) 12);
+        builder.setDatapathId(Uint64.valueOf(1234));
+        builder.setBuffers(Uint32.valueOf(1234));
+        builder.setTables(Uint8.valueOf(12));
+        builder.setAuxiliaryId(Uint8.valueOf(12));
         builder.setCapabilities(new Capabilities(true, false, true, false, true, false, true));
-        builder.setReserved(1234L);
+        builder.setReserved(Uint32.valueOf(1234));
         GetFeaturesOutput message = builder.build();
 
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -64,13 +66,13 @@ public class GetFeaturesOutputFactoryTest {
     }
 
     private static Capabilities createCapabilities(int input) {
-        final Boolean one = (input & (1 << 0)) > 0;
-        final Boolean two = (input & (1 << 1)) > 0;
-        final Boolean three = (input & (1 << 2)) > 0;
-        final Boolean four = (input & (1 << 3)) > 0;
-        final Boolean five = (input & (1 << 5)) > 0;
-        final Boolean six = (input & (1 << 6)) > 0;
-        final Boolean seven = (input & (1 << 8)) > 0;
+        final Boolean one = (input & 1 << 0) > 0;
+        final Boolean two = (input & 1 << 1) > 0;
+        final Boolean three = (input & 1 << 2) > 0;
+        final Boolean four = (input & 1 << 3) > 0;
+        final Boolean five = (input & 1 << 5) > 0;
+        final Boolean six = (input & 1 << 6) > 0;
+        final Boolean seven = (input & 1 << 8) > 0;
         return new Capabilities(one, four, five, seven, three, six, two);
     }
 }
