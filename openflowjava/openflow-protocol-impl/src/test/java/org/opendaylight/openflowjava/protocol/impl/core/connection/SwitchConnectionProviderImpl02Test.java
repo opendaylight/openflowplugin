@@ -51,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for SwitchConnectionProviderImpl02.
@@ -149,7 +150,8 @@ public class SwitchConnectionProviderImpl02Test {
         startUp(TransportProtocol.TCP);
         // -- registerActionSerializer
         final ExperimenterActionSerializerKey key1
-            = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, 42L, TestSubType.class);
+            = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, Uint32.valueOf(42),
+                TestSubType.class);
         provider.registerActionSerializer(key1, serializer);
         Assert.assertTrue("Wrong -- unregister ActionSerializer", provider.unregisterSerializer(key1));
         Assert.assertFalse("Wrong -- unregister ActionSerializer by not existing key",

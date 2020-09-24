@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCase;
@@ -29,20 +28,6 @@ public final class ExperimenterActionSerializerKey extends ActionSerializerKey<E
      * @param actionSubType vendor defined subtype
      */
     public ExperimenterActionSerializerKey(final short msgVersion, final Uint32 experimenterId,
-            final Class<? extends ExperimenterActionSubType> actionSubType) {
-        super(msgVersion, ExperimenterIdCase.class, experimenterId);
-        this.actionSubType = actionSubType;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param msgVersion protocol wire version
-     * @param experimenterId experimenter / vendor ID
-     * @param actionSubType vendor defined subtype
-     */
-    @Deprecated(forRemoval = true)
-    public ExperimenterActionSerializerKey(final short msgVersion, final Long experimenterId,
             final Class<? extends ExperimenterActionSubType> actionSubType) {
         super(msgVersion, ExperimenterIdCase.class, experimenterId);
         this.actionSubType = actionSubType;
