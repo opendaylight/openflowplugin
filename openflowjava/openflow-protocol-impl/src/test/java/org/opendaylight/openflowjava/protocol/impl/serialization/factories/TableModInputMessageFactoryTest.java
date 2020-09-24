@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -23,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for TableModInputMessageFactory.
@@ -54,7 +54,7 @@ public class TableModInputMessageFactoryTest {
     public void testTableModInput() throws Exception {
         TableModInputBuilder builder = new TableModInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setTableId(new TableId(9L));
+        builder.setTableId(new TableId(Uint32.valueOf(9)));
         builder.setConfig(new TableConfig(true));
         TableModInput message = builder.build();
 

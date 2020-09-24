@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsidBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OxmPbbIsidSerializer.
@@ -117,14 +118,14 @@ public class OxmPbbIsidSerializerTest {
         assertEquals("Wrong value length", EncodeConstants.SIZE_OF_3_BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder preparePbbIsidMatchEntry(boolean hasMask, long value) {
+    private static MatchEntryBuilder preparePbbIsidMatchEntry(boolean hasMask, int value) {
         final MatchEntryBuilder builder = preparePbbIsidHeader(hasMask);
         PbbIsidCaseBuilder casebuilder = new PbbIsidCaseBuilder();
         PbbIsidBuilder valueBuilder = new PbbIsidBuilder();
         if (hasMask) {
             valueBuilder.setMask(new byte[]{0, 15, 10});
         }
-        valueBuilder.setIsid(value);
+        valueBuilder.setIsid(Uint32.valueOf(value));
         casebuilder.setPbbIsid(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());
         return builder;

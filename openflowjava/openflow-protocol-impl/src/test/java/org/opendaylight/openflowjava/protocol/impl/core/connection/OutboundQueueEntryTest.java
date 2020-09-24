@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +36,8 @@ public class OutboundQueueEntryTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutboundQueueEntryTest.class);
 
-    private static final short VERSION = (short) 13;
-    private static final long VALUE = 1L;
+    private static final Uint8 VERSION = Uint8.valueOf(13);
+    private static final Uint32 VALUE = Uint32.ONE;
 
     private Integer failCounter = 0;
 
@@ -109,7 +111,7 @@ public class OutboundQueueEntryTest {
     @Test
     public void test() {
 
-        final FutureCallback<OfHeader> result = new FutureCallback<OfHeader>() {
+        final FutureCallback<OfHeader> result = new FutureCallback<>() {
             @Override
             public void onSuccess(@Nullable OfHeader header) {
                 LOG.info("onSuccess: xid: {}", header.getXid());

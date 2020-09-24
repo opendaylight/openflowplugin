@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10PortStatusMessageFactory.
@@ -49,7 +50,7 @@ public class OF10PortStatusMessageFactoryTest {
         PortStatusMessageBuilder builder = new PortStatusMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setReason(PortReason.forValue(1));
-        builder.setPortNo(1L);
+        builder.setPortNo(Uint32.ONE);
         builder.setHwAddr(new MacAddress("94:de:80:a6:61:40"));
         builder.setName("Port name");
         builder.setConfigV10(new PortConfigV10(true, false, true, false, true, false, true));

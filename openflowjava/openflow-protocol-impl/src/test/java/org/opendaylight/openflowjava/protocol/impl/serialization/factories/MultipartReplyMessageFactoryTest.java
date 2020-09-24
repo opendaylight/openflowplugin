@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -171,7 +170,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -203,12 +204,12 @@ public class MultipartReplyMessageFactoryTest {
         final MultipartReplyTableFeaturesBuilder featuresBuilder = new MultipartReplyTableFeaturesBuilder();
         final List<TableFeatures> tableFeaturesList = new ArrayList<>();
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
-        tableFeaturesBuilder.setTableId((short) 8);
+        tableFeaturesBuilder.setTableId(Uint8.valueOf(8));
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
         tableFeaturesBuilder.setMetadataMatch(new byte[] { 0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01 });
         tableFeaturesBuilder.setMetadataWrite(new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 });
         tableFeaturesBuilder.setConfig(new TableConfig(true));
-        tableFeaturesBuilder.setMaxEntries(65L);
+        tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(65));
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
         propBuilder.addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder()
@@ -256,14 +257,14 @@ public class MultipartReplyMessageFactoryTest {
         tableFeaturesBuilder.setTableFeatureProperties(properties);
         tableFeaturesList.add(tableFeaturesBuilder.build());
         tableFeaturesBuilder = new TableFeaturesBuilder();
-        tableFeaturesBuilder.setTableId((short) 8);
+        tableFeaturesBuilder.setTableId(Uint8.valueOf(8));
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
         byte[] metadataMatch = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01 };
         tableFeaturesBuilder.setMetadataMatch(metadataMatch);
         byte[] metadataWrite = new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 };
         tableFeaturesBuilder.setMetadataWrite(metadataWrite);
         tableFeaturesBuilder.setConfig(new TableConfig(true));
-        tableFeaturesBuilder.setMaxEntries(67L);
+        tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(67));
         properties = new ArrayList<>();
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITEACTIONS);
@@ -504,11 +505,11 @@ public class MultipartReplyMessageFactoryTest {
         builder.setType(MultipartType.forValue(11));
         final MultipartReplyMeterFeaturesCaseBuilder meterFeaturesCase = new MultipartReplyMeterFeaturesCaseBuilder();
         MultipartReplyMeterFeaturesBuilder meterFeatures = new MultipartReplyMeterFeaturesBuilder();
-        meterFeatures.setMaxMeter(1L);
+        meterFeatures.setMaxMeter(Uint32.ONE);
         meterFeatures.setBandTypes(new MeterBandTypeBitmap(true, false));
         meterFeatures.setCapabilities(new MeterFlags(true, false, true, false));
-        meterFeatures.setMaxBands((short) 1);
-        meterFeatures.setMaxColor((short) 1);
+        meterFeatures.setMaxBands(Uint8.ONE);
+        meterFeatures.setMaxColor(Uint8.ONE);
         meterFeaturesCase.setMultipartReplyMeterFeatures(meterFeatures.build());
         builder.setMultipartReplyBody(meterFeaturesCase.build());
         MultipartReplyMessage message = builder.build();
@@ -853,9 +854,9 @@ public class MultipartReplyMessageFactoryTest {
         builder.setType(MultipartType.forValue(2));
         final MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder aggregate = new MultipartReplyAggregateBuilder();
-        aggregate.setPacketCount(BigInteger.valueOf(1L));
-        aggregate.setByteCount(BigInteger.valueOf(1L));
-        aggregate.setFlowCount(1L);
+        aggregate.setPacketCount(Uint64.ONE);
+        aggregate.setByteCount(Uint64.ONE);
+        aggregate.setFlowCount(Uint32.ONE);
         aggregateCase.setMultipartReplyAggregate(aggregate.build());
         builder.setMultipartReplyBody(aggregateCase.build());
         MultipartReplyMessage message = builder.build();
@@ -1002,7 +1003,7 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<Ports> createPortList() {
         PortsBuilder builder = new PortsBuilder();
-        builder.setPortNo(1L);
+        builder.setPortNo(Uint32.ONE);
         builder.setHwAddr(new MacAddress("94:de:80:a6:61:40"));
         builder.setName("Port name");
         builder.setConfig(new PortConfig(true, false, true, false));
@@ -1015,8 +1016,8 @@ public class MultipartReplyMessageFactoryTest {
                 true, false, true, false, true, false));
         builder.setPeerFeatures(new PortFeatures(true, false, true, false, true, false, true, false, true, false, true,
                 false, true, false, true, false));
-        builder.setCurrSpeed(1234L);
-        builder.setMaxSpeed(1234L);
+        builder.setCurrSpeed(Uint32.valueOf(1234));
+        builder.setMaxSpeed(Uint32.valueOf(1234));
         List<Ports> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -1065,17 +1066,17 @@ public class MultipartReplyMessageFactoryTest {
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
         input.skipBytes(Short.SIZE / Byte.SIZE);
-        dropBand.setRate(input.readUnsignedInt());
-        dropBand.setBurstSize(input.readUnsignedInt());
+        dropBand.setRate(Uint32.fromIntBits(input.readInt()));
+        dropBand.setBurstSize(Uint32.fromIntBits(input.readInt()));
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
         final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
         input.skipBytes(Short.SIZE / Byte.SIZE);
-        dscpRemarkBand.setRate(input.readUnsignedInt());
-        dscpRemarkBand.setBurstSize(input.readUnsignedInt());
-        dscpRemarkBand.setPrecLevel((short) 3);
+        dscpRemarkBand.setRate(Uint32.fromIntBits(input.readInt()));
+        dscpRemarkBand.setBurstSize(Uint32.fromIntBits(input.readInt()));
+        dscpRemarkBand.setPrecLevel(Uint8.valueOf(3));
         dscpCaseBuilder.setMeterBandDscpRemark(dscpRemarkBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dscpCaseBuilder.build()).build());
         return bandsList;
@@ -1084,7 +1085,7 @@ public class MultipartReplyMessageFactoryTest {
     private static List<MeterConfig> createMeterConfig() {
         MeterConfigBuilder builder = new MeterConfigBuilder();
         builder.setFlags(new MeterFlags(true, false, true, false));
-        builder.setMeterId(new MeterId(1L));
+        builder.setMeterId(new MeterId(Uint32.ONE));
         builder.setBands(createBandsList());
         List<MeterConfig> list = new ArrayList<>();
         list.add(builder.build());
@@ -1103,16 +1104,16 @@ public class MultipartReplyMessageFactoryTest {
         final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.OFPMBTDROP);
-        dropBand.setRate(1L);
-        dropBand.setBurstSize(2L);
+        dropBand.setRate(Uint32.ONE);
+        dropBand.setBurstSize(Uint32.TWO);
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
         final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.OFPMBTDSCPREMARK);
-        dscpRemarkBand.setRate(1L);
-        dscpRemarkBand.setBurstSize(2L);
-        dscpRemarkBand.setPrecLevel((short) 3);
+        dscpRemarkBand.setRate(Uint32.ONE);
+        dscpRemarkBand.setBurstSize(Uint32.ONE);
+        dscpRemarkBand.setPrecLevel(Uint8.valueOf(3));
         dscpCaseBuilder.setMeterBandDscpRemark(dscpRemarkBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dscpCaseBuilder.build()).build());
         return bandsList;
@@ -1128,12 +1129,12 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<MeterStats> createMeterStats() {
         MeterStatsBuilder builder = new MeterStatsBuilder();
-        builder.setMeterId(new MeterId(1L));
-        builder.setFlowCount(1L);
-        builder.setPacketInCount(BigInteger.valueOf(1L));
-        builder.setByteInCount(BigInteger.valueOf(1L));
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(1L);
+        builder.setMeterId(new MeterId(Uint32.ONE));
+        builder.setFlowCount(Uint32.ONE);
+        builder.setPacketInCount(Uint64.ONE);
+        builder.setByteInCount(Uint64.ONE);
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.ONE);
         builder.setMeterBandStats(createMeterBandStats());
         List<MeterStats> list = new ArrayList<>();
         list.add(builder.build());
@@ -1142,8 +1143,8 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<MeterBandStats> createMeterBandStats() {
         MeterBandStatsBuilder builder = new MeterBandStatsBuilder();
-        builder.setPacketBandCount(BigInteger.valueOf(1L));
-        builder.setByteBandCount(BigInteger.valueOf(1L));
+        builder.setPacketBandCount(Uint64.ONE);
+        builder.setByteBandCount(Uint64.ONE);
         List<MeterBandStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -1208,7 +1209,7 @@ public class MultipartReplyMessageFactoryTest {
     private static List<GroupDesc> createGroupDesc() {
         GroupDescBuilder builder = new GroupDescBuilder();
         builder.setType(GroupType.forValue(1));
-        builder.setGroupId(new GroupId(1L));
+        builder.setGroupId(new GroupId(Uint32.ONE));
         builder.setBucketsList(createBucketsList());
         List<GroupDesc> list = new ArrayList<>();
         list.add(builder.build());
@@ -1217,12 +1218,12 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<GroupStats> createGroupStats() {
         GroupStatsBuilder builder = new GroupStatsBuilder();
-        builder.setGroupId(new GroupId(1L));
-        builder.setRefCount(1L);
-        builder.setPacketCount(BigInteger.valueOf(1L));
-        builder.setByteCount(BigInteger.valueOf(1L));
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(1L);
+        builder.setGroupId(new GroupId(Uint32.ONE));
+        builder.setRefCount(Uint32.ONE);
+        builder.setPacketCount(Uint64.ONE);
+        builder.setByteCount(Uint64.ONE);
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.ONE);
         builder.setBucketStats(createBucketStats());
         List<GroupStats> list = new ArrayList<>();
         list.add(builder.build());
@@ -1231,9 +1232,9 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<BucketsList> createBucketsList() {
         BucketsListBuilder builder = new BucketsListBuilder();
-        builder.setWeight(1);
-        builder.setWatchPort(new PortNumber(1L));
-        builder.setWatchGroup(1L);
+        builder.setWeight(Uint16.ONE);
+        builder.setWatchPort(new PortNumber(Uint32.ONE));
+        builder.setWatchGroup(Uint32.ONE);
         builder.setAction(createActionList());
         List<BucketsList> list = new ArrayList<>();
         list.add(builder.build());
@@ -1244,8 +1245,8 @@ public class MultipartReplyMessageFactoryTest {
         final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(45L));
-        outputBuilder.setMaxLength(55);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(45)));
+        outputBuilder.setMaxLength(Uint16.valueOf(55));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
@@ -1253,7 +1254,7 @@ public class MultipartReplyMessageFactoryTest {
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder ttlCaseBuilder = new SetNwTtlCaseBuilder();
         SetNwTtlActionBuilder ttlActionBuilder = new SetNwTtlActionBuilder();
-        ttlActionBuilder.setNwTtl((short) 64);
+        ttlActionBuilder.setNwTtl(Uint8.valueOf(64));
         ttlCaseBuilder.setSetNwTtlAction(ttlActionBuilder.build());
         actionBuilder.setActionChoice(ttlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -1262,8 +1263,8 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<BucketStats> createBucketStats() {
         BucketStatsBuilder builder = new BucketStatsBuilder();
-        builder.setPacketCount(BigInteger.valueOf(1L));
-        builder.setByteCount(BigInteger.valueOf(1L));
+        builder.setPacketCount(Uint64.ONE);
+        builder.setByteCount(Uint64.ONE);
         List<BucketStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -1271,13 +1272,13 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<QueueStats> createQueueStats() {
         QueueStatsBuilder builder = new QueueStatsBuilder();
-        builder.setPortNo(1L);
-        builder.setQueueId(1L);
-        builder.setTxBytes(BigInteger.valueOf(1L));
-        builder.setTxPackets(BigInteger.valueOf(1L));
-        builder.setTxErrors(BigInteger.valueOf(1L));
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(1L);
+        builder.setPortNo(Uint32.ONE);
+        builder.setQueueId(Uint32.ONE);
+        builder.setTxBytes(Uint64.ONE);
+        builder.setTxPackets(Uint64.ONE);
+        builder.setTxErrors(Uint64.ONE);
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.ONE);
         List<QueueStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -1285,21 +1286,21 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<PortStats> createPortStats() {
         PortStatsBuilder builder = new PortStatsBuilder();
-        builder.setPortNo(1L);
-        builder.setRxPackets(BigInteger.valueOf(1L));
-        builder.setTxPackets(BigInteger.valueOf(1L));
-        builder.setRxBytes(BigInteger.valueOf(1L));
-        builder.setTxBytes(BigInteger.valueOf(1L));
-        builder.setRxDropped(BigInteger.valueOf(1L));
-        builder.setTxDropped(BigInteger.valueOf(1L));
-        builder.setRxErrors(BigInteger.valueOf(1L));
-        builder.setTxErrors(BigInteger.valueOf(1L));
-        builder.setRxFrameErr(BigInteger.valueOf(1L));
-        builder.setRxOverErr(BigInteger.valueOf(1L));
-        builder.setRxCrcErr(BigInteger.valueOf(1L));
-        builder.setCollisions(BigInteger.valueOf(1L));
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(1L);
+        builder.setPortNo(Uint32.ONE);
+        builder.setRxPackets(Uint64.ONE);
+        builder.setTxPackets(Uint64.ONE);
+        builder.setRxBytes(Uint64.ONE);
+        builder.setTxBytes(Uint64.ONE);
+        builder.setRxDropped(Uint64.ONE);
+        builder.setTxDropped(Uint64.ONE);
+        builder.setRxErrors(Uint64.ONE);
+        builder.setTxErrors(Uint64.ONE);
+        builder.setRxFrameErr(Uint64.ONE);
+        builder.setRxOverErr(Uint64.ONE);
+        builder.setRxCrcErr(Uint64.ONE);
+        builder.setCollisions(Uint64.ONE);
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.ONE);
         List<PortStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -1307,10 +1308,10 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<TableStats> createTableStats() {
         TableStatsBuilder builder = new TableStatsBuilder();
-        builder.setTableId((short) 1);
-        builder.setActiveCount(1L);
-        builder.setLookupCount(BigInteger.valueOf(1L));
-        builder.setMatchedCount(BigInteger.valueOf(1L));
+        builder.setTableId(Uint8.ONE);
+        builder.setActiveCount(Uint32.ONE);
+        builder.setLookupCount(Uint64.ONE);
+        builder.setMatchedCount(Uint64.ONE);
         List<TableStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -1318,15 +1319,15 @@ public class MultipartReplyMessageFactoryTest {
 
     private static List<FlowStats> createFlowStats() {
         FlowStatsBuilder builder = new FlowStatsBuilder();
-        builder.setTableId((short) 1);
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(1L);
-        builder.setPriority(1);
-        builder.setIdleTimeout(1);
-        builder.setHardTimeout(1);
-        builder.setCookie(BigInteger.valueOf(1234L));
-        builder.setPacketCount(BigInteger.valueOf(1234L));
-        builder.setByteCount(BigInteger.valueOf(1234L));
+        builder.setTableId(Uint8.ONE);
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.ONE);
+        builder.setPriority(Uint16.ONE);
+        builder.setIdleTimeout(Uint16.ONE);
+        builder.setHardTimeout(Uint16.ONE);
+        builder.setCookie(Uint64.valueOf(1234));
+        builder.setPacketCount(Uint64.valueOf(1234));
+        builder.setByteCount(Uint64.valueOf(1234));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
         final List<MatchEntry> entries = new ArrayList<>();
@@ -1336,7 +1337,7 @@ public class MultipartReplyMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(42L));
+        inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.valueOf(42)));
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1345,7 +1346,7 @@ public class MultipartReplyMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn((short) 4);
+        ipEcnBuilder.setEcn(Uint8.valueOf(4));
         ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
         entriesBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -1356,7 +1357,7 @@ public class MultipartReplyMessageFactoryTest {
         InstructionBuilder builderInstruction = new InstructionBuilder();
         GotoTableCaseBuilder gotoCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder instructionBuilder = new GotoTableBuilder();
-        instructionBuilder.setTableId((short) 5);
+        instructionBuilder.setTableId(Uint8.valueOf(5));
         gotoCaseBuilder.setGotoTable(instructionBuilder.build());
         builderInstruction.setInstructionChoice(gotoCaseBuilder.build());
         instructions.add(builderInstruction.build());
@@ -1377,7 +1378,7 @@ public class MultipartReplyMessageFactoryTest {
         builderInstruction = new InstructionBuilder();
         MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
         MeterBuilder meterBuilder = new MeterBuilder();
-        meterBuilder.setMeterId(42L);
+        meterBuilder.setMeterId(Uint32.valueOf(42));
         meterCaseBuilder.setMeter(meterBuilder.build());
         builderInstruction.setInstructionChoice(meterCaseBuilder.build());
         instructions.add(builderInstruction.build());
@@ -1387,8 +1388,8 @@ public class MultipartReplyMessageFactoryTest {
         final WriteActionsBuilder writeActionsBuilder = new WriteActionsBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(45L));
-        outputBuilder.setMaxLength(55);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(45)));
+        outputBuilder.setMaxLength(Uint16.valueOf(55));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
@@ -1397,7 +1398,7 @@ public class MultipartReplyMessageFactoryTest {
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder ttlCaseBuilder = new SetNwTtlCaseBuilder();
         SetNwTtlActionBuilder ttlActionBuilder = new SetNwTtlActionBuilder();
-        ttlActionBuilder.setNwTtl((short) 64);
+        ttlActionBuilder.setNwTtl(Uint8.valueOf(64));
         ttlCaseBuilder.setSetNwTtlAction(ttlActionBuilder.build());
         actionBuilder.setActionChoice(ttlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -1413,7 +1414,7 @@ public class MultipartReplyMessageFactoryTest {
         actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder vlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder vlanBuilder = new PushVlanActionBuilder();
-        vlanBuilder.setEthertype(new EtherType(new EtherType(14)));
+        vlanBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(14))));
         vlanCaseBuilder.setPushVlanAction(vlanBuilder.build());
         actionBuilder.setActionChoice(vlanCaseBuilder.build());
         actions.add(actionBuilder.build());

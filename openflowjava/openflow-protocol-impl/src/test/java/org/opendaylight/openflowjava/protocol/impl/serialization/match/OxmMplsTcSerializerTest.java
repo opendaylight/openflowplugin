@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsTcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.tc._case.MplsTcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OxmMplsTcSerializer.
@@ -34,7 +35,7 @@ public class OxmMplsTcSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareMplsTcMatchEntry((short) 16);
+        MatchEntryBuilder builder = prepareMplsTcMatchEntry(Uint8.valueOf(16));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmMplsTcSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMplsTcMatchEntry(short value) {
+    private static MatchEntryBuilder prepareMplsTcMatchEntry(Uint8 value) {
         MatchEntryBuilder builder = prepareMplsTcHeader(false);
         MplsTcCaseBuilder casebuilder = new MplsTcCaseBuilder();
         MplsTcBuilder valueBuilder = new MplsTcBuilder();

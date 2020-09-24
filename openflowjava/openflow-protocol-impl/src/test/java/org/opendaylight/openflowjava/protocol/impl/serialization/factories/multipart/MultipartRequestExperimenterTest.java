@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestExperimenterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.experimenter._case.MultipartRequestExperimenterBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MultipartRequestExperimenter.
@@ -61,8 +61,8 @@ public class MultipartRequestExperimenterTest {
         builder.setFlags(new MultipartRequestFlags(false));
         final MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
         MultipartRequestExperimenterBuilder expBuilder = new MultipartRequestExperimenterBuilder();
-        expBuilder.setExperimenter(new ExperimenterId(42L));
-        expBuilder.setExpType(21L);
+        expBuilder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
+        expBuilder.setExpType(Uint32.valueOf(21));
         expBuilder.setExperimenterDataOfChoice(vendorData);
         caseBuilder.setMultipartRequestExperimenter(expBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());

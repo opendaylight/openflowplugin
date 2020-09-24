@@ -27,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for GroupModInputMessageFactory.
@@ -58,7 +60,7 @@ public class GroupModInputMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setCommand(GroupModCommand.forValue(2));
         builder.setType(GroupType.forValue(3));
-        builder.setGroupId(new GroupId(256L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(256)));
         List<BucketsList> exp = createBucketsList();
         builder.setBucketsList(exp);
         final GroupModInput message = builder.build();
@@ -88,9 +90,9 @@ public class GroupModInputMessageFactoryTest {
     private static List<BucketsList> createBucketsList() {
         final List<BucketsList> bucketsList = new ArrayList<>();
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
-        bucketsBuilder.setWeight(10);
-        bucketsBuilder.setWatchPort(new PortNumber(65L));
-        bucketsBuilder.setWatchGroup(22L);
+        bucketsBuilder.setWeight(Uint16.TEN);
+        bucketsBuilder.setWatchPort(new PortNumber(Uint32.valueOf(65)));
+        bucketsBuilder.setWatchGroup(Uint32.valueOf(22));
         BucketsList bucket = bucketsBuilder.build();
         bucketsList.add(bucket);
         return bucketsList;
@@ -100,9 +102,9 @@ public class GroupModInputMessageFactoryTest {
         final List<BucketsList> bucketsList = new ArrayList<>();
         BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
         out.skipBytes(Short.BYTES);
-        bucketsBuilder.setWeight(out.readUnsignedShort());
-        bucketsBuilder.setWatchPort(new PortNumber(out.readUnsignedInt()));
-        bucketsBuilder.setWatchGroup(out.readUnsignedInt());
+        bucketsBuilder.setWeight(Uint16.fromShortBits(out.readShort()));
+        bucketsBuilder.setWatchPort(new PortNumber(Uint32.fromIntBits(out.readInt())));
+        bucketsBuilder.setWatchGroup(Uint32.fromIntBits(out.readInt()));
         out.skipBytes(4);
         BucketsList bucket = bucketsBuilder.build();
         bucketsList.add(bucket);
@@ -118,7 +120,7 @@ public class GroupModInputMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setCommand(GroupModCommand.forValue(2));
         builder.setType(GroupType.forValue(3));
-        builder.setGroupId(new GroupId(256L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(256)));
         GroupModInput message = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();

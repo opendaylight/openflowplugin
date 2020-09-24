@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MultipartRequestMeterInputMessageFactory.
@@ -54,7 +55,7 @@ public class MultipartRequestMeterInputMessageFactoryTest {
     private static MultipartRequestMeterCase createRequestMeter() {
         MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder builder = new MultipartRequestMeterBuilder();
-        builder.setMeterId(new MeterId(1121L));
+        builder.setMeterId(new MeterId(Uint32.valueOf(1121)));
         caseBuilder.setMultipartRequestMeter(builder.build());
         return caseBuilder.build();
     }

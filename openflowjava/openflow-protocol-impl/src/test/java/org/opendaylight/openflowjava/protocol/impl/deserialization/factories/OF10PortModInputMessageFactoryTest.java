@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10PortModInputMessageFactory.
@@ -45,7 +46,7 @@ public class OF10PortModInputMessageFactoryTest {
                 .buildBuffer("19 e9 08 00 27 00 b0 eb " + "00 00 00 15 00 00 00 62 00 00 02 8c 00 00 00 00 ");
         PortModInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV10(deserializedMessage);
-        Assert.assertEquals("Wrong port", new PortNumber(6633L), deserializedMessage.getPortNo());
+        Assert.assertEquals("Wrong port", new PortNumber(Uint32.valueOf(6633)), deserializedMessage.getPortNo());
         Assert.assertEquals("Wrong hwAddr", new MacAddress("08:00:27:00:b0:eb"), deserializedMessage.getHwAddress());
         Assert.assertEquals("Wrong config", new PortConfigV10(true, false, false, true, false, false, true),
                 deserializedMessage.getConfigV10());

@@ -30,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.dscp.remark._case.MeterBandDscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for MeterModInputMessageFactory.
@@ -58,7 +60,7 @@ public class MeterModInputMessageFactoryTest {
 
         Assert.assertEquals("Wrong command", MeterModCommand.forValue(1), deserializedMessage.getCommand());
         Assert.assertEquals("Wrong flags", new MeterFlags(false, true, true, false), deserializedMessage.getFlags());
-        Assert.assertEquals("Wrong meter id", new MeterId(2248L), deserializedMessage.getMeterId());
+        Assert.assertEquals("Wrong meter id", new MeterId(Uint32.valueOf(2248)), deserializedMessage.getMeterId());
         Assert.assertEquals("Wrong band", createBandsList().get(0), deserializedMessage.getBands().get(0));
         Assert.assertEquals("Wrong band", createBandsList().get(1), deserializedMessage.getBands().get(1));
     }
@@ -69,16 +71,16 @@ public class MeterModInputMessageFactoryTest {
         final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.OFPMBTDROP);
-        dropBand.setRate(1L);
-        dropBand.setBurstSize(2L);
+        dropBand.setRate(Uint32.ONE);
+        dropBand.setBurstSize(Uint32.TWO);
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
         final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.OFPMBTDSCPREMARK);
-        dscpRemarkBand.setRate(1L);
-        dscpRemarkBand.setBurstSize(2L);
-        dscpRemarkBand.setPrecLevel((short) 3);
+        dscpRemarkBand.setRate(Uint32.ONE);
+        dscpRemarkBand.setBurstSize(Uint32.TWO);
+        dscpRemarkBand.setPrecLevel(Uint8.valueOf(3));
         dscpCaseBuilder.setMeterBandDscpRemark(dscpRemarkBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dscpCaseBuilder.build()).build());
         return bandsList;

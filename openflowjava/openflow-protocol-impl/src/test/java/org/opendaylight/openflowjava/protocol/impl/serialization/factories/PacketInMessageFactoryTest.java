@@ -38,7 +38,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for PacketInMessageFactory.
@@ -61,12 +64,11 @@ public class PacketInMessageFactoryTest {
     public void testSerialize() throws Exception {
         PacketInMessageBuilder builder = new PacketInMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setBufferId(256L);
-        builder.setTotalLen(10);
+        builder.setBufferId(Uint32.valueOf(256));
+        builder.setTotalLen(Uint16.TEN);
         builder.setReason(PacketInReason.forValue(0));
-        builder.setTableId(new TableId(1L));
-        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01 };
-        builder.setCookie(new BigInteger(1, cookie));
+        builder.setTableId(new TableId(Uint32.ONE));
+        builder.setCookie(Uint64.valueOf("FF01040106000701", 16));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
         final List<MatchEntry> entries = new ArrayList<>();
@@ -76,7 +78,7 @@ public class PacketInMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(42L));
+        inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.valueOf(42)));
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -85,7 +87,7 @@ public class PacketInMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn((short) 4);
+        ipEcnBuilder.setEcn(Uint8.valueOf(4));
         ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
         entriesBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -104,7 +106,7 @@ public class PacketInMessageFactoryTest {
         Assert.assertEquals("Wrong reason", message.getReason().getIntValue(), serializedBuffer.readUnsignedByte());
         Assert.assertEquals("Wrong tableId", message.getTableId().getValue().intValue(),
                 serializedBuffer.readUnsignedByte());
-        cookie = new byte[Long.BYTES];
+        byte[] cookie = new byte[Long.BYTES];
         serializedBuffer.readBytes(cookie);
         Assert.assertEquals("Wrong cookie", message.getCookie(), Uint64.valueOf(new BigInteger(1, cookie)));
         Assert.assertEquals("Wrong match type", 1, serializedBuffer.readUnsignedShort());

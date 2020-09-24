@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -32,6 +31,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF10FeaturesReplyMessageFactory.
@@ -54,9 +56,9 @@ public class OF10FeaturesReplyMessageFactoryTest {
     public void testSerialize() throws Exception {
         GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
-        builder.setDatapathId(BigInteger.valueOf(1L));
-        builder.setBuffers(1L);
-        builder.setTables((short) 1);
+        builder.setDatapathId(Uint64.ONE);
+        builder.setBuffers(Uint32.ONE);
+        builder.setTables(Uint8.ONE);
         builder.setCapabilitiesV10(new CapabilitiesV10(true, false, true, false, true, false, true, false));
         builder.setActionsV10(
                 new ActionTypeV10(true, false, true, false, true, false, true, false, true, false, true, false, true));
@@ -97,7 +99,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
     private static List<PhyPort> createPorts() {
         final List<PhyPort> ports = new ArrayList<>();
         PhyPortBuilder builder = new PhyPortBuilder();
-        builder.setPortNo(1L);
+        builder.setPortNo(Uint32.ONE);
         builder.setHwAddr(new MacAddress("94:de:80:a6:61:40"));
         builder.setName("Port name");
         builder.setConfigV10(new PortConfigV10(true, false, true, false, true, false, true));

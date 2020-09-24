@@ -27,6 +27,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF10FlowRemovedMessageFactory.
@@ -51,30 +55,30 @@ public class OF10FlowRemovedMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
-        matchBuilder.setNwSrcMask((short) 0);
-        matchBuilder.setNwDstMask((short) 0);
-        matchBuilder.setInPort(58);
+        matchBuilder.setNwSrcMask(Uint8.ZERO);
+        matchBuilder.setNwDstMask(Uint8.ZERO);
+        matchBuilder.setInPort(Uint16.valueOf(58));
         matchBuilder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         matchBuilder.setDlDst(new MacAddress("ff:ff:ff:ff:ff:ff"));
-        matchBuilder.setDlVlan(18);
-        matchBuilder.setDlVlanPcp((short) 5);
-        matchBuilder.setDlType(42);
-        matchBuilder.setNwTos((short) 4);
-        matchBuilder.setNwProto((short) 7);
+        matchBuilder.setDlVlan(Uint16.valueOf(18));
+        matchBuilder.setDlVlanPcp(Uint8.valueOf(5));
+        matchBuilder.setDlType(Uint16.valueOf(42));
+        matchBuilder.setNwTos(Uint8.valueOf(4));
+        matchBuilder.setNwProto(Uint8.valueOf(7));
         matchBuilder.setNwSrc(new Ipv4Address("8.8.8.8"));
         matchBuilder.setNwDst(new Ipv4Address("16.16.16.16"));
-        matchBuilder.setTpSrc(6653);
-        matchBuilder.setTpDst(6633);
+        matchBuilder.setTpSrc(Uint16.valueOf(6653));
+        matchBuilder.setTpDst(Uint16.valueOf(6633));
         builder.setMatchV10(matchBuilder.build());
-        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x01, 0x01, 0x04, 0x01 };
-        builder.setCookie(new BigInteger(1, cookie));
-        builder.setPriority(1);
+        final byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x01, 0x01, 0x04, 0x01 };
+        builder.setCookie(Uint64.valueOf(new BigInteger(1, cookie)));
+        builder.setPriority(Uint16.ONE);
         builder.setReason(FlowRemovedReason.forValue(1));
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(1L);
-        builder.setIdleTimeout(12);
-        builder.setPacketCount(BigInteger.valueOf(1L));
-        builder.setByteCount(BigInteger.valueOf(2L));
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.ONE);
+        builder.setIdleTimeout(Uint16.valueOf(12));
+        builder.setPacketCount(Uint64.ONE);
+        builder.setByteCount(Uint64.TWO);
         FlowRemovedMessage message = builder.build();
 
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
