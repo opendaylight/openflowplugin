@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.IpDscpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ip.dscp._case.IpDscpBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OxmIpDscpSerializer.
@@ -35,7 +36,7 @@ public class OxmIpDscpSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareIpDscpMatchEntry((short) 58);
+        MatchEntryBuilder builder = prepareIpDscpMatchEntry(Uint8.valueOf(58));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -83,7 +84,7 @@ public class OxmIpDscpSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIpDscpMatchEntry(short value) {
+    private static MatchEntryBuilder prepareIpDscpMatchEntry(Uint8 value) {
         MatchEntryBuilder builder = prepareIpDscpHeader(false);
         IpDscpCaseBuilder casebuilder = new IpDscpCaseBuilder();
         IpDscpBuilder dscpBuilder = new IpDscpBuilder();

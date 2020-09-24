@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for MultipartRequestGroupInputMessageFactory.
@@ -56,7 +57,7 @@ public class MultipartRequestGroupInputMessageFactoryTest {
     private static MultipartRequestGroupCase createRequestGroup() {
         MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder builder = new MultipartRequestGroupBuilder();
-        builder.setGroupId(new GroupId(2258L));
+        builder.setGroupId(new GroupId(Uint32.valueOf(2258)));
         caseBuilder.setMultipartRequestGroup(builder.build());
         return caseBuilder.build();
     }

@@ -34,7 +34,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF10FlowModInputMessageFactory.
@@ -67,7 +70,7 @@ public class OF10FlowModInputMessageFactoryTest {
         Assert.assertEquals("Wrong Hard Timeout", 16, deserializedMessage.getHardTimeout().intValue());
         Assert.assertEquals("Wrong priority", 1, deserializedMessage.getPriority().intValue());
         Assert.assertEquals("Wrong buffer id", 2L, deserializedMessage.getBufferId().longValue());
-        Assert.assertEquals("Wrong out port", new PortNumber(4422L), deserializedMessage.getOutPort());
+        Assert.assertEquals("Wrong out port", new PortNumber(Uint32.valueOf(4422)), deserializedMessage.getOutPort());
         Assert.assertEquals("Wrong flags", new FlowModFlagsV10(true, false, true), deserializedMessage.getFlagsV10());
         Assert.assertEquals("Wrong actions", createAction(), deserializedMessage.getAction());
     }
@@ -84,7 +87,7 @@ public class OF10FlowModInputMessageFactoryTest {
         actionBuilder = new ActionBuilder();
         SetTpSrcCaseBuilder tpSrcCaseBuilder = new SetTpSrcCaseBuilder();
         SetTpSrcActionBuilder tpSrcBuilder = new SetTpSrcActionBuilder();
-        tpSrcBuilder.setPort(new PortNumber(42L));
+        tpSrcBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setActionChoice(tpSrcCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -94,20 +97,20 @@ public class OF10FlowModInputMessageFactoryTest {
     private static MatchV10 createMatch() {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
-        matchBuilder.setNwSrcMask((short) 0);
-        matchBuilder.setNwDstMask((short) 0);
-        matchBuilder.setInPort(58);
+        matchBuilder.setNwSrcMask(Uint8.ZERO);
+        matchBuilder.setNwDstMask(Uint8.ZERO);
+        matchBuilder.setInPort(Uint16.valueOf(58));
         matchBuilder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         matchBuilder.setDlDst(new MacAddress("ff:ff:ff:ff:ff:ff"));
-        matchBuilder.setDlVlan(18);
+        matchBuilder.setDlVlan(Uint16.valueOf(18));
         matchBuilder.setDlVlanPcp((short) 5);
-        matchBuilder.setDlType(42);
+        matchBuilder.setDlType(Uint16.valueOf(42));
         matchBuilder.setNwTos((short) 4);
         matchBuilder.setNwProto((short) 7);
         matchBuilder.setNwSrc(new Ipv4Address("8.8.8.8"));
         matchBuilder.setNwDst(new Ipv4Address("16.16.16.16"));
-        matchBuilder.setTpSrc(6653);
-        matchBuilder.setTpDst(6633);
+        matchBuilder.setTpSrc(Uint16.valueOf(6653));
+        matchBuilder.setTpDst(Uint16.valueOf(6633));
         return matchBuilder.build();
     }
 }

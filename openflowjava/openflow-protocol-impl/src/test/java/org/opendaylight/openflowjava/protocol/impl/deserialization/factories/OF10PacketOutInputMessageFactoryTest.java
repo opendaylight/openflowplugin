@@ -27,6 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10PacketOutInputMessageFactory.
@@ -52,7 +54,7 @@ public class OF10PacketOutInputMessageFactoryTest {
         PacketOutInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV10(deserializedMessage);
         Assert.assertEquals("Wrong bufferId ", 256L, deserializedMessage.getBufferId().longValue());
-        Assert.assertEquals("Wrong inPort ", new PortNumber(257L), deserializedMessage.getInPort());
+        Assert.assertEquals("Wrong inPort ", new PortNumber(Uint32.valueOf(257)), deserializedMessage.getInPort());
         Assert.assertEquals("Wrong action ", createActionList().get(0), deserializedMessage.getAction().get(0));
         Assert.assertEquals("Wrong action ", createActionList().get(1), deserializedMessage.getAction().get(1));
         Assert.assertArrayEquals("Wrong data ",
@@ -64,8 +66,8 @@ public class OF10PacketOutInputMessageFactoryTest {
         final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
-        outputBuilder.setMaxLength(50);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
+        outputBuilder.setMaxLength(Uint16.valueOf(50));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());

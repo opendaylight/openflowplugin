@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -31,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for PacketOutInputMessageFactory.
@@ -62,13 +63,13 @@ public class PacketOutInputMessageFactoryTest {
     public void testPacketOutInputMessage() throws Exception {
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setBufferId(256L);
-        builder.setInPort(new PortNumber(256L));
+        builder.setBufferId(Uint32.valueOf(256));
+        builder.setInPort(new PortNumber(Uint32.valueOf(256)));
         final List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanBuilder = new PushVlanActionBuilder();
-        pushVlanBuilder.setEthertype(new EtherType(new EtherType(25)));
+        pushVlanBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(25))));
         pushVlanCaseBuilder.setPushVlanAction(pushVlanBuilder.build());
         actionBuilder.setActionChoice(pushVlanCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -106,8 +107,8 @@ public class PacketOutInputMessageFactoryTest {
     public void testPacketOutInputWithNoData() throws Exception {
         PacketOutInputBuilder builder = new PacketOutInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setBufferId(256L);
-        builder.setInPort(new PortNumber(256L));
+        builder.setBufferId(Uint32.valueOf(256));
+        builder.setInPort(new PortNumber(Uint32.valueOf(256)));
         List<Action> actions = new ArrayList<>();
         builder.setAction(actions);
         builder.setData(null);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -20,6 +19,7 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerR
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for FlowRemovedMessageFactory.
@@ -56,7 +56,7 @@ public class FlowRemovedMessageFactoryTest {
         Assert.assertTrue(builtByFactory.getCookie().longValue() == 0x0001020304050607L);
         Assert.assertTrue(builtByFactory.getPriority().toJava() == 0x03);
         Assert.assertEquals("Wrong reason", 0x02, builtByFactory.getReason().getIntValue());
-        Assert.assertEquals("Wrong tableId", new TableId(4L), builtByFactory.getTableId());
+        Assert.assertEquals("Wrong tableId", new TableId(Uint32.valueOf(4)), builtByFactory.getTableId());
         Assert.assertEquals("Wrong durationSec", 0x02L, builtByFactory.getDurationSec().longValue());
         Assert.assertEquals("Wrong durationNsec", 0x05L, builtByFactory.getDurationNsec().longValue());
         Assert.assertEquals("Wrong idleTimeout", 0x01, builtByFactory.getIdleTimeout().intValue());
@@ -64,5 +64,4 @@ public class FlowRemovedMessageFactoryTest {
         Assert.assertEquals("Wrong packetCount", 0x0001020304050607L, builtByFactory.getPacketCount().longValue());
         Assert.assertEquals("Wrong byteCount", 0x0001020304050607L, builtByFactory.getByteCount().longValue());
     }
-
 }

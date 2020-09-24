@@ -48,7 +48,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for FlowModInputMessageFactory.
@@ -81,13 +84,13 @@ public class FlowModInputMessageFactoryTest {
         Assert.assertEquals("Wrong cookie", Uint64.valueOf("FF01040106000701", 16), deserializedMessage.getCookie());
         Assert.assertEquals("Wrong cookie mask", Uint64.valueOf("FF05000009300030", 16),
             deserializedMessage.getCookieMask());
-        Assert.assertEquals("Wrong table id", new TableId(65L), deserializedMessage.getTableId());
+        Assert.assertEquals("Wrong table id", new TableId(Uint32.valueOf(65)), deserializedMessage.getTableId());
         Assert.assertEquals("Wrong command", FlowModCommand.forValue(2), deserializedMessage.getCommand());
         Assert.assertEquals("Wrong idle timeout", 12, deserializedMessage.getIdleTimeout().intValue());
         Assert.assertEquals("Wrong hard timeout", 0, deserializedMessage.getHardTimeout().intValue());
         Assert.assertEquals("Wrong priority", 126, deserializedMessage.getPriority().intValue());
         Assert.assertEquals("Wrong buffer id ", 2L, deserializedMessage.getBufferId().longValue());
-        Assert.assertEquals("Wrong out port", new PortNumber(4422L), deserializedMessage.getOutPort());
+        Assert.assertEquals("Wrong out port", new PortNumber(Uint32.valueOf(4422)), deserializedMessage.getOutPort());
         Assert.assertEquals("Wrong out group", 98L, deserializedMessage.getOutGroup().longValue());
         Assert.assertEquals("Wrong flags", new FlowModFlags(true, false, true, false, true),
                 deserializedMessage.getFlags());
@@ -101,7 +104,7 @@ public class FlowModInputMessageFactoryTest {
         InstructionBuilder insBuilder = new InstructionBuilder();
         GotoTableCaseBuilder goToCaseBuilder = new GotoTableCaseBuilder();
         GotoTableBuilder instructionBuilder = new GotoTableBuilder();
-        instructionBuilder.setTableId((short) 43);
+        instructionBuilder.setTableId(Uint8.valueOf(43));
         goToCaseBuilder.setGotoTable(instructionBuilder.build());
         insBuilder.setInstructionChoice(goToCaseBuilder.build());
         instructions.add(insBuilder.build());
@@ -121,8 +124,8 @@ public class FlowModInputMessageFactoryTest {
         final ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
-        outputBuilder.setMaxLength(52);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
+        outputBuilder.setMaxLength(Uint16.valueOf(52));
         caseBuilder.setOutputAction(outputBuilder.build());
         actionBuilder.setActionChoice(caseBuilder.build());
         actions.add(actionBuilder.build());
@@ -143,7 +146,7 @@ public class FlowModInputMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(42L));
+        inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.valueOf(42)));
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
@@ -152,7 +155,7 @@ public class FlowModInputMessageFactoryTest {
         entriesBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn((short) 4);
+        ipEcnBuilder.setEcn(Uint8.valueOf(4));
         ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
         entriesBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entriesBuilder.build());

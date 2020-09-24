@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.QueueId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10ActionsSerializer.
@@ -74,7 +75,7 @@ public class OF10ActionsSerializerTest {
         final List<Action> actions = new ArrayList<>();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
         outputBuilder.setMaxLength(32);
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
@@ -135,22 +136,22 @@ public class OF10ActionsSerializerTest {
         actionBuilder = new ActionBuilder();
         SetTpSrcCaseBuilder tpSrcCaseBuilder = new SetTpSrcCaseBuilder();
         SetTpSrcActionBuilder tpSrcBuilder = new SetTpSrcActionBuilder();
-        tpSrcBuilder.setPort(new PortNumber(6653L));
+        tpSrcBuilder.setPort(new PortNumber(Uint32.valueOf(6653)));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setActionChoice(tpSrcCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         SetTpDstCaseBuilder tpDstCaseBuilder = new SetTpDstCaseBuilder();
         SetTpDstActionBuilder tpDstBuilder = new SetTpDstActionBuilder();
-        tpDstBuilder.setPort(new PortNumber(6633L));
+        tpDstBuilder.setPort(new PortNumber(Uint32.valueOf(6633)));
         tpDstCaseBuilder.setSetTpDstAction(tpDstBuilder.build());
         actionBuilder.setActionChoice(tpDstCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         EnqueueCaseBuilder enqueueCaseBuilder = new EnqueueCaseBuilder();
         EnqueueActionBuilder enqueueBuilder = new EnqueueActionBuilder();
-        enqueueBuilder.setPort(new PortNumber(6613L));
-        enqueueBuilder.setQueueId(new QueueId(400L));
+        enqueueBuilder.setPort(new PortNumber(Uint32.valueOf(6613)));
+        enqueueBuilder.setQueueId(new QueueId(Uint32.valueOf(400)));
         enqueueCaseBuilder.setEnqueueAction(enqueueBuilder.build());
         actionBuilder.setActionChoice(enqueueCaseBuilder.build());
         actions.add(actionBuilder.build());

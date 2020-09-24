@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.TcpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmTcpSrcSerializer.
@@ -87,7 +88,7 @@ public class OxmTcpSrcSerializerTest {
         MatchEntryBuilder builder = prepareHeader(false);
         TcpSrcCaseBuilder casebuilder = new TcpSrcCaseBuilder();
         TcpSrcBuilder valueBuilder = new TcpSrcBuilder();
-        valueBuilder.setPort(new PortNumber(value));
+        valueBuilder.setPort(new PortNumber(Uint16.valueOf(value)));
         casebuilder.setTcpSrc(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());
         return builder;

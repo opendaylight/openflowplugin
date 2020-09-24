@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -60,6 +59,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF10StatsReplyMessageFactory.
@@ -171,9 +174,9 @@ public class OF10StatsReplyMessageFactoryTest {
         builder.setType(MultipartType.forValue(2));
         final MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder aggregate = new MultipartReplyAggregateBuilder();
-        aggregate.setPacketCount(BigInteger.valueOf(1234L));
-        aggregate.setByteCount(BigInteger.valueOf(1234L));
-        aggregate.setFlowCount(1L);
+        aggregate.setPacketCount(Uint64.valueOf(1234));
+        aggregate.setByteCount(Uint64.valueOf(1234));
+        aggregate.setFlowCount(Uint32.ONE);
         aggregateCase.setMultipartReplyAggregate(aggregate.build());
         builder.setMultipartReplyBody(aggregateCase.build());
         MultipartReplyMessage message = builder.build();
@@ -299,10 +302,10 @@ public class OF10StatsReplyMessageFactoryTest {
 
     private static List<QueueStats> createQueueStats() {
         QueueStatsBuilder builder = new QueueStatsBuilder();
-        builder.setQueueId(1L);
-        builder.setTxBytes(BigInteger.valueOf(1L));
-        builder.setTxPackets(BigInteger.valueOf(1L));
-        builder.setTxErrors(BigInteger.valueOf(1L));
+        builder.setQueueId(Uint32.ONE);
+        builder.setTxBytes(Uint64.ONE);
+        builder.setTxPackets(Uint64.ONE);
+        builder.setTxErrors(Uint64.ONE);
         List<QueueStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -310,19 +313,19 @@ public class OF10StatsReplyMessageFactoryTest {
 
     private static List<PortStats> createPortStats() {
         PortStatsBuilder builder = new PortStatsBuilder();
-        builder.setPortNo(1L);
-        builder.setRxPackets(BigInteger.valueOf(1L));
-        builder.setTxPackets(BigInteger.valueOf(1L));
-        builder.setRxBytes(BigInteger.valueOf(1L));
-        builder.setTxBytes(BigInteger.valueOf(1L));
-        builder.setRxDropped(BigInteger.valueOf(1L));
-        builder.setTxDropped(BigInteger.valueOf(1L));
-        builder.setRxErrors(BigInteger.valueOf(1L));
-        builder.setTxErrors(BigInteger.valueOf(1L));
-        builder.setRxFrameErr(BigInteger.valueOf(1L));
-        builder.setRxOverErr(BigInteger.valueOf(1L));
-        builder.setRxCrcErr(BigInteger.valueOf(1L));
-        builder.setCollisions(BigInteger.valueOf(1L));
+        builder.setPortNo(Uint32.ONE);
+        builder.setRxPackets(Uint64.ONE);
+        builder.setTxPackets(Uint64.ONE);
+        builder.setRxBytes(Uint64.ONE);
+        builder.setTxBytes(Uint64.ONE);
+        builder.setRxDropped(Uint64.ONE);
+        builder.setTxDropped(Uint64.ONE);
+        builder.setRxErrors(Uint64.ONE);
+        builder.setTxErrors(Uint64.ONE);
+        builder.setRxFrameErr(Uint64.ONE);
+        builder.setRxOverErr(Uint64.ONE);
+        builder.setRxCrcErr(Uint64.ONE);
+        builder.setCollisions(Uint64.ONE);
         List<PortStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -330,13 +333,13 @@ public class OF10StatsReplyMessageFactoryTest {
 
     private static List<TableStats> createTableStats() {
         TableStatsBuilder builder = new TableStatsBuilder();
-        builder.setTableId((short) 1);
+        builder.setTableId(Uint8.ONE);
         builder.setName("Table name");
         builder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
-        builder.setMaxEntries(1L);
-        builder.setActiveCount(1L);
-        builder.setLookupCount(BigInteger.valueOf(1234L));
-        builder.setMatchedCount(BigInteger.valueOf(1234L));
+        builder.setMaxEntries(Uint32.ONE);
+        builder.setActiveCount(Uint32.ONE);
+        builder.setLookupCount(Uint64.valueOf(1234));
+        builder.setMatchedCount(Uint64.valueOf(1234));
         List<TableStats> list = new ArrayList<>();
         list.add(builder.build());
         return list;
@@ -344,37 +347,37 @@ public class OF10StatsReplyMessageFactoryTest {
 
     private static List<FlowStats> createFlowStats() {
         FlowStatsBuilder builder = new FlowStatsBuilder();
-        builder.setTableId((short) 1);
+        builder.setTableId(Uint8.ONE);
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
-        matchBuilder.setNwSrcMask((short) 0);
-        matchBuilder.setNwDstMask((short) 0);
-        matchBuilder.setInPort(58);
+        matchBuilder.setNwSrcMask(Uint8.ZERO);
+        matchBuilder.setNwDstMask(Uint8.ZERO);
+        matchBuilder.setInPort(Uint16.valueOf(58));
         matchBuilder.setDlSrc(new MacAddress("01:01:01:01:01:01"));
         matchBuilder.setDlDst(new MacAddress("ff:ff:ff:ff:ff:ff"));
-        matchBuilder.setDlVlan(18);
+        matchBuilder.setDlVlan(Uint16.valueOf(18));
         matchBuilder.setDlVlanPcp((short) 5);
-        matchBuilder.setDlType(42);
+        matchBuilder.setDlType(Uint16.valueOf(42));
         matchBuilder.setNwTos((short) 4);
         matchBuilder.setNwProto((short) 7);
         matchBuilder.setNwSrc(new Ipv4Address("8.8.8.8"));
         matchBuilder.setNwDst(new Ipv4Address("16.16.16.16"));
-        matchBuilder.setTpSrc(6653);
-        matchBuilder.setTpDst(6633);
+        matchBuilder.setTpSrc(Uint16.valueOf(6653));
+        matchBuilder.setTpDst(Uint16.valueOf(6633));
         builder.setMatchV10(matchBuilder.build());
-        builder.setDurationSec(1L);
-        builder.setDurationNsec(2L);
-        builder.setPriority(1);
-        builder.setIdleTimeout(1);
-        builder.setHardTimeout(1);
-        builder.setCookie(BigInteger.valueOf(1234L));
-        builder.setPacketCount(BigInteger.valueOf(1234L));
-        builder.setByteCount(BigInteger.valueOf(1234L));
+        builder.setDurationSec(Uint32.ONE);
+        builder.setDurationNsec(Uint32.TWO);
+        builder.setPriority(Uint16.ONE);
+        builder.setIdleTimeout(Uint16.ONE);
+        builder.setHardTimeout(Uint16.ONE);
+        builder.setCookie(Uint64.valueOf(1234));
+        builder.setPacketCount(Uint64.valueOf(1234));
+        builder.setByteCount(Uint64.valueOf(1234));
         final List<Action> actions = new ArrayList<>();
         final ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
         outputBuilder.setMaxLength(50);
         caseBuilder.setOutputAction(outputBuilder.build());
         actionBuilder.setActionChoice(caseBuilder.build());

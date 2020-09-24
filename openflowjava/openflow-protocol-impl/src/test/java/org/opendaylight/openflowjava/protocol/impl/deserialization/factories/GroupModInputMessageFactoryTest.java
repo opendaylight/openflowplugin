@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for GroupModInputMessageFactory.
@@ -50,10 +51,10 @@ public class GroupModInputMessageFactoryTest {
         // Test Message
         Assert.assertEquals("Wrong command", GroupModCommand.forValue(2), deserializedMessage.getCommand());
         Assert.assertEquals("Wrong type", GroupType.forValue(3), deserializedMessage.getType());
-        Assert.assertEquals("Wrong group id", new GroupId(256L), deserializedMessage.getGroupId());
+        Assert.assertEquals("Wrong group id", new GroupId(Uint32.valueOf(256)), deserializedMessage.getGroupId());
         BucketsList bucket = deserializedMessage.getBucketsList().get(0);
         Assert.assertEquals("Wrong weight", 10, bucket.getWeight().intValue());
-        Assert.assertEquals("Wrong watch port", new PortNumber(65L), bucket.getWatchPort());
+        Assert.assertEquals("Wrong watch port", new PortNumber(Uint32.valueOf(65)), bucket.getWatchPort());
         Assert.assertEquals("Wrong watch group", 22L, bucket.getWatchGroup().longValue());
     }
 
