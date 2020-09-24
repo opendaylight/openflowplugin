@@ -43,6 +43,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link FlatBatchMeterAdapters}.
@@ -59,8 +61,8 @@ public class FlatBatchMeterAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createAddMeterBatch(1L),
-                createAddMeterBatch(2L)));
+                createAddMeterBatch(Uint32.ONE),
+                createAddMeterBatch(Uint32.TWO)));
 
         final AddMetersBatchInput addMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, NODE_REF);
@@ -73,19 +75,19 @@ public class FlatBatchMeterAdaptersTest {
         Assert.assertEquals(2L, it.next().getMeterId().getValue().longValue());
     }
 
-    private static FlatBatchAddMeter createAddMeterBatch(final long groupIdValue) {
+    private static FlatBatchAddMeter createAddMeterBatch(final Uint32 groupIdValue) {
         return new FlatBatchAddMeterBuilder()
                 .setMeterId(new MeterId(groupIdValue))
                 .build();
     }
 
-    private static FlatBatchRemoveMeter createRemoveMeterBatch(final long groupIdValue) {
+    private static FlatBatchRemoveMeter createRemoveMeterBatch(final Uint32 groupIdValue) {
         return new FlatBatchRemoveMeterBuilder()
                 .setMeterId(new MeterId(groupIdValue))
                 .build();
     }
 
-    private static FlatBatchUpdateMeter createUpdateMeterBatch(final long groupIdValue) {
+    private static FlatBatchUpdateMeter createUpdateMeterBatch(final Uint32 groupIdValue) {
         return new FlatBatchUpdateMeterBuilder()
                 .setOriginalBatchedMeter(new OriginalBatchedMeterBuilder()
                         .setMeterId(new MeterId(groupIdValue))
@@ -101,8 +103,8 @@ public class FlatBatchMeterAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createRemoveMeterBatch(1L),
-                createRemoveMeterBatch(2L)));
+                createRemoveMeterBatch(Uint32.ONE),
+                createRemoveMeterBatch(Uint32.TWO)));
 
         final RemoveMetersBatchInput removeMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, NODE_REF);
@@ -119,8 +121,8 @@ public class FlatBatchMeterAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createUpdateMeterBatch(1L),
-                createUpdateMeterBatch(2L)));
+                createUpdateMeterBatch(Uint32.ONE),
+                createUpdateMeterBatch(Uint32.TWO)));
 
         final UpdateMetersBatchInput updateMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, NODE_REF);
@@ -139,8 +141,8 @@ public class FlatBatchMeterAdaptersTest {
                 .withError(RpcError.ErrorType.APPLICATION, "ut-meterError")
                 .withResult(new AddMetersBatchOutputBuilder()
                         .setBatchFailedMetersOutput(Lists.newArrayList(
-                                createBatchFailedMetersOutput(0, 1L),
-                                createBatchFailedMetersOutput(1, 2L)
+                                createBatchFailedMetersOutput(Uint16.ZERO, Uint32.ONE),
+                                createBatchFailedMetersOutput(Uint16.ONE, Uint32.TWO)
                         ))
                         .build())
                 .build();
@@ -173,15 +175,15 @@ public class FlatBatchMeterAdaptersTest {
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
-    private static BatchFailedMetersOutput createBatchFailedMetersOutput(final Integer batchOrder,
-            final long groupIdValue) {
+    private static BatchFailedMetersOutput createBatchFailedMetersOutput(final Uint16 batchOrder,
+            final Uint32 groupIdValue) {
         return new BatchFailedMetersOutputBuilder()
                 .setMeterId(new MeterId(groupIdValue))
                 .setBatchOrder(batchOrder)
                 .build();
     }
 
-    private static BatchFailure createChainFailure(final int batchOrder, final long groupIdValue) {
+    private static BatchFailure createChainFailure(final Uint16 batchOrder, final Uint32 groupIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureMeterIdCaseBuilder()

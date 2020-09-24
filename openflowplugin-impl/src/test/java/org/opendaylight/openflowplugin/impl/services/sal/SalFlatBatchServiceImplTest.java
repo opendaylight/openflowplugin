@@ -13,7 +13,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.Assert;
@@ -94,6 +96,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl}.
@@ -288,7 +292,7 @@ public class SalFlatBatchServiceImplTest {
                         .withResult(new RemoveFlowsBatchOutputBuilder()
                                 .setBatchFailedFlowsOutput(Lists.newArrayList(
                                         new BatchFailedFlowsOutputBuilder()
-                                                .setBatchOrder(1)
+                                                .setBatchOrder(Uint16.ONE)
                                                 .setFlowId(new FlowId("123"))
                                                 .build()))
                                 .build())
@@ -312,28 +316,27 @@ public class SalFlatBatchServiceImplTest {
                 .thenReturn(RpcResultBuilder.success(new UpdateMetersBatchOutputBuilder().build()).buildFuture());
     }
 
-    private Batch createFlowAddBatch(final int batchOrder, final String flowIdValue) {
+    private static Batch createFlowAddBatch(final int batchOrder, final String flowIdValue) {
         return createFlowAddBatch(batchOrder, flowIdValue, 1);
     }
 
     private static Batch createFlowAddBatch(final int batchOrder, final String flowIdValue, final int amount) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
                         .setFlatBatchAddFlow(repeatFlatBatchAddFlowInList(flowIdValue, amount))
                         .build())
                 .build();
     }
 
-    private static List<FlatBatchAddFlow> repeatFlatBatchAddFlowInList(final String flowIdValue, final int amount) {
-        final List<FlatBatchAddFlow> list = new ArrayList<>();
+    private static Map<FlatBatchAddFlowKey, FlatBatchAddFlow> repeatFlatBatchAddFlowInList(final String flowIdValue,
+            final int amount) {
+        final Map<FlatBatchAddFlowKey, FlatBatchAddFlow> map = new LinkedHashMap<>();
         for (int i = 0; i < amount; i++) {
-            list.add(new FlatBatchAddFlowBuilder()
-                    .setFlowId(new FlowId(flowIdValue + i))
-                    .withKey(new FlatBatchAddFlowKey(i))
-                    .build());
+            final FlatBatchAddFlowKey key = new FlatBatchAddFlowKey(Uint16.valueOf(i));
+            map.put(key, new FlatBatchAddFlowBuilder().withKey(key).setFlowId(new FlowId(flowIdValue + i)).build());
         }
-        return list;
+        return map;
     }
 
     private static <T> List<T> repeatInList(final T item, final int amount) {
@@ -346,7 +349,7 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createFlowRemoveBatch(final int batchOrder, final String flowIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchRemoveFlowCaseBuilder()
                         .setFlatBatchRemoveFlow(Collections.singletonList(new FlatBatchRemoveFlowBuilder()
                                 .setFlowId(new FlowId(flowIdValue))
@@ -356,9 +359,10 @@ public class SalFlatBatchServiceImplTest {
     }
 
     private static Batch createFlowUpdateBatch(final int batchOrder, final String flowIdValue) {
+        final Uint16 uint = Uint16.valueOf(batchOrder);
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
-                .withKey(new BatchKey(batchOrder))
+                .setBatchOrder(uint)
+                .withKey(new BatchKey(uint))
                 .setBatchChoice(new FlatBatchUpdateFlowCaseBuilder()
                         .setFlatBatchUpdateFlow(Collections.singletonList(new FlatBatchUpdateFlowBuilder()
                                 .setFlowId(new FlowId(flowIdValue))
@@ -369,10 +373,10 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createGroupAddBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchAddGroupCaseBuilder()
                         .setFlatBatchAddGroup(Collections.singletonList(new FlatBatchAddGroupBuilder()
-                                .setGroupId(new GroupId(groupIdValue))
+                                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                                 .build()))
                         .build())
                 .build();
@@ -380,10 +384,10 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createGroupRemoveBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchRemoveGroupCaseBuilder()
                         .setFlatBatchRemoveGroup(Collections.singletonList(new FlatBatchRemoveGroupBuilder()
-                                .setGroupId(new GroupId(groupIdValue))
+                                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                                 .build()))
                         .build())
                 .build();
@@ -391,14 +395,14 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createGroupUpdateBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchUpdateGroupCaseBuilder()
                         .setFlatBatchUpdateGroup(Collections.singletonList(new FlatBatchUpdateGroupBuilder()
                                 .setOriginalBatchedGroup(new OriginalBatchedGroupBuilder()
-                                        .setGroupId(new GroupId(groupIdValue))
+                                        .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                                         .build())
                                 .setUpdatedBatchedGroup(new UpdatedBatchedGroupBuilder()
-                                        .setGroupId(new GroupId(groupIdValue))
+                                        .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                                         .build())
                                 .build()))
                         .build())
@@ -407,10 +411,10 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createMeterAddBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchAddMeterCaseBuilder()
                         .setFlatBatchAddMeter(Collections.singletonList(new FlatBatchAddMeterBuilder()
-                                .setMeterId(new MeterId(groupIdValue))
+                                .setMeterId(new MeterId(Uint32.valueOf(groupIdValue)))
                                 .build()))
                         .build())
                 .build();
@@ -418,10 +422,10 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createMeterRemoveBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchRemoveMeterCaseBuilder()
                         .setFlatBatchRemoveMeter(Collections.singletonList(new FlatBatchRemoveMeterBuilder()
-                                .setMeterId(new MeterId(groupIdValue))
+                                .setMeterId(new MeterId(Uint32.valueOf(groupIdValue)))
                                 .build()))
                         .build())
                 .build();
@@ -429,14 +433,14 @@ public class SalFlatBatchServiceImplTest {
 
     private static Batch createMeterUpdateBatch(final int batchOrder, final long groupIdValue) {
         return new BatchBuilder()
-                .setBatchOrder(batchOrder)
+                .setBatchOrder(Uint16.valueOf(batchOrder))
                 .setBatchChoice(new FlatBatchUpdateMeterCaseBuilder()
                         .setFlatBatchUpdateMeter(Collections.singletonList(new FlatBatchUpdateMeterBuilder()
                                 .setOriginalBatchedMeter(new OriginalBatchedMeterBuilder()
-                                        .setMeterId(new MeterId(groupIdValue))
+                                        .setMeterId(new MeterId(Uint32.valueOf(groupIdValue)))
                                         .build())
                                 .setUpdatedBatchedMeter(new UpdatedBatchedMeterBuilder()
-                                        .setMeterId(new MeterId(groupIdValue))
+                                        .setMeterId(new MeterId(Uint32.valueOf(groupIdValue)))
                                         .build())
                                 .build()))
                         .build())
@@ -561,11 +565,11 @@ public class SalFlatBatchServiceImplTest {
                         .withResult(new AddFlowsBatchOutputBuilder()
                                 .setBatchFailedFlowsOutput(Lists.newArrayList(
                                         new BatchFailedFlowsOutputBuilder()
-                                                .setBatchOrder(0)
+                                                .setBatchOrder(Uint16.ZERO)
                                                 .setFlowId(new FlowId("f1"))
                                                 .build(),
                                         new BatchFailedFlowsOutputBuilder()
-                                                .setBatchOrder(1)
+                                                .setBatchOrder(Uint16.ONE)
                                                 .setFlowId(new FlowId("f2"))
                                                 .build()))
                                 .build())

@@ -58,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,13 +113,11 @@ public class StatisticsManagerImplTest {
                 ArgumentMatchers.any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        final long basicTimerDelay = 3000L;
-        final long maximumTimerDelay = 900000L;
 
         statisticsManager = new StatisticsManagerImpl(
                 new OpenflowProviderConfigBuilder()
-                        .setBasicTimerDelay(new NonZeroUint32Type(basicTimerDelay))
-                        .setMaximumTimerDelay(new NonZeroUint32Type(maximumTimerDelay))
+                        .setBasicTimerDelay(new NonZeroUint32Type(Uint32.valueOf(3000)))
+                        .setMaximumTimerDelay(new NonZeroUint32Type(Uint32.valueOf(900000)))
                         .setIsStatisticsPollingOn(false)
                         .build(), rpcProviderRegistry,
                 convertorManager,

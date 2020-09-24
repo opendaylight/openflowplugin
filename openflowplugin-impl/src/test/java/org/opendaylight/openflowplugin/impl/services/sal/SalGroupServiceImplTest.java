@@ -37,10 +37,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SalGroupServiceImplTest extends ServiceMocking {
 
-    private static final Long DUMMY_GROUP_ID = 15L;
+    private static final Uint32 DUMMY_GROUP_ID = Uint32.valueOf(15);
     private static final
         KeyedInstanceIdentifier<Node, NodeKey> NODE_II = InstanceIdentifier.create(Nodes.class).child(Node.class,
             new NodeKey(new NodeId(DUMMY_NODE_ID)));

@@ -43,8 +43,8 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 public class GroupUtilTest {
 
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
-    private static final GroupId DUMMY_GROUP_ID = new GroupId(42L);
-    private static final GroupId DUMMY_GROUP_ID_2 = new GroupId(43L);
+    private static final GroupId DUMMY_GROUP_ID = new GroupId(Uint32.valueOf(42));
+    private static final GroupId DUMMY_GROUP_ID_2 = new GroupId(Uint32.valueOf(43));
     private static final long GROUP_ACTION_BITMAP =
             0b00000000000000000000000000000000000001111111111111001100000000001L;
 

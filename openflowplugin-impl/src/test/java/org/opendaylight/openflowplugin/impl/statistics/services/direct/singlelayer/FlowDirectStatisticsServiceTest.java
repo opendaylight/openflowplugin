@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,12 +82,12 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
     public void testBuildReply() {
         final FlowAndStatisticsMapList flowStat = new FlowAndStatisticsMapListBuilder()
                 .setDuration(new DurationBuilder()
-                        .setSecond(new Counter32(1L))
-                        .setNanosecond(new Counter32(2L))
+                        .setSecond(new Counter32(Uint32.ONE))
+                        .setNanosecond(new Counter32(Uint32.TWO))
                         .build())
                 .setTableId(Uint8.valueOf(50))
-                .setByteCount(new Counter64(BigInteger.valueOf(7094)))
-                .setPacketCount(new Counter64(BigInteger.valueOf(63)))
+                .setByteCount(new Counter64(Uint64.valueOf(7094)))
+                .setPacketCount(new Counter64(Uint64.valueOf(63)))
                 .setCookie(new FlowCookie(Uint64.valueOf(134419365)))
                 .setFlags(new FlowModFlags(true, false, false, false, false))
                 .setMatch(new MatchBuilder().setEthernetMatch(
@@ -110,12 +109,12 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
         final FlowAndStatisticsMapList flowStat1 = new FlowAndStatisticsMapListBuilder()
                 .setDuration(new DurationBuilder()
-                        .setSecond(new Counter32(1L))
-                        .setNanosecond(new Counter32(2L))
+                        .setSecond(new Counter32(Uint32.ONE))
+                        .setNanosecond(new Counter32(Uint32.TWO))
                         .build())
                 .setTableId(Uint8.valueOf(51))
-                .setByteCount(new Counter64(BigInteger.valueOf(9853)))
-                .setPacketCount(new Counter64(BigInteger.valueOf(99)))
+                .setByteCount(new Counter64(Uint64.valueOf(9853)))
+                .setPacketCount(new Counter64(Uint64.valueOf(99)))
                 .setCookie(new FlowCookie(Uint64.valueOf(134550437)))
                 .setFlags(new FlowModFlags(true, false, false, false, false))
                 .setMatch(new MatchBuilder().setEthernetMatch(

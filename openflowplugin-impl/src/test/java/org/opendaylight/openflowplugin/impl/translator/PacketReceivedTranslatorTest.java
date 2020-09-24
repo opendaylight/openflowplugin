@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.translator;
 
 import com.google.common.collect.Lists;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
@@ -49,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -118,8 +118,8 @@ public class PacketReceivedTranslatorTest {
                 .setData(data).setReason(reason)
                 .setMatch(packetInMatchBld.build())
                 .setVersion(OFConstants.OFP_VERSION_1_3)
-                .setCookie(BigInteger.ZERO)
-                .setTableId(new TableId(42L))
+                .setCookie(Uint64.ZERO)
+                .setTableId(new TableId(Uint32.valueOf(42)))
                 .build();
 
     }
@@ -133,7 +133,7 @@ public class PacketReceivedTranslatorTest {
                 .setMatch(packetInMatchBld.build())
                 .setVersion(OFConstants.OFP_VERSION_1_3);
         final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
-        final Match packetInMatch = packetReceivedTranslator.getPacketInMatch(inputBld.build(), Uint64.valueOf(10));
+        final Match packetInMatch = packetReceivedTranslator.getPacketInMatch(inputBld.build(), Uint64.TEN);
 
         Assert.assertNotNull(packetInMatch.getInPort());
         Assert.assertEquals("openflow:10:" + PORT_NUM_VALUE, packetInMatch.getInPort().getValue());
@@ -141,7 +141,7 @@ public class PacketReceivedTranslatorTest {
 
     private static MatchEntryBuilder assembleMatchEntryBld(final long portNumValue) {
         MatchEntryBuilder matchEntryBuilder = prepareHeader(InPort.class, false);
-        InPortBuilder inPortBld = new InPortBuilder().setPortNumber(new PortNumber(portNumValue));
+        InPortBuilder inPortBld = new InPortBuilder().setPortNumber(new PortNumber(Uint32.valueOf(portNumValue)));
         InPortCaseBuilder caseBuilder = new InPortCaseBuilder();
         caseBuilder.setInPort(inPortBld.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

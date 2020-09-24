@@ -14,19 +14,18 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class ArpOpEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final int arpOp = 42;
+        final Uint16 arpOp = Uint16.valueOf(42);
 
         final Match arpOpMatch = new MatchBuilder()
-                .setLayer3Match(new ArpMatchBuilder()
-                        .setArpOp(arpOp)
-                        .build())
+                .setLayer3Match(new ArpMatchBuilder().setArpOp(arpOp).build())
                 .build();
 
-        assertMatch(arpOpMatch, false, (out) -> assertEquals(out.readShort(), arpOp));
+        assertMatch(arpOpMatch, false, (out) -> assertEquals(out.readShort(), arpOp.intValue()));
     }
 
     @Override

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -40,8 +39,7 @@ public class Ipv4DestinationEntryDeserializer extends AbstractMatchEntryDeserial
         }
     }
 
-    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address, @Nullable final byte[]
-            mask) {
+    private static void setPrefixMatch(final MatchBuilder builder, final Ipv4Address address, final byte[] mask) {
         if (builder.getLayer3Match() == null) {
             builder.setLayer3Match(new Ipv4MatchBuilder()
                     .setIpv4Destination(IpConversionUtil.createPrefix(address, mask))

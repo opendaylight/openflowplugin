@@ -14,6 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class IpProtoEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
@@ -21,9 +22,7 @@ public class IpProtoEntrySerializerTest extends AbstractMatchEntrySerializerTest
         final short proto = (short) 6; // TCP
 
         final Match match = new MatchBuilder()
-                .setIpMatch(new IpMatchBuilder()
-                        .setIpProtocol(proto)
-                        .build())
+                .setIpMatch(new IpMatchBuilder().setIpProtocol(Uint8.valueOf(proto)).build())
                 .build();
 
         assertMatch(match, false, (out) -> assertEquals(out.readUnsignedByte(), proto));

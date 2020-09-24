@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class IpDscpEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
@@ -22,9 +23,7 @@ public class IpDscpEntrySerializerTest extends AbstractMatchEntrySerializerTest 
         final short dscp = (short) 58;
 
         final Match match = new MatchBuilder()
-                .setIpMatch(new IpMatchBuilder()
-                        .setIpDscp(new Dscp(dscp))
-                        .build())
+                .setIpMatch(new IpMatchBuilder().setIpDscp(new Dscp(Uint8.valueOf(dscp))).build())
                 .build();
 
         assertMatch(match, false, (out) -> assertEquals(out.readUnsignedByte(), dscp));

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.configuration;
 
 import static org.junit.Assert.assertEquals;
@@ -36,25 +35,25 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 public class ConfigurationServiceFactoryImplTest {
     private static final int CONFIG_PROP_COUNT = 25;
     private static final boolean IS_STATISTICS_POLLING_ON = true;
-    private static final int BARRIER_COUNT_LIMIT = 2000;
-    private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000;
-    private static final long ECHO_REPLY_TIMEOUT = 4000;
+    private static final Uint16 BARRIER_COUNT_LIMIT = Uint16.valueOf(2000);
+    private static final Uint32 BARRIER_INTERVAL_TIMEOUT_LIMIT = Uint32.valueOf(3000);
+    private static final Uint32 ECHO_REPLY_TIMEOUT = Uint32.valueOf(4000);
     private static final boolean ENABLE_FLOW_REMOVED_NOTIFICATION = true;
     private static final boolean SKIP_TABLE_FEATURES = true;
-    private static final long BASIC_TIMER_DELAY = 2690;
-    private static final long MAXIMUM_TIMER_DELAY = 3679;
+    private static final Uint32 BASIC_TIMER_DELAY = Uint32.valueOf(2690);
+    private static final Uint32 MAXIMUM_TIMER_DELAY = Uint32.valueOf(3679);
     private static final boolean SWITCH_FEATURES_MANDATORY = false;
     private static final boolean IS_STATISTICS_RPC_ENABLED = false;
     private static final boolean USE_SINGLE_LAYER_SERIALIZATION = true;
-    private static final int RPC_REQUESTS_QUOTA = 2500;
+    private static final Uint16 RPC_REQUESTS_QUOTA = Uint16.valueOf(2500);
     private static final Uint32 GLOBAL_NOTIFICATION_QUOTA = Uint32.valueOf(9000);
     private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.valueOf(3);
     private static final int THREAD_POOL_MIN_THREADS_UPDATE = 4;
-    private static final int THREAD_POOL_MAX_THREADS = 1000;
+    private static final Uint16 THREAD_POOL_MAX_THREADS = Uint16.valueOf(1000);
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
-    private static final long DEVICE_DATASTORE_REMOVAL_DELAY = 500;
+    private static final Uint32 DEVICE_DATASTORE_REMOVAL_DELAY = Uint32.valueOf(500);
 
     @Mock
     private OpenflowProviderConfig config;
@@ -124,7 +123,7 @@ public class ConfigurationServiceFactoryImplTest {
         final int tpMaxThreads = configurationService
                 .getProperty(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(), Integer::valueOf);
 
-        assertEquals(THREAD_POOL_MAX_THREADS, tpMaxThreads);
+        assertEquals(THREAD_POOL_MAX_THREADS.intValue(), tpMaxThreads);
     }
 
     @Test

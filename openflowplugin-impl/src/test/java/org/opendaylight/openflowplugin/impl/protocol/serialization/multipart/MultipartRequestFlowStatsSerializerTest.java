@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -25,16 +24,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multip
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.stats.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartRequestFlowStatsSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02 = 4;
-    private static final short TABLE_ID = 42;
-    private static final BigInteger OUT_PORT = BigInteger.ONE;
-    private static final long OUT_GROUP = 10;
-    private static final FlowCookie COOKIE = new FlowCookie(BigInteger.valueOf(8));
-    private static final FlowCookie COOKIE_MASK = new FlowCookie(BigInteger.TEN);
-    private static final Short IP_PROTOCOL_MATCH = (short) 17;
+    private static final Uint8 TABLE_ID = Uint8.valueOf(42);
+    private static final Uint64 OUT_PORT = Uint64.ONE;
+    private static final Uint32 OUT_GROUP = Uint32.TEN;
+    private static final FlowCookie COOKIE = new FlowCookie(Uint64.valueOf(8));
+    private static final FlowCookie COOKIE_MASK = new FlowCookie(Uint64.TEN);
+    private static final Uint8 IP_PROTOCOL_MATCH = Uint8.valueOf(17);
     private static final Match MATCH = new MatchBuilder()
             .setIpMatch(new IpMatchBuilder()
                     .setIpProtocol(IP_PROTOCOL_MATCH)
@@ -63,10 +65,10 @@ public class MultipartRequestFlowStatsSerializerTest extends AbstractSerializerT
         final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(BODY, out);
 
-        assertEquals(out.readUnsignedByte(), TABLE_ID);
+        assertEquals(out.readUnsignedByte(), TABLE_ID.shortValue());
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01);
         assertEquals(out.readUnsignedInt(), OUT_PORT.longValue());
-        assertEquals(out.readUnsignedInt(), OUT_GROUP);
+        assertEquals(out.readUnsignedInt(), OUT_GROUP.longValue());
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_02);
         assertEquals(out.readLong(), COOKIE.getValue().longValue());
         assertEquals(out.readLong(), COOKIE_MASK.getValue().longValue());

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -17,18 +16,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcActionBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SetTpSrcActionSerializerTest extends AbstractSetFieldActionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final PortNumber port = new PortNumber(20);
+        final PortNumber port = new PortNumber(Uint16.valueOf(20));
         final short protocol = 6; // TCP
 
         final Action action = new SetTpSrcActionCaseBuilder()
                 .setSetTpSrcAction(new SetTpSrcActionBuilder()
                         .setPort(port)
-                        .setIpProtocol(protocol)
+                        .setIpProtocol(Uint8.valueOf(protocol))
                         .build())
                 .build();
 

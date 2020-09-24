@@ -28,11 +28,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class AsyncConfigMessageSerializerTest extends AbstractSerializerTest {
 
     private static final short LENGTH = 32;
-    private static final Long XID = 42L;
+    private static final Uint32 XID = Uint32.valueOf(42);
     private static final short VERSION = EncodeConstants.OF13_VERSION_ID;
 
     // Packet in mask

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import static org.junit.Assert.assertEquals;
@@ -19,9 +18,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SingleLayerMeterServiceTest extends ServiceMocking {
-    private static final long METER_ID = 42;
+    private static final Uint32 METER_ID = Uint32.valueOf(42);
     private SingleLayerMeterService<AddMeterOutput> service;
 
     @Override
@@ -42,6 +42,6 @@ public class SingleLayerMeterServiceTest extends ServiceMocking {
         final MeterMessage result = (MeterMessage) ofHeader;
 
         assertEquals(MeterModCommand.OFPMCADD, result.getCommand());
-        assertEquals(METER_ID, result.getMeterId().getValue().longValue());
+        assertEquals(METER_ID, result.getMeterId().getValue());
     }
 }

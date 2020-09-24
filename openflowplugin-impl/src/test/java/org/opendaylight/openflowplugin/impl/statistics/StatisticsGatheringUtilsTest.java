@@ -132,6 +132,7 @@ import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -222,15 +223,15 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testGatherStatistics_group() throws Exception {
         final MultipartType type = MultipartType.OFPMPGROUP;
-        final long groupIdValue = 19L;
+        final Uint32 groupIdValue = Uint32.valueOf(19);
 
         final GroupStatsBuilder groupStatsBld = new GroupStatsBuilder()
                 .setBucketStats(Lists.newArrayList(createBucketStat(21L, 42L)))
-                .setByteCount(BigInteger.valueOf(84L))
-                .setPacketCount(BigInteger.valueOf(63L))
-                .setDurationSec(11L)
-                .setDurationNsec(12L)
-                .setRefCount(13L)
+                .setByteCount(Uint64.valueOf(84))
+                .setPacketCount(Uint64.valueOf(63))
+                .setDurationSec(Uint32.valueOf(11))
+                .setDurationNsec(Uint32.valueOf(12))
+                .setRefCount(Uint32.valueOf(13))
                 .setGroupId(new GroupId(groupIdValue));
         final MultipartReplyGroupBuilder mpReplyGroupBld = new MultipartReplyGroupBuilder();
         mpReplyGroupBld.setGroupStats(Lists.newArrayList(groupStatsBld.build()));
@@ -257,7 +258,7 @@ public class StatisticsGatheringUtilsTest {
         final long groupIdValue = 27L;
 
         final BucketsListBuilder bucketsListBld = new BucketsListBuilder()
-                .setWatchPort(new PortNumber(5L));
+                .setWatchPort(new PortNumber(Uint32.valueOf(5)));
         final GroupDescBuilder groupStatsBld = new GroupDescBuilder()
                 .setBucketsList(Lists.newArrayList(bucketsListBld.build()))
                 .setGroupId(new GroupId(groupIdValue))
@@ -287,18 +288,18 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testGatherStatistics_meter() throws Exception {
         final MultipartType type = MultipartType.OFPMPMETER;
-        final long meterIdValue = 19L;
+        final Uint32 meterIdValue = Uint32.valueOf(19);
 
         final MeterBandStatsBuilder meterBandStatsBld = new MeterBandStatsBuilder()
-                .setByteBandCount(BigInteger.valueOf(91L))
-                .setPacketBandCount(BigInteger.valueOf(92L));
+                .setByteBandCount(Uint64.valueOf(91))
+                .setPacketBandCount(Uint64.valueOf(92));
         final MeterStatsBuilder meterStatsBld = new MeterStatsBuilder()
                 .setMeterId(new MeterId(meterIdValue))
-                .setByteInCount(BigInteger.valueOf(111L))
-                .setDurationSec(112L)
-                .setDurationNsec(113L)
-                .setFlowCount(114L)
-                .setPacketInCount(BigInteger.valueOf(115L))
+                .setByteInCount(Uint64.valueOf(111))
+                .setDurationSec(Uint32.valueOf(112))
+                .setDurationNsec(Uint32.valueOf(113))
+                .setFlowCount(Uint32.valueOf(114))
+                .setPacketInCount(Uint64.valueOf(115))
                 .setMeterBandStats(Lists.newArrayList(meterBandStatsBld.build()));
         final MultipartReplyMeterBuilder mpReplyMeterBld = new MultipartReplyMeterBuilder();
         mpReplyMeterBld.setMeterStats(Lists.newArrayList(meterStatsBld.build()));
@@ -324,7 +325,7 @@ public class StatisticsGatheringUtilsTest {
         final MultipartType type = MultipartType.OFPMPPORTSTATS;
 
         final PortStatsBuilder portStatsBld = new PortStatsBuilder()
-                .setPortNo(11L);
+                .setPortNo(Uint32.valueOf(11));
         final MultipartReplyPortStatsBuilder mpReplyMeterBld = new MultipartReplyPortStatsBuilder();
         mpReplyMeterBld.setPortStats(Lists.newArrayList(portStatsBld.build()));
         final MultipartReplyPortStatsCaseBuilder mpReplyMeterCaseBld = new MultipartReplyPortStatsCaseBuilder();
@@ -351,10 +352,10 @@ public class StatisticsGatheringUtilsTest {
         final MultipartType type = MultipartType.OFPMPTABLE;
 
         final TableStatsBuilder tableStatsBld = new TableStatsBuilder()
-                .setActiveCount(33L)
-                .setLookupCount(BigInteger.valueOf(34L))
-                .setMatchedCount(BigInteger.valueOf(35L))
-                .setTableId((short) 0);
+                .setActiveCount(Uint32.valueOf(33))
+                .setLookupCount(Uint64.valueOf(34))
+                .setMatchedCount(Uint64.valueOf(35))
+                .setTableId(Uint8.ZERO);
         final MultipartReplyTableBuilder mpReplyTableBld = new MultipartReplyTableBuilder();
         mpReplyTableBld.setTableStats(Lists.newArrayList(tableStatsBld.build()));
         final MultipartReplyTableCaseBuilder mpReplyTableCaseBld = new MultipartReplyTableCaseBuilder();
@@ -367,7 +368,7 @@ public class StatisticsGatheringUtilsTest {
 
         final InstanceIdentifier<FlowTableStatistics> tablePath = dummyNodePath
                 .augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey((short) 0))
+                .child(Table.class, new TableKey(Uint8.ZERO))
                 .augmentation(FlowTableStatisticsData.class)
                 .child(FlowTableStatistics.class);
         verify(deviceContext).writeToTransaction(
@@ -380,14 +381,14 @@ public class StatisticsGatheringUtilsTest {
     public void testGatherStatistics_queue() throws Exception {
         final MultipartType type = MultipartType.OFPMPQUEUE;
 
-        final long queueIdValue = 4L;
+        final Uint32 queueIdValue = Uint32.valueOf(4);
         final QueueStatsBuilder queueStatsBld = new QueueStatsBuilder()
-                .setPortNo(11L)
-                .setTxBytes(BigInteger.valueOf(44L))
-                .setTxErrors(BigInteger.valueOf(45L))
-                .setTxPackets(BigInteger.valueOf(46L))
-                .setDurationSec(47L)
-                .setDurationNsec(48L)
+                .setPortNo(Uint32.valueOf(11))
+                .setTxBytes(Uint64.valueOf(44))
+                .setTxErrors(Uint64.valueOf(45))
+                .setTxPackets(Uint64.valueOf(46))
+                .setDurationSec(Uint32.valueOf(47))
+                .setDurationNsec(Uint32.valueOf(48))
                 .setQueueId(queueIdValue);
 
         final MultipartReplyQueueBuilder mpReplyQueueBld = new MultipartReplyQueueBuilder();
@@ -413,13 +414,12 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testGatherStatistics_flow() throws Exception {
-        final short tableId = 0;
         final MultipartType type = MultipartType.OFPMPFLOW;
 
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
-        tableDataBld.setId(tableId);
+        tableDataBld.setId(Uint8.ZERO);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
@@ -432,11 +432,11 @@ public class StatisticsGatheringUtilsTest {
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
                         .setMatchEntry(Collections.emptyList());
         final FlowStatsBuilder flowStatsBld = new FlowStatsBuilder()
-                .setByteCount(BigInteger.valueOf(55L))
-                .setPacketCount(BigInteger.valueOf(56L))
-                .setDurationSec(57L)
-                .setDurationNsec(58L)
-                .setTableId((short) 0)
+                .setByteCount(Uint64.valueOf(55))
+                .setPacketCount(Uint64.valueOf(56))
+                .setDurationSec(Uint32.valueOf(57))
+                .setDurationNsec(Uint32.valueOf(58L))
+                .setTableId(Uint8.ZERO)
                 .setMatch(matchBld.build())
                 .setFlags(new FlowModFlags(true, false, false, false, true));
 
@@ -450,10 +450,10 @@ public class StatisticsGatheringUtilsTest {
         fireAndCheck(type, statsData);
 
         final FlowBuilder flowBld = new FlowBuilder()
-                .setTableId((short) 0)
+                .setTableId(Uint8.ZERO)
                 .setMatch(new MatchBuilder().build());
         final KeyedInstanceIdentifier<Table, TableKey> tablePath = dummyNodePath.augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey((short) 0));
+                .child(Table.class, new TableKey(Uint8.ZERO));
         final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =  tablePath.child(Flow.class, new FlowKey(flowId));
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
@@ -468,7 +468,7 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testGatherStatistics_meterConfig() throws Exception {
         final MultipartType type = MultipartType.OFPMPMETERCONFIG;
-        final Long meterIdValue = 55L;
+        final Uint32 meterIdValue = Uint32.valueOf(55);
 
         final MeterConfigBuilder meterConfigBld = new MeterConfigBuilder()
                 .setMeterId(new MeterId(meterIdValue))
@@ -522,22 +522,21 @@ public class StatisticsGatheringUtilsTest {
                 .setMultipartReplyBody(mpReplyGroupCaseBld)
                 .setType(type)
                 .setFlags(new MultipartRequestFlags(false))
-                .setXid(42L)
+                .setXid(Uint32.valueOf(42))
                 .build();
     }
 
     private static BucketStats createBucketStat(final long byteCount, final long packetCount) {
         return new BucketStatsBuilder()
-                .setByteCount(BigInteger.valueOf(byteCount)).setPacketCount(BigInteger.valueOf(packetCount)).build();
+                .setByteCount(BigInteger.valueOf(byteCount)).setPacketCount(Uint64.valueOf(packetCount)).build();
     }
 
     @Test
     public void testDeleteAllKnownFlows() {
-        final short tableId = 0;
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final TableBuilder tableDataBld = new TableBuilder();
-        tableDataBld.setId(tableId);
+        tableDataBld.setId(Uint8.ZERO);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());

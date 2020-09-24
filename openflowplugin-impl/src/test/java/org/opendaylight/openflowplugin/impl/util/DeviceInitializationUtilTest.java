@@ -43,14 +43,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceInitializationUtilTest {
     private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II = DeviceStateUtil
                 .createNodeInstanceIdentifier(new NodeId("openflow:1"));
-    private static final int PORT = 2017;
-    private static final InetSocketAddress INET_SOCKET_ADDRESS = new InetSocketAddress("192.168.0.1", PORT);
+    private static final Uint16 PORT = Uint16.valueOf(2017);
+    private static final InetSocketAddress INET_SOCKET_ADDRESS = new InetSocketAddress("192.168.0.1", PORT.intValue());
     private static final Uint8 TABLES = Uint8.valueOf(25);
 
     @Mock

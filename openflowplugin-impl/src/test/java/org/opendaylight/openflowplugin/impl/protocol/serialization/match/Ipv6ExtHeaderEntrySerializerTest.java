@@ -17,12 +17,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class Ipv6ExtHeaderEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final int ipv6extHdr = 358;
-        final int ipv6extHdrMask = 100;
+        final Uint16 ipv6extHdr = Uint16.valueOf(358);
+        final Uint16 ipv6extHdrMask = Uint16.valueOf(100);
 
         final Match ipv6extHdrMatch = new MatchBuilder()
                 .setLayer3Match(new Ipv6MatchBuilder()
@@ -34,7 +35,7 @@ public class Ipv6ExtHeaderEntrySerializerTest extends AbstractMatchEntrySerializ
                 .build();
 
         assertMatch(ipv6extHdrMatch, true, (out) -> {
-            assertEquals(out.readUnsignedShort(), ipv6extHdr);
+            assertEquals(out.readUnsignedShort(), ipv6extHdr.intValue());
 
             byte[] mask = new byte[2];
             out.readBytes(mask);
@@ -49,7 +50,8 @@ public class Ipv6ExtHeaderEntrySerializerTest extends AbstractMatchEntrySerializ
                         .build())
                 .build();
 
-        assertMatch(ipv6exyHdrMatchNoMask, false, (out) -> assertEquals(out.readUnsignedShort(), ipv6extHdr));
+        assertMatch(ipv6exyHdrMatchNoMask, false,
+            (out) -> assertEquals(out.readUnsignedShort(), ipv6extHdr.intValue()));
     }
 
     @Override

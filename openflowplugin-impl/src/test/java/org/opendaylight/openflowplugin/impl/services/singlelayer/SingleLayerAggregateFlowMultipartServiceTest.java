@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import static org.junit.Assert.assertEquals;
@@ -25,9 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking {
-    private static final short TABLE_ID = 42;
+    private static final Uint8 TABLE_ID = Uint8.valueOf(42);
     private static final Uint64 BYTE_COUNT = Uint64.valueOf(10);
     private SingleLayerAggregateFlowMultipartService service;
 
@@ -50,7 +50,7 @@ public class SingleLayerAggregateFlowMultipartServiceTest extends ServiceMocking
             (MultipartRequestFlowAggregateStats) ((MultipartRequest) ofHeader)
                 .getMultipartRequestBody();
 
-        assertEquals(TABLE_ID, result.getFlowAggregateStats().getTableId().shortValue());
+        assertEquals(TABLE_ID, result.getFlowAggregateStats().getTableId());
     }
 
     @Test

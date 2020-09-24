@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.translator;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +36,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test of {@link AggregatedFlowStatisticsTranslator}.
@@ -100,15 +102,15 @@ public class FlowRemovedTranslatorTest {
     private org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemoved
             buildMessage(final boolean isV10) {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
-                .setCookie(BigInteger.ONE)
+                .setCookie(Uint64.ONE)
                 .setReason(FlowRemovedReason.OFPRRGROUPDELETE)
-                .setPriority(1);
+                .setPriority(Uint16.ONE);
 
         if (isV10) {
             builder.setMatchV10(new MatchV10Builder().setWildcards(flowWildcards).build());
         } else {
             builder.setMatch(new MatchBuilder().setMatchEntry(Collections.emptyList()).build())
-                .setTableId(new TableId(42L));
+                .setTableId(new TableId(Uint32.valueOf(42)));
         }
 
         return builder.build();

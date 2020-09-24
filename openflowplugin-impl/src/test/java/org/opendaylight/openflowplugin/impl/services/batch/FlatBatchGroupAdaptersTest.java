@@ -43,6 +43,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link FlatBatchGroupAdapters}.
@@ -59,8 +61,8 @@ public class FlatBatchGroupAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createAddGroupBatch(1L),
-                createAddGroupBatch(2L)));
+                createAddGroupBatch(Uint32.ONE),
+                createAddGroupBatch(Uint32.TWO)));
 
         final AddGroupsBatchInput addGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, NODE_REF);
@@ -72,19 +74,19 @@ public class FlatBatchGroupAdaptersTest {
         Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
     }
 
-    private static FlatBatchAddGroup createAddGroupBatch(final long groupIdValue) {
+    private static FlatBatchAddGroup createAddGroupBatch(final Uint32 groupIdValue) {
         return new FlatBatchAddGroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
                 .build();
     }
 
-    private static FlatBatchRemoveGroup createRemoveGroupBatch(final long groupIdValue) {
+    private static FlatBatchRemoveGroup createRemoveGroupBatch(final Uint32 groupIdValue) {
         return new FlatBatchRemoveGroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
                 .build();
     }
 
-    private static FlatBatchUpdateGroup createUpdateGroupBatch(final long groupIdValue) {
+    private static FlatBatchUpdateGroup createUpdateGroupBatch(final Uint32 groupIdValue) {
         return new FlatBatchUpdateGroupBuilder()
                 .setOriginalBatchedGroup(new OriginalBatchedGroupBuilder()
                         .setGroupId(new GroupId(groupIdValue))
@@ -100,8 +102,8 @@ public class FlatBatchGroupAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createRemoveGroupBatch(1L),
-                createRemoveGroupBatch(2L)));
+                createRemoveGroupBatch(Uint32.ONE),
+                createRemoveGroupBatch(Uint32.TWO)));
 
         final RemoveGroupsBatchInput removeGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, NODE_REF);
@@ -118,8 +120,8 @@ public class FlatBatchGroupAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createUpdateGroupBatch(1L),
-                createUpdateGroupBatch(2L)));
+                createUpdateGroupBatch(Uint32.ONE),
+                createUpdateGroupBatch(Uint32.TWO)));
 
         final UpdateGroupsBatchInput updateGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, NODE_REF);
@@ -138,8 +140,8 @@ public class FlatBatchGroupAdaptersTest {
                 .withError(RpcError.ErrorType.APPLICATION, "ut-groupError")
                 .withResult(new AddGroupsBatchOutputBuilder()
                         .setBatchFailedGroupsOutput(Lists.newArrayList(
-                                createBatchFailedGroupsOutput(0, 1L),
-                                createBatchFailedGroupsOutput(1, 2L)
+                                createBatchFailedGroupsOutput(Uint16.ZERO, Uint32.ONE),
+                                createBatchFailedGroupsOutput(Uint16.ONE, Uint32.TWO)
                         ))
                         .build())
                 .build();
@@ -172,15 +174,15 @@ public class FlatBatchGroupAdaptersTest {
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
     }
 
-    private static BatchFailedGroupsOutput createBatchFailedGroupsOutput(final Integer batchOrder,
-            final long groupIdValue) {
+    private static BatchFailedGroupsOutput createBatchFailedGroupsOutput(final Uint16 batchOrder,
+            final Uint32 groupIdValue) {
         return new BatchFailedGroupsOutputBuilder()
                 .setGroupId(new GroupId(groupIdValue))
                 .setBatchOrder(batchOrder)
                 .build();
     }
 
-    private static BatchFailure createChainFailure(final int batchOrder, final long groupIdValue) {
+    private static BatchFailure createChainFailure(final Uint16 batchOrder, final Uint32 groupIdValue) {
         return new BatchFailureBuilder()
                 .setBatchOrder(batchOrder)
                 .setBatchItemIdChoice(new FlatBatchFailureGroupIdCaseBuilder()
