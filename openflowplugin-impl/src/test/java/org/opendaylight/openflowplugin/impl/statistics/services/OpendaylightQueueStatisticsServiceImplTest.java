@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPortOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test for {@link OpendaylightQueueStatisticsServiceImpl}.
@@ -51,6 +51,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
 
     private OpendaylightQueueStatisticsServiceImpl queueStatisticsService;
 
+    @Override
     public void setUp() {
         queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -89,9 +90,9 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
                                         .setQueueStats(Collections.singletonList(new QueueStatsBuilder()
                                                 .setDurationSec(41L)
                                                 .setDurationNsec(42L)
-                                                .setTxBytes(BigInteger.valueOf(43L))
-                                                .setTxErrors(BigInteger.valueOf(44L))
-                                                .setTxPackets(BigInteger.valueOf(45L))
+                                                .setTxBytes(Uint64.valueOf(43))
+                                                .setTxErrors(Uint64.valueOf(44))
+                                                .setTxPackets(Uint64.valueOf(45))
                                                 .setPortNo(46L)
                                                 .setQueueId(47L)
                                                 .build()))

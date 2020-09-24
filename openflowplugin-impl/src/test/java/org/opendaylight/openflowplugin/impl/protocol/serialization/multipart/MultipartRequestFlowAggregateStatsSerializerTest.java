@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multip
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.MultipartRequestFlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.multipart.request.multipart.request.body.multipart.request.flow.aggregate.stats.FlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MultipartRequestFlowAggregateStatsSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_MULTIPART_REQUEST_FLOW_BODY_01 = 3;
@@ -32,8 +33,8 @@ public class MultipartRequestFlowAggregateStatsSerializerTest extends AbstractSe
     private static final short TABLE_ID = 42;
     private static final BigInteger OUT_PORT = BigInteger.ONE;
     private static final long OUT_GROUP = 10;
-    private static final FlowCookie COOKIE = new FlowCookie(BigInteger.valueOf(8));
-    private static final FlowCookie COOKIE_MASK = new FlowCookie(BigInteger.TEN);
+    private static final FlowCookie COOKIE = new FlowCookie(Uint64.valueOf(8));
+    private static final FlowCookie COOKIE_MASK = new FlowCookie(Uint64.TEN);
     private static final Short IP_PROTOCOL_MATCH = (short) 17;
     private static final Match MATCH = new MatchBuilder()
             .setIpMatch(new IpMatchBuilder()

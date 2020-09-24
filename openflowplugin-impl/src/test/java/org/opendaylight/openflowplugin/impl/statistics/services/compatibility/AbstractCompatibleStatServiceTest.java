@@ -53,6 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -123,7 +124,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                         .setNode(createNodeRef("unitProt:123"))
-                        .setTableId(new TableId((short) 1))
+                        .setTableId(new TableId(Uint8.ONE))
                         .build();
 
         rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
@@ -131,9 +132,9 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
                         .setVersion(OFConstants.OFP_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyAggregateCaseBuilder()
                                 .setMultipartReplyAggregate(new MultipartReplyAggregateBuilder()
-                                        .setByteCount(BigInteger.valueOf(11L))
+                                        .setByteCount(Uint64.valueOf(11))
                                         .setFlowCount(12L)
-                                        .setPacketCount(BigInteger.valueOf(13L))
+                                        .setPacketCount(Uint64.valueOf(13))
                                         .build())
                                 .build())
                         .build()

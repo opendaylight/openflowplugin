@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeter;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint32 METER_NO = Uint32.valueOf(1);
@@ -68,8 +68,9 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartReplyMeter meter = mock(MultipartReplyMeter.class);
         final MeterStats meterStat = new MeterStatsBuilder().setMeterId(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(METER_NO))
-                .setByteInCount(BigInteger.ONE).setPacketInCount(BigInteger.ONE).setDurationSec(1L).setDurationNsec(1L)
-                .setFlowCount(0L).setMeterBandStats(Collections.emptyList()).build();
+                .setByteInCount(Uint64.ONE).setPacketInCount(Uint64.ONE).setDurationSec(Uint32.ONE)
+                .setDurationNsec(Uint32.ONE).setFlowCount(Uint32.ZERO).setMeterBandStats(Collections.emptyList())
+                .build();
 
         final List<MeterStats> meterStats = Collections.singletonList(meterStat);
         final List<MultipartReply> input = Collections.singletonList(reply);

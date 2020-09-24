@@ -7,27 +7,24 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MplsBosEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final short mplsBos = (short) 1;
-
         final Match mplsBosMatch = new MatchBuilder()
-                .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
-                        .setMplsBos(mplsBos)
-                        .build())
+                .setProtocolMatchFields(new ProtocolMatchFieldsBuilder().setMplsBos(Uint8.ONE).build())
                 .build();
 
         // TODO: Why are we using short in models instead of boolean?
-        assertMatch(mplsBosMatch, false, (out) -> assertEquals(out.readBoolean(), mplsBos != 0));
+        assertMatch(mplsBosMatch, false, (out) -> assertTrue(out.readBoolean()));
     }
 
     @Override

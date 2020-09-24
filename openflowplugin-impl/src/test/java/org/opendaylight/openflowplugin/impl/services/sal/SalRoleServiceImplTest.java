@@ -84,7 +84,7 @@ public class SalRoleServiceImplTest {
 
     private final NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
 
-    private static long testXid = 100L;
+    private static final Uint32 testXid = Uint32.valueOf(100);
 
     private static final String ROLEREQUESTFAILED = org.opendaylight.yang.gen.v1.urn
             .opendaylight.openflow.common.types.rev130731.ErrorType.ROLEREQUESTFAILED.name();
@@ -108,7 +108,7 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockFeaturesReply.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getMessageSpy()).thenReturn(mockMessageSpy);
         Mockito.when(mockRequestContextStack.<RoleRequestOutput>createRequestContext()).thenReturn(mockRequestContext);
-        Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(Uint32.valueOf(testXid)));
+        Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(testXid));
         Mockito.when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(mockOutboundQueue);
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState())
                 .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);

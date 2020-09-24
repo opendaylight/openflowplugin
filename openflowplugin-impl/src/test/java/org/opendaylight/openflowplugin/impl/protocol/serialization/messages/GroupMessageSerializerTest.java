@@ -37,6 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupMessageSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
@@ -47,15 +49,15 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
     private static final Boolean BARRIER = false;
     private static final GroupModCommand COMMAND = GroupModCommand.OFPGCADD;
     private static final String CONTAINER_NAME = "openflow:1";
-    private static final GroupId GROUP_ID = new GroupId(41L);
+    private static final GroupId GROUP_ID = new GroupId(Uint32.valueOf(41));
     private static final String GROUP_NAME = "group41";
     private static final GroupTypes GROUP_TYPE = GroupTypes.GroupAll;
 
-    private static final BucketId BUCKET_ID = new BucketId(40L);
+    private static final BucketId BUCKET_ID = new BucketId(Uint32.valueOf(40));
     private static final BucketKey BUCKET_KEY = new BucketKey(BUCKET_ID);
-    private static final Long BUCKET_WATCH_GROUP = 12L;
-    private static final Long BUCKET_WATCH_PORT = 6L;
-    private static final Integer BUCKET_WEIGHT = 50;
+    private static final Uint32 BUCKET_WATCH_GROUP = Uint32.valueOf(12);
+    private static final Uint32 BUCKET_WATCH_PORT = Uint32.valueOf(6);
+    private static final Uint16 BUCKET_WEIGHT = Uint16.valueOf(50);
     private static final Integer ACTION_ORDER = 0;
     private static final ActionKey ACTION_KEY = new ActionKey(ACTION_ORDER);
     private static final Ipv4Prefix IPV4_PREFIX = new Ipv4Prefix("192.168.76.0/32");

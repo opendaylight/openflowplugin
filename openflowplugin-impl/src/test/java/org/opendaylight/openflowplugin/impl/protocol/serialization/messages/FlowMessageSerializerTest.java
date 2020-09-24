@@ -48,11 +48,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowMessageSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
 
-    private static final Long XID = 42L;
+    private static final Uint32 XID = Uint32.valueOf(42);
     private static final Short VERSION = EncodeConstants.OF13_VERSION_ID;
     private static final Short TABLE_ID = 2;
     private static final Boolean STRICT = true;
@@ -64,7 +67,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
     private static final FlowCookie COOKIE = new FlowCookie(BigInteger.ONE);
     private static final FlowCookie COOKIE_MASK = new FlowCookie(BigInteger.ZERO);
     private static final String FLOW_NAME = "flowflow";
-    private static final Integer HARD_TIMEOUT = 10;
+    private static final Uint16 HARD_TIMEOUT = Uint16.TEN;
     private static final Integer IDLE_TIMEOUT = 5;
     private static final Boolean INSTALL_HW = true;
     private static final Long OUT_GROUP = 1L;
@@ -84,7 +87,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
             IS_SENDFLOWREM);
 
     private static final Integer VLAN_ID = 1;
-    private static final Short IP_PROTOCOL = (short) 6; // TCP
+    private static final Uint8 IP_PROTOCOL = Uint8.valueOf(6); // TCP
 
     private static final Integer TP_SRC_PORT = 22;
     private static final Integer TP_DST_PORT = 23;
@@ -262,7 +265,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
         assertEquals(out.readUnsignedByte(), Short.BYTES);
-        assertEquals(out.readUnsignedShort(), VLAN_ID | (1 << 12));
+        assertEquals(out.readUnsignedShort(), VLAN_ID | 1 << 12);
 
         paddingRemainder = (out.readerIndex() - setVlanStartIndex) % EncodeConstants.PADDING;
         if (paddingRemainder != 0) {
@@ -349,7 +352,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1 | 1);
         assertEquals(out.readUnsignedByte(), Short.BYTES * 2);
-        assertEquals(out.readUnsignedShort(), (1 << 12));
+        assertEquals(out.readUnsignedShort(), 1 << 12);
         byte[] vlanMask = new byte[2];
         out.readBytes(vlanMask);
         assertArrayEquals(vlanMask, new byte[] { 16, 0 });
@@ -379,7 +382,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
         assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
         assertEquals(out.readUnsignedByte(), OxmMatchConstants.VLAN_VID << 1);
         assertEquals(out.readUnsignedByte(), Short.BYTES);
-        assertEquals(out.readUnsignedShort(), VLAN_ID | (1 << 12));
+        assertEquals(out.readUnsignedShort(), VLAN_ID | 1 << 12);
 
         paddingRemainder = (out.readerIndex() - setVlanStartIndex) % EncodeConstants.PADDING;
         if (paddingRemainder != 0) {

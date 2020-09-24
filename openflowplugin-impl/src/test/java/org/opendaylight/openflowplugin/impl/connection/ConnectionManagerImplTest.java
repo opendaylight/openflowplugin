@@ -46,6 +46,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test of {@link ConnectionManagerImpl} - lightweight version, using basic ways (TDD).
@@ -148,10 +151,10 @@ public class ConnectionManagerImplTest {
         // deliver getFeature output
         Thread.sleep(100L);
         final GetFeaturesOutput getFeatureOutput = new GetFeaturesOutputBuilder()
-                .setDatapathId(BigInteger.TEN)
+                .setDatapathId(Uint64.TEN)
                 .setVersion(OFConstants.OFP_VERSION_1_3)
-                .setXid(2L)
-                .setTables((short) 15)
+                .setXid(Uint32.TWO)
+                .setTables(Uint8.valueOf(15))
                 .build();
         final RpcResult<GetFeaturesOutput> rpcFeaturesOutput = RpcResultBuilder.success(getFeatureOutput).build();
         featureResponseFx.set(rpcFeaturesOutput);
@@ -207,10 +210,10 @@ public class ConnectionManagerImplTest {
         // deliver getFeature output
         Thread.sleep(100L);
         final GetFeaturesOutput getFeatureOutput = new GetFeaturesOutputBuilder()
-                .setDatapathId(BigInteger.TEN)
+                .setDatapathId(Uint64.TEN)
                 .setVersion(OFConstants.OFP_VERSION_1_3)
-                .setXid(2L)
-                .setTables((short) 15)
+                .setXid(Uint32.TWO)
+                .setTables(Uint8.valueOf(15))
                 .build();
         final RpcResult<GetFeaturesOutput> rpcFeaturesOutput = RpcResultBuilder.success(getFeatureOutput).build();
         featureResponseFx.set(rpcFeaturesOutput);

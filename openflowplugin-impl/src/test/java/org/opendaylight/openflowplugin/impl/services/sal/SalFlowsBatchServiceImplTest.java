@@ -65,6 +65,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,18 +188,18 @@ public class SalFlowsBatchServiceImplTest {
     private static BatchAddFlows createEmptyBatchAddFlow(final String flowIdValue, final int priority) {
         return new BatchAddFlowsBuilder()
                 .setFlowId(new FlowId(flowIdValue))
-                .setPriority(priority)
+                .setPriority(Uint16.valueOf(priority))
                 .setMatch(new MatchBuilder().build())
-                .setTableId((short) 0)
+                .setTableId(Uint8.ZERO)
                 .build();
     }
 
     private static BatchRemoveFlows createEmptyBatchRemoveFlow(final String flowIdValue, final int priority) {
         return new BatchRemoveFlowsBuilder()
                 .setFlowId(new FlowId(flowIdValue))
-                .setPriority(priority)
+                .setPriority(Uint16.valueOf(priority))
                 .setMatch(new MatchBuilder().build())
-                .setTableId((short) 0)
+                .setTableId(Uint8.ZERO)
                 .build();
     }
 
