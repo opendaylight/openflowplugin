@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.it.integration;
 
 import java.net.InetAddress;
@@ -19,11 +18,11 @@ import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -85,7 +84,7 @@ public class IntegrationTest {
         Mockito.doAnswer(invocation -> {
             ((Runnable)invocation.getArguments()[0]).run();
             return null;
-        }).when(executorService).execute(Matchers.<Runnable>any());
+        }).when(executorService).execute(ArgumentMatchers.any());
 
         final String currentDir = System.getProperty("user.dir");
         LOGGER.debug("Current dir using System: {}", currentDir);
