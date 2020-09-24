@@ -110,18 +110,6 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Fills specified ByteBuf with 0 (zeros) of desired length, used for padding.
-     *
-     * @param length the desired length
-     * @param out ByteBuf to be padded
-     * @deprecated Use {@link ByteBuf#writeZero(int)} directly.
-     */
-    @Deprecated
-    public static void padBuffer(final int length, final ByteBuf out) {
-        out.writeZero(length);
-    }
-
-    /**
      * Create standard OF header.
      *
      * @param msgType message code
