@@ -50,7 +50,7 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private void printNodeHeaderOutput() {
+    private static void printNodeHeaderOutput() {
         Formatter formatter = new Formatter();
         String header = formatter.format(OUTPUT_FORMAT, "NodeId", "Name", "Ports").toString();
         formatter.close();
@@ -58,12 +58,12 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private void printHeaderSeparator() {
+    private static void printHeaderSeparator() {
         System.out.println(HEADER_SEPARATOR);
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private void printNodeOutput(final OFNode ofNode) {
+    private static void printNodeOutput(final OFNode ofNode) {
         String ofNodeId = ofNode.getNodeId().toString();
         String ofNodeName = ofNode.getNodeName();
         System.out.print(new Formatter().format(NEW_LINE, ofNodeId, ofNodeName, ofNode.getPorts()).toString());

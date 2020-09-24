@@ -55,8 +55,8 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
             = "org.opendaylight.openflowplugin.frm:type=ReconciliationState";
     private static final String JMX_ATTRIBUTE_NAME = "acquireReconciliationStates";
     private static final String JMX_REST_HTTP_AUTH_UNAME_PWD = "admin:admin";
-    private ReconciliationJMXServiceMBean reconciliationJMXServiceMBean;
-    private ClusterMemberInfo clusterMemberInfoProvider;
+    private final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean;
+    private final ClusterMemberInfo clusterMemberInfoProvider;
 
 
     public GetReconciliationStateProvider(final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean,
@@ -111,13 +111,13 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         result.stream().forEach(p -> session.getConsole().println(p));
     }
 
-    private String getHeaderOutput() {
+    private static String getHeaderOutput() {
         String header = String.format("%-17s %-25s %-25s", "DatapathId", "Reconciliation Status",
                 "Reconciliation Time");
         return header;
     }
 
-    private String getLineSeparator() {
+    private static String getLineSeparator() {
         return "-------------------------------------------------------------------";
     }
 
@@ -129,7 +129,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         LOG.debug("The ip address of nodes in the cluster : {}", clusterIPAddresses);
         if (!clusterIPAddresses.isEmpty()) {
             String selfAddress = clusterMemberInfoProvider.getSelfAddress() != null
-                    ? clusterMemberInfoProvider.getSelfAddress().getHostAddress() : ("localhost");
+                    ? clusterMemberInfoProvider.getSelfAddress().getHostAddress() : "localhost";
             LOG.trace("The ip address of local node is {}", selfAddress);
             for (String memberAddress : clusterIPAddresses) {
                 try {

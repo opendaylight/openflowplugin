@@ -49,7 +49,7 @@ public class ReconciliationCount extends OsgiCommandSupport {
         return null;
     }
 
-    private String getReconcileCountHeaderOutput() {
+    private static String getReconcileCountHeaderOutput() {
         final Formatter formatter = new Formatter();
         String header = formatter.format("%-15s %3s %-15s %3s %-15s %3s %-15s %n", "NodeId", "",
                 "ReconcileSuccessCount", "", "ReconcileFailureCount", "", "LastReconcileTime").toString();

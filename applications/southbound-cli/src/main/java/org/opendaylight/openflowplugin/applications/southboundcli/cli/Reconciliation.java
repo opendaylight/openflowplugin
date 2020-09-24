@@ -68,7 +68,7 @@ public class Reconciliation extends OsgiCommandSupport {
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private void printInProgressNodes(ReconcileOutput reconcileOutput) {
+    private static void printInProgressNodes(ReconcileOutput reconcileOutput) {
         List<Uint64> inprogressNodes = reconcileOutput.getInprogressNodes();
         if (inprogressNodes.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder();
@@ -82,7 +82,7 @@ public class Reconciliation extends OsgiCommandSupport {
         }
     }
 
-    private String getReconcileHeaderOutput() {
+    private static String getReconcileHeaderOutput() {
         final Formatter formatter = new Formatter();
         String header = formatter.format("%-15s %n", "Reconciliation already InProgress for below node(s)").toString();
         formatter.close();

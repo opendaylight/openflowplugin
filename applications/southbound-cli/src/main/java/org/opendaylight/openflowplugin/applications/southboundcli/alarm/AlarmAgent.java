@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli.alarm;
 
 import java.lang.management.ManagementFactory;
@@ -127,7 +126,7 @@ public class AlarmAgent {
      * @param nodeId Source of the alarm nodeId
      * @param event reason for alarm invoke/clear
      */
-    private String getAlarmText(final Long nodeId, final String event) {
+    private static String getAlarmText(final Long nodeId, final String event) {
         return new StringBuilder("OF Switch ").append(nodeId).append(event).toString();
     }
 
@@ -136,7 +135,7 @@ public class AlarmAgent {
      *
      * @param nodeId Source of the alarm nodeId
      */
-    private String getSourceText(final Long nodeId) {
+    private static String getSourceText(final Long nodeId) {
         return "Dpn=" + nodeId;
     }
 }

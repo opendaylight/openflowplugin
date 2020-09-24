@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
 import java.util.Formatter;
@@ -56,7 +55,7 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
         return null;
     }
 
-    private String getAllLocalNodesHeaderOutput() {
+    private static String getAllLocalNodesHeaderOutput() {
         Formatter formatter = new Formatter();
         String header = formatter.format("%-15s %3s %-15s", "NodeId", "", "NodeName").toString();
         formatter.close();

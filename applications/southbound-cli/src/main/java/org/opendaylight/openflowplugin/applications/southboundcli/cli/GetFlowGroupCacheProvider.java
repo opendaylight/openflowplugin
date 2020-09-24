@@ -26,7 +26,7 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
     @Option(name = "-d", description = "Node Id")
     String dpnId;
 
-    private FlowGroupCacheManager flowGroupCacheManager;
+    private final FlowGroupCacheManager flowGroupCacheManager;
 
     public GetFlowGroupCacheProvider(final FlowGroupCacheManager flowGroupCacheManager) {
         this.flowGroupCacheManager = flowGroupCacheManager;
@@ -93,7 +93,7 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         return null;
     }
 
-    private String getLocalNodeHeaderOutput() {
+    private static String getLocalNodeHeaderOutput() {
         Formatter formatter = new Formatter();
         String header = formatter.format("%-10s %1s %-8s %1s %-23s %1s %-60s",
                 "TableId", "", "Status", "", "Time", "", "Flow/Group Id").toString();
@@ -101,7 +101,7 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         return header;
     }
 
-    private String getAllLocalNodesHeaderOutput() {
+    private static String getAllLocalNodesHeaderOutput() {
         Formatter formatter = new Formatter();
         String header = formatter.format("%-15s %1s %-10s %1s %-8s %1s %-23s %1s %-60s",
                 "DpnId", "", "TableId", "", "Status", "", "Time", "", "Flow/Group Id").toString();
@@ -109,7 +109,7 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         return header;
     }
 
-    private String getLineSeparator() {
+    private static String getLineSeparator() {
         return "---------------------------------------------------------------------------------------------"
                 + "-----------------------------------------------";
     }
