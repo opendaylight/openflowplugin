@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.extension.test;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
@@ -175,7 +174,7 @@ public class Test implements TestService {
             .setEnd(Uint16.valueOf(5));
         NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
         nxRegLoadBuilder.setDst(dstBld.build());
-        nxRegLoadBuilder.setValue(BigInteger.valueOf(55L));
+        nxRegLoadBuilder.setValue(Uint64.valueOf(55L));
         NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder topNxActionCaseBld =
                 new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder();
         topNxActionCaseBld.setNxRegLoad(nxRegLoadBuilder.build());
