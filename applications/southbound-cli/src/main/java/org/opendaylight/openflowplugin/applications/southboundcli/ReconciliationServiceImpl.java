@@ -14,7 +14,6 @@ import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.R
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,6 +56,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final FrmReconciliationService frmReconciliationService;
     private final AlarmAgent alarmAgent;
     private final NodeListener nodeListener;
-    private final Long startCount = 1L;
     private final int threadPoolSize = 10;
     private final ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
     private final Map<String, ReconciliationState> reconciliationStates;
@@ -124,8 +123,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                     alarmAgent.raiseNodeReconciliationAlarm(nodeId);
                     LOG.info("Executing reconciliation for node {} with state ", nodeId);
                     NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
-                    ReconciliationTask reconcileTask = new ReconciliationTask(new BigInteger(String.valueOf(nodeId)),
-                            nodeKey);
+                    ReconciliationTask reconcileTask = new ReconciliationTask(Uint64.valueOf(nodeId), nodeKey);
                     executor.execute(reconcileTask);
                 }
             });
@@ -160,9 +158,9 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final class ReconciliationTask implements Runnable {
         private static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
         private final NodeKey nodeKey;
-        private final BigInteger nodeId;
+        private final Uint64 nodeId;
 
-        private ReconciliationTask(BigInteger nodeId, NodeKey nodeKey) {
+        private ReconciliationTask(Uint64 nodeId, NodeKey nodeKey) {
             this.nodeId = nodeId;
             this.nodeKey = nodeKey;
         }
@@ -209,18 +207,18 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             if (isSuccess) {
                 if (count.isPresent()) {
                     long successCount = count.get().getSuccessCount().toJava();
-                    counterBuilder.setSuccessCount(++successCount);
+                    counterBuilder.setSuccessCount(Uint32.valueOf(++successCount));
                     LOG.debug("Reconcile success count {} for the node: {} ", successCount, nodeId);
                 } else {
-                    counterBuilder.setSuccessCount(startCount);
+                    counterBuilder.setSuccessCount(Uint32.ONE);
                 }
             } else {
                 if (count.isPresent()) {
                     long failureCount = count.get().getFailureCount().toJava();
-                    counterBuilder.setFailureCount(++failureCount);
+                    counterBuilder.setFailureCount(Uint32.valueOf(++failureCount));
                     LOG.debug("Reconcile failure count {} for the node: {} ", failureCount, nodeId);
                 } else {
-                    counterBuilder.setFailureCount(startCount);
+                    counterBuilder.setFailureCount(Uint32.ONE);
                 }
             }
             try {
