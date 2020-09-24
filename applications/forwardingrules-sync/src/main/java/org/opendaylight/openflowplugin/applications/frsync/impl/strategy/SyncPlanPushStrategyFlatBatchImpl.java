@@ -291,7 +291,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     int itemOrder = 0;
                     for (ItemSyncBox.ItemUpdateTuple<Group> groupUpdate : groupItemSyncBox.getItemsToUpdate()) {
                         flatBatchUpdateGroupBag.add(new FlatBatchUpdateGroupBuilder()
-                            .setBatchOrder(itemOrder++)
+                            .setBatchOrder(Uint16.valueOf(itemOrder++))
                             .setOriginalBatchedGroup(new OriginalBatchedGroupBuilder(groupUpdate.getOriginal()).build())
                             .setUpdatedBatchedGroup(new UpdatedBatchedGroupBuilder(groupUpdate.getUpdated()).build())
                             .build());
@@ -300,7 +300,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                             .setBatchChoice(new FlatBatchUpdateGroupCaseBuilder()
                                     .setFlatBatchUpdateGroup(flatBatchUpdateGroupBag)
                                     .build())
-                            .setBatchOrder(order)
+                            .setBatchOrder(Uint16.valueOf(order))
                             .build();
                     order += itemOrder;
                     batchBag.add(batch);
@@ -323,13 +323,13 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     int itemOrder = 0;
                     for (Group group : groupItemSyncBox.getItemsToPush()) {
                         flatBatchRemoveGroupBag.add(new FlatBatchRemoveGroupBuilder(group)
-                                .setBatchOrder(itemOrder++).build());
+                                .setBatchOrder(Uint16.valueOf(itemOrder++)).build());
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchRemoveGroupCaseBuilder()
                                     .setFlatBatchRemoveGroup(flatBatchRemoveGroupBag)
                                     .build())
-                            .setBatchOrder(order)
+                            .setBatchOrder(Uint16.valueOf(order))
                             .build();
                     order += itemOrder;
                     batchBag.add(batch);
@@ -350,13 +350,15 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                         new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
                 int itemOrder = 0;
                 for (Meter meter : meterItemSyncBox.getItemsToPush()) {
-                    flatBatchAddMeterBag.add(new FlatBatchAddMeterBuilder(meter).setBatchOrder(itemOrder++).build());
+                    flatBatchAddMeterBag.add(new FlatBatchAddMeterBuilder(meter)
+                        .setBatchOrder(Uint16.valueOf(itemOrder++))
+                        .build());
                 }
                 final Batch batch = new BatchBuilder()
                         .setBatchChoice(new FlatBatchAddMeterCaseBuilder()
                                 .setFlatBatchAddMeter(flatBatchAddMeterBag)
                                 .build())
-                        .setBatchOrder(order)
+                        .setBatchOrder(Uint16.valueOf(order))
                         .build();
                 order += itemOrder;
                 batchBag.add(batch);
@@ -368,7 +370,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 int itemOrder = 0;
                 for (ItemSyncBox.ItemUpdateTuple<Meter> meterUpdate : meterItemSyncBox.getItemsToUpdate()) {
                     flatBatchUpdateMeterBag.add(new FlatBatchUpdateMeterBuilder()
-                            .setBatchOrder(itemOrder++)
+                            .setBatchOrder(Uint16.valueOf(itemOrder++))
                             .setOriginalBatchedMeter(new OriginalBatchedMeterBuilder(meterUpdate.getOriginal()).build())
                             .setUpdatedBatchedMeter(new UpdatedBatchedMeterBuilder(meterUpdate.getUpdated()).build())
                             .build());
@@ -377,7 +379,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                         .setBatchChoice(new FlatBatchUpdateMeterCaseBuilder()
                                 .setFlatBatchUpdateMeter(flatBatchUpdateMeterBag)
                                 .build())
-                        .setBatchOrder(order)
+                        .setBatchOrder(Uint16.valueOf(order))
                         .build();
                 order += itemOrder;
                 batchBag.add(batch);
@@ -396,13 +398,15 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
             int itemOrder = 0;
             for (Meter meter : meterItemSyncBox.getItemsToPush()) {
-                flatBatchRemoveMeterBag.add(new FlatBatchRemoveMeterBuilder(meter).setBatchOrder(itemOrder++).build());
+                flatBatchRemoveMeterBag.add(new FlatBatchRemoveMeterBuilder(meter)
+                    .setBatchOrder(Uint16.valueOf(itemOrder++))
+                    .build());
             }
             final Batch batch = new BatchBuilder()
                     .setBatchChoice(new FlatBatchRemoveMeterCaseBuilder()
                             .setFlatBatchRemoveMeter(flatBatchRemoveMeterBag)
                             .build())
-                    .setBatchOrder(order)
+                    .setBatchOrder(Uint16.valueOf(order))
                     .build();
             order += itemOrder;
             batchBag.add(batch);
@@ -425,7 +429,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     int itemOrder = 0;
                     for (Flow flow : flowItemSyncBox.getItemsToPush()) {
                         flatBatchAddFlowBag.add(new FlatBatchAddFlowBuilder(flow)
-                                .setBatchOrder(itemOrder++)
+                                .setBatchOrder(Uint16.valueOf(itemOrder++))
                                 .setFlowId(flow.getId())
                                 .build());
                     }
@@ -433,7 +437,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                             .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
                                     .setFlatBatchAddFlow(flatBatchAddFlowBag)
                                     .build())
-                            .setBatchOrder(order)
+                            .setBatchOrder(Uint16.valueOf(order))
                             .build();
                     order += itemOrder;
                     batchBag.add(batch);
@@ -445,7 +449,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     int itemOrder = 0;
                     for (ItemSyncBox.ItemUpdateTuple<Flow> flowUpdate : flowItemSyncBox.getItemsToUpdate()) {
                         flatBatchUpdateFlowBag.add(new FlatBatchUpdateFlowBuilder()
-                            .setBatchOrder(itemOrder++)
+                            .setBatchOrder(Uint16.valueOf(itemOrder++))
                             .setFlowId(flowUpdate.getUpdated().getId())
                             .setOriginalBatchedFlow(new OriginalBatchedFlowBuilder(flowUpdate.getOriginal()).build())
                             .setUpdatedBatchedFlow(new UpdatedBatchedFlowBuilder(flowUpdate.getUpdated()).build())
@@ -455,7 +459,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                             .setBatchChoice(new FlatBatchUpdateFlowCaseBuilder()
                                     .setFlatBatchUpdateFlow(flatBatchUpdateFlowBag)
                                     .build())
-                            .setBatchOrder(order)
+                            .setBatchOrder(Uint16.valueOf(order))
                             .build();
                     order += itemOrder;
                     batchBag.add(batch);
