@@ -339,18 +339,6 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Buffer padding test.
-     */
-    @Test
-    public void testPadBuffer() {
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer();
-        ByteBufUtils.padBuffer(4, buf);
-        Assert.assertEquals("Wrong padding", 0, buf.readUnsignedInt());
-        ByteBufUtils.padBuffer(0, buf);
-        Assert.assertTrue("Wrong padding", buf.readableBytes() == 0);
-    }
-
-    /**
      * Write OF header test.
      */
     @Test
