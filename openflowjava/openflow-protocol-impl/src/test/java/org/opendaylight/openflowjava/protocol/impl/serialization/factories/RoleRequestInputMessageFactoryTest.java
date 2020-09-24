@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -57,8 +56,7 @@ public class RoleRequestInputMessageFactoryTest {
         RoleRequestInputBuilder builder = new RoleRequestInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setRole(ControllerRole.forValue(2));
-        byte[] generationId = new byte[]{(byte) 0xFF, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
-        builder.setGenerationId(new BigInteger(1, generationId));
+        builder.setGenerationId(Uint64.valueOf("0xFF01010101010101", 16));
         RoleRequestInput message = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();

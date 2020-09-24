@@ -53,6 +53,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPortBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF13ActionsSerializer.
@@ -79,8 +82,8 @@ public class OF13ActionsSerializerTest {
     public void test() {
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
-        outputBuilder.setMaxLength(52);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
+        outputBuilder.setMaxLength(Uint16.valueOf(52));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
@@ -95,7 +98,7 @@ public class OF13ActionsSerializerTest {
         actionBuilder = new ActionBuilder();
         SetMplsTtlCaseBuilder setMplsTtlCaseBuilder = new SetMplsTtlCaseBuilder();
         SetMplsTtlActionBuilder setMplsTtlBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlBuilder.setMplsTtl((short) 4);
+        setMplsTtlBuilder.setMplsTtl(Uint8.valueOf(4));
         setMplsTtlCaseBuilder.setSetMplsTtlAction(setMplsTtlBuilder.build());
         actionBuilder.setActionChoice(setMplsTtlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -105,7 +108,7 @@ public class OF13ActionsSerializerTest {
         actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanBuilder = new PushVlanActionBuilder();
-        pushVlanBuilder.setEthertype(new EtherType(new EtherType(16)));
+        pushVlanBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(16))));
         pushVlanCaseBuilder.setPushVlanAction(pushVlanBuilder.build());
         actionBuilder.setActionChoice(pushVlanCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -115,35 +118,35 @@ public class OF13ActionsSerializerTest {
         actionBuilder = new ActionBuilder();
         PushMplsCaseBuilder pushMplsCaseBuilder = new PushMplsCaseBuilder();
         PushMplsActionBuilder pushMplsBuilder = new PushMplsActionBuilder();
-        pushMplsBuilder.setEthertype(new EtherType(new EtherType(17)));
+        pushMplsBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(17))));
         pushMplsCaseBuilder.setPushMplsAction(pushMplsBuilder.build());
         actionBuilder.setActionChoice(pushMplsCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         PopMplsCaseBuilder popMplsCaseBuilder = new PopMplsCaseBuilder();
         PopMplsActionBuilder popMplsBuilder = new PopMplsActionBuilder();
-        popMplsBuilder.setEthertype(new EtherType(new EtherType(18)));
+        popMplsBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(18))));
         popMplsCaseBuilder.setPopMplsAction(popMplsBuilder.build());
         actionBuilder.setActionChoice(popMplsCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         SetQueueCaseBuilder setQueueCaseBuilder = new SetQueueCaseBuilder();
         SetQueueActionBuilder setQueueBuilder = new SetQueueActionBuilder();
-        setQueueBuilder.setQueueId(1234L);
+        setQueueBuilder.setQueueId(Uint32.valueOf(1234));
         setQueueCaseBuilder.setSetQueueAction(setQueueBuilder.build());
         actionBuilder.setActionChoice(setQueueCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         GroupCaseBuilder groupCaseBuilder = new GroupCaseBuilder();
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
-        groupActionBuilder.setGroupId(555L);
+        groupActionBuilder.setGroupId(Uint32.valueOf(555));
         groupCaseBuilder.setGroupAction(groupActionBuilder.build());
         actionBuilder.setActionChoice(groupCaseBuilder.build());
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         SetNwTtlCaseBuilder nwTtlCaseBuilder = new SetNwTtlCaseBuilder();
         SetNwTtlActionBuilder nwTtlBuilder = new SetNwTtlActionBuilder();
-        nwTtlBuilder.setNwTtl((short) 8);
+        nwTtlBuilder.setNwTtl(Uint8.valueOf(8));
         nwTtlCaseBuilder.setSetNwTtlAction(nwTtlBuilder.build());
         actionBuilder.setActionChoice(nwTtlCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -157,7 +160,7 @@ public class OF13ActionsSerializerTest {
         matchBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
-        inPortBuilder.setPortNumber(new PortNumber(1L));
+        inPortBuilder.setPortNumber(new PortNumber(Uint32.ONE));
         inPortCaseBuilder.setInPort(inPortBuilder.build());
         matchBuilder.setMatchEntryValue(inPortCaseBuilder.build());
         List<MatchEntry> entries = new ArrayList<>();
@@ -171,7 +174,7 @@ public class OF13ActionsSerializerTest {
         actionBuilder = new ActionBuilder();
         PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
         PushPbbActionBuilder pushPbbBuilder = new PushPbbActionBuilder();
-        pushPbbBuilder.setEthertype(new EtherType(new EtherType(19)));
+        pushPbbBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(19))));
         pushPbbCaseBuilder.setPushPbbAction(pushPbbBuilder.build());
         actionBuilder.setActionChoice(pushPbbCaseBuilder.build());
         actions.add(actionBuilder.build());
@@ -253,8 +256,8 @@ public class OF13ActionsSerializerTest {
     public void testHeaders() {
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
-        outputBuilder.setPort(new PortNumber(42L));
-        outputBuilder.setMaxLength(52);
+        outputBuilder.setPort(new PortNumber(Uint32.valueOf(42)));
+        outputBuilder.setMaxLength(Uint16.valueOf(52));
         caseBuilder.setOutputAction(outputBuilder.build());
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(caseBuilder.build());
@@ -267,7 +270,7 @@ public class OF13ActionsSerializerTest {
         matchBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
-        inPortBuilder.setPortNumber(new PortNumber(1L));
+        inPortBuilder.setPortNumber(new PortNumber(Uint32.ONE));
         inPortCaseBuilder.setInPort(inPortBuilder.build());
         matchBuilder.setMatchEntryValue(inPortCaseBuilder.build());
         List<MatchEntry> entries = new ArrayList<>();

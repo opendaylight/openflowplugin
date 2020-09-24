@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.MplsLabelCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.mpls.label._case.MplsLabelBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OxmMplsLabelSerializer.
@@ -34,7 +35,7 @@ public class OxmMplsLabelSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareMplsLabelMatchEntry(168535);
+        MatchEntryBuilder builder = prepareMplsLabelMatchEntry(Uint32.valueOf(168535));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmMplsLabelSerializerTest {
         assertEquals("Wrong value length", Integer.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMplsLabelMatchEntry(long label) {
+    private static MatchEntryBuilder prepareMplsLabelMatchEntry(Uint32 label) {
         MatchEntryBuilder builder = prepareMplsLabelHeader(false);
         MplsLabelCaseBuilder casebuilder = new MplsLabelCaseBuilder();
         MplsLabelBuilder valueBuilder = new MplsLabelBuilder();

@@ -28,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for PacketOutInputMessageFactory.
@@ -56,7 +58,7 @@ public class PacketOutInputMessageFactoryTest {
         BufferHelper.checkHeaderV13(deserializedMessage);
 
         Assert.assertEquals("Wrong buffer Id", 256L, deserializedMessage.getBufferId().longValue());
-        Assert.assertEquals("Wrong In Port", new PortNumber(256L), deserializedMessage.getInPort());
+        Assert.assertEquals("Wrong In Port", new PortNumber(Uint32.valueOf(256)), deserializedMessage.getInPort());
         Assert.assertEquals("Wrong Numbers of actions", createAction(), deserializedMessage.getAction());
         byte[] data = ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14");
         Assert.assertArrayEquals("Wrong data", data, deserializedMessage.getData());
@@ -67,7 +69,7 @@ public class PacketOutInputMessageFactoryTest {
         ActionBuilder actionBuilder = new ActionBuilder();
         PushVlanCaseBuilder pushVlanCaseBuilder = new PushVlanCaseBuilder();
         PushVlanActionBuilder pushVlanBuilder = new PushVlanActionBuilder();
-        pushVlanBuilder.setEthertype(new EtherType(new EtherType(25)));
+        pushVlanBuilder.setEthertype(new EtherType(new EtherType(Uint16.valueOf(25))));
         pushVlanCaseBuilder.setPushVlanAction(pushVlanBuilder.build());
         actionBuilder.setActionChoice(pushVlanCaseBuilder.build());
         actions.add(actionBuilder.build());

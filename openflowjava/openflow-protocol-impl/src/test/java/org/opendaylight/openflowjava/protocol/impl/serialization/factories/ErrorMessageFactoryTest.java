@@ -21,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for ErrorMessageFactory.
@@ -42,8 +43,8 @@ public class ErrorMessageFactoryTest {
     public void testSerialize() throws Exception {
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setType(10);
-        builder.setCode(20);
+        builder.setType(Uint16.TEN);
+        builder.setCode(Uint16.valueOf(20));
         byte[] data = ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14");
         builder.setData(data);
         ErrorMessage message = builder.build();

@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6CodeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.code._case.Icmpv6CodeBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OxmIcmpv6CodeSerializer.
@@ -34,7 +35,7 @@ public class OxmIcmpv6CodeSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareIcmpv6CodeMatchEntry((short) 101);
+        MatchEntryBuilder builder = prepareIcmpv6CodeMatchEntry(Uint8.valueOf(101));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmIcmpv6CodeSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIcmpv6CodeMatchEntry(short value) {
+    private static MatchEntryBuilder prepareIcmpv6CodeMatchEntry(Uint8 value) {
         MatchEntryBuilder builder = prepareIcmpv6CodeHeader(false);
         Icmpv6CodeCaseBuilder casebuilder = new Icmpv6CodeCaseBuilder();
         Icmpv6CodeBuilder valueBuilder = new Icmpv6CodeBuilder();

@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Vlan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmVlanVidSerializer.
@@ -122,7 +123,7 @@ public class OxmVlanVidSerializerTest {
         if (hasMask) {
             valueBuilder.setMask(new byte[]{15, 15});
         }
-        valueBuilder.setVlanVid(500);
+        valueBuilder.setVlanVid(Uint16.valueOf(500));
         valueBuilder.setCfiBit(cfiBit);
         casebuilder.setVlanVid(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());

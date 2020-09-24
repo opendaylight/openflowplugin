@@ -37,6 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF10StatsRequestInputFactory.
@@ -97,23 +100,23 @@ public class OF10StatsRequestInputFactoryTest {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true,
                 true, true, true, true));
-        matchBuilder.setNwSrcMask((short) 8);
-        matchBuilder.setNwDstMask((short) 16);
-        matchBuilder.setInPort(51);
+        matchBuilder.setNwSrcMask(Uint8.valueOf(8));
+        matchBuilder.setNwDstMask(Uint8.valueOf(16));
+        matchBuilder.setInPort(Uint16.valueOf(51));
         matchBuilder.setDlSrc(new MacAddress("00:01:02:03:04:05"));
         matchBuilder.setDlDst(new MacAddress("05:04:03:02:01:00"));
-        matchBuilder.setDlVlan(52);
-        matchBuilder.setDlVlanPcp((short) 53);
-        matchBuilder.setDlType(54);
-        matchBuilder.setNwTos((short) 55);
-        matchBuilder.setNwProto((short) 56);
+        matchBuilder.setDlVlan(Uint16.valueOf(52));
+        matchBuilder.setDlVlanPcp(Uint8.valueOf(53));
+        matchBuilder.setDlType(Uint16.valueOf(54));
+        matchBuilder.setNwTos(Uint8.valueOf(55));
+        matchBuilder.setNwProto(Uint8.valueOf(56));
         matchBuilder.setNwSrc(new Ipv4Address("10.0.0.1"));
         matchBuilder.setNwDst(new Ipv4Address("10.0.0.2"));
-        matchBuilder.setTpSrc(57);
-        matchBuilder.setTpDst(58);
+        matchBuilder.setTpSrc(Uint16.valueOf(57));
+        matchBuilder.setTpDst(Uint16.valueOf(58));
         flowBuilder.setMatchV10(matchBuilder.build());
-        flowBuilder.setTableId((short) 1);
-        flowBuilder.setOutPort(42L);
+        flowBuilder.setTableId(Uint8.ONE);
+        flowBuilder.setOutPort(Uint32.valueOf(42));
         caseBuilder.setMultipartRequestFlow(flowBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
@@ -163,23 +166,23 @@ public class OF10StatsRequestInputFactoryTest {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(false, false, false, false,
                 false, false, false, false, false, false));
-        matchBuilder.setNwSrcMask((short) 32);
-        matchBuilder.setNwDstMask((short) 32);
-        matchBuilder.setInPort(51);
+        matchBuilder.setNwSrcMask(Uint8.valueOf(32));
+        matchBuilder.setNwDstMask(Uint8.valueOf(32));
+        matchBuilder.setInPort(Uint16.valueOf(51));
         matchBuilder.setDlSrc(new MacAddress("00:01:02:03:04:05"));
         matchBuilder.setDlDst(new MacAddress("05:04:03:02:01:00"));
-        matchBuilder.setDlVlan(52);
-        matchBuilder.setDlVlanPcp((short) 53);
-        matchBuilder.setDlType(54);
-        matchBuilder.setNwTos((short) 55);
-        matchBuilder.setNwProto((short) 56);
+        matchBuilder.setDlVlan(Uint16.valueOf(52));
+        matchBuilder.setDlVlanPcp(Uint8.valueOf(53));
+        matchBuilder.setDlType(Uint16.valueOf(54));
+        matchBuilder.setNwTos(Uint8.valueOf(55));
+        matchBuilder.setNwProto(Uint8.valueOf(56));
         matchBuilder.setNwSrc(new Ipv4Address("10.0.0.1"));
         matchBuilder.setNwDst(new Ipv4Address("10.0.0.2"));
-        matchBuilder.setTpSrc(57);
-        matchBuilder.setTpDst(58);
+        matchBuilder.setTpSrc(Uint16.valueOf(57));
+        matchBuilder.setTpDst(Uint16.valueOf(58));
         flowBuilder.setMatchV10(matchBuilder.build());
-        flowBuilder.setTableId((short) 42);
-        flowBuilder.setOutPort(6653L);
+        flowBuilder.setTableId(Uint8.valueOf(42));
+        flowBuilder.setOutPort(Uint32.valueOf(6653));
         caseBuilder.setMultipartRequestFlow(flowBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
@@ -250,7 +253,7 @@ public class OF10StatsRequestInputFactoryTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
-        portBuilder.setPortNo(15L);
+        portBuilder.setPortNo(Uint32.valueOf(15));
         caseBuilder.setMultipartRequestPortStats(portBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
@@ -277,8 +280,8 @@ public class OF10StatsRequestInputFactoryTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
-        queueBuilder.setPortNo(15L);
-        queueBuilder.setQueueId(16L);
+        queueBuilder.setPortNo(Uint32.valueOf(15));
+        queueBuilder.setQueueId(Uint32.valueOf(16));
         caseBuilder.setMultipartRequestQueue(queueBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();

@@ -19,6 +19,7 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerR
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit tests for OF10GetQueueConfigInputMessageFactory.
@@ -41,6 +42,6 @@ public class OF10GetQueueConfigInputMessageFactoryTest {
         ByteBuf bb = BufferHelper.buildBuffer("19 fd 00 00");
         GetQueueConfigInput deserializedMessage = BufferHelper.deserialize(factory, bb);
         BufferHelper.checkHeaderV10(deserializedMessage);
-        Assert.assertEquals("Wrong port", new PortNumber(6653L), deserializedMessage.getPort());
+        Assert.assertEquals("Wrong port", new PortNumber(Uint32.valueOf(6653)), deserializedMessage.getPort());
     }
 }

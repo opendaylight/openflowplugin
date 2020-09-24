@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PacketTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.packet.type._case.PacketTypeBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OxmPacketTypeSerializerTest {
     private ByteBuf buffer;
@@ -35,7 +36,7 @@ public class OxmPacketTypeSerializerTest {
     @Test
     public void serializeTest() {
         final long packetType = 0x1894f;
-        MatchEntry matchEntry = createMatchEntry(packetType);
+        MatchEntry matchEntry = createMatchEntry(Uint32.valueOf(packetType));
 
         serializer.serialize(matchEntry, buffer);
 
@@ -47,7 +48,7 @@ public class OxmPacketTypeSerializerTest {
         assertEquals(packetType, buffer.readUnsignedInt());
     }
 
-    private static MatchEntry createMatchEntry(long packetType) {
+    private static MatchEntry createMatchEntry(Uint32 packetType) {
         PacketTypeCase packetTypeCase = new PacketTypeCaseBuilder()
                 .setPacketType(new PacketTypeBuilder().setPacketType(packetType).build())
                 .build();

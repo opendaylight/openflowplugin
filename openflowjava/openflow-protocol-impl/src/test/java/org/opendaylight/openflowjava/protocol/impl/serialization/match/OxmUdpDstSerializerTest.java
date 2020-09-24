@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.UdpDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmUdpDstSerializer.
@@ -87,7 +88,7 @@ public class OxmUdpDstSerializerTest {
         MatchEntryBuilder builder = prepareHeader(false);
         UdpDstCaseBuilder casebuilder = new UdpDstCaseBuilder();
         UdpDstBuilder valueBuilder = new UdpDstBuilder();
-        valueBuilder.setPort(new PortNumber(value));
+        valueBuilder.setPort(new PortNumber(Uint16.valueOf(value)));
         casebuilder.setUdpDst(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());
         return builder;

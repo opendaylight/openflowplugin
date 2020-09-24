@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Open
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.EthTypeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.eth.type._case.EthTypeBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmEthTypeSerializer.
@@ -35,7 +36,7 @@ public class OxmEthTypeSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareEthTypeMatchEntry(65535);
+        MatchEntryBuilder builder = prepareEthTypeMatchEntry(Uint16.MAX_VALUE);
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -83,7 +84,7 @@ public class OxmEthTypeSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareEthTypeMatchEntry(int type) {
+    private static MatchEntryBuilder prepareEthTypeMatchEntry(Uint16 type) {
         MatchEntryBuilder builder = prepareEthTypeHeader(false);
         EthTypeCaseBuilder casebuilder = new EthTypeCaseBuilder();
         EthTypeBuilder valueBuilder = new EthTypeBuilder();

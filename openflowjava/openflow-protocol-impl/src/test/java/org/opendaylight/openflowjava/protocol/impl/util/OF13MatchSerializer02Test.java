@@ -156,6 +156,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVidBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OF13MatchSerializer02.
@@ -209,7 +212,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
-        inPortBuilder.setPortNumber(new PortNumber(42L));
+        inPortBuilder.setPortNumber(new PortNumber(Uint32.valueOf(42)));
         inPortCaseBuilder.setInPort(inPortBuilder.build());
         entryBuilder.setMatchEntryValue(inPortCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -219,7 +222,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
-        inPhyPortBuilder.setPortNumber(new PortNumber(43L));
+        inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.valueOf(43)));
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entryBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -262,7 +265,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
         EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
-        ethTypeBuilder.setEthType(new EtherType(46));
+        ethTypeBuilder.setEthType(new EtherType(Uint16.valueOf(46)));
         ethTypeCaseBuilder.setEthType(ethTypeBuilder.build());
         entryBuilder.setMatchEntryValue(ethTypeCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -272,7 +275,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(true);
         final VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
-        vlanVidBuilder.setVlanVid(45);
+        vlanVidBuilder.setVlanVid(Uint16.valueOf(45));
         vlanVidBuilder.setCfiBit(true);
         vlanVidBuilder.setMask(new byte[]{0,9});
         vlanVidCaseBuilder.setVlanVid(vlanVidBuilder.build());
@@ -284,7 +287,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         VlanPcpCaseBuilder vlanPcpCaseBuilder = new VlanPcpCaseBuilder();
         VlanPcpBuilder vlanPcpBuilder = new VlanPcpBuilder();
-        vlanPcpBuilder.setVlanPcp((short) 14);
+        vlanPcpBuilder.setVlanPcp(Uint8.valueOf(14));
         vlanPcpCaseBuilder.setVlanPcp(vlanPcpBuilder.build());
         entryBuilder.setMatchEntryValue(vlanPcpCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -294,7 +297,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         IpDscpCaseBuilder ipDscpCaseBuilder = new IpDscpCaseBuilder();
         IpDscpBuilder ipDscpBuilder = new IpDscpBuilder();
-        ipDscpBuilder.setDscp(new Dscp((short) 48));
+        ipDscpBuilder.setDscp(new Dscp(Uint8.valueOf(48)));
         ipDscpCaseBuilder.setIpDscp(ipDscpBuilder.build());
         entryBuilder.setMatchEntryValue(ipDscpCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -304,7 +307,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
-        ipEcnBuilder.setEcn((short) 49);
+        ipEcnBuilder.setEcn(Uint8.valueOf(49));
         ipEcnCaseBuilder.setIpEcn(ipEcnBuilder.build());
         entryBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -314,7 +317,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         IpProtoCaseBuilder ipProtoCaseBuilder = new IpProtoCaseBuilder();
         IpProtoBuilder ipProtoBuilder = new IpProtoBuilder();
-        ipProtoBuilder.setProtocolNumber((short) 50);
+        ipProtoBuilder.setProtocolNumber(Uint8.valueOf(50));
         ipProtoCaseBuilder.setIpProto(ipProtoBuilder.build());
         entryBuilder.setMatchEntryValue(ipProtoCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -347,7 +350,7 @@ public class OF13MatchSerializer02Test {
         TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
         TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
         tcpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params
-                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(6653));
+                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(Uint16.valueOf(6653)));
         tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
         entryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -358,7 +361,7 @@ public class OF13MatchSerializer02Test {
         TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
         TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
         tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params
-                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(6654));
+                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(Uint16.valueOf(6654)));
         tcpDstCaseBuilder.setTcpDst(tcpDstBuilder.build());
         entryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -369,7 +372,7 @@ public class OF13MatchSerializer02Test {
         UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
         UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
         udpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params
-                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(6655));
+                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(Uint16.valueOf(6655)));
         udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
         entryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -380,7 +383,7 @@ public class OF13MatchSerializer02Test {
         UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
         UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
         udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params
-                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(6656));
+                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(Uint16.valueOf(6656)));
         udpDstCaseBuilder.setUdpDst(udpDstBuilder.build());
         entryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -391,7 +394,7 @@ public class OF13MatchSerializer02Test {
         SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
         SctpSrcBuilder sctpSrcBuilder = new SctpSrcBuilder();
         sctpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params
-                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(6657));
+                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(Uint16.valueOf(6657)));
         sctpSrcCaseBuilder.setSctpSrc(sctpSrcBuilder.build());
         entryBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -402,7 +405,7 @@ public class OF13MatchSerializer02Test {
         SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
         SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
         sctpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params
-                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(6658));
+                .xml.ns.yang.ietf.inet.types.rev130715.PortNumber(Uint16.valueOf(6658)));
         sctpDstCaseBuilder.setSctpDst(sctpDstBuilder.build());
         entryBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -412,7 +415,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
         Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
-        icmpv4TypeBuilder.setIcmpv4Type((short) 51);
+        icmpv4TypeBuilder.setIcmpv4Type(Uint8.valueOf(51));
         icmpv4TypeCaseBuilder.setIcmpv4Type(icmpv4TypeBuilder.build());
         entryBuilder.setMatchEntryValue(icmpv4TypeCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -422,7 +425,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
         Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
-        icmpv4CodeBuilder.setIcmpv4Code((short) 52);
+        icmpv4CodeBuilder.setIcmpv4Code(Uint8.valueOf(52));
         icmpv4CodeCaseBuilder.setIcmpv4Code(icmpv4CodeBuilder.build());
         entryBuilder.setMatchEntryValue(icmpv4CodeCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -432,7 +435,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder();
         ArpOpBuilder arpOpBuilder = new ArpOpBuilder();
-        arpOpBuilder.setOpCode(53);
+        arpOpBuilder.setOpCode(Uint16.valueOf(53));
         arpOpCaseBuilder.setArpOp(arpOpBuilder.build());
         entryBuilder.setMatchEntryValue(arpOpCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -508,7 +511,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
         Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
-        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(58L));
+        ipv6FlabelBuilder.setIpv6Flabel(new Ipv6FlowLabel(Uint32.valueOf(58)));
         ipv6FlabelCaseBuilder.setIpv6Flabel(ipv6FlabelBuilder.build());
         entryBuilder.setMatchEntryValue(ipv6FlabelCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -518,7 +521,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
         Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
-        icmpv6TypeBuilder.setIcmpv6Type((short) 59);
+        icmpv6TypeBuilder.setIcmpv6Type(Uint8.valueOf(59));
         icmpv6TypeCaseBuilder.setIcmpv6Type(icmpv6TypeBuilder.build());
         entryBuilder.setMatchEntryValue(icmpv6TypeCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -528,7 +531,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
         Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
-        icmpv6CodeBuilder.setIcmpv6Code((short) 60);
+        icmpv6CodeBuilder.setIcmpv6Code(Uint8.valueOf(60));
         icmpv6CodeCaseBuilder.setIcmpv6Code(icmpv6CodeBuilder.build());
         entryBuilder.setMatchEntryValue(icmpv6CodeCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -567,7 +570,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         MplsLabelCaseBuilder mplsLabelCaseBuilder = new MplsLabelCaseBuilder();
         MplsLabelBuilder mplsLabelBuilder = new MplsLabelBuilder();
-        mplsLabelBuilder.setMplsLabel(61L);
+        mplsLabelBuilder.setMplsLabel(Uint32.valueOf(61));
         mplsLabelCaseBuilder.setMplsLabel(mplsLabelBuilder.build());
         entryBuilder.setMatchEntryValue(mplsLabelCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -577,7 +580,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         MplsTcCaseBuilder mplsTcCaseBuilder = new MplsTcCaseBuilder();
         MplsTcBuilder mplsTcBuilder = new MplsTcBuilder();
-        mplsTcBuilder.setTc((short) 62);
+        mplsTcBuilder.setTc(Uint8.valueOf(62));
         mplsTcCaseBuilder.setMplsTc(mplsTcBuilder.build());
         entryBuilder.setMatchEntryValue(mplsTcCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -597,8 +600,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(true);
         PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
         PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
-        pbbIsidBuilder.setIsid(64L);
-        pbbIsidBuilder.setMask(new byte[]{0,1,2});
+        pbbIsidBuilder.setIsid(Uint32.valueOf(64));
+        pbbIsidBuilder.setMask(new byte[]{0, 1, 2});
         pbbIsidCaseBuilder.setPbbIsid(pbbIsidBuilder.build());
         entryBuilder.setMatchEntryValue(pbbIsidCaseBuilder.build());
         entries.add(entryBuilder.build());
@@ -631,7 +634,7 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setHasMask(false);
         PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
         PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
-        packetTypeBuilder.setPacketType(0x1894fL);
+        packetTypeBuilder.setPacketType(Uint32.valueOf(0x1894f));
         packetTypeCaseBuilder.setPacketType(packetTypeBuilder.build());
         entryBuilder.setMatchEntryValue(packetTypeCaseBuilder.build());
         entries.add(entryBuilder.build());

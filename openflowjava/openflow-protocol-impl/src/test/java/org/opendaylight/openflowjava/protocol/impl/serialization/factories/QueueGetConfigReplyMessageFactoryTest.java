@@ -59,7 +59,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
     public void testSerialize() throws Exception {
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setPort(new PortNumber(0x00010203L));
+        builder.setPort(new PortNumber(Uint32.valueOf(0x00010203)));
         builder.setQueues(createQueuesList());
         GetQueueConfigOutput message = builder.build();
 

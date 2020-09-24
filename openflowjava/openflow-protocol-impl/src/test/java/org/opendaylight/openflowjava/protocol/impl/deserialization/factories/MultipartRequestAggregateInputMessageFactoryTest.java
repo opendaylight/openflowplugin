@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for MultipartRequestAggregateInputMessageFactory.
@@ -58,13 +60,11 @@ public class MultipartRequestAggregateInputMessageFactoryTest {
     private static MultipartRequestAggregateCase createRequestAggregate() {
         final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder builder = new MultipartRequestAggregateBuilder();
-        builder.setTableId((short) 8);
-        builder.setOutPort(85L);
-        builder.setOutGroup(95L);
-        byte[] cookie = new byte[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
-        builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookieMask = new byte[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
-        builder.setCookieMask(new BigInteger(1, cookieMask));
+        builder.setTableId(Uint8.valueOf(8));
+        builder.setOutPort(Uint32.valueOf(85));
+        builder.setOutGroup(Uint32.valueOf(95));
+        builder.setCookie(Uint64.valueOf("0x0001010101010101", 16));
+        builder.setCookieMask(Uint64.valueOf("0x0001010101010101", 16));
         caseBuilder.setMultipartRequestAggregate(builder.build());
         return caseBuilder.build();
     }

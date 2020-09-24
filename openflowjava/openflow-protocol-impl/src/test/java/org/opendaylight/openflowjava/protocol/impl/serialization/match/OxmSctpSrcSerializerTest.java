@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Sctp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.SctpSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.sctp.src._case.SctpSrcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Unit tests for OxmSctpSrcSerializer.
@@ -87,7 +88,7 @@ public class OxmSctpSrcSerializerTest {
         MatchEntryBuilder builder = prepareHeader(false);
         SctpSrcCaseBuilder casebuilder = new SctpSrcCaseBuilder();
         SctpSrcBuilder valueBuilder = new SctpSrcBuilder();
-        valueBuilder.setPort(new PortNumber(value));
+        valueBuilder.setPort(new PortNumber(Uint16.valueOf(value)));
         casebuilder.setSctpSrc(valueBuilder.build());
         builder.setMatchEntryValue(casebuilder.build());
         return builder;

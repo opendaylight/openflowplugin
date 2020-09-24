@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Vlan
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanPcpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.pcp._case.VlanPcpBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OxmVlanPcpSerializer.
@@ -34,7 +35,7 @@ public class OxmVlanPcpSerializerTest {
      */
     @Test
     public void testSerialize() {
-        MatchEntryBuilder builder = prepareVlanPcpMatchEntry((short) 42);
+        MatchEntryBuilder builder = prepareVlanPcpMatchEntry(Uint8.valueOf(42));
 
         ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(builder.build(), buffer);
@@ -82,7 +83,7 @@ public class OxmVlanPcpSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareVlanPcpMatchEntry(short value) {
+    private static MatchEntryBuilder prepareVlanPcpMatchEntry(Uint8 value) {
         MatchEntryBuilder builder = prepareVlanPcpHeader(false);
         VlanPcpCaseBuilder casebuilder = new VlanPcpCaseBuilder();
         VlanPcpBuilder valueBuilder = new VlanPcpBuilder();

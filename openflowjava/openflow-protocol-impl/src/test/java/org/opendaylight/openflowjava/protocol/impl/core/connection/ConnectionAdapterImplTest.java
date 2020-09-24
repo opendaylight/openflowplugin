@@ -56,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEventBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Unit test for ConnectionAdapterImpl.
@@ -146,7 +147,7 @@ public class ConnectionAdapterImplTest {
     public void testConsume2() {
         adapter.setResponseCache(mockCache);
         final BarrierOutputBuilder barrierBuilder = new BarrierOutputBuilder();
-        barrierBuilder.setXid(42L);
+        barrierBuilder.setXid(Uint32.valueOf(42));
         final BarrierOutput barrier = barrierBuilder.build();
         adapter.consume(barrier);
         verify(mockCache, times(1)).getIfPresent(any(RpcResponseKey.class));
@@ -158,8 +159,8 @@ public class ConnectionAdapterImplTest {
     @Test
     public void testConsume3() {
         final BarrierInputBuilder inputBuilder = new BarrierInputBuilder();
-        inputBuilder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        inputBuilder.setXid(42L);
+        inputBuilder.setVersion(EncodeConstants.OF_VERSION_1_3);
+        inputBuilder.setXid(Uint32.valueOf(42));
         final BarrierInput barrierInput = inputBuilder.build();
         final RpcResponseKey key = new RpcResponseKey(42L,
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput");
@@ -167,7 +168,7 @@ public class ConnectionAdapterImplTest {
                 "failure", mockCache, key);
         cache.put(key, listener);
         final BarrierOutputBuilder barrierBuilder = new BarrierOutputBuilder();
-        barrierBuilder.setXid(42L);
+        barrierBuilder.setXid(Uint32.valueOf(42));
         final BarrierOutput barrierOutput = barrierBuilder.build();
         adapter.consume(barrierOutput);
         final ResponseExpectedRpcListener<?> ifPresent = cache.getIfPresent(key);
