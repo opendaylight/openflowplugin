@@ -17,7 +17,6 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.action.container.action.choice.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yangtools.yang.common.Uint32;
 
 public final class ActionExtensionHelper {
 
@@ -56,7 +55,7 @@ public final class ActionExtensionHelper {
             convertor = extensionConvertorProvider.getActionConverter(key);
         } else if (action.getActionChoice() != null) {
             ActionSerializerKey<?> key = new ActionSerializerKey(EncodeConstants.OF13_VERSION_ID,
-                    action.getActionChoice().implementedInterface(), (Uint32) null);
+                    action.getActionChoice().implementedInterface(), null);
             convertor = extensionConvertorProvider.getActionConverter(key);
         }
 

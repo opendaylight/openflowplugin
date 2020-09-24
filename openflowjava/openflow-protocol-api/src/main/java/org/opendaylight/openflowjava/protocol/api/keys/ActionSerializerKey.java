@@ -36,18 +36,6 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
         this.experimenterId = experimenterId;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param msgVersion protocol wire version
-     * @param actionType type of action
-     * @param experimenterId experimenter / vendor ID
-     */
-    @Deprecated(forRemoval = true)
-    public ActionSerializerKey(final short msgVersion, final Class<T> actionType, final Long experimenterId) {
-        this(msgVersion, actionType, experimenterId == null ? (Uint32) null : Uint32.valueOf(experimenterId));
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
