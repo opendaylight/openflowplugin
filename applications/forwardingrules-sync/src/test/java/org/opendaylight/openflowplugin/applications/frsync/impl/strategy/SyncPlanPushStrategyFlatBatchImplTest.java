@@ -286,10 +286,10 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     @Test
     public void testMapBatchesToRanges() {
         final List<Batch> inputBatchBag = Lists.newArrayList(
-                new BatchBuilder().setBatchOrder(0).build(),
-                new BatchBuilder().setBatchOrder(5).build(),
-                new BatchBuilder().setBatchOrder(9).build(),
-                new BatchBuilder().setBatchOrder(15).build()
+                new BatchBuilder().setBatchOrder(Uint16.ZERO).build(),
+                new BatchBuilder().setBatchOrder(Uint16.valueOf(5)).build(),
+                new BatchBuilder().setBatchOrder(Uint16.valueOf(9)).build(),
+                new BatchBuilder().setBatchOrder(Uint16.valueOf(15)).build()
         );
         final Map<Range<Uint16>, Batch> rangeBatchMap =
                 SyncPlanPushStrategyFlatBatchImpl.mapBatchesToRanges(inputBatchBag, 42);

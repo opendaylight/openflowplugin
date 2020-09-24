@@ -40,6 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.polkorab
  */
-
 public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHandler,
         SystemNotificationsListener, ConnectionReadyListener {
 
@@ -56,7 +57,7 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     protected volatile ConnectionAdapter adapter;
     private final SettableFuture<Void> finishedFuture;
     private int idleCounter = 0;
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
 
     public MockPlugin(ExecutorService executorService) {
         LOGGER.trace("Creating MockPlugin");
@@ -88,7 +89,7 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
         new Thread(() -> {
             LOGGER.debug("MockPlugin.onEchoRequestMessage().run() started adapter: {}", adapter);
             EchoReplyInputBuilder replyBuilder = new EchoReplyInputBuilder();
-            replyBuilder.setVersion((short) 4);
+            replyBuilder.setVersion(Uint8.valueOf(4));
             replyBuilder.setXid(notification.getXid());
             EchoReplyInput echoReplyInput = replyBuilder.build();
             adapter.echoReply(echoReplyInput);
@@ -120,8 +121,8 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
         new Thread(() -> {
             LOGGER.debug("MockPlugin.onHelloMessage().run() Hello message received");
             HelloInputBuilder hib = new HelloInputBuilder();
-            hib.setVersion((short) 4);
-            hib.setXid(2L);
+            hib.setVersion(Uint8.valueOf(4));
+            hib.setXid(Uint32.TWO);
             HelloInput hi = hib.build();
             adapter.hello(hi);
             LOGGER.debug("hello msg sent");
@@ -132,8 +133,8 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
 
     protected void getSwitchFeatures() {
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
-        featuresBuilder.setVersion((short) 4);
-        featuresBuilder.setXid(3L);
+        featuresBuilder.setVersion(Uint8.valueOf(4));
+        featuresBuilder.setXid(Uint32.valueOf(3));
         GetFeaturesInput featuresInput = featuresBuilder.build();
         try {
             LOGGER.debug("Requesting features ");

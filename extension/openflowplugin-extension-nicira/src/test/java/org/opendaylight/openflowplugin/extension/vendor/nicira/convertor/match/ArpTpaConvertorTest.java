@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpTpaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.tpa.grouping.NxmOfArpTpaBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link ArpTpaConvertor}.
@@ -74,7 +75,7 @@ public class ArpTpaConvertorTest {
     @Test
     public void testConvertToOFJava() {
         final ArpTpaValuesBuilder arpTpaValuesBuilder = new ArpTpaValuesBuilder()
-                .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
+                .setValue(Uint32.valueOf(IpConverter.ipv4AddressToLong(IPV4_ADDRESS)));
         final ArpTpaCaseValueBuilder arpTpaCaseValueBuilder = new ArpTpaCaseValueBuilder()
                 .setArpTpaValues(arpTpaValuesBuilder.build());
 

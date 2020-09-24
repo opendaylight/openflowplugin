@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpSpaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.spa.grouping.NxmOfArpSpaBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link ArpSpaConvertor}.
@@ -73,7 +74,7 @@ public class ArpSpaConvertorTest {
     @Test
     public void testConvertFromOFJava() {
         final ArpSpaValuesBuilder arpSpaValuesBuilder = new ArpSpaValuesBuilder()
-                .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
+                .setValue(Uint32.valueOf(IpConverter.ipv4AddressToLong(IPV4_ADDRESS)));
         final ArpSpaCaseValueBuilder arpSpaCaseValueBuilder = new ArpSpaCaseValueBuilder()
                 .setArpSpaValues(arpSpaValuesBuilder.build());
 

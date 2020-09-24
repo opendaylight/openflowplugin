@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIpv4DstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.ipv4.dst.grouping.NxmNxTunIpv4DstBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link TunIPv4DstConvertor}.
@@ -73,7 +74,7 @@ public class TunIPv4DstConvertorTest {
     @Test
     public void testConvert1() {
         final TunIpv4DstValuesBuilder tunIpv4DstValuesBuilder = new TunIpv4DstValuesBuilder()
-                .setValue(IpConverter.ipv4AddressToLong(IPV4_ADDRESS));
+                .setValue(Uint32.valueOf(IpConverter.ipv4AddressToLong(IPV4_ADDRESS)));
         final TunIpv4DstCaseValueBuilder tunIpv4DstCaseValueBuilder = new TunIpv4DstCaseValueBuilder()
                 .setTunIpv4DstValues(tunIpv4DstValuesBuilder.build());
 
