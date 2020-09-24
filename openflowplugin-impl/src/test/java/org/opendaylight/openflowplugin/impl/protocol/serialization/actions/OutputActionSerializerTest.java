@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -20,24 +19,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class OutputActionSerializerTest extends AbstractActionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final int length = 10;
         final String port = OutputPortValues.LOCAL.toString();
 
         final Action action = new OutputActionCaseBuilder()
                 .setOutputAction(new OutputActionBuilder()
                         .setOutputNodeConnector(new Uri("openflow:1:" + port))
-                        .setMaxLength(length)
+                        .setMaxLength(Uint16.TEN)
                         .build())
                 .build();
 
         assertAction(action, out -> {
             assertEquals(out.readUnsignedInt(), BinContent.intToUnsignedLong(PortNumberValues.LOCAL.getIntValue()));
-            assertEquals(out.readUnsignedShort(), length);
+            assertEquals(out.readUnsignedShort(), 10);
             out.skipBytes(ActionConstants.OUTPUT_PADDING);
         });
     }

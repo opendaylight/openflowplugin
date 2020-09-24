@@ -22,7 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods (failing).
@@ -54,7 +56,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder input =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setTableId(new TableId((short) 1));
+                .setTableId(new TableId(Uint8.ONE));
 
         flowStatisticsService.getAggregateFlowStatisticsFromFlowTableForAllFlows(input.build());
     }
@@ -63,7 +65,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
     public void testGetAllFlowStatisticsFromFlowTable() {
         GetAllFlowStatisticsFromFlowTableInputBuilder input = new GetAllFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setTableId(new TableId((short) 1));
+                .setTableId(new TableId(Uint8.ONE));
 
         flowStatisticsService.getAllFlowStatisticsFromFlowTable(input.build());
     }
@@ -81,7 +83,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
     public void testGetFlowStatisticsFromFlowTable() {
         GetFlowStatisticsFromFlowTableInputBuilder input = new GetFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setPriority(5);
+                .setPriority(Uint16.valueOf(5));
 
         final Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
                 = flowStatisticsService.getFlowStatisticsFromFlowTable(input.build());

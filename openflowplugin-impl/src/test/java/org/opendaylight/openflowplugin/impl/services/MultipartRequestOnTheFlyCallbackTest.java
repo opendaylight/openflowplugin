@@ -17,7 +17,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -69,8 +68,10 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartRequestOnTheFlyCallbackTest {
@@ -107,7 +108,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     private AbstractRequestContext<List<MultipartReply>> dummyRequestContext;
     private final EventIdentifier dummyEventIdentifier = new EventIdentifier(DUMMY_EVENT_NAME, DUMMY_DEVICE_ID);
     private AbstractMultipartRequestOnTheFlyCallback<MultipartReply> multipartRequestOnTheFlyCallback;
-    private final short tableId = 0;
+    private final Uint8 tableId = Uint8.ZERO;
 
     @Before
     public void initialization() {
@@ -129,7 +130,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.emptyList());
+        flowNodeBuilder.setTable(Collections.emptyMap());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         dummyRequestContext = new AbstractRequestContext<>(DUMMY_XID) {
 
@@ -196,12 +197,12 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 .setMatchEntry(Collections.emptyList());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
                 .setTableId(tableId)
-                .setPriority(2)
-                .setCookie(BigInteger.ZERO)
-                .setByteCount(BigInteger.TEN)
-                .setPacketCount(BigInteger.ONE)
-                .setDurationSec(11L)
-                .setDurationNsec(12L)
+                .setPriority(Uint16.TWO)
+                .setCookie(Uint64.ZERO)
+                .setByteCount(Uint64.TEN)
+                .setPacketCount(Uint64.ONE)
+                .setDurationSec(Uint32.valueOf(11))
+                .setDurationNsec(Uint32.valueOf(12))
                 .setMatch(matchBuilder.build())
                 .setFlags(new FlowModFlags(true, false, false, false, false));
         final MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder()
@@ -212,7 +213,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 .setType(MultipartType.OFPMPFLOW)
                 .setFlags(new MultipartRequestFlags(true))
                 .setMultipartReplyBody(multipartReplyFlowCaseBuilder.build())
-                .setXid(21L);
+                .setXid(Uint32.valueOf(21));
 
         final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);

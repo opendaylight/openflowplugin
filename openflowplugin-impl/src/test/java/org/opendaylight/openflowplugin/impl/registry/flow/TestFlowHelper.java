@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
-import java.math.BigInteger;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
@@ -17,6 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Flow building helper.
@@ -33,9 +34,9 @@ public final class TestFlowHelper {
      */
     protected static FlowAndStatisticsMapListBuilder createFlowAndStatisticsMapListBuilder(int index) {
         FlowAndStatisticsMapListBuilder flowAndStatisticsMapListBuilder = new FlowAndStatisticsMapListBuilder();
-        flowAndStatisticsMapListBuilder.setPriority(index);
-        flowAndStatisticsMapListBuilder.setTableId((short) index);
-        flowAndStatisticsMapListBuilder.setCookie(new FlowCookie(BigInteger.TEN));
+        flowAndStatisticsMapListBuilder.setPriority(Uint16.valueOf(index));
+        flowAndStatisticsMapListBuilder.setTableId(Uint8.valueOf(index));
+        flowAndStatisticsMapListBuilder.setCookie(new FlowCookie(Uint64.TEN));
 
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
 

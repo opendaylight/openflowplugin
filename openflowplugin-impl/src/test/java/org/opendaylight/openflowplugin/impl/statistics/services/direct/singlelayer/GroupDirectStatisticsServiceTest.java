@@ -70,7 +70,7 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
         final MultipartReply reply = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyGroupStatsBuilder()
-                        .setGroupStats(Collections.singletonList(groupStat))
+                        .setGroupStats(Collections.singletonMap(groupStat.key(), groupStat))
                         .build())
                 .build();
 

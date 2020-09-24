@@ -17,22 +17,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class VlanVidEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final int vlan = (short) 1;
-
         final Match vlanMatch = new MatchBuilder()
                 .setVlanMatch(new VlanMatchBuilder()
                         .setVlanId(new VlanIdBuilder()
-                                .setVlanId(new VlanId(vlan))
+                                .setVlanId(new VlanId(Uint16.ONE))
                                 .setVlanIdPresent(true)
                                 .build())
                         .build())
                 .build();
 
-        assertMatch(vlanMatch, false, (out) -> assertEquals(out.readShort(), vlan | (1 << 12)));
+        assertMatch(vlanMatch, false, (out) -> assertEquals(out.readShort(), 1 | 1 << 12));
 
         final Match vlanMatchMaskOnly = new MatchBuilder()
                 .setVlanMatch(new VlanMatchBuilder()
@@ -43,7 +42,7 @@ public class VlanVidEntrySerializerTest extends AbstractMatchEntrySerializerTest
                 .build();
 
         assertMatch(vlanMatchMaskOnly, true, out -> {
-            assertEquals(out.readShort(), (1 << 12));
+            assertEquals(out.readShort(), 1 << 12);
 
             byte[] mask = new byte[2];
             out.readBytes(mask);

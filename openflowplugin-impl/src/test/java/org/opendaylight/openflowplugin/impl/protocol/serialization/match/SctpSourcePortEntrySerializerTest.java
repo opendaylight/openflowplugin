@@ -15,19 +15,16 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.SctpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class SctpSourcePortEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final int sctp = 10;
-
         final Match sctpMatch = new MatchBuilder()
-                .setLayer4Match(new SctpMatchBuilder()
-                        .setSctpSourcePort(new PortNumber(sctp))
-                        .build())
+                .setLayer4Match(new SctpMatchBuilder().setSctpSourcePort(new PortNumber(Uint16.TEN)).build())
                 .build();
 
-        assertMatch(sctpMatch, false, (out) -> assertEquals(out.readUnsignedShort(), sctp));
+        assertMatch(sctpMatch, false, (out) -> assertEquals(out.readUnsignedShort(), 10));
     }
 
     @Override

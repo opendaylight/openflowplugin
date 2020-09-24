@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link DeviceMeterRegistryImpl}.
@@ -26,8 +27,8 @@ public class DeviceMeterRegistryImplTest {
     @Before
     public void setUp() {
         deviceMeterRegistry = new DeviceMeterRegistryImpl();
-        meterId = new MeterId(42L);
-        meterId2 = new MeterId(84L);
+        meterId = new MeterId(Uint32.valueOf(42));
+        meterId2 = new MeterId(Uint32.valueOf(84));
         Assert.assertEquals(0, deviceMeterRegistry.getAllMeterIds().size());
         deviceMeterRegistry.store(meterId);
         Assert.assertEquals(1, deviceMeterRegistry.getAllMeterIds().size());

@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -40,11 +40,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RpcManagerImplTest {
 
-    private static final int QUOTA_VALUE = 5;
+    private static final Uint16 QUOTA_VALUE = Uint16.valueOf(5);
     private RpcManagerImpl rpcManager;
 
     @Mock
@@ -89,7 +90,7 @@ public class RpcManagerImplTest {
                 flowGroupCacheManager);
 
         FeaturesReply features = new GetFeaturesOutputBuilder()
-                .setVersion(OFConstants.OFP_VERSION_1_3)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .build();
 
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);

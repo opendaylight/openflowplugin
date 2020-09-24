@@ -29,7 +29,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceConnectedHandler;
 import org.opendaylight.openflowplugin.impl.util.ThreadPoolLoggingExecutor;
@@ -46,6 +46,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test of {@link ConnectionManagerImpl} - lightweight version, using basic ways (TDD).
@@ -69,9 +73,9 @@ public class ConnectionManagerImplTest {
     @Mock
     DataBroker dataBroker;
 
-    private static final long ECHO_REPLY_TIMEOUT = 500;
-    private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
-    private static final int DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = 60;
+    private static final Uint32 ECHO_REPLY_TIMEOUT = Uint32.valueOf(500);
+    private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
+    private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
     private static final boolean ENABLE_CUSTOM_TRUST_MANAGER = false;
 
     @Before
@@ -139,19 +143,22 @@ public class ConnectionManagerImplTest {
 
         //set dpn last connected time to be before dpn hold time seconds from now
         connectionManagerImpl.getDeviceConnectionStatusProvider().addDeviceLastConnectionTime(BigInteger.TEN,
-                LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS));
+                LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toJava()));
 
         // send hello reply
-        final HelloMessage hello = new HelloMessageBuilder().setVersion(OFConstants.OFP_VERSION_1_3).setXid(1L).build();
+        final HelloMessage hello = new HelloMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(Uint32.ONE)
+                .build();
         ofpListenerAC.getValue().onHelloMessage(hello);
 
         // deliver getFeature output
         Thread.sleep(100L);
         final GetFeaturesOutput getFeatureOutput = new GetFeaturesOutputBuilder()
-                .setDatapathId(BigInteger.TEN)
-                .setVersion(OFConstants.OFP_VERSION_1_3)
-                .setXid(2L)
-                .setTables((short) 15)
+                .setDatapathId(Uint64.TEN)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(Uint32.TWO)
+                .setTables(Uint8.valueOf(15))
                 .build();
         final RpcResult<GetFeaturesOutput> rpcFeaturesOutput = RpcResultBuilder.success(getFeatureOutput).build();
         featureResponseFx.set(rpcFeaturesOutput);
@@ -190,10 +197,13 @@ public class ConnectionManagerImplTest {
 
         //set dpn last connected time to be before dpn hold time seconds from now
         connectionManagerImpl.getDeviceConnectionStatusProvider().addDeviceLastConnectionTime(BigInteger.TEN,
-                LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS));
+                LocalDateTime.now().minusSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toJava()));
 
         // fire handshake - send hello reply
-        final HelloMessage hello = new HelloMessageBuilder().setVersion(OFConstants.OFP_VERSION_1_3).setXid(1L).build();
+        final HelloMessage hello = new HelloMessageBuilder()
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(Uint32.ONE)
+                .build();
         ofpListenerAC.getValue().onHelloMessage(hello);
 
         // notify about connection ready
@@ -207,10 +217,10 @@ public class ConnectionManagerImplTest {
         // deliver getFeature output
         Thread.sleep(100L);
         final GetFeaturesOutput getFeatureOutput = new GetFeaturesOutputBuilder()
-                .setDatapathId(BigInteger.TEN)
-                .setVersion(OFConstants.OFP_VERSION_1_3)
-                .setXid(2L)
-                .setTables((short) 15)
+                .setDatapathId(Uint64.TEN)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .setXid(Uint32.TWO)
+                .setTables(Uint8.valueOf(15))
                 .build();
         final RpcResult<GetFeaturesOutput> rpcFeaturesOutput = RpcResultBuilder.success(getFeatureOutput).build();
         featureResponseFx.set(rpcFeaturesOutput);

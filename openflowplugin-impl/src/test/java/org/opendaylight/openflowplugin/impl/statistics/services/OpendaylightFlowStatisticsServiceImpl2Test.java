@@ -23,7 +23,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
@@ -38,7 +38,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only not delegated method.
@@ -80,7 +82,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                 .commitEntry(eq(42L), requestInput.capture(), Mockito.<FutureCallback>any());
         Mockito.doAnswer((Answer<Void>) invocation -> {
             final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
-                    .setVersion(OFConstants.OFP_VERSION_1_3);
+                    .setVersion(EncodeConstants.OF_VERSION_1_3);
 
             rqContextMp.setResult(RpcResultBuilder
                     .success(Collections.<MultipartReply>singletonList(messageBuilder.build()))
@@ -94,8 +96,8 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
         GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder input =
                 new GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder()
                         .setNode(createNodeRef("unitProt:123"))
-                        .setPriority(5)
-                        .setTableId((short) 1);
+                        .setPriority(Uint16.valueOf(5))
+                        .setTableId(Uint8.ONE);
 
         final Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> resultFuture
                 = flowStatisticsService.getAggregateFlowStatisticsFromFlowTableForGivenMatch(input.build());

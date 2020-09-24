@@ -64,6 +64,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl}.
@@ -306,13 +307,13 @@ public class SalGroupsBatchServiceImplTest {
 
     private static BatchAddGroups createEmptyBatchAddGroup(final long groupIdValue) {
         return new BatchAddGroupsBuilder()
-                .setGroupId(new GroupId(groupIdValue))
+                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                 .build();
     }
 
     private static BatchRemoveGroups createEmptyBatchRemoveGroup(final long groupIdValue) {
         return new BatchRemoveGroupsBuilder()
-                .setGroupId(new GroupId(groupIdValue))
+                .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                 .build();
     }
 

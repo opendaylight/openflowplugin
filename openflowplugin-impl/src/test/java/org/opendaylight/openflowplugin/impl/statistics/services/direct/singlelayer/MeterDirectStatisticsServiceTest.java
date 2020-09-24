@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint32 METER_NO = Uint32.ONE;
@@ -71,19 +71,19 @@ public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     public void testBuildReply() {
         final MeterStats meterStat = new MeterStatsBuilder()
                 .setMeterId(new MeterId(METER_NO))
-                .setByteInCount(new Counter64(BigInteger.ONE))
-                .setPacketInCount(new Counter64(BigInteger.ONE))
+                .setByteInCount(new Counter64(Uint64.ONE))
+                .setPacketInCount(new Counter64(Uint64.ONE))
                 .setDuration(new DurationBuilder()
-                        .setSecond(new Counter32(1L))
-                        .setNanosecond(new Counter32(1L))
+                        .setSecond(new Counter32(Uint32.ONE))
+                        .setNanosecond(new Counter32(Uint32.ONE))
                         .build())
-                .setFlowCount(new Counter32(0L))
+                .setFlowCount(new Counter32(Uint32.ZERO))
                 .setMeterBandStats(new MeterBandStatsBuilder().build())
                 .build();
 
         final MultipartReply reply = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyMeterStatsBuilder()
-                        .setMeterStats(Collections.singletonList(meterStat))
+                        .setMeterStats(Collections.singletonMap(meterStat.key(), meterStat))
                         .build())
                 .build();
 

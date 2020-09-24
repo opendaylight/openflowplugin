@@ -14,19 +14,16 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MplsLabelEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final long mplsLabel = 10L;
-
         final Match mplsLabelMatch = new MatchBuilder()
-                .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
-                        .setMplsLabel(mplsLabel)
-                        .build())
+                .setProtocolMatchFields(new ProtocolMatchFieldsBuilder().setMplsLabel(Uint32.TEN).build())
                 .build();
 
-        assertMatch(mplsLabelMatch, false, (out) -> assertEquals(out.readUnsignedInt(), mplsLabel));
+        assertMatch(mplsLabelMatch, false, (out) -> assertEquals(out.readUnsignedInt(), 10L));
     }
 
     @Override

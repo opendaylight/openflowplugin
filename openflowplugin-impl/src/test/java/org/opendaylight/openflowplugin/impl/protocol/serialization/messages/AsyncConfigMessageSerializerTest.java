@@ -28,12 +28,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PacketInReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortReason;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class AsyncConfigMessageSerializerTest extends AbstractSerializerTest {
 
     private static final short LENGTH = 32;
-    private static final Long XID = 42L;
-    private static final short VERSION = EncodeConstants.OF13_VERSION_ID;
+    private static final Uint32 XID = Uint32.valueOf(42);
+    private static final Uint8 VERSION = EncodeConstants.OF_VERSION_1_3;
 
     // Packet in mask
     private static final Boolean MASTER_IS_NOMATCH = true;
@@ -88,7 +90,7 @@ public class AsyncConfigMessageSerializerTest extends AbstractSerializerTest {
         serializer.serialize(MESSAGE, out);
 
         // Header
-        assertEquals(out.readByte(), VERSION);
+        assertEquals(out.readByte(), VERSION.byteValue());
         assertEquals(out.readByte(), serializer.getMessageType());
         assertEquals(out.readShort(), LENGTH);
         assertEquals(out.readInt(), XID.intValue());

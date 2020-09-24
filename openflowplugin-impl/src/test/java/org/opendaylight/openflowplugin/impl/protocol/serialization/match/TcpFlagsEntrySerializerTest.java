@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -14,27 +13,27 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class TcpFlagsEntrySerializerTest extends AbstractExperimenterMatchEntrySerializerTest {
 
     @Test
     public void testSerialize() {
-        final int tcp = 8;
+        final Uint16 tcp = Uint16.valueOf(8);
         final byte[] tcpMask = new byte[] { 30, 30 };
 
         final Match tcpFlagsMatch = new MatchBuilder()
                 .setTcpFlagsMatch(new TcpFlagsMatchBuilder()
                         .setTcpFlags(tcp)
-                        .setTcpFlagsMask(ByteUtil.bytesToUnsignedShort(tcpMask))
+                        .setTcpFlagsMask(Uint16.valueOf(0x1E1E))
                         .build())
                 .build();
 
         assertMatch(tcpFlagsMatch, true, (out) -> {
-            assertEquals(out.readUnsignedShort(), tcp);
+            assertEquals(out.readUnsignedShort(), tcp.intValue());
 
             byte[] mask = new byte[2];
             out.readBytes(mask);
@@ -47,7 +46,7 @@ public class TcpFlagsEntrySerializerTest extends AbstractExperimenterMatchEntryS
                         .build())
                 .build();
 
-        assertMatch(tcpFlagsMatchNoMask, false, (out) -> assertEquals(out.readUnsignedShort(), tcp));
+        assertMatch(tcpFlagsMatchNoMask, false, (out) -> assertEquals(out.readUnsignedShort(), tcp.intValue()));
     }
 
     @Override

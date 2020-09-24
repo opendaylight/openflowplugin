@@ -14,6 +14,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MatchUtilTest {
 
@@ -28,23 +30,21 @@ public class MatchUtilTest {
     }
 
     private static MatchV10Builder expectedV10Match() {
-        Short zeroShort = Short.valueOf("0");
-        Integer zeroInteger = 0;
         MatchV10Builder matchV10Builder = new MatchV10Builder();
         matchV10Builder.setDlDst(ZERO_MAC_ADDRESS);
         matchV10Builder.setDlSrc(ZERO_MAC_ADDRESS);
-        matchV10Builder.setDlType(zeroInteger);
-        matchV10Builder.setDlVlan(zeroInteger);
-        matchV10Builder.setDlVlanPcp(zeroShort);
-        matchV10Builder.setInPort(zeroInteger);
+        matchV10Builder.setDlType(Uint16.ZERO);
+        matchV10Builder.setDlVlan(Uint16.ZERO);
+        matchV10Builder.setDlVlanPcp(Uint8.ZERO);
+        matchV10Builder.setInPort(Uint16.ZERO);
         matchV10Builder.setNwDst(ZERO_IPV4_ADDRESS);
-        matchV10Builder.setNwDstMask(zeroShort);
-        matchV10Builder.setNwProto(zeroShort);
+        matchV10Builder.setNwDstMask(Uint8.ZERO);
+        matchV10Builder.setNwProto(Uint8.ZERO);
         matchV10Builder.setNwSrc(ZERO_IPV4_ADDRESS);
-        matchV10Builder.setNwSrcMask(zeroShort);
-        matchV10Builder.setNwTos(zeroShort);
-        matchV10Builder.setTpDst(zeroInteger);
-        matchV10Builder.setTpSrc(zeroInteger);
+        matchV10Builder.setNwSrcMask(Uint8.ZERO);
+        matchV10Builder.setNwTos(Uint8.ZERO);
+        matchV10Builder.setTpDst(Uint16.ZERO);
+        matchV10Builder.setTpSrc(Uint16.ZERO);
         FlowWildcardsV10 flowWildcardsV10 =
                 new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true);
         matchV10Builder.setWildcards(flowWildcardsV10);

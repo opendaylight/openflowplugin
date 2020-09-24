@@ -59,13 +59,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
 
-    private static final long TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = 2000L;
-    private static final int BARRIER_COUNT_LIMIT = 25600;
-    private static final long BARRIER_INTERVAL_NANOS = 500;
+    private static final Uint32 TEST_VALUE_GLOBAL_NOTIFICATION_QUOTA = Uint32.valueOf(2000);
+    private static final Uint16 BARRIER_COUNT_LIMIT = Uint16.valueOf(25600);
+    private static final Uint32 BARRIER_INTERVAL_NANOS = Uint32.valueOf(500);
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
     private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_IDENTIFIER  = DeviceStateUtil
             .createNodeInstanceIdentifier(DUMMY_NODE_ID);

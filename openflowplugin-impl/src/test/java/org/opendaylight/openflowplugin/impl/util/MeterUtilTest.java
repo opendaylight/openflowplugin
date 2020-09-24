@@ -34,6 +34,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link MeterUtil}.
@@ -41,8 +42,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class MeterUtilTest {
 
     public static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
-    private static final MeterId DUMMY_METER_ID = new MeterId(42L);
-    private static final MeterId DUMMY_METER_ID_2 = new MeterId(43L);
+    private static final MeterId DUMMY_METER_ID = new MeterId(Uint32.valueOf(42));
+    private static final MeterId DUMMY_METER_ID_2 = new MeterId(Uint32.valueOf(43));
 
     @Test
     public void testBuildGroupPath() {

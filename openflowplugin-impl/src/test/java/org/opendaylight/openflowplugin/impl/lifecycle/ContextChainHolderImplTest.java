@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,7 +52,7 @@ public class ContextChainHolderImplTest {
     private static final String ENTITY_TEST = "EntityTest";
     private static final String OPENFLOW_TEST = "openflow:test";
     private static final Uint8 AUXILIARY_ID = Uint8.ZERO;
-    private static final Long DEVICE_DATASTORE_REMOVAL_DELAY = 500L;
+    private static final Uint32 DEVICE_DATASTORE_REMOVAL_DELAY = Uint32.valueOf(500);
     @Mock
     private StatisticsManager statisticsManager;
     @Mock

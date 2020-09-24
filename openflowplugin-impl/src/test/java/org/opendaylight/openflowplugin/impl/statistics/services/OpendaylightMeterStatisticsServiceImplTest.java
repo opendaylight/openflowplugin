@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,7 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInputBuilder;
@@ -55,6 +53,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeaturesBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link OpendaylightMeterStatisticsServiceImpl}.
@@ -62,13 +63,14 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
 
     private static final org.opendaylight.yang.gen.v1.urn
-                .opendaylight.openflow.common.types.rev130731.MeterId METER_ID =
-            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId(123L);
+                .opendaylight.openflow.common.types.rev130731.MeterId METER_ID = new org.opendaylight.yang.gen.v1.urn
+                    .opendaylight.openflow.common.types.rev130731.MeterId(Uint32.valueOf(123));
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
     private OpendaylightMeterStatisticsServiceImpl meterStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(rqContextStack, deviceContext,
@@ -90,7 +92,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
                 new MultipartReplyMessageBuilder()
-                        .setVersion(OFConstants.OFP_VERSION_1_3)
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyMeterConfigCaseBuilder()
                                 .setMultipartReplyMeterConfig(new MultipartReplyMeterConfigBuilder()
                                         .setMeterConfig(Collections.singletonList(new MeterConfigBuilder()
@@ -99,8 +101,8 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
                                                 .setBands(Collections.singletonList(new BandsBuilder()
                                                         .setMeterBand(new MeterBandDropCaseBuilder()
                                                                 .setMeterBandDrop(new MeterBandDropBuilder()
-                                                                        .setBurstSize(61L)
-                                                                        .setRate(62L)
+                                                                        .setBurstSize(Uint32.valueOf(61))
+                                                                        .setRate(Uint32.valueOf(62))
                                                                         .setType(MeterBandType.OFPMBTDROP)
                                                                         .build())
                                                                 .build())
@@ -143,14 +145,14 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
                 new MultipartReplyMessageBuilder()
-                        .setVersion(OFConstants.OFP_VERSION_1_3)
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyMeterFeaturesCaseBuilder()
                                 .setMultipartReplyMeterFeatures(new MultipartReplyMeterFeaturesBuilder()
                                         .setBandTypes(new MeterBandTypeBitmap(true, false))
                                         .setCapabilities(new MeterFlags(true, false, false, false))
-                                        .setMaxBands((short) 71)
-                                        .setMaxColor((short) 72)
-                                        .setMaxMeter(73L)
+                                        .setMaxBands(Uint8.valueOf(71))
+                                        .setMaxColor(Uint8.valueOf(72))
+                                        .setMaxMeter(Uint32.valueOf(73))
                                         .build())
                                 .build())
                         .build()
@@ -169,7 +171,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
     public void testGetMeterStatistics() throws Exception {
         GetMeterStatisticsInputBuilder input = new GetMeterStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setMeterId(new MeterId(21L));
+                .setMeterId(new MeterId(Uint32.valueOf(21)));
 
         rpcResult = buildMeterStatisticsReply();
 
@@ -185,19 +187,19 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
     protected RpcResult<Object> buildMeterStatisticsReply() {
         return RpcResultBuilder.<Object>success(Collections.singletonList(
                 new MultipartReplyMessageBuilder()
-                        .setVersion(OFConstants.OFP_VERSION_1_3)
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyMeterCaseBuilder()
                                 .setMultipartReplyMeter(new MultipartReplyMeterBuilder()
                                         .setMeterStats(Collections.singletonList(new MeterStatsBuilder()
                                                 .setMeterId(METER_ID)
-                                                .setByteInCount(BigInteger.valueOf(81L))
-                                                .setDurationSec(82L)
-                                                .setDurationNsec(83L)
-                                                .setFlowCount(84L)
-                                                .setPacketInCount(BigInteger.valueOf(85L))
+                                                .setByteInCount(Uint64.valueOf(81))
+                                                .setDurationSec(Uint32.valueOf(82))
+                                                .setDurationNsec(Uint32.valueOf(83))
+                                                .setFlowCount(Uint32.valueOf(84))
+                                                .setPacketInCount(Uint64.valueOf(85))
                                                 .setMeterBandStats(Collections.singletonList(new MeterBandStatsBuilder()
-                                                        .setByteBandCount(BigInteger.valueOf(86L))
-                                                        .setPacketBandCount(BigInteger.valueOf(87L))
+                                                        .setByteBandCount(Uint64.valueOf(86))
+                                                        .setPacketBandCount(Uint64.valueOf(87))
                                                         .build()))
                                                 .build()))
                                         .build())

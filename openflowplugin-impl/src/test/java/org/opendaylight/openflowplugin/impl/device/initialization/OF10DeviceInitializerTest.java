@@ -84,7 +84,7 @@ public class OF10DeviceInitializerTest {
         when(featuresReply.getCapabilitiesV10()).thenReturn(capabilitiesV10);
         when(featuresReply.getPhyPort()).thenReturn(Collections
                 .singletonList(new PhyPortBuilder()
-                        .setPortNo(42L)
+                        .setPortNo(Uint32.valueOf(42))
                         .build()));
         when(connectionContext.getFeatures()).thenReturn(featuresReply);
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);

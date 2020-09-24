@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class FlowRegistryKeyFactoryTest {
 
         // different priority
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
-        flowStatisticsMapListBld2.setPriority(flowStatisticsMapListBld2.getPriority().toJava() + 1);
+        flowStatisticsMapListBld2.setPriority(Uint16.valueOf(flowStatisticsMapListBld2.getPriority().toJava() + 1));
         key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
         Assert.assertFalse(key1.equals(key2));
 
@@ -105,7 +105,7 @@ public class FlowRegistryKeyFactoryTest {
 
         // different tableId
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
-        flowStatisticsMapListBld2.setTableId((short) (flowStatisticsMapListBld2.getTableId().toJava() + 1));
+        flowStatisticsMapListBld2.setTableId(Uint8.valueOf(flowStatisticsMapListBld2.getTableId().toJava() + 1));
         key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
         Assert.assertFalse(key1.equals(key2));
 
@@ -117,10 +117,10 @@ public class FlowRegistryKeyFactoryTest {
         MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
         FlowBuilder flow1Builder = new FlowBuilder()
-                .setCookie(new FlowCookie(BigInteger.valueOf(483)))
+                .setCookie(new FlowCookie(Uint64.valueOf(483)))
                 .setMatch(match1Builder.build())
-                .setPriority(2)
-                .setTableId((short) 0);
+                .setPriority(Uint16.TWO)
+                .setTableId(Uint8.ZERO);
 
         FlowRegistryKey flow1Hash = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flow1Builder.build());
         LOG.info("flowHash1: {}", flow1Hash.hashCode());
@@ -129,7 +129,7 @@ public class FlowRegistryKeyFactoryTest {
         MatchBuilder match2Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.0.242/32")).build());
         FlowBuilder flow2Builder = new FlowBuilder(flow1Builder.build())
-                .setCookie(new FlowCookie(BigInteger.valueOf(148)))
+                .setCookie(new FlowCookie(Uint64.valueOf(148)))
                 .setMatch(match2Builder.build());
 
         FlowRegistryKey flow2Hash = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flow2Builder.build());
@@ -143,10 +143,10 @@ public class FlowRegistryKeyFactoryTest {
         MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
         FlowBuilder flow1Builder = new FlowBuilder()
-                .setCookie(new FlowCookie(BigInteger.valueOf(483)))
+                .setCookie(new FlowCookie(Uint64.valueOf(483)))
                 .setMatch(match1Builder.build())
-                .setPriority(2)
-                .setTableId((short) 0);
+                .setPriority(Uint16.TWO)
+                .setTableId(Uint8.ZERO);
 
         FlowBuilder fb1 = new FlowBuilder(flow1Builder.build());
         fb1.setTableId((Uint8) null);

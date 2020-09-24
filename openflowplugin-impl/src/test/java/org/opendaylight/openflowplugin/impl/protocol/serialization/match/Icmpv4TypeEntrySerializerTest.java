@@ -14,6 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class Icmpv4TypeEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
@@ -21,9 +22,7 @@ public class Icmpv4TypeEntrySerializerTest extends AbstractMatchEntrySerializerT
         final short type = 128;
 
         final Match match = new MatchBuilder()
-                .setIcmpv4Match(new Icmpv4MatchBuilder()
-                        .setIcmpv4Type(type)
-                        .build())
+                .setIcmpv4Match(new Icmpv4MatchBuilder().setIcmpv4Type(Uint8.valueOf(type)).build())
                 .build();
 
         assertMatch(match, false, (out) -> assertEquals(out.readUnsignedByte(), type));

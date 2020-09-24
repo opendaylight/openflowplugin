@@ -10,32 +10,29 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions
 
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class WriteMetadataInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final long metadata = 10L;
-        final long metadataMask = 10L;
-
         final Instruction instruction = new WriteMetadataCaseBuilder()
                 .setWriteMetadata(new WriteMetadataBuilder()
-                        .setMetadata(BigInteger.valueOf(metadata))
-                        .setMetadataMask(BigInteger.valueOf(metadataMask))
+                        .setMetadata(Uint64.TEN)
+                        .setMetadataMask(Uint64.TEN)
                         .build())
                 .build();
 
         assertInstruction(instruction, out -> {
             out.skipBytes(InstructionConstants.PADDING_IN_WRITE_METADATA);
-            assertEquals(out.readLong(), metadata);
-            assertEquals(out.readLong(), metadataMask);
+            assertEquals(out.readLong(), 10);
+            assertEquals(out.readLong(), 10);
         });
     }
 

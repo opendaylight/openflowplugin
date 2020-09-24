@@ -11,7 +11,6 @@ package org.opendaylight.openflowplugin.impl.common;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Before;
@@ -67,12 +66,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeaturesBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultipartReplyTranslatorUtilTest {
     @Mock
     private DeviceInfo deviceInfo;
-    private ConvertorExecutor convertorExecutor = ConvertorManagerFactory.createDefaultManager();
+    private final ConvertorExecutor convertorExecutor = ConvertorManagerFactory.createDefaultManager();
     private TranslatorLibrarian translatorLibrarian;
 
     @Before
@@ -168,9 +170,9 @@ public class MultipartReplyTranslatorUtilTest {
                 MultipartType.OFPMPAGGREGATE,
                 new MultipartReplyAggregateCaseBuilder()
                         .setMultipartReplyAggregate(new MultipartReplyAggregateBuilder()
-                                .setByteCount(BigInteger.ONE)
-                                .setFlowCount(10L)
-                                .setPacketCount(BigInteger.ONE)
+                                .setByteCount(Uint64.ONE)
+                                .setFlowCount(Uint32.TEN)
+                                .setPacketCount(Uint64.ONE)
                                 .build())
                         .build());
 
@@ -278,7 +280,7 @@ public class MultipartReplyTranslatorUtilTest {
                 MultipartType.OFPMPMETERFEATURES,
                 new MultipartReplyMeterFeaturesCaseBuilder()
                         .setMultipartReplyMeterFeatures(new MultipartReplyMeterFeaturesBuilder()
-                                .setMaxMeter(10L)
+                                .setMaxMeter(Uint32.TEN)
                                 .setCapabilities(new MeterFlags(true, false, false, false))
                                 .setBandTypes(new MeterBandTypeBitmap(true, false))
                                 .build())
@@ -294,10 +296,10 @@ public class MultipartReplyTranslatorUtilTest {
                 new MultipartReplyTableCaseBuilder()
                         .setMultipartReplyTable(new MultipartReplyTableBuilder()
                                 .setTableStats(Collections.singletonList(new TableStatsBuilder()
-                                        .setActiveCount(10L)
-                                        .setLookupCount(BigInteger.ONE)
-                                        .setMatchedCount(BigInteger.ONE)
-                                        .setTableId((short) 10)
+                                        .setActiveCount(Uint32.TEN)
+                                        .setLookupCount(Uint64.ONE)
+                                        .setMatchedCount(Uint64.ONE)
+                                        .setTableId(Uint8.TEN)
                                         .build()))
                                 .build())
                         .build());
@@ -312,12 +314,12 @@ public class MultipartReplyTranslatorUtilTest {
                 new MultipartReplyQueueCaseBuilder()
                         .setMultipartReplyQueue(new MultipartReplyQueueBuilder()
                                 .setQueueStats(Collections.singletonList(new QueueStatsBuilder()
-                                        .setTxErrors(BigInteger.ONE)
-                                        .setTxBytes(BigInteger.ONE)
-                                        .setTxPackets(BigInteger.ONE)
-                                        .setDurationNsec(10L)
-                                        .setDurationSec(10L)
-                                        .setQueueId(10L)
+                                        .setTxErrors(Uint64.ONE)
+                                        .setTxBytes(Uint64.ONE)
+                                        .setTxPackets(Uint64.ONE)
+                                        .setDurationNsec(Uint32.TEN)
+                                        .setDurationSec(Uint32.TEN)
+                                        .setQueueId(Uint32.TEN)
                                         .build()))
                                 .build())
                         .build());

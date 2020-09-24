@@ -14,19 +14,18 @@ import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class IpEcnEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final short ecn = (short) 58;
+        final Uint8 ecn = Uint8.valueOf(58);
 
         final Match match = new MatchBuilder()
-                .setIpMatch(new IpMatchBuilder()
-                        .setIpEcn(ecn)
-                        .build())
+                .setIpMatch(new IpMatchBuilder().setIpEcn(ecn).build())
                 .build();
 
-        assertMatch(match, false, (out) -> assertEquals(out.readUnsignedByte(), ecn));
+        assertMatch(match, false, (out) -> assertEquals(out.readUnsignedByte(), ecn.shortValue()));
     }
 
     @Override

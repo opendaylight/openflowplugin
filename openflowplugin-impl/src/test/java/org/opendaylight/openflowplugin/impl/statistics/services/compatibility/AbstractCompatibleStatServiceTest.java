@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -13,7 +12,6 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Assert;
@@ -24,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -53,6 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -123,26 +123,26 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                         .setNode(createNodeRef("unitProt:123"))
-                        .setTableId(new TableId((short) 1))
+                        .setTableId(new TableId(Uint8.ONE))
                         .build();
 
         rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
                 new MultipartReplyMessageBuilder()
-                        .setVersion(OFConstants.OFP_VERSION_1_3)
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyAggregateCaseBuilder()
                                 .setMultipartReplyAggregate(new MultipartReplyAggregateBuilder()
-                                        .setByteCount(BigInteger.valueOf(11L))
-                                        .setFlowCount(12L)
-                                        .setPacketCount(BigInteger.valueOf(13L))
+                                        .setByteCount(Uint64.valueOf(11))
+                                        .setFlowCount(Uint32.valueOf(12))
+                                        .setPacketCount(Uint64.valueOf(13))
                                         .build())
                                 .build())
                         .build()
         )).build();
 
         AggregatedFlowStatistics aggregatedStats = new AggregatedFlowStatisticsBuilder()
-                .setByteCount(new Counter64(BigInteger.valueOf(11L)))
-                .setFlowCount(new Counter32(12L))
-                .setPacketCount(new Counter64(BigInteger.valueOf(13L)))
+                .setByteCount(new Counter64(Uint64.valueOf(11)))
+                .setFlowCount(new Counter32(Uint32.valueOf(12)))
+                .setPacketCount(new Counter64(Uint64.valueOf(13)))
                 .build();
         Mockito.when(translator.translate(any(MultipartReply.class), eq(deviceInfo), any()))
                 .thenReturn(aggregatedStats);

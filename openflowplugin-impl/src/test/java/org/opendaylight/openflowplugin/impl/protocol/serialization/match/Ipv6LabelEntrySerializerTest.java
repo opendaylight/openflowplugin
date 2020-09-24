@@ -18,12 +18,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class Ipv6LabelEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
     public void testSerialize() {
-        final long ipv6flowLabel = 358;
-        final long ipv6flowLabelMask = 100;
+        final Uint32 ipv6flowLabel = Uint32.valueOf(358);
+        final Uint32 ipv6flowLabelMask = Uint32.valueOf(100);
 
         final Match ipv6flowLabelMatch = new MatchBuilder()
                 .setLayer3Match(new Ipv6MatchBuilder()
@@ -35,7 +36,7 @@ public class Ipv6LabelEntrySerializerTest extends AbstractMatchEntrySerializerTe
                 .build();
 
         assertMatch(ipv6flowLabelMatch, true, (out) -> {
-            assertEquals(out.readUnsignedInt(), ipv6flowLabel);
+            assertEquals(out.readUnsignedInt(), ipv6flowLabel.longValue());
 
             byte[] mask = new byte[4];
             out.readBytes(mask);
@@ -50,7 +51,8 @@ public class Ipv6LabelEntrySerializerTest extends AbstractMatchEntrySerializerTe
                         .build())
                 .build();
 
-        assertMatch(ipv6exyHdrMatchNoMask, false, (out) -> assertEquals(out.readUnsignedInt(), ipv6flowLabel));
+        assertMatch(ipv6exyHdrMatchNoMask, false,
+            (out) -> assertEquals(out.readUnsignedInt(), ipv6flowLabel.longValue()));
     }
 
     @Override

@@ -10,12 +10,12 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 import static org.junit.Assert.assertArrayEquals;
 
 import com.google.common.primitives.Longs;
-import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MetadataEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
@@ -26,8 +26,8 @@ public class MetadataEntrySerializerTest extends AbstractMatchEntrySerializerTes
 
         final Match metadataMatch = new MatchBuilder()
                 .setMetadata(new MetadataBuilder()
-                        .setMetadata(BigInteger.valueOf(Longs.fromByteArray(metadata)))
-                        .setMetadataMask(BigInteger.valueOf(Longs.fromByteArray(metadataMask)))
+                        .setMetadata(Uint64.valueOf(Longs.fromByteArray(metadata)))
+                        .setMetadataMask(Uint64.valueOf(Longs.fromByteArray(metadataMask)))
                         .build())
                 .build();
 
@@ -43,7 +43,7 @@ public class MetadataEntrySerializerTest extends AbstractMatchEntrySerializerTes
 
         final Match metadataMatchNoMask = new MatchBuilder()
                 .setMetadata(new MetadataBuilder()
-                        .setMetadata(BigInteger.valueOf(Longs.fromByteArray(metadata)))
+                        .setMetadata(Uint64.valueOf(Longs.fromByteArray(metadata)))
                         .build())
                 .build();
 

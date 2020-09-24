@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import static org.junit.Assert.assertEquals;
@@ -18,15 +17,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SingleLayerFlowServiceTest extends ServiceMocking {
-    private static final short TABLE_ID = 42;
+    private static final Uint8 TABLE_ID = Uint8.valueOf(42);
     private SingleLayerFlowService<AddFlowOutput> service;
 
     @Override
     protected void setup() {
-        service = new SingleLayerFlowService<>(mockedRequestContextStack,
-                mockedDeviceContext, AddFlowOutput.class);
+        service = new SingleLayerFlowService<>(mockedRequestContextStack, mockedDeviceContext, AddFlowOutput.class);
     }
 
     @Test
@@ -41,6 +40,6 @@ public class SingleLayerFlowServiceTest extends ServiceMocking {
         final FlowMessage result = (FlowMessage) ofHeader;
 
         assertEquals(FlowModCommand.OFPFCADD, result.getCommand());
-        assertEquals(TABLE_ID, result.getTableId().shortValue());
+        assertEquals(TABLE_ID, result.getTableId());
     }
 }

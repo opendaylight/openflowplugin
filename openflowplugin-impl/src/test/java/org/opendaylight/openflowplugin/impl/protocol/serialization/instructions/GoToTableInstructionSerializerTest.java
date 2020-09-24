@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions;
 
 import static org.junit.Assert.assertEquals;
@@ -16,21 +15,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class GoToTableInstructionSerializerTest extends AbstractInstructionSerializerTest {
 
     @Test
     public void testSerialize() {
-        final short table = 2;
-
         final Instruction instruction = new GoToTableCaseBuilder()
-                .setGoToTable(new GoToTableBuilder()
-                        .setTableId(table)
-                        .build())
+                .setGoToTable(new GoToTableBuilder().setTableId(Uint8.TWO).build())
                 .build();
 
         assertInstruction(instruction, out -> {
-            assertEquals(out.readUnsignedByte(), table);
+            assertEquals(out.readUnsignedByte(), 2);
             out.skipBytes(InstructionConstants.PADDING_IN_GOTO_TABLE);
         });
     }

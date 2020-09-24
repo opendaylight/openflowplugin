@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,7 +22,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
@@ -37,6 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Test for {@link OpendaylightPortStatisticsServiceImpl}.
@@ -48,6 +49,7 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
 
     private OpendaylightPortStatisticsServiceImpl portStatisticsService;
 
+    @Override
     public void setUp() {
         portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
@@ -80,25 +82,25 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
     private static RpcResult<Object> buildPortStatisticsReply() {
         return RpcResultBuilder.<Object>success(Collections.singletonList(
                 new MultipartReplyMessageBuilder()
-                        .setVersion(OFConstants.OFP_VERSION_1_3)
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyPortStatsCaseBuilder()
                                 .setMultipartReplyPortStats(new MultipartReplyPortStatsBuilder()
                                         .setPortStats(Collections.singletonList(new PortStatsBuilder()
-                                                .setDurationSec(90L)
-                                                .setDurationNsec(91L)
-                                                .setCollisions(BigInteger.valueOf(92L))
-                                                .setPortNo(93L)
-                                                .setRxBytes(BigInteger.valueOf(94L))
-                                                .setRxCrcErr(BigInteger.valueOf(95L))
-                                                .setRxDropped(BigInteger.valueOf(96L))
-                                                .setRxFrameErr(BigInteger.valueOf(97L))
-                                                .setRxErrors(BigInteger.valueOf(98L))
-                                                .setRxOverErr(BigInteger.valueOf(99L))
-                                                .setRxPackets(BigInteger.valueOf(100L))
-                                                .setTxBytes(BigInteger.valueOf(94L))
-                                                .setTxDropped(BigInteger.valueOf(96L))
-                                                .setTxErrors(BigInteger.valueOf(98L))
-                                                .setTxPackets(BigInteger.valueOf(98L))
+                                                .setDurationSec(Uint32.valueOf(90))
+                                                .setDurationNsec(Uint32.valueOf(91))
+                                                .setCollisions(Uint64.valueOf(92))
+                                                .setPortNo(Uint32.valueOf(93))
+                                                .setRxBytes(Uint64.valueOf(94))
+                                                .setRxCrcErr(Uint64.valueOf(95))
+                                                .setRxDropped(Uint64.valueOf(96))
+                                                .setRxFrameErr(Uint64.valueOf(97))
+                                                .setRxErrors(Uint64.valueOf(98))
+                                                .setRxOverErr(Uint64.valueOf(99))
+                                                .setRxPackets(Uint64.valueOf(100))
+                                                .setTxBytes(Uint64.valueOf(94))
+                                                .setTxDropped(Uint64.valueOf(96))
+                                                .setTxErrors(Uint64.valueOf(98))
+                                                .setTxPackets(Uint64.valueOf(98))
                                                 .build()))
                                         .build())
                                 .build())

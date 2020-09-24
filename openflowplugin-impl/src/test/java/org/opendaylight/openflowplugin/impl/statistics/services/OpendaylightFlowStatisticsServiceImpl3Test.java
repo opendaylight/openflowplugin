@@ -23,6 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods.
@@ -34,6 +36,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
 
     private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
 
+    @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService =
@@ -46,7 +49,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
         GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput input =
                 new GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setTableId(new TableId((short) 1))
+                .setTableId(new TableId(Uint8.ONE))
                 .build();
 
         flowStatisticsService.getAggregateFlowStatisticsFromFlowTableForAllFlows(input);
@@ -57,7 +60,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     public void testGetAllFlowStatisticsFromFlowTable() {
         GetAllFlowStatisticsFromFlowTableInput input = new GetAllFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setTableId(new TableId((short) 1))
+                .setTableId(new TableId(Uint8.ONE))
                 .build();
 
         flowStatisticsService.getAllFlowStatisticsFromFlowTable(input);
@@ -78,7 +81,7 @@ public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsSer
     public void testGetFlowStatisticsFromFlowTable() {
         GetFlowStatisticsFromFlowTableInput input = new GetFlowStatisticsFromFlowTableInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
-                .setPriority(5)
+                .setPriority(Uint16.valueOf(5))
                 .build();
 
         flowStatisticsService.getFlowStatisticsFromFlowTable(input);

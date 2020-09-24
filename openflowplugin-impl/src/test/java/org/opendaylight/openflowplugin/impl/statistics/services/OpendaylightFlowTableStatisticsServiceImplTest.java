@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,7 +20,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
@@ -37,13 +35,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link OpendaylightFlowTableStatisticsServiceImpl}.
  */
 public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+    private static final Uint8 TABLE_ID = Uint8.valueOf(123);
 
-    private static final Short TABLE_ID = (short) 123;
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
@@ -65,17 +65,17 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
 
         rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
                 new MultipartReplyMessageBuilder()
-                        .setVersion(OFConstants.OFP_VERSION_1_3)
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyTableCaseBuilder()
                                 .setMultipartReplyTable(new MultipartReplyTableBuilder()
                                         .setTableStats(Collections.singletonList(new TableStatsBuilder()
-                                                .setActiveCount(31L)
-                                                .setLookupCount(BigInteger.valueOf(32L))
-                                                .setMatchedCount(BigInteger.valueOf(33L))
-                                                .setMaxEntries(34L)
+                                                .setActiveCount(Uint32.valueOf(31))
+                                                .setLookupCount(Uint64.valueOf(32))
+                                                .setMatchedCount(Uint64.valueOf(33))
+                                                .setMaxEntries(Uint32.valueOf(34))
                                                 .setName("test-table")
-                                                .setNwDstMask((short) 35)
-                                                .setNwSrcMask((short) 36)
+                                                .setNwDstMask(Uint8.valueOf(35))
+                                                .setNwSrcMask(Uint8.valueOf(36))
                                                 .setTableId(TABLE_ID)
                                                 .build()))
                                         .build())

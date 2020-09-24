@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -20,10 +19,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartRequestQueueStatsSerializerTest extends AbstractSerializerTest {
     private static final long PORT = 42;
-    private static final long QUEUE_ID = 43;
+    private static final Uint32 QUEUE_ID = Uint32.valueOf(43);
     private static final MultipartRequestQueueStats BODY = new MultipartRequestQueueStatsBuilder()
             .setNodeConnectorId(new NodeConnectorId("openflow:1:" + PORT))
             .setQueueId(new QueueId(QUEUE_ID))
@@ -43,7 +43,7 @@ public class MultipartRequestQueueStatsSerializerTest extends AbstractSerializer
         serializer.serialize(BODY, out);
 
         assertEquals(out.readUnsignedInt(), PORT);
-        assertEquals(out.readUnsignedInt(), QUEUE_ID);
+        assertEquals(out.readUnsignedInt(), QUEUE_ID.longValue());
         assertEquals(out.readableBytes(), 0);
     }
 

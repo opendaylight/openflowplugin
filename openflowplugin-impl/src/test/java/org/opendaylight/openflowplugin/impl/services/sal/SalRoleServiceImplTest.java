@@ -84,7 +84,7 @@ public class SalRoleServiceImplTest {
 
     private final NodeId testNodeId = new NodeId(Uri.getDefaultInstance("openflow:1"));
 
-    private static long testXid = 100L;
+    private static final Uint32 TEST_XID = Uint32.valueOf(100);
 
     private static final String ROLEREQUESTFAILED = org.opendaylight.yang.gen.v1.urn
             .opendaylight.openflow.common.types.rev130731.ErrorType.ROLEREQUESTFAILED.name();
@@ -108,7 +108,7 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockFeaturesReply.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getMessageSpy()).thenReturn(mockMessageSpy);
         Mockito.when(mockRequestContextStack.<RoleRequestOutput>createRequestContext()).thenReturn(mockRequestContext);
-        Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(Uint32.valueOf(testXid)));
+        Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(TEST_XID));
         Mockito.when(mockConnectionContext.getOutboundQueueProvider()).thenReturn(mockOutboundQueue);
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState())
                 .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
@@ -124,7 +124,7 @@ public class SalRoleServiceImplTest {
     @Test
     public void testSetRole() throws Exception {
         RoleRequestOutput roleRequestOutput = new RoleRequestOutputBuilder()
-                .setXid(testXid).setGenerationId(Uint64.ONE).build();
+                .setXid(TEST_XID).setGenerationId(Uint64.ONE).build();
         ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
                 RpcResultBuilder.<RoleRequestOutput>success().withResult(roleRequestOutput).buildFuture();
 
@@ -146,7 +146,7 @@ public class SalRoleServiceImplTest {
 
         SetRoleOutput setRoleOutput = roleOutputRpcResult.getResult();
         assertNotNull(setRoleOutput);
-        assertEquals(Uint64.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
+        assertEquals(Uint64.valueOf(TEST_XID), setRoleOutput.getTransactionId().getValue());
 
     }
 
@@ -155,7 +155,7 @@ public class SalRoleServiceImplTest {
         // set role to slave
 
         RoleRequestOutput roleRequestOutput = new RoleRequestOutputBuilder()
-                .setXid(testXid).setGenerationId(Uint64.ONE).build();
+                .setXid(TEST_XID).setGenerationId(Uint64.ONE).build();
         ListenableFuture<RpcResult<RoleRequestOutput>> futureOutput =
                 RpcResultBuilder.<RoleRequestOutput>success().withResult(roleRequestOutput).buildFuture();
 
@@ -176,7 +176,7 @@ public class SalRoleServiceImplTest {
 
         SetRoleOutput setRoleOutput = roleOutputRpcResult.getResult();
         assertNotNull(setRoleOutput);
-        assertEquals(Uint64.valueOf(testXid), setRoleOutput.getTransactionId().getValue());
+        assertEquals(Uint64.valueOf(TEST_XID), setRoleOutput.getTransactionId().getValue());
 
         // make another role change with the same role - slave
         Future<RpcResult<SetRoleOutput>> future2 = salRoleService.setRole(setRoleInput);

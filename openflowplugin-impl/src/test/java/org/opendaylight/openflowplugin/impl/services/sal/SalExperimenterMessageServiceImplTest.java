@@ -51,7 +51,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
                                                                               extensionConverterProvider);
         Mockito.when(extensionConverterProvider.getMessageConverter(ArgumentMatchers.<TypeVersionKey>any()))
                 .thenReturn(extensionConverter);
-        Mockito.when(extensionConverter.getExperimenterId()).thenReturn(new ExperimenterId(43L));
+        Mockito.when(extensionConverter.getExperimenterId()).thenReturn(new ExperimenterId(Uint32.valueOf(43)));
         Mockito.when(extensionConverter.getType()).thenReturn(44L);
     }
 

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint32 QUEUE_NO = Uint32.ONE;
@@ -73,14 +73,14 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final QueueIdAndStatisticsMap queueStats = new QueueIdAndStatisticsMapBuilder()
                 .setQueueId(new QueueId(QUEUE_NO))
                 .setNodeConnectorId(new NodeConnectorId(PORT_NO.toString()))
-                .setTransmittedBytes(new Counter64(BigInteger.ONE))
-                .setTransmissionErrors(new Counter64(BigInteger.ONE))
-                .setTransmittedBytes(new Counter64(BigInteger.ONE))
+                .setTransmittedBytes(new Counter64(Uint64.ONE))
+                .setTransmissionErrors(new Counter64(Uint64.ONE))
+                .setTransmittedBytes(new Counter64(Uint64.ONE))
                 .build();
 
         final MultipartReply reply = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyQueueStatsBuilder()
-                        .setQueueIdAndStatisticsMap(Collections.singletonList(queueStats))
+                        .setQueueIdAndStatisticsMap(Collections.singletonMap(queueStats.key(), queueStats))
                         .build())
                 .build();
 

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -35,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroup;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint32 GROUP_NO = Uint32.ONE;
@@ -72,12 +72,12 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final GroupStats groupStat = new GroupStatsBuilder()
                 .setGroupId(new org.opendaylight.yang.gen.v1.urn
                         .opendaylight.openflow.common.types.rev130731.GroupId(GROUP_NO))
-                .setByteCount(BigInteger.ONE)
-                .setPacketCount(BigInteger.ONE)
+                .setByteCount(Uint64.ONE)
+                .setPacketCount(Uint64.ONE)
                 .setBucketStats(Collections.emptyList())
-                .setDurationSec(1L)
-                .setDurationNsec(1L)
-                .setRefCount(0L)
+                .setDurationSec(Uint32.ONE)
+                .setDurationNsec(Uint32.ONE)
+                .setRefCount(Uint32.ZERO)
                 .build();
 
         final List<GroupStats> groupStats = Collections.singletonList(groupStat);

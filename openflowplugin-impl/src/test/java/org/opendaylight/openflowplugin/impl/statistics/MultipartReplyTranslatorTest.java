@@ -64,7 +64,7 @@ public class MultipartReplyTranslatorTest {
     private static final Uint64 DUMMY_BYTE_COUNT = Uint64.valueOf(31);
     private static final Uint64 DUMMY_PACKET_COUNT = Uint64.valueOf(41);
     private static final Uint32 DUMMY_FLOW_COUNT = Uint32.valueOf(51);
-    private static final Long DUMMY_PORT_NO = 154L;
+    private static final Uint32 DUMMY_PORT_NO = Uint32.valueOf(154);
     private static final Uint64 DUMMY_RX_BYTES = Uint64.valueOf(155);
     private static final Uint64 DUMMY_TX_BYTES = Uint64.valueOf(165);
     private static final Uint64 DUMMY_RX_PACKETS = Uint64.valueOf(175);
@@ -79,7 +79,7 @@ public class MultipartReplyTranslatorTest {
     private static final Uint64 DUMMY_TX_ERRORS = Uint64.valueOf(265);
     private static final Uint32 DUMMY_DURATION_SEC = Uint32.valueOf(3453);
     private static final Uint32 DUMMY_DURATION_NSEC = Uint32.valueOf(3343);
-    private static final GroupId DUMMY_GROUP_ID = new GroupId(55L);
+    private static final GroupId DUMMY_GROUP_ID = new GroupId(Uint32.valueOf(55));
     private static final Uint32 DUMMY_REF_COUNT = Uint32.valueOf(1234);
     private static final GroupTypes DUMMY_GROUPS_TYPE = GroupTypes.GroupAll;
     private static final GroupType DUMMY_GROUP_TYPE = GroupType.OFPGTALL;

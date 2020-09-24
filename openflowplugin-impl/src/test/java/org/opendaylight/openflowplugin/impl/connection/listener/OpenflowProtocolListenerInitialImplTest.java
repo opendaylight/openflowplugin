@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
 import org.junit.Assert;
@@ -17,12 +16,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
-import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test for {@link OpenflowProtocolListenerInitialImpl}.
@@ -55,8 +55,8 @@ public class OpenflowProtocolListenerInitialImplTest {
     @Test
     public void testOnEchoRequestMessage() {
         EchoRequestMessageBuilder echoRequestMessageBld = new EchoRequestMessageBuilder()
-                .setXid(42L)
-                .setVersion(OFConstants.OFP_VERSION_1_3);
+                .setXid(Uint32.valueOf(42))
+                .setVersion(EncodeConstants.OF_VERSION_1_3);
         openflowProtocolListenerInitial.onEchoRequestMessage(echoRequestMessageBld.build());
 
         Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.any());
@@ -65,8 +65,8 @@ public class OpenflowProtocolListenerInitialImplTest {
     @Test
     public void testOnHelloMessage() {
         HelloMessageBuilder helloMessageBld = new HelloMessageBuilder()
-                .setXid(42L)
-                .setVersion(OFConstants.OFP_VERSION_1_3);
+                .setXid(Uint32.valueOf(42))
+                .setVersion(EncodeConstants.OF_VERSION_1_3);
         openflowProtocolListenerInitial.onHelloMessage(helloMessageBld.build());
 
         Mockito.verify(handshakeManager).shake(ArgumentMatchers.any());

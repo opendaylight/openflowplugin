@@ -14,6 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.desc._case.MultipartReplyDescBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public final class MsgGeneratorTestUtils {
 
@@ -30,7 +31,7 @@ public final class MsgGeneratorTestUtils {
 
         MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
                 .setMultipartReplyBody(replyBody)
-                .setXid(xid)
+                .setXid(Uint32.valueOf(xid))
                 .setFlags(new MultipartRequestFlags(hasNext))
                 .setType(MultipartType.OFPMPDESC);
         return messageBuilder;

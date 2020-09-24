@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import static org.junit.Assert.assertEquals;
@@ -27,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class PortMessageSerializerTest extends AbstractSerializerTest {
 
@@ -34,8 +35,8 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_02 = 2;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_03 = 4;
     private static final short LENGTH = 40;
-    private static final Long XID = 42L;
-    private static final short VERSION = EncodeConstants.OF13_VERSION_ID;
+    private static final Uint32 XID = Uint32.valueOf(42);
+    private static final Uint8 VERSION = EncodeConstants.OF_VERSION_1_3;
     private static final String PORT_NUMBER = OutputPortValues.ALL.toString();
     private static final Long PORT_NUMBER_VAL = BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue());
     private static final String MAC_ADDRESS = "E9:2A:55:BA:FA:4D";
@@ -104,7 +105,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
         serializer.serialize(MESSAGE, out);
 
         // Header
-        assertEquals(out.readByte(), VERSION);
+        assertEquals(out.readByte(), VERSION.byteValue());
         assertEquals(out.readByte(), serializer.getMessageType());
         assertEquals(out.readShort(), LENGTH);
         assertEquals(out.readInt(), XID.intValue());

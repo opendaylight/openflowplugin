@@ -216,11 +216,11 @@ public class FlatBatchUtilTest {
         }
     }
 
-    private Batch createBatch(BatchStepType type) {
+    private static Batch createBatch(BatchStepType type) {
         return createBatch(type, 1);
     }
 
-    private Batch createBatch(BatchStepType type, final int size) {
+    private static Batch createBatch(BatchStepType type, final int size) {
         final BatchChoice batchCase;
         switch (type) {
             case FLOW_ADD:
@@ -281,7 +281,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchAddGroup> repeatFlatBatchAddGroupIntoList(final int size) {
         final List<FlatBatchAddGroup> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchAddGroupBuilder().withKey(new FlatBatchAddGroupKey(i)).build());
+            list.add(new FlatBatchAddGroupBuilder().withKey(new FlatBatchAddGroupKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -289,7 +289,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchUpdateGroup> repeatFlatBatchUpdateGroupIntoList(final int size) {
         final List<FlatBatchUpdateGroup> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchUpdateGroupBuilder().withKey(new FlatBatchUpdateGroupKey(i)).build());
+            list.add(new FlatBatchUpdateGroupBuilder().withKey(new FlatBatchUpdateGroupKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -297,7 +297,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchRemoveGroup> repeatFlatBatchRemoveGroupIntoList(final int size) {
         final List<FlatBatchRemoveGroup> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchRemoveGroupBuilder().withKey(new FlatBatchRemoveGroupKey(i)).build());
+            list.add(new FlatBatchRemoveGroupBuilder().withKey(new FlatBatchRemoveGroupKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -305,7 +305,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchAddFlow> repeatFlatBatchAddFlowIntoList(final int size) {
         final List<FlatBatchAddFlow> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchAddFlowBuilder().withKey(new FlatBatchAddFlowKey(i)).build());
+            list.add(new FlatBatchAddFlowBuilder().withKey(new FlatBatchAddFlowKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -313,7 +313,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchUpdateFlow> repeatFlatBatchUpdateFlowIntoList(final int size) {
         final List<FlatBatchUpdateFlow> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchUpdateFlowBuilder().withKey(new FlatBatchUpdateFlowKey(i)).build());
+            list.add(new FlatBatchUpdateFlowBuilder().withKey(new FlatBatchUpdateFlowKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -321,7 +321,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchRemoveFlow> repeatFlatBatchRemoveFlowIntoList(final int size) {
         final List<FlatBatchRemoveFlow> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchRemoveFlowBuilder().withKey(new FlatBatchRemoveFlowKey(i)).build());
+            list.add(new FlatBatchRemoveFlowBuilder().withKey(new FlatBatchRemoveFlowKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -329,7 +329,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchAddMeter> repeatFlatBatchAddMeterIntoList(final int size) {
         final List<FlatBatchAddMeter> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchAddMeterBuilder().withKey(new FlatBatchAddMeterKey(i)).build());
+            list.add(new FlatBatchAddMeterBuilder().withKey(new FlatBatchAddMeterKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -337,7 +337,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchUpdateMeter> repeatFlatBatchUpdateMeterIntoList(final int size) {
         final List<FlatBatchUpdateMeter> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchUpdateMeterBuilder().withKey(new FlatBatchUpdateMeterKey(i)).build());
+            list.add(new FlatBatchUpdateMeterBuilder().withKey(new FlatBatchUpdateMeterKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -345,7 +345,7 @@ public class FlatBatchUtilTest {
     private static List<FlatBatchRemoveMeter> repeatFlatBatchRemoveMeterIntoList(final int size) {
         final List<FlatBatchRemoveMeter> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(new FlatBatchRemoveMeterBuilder().withKey(new FlatBatchRemoveMeterKey(i)).build());
+            list.add(new FlatBatchRemoveMeterBuilder().withKey(new FlatBatchRemoveMeterKey(Uint16.valueOf(i))).build());
         }
         return list;
     }
@@ -353,14 +353,14 @@ public class FlatBatchUtilTest {
     @Test
     public void testMergeJobsResultsFutures() {
         final BatchFailure batchFailure = new BatchFailureBuilder()
-                .setBatchOrder(9)
+                .setBatchOrder(Uint16.valueOf(9))
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
                         .setFlowId(new FlowId("11"))
                         .build())
                 .withKey(new BatchFailureKey(Uint16.ZERO))
                 .build();
         final BatchFailure batchFailure_1 = new BatchFailureBuilder()
-                .setBatchOrder(9)
+                .setBatchOrder(Uint16.valueOf(9))
                 .setBatchItemIdChoice(new FlatBatchFailureFlowIdCaseBuilder()
                         .setFlowId(new FlowId("11"))
                         .build())

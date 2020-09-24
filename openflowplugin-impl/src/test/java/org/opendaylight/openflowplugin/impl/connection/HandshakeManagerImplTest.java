@@ -43,6 +43,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class HandshakeManagerImplTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeManagerImplTest.class);
-    private static final int DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = 0;
+    private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final int DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = 60;
 
     private HandshakeManagerImpl handshakeManager;
@@ -85,7 +89,7 @@ public class HandshakeManagerImplTest {
                 errorHandler, handshakeListener, false, deviceConnectionRateLimiter,
                 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS, deviceConnectionStatusProvider);
 
-        resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().setDatapathId(BigInteger.ONE).build())
+        resultFeatures = RpcResultBuilder.success(new GetFeaturesOutputBuilder().setDatapathId(Uint64.ONE).build())
                 .build();
 
         Mockito.when(adapter.hello(any(HelloInput.class)))
@@ -519,7 +523,7 @@ public class HandshakeManagerImplTest {
      * @return builder
      */
     private static HelloMessageBuilder createHelloMessage(short ofpVersion10, long helloXid) {
-        return new HelloMessageBuilder().setVersion(ofpVersion10).setXid(helloXid);
+        return new HelloMessageBuilder().setVersion(Uint8.valueOf(ofpVersion10)).setXid(Uint32.valueOf(helloXid));
     }
 
     /**

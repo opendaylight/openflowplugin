@@ -10,13 +10,13 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TunnelBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class TunnelIdEntrySerializerTest extends AbstractMatchEntrySerializerTest {
     @Test
@@ -30,8 +30,8 @@ public class TunnelIdEntrySerializerTest extends AbstractMatchEntrySerializerTes
 
         final Match tcpFlagsMatch = new MatchBuilder()
                 .setTunnel(new TunnelBuilder()
-                        .setTunnelId(BigInteger.valueOf(tunnelId))
-                        .setTunnelMask(BigInteger.valueOf(maskBuff.getLong()))
+                        .setTunnelId(Uint64.valueOf(tunnelId))
+                        .setTunnelMask(Uint64.valueOf(maskBuff.getLong()))
                         .build())
                 .build();
 
@@ -45,7 +45,7 @@ public class TunnelIdEntrySerializerTest extends AbstractMatchEntrySerializerTes
 
         final Match tcpFlagsMatchNoMask = new MatchBuilder()
                 .setTunnel(new TunnelBuilder()
-                        .setTunnelId(BigInteger.valueOf(tunnelId))
+                        .setTunnelId(Uint64.valueOf(tunnelId))
                         .build())
                 .build();
 

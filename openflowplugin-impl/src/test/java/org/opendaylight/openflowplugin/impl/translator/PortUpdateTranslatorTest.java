@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Test of {@link PortUpdateTranslator}.
@@ -118,7 +119,7 @@ public class PortUpdateTranslatorTest {
         final PortStateV10 portState10 = PortStateV10.getDefaultInstance("live");
 
         return new PortStatusMessageBuilder()
-                .setPortNo(portNoValue)
+                .setPortNo(Uint32.valueOf(portNoValue))
                 .setReason(PortReason.OFPPRADD)
                 .setAdvertisedFeatures(portFeatures13)
                 .setAdvertisedFeaturesV10(portFeatures10)
@@ -132,9 +133,9 @@ public class PortUpdateTranslatorTest {
                 .setStateV10(portState10)
                 .setSupportedFeatures(portFeatures13)
                 .setSupportedFeaturesV10(portFeatures10)
-                .setCurrSpeed(speed)
+                .setCurrSpeed(Uint32.valueOf(speed))
                 .setHwAddr(new MacAddress("01:02:03:04:05:06"))
-                .setMaxSpeed(2 * speed)
+                .setMaxSpeed(Uint32.valueOf(2 * speed))
                 .setName("utPortName:" + portNoValue);
     }
 }
