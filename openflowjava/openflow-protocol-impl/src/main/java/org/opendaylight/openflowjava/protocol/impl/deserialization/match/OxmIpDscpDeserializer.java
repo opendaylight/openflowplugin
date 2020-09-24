@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
@@ -25,17 +24,15 @@ import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
  *
  * @author michal.polkorab
  */
-public class OxmIpDscpDeserializer extends AbstractOxmMatchEntryDeserializer
-        implements OFDeserializer<MatchEntry> {
-
+public class OxmIpDscpDeserializer extends AbstractOxmMatchEntryDeserializer {
     @Override
-    public MatchEntry deserialize(ByteBuf input) {
+    public MatchEntry deserialize(final ByteBuf input) {
         MatchEntryBuilder builder = processHeader(getOxmClass(), getOxmField(), input);
         addIpDscpValue(input, builder);
         return builder.build();
     }
 
-    private static void addIpDscpValue(ByteBuf input, MatchEntryBuilder builder) {
+    private static void addIpDscpValue(final ByteBuf input, final MatchEntryBuilder builder) {
         builder.setMatchEntryValue(new IpDscpCaseBuilder()
             .setIpDscp(new IpDscpBuilder().setDscp(new Dscp(ByteBufUtils.readUint8(input))).build())
             .build());
