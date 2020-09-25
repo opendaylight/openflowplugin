@@ -303,29 +303,6 @@ public class ByteBufUtilsTest {
         ipv4Address = ByteBufUtils.readIpv4Address(buffer2);
     }
 
-    /**
-     * Test ipv6 address conversion.
-     */
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void testReadIpv6Address() {
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
-        buffer.writeShort(10);
-        buffer.writeShort(65535);
-        buffer.writeShort(4096);
-        buffer.writeShort(0);
-        buffer.writeShort(1024);
-        buffer.writeShort(42);
-        buffer.writeShort(2568);
-        buffer.writeShort(45689);
-        String ipv4Address = ByteBufUtils.readIpv6Address(buffer);
-        Assert.assertEquals("Wrong conversion", "000A:FFFF:1000:0000:0400:002A:0A08:B279", ipv4Address);
-        Assert.assertTrue("Unexpected data", buffer.readableBytes() == 0);
-
-        ByteBuf buffer2 = PooledByteBufAllocator.DEFAULT.buffer();
-        buffer.writeShort(10);
-        ipv4Address = ByteBufUtils.readIpv6Address(buffer2);
-    }
-
     @Test
     public void testSerializeList() {
 
