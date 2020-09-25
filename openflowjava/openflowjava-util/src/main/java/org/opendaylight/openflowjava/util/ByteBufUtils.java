@@ -7,10 +7,8 @@
  */
 package org.opendaylight.openflowjava.util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.UnsignedBytes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.nio.ByteBuffer;
@@ -220,40 +218,11 @@ public abstract class ByteBufUtils {
         return sb.toString().trim();
     }
 
-    private static void appendHexByte(final StringBuilder sb, final byte value) {
-        final int v = UnsignedBytes.toInt(value);
-        sb.append(HEX_CHARS[v >>> 4]);
-        sb.append(HEX_CHARS[v &  15]);
-    }
-
     private static void appendHexUnsignedShort(final StringBuilder sb, final int val) {
         sb.append(ByteBufUtils.HEX_CHARS[val >>> 12 & 15]);
         sb.append(ByteBufUtils.HEX_CHARS[val >>>  8 & 15]);
         sb.append(ByteBufUtils.HEX_CHARS[val >>>  4 & 15]);
         sb.append(ByteBufUtils.HEX_CHARS[val        & 15]);
-    }
-
-    /**
-     * Converts a MAC address represented in bytes to String.
-     * See also {@link org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress}.
-     *
-     * @param address the MAC address to convert
-     * @return String representation of a MAC address
-     * @deprecated Use {@link IetfYangUtil#macAddressFor(byte[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static String macAddressToString(final byte[] address) {
-        Preconditions.checkArgument(address.length == EncodeConstants.MAC_ADDRESS_LENGTH);
-
-        final StringBuilder sb = new StringBuilder(17);
-
-        appendHexByte(sb, address[0]);
-        for (int i = 1; i < EncodeConstants.MAC_ADDRESS_LENGTH; i++) {
-            sb.append(':');
-            appendHexByte(sb, address[i]);
-        }
-
-        return sb.toString();
     }
 
     /**
