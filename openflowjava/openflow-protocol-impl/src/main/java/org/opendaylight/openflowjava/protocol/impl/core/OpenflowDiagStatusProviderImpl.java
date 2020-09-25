@@ -34,12 +34,10 @@ public class OpenflowDiagStatusProviderImpl implements OpenflowDiagStatusProvide
     private static final String OPENFLOW_SERVICE_AGGREGATE = OPENFLOW_SERVICE;
 
     private final DiagStatusService diagStatusService;
-    private volatile Map<String, ServiceState> statusMap = new HashMap<String, ServiceState>() {{
-            put(OPENFLOW_SERVICE, STARTING);
-            put(OPENFLOW_SERVER_6633, STARTING);
-            put(OPENFLOW_SERVER_6653, STARTING);
-        }
-    };
+    private volatile Map<String, ServiceState> statusMap = new HashMap<>(Map.of(
+        OPENFLOW_SERVICE, STARTING,
+        OPENFLOW_SERVER_6633, STARTING,
+        OPENFLOW_SERVER_6653, STARTING));
 
     @Inject
     public OpenflowDiagStatusProviderImpl(final @Reference DiagStatusService diagStatusService) {
