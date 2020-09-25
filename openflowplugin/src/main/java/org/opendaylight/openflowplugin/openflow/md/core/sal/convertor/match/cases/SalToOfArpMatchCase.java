@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -21,6 +20,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.Versi
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.MatchConvertorUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpSourceHardwareAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.arp.match.fields.ArpTargetHardwareAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatch;
@@ -127,7 +127,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             arpShaBuilder.setMacAddress(arpSourceHardwareAddress.getAddress());
             boolean hasMask = false;
             if (null != arpSourceHardwareAddress.getMask()) {
-                arpShaBuilder.setMask(ByteBufUtils.macAddressToBytes(arpSourceHardwareAddress.getMask().getValue()));
+                arpShaBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(arpSourceHardwareAddress.getMask()));
                 hasMask = true;
             }
             arpShaCaseBuilder.setArpSha(arpShaBuilder.build());
@@ -147,7 +147,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             arpThaBuilder.setMacAddress(arpTargetHardwareAddress.getAddress());
             boolean hasMask = false;
             if (null != arpTargetHardwareAddress.getMask()) {
-                arpThaBuilder.setMask(ByteBufUtils.macAddressToBytes(arpTargetHardwareAddress.getMask().getValue()));
+                arpThaBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddress.getMask()));
                 hasMask = true;
             }
             arpThaCaseBuilder.setArpTha(arpThaBuilder.build());

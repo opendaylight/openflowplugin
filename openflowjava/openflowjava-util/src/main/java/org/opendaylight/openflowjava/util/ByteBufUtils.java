@@ -241,7 +241,10 @@ public abstract class ByteBufUtils {
      *
      * @param macAddress the mac address to convert
      * @return byte representation of mac address
+     *
+     * @deprecated Use {@link IetfYangUtil#macAddressBytes(MacAddress)} instead.
      */
+    @Deprecated(forRemoval = true)
     @SuppressWarnings("checkstyle:IllegalCatch")
     public static byte[] macAddressToBytes(final String macAddress) {
         final byte[] result = new byte[EncodeConstants.MAC_ADDRESS_LENGTH];
