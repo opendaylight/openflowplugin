@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
@@ -37,6 +36,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.case
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
@@ -415,7 +415,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             boolean hasMask = ethernetDestination.getMask() != null;
 
             if (hasMask) {
-                ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(ethernetDestination.getMask().getValue()));
+                ethDstBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(ethernetDestination.getMask()));
             }
 
             ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
@@ -435,7 +435,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             boolean hasMask = ethernetSource.getMask() != null;
 
             if (hasMask) {
-                ethDstBuilder.setMask(ByteBufUtils.macAddressToBytes(ethernetSource.getMask().getValue()));
+                ethDstBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSource.getMask()));
             }
 
             ethSrcCaseBuilder.setEthSrc(ethDstBuilder.build());
