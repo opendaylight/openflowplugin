@@ -18,7 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
@@ -56,7 +56,7 @@ public class OF10PortModInputMessageFactoryTest {
         PortModInputBuilder builder = new PortModInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setPortNo(new PortNumber(Uint32.valueOf(6633)));
-        builder.setHwAddress(new MacAddress("08:00:27:00:B0:EB"));
+        builder.setHwAddress(new MacAddress("08:00:27:00:b0:eb"));
         builder.setConfigV10(new PortConfigV10(true, false, false, true, false, false, true));
         builder.setMaskV10(new PortConfigV10(false, true, true, false, false, true, false));
         builder.setAdvertiseV10(new PortFeaturesV10(true, true, false, false, false, false,
@@ -70,8 +70,7 @@ public class OF10PortModInputMessageFactoryTest {
         Assert.assertEquals("Wrong PortNo", message.getPortNo().getValue().longValue(), out.readUnsignedShort());
         byte[] address = new byte[6];
         out.readBytes(address);
-        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(),
-                new MacAddress(ByteBufUtils.macAddressToString(address)));
+        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(), IetfYangUtil.INSTANCE.macAddressFor(address));
         Assert.assertEquals("Wrong config", 21, out.readUnsignedInt());
         Assert.assertEquals("Wrong mask", 98, out.readUnsignedInt());
         Assert.assertEquals("Wrong advertise", 652, out.readUnsignedInt());

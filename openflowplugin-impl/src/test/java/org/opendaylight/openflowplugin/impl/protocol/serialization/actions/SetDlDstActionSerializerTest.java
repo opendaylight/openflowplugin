@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCase;
@@ -19,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 
 public class SetDlDstActionSerializerTest extends AbstractSetFieldActionSerializerTest {
-
     @Test
     public void testSerialize() {
         final MacAddress address = new MacAddress("00:01:02:03:04:05");
@@ -33,7 +31,7 @@ public class SetDlDstActionSerializerTest extends AbstractSetFieldActionSerializ
         assertAction(action, out -> {
             byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(new MacAddress(ByteBufUtils.macAddressToString(addressBytes)).getValue(), address.getValue());
+            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
         });
     }
 
@@ -41,5 +39,4 @@ public class SetDlDstActionSerializerTest extends AbstractSetFieldActionSerializ
     protected Class<? extends Action> getClazz() {
         return SetDlDstActionCase.class;
     }
-
 }

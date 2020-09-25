@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.AbstractSerializerTest;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
@@ -115,9 +116,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_01);
         byte[] address = new byte[6];
         out.readBytes(address);
-        assertEquals(
-                new MacAddress(ByteBufUtils.macAddressToString(address)).getValue(),
-                new MacAddress(MAC_ADDRESS).getValue());
+        assertEquals(IetfYangUtil.INSTANCE.macAddressFor(address), new MacAddress(MAC_ADDRESS));
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_02);
 
         // Port config
