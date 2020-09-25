@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -34,7 +35,7 @@ public class ArpThaCodecTest {
     private static final int NXM_FIELD_CODE = 18;
 
     private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
-    private static final MacAddress TEST_ADDRESS = new MacAddress(ByteBufUtils.macAddressToString(TEST_ADDR));
+    private static final MacAddress TEST_ADDRESS = IetfYangUtil.INSTANCE.macAddressFor(TEST_ADDR);
 
     @Before
     public void setUp() {
@@ -77,9 +78,7 @@ public class ArpThaCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxArpTha.class);
         matchEntryBuilder.setHasMask(false);
 
-        byte[] address = new byte[VALUE_LENGTH];
-
-        valuesBuilder.setMacAddress(new MacAddress(ByteBufUtils.macAddressToString(address)));
+        valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));
 
         caseBuilder.setArpThaValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

@@ -18,6 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.AbstractSerializerTest;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
@@ -39,7 +40,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
     private static final Uint8 VERSION = EncodeConstants.OF_VERSION_1_3;
     private static final String PORT_NUMBER = OutputPortValues.ALL.toString();
     private static final Long PORT_NUMBER_VAL = BinContent.intToUnsignedLong(PortNumberValues.ALL.getIntValue());
-    private static final String MAC_ADDRESS = "E9:2A:55:BA:FA:4D";
+    private static final String MAC_ADDRESS = "e9:2a:55:ba:fa:4d";
 
     // Port config
     private static final Boolean IS_NOFWD = false;
@@ -115,9 +116,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_01);
         byte[] address = new byte[6];
         out.readBytes(address);
-        assertEquals(
-                new MacAddress(ByteBufUtils.macAddressToString(address)).getValue(),
-                new MacAddress(MAC_ADDRESS).getValue());
+        assertEquals(new MacAddress(MAC_ADDRESS), IetfYangUtil.INSTANCE.macAddressFor(address));
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_02);
 
         // Port config
