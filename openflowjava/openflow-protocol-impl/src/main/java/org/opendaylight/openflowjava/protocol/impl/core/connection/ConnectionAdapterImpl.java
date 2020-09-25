@@ -295,7 +295,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             } catch (InvalidNameException e) {
                 LOG.error("Exception ", e);
             }
-            switchCertificateBuilder.setSerialNumber(switchCertificate.getSerialNumber());
+            switchCertificateBuilder.setSerialNumber(switchCertificate.getSerialNumber().toString());
             try {
                 if (switchCertificate.getSubjectAlternativeNames() != null) {
                     List<String> subjectAlternateNames = new ArrayList<>();
