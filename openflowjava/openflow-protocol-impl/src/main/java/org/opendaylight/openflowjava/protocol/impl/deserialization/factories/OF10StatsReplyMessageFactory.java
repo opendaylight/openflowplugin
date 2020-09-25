@@ -66,6 +66,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates StatsReply messages (OpenFlow v1.0).
@@ -270,10 +271,10 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private MultipartReplyExperimenterCase setExperimenter(ByteBuf input) {
-        final long expId = input.readUnsignedInt();
+        final Uint32 expId = readUint32(input);
         final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createMultipartReplyVendorMessageDeserializerKey(
-                EncodeConstants.OF10_VERSION_ID, expId));
+                EncodeConstants.OF10_VERSION_ID, expId.toJava()));
 
         final MultipartReplyExperimenterBuilder mpExperimenterBld = new MultipartReplyExperimenterBuilder()
                 .setExperimenter(new ExperimenterId(expId))

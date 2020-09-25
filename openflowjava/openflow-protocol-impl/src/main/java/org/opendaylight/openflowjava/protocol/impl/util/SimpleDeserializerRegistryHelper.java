@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper class for deserializer registration.
@@ -19,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 public class SimpleDeserializerRegistryHelper {
 
     private final short version;
+    private final @NonNull Uint8 uintVersion;
     private final DeserializerRegistry registry;
 
     /**
@@ -30,6 +33,7 @@ public class SimpleDeserializerRegistryHelper {
     public SimpleDeserializerRegistryHelper(final short version, final DeserializerRegistry deserializerRegistry) {
         this.version = version;
         this.registry = deserializerRegistry;
+        this.uintVersion = Uint8.valueOf(version);
     }
 
     /**
@@ -43,7 +47,7 @@ public class SimpleDeserializerRegistryHelper {
         registry.registerDeserializer(new MessageCodeKey(version, code, deserializedObjectClass), deserializer);
 
         if (deserializer instanceof VersionAssignableFactory) {
-            ((VersionAssignableFactory) deserializer).assignVersion(version);
+            ((VersionAssignableFactory<?>) deserializer).assignVersion(uintVersion);
         }
     }
 }

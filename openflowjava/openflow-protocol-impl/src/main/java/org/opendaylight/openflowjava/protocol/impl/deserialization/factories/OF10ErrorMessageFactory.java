@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.QueueOpFailedCodeV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Translates Error messages (OpenFlow v1.0).
@@ -52,10 +53,10 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
 
     private static void decodeType(ErrorMessageBuilder builder, ErrorTypeV10 type, int readValue) {
         if (type != null) {
-            builder.setType(type.getIntValue());
+            builder.setType(Uint16.valueOf(type.getIntValue()));
             builder.setTypeString(type.name());
         } else {
-            builder.setType(readValue);
+            builder.setType(Uint16.valueOf(readValue));
             builder.setTypeString(UNKNOWN_TYPE);
         }
     }
@@ -129,12 +130,12 @@ public class OF10ErrorMessageFactory implements OFDeserializer<ErrorMessage> {
     }
 
     private static void setUnknownCode(ErrorMessageBuilder builder, int readValue) {
-        builder.setCode(readValue);
+        builder.setCode(Uint16.valueOf(readValue));
         builder.setCodeString(UNKNOWN_CODE);
     }
 
     private static void setCode(ErrorMessageBuilder builder, int code, String codeString) {
-        builder.setCode(code);
+        builder.setCode(Uint16.valueOf(code));
         builder.setCodeString(codeString);
     }
 
