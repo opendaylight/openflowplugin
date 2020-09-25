@@ -1066,7 +1066,7 @@ public class MultipartReplyMessageFactoryTest {
         final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
-        input.skipBytes(Short.SIZE / Byte.SIZE);
+        input.skipBytes(Short.BYTES);
         dropBand.setRate(Uint32.fromIntBits(input.readInt()));
         dropBand.setBurstSize(Uint32.fromIntBits(input.readInt()));
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
@@ -1074,7 +1074,7 @@ public class MultipartReplyMessageFactoryTest {
         final MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
-        input.skipBytes(Short.SIZE / Byte.SIZE);
+        input.skipBytes(Short.BYTES);
         dscpRemarkBand.setRate(Uint32.fromIntBits(input.readInt()));
         dscpRemarkBand.setBurstSize(Uint32.fromIntBits(input.readInt()));
         dscpRemarkBand.setPrecLevel(Uint8.valueOf(3));
