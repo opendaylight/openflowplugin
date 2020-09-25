@@ -39,10 +39,10 @@ public class VendorMessageFactory implements OFDeserializer<ExperimenterMessage>
         Objects.requireNonNull(deserializerRegistry);
 
         final Uint32 xid = readUint32(message);
-        final long expId = message.readUnsignedInt();
+        final Uint32 expId = readUint32(message);
         OFDeserializer<ExperimenterDataOfChoice> deserializer = deserializerRegistry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createVendorMessageDeserializerKey(
-                        EncodeConstants.OF10_VERSION_ID, expId));
+                        EncodeConstants.OF10_VERSION_ID, expId.toJava()));
         final ExperimenterDataOfChoice vendorData = deserializer.deserialize(message);
 
         final ExperimenterMessageBuilder messageBld = new ExperimenterMessageBuilder()

@@ -13,6 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.PbbI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsidBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates OxmPbbIsid messages.
@@ -26,9 +27,9 @@ public class OxmPbbIsidDeserializer extends AbstractOxmMatchEntryDeserializer {
 
     @Override
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
-        final Integer isid = input.readUnsignedMedium();
+        final int isid = input.readUnsignedMedium();
         final PbbIsidBuilder isidBuilder = new PbbIsidBuilder()
-                .setIsid(isid.longValue());
+                .setIsid(Uint32.valueOf(isid));
         if (builder.isHasMask()) {
             isidBuilder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.SIZE_OF_3_BYTES));
         }

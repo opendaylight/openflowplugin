@@ -649,12 +649,12 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     private MultipartReplyExperimenterCase setExperimenter(final ByteBuf input) {
-        final long expId = input.readUnsignedInt();
-        final long expType = input.readUnsignedInt();
+        final Uint32 expId = readUint32(input);
+        final Uint32 expType = readUint32(input);
 
         final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createMultipartReplyMessageDeserializerKey(
-                        EncodeConstants.OF13_VERSION_ID, expId, expType));
+                        EncodeConstants.OF13_VERSION_ID, expId.toJava(), expType.toJava()));
 
         final MultipartReplyExperimenterBuilder mpExperimenterBld = new MultipartReplyExperimenterBuilder()
                 .setExperimenter(new ExperimenterId(expId))
