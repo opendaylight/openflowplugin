@@ -70,7 +70,7 @@ public interface EncodeConstants {
     byte GROUPS_IN_IPV6_ADDRESS = 8;
 
     /** Length of ipv6 address in bytes. */
-    byte SIZE_OF_IPV6_ADDRESS_IN_BYTES = 8 * Short.SIZE / Byte.SIZE;
+    byte SIZE_OF_IPV6_ADDRESS_IN_BYTES = 8 * Short.BYTES;
 
     /** Length of 3 bytes. */
     byte SIZE_OF_3_BYTES = 3;
