@@ -18,7 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -80,7 +80,7 @@ public class PortStatusMessageFactoryTest {
         byte[] address = new byte[6];
         serializedBuffer.readBytes(address);
         Assert.assertEquals("Wrong MacAddress", message.getHwAddr().getValue().toLowerCase(),
-                new MacAddress(ByteBufUtils.macAddressToString(address)).getValue().toLowerCase());
+                IetfYangUtil.INSTANCE.macAddressFor(address).getValue().toLowerCase());
         serializedBuffer.skipBytes(PORT_PADDING_2);
         byte[] name = new byte[16];
         serializedBuffer.readBytes(name);

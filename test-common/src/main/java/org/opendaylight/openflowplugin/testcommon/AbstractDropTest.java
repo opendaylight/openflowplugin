@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
-import static org.opendaylight.openflowjava.util.ByteBufUtils.macAddressToString;
-
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,7 +16,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
@@ -178,7 +176,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
             //TODO: use HEX, use binary form
             //Hex.decodeHex("000000000001".toCharArray());
 
-            ethSourceBuilder.setAddress(new MacAddress(macAddressToString(srcMac)));
+            ethSourceBuilder.setAddress(IetfYangUtil.INSTANCE.macAddressFor(srcMac));
             ethernetMatch.setEthernetSource(ethSourceBuilder.build());
             match.setEthernetMatch(ethernetMatch.build());
 

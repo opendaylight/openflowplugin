@@ -18,7 +18,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
@@ -61,7 +61,7 @@ public class PortModInputMessageFactoryTest {
         PortModInputBuilder builder = new PortModInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setPortNo(new PortNumber(Uint32.valueOf(9)));
-        builder.setHwAddress(new MacAddress("08:00:27:00:B0:EB"));
+        builder.setHwAddress(new MacAddress("08:00:27:00:b0:eb"));
         builder.setConfig(new PortConfig(true, false, true, false));
         builder.setMask(new PortConfig(false, true, false, true));
         builder.setAdvertise(new PortFeatures(true, false, false, false,
@@ -89,8 +89,7 @@ public class PortModInputMessageFactoryTest {
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_01);
         byte[] address = new byte[6];
         out.readBytes(address);
-        Assert.assertEquals("Wrong MacAddress", message.getHwAddress().getValue(),
-                new MacAddress(ByteBufUtils.macAddressToString(address)).getValue());
+        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(), IetfYangUtil.INSTANCE.macAddressFor(address));
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_02);
         Assert.assertEquals("Wrong config", message.getConfig(), createPortConfig(out.readInt()));
         Assert.assertEquals("Wrong mask", message.getMask(), createPortConfig(out.readInt()));
