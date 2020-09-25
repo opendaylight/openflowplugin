@@ -217,16 +217,6 @@ public class ByteBufUtilsTest {
     }
 
     /**
-     * Test of {@link ByteBufUtils#macAddressToString(byte[])}.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testMacToString() {
-        Assert.assertEquals("Wrong string decoded", "00:01:02:03:FF:05",
-                ByteBufUtils.macAddressToString(new byte[]{0, 1, 2, 3, (byte) 255, 5}));
-        ByteBufUtils.macAddressToString(new byte[]{0, 1, 2, 3, (byte) 255, 5, 6});
-    }
-
-    /**
      * Test of {@link ByteBufUtils#decodeNullTerminatedString(ByteBuf, int)}.
      */
     @Test
