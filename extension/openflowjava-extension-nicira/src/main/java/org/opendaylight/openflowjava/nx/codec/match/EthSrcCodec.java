@@ -13,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
@@ -35,8 +36,8 @@ public class EthSrcCodec extends AbstractMatchCodec {
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        EthSrcCaseValue ethSrcCase = ((EthSrcCaseValue) input.getMatchEntryValue());
-        outBuffer.writeBytes(ByteBufUtils.macAddressToBytes(ethSrcCase.getEthSrcValues().getMacAddress().getValue()));
+        EthSrcCaseValue ethSrcCase = (EthSrcCaseValue) input.getMatchEntryValue();
+        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethSrcCase.getEthSrcValues().getMacAddress()));
     }
 
     @Override

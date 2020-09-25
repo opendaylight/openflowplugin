@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.MacAddressFilter;
 
@@ -29,7 +29,7 @@ public abstract class AbstractMacAddressFilterEntrySerializer<E extends MacAddre
     protected final void serializeEntry(final E entry, final MacAddress mask, final ByteBuf outBuffer) {
         writeMacAddress(entry.getAddress(), outBuffer);
         if (mask != null) {
-            writeMask(ByteBufUtils.macAddressToBytes(mask.getValue()), outBuffer, EncodeConstants.MAC_ADDRESS_LENGTH);
+            writeMask(IetfYangUtil.INSTANCE.macAddressBytes(mask), outBuffer, EncodeConstants.MAC_ADDRESS_LENGTH);
         }
     }
 }

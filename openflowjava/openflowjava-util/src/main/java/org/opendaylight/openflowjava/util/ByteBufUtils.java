@@ -236,12 +236,14 @@ public abstract class ByteBufUtils {
     }
 
     /**
-     * Converts macAddress to byte array.
-     * See also {@link org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress}.
+     * Converts macAddress to byte array. See also {@link MacAddress}.
      *
      * @param macAddress the mac address to convert
      * @return byte representation of mac address
+     *
+     * @deprecated Use IetfYangUtil.macAddressBytes(MacAddress) instead.
      */
+    @Deprecated(forRemoval = true)
     @SuppressWarnings("checkstyle:IllegalCatch")
     public static byte[] macAddressToBytes(final String macAddress) {
         final byte[] result = new byte[EncodeConstants.MAC_ADDRESS_LENGTH];
