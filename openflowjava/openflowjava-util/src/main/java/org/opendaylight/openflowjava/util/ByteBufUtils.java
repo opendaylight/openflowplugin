@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.util;
 
 import com.google.common.base.Preconditions;
@@ -231,7 +230,7 @@ public abstract class ByteBufUtils {
         sb.append(ByteBufUtils.HEX_CHARS[val >>> 12 & 15]);
         sb.append(ByteBufUtils.HEX_CHARS[val >>>  8 & 15]);
         sb.append(ByteBufUtils.HEX_CHARS[val >>>  4 & 15]);
-        sb.append(ByteBufUtils.HEX_CHARS[ val         & 15]);
+        sb.append(ByteBufUtils.HEX_CHARS[val        & 15]);
     }
 
     /**
@@ -240,7 +239,9 @@ public abstract class ByteBufUtils {
      *
      * @param address the MAC address to convert
      * @return String representation of a MAC address
+     * @deprecated Use {@link IetfYangUtil#macAddressFor(byte[])} instead.
      */
+    @Deprecated(forRemoval = true)
     public static String macAddressToString(final byte[] address) {
         Preconditions.checkArgument(address.length == EncodeConstants.MAC_ADDRESS_LENGTH);
 
