@@ -12,9 +12,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -46,8 +44,9 @@ public class EthDstCodec extends AbstractMatchCodec {
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);
         EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
-        caseBuilder.setEthDstValues(new EthDstValuesBuilder().setMacAddress(
-                new MacAddress(ByteBufUtils.macAddressToString(address))).build());
+        caseBuilder.setEthDstValues(new EthDstValuesBuilder()
+            .setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(address))
+            .build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();
     }
