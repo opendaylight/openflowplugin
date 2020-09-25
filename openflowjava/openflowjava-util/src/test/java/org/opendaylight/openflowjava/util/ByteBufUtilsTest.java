@@ -284,25 +284,6 @@ public class ByteBufUtilsTest {
         Assert.assertEquals("Wrong conversion", "", ByteBufUtils.bytesToHexString(empty));
     }
 
-    /**
-     * Test ipv4 address conversion.
-     */
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void testReadIpv4Address() {
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
-        buffer.writeByte(10);
-        buffer.writeByte(20);
-        buffer.writeByte(30);
-        buffer.writeByte(40);
-        String ipv4Address = ByteBufUtils.readIpv4Address(buffer);
-        Assert.assertEquals("Wrong conversion", "10.20.30.40", ipv4Address);
-        Assert.assertTrue("Unexpected data", buffer.readableBytes() == 0);
-
-        ByteBuf buffer2 = PooledByteBufAllocator.DEFAULT.buffer();
-        buffer.writeByte(10);
-        ipv4Address = ByteBufUtils.readIpv4Address(buffer2);
-    }
-
     @Test
     public void testSerializeList() {
 
