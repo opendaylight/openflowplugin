@@ -230,24 +230,6 @@ public abstract class ByteBufUtils {
         return new String(name, StandardCharsets.UTF_8).trim();
     }
 
-    /**
-     * Read an IPv4 address from a buffer and format it into dotted-quad string.
-     *
-     * @param buf Input buffer
-     * @return Dotted-quad string
-     */
-    public static String readIpv4Address(final ByteBuf buf) {
-        final StringBuilder sb = new StringBuilder(EncodeConstants.GROUPS_IN_IPV4_ADDRESS * 4 - 1);
-
-        sb.append(buf.readUnsignedByte());
-        for (int i = 1; i < EncodeConstants.GROUPS_IN_IPV4_ADDRESS; i++) {
-            sb.append('.');
-            sb.append(buf.readUnsignedByte());
-        }
-
-        return sb.toString();
-    }
-
     public static Ipv4Address readIetfIpv4Address(final ByteBuf buf) {
         final byte[] tmp = new byte[4];
         buf.readBytes(tmp);
