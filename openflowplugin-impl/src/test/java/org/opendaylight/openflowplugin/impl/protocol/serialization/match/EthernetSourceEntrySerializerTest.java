@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -21,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 
 public class EthernetSourceEntrySerializerTest extends AbstractMatchEntrySerializerTest {
-
     @Test
     public void testSerialize() {
         final MacAddress address = new MacAddress("00:01:02:03:04:05");
@@ -39,11 +37,11 @@ public class EthernetSourceEntrySerializerTest extends AbstractMatchEntrySeriali
         assertMatch(match, true, (out) -> {
             final byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(new MacAddress(ByteBufUtils.macAddressToString(addressBytes)).getValue(), address.getValue());
+            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
 
             final byte[] maskBytes = new byte[6];
             out.readBytes(maskBytes);
-            assertEquals(new MacAddress(ByteBufUtils.macAddressToString(maskBytes)).getValue(), mask.getValue());
+            assertEquals(mask, IetfYangUtil.INSTANCE.macAddressFor(maskBytes));
         });
 
         final Match matchNoMask = new MatchBuilder()
@@ -57,7 +55,7 @@ public class EthernetSourceEntrySerializerTest extends AbstractMatchEntrySeriali
         assertMatch(matchNoMask, false, (out) -> {
             final byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(new MacAddress(ByteBufUtils.macAddressToString(addressBytes)).getValue(), address.getValue());
+            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
         });
     }
 
@@ -75,5 +73,4 @@ public class EthernetSourceEntrySerializerTest extends AbstractMatchEntrySeriali
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
     }
-
 }
