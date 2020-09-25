@@ -33,7 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public abstract class ByteBufUtils {
     public static final Splitter DOT_SPLITTER = Splitter.on('.');
     public static final Splitter COLON_SPLITTER = Splitter.on(':');
-    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
     private static final Splitter HEXSTRING_SPLITTER =  Splitter.onPattern("\\s+").omitEmptyStrings();
     private static final Splitter HEXSTRING_NOSPACE_SPLITTER = Splitter.onPattern("(?<=\\G.{2})").omitEmptyStrings();
 
@@ -218,13 +217,6 @@ public abstract class ByteBufUtils {
         return sb.toString().trim();
     }
 
-    private static void appendHexUnsignedShort(final StringBuilder sb, final int val) {
-        sb.append(ByteBufUtils.HEX_CHARS[val >>> 12 & 15]);
-        sb.append(ByteBufUtils.HEX_CHARS[val >>>  8 & 15]);
-        sb.append(ByteBufUtils.HEX_CHARS[val >>>  4 & 15]);
-        sb.append(ByteBufUtils.HEX_CHARS[val        & 15]);
-    }
-
     /**
      * Reads and parses null-terminated string from ByteBuf.
      *
@@ -251,26 +243,6 @@ public abstract class ByteBufUtils {
         for (int i = 1; i < EncodeConstants.GROUPS_IN_IPV4_ADDRESS; i++) {
             sb.append('.');
             sb.append(buf.readUnsignedByte());
-        }
-
-        return sb.toString();
-    }
-
-
-    /**
-     * Read an IPv6 address from a buffer and format it into a string of eight groups of four
-     * hexadecimal digits separated by colons.
-     *
-     * @param buf Input buffer
-     * @return IPv6 address in string format
-     */
-    public static String readIpv6Address(final ByteBuf buf) {
-        final StringBuilder sb = new StringBuilder(EncodeConstants.GROUPS_IN_IPV6_ADDRESS * 5 - 1);
-
-        appendHexUnsignedShort(sb, buf.readUnsignedShort());
-        for (int i = 1; i < EncodeConstants.GROUPS_IN_IPV6_ADDRESS; i++) {
-            sb.append(':');
-            appendHexUnsignedShort(sb, buf.readUnsignedShort());
         }
 
         return sb.toString();
