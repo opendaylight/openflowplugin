@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import static org.junit.Assert.assertEquals;
@@ -13,29 +12,25 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 
 public class Ipv6NdSllEntrySerializerTest extends AbstractMatchEntrySerializerTest {
-
     @Test
     public void testSerialize() {
         final MacAddress ipv6NdSll = new MacAddress("00:01:02:03:04:05");
 
         final Match ipv6NdSllMatch = new MatchBuilder()
-                .setLayer3Match(new Ipv6MatchBuilder()
-                        .setIpv6NdSll(ipv6NdSll)
-                        .build())
+                .setLayer3Match(new Ipv6MatchBuilder().setIpv6NdSll(ipv6NdSll).build())
                 .build();
 
         assertMatch(ipv6NdSllMatch, false, (out) -> {
             byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(new MacAddress(ByteBufUtils.macAddressToString(addressBytes)).getValue(),
-                    ipv6NdSll.getValue());
+            assertEquals(ipv6NdSll, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
         });
     }
 
@@ -53,5 +48,4 @@ public class Ipv6NdSllEntrySerializerTest extends AbstractMatchEntrySerializerTe
     protected int getOxmClassCode() {
         return OxmMatchConstants.OPENFLOW_BASIC_CLASS;
     }
-
 }

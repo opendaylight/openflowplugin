@@ -135,10 +135,10 @@ public class OF10StatsReplyMessageFactoryTest {
         Assert.assertEquals("Wrong inPort", 58, serializedBuffer.readUnsignedShort());
         byte[] dlSrc = new byte[6];
         serializedBuffer.readBytes(dlSrc);
-        Assert.assertEquals("Wrong dlSrc", "01:01:01:01:01:01", ByteBufUtils.macAddressToString(dlSrc));
+        Assert.assertArrayEquals("Wrong dlSrc", new byte[] { 01, 01, 01, 01, 01, 01 }, dlSrc);
         byte[] dlDst = new byte[6];
         serializedBuffer.readBytes(dlDst);
-        Assert.assertEquals("Wrong dlDst", "FF:FF:FF:FF:FF:FF", ByteBufUtils.macAddressToString(dlDst));
+        Assert.assertArrayEquals("Wrong dlDst", new byte[] { -1, -1, -1, -1, -1, -1 }, dlDst);
         Assert.assertEquals("Wrong dlVlan", 18, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong dlVlanPcp", 5, serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(1);

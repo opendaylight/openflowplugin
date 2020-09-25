@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -22,7 +21,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwDstCaseBuilder;
@@ -123,10 +121,10 @@ public class OF10FlowModInputMessageFactoryTest {
         Assert.assertEquals("Wrong inPort", 58, out.readUnsignedShort());
         byte[] dlSrc = new byte[6];
         out.readBytes(dlSrc);
-        Assert.assertEquals("Wrong dlSrc", "01:01:01:01:01:01", ByteBufUtils.macAddressToString(dlSrc));
+        Assert.assertArrayEquals("Wrong dlSrc", new byte[] { 01, 01, 01, 01, 01, 01 }, dlSrc);
         byte[] dlDst = new byte[6];
         out.readBytes(dlDst);
-        Assert.assertEquals("Wrong dlDst", "FF:FF:FF:FF:FF:FF", ByteBufUtils.macAddressToString(dlDst));
+        Assert.assertArrayEquals("Wrong dlDst", new byte[] { -1, -1, -1, -1, -1, -1 }, dlDst);
         Assert.assertEquals("Wrong dlVlan", 18, out.readUnsignedShort());
         Assert.assertEquals("Wrong dlVlanPcp", 5, out.readUnsignedByte());
         out.skipBytes(1);

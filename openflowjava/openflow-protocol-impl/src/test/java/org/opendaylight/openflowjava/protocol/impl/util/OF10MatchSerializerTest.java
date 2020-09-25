@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
@@ -18,7 +17,6 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowWildcardsV10;
@@ -78,10 +76,10 @@ public class OF10MatchSerializerTest {
         Assert.assertEquals("Wrong in-port", 6653, out.readUnsignedShort());
         byte[] dlSrc = new byte[6];
         out.readBytes(dlSrc);
-        Assert.assertEquals("Wrong dl-src", "01:01:01:01:01:01", ByteBufUtils.macAddressToString(dlSrc));
+        Assert.assertArrayEquals("Wrong dl-src", new byte[] { 01, 01, 01, 01, 01, 01 }, dlSrc);
         byte[] dlDst = new byte[6];
         out.readBytes(dlDst);
-        Assert.assertEquals("Wrong dl-dst", "02:02:02:02:02:02", ByteBufUtils.macAddressToString(dlDst));
+        Assert.assertArrayEquals("Wrong dl-dst", new byte[] { 02, 02, 02, 02, 02, 02 }, dlDst);
         Assert.assertEquals("Wrong dl-vlan", 128, out.readUnsignedShort());
         Assert.assertEquals("Wrong dl-vlan-pcp", 2, out.readUnsignedByte());
         out.skipBytes(1);
@@ -125,10 +123,10 @@ public class OF10MatchSerializerTest {
         Assert.assertEquals("Wrong in-port", 6653, out.readUnsignedShort());
         byte[] dlSrc = new byte[6];
         out.readBytes(dlSrc);
-        Assert.assertEquals("Wrong dl-src", "01:01:01:01:01:01", ByteBufUtils.macAddressToString(dlSrc));
+        Assert.assertArrayEquals("Wrong dl-src", new byte[] { 01, 01, 01, 01, 01, 01 }, dlSrc);
         byte[] dlDst = new byte[6];
         out.readBytes(dlDst);
-        Assert.assertEquals("Wrong dl-dst", "02:02:02:02:02:02", ByteBufUtils.macAddressToString(dlDst));
+        Assert.assertArrayEquals("Wrong dl-dst", new byte[] { 02, 02, 02, 02, 02, 02 }, dlDst);
         Assert.assertEquals("Wrong dl-vlan", 128, out.readUnsignedShort());
         Assert.assertEquals("Wrong dl-vlan-pcp", 2, out.readUnsignedByte());
         out.skipBytes(1);
