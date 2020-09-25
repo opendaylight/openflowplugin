@@ -66,9 +66,6 @@ public interface EncodeConstants {
     /** Number of groups in ipv4 address. */
     byte GROUPS_IN_IPV4_ADDRESS = 4;
 
-    /** Number of groups in ipv6 address. */
-    byte GROUPS_IN_IPV6_ADDRESS = 8;
-
     /** Length of ipv6 address in bytes. */
     byte SIZE_OF_IPV6_ADDRESS_IN_BYTES = 8 * Short.BYTES;
 
