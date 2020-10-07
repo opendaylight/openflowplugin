@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.match;
 
 import io.netty.buffer.ByteBuf;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Layer4Match;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
@@ -20,7 +18,7 @@ public abstract class AbstractPortNumberWithMaskEntrySerilizer
     }
 
     @Override
-    protected void serializeEntry(@NonNull Layer4Match entry, @NonNull Uint16 mask, @NonNull ByteBuf outBuffer) {
+    protected void serializeEntry(final Layer4Match entry, final Uint16 mask, final ByteBuf outBuffer) {
         Uint16 portMask = extractMask(entry);
         Uint16 port = extractPort(entry);
         if (port != null) {
@@ -31,7 +29,8 @@ public abstract class AbstractPortNumberWithMaskEntrySerilizer
         }
     }
 
-    protected  Uint16 extractEntryMask(@NonNull Layer4Match entry) {
+    @Override
+    protected Uint16 extractEntryMask(final Layer4Match entry) {
         return extractMask(entry);
     }
 
