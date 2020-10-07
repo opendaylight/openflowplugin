@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.arbitratorreconciliation.impl;
+
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -41,7 +42,6 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 import org.opendaylight.serviceutils.upgrade.UpgradeState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
@@ -104,8 +104,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private static final String SEPARATOR = ":";
 
     private static final BundleRemoveFlowCase DELETE_ALL_FLOW = new BundleRemoveFlowCaseBuilder()
-            .setRemoveFlowCaseData(
-                    new RemoveFlowCaseDataBuilder(new FlowBuilder().setTableId(OFConstants.OFPTT_ALL).build()).build())
+            .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder()
+                .setTableId(OFConstants.OFPTT_ALL)
+                .build())
             .build();
     private static final BundleRemoveGroupCase DELETE_ALL_GROUP = new BundleRemoveGroupCaseBuilder()
             .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(new GroupBuilder()
@@ -126,16 +127,15 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             ObjectRegistration<? extends RpcService>> rpcRegistrations = new ConcurrentHashMap<>();
 
     @Inject
-    public ArbitratorReconciliationManagerImpl(
-            @Reference ReconciliationManager reconciliationManager, @Reference RpcProviderService rpcProviderService,
-            @Reference final RpcConsumerRegistry rpcRegistry, @Reference UpgradeState upgradeState) {
+    public ArbitratorReconciliationManagerImpl(@Reference final ReconciliationManager reconciliationManager,
+            @Reference final RpcProviderService rpcProviderService, @Reference final RpcConsumerRegistry rpcRegistry,
+            @Reference final UpgradeState upgradeState) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
-        this.reconciliationManager = Preconditions.checkNotNull(reconciliationManager,
-                "ReconciliationManager cannot be null!");
-        this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
+        this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager cannot be null!");
+        this.salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundleService not found.");
         this.rpcProviderService = rpcProviderService;
-        this.upgradeState = Preconditions.checkNotNull(upgradeState, "UpgradeState cannot be null!");
+        this.upgradeState = requireNonNull(upgradeState, "UpgradeState cannot be null!");
     }
 
     @PostConstruct
@@ -156,7 +156,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @Override
     public ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
-            CommitActiveBundleInput input) {
+            final CommitActiveBundleInput input) {
         Uint64 nodeId = input.getNodeId();
         if (bundleIdMap.containsKey(nodeId)) {
             BundleId bundleId = bundleIdMap.get(nodeId).getBundleId();
@@ -210,7 +210,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     }
 
     @Override
-    public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
+    public ListenableFuture<Boolean> startReconciliation(final DeviceInfo node) {
         registerRpc(node);
         if (upgradeState.isUpgradeInProgress()) {
             LOG.trace("Starting arbitrator reconciliation for node {}", node.getDatapathId());
@@ -221,7 +221,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     }
 
     @Override
-    public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
+    public ListenableFuture<Boolean> endReconciliation(final DeviceInfo node) {
         Uint64 datapathId = node.getDatapathId();
         LOG.trace("Stopping arbitrator reconciliation for node {}", datapathId);
         bundleIdMap.remove(datapathId);
@@ -244,7 +244,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         return ResultState.DONOTHING;
     }
 
-    private ListenableFuture<Boolean> reconcileConfiguration(DeviceInfo node) {
+    private ListenableFuture<Boolean> reconcileConfiguration(final DeviceInfo node) {
         LOG.info("Triggering arbitrator reconciliation for device {}", node.getDatapathId());
         ArbitratorReconciliationTask upgradeReconTask = new ArbitratorReconciliationTask(node);
         return executor.submit(upgradeReconTask);
@@ -341,13 +341,13 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
 
         @Override
-        public void onSuccess(RpcResult<?> rpcResult) {
+        public void onSuccess(final RpcResult<?> rpcResult) {
             LOG.debug("Completed arbitrator reconciliation for device:{}", nodeId);
             bundleIdMap.remove(nodeId);
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Error while performing arbitrator reconciliation for device {}", nodeId, throwable);
         }
     }
@@ -372,7 +372,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         };
     }
 
-    private void registerRpc(DeviceInfo node) {
+    private void registerRpc(final DeviceInfo node) {
         KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is registered : {}", path);
@@ -382,7 +382,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         rpcRegistrations.put(node.getNodeId().getValue(), rpcRegistration);
     }
 
-    private void deregisterRpc(DeviceInfo node) {
+    private void deregisterRpc(final DeviceInfo node) {
         KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is unregistered : {}", path);
@@ -397,7 +397,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         private final BundleId bundleId;
         private final ListenableFuture<RpcResult<ControlBundleOutput>> result;
 
-        BundleDetails(BundleId bundleId, ListenableFuture<RpcResult<ControlBundleOutput>> result) {
+        BundleDetails(final BundleId bundleId, final ListenableFuture<RpcResult<ControlBundleOutput>> result) {
             this.bundleId = bundleId;
             this.result = result;
         }
@@ -413,7 +413,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private static Uint64 getDpnIdFromNodeName(String nodeName) {
+    private static Uint64 getDpnIdFromNodeName(final String nodeName) {
         String dpnId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
         return Uint64.valueOf(dpnId);
     }

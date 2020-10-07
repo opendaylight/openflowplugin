@@ -70,7 +70,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
                 newLink("link1", newSourceNode("node1"), newDestNode("dest")),
                 newLink("link2", newSourceNode("source"), newDestNode("node1")),
                 newLink("link3", newSourceNode("source2"), newDestNode("dest2")));
-        final Topology topology = new TopologyBuilder().setLink(linkList).build();
+        final Topology topology = new TopologyBuilder().withKey(topologyIID.getKey()).setLink(linkList).build();
 
         final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Link.class, linkList.get(0).key()),

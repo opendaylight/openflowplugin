@@ -2,6 +2,6 @@
 <features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name="odl-openflowplugin-southbound" version="${project.version}">
         <configfile finalname="etc/org.opendaylight.openflowplugin.cfg">mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/${project.version}/cfg/config</configfile>
-        <feature version="[2,3)">odl-mdsal-broker</feature>
+        <feature version="[3,4)">odl-mdsal-broker</feature>
     </feature>
 </features>

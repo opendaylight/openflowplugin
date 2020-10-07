@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,10 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
@@ -50,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -246,10 +245,11 @@ public class ReconcileUtilTest {
     }
 
     private static Group createGroupWithPreconditions(final long groupIdValue, final long... requiredId) {
-        final List<Action> actionBag = new ArrayList<>();
+        final BindingMap.Builder<ActionKey, Action> actionBag = BindingMap.builder(requiredId.length);
         int key = 0;
         for (long groupIdPrecondition : requiredId) {
             actionBag.add(new ActionBuilder()
+                .setOrder(key)
                 .setAction(new GroupActionCaseBuilder()
                     .setGroupAction(new GroupActionBuilder()
                         .setGroupId(Uint32.valueOf(groupIdPrecondition))
@@ -259,18 +259,18 @@ public class ReconcileUtilTest {
                 .build());
         }
 
-        final Bucket bucket = new BucketBuilder().setAction(actionBag).build();
-        final Buckets buckets = new BucketsBuilder()
-                .setBucket(Collections.singletonMap(bucket.key(), bucket))
-                .build();
-
         return new GroupBuilder()
                 .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
-                .setBuckets(buckets)
+                .setBuckets(new BucketsBuilder()
+                    .setBucket(BindingMap.of(new BucketBuilder()
+                        .setBucketId(new BucketId(Uint32.ZERO))
+                        .setAction(actionBag.build())
+                        .build()))
+                    .build())
                 .build();
     }
 
-    private static Map<Uint32, Group> createGroups(long... groupIds) {
+    private static Map<Uint32, Group> createGroups(final long... groupIds) {
         final Map<Uint32, Group> ret = Maps.newHashMapWithExpectedSize(groupIds.length);
         for (long groupId : groupIds) {
             ret.put(Uint32.valueOf(groupId), createGroup(groupId));

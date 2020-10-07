@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -53,7 +54,7 @@ public class SyncReactorImpl implements SyncReactor {
     private final SyncPlanPushStrategy syncPlanPushStrategy;
 
     public SyncReactorImpl(final SyncPlanPushStrategy syncPlanPushStrategy) {
-        this.syncPlanPushStrategy = Preconditions.checkNotNull(syncPlanPushStrategy, "execution strategy is mandatory");
+        this.syncPlanPushStrategy = requireNonNull(syncPlanPushStrategy, "execution strategy is mandatory");
     }
 
     @Override

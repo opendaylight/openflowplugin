@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     private Group testGroup;
     private Node testNode;
 
-    public OpenflowpluginGroupTestCommandProvider(DataBroker dataBroker, BundleContext ctx) {
+    public OpenflowpluginGroupTestCommandProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.ctx = ctx;
     }
@@ -95,7 +96,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         createTestNode();
     }
 
-    private void createUserNode(String nodeRef) {
+    private void createUserNode(final String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.withKey(new NodeKey(builder.getId()));
@@ -109,11 +110,11 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         testNode = builder.build();
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    private GroupBuilder createTestGroup(String actionType, String groupType, String groupMod) {
+    private GroupBuilder createTestGroup(String actionType, String groupType, final String groupMod) {
         // Sample data , committing to DataStore
 
         GroupBuilder group = new GroupBuilder();
@@ -573,24 +574,24 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
             createUserNode(nref);
         }
         GroupBuilder gbuilder = createTestGroup(ci.nextArgument(), ci.nextArgument(), "add");
-        ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
+        ReadWriteTransaction modification = requireNonNull(dataBroker).newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _addGroup(CommandInterpreter ci) {
+    public void _addGroup(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -604,8 +605,8 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         writeGroup(ci, testGroup);
     }
 
-    private void writeGroup(final CommandInterpreter ci, Group group) {
-        ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
+    private void writeGroup(final CommandInterpreter ci, final Group group) {
+        ReadWriteTransaction modification = requireNonNull(dataBroker).newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(group.getGroupId()));
@@ -614,18 +615,18 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _modifyGroup(CommandInterpreter ci) {
+    public void _modifyGroup(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {

@@ -7,10 +7,10 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdValueFromNodeIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -55,9 +55,8 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     private final NodeConfigurator nodeConfigurator;
 
     public BundleGroupForwarder(final ForwardingRulesManager forwardingRulesManager) {
-        this.forwardingRulesManager = Preconditions.checkNotNull(forwardingRulesManager,
-                "ForwardingRulesManager can not be null!");
-        this.nodeConfigurator = Preconditions.checkNotNull(forwardingRulesManager.getNodeConfigurator(),
+        this.forwardingRulesManager = requireNonNull(forwardingRulesManager, "ForwardingRulesManager can not be null!");
+        this.nodeConfigurator = requireNonNull(forwardingRulesManager.getNodeConfigurator(),
                 "NodeConfigurator can not be null!");
     }
 
@@ -180,7 +179,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
         }
 
         @Override
-        public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
+        public void onSuccess(final RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 LOG.debug("Group add with id {} finished without error for node {}", groupId, nodeId);
@@ -191,7 +190,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Service call for adding group {} failed for node {} with error ", groupId, nodeId, throwable);
         }
     }
@@ -206,7 +205,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
         }
 
         @Override
-        public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
+        public void onSuccess(final RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
                 forwardingRulesManager.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 LOG.debug("Group update with id {} finished without error for node {}", groupId, nodeId);
@@ -217,7 +216,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Service call for updating group {} failed for node {}", groupId, nodeId, throwable);
         }
     }
@@ -232,7 +231,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
         }
 
         @Override
-        public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
+        public void onSuccess(final RpcResult<AddBundleMessagesOutput> result) {
             if (result.isSuccessful()) {
                 LOG.debug("Group remove with id {} finished without error for node {}", groupId, nodeId);
                 forwardingRulesManager.getDevicesGroupRegistry().removeGroup(nodeId, groupId);
@@ -243,7 +242,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Service call for removing group {} failed for node {} with error", groupId, nodeId, throwable);
         }
     }

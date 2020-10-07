@@ -215,8 +215,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     }
 
     @Override
-    public void onNotAbleToStartMastership(@NonNull final DeviceInfo deviceInfo, @NonNull final String reason,
-                                           final boolean mandatory) {
+    public void onNotAbleToStartMastership(final DeviceInfo deviceInfo, final String reason, final boolean mandatory) {
         LOG.error("Not able to set MASTER role on device {}, reason: {}", deviceInfo, reason);
 
         if (!mandatory) {

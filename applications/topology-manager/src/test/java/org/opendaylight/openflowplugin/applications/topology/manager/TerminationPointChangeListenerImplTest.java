@@ -81,7 +81,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
                 newLink("link2", newSourceTp("source"), newDestTp("tp1")),
                 newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
-        final Topology topology = new TopologyBuilder().setLink(linkList).build();
+        final Topology topology = new TopologyBuilder().withKey(topologyIID.getKey()).setLink(linkList).build();
 
         final InstanceIdentifier[] expDeletedIIDs = {
                 topologyIID.child(Link.class, linkList.get(0).key()),
@@ -220,7 +220,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
-        Topology topology = new TopologyBuilder().setLink(linkList).build();
+        Topology topology = new TopologyBuilder().withKey(topologyIID.getKey()).setLink(linkList).build();
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(topology))).when(mockTx)
@@ -265,7 +265,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
-        Topology topology = new TopologyBuilder().setLink(linkList).build();
+        Topology topology = new TopologyBuilder().withKey(topologyIID.getKey()).setLink(linkList).build();
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(topology))).when(mockTx)

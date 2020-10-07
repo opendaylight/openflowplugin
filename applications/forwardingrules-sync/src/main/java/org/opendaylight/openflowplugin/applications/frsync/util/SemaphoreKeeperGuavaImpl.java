@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -42,7 +43,7 @@ public class SemaphoreKeeperGuavaImpl<K> implements SemaphoreKeeper<K> {
 
     @Override
     public Semaphore summonGuardAndAcquire(@NonNull final K key) {
-        final Semaphore guard = Preconditions.checkNotNull(summonGuard(key), "Guard not available for " + key);
+        final Semaphore guard = requireNonNull(summonGuard(key), "Guard not available for " + key);
         try {
             guard.acquire();
         } catch (InterruptedException e) {

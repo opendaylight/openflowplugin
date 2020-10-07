@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Implementation define a contract between {@link GroupStatistics} data object
@@ -57,8 +58,10 @@ public class GroupStatNotificationSupplierImpl extends AbstractNotificationSuppl
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.emptyList());
-        builder.setGroupStats(Collections.singletonList(new GroupStatsBuilder(groupStatistics).build()));
+        builder.setNodeConnector(Collections.emptyMap());
+        builder.setGroupStats(BindingMap.of(new GroupStatsBuilder(groupStatistics)
+            .setGroupId(path.firstKeyOf(Group.class).getGroupId())
+            .build()));
         return builder.build();
     }
 }

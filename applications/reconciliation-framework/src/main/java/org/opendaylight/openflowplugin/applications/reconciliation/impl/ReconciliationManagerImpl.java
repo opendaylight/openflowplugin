@@ -8,7 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.reconciliation.impl;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -51,9 +52,9 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     private final AtomicReference<ResultState> decidedResultState = new AtomicReference<>(ResultState.DONOTHING);
 
     @Inject
-    public ReconciliationManagerImpl(@Reference MastershipChangeServiceManager mastershipChangeServiceManager) {
-        this.mastershipChangeServiceManager = Preconditions
-                .checkNotNull(mastershipChangeServiceManager, "MastershipChangeServiceManager can not be null!");
+    public ReconciliationManagerImpl(@Reference final MastershipChangeServiceManager mastershipChangeServiceManager) {
+        this.mastershipChangeServiceManager = requireNonNull(mastershipChangeServiceManager,
+            "MastershipChangeServiceManager can not be null!");
     }
 
     @PostConstruct
@@ -63,7 +64,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     }
 
     @Override
-    public NotificationRegistration registerService(ReconciliationNotificationListener reconciliationTask) {
+    public NotificationRegistration registerService(final ReconciliationNotificationListener reconciliationTask) {
         LOG.debug("Registered service {} with priority {} and intent {}", reconciliationTask.getName(),
                   reconciliationTask.getPriority(), reconciliationTask.getResultState());
         registeredServices.computeIfAbsent(reconciliationTask.getPriority(), services -> new ArrayList<>())
@@ -78,9 +79,9 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
         return registration;
     }
 
-    private void decideResultState(ResultState resultState) {
+    private void decideResultState(final ResultState resultState) {
         Integer count = resultStateMap.get(resultState);
-        resultStateMap.put(resultState, count = (count == null ? 1 : count + 1));
+        resultStateMap.put(resultState, count = count == null ? 1 : count + 1);
         Map.Entry<ResultState, Integer> maxEntry = null;
         for (Map.Entry<ResultState, Integer> entry : resultStateMap.entrySet()) {
             if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
@@ -103,13 +104,13 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     }
 
     @Override
-    public ListenableFuture<ResultState> onDevicePrepared(@NonNull DeviceInfo node) {
+    public ListenableFuture<ResultState> onDevicePrepared(@NonNull final DeviceInfo node) {
         LOG.debug("Triggering reconciliation for node : {}", node.getNodeId());
         return futureMap.computeIfAbsent(node, value -> reconcileNode(node));
     }
 
     @Override
-    public ListenableFuture<Void> onDeviceDisconnected(@NonNull DeviceInfo node) {
+    public ListenableFuture<Void> onDeviceDisconnected(@NonNull final DeviceInfo node) {
         LOG.info("Stopping reconciliation for node {}", node.getNodeId());
         if (futureMap.containsKey(node)) {
             return cancelNodeReconciliation(node);
@@ -117,7 +118,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
         return Futures.immediateFuture(null);
     }
 
-    private ListenableFuture<ResultState> reconcileNode(DeviceInfo node) {
+    private ListenableFuture<ResultState> reconcileNode(final DeviceInfo node) {
         ListenableFuture<ResultState> lastFuture = Futures.immediateFuture(null);
         for (List<ReconciliationNotificationListener> services : registeredServices.values()) {
             lastFuture = reconcileServices(lastFuture, services, node);
@@ -125,10 +126,10 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
         return lastFuture;
     }
 
-    private ListenableFuture<ResultState> reconcileServices(ListenableFuture<ResultState> prevFuture,
-                                                            List<ReconciliationNotificationListener>
+    private ListenableFuture<ResultState> reconcileServices(final ListenableFuture<ResultState> prevFuture,
+                                                            final List<ReconciliationNotificationListener>
                                                                     servicesForPriority,
-                                                            DeviceInfo node) {
+                                                            final DeviceInfo node) {
         return Futures.transformAsync(prevFuture, prevResult -> Futures.transform(Futures.allAsList(
                 servicesForPriority.stream().map(service -> service.startReconciliation(node))
                         .collect(Collectors.toList())), results -> decidedResultState.get(),
@@ -136,7 +137,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
                                       MoreExecutors.directExecutor());
     }
 
-    private ListenableFuture<Void> cancelNodeReconciliation(DeviceInfo node) {
+    private ListenableFuture<Void> cancelNodeReconciliation(final DeviceInfo node) {
         ListenableFuture<Void> lastFuture = Futures.immediateFuture(null);
         futureMap.get(node).cancel(true);
         futureMap.remove(node);
@@ -146,10 +147,10 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
         return lastFuture;
     }
 
-    private ListenableFuture<Void> cancelServiceReconciliation(ListenableFuture<Void> prevFuture,
-                                                               List<ReconciliationNotificationListener>
+    private ListenableFuture<Void> cancelServiceReconciliation(final ListenableFuture<Void> prevFuture,
+                                                               final List<ReconciliationNotificationListener>
                                                                        servicesForPriority,
-                                                               DeviceInfo node) {
+                                                               final DeviceInfo node) {
         return Futures.transformAsync(prevFuture, prevResult -> Futures.transform(Futures.allAsList(
                 servicesForPriority.stream().map(service -> service.endReconciliation(node))
                         .collect(Collectors.toList())), results -> null, MoreExecutors.directExecutor()),

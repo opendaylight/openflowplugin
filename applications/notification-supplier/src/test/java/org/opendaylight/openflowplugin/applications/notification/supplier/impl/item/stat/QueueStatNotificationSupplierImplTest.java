@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import static org.junit.Assert.assertEquals;
@@ -28,6 +27,8 @@ import org.opendaylight.openflowplugin.applications.notification.supplier.impl.h
 import org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper.TestSupplierVerifyHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.Queue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.queues.QueueKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.QueueId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -40,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class QueueStatNotificationSupplierImplTest {
 
@@ -115,16 +117,13 @@ public class QueueStatNotificationSupplierImplTest {
     private static InstanceIdentifier<FlowCapableNodeConnectorQueueStatisticsData> createTestQueueStatPath() {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(FLOW_NODE_ID)))
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId(FLOW_CODE_CONNECTOR_ID)))
-                .augmentation(FlowCapableNodeConnector.class).child(Queue.class)
+                .augmentation(FlowCapableNodeConnector.class).child(Queue.class, new QueueKey(new QueueId(Uint32.ZERO)))
                 .augmentation(FlowCapableNodeConnectorQueueStatisticsData.class);
     }
 
     private static FlowCapableNodeConnectorQueueStatisticsData createTestQueueStat() {
-        final FlowCapableNodeConnectorQueueStatisticsDataBuilder builder
-                = new FlowCapableNodeConnectorQueueStatisticsDataBuilder();
-        final FlowCapableNodeConnectorQueueStatisticsBuilder value
-                = new FlowCapableNodeConnectorQueueStatisticsBuilder();
-        builder.setFlowCapableNodeConnectorQueueStatistics(value.build());
-        return builder.build();
+        return new FlowCapableNodeConnectorQueueStatisticsDataBuilder()
+            .setFlowCapableNodeConnectorQueueStatistics(new FlowCapableNodeConnectorQueueStatisticsBuilder().build())
+            .build();
     }
 }

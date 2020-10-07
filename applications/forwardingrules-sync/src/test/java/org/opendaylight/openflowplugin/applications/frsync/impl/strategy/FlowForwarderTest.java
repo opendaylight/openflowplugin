@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
@@ -55,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -135,17 +135,19 @@ public class FlowForwarderTest {
                                 .build()).buildFuture());
 
         final Instructions originalInstructions = new InstructionsBuilder()
-                .setInstruction(Collections.singletonList(new InstructionBuilder()
+                .setInstruction(BindingMap.of(new InstructionBuilder()
                         .setInstruction(new ApplyActionsCaseBuilder()
                                 .setApplyActions(new ApplyActionsBuilder()
-                                        .setAction(Collections.singletonList(new ActionBuilder()
+                                        .setAction(BindingMap.of(new ActionBuilder()
                                                 .setAction(new DropActionCaseBuilder()
                                                         .build())
-                                                .build())
-                                        ).build()
-                                ).build())
-                        .build())
-                ).build();
+                                                .setOrder(0)
+                                                .build()))
+                                        .build())
+                                .build())
+                        .setOrder(0)
+                        .build()))
+                .build();
 
         final Flow flowUpdated = new FlowBuilder(flow)
                 .setInstructions(originalInstructions)

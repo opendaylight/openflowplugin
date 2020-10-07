@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.lldp.utils;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
@@ -62,7 +63,7 @@ public final class LLDPDiscoveryUtils {
      * @return nodeConnectorId - encoded in custom TLV of given lldp
      * @see LLDPDiscoveryUtils#lldpToNodeConnectorRef(byte[], boolean)
      */
-    public static NodeConnectorRef lldpToNodeConnectorRef(byte[] payload)  {
+    public static NodeConnectorRef lldpToNodeConnectorRef(final byte[] payload)  {
         return lldpToNodeConnectorRef(payload, false);
     }
 
@@ -74,7 +75,8 @@ public final class LLDPDiscoveryUtils {
      * @return nodeConnectorId - encoded in custom TLV of given lldp
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public static NodeConnectorRef lldpToNodeConnectorRef(byte[] payload, boolean useExtraAuthenticatorCheck)  {
+    public static NodeConnectorRef lldpToNodeConnectorRef(final byte[] payload,
+            final boolean useExtraAuthenticatorCheck)  {
         NodeConnectorRef nodeConnectorRef = null;
 
         if (isLLDP(payload)) {
@@ -152,7 +154,7 @@ public final class LLDPDiscoveryUtils {
     }
 
     public static boolean isEntityOwned(final EntityOwnershipService eos, final String nodeId) {
-        Preconditions.checkNotNull(eos, "Entity ownership service must not be null");
+        requireNonNull(eos, "Entity ownership service must not be null");
 
         EntityOwnershipState state = null;
         Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
@@ -165,7 +167,7 @@ public final class LLDPDiscoveryUtils {
     }
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819
-            .LinkDiscovered toLLDPLinkDiscovered(Link link) {
+            .LinkDiscovered toLLDPLinkDiscovered(final Link link) {
         return new LinkDiscoveredBuilder()
                 .setSource(getNodeConnectorRefFromLink(link.getSource().getSourceTp(),
                         link.getSource().getSourceNode()))
@@ -190,7 +192,7 @@ public final class LLDPDiscoveryUtils {
         return ethernetType == ETHERNET_TYPE_LLDP;
     }
 
-    private static boolean checkExtraAuthenticator(LLDP lldp, NodeConnectorId srcNodeConnectorId) {
+    private static boolean checkExtraAuthenticator(final LLDP lldp, final NodeConnectorId srcNodeConnectorId) {
         final LLDPTLV hashLldptlv = lldp.getCustomTLV(LLDPTLV.createSecSubTypeCustomTLVKey());
         boolean secAuthenticatorOk = false;
         if (hashLldptlv != null) {

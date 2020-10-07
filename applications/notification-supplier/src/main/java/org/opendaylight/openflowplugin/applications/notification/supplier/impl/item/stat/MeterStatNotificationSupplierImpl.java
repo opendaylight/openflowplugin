@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Implementation define a contract between {@link MeterStatistics} data object
@@ -57,8 +58,10 @@ public class MeterStatNotificationSupplierImpl extends AbstractNotificationSuppl
         builder.setId(getNodeId(path));
         builder.setMoreReplies(Boolean.FALSE);
         // TODO : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.emptyList());
-        builder.setMeterStats(Collections.singletonList(new MeterStatsBuilder(meterStatistics).build()));
+        builder.setNodeConnector(Collections.emptyMap());
+        builder.setMeterStats(BindingMap.of(new MeterStatsBuilder(meterStatistics)
+            .setMeterId(path.firstKeyOf(Meter.class).getMeterId())
+            .build()));
         return builder.build();
     }
 }

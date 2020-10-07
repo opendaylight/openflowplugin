@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.COMPLETED;
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.FAILED;
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.STARTED;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -148,13 +147,12 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
                                       final String serviceName, final int priority, final ResultState resultState,
                                       final FlowGroupCacheManager flowGroupCacheManager) {
-        this.provider = Preconditions.checkNotNull(manager, "ForwardingRulesManager can not be null!");
-        dataBroker = Preconditions.checkNotNull(db, "DataBroker can not be null!");
+        this.provider = requireNonNull(manager, "ForwardingRulesManager can not be null!");
+        dataBroker = requireNonNull(db, "DataBroker can not be null!");
         this.serviceName = serviceName;
         this.priority = priority;
         this.resultState = resultState;
-        salBundleService = Preconditions.checkNotNull(manager.getSalBundleService(),
-                "salBundleService can not be null!");
+        salBundleService = requireNonNull(manager.getSalBundleService(), "salBundleService can not be null!");
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
     }
 
@@ -166,7 +164,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public ListenableFuture<Boolean> reconcileConfiguration(InstanceIdentifier<FlowCapableNode> connectedNode) {
+    public ListenableFuture<Boolean> reconcileConfiguration(final InstanceIdentifier<FlowCapableNode> connectedNode) {
         LOG.info("Triggering reconciliation for device {}", connectedNode.firstKeyOf(Node.class));
         // Clearing the group registry cache for the connected node if exists
         String nodeId = FrmUtil.getNodeIdValueFromNodeIdentifier(connectedNode);
@@ -186,7 +184,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public void flowNodeDisconnected(InstanceIdentifier<FlowCapableNode> disconnectedNode) {
+    public void flowNodeDisconnected(final InstanceIdentifier<FlowCapableNode> disconnectedNode) {
         String node = disconnectedNode.firstKeyOf(Node.class).getId().getValue();
         BigInteger dpnId = getDpnIdFromNodeName(node);
         reconciliationStates.remove(dpnId.toString());
@@ -321,7 +319,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public ListenableFuture<Boolean> startReconciliation(DeviceInfo node) {
+    public ListenableFuture<Boolean> startReconciliation(final DeviceInfo node) {
         InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
                 .augmentation(FlowCapableNode.class);
         // Clearing the group registry cache for the connected node if exists
@@ -330,7 +328,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     @Override
-    public ListenableFuture<Boolean> endReconciliation(DeviceInfo node) {
+    public ListenableFuture<Boolean> endReconciliation(final DeviceInfo node) {
         ListenableFuture<Boolean> listenableFuture = futureMap.computeIfPresent(node, (key, future) -> future);
         if (listenableFuture != null) {
             listenableFuture.cancel(true);
@@ -538,7 +536,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
          * @param group
          *            The group to add.
          */
-        private void addGroup(Map<Uint32, ListenableFuture<?>> map, Group group) {
+        private void addGroup(final Map<Uint32, ListenableFuture<?>> map, final Group group) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
             final Uint32 groupId = group.getGroupId().getValue();
             ListenableFuture<?> future = JdkFutureAdapters
@@ -546,7 +544,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
             Futures.addCallback(future, new FutureCallback<Object>() {
                 @Override
-                public void onSuccess(Object result) {
+                public void onSuccess(final Object result) {
                     if (LOG.isTraceEnabled()) {
                         LOG.trace("add-group RPC completed: node={}, id={}",
                                 nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
@@ -554,7 +552,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 }
 
                 @Override
-                public void onFailure(Throwable cause) {
+                public void onFailure(final Throwable cause) {
                     LOG.debug("add-group RPC failed: node={}, id={}",
                             nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId, cause);
                 }
@@ -572,7 +570,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
          *            Future associated with add-group RPC that installs the target
          *            group.
          */
-        private void awaitGroup(String nodeId, ListenableFuture<?> future) {
+        private void awaitGroup(final String nodeId, final ListenableFuture<?> future) {
             awaitGroups(nodeId, Collections.singleton(future));
         }
 
@@ -584,7 +582,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
          * @param futures
          *            A collection of futures associated with add-group RPCs.
          */
-        private void awaitGroups(String nodeId, Collection<ListenableFuture<?>> futures) {
+        private void awaitGroups(final String nodeId, final Collection<ListenableFuture<?>> futures) {
             if (!futures.isEmpty()) {
                 long timeout = Math.min(ADD_GROUP_TIMEOUT * futures.size(), MAX_ADD_GROUP_TIMEOUT);
                 try {
@@ -599,15 +597,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "https://github.com/spotbugs/spotbugs/issues/811")
-    private static BigInteger getDpnIdFromNodeName(String nodeName) {
+    private static BigInteger getDpnIdFromNodeName(final String nodeName) {
         String dpId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
         return new BigInteger(dpId);
     }
 
     private void reconciliationPreProcess(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        List<InstanceIdentifier<StaleFlow>> staleFlowsToBeBulkDeleted = Lists.newArrayList();
-        List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = Lists.newArrayList();
-        List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = Lists.newArrayList();
+        List<InstanceIdentifier<StaleFlow>> staleFlowsToBeBulkDeleted = new ArrayList<>();
+        List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = new ArrayList<>();
+        List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = new ArrayList<>();
 
         Optional<FlowCapableNode> flowNode = Optional.empty();
 
@@ -691,7 +689,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         deleteDSStaleMeters(staleMetersToBeBulkDeleted);
     }
 
-    private void deleteDSStaleFlows(List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
+    private void deleteDSStaleFlows(final List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
         for (InstanceIdentifier<StaleFlow> staleFlowIId : flowsForBulkDelete) {
@@ -702,7 +700,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
-    private void deleteDSStaleGroups(List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
+    private void deleteDSStaleGroups(final List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
         for (InstanceIdentifier<StaleGroup> staleGroupIId : groupsForBulkDelete) {
@@ -713,7 +711,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         handleStaleEntityDeletionResultFuture(submitFuture);
     }
 
-    private void deleteDSStaleMeters(List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
+    private void deleteDSStaleMeters(final List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
         for (InstanceIdentifier<StaleMeter> staleMeterIId : metersForBulkDelete) {
@@ -726,7 +724,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
-            StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final StaleFlow staleFlow, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
                 new StaleFlowKey(new FlowId(staleFlow.getId())));
@@ -734,13 +732,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .group.types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
-            StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final StaleGroup staleGroup, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .flow.inventory.rev130819.meters.StaleMeter> getStaleMeterInstanceIdentifier(
-            StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final StaleMeter staleMeter, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 
@@ -766,15 +764,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return futureList;
     }
 
-    private static void handleStaleEntityDeletionResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleEntityDeletionResultFuture(final FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(final Object result) {
                 LOG.debug("Stale entity removal success");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.debug("Stale entity removal failed", throwable);
             }
         }, MoreExecutors.directExecutor());

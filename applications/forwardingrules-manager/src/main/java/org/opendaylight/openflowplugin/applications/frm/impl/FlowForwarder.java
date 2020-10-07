@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
@@ -14,7 +15,6 @@ import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getN
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -260,8 +260,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public void createStaleMarkEntity(InstanceIdentifier<Flow> identifier, Flow del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final InstanceIdentifier<Flow> identifier, final Flow del,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent, del);
         StaleFlow staleFlow = makeStaleFlow(identifier, del, nodeIdent);
         persistStaleFlow(staleFlow, nodeIdent);
@@ -274,8 +274,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private static boolean tableIdValidationPrecondition(final TableKey tableKey, final Flow flow) {
-        Preconditions.checkNotNull(tableKey, "TableKey can not be null or empty!");
-        Preconditions.checkNotNull(flow, "Flow can not be null or empty!");
+        requireNonNull(tableKey, "TableKey can not be null or empty!");
+        requireNonNull(flow, "Flow can not be null or empty!");
         if (!tableKey.getId().equals(flow.getTableId())) {
             LOG.warn("TableID in URI tableId={} and in palyload tableId={} is not same.", flow.getTableId(),
                     tableKey.getId());
@@ -284,13 +284,13 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         return true;
     }
 
-    private static StaleFlow makeStaleFlow(InstanceIdentifier<Flow> identifier, Flow del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private static StaleFlow makeStaleFlow(final InstanceIdentifier<Flow> identifier, final Flow del,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
         return staleFlowBuilder.setId(del.getId()).build();
     }
 
-    private void persistStaleFlow(StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private void persistStaleFlow(final StaleFlow staleFlow, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent),
                 staleFlow);
@@ -299,15 +299,15 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         handleStaleFlowResultFuture(submitFuture);
     }
 
-    private static void handleStaleFlowResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleFlowResultFuture(final FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(final Object result) {
                 LOG.debug("Stale Flow creation success");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("Stale Flow creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -316,7 +316,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
         .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
-            StaleFlow staleFlow, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final StaleFlow staleFlow, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
                 new StaleFlowKey(new FlowId(staleFlow.getId())));
@@ -361,8 +361,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         private final Uint32 groupId;
         private final SettableFuture<RpcResult<AddFlowOutput>> resultFuture;
 
-        private AddFlowCallBack(final AddFlowInput addFlowInput, final String nodeId, Uint32 groupId,
-                SettableFuture<RpcResult<AddFlowOutput>> resultFuture) {
+        private AddFlowCallBack(final AddFlowInput addFlowInput, final String nodeId, final Uint32 groupId,
+                final SettableFuture<RpcResult<AddFlowOutput>> resultFuture) {
             this.addFlowInput = addFlowInput;
             this.nodeId = nodeId;
             this.groupId = groupId;
@@ -370,19 +370,19 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         }
 
         @Override
-        public void onSuccess(RpcResult<AddGroupOutput> rpcResult) {
+        public void onSuccess(final RpcResult<AddGroupOutput> rpcResult) {
             if (rpcResult.isSuccessful() || rpcResult.getErrors().size() == 1
                     && rpcResult.getErrors().iterator().next().getMessage().contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 Futures.addCallback(provider.getSalFlowService().addFlow(addFlowInput),
                     new FutureCallback<RpcResult<AddFlowOutput>>() {
                         @Override
-                        public void onSuccess(RpcResult<AddFlowOutput> result) {
+                        public void onSuccess(final RpcResult<AddFlowOutput> result) {
                             resultFuture.set(result);
                         }
 
                         @Override
-                        public void onFailure(Throwable failure) {
+                        public void onFailure(final Throwable failure) {
                             resultFuture.setException(failure);
                         }
                     },  MoreExecutors.directExecutor());
@@ -398,7 +398,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Service call for adding flow with id {} failed for node {}",
                     getFlowId(addFlowInput.getFlowRef()), nodeId, throwable);
             resultFuture.setException(throwable);
@@ -412,7 +412,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         private final SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture;
 
         private UpdateFlowCallBack(final UpdateFlowInput updateFlowInput, final String nodeId,
-                SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, Uint32 groupId) {
+                final SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture, final Uint32 groupId) {
             this.updateFlowInput = updateFlowInput;
             this.nodeId = nodeId;
             this.groupId = groupId;
@@ -420,19 +420,19 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         }
 
         @Override
-        public void onSuccess(RpcResult<AddGroupOutput> rpcResult) {
+        public void onSuccess(final RpcResult<AddGroupOutput> rpcResult) {
             if (rpcResult.isSuccessful() || rpcResult.getErrors().size() == 1
                     && rpcResult.getErrors().iterator().next().getMessage().contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 Futures.addCallback(provider.getSalFlowService().updateFlow(updateFlowInput),
                     new FutureCallback<RpcResult<UpdateFlowOutput>>() {
                         @Override
-                        public void onSuccess(RpcResult<UpdateFlowOutput> result) {
+                        public void onSuccess(final RpcResult<UpdateFlowOutput> result) {
                             resultFuture.set(result);
                         }
 
                         @Override
-                        public void onFailure(Throwable failure) {
+                        public void onFailure(final Throwable failure) {
                             resultFuture.setException(failure);
                         }
                     },  MoreExecutors.directExecutor());
@@ -448,7 +448,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Service call for updating flow with id {} failed for node {}",
                     getFlowId(updateFlowInput.getFlowRef()), nodeId, throwable);
             resultFuture.setException(throwable);

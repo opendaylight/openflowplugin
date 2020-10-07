@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -45,20 +46,18 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
 
     public AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
                                      final ListenerRegistrationHelper registrationHelper) {
-        this.provider = Preconditions.checkNotNull(provider, "ForwardingRulesManager can not be null!");
-        this.nodeConfigurator = Preconditions.checkNotNull(provider.getNodeConfigurator(),
-                "NodeConfigurator can not be null!");
-        this.dataBroker = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
-        this.registrationHelper = Preconditions.checkNotNull(registrationHelper, "registrationHelper can not be null!");
+        this.provider = requireNonNull(provider, "ForwardingRulesManager can not be null!");
+        this.nodeConfigurator = requireNonNull(provider.getNodeConfigurator(), "NodeConfigurator can not be null!");
+        this.dataBroker = requireNonNull(dataBroker, "DataBroker can not be null!");
+        this.registrationHelper = requireNonNull(registrationHelper, "registrationHelper can not be null!");
         registerListener();
         provider.addRecoverableListener(this);
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
-        Preconditions.checkNotNull(changes, "Changes may not be null!");
-        LOG.trace("Received data changes :{}", changes);
+    public void onDataTreeChanged(final Collection<DataTreeModification<T>> changes) {
+        LOG.trace("Received data changes :{}", requireNonNull(changes, "Changes may not be null!"));
 
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
@@ -120,13 +119,13 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
                 new FutureCallback<ListenerRegistration<AbstractListeningCommiter>>() {
                     @Override
                     public void onSuccess(
-                            @Nullable ListenerRegistration<AbstractListeningCommiter> flowListenerRegistration) {
+                            @Nullable final ListenerRegistration<AbstractListeningCommiter> flowListenerRegistration) {
                         LOG.info("{} registered successfully", flowListenerRegistration.getInstance());
                         listenerRegistration = flowListenerRegistration;
                     }
 
                     @Override
-                    public void onFailure(Throwable throwable) {
+                    public void onFailure(final Throwable throwable) {
                         LOG.error("Registration failed ", throwable);
                     }
                 }, MoreExecutors.directExecutor());
@@ -139,7 +138,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
     private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        Preconditions.checkNotNull(nodeIdent, "FlowCapableNode identifier can not be null!");
+        requireNonNull(nodeIdent, "FlowCapableNode identifier can not be null!");
         // In single node cluster, node should be in local cache before we get any flow/group/meter
         // data change event from data store. So first check should pass.
         // In case of 3-node cluster, when shard leader changes, clustering will send blob of data
