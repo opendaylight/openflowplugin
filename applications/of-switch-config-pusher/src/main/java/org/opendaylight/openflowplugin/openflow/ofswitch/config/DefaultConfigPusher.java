@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.ofswitch.config;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -47,12 +48,11 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
     private ListenerRegistration<?> listenerRegistration;
 
     @Inject
-    public DefaultConfigPusher(NodeConfigService nodeConfigService, @Reference DataBroker dataBroker,
-            @Reference DeviceOwnershipService deviceOwnershipService) {
+    public DefaultConfigPusher(final NodeConfigService nodeConfigService, @Reference final DataBroker dataBroker,
+            @Reference final DeviceOwnershipService deviceOwnershipService) {
         this.nodeConfigService = nodeConfigService;
         this.dataBroker = dataBroker;
-        this.deviceOwnershipService = Preconditions.checkNotNull(deviceOwnershipService,
-                "DeviceOwnershipService can not be null");
+        this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")

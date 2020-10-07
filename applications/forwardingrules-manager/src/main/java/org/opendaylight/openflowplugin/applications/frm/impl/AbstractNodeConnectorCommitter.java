@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
@@ -20,8 +21,8 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         implements FlowCapableNodeConnectorCommitter<T> {
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<T>> changes) {
-        Preconditions.checkNotNull(changes, "Changes may not be null!");
+    public void onDataTreeChanged(final Collection<DataTreeModification<T>> changes) {
+        requireNonNull(changes, "Changes may not be null!");
 
         for (DataTreeModification<T> change : changes) {
             final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
@@ -58,7 +59,7 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
     protected abstract InstanceIdentifier<T> getWildCardPath();
 
     private static boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
-        Preconditions.checkNotNull(nodeConnIdent, "FlowCapableNodeConnector ident can not be null!");
+        requireNonNull(nodeConnIdent, "FlowCapableNodeConnector ident can not be null!");
         return true;
     }
 }

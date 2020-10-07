@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.buildGroupInstanceIdentifier;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getFlowId;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdValueFromNodeIdentifier;
@@ -14,7 +15,6 @@ import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getT
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -64,16 +64,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
-
     private static final Logger LOG = LoggerFactory.getLogger(BundleFlowForwarder.class);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
+
     private final ForwardingRulesManager forwardingRulesManager;
     private final NodeConfigurator nodeConfigurator;
 
-    public BundleFlowForwarder(ForwardingRulesManager forwardingRulesManager) {
-        this.forwardingRulesManager = Preconditions.checkNotNull(forwardingRulesManager,
-                "ForwardingRulesManager can not be null!");
-        this.nodeConfigurator = Preconditions.checkNotNull(forwardingRulesManager.getNodeConfigurator(),
+    public BundleFlowForwarder(final ForwardingRulesManager forwardingRulesManager) {
+        this.forwardingRulesManager = requireNonNull(forwardingRulesManager, "ForwardingRulesManager can not be null!");
+        this.nodeConfigurator = requireNonNull(forwardingRulesManager.getNodeConfigurator(),
                 "NodeConfigurator can not be null!");
     }
 
@@ -228,8 +227,9 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         private final Uint8 tableId;
         private final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
 
-        BundleFlowCallBack(InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId, Message messages,
-            InstanceIdentifier<Flow> identifier , SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
+        BundleFlowCallBack(final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId,
+                final Message messages, final InstanceIdentifier<Flow> identifier,
+                final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
             this.nodeIdent = nodeIdent;
             this.bundleId = bundleId;
             this.messages = messages;
@@ -240,7 +240,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         }
 
         @Override
-        public void onSuccess(RpcResult<AddBundleMessagesOutput> rpcResult) {
+        public void onSuccess(final RpcResult<AddBundleMessagesOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                         .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
@@ -258,7 +258,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
                 Futures.addCallback(addFuture, new FutureCallback<RpcResult<AddBundleMessagesOutput>>() {
                     @Override
-                    public void onSuccess(RpcResult<AddBundleMessagesOutput> result) {
+                    public void onSuccess(final RpcResult<AddBundleMessagesOutput> result) {
                         resultFuture.set(result);
                         if (!result.getErrors().isEmpty()) {
                             LOG.error("Flow add with flowId {} and tableId {} failed for node {} with error: {}",
@@ -268,7 +268,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                     }
 
                     @Override
-                    public void onFailure(Throwable failure) {
+                    public void onFailure(final Throwable failure) {
                         resultFuture.setException(failure);
                     }
                 },  MoreExecutors.directExecutor());
@@ -280,7 +280,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             LOG.error("Error while pushing flow add bundle {} for device {}", messages, nodeId);
             resultFuture.setException(throwable);
         }

@@ -177,6 +177,7 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
         when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
         when(deviceFlowRegistry.retrieveDescriptor(any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
+        when(flowDescriptor.getFlowId()).thenReturn(new FlowId("MOCK_FLOW"));
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionAdapter);

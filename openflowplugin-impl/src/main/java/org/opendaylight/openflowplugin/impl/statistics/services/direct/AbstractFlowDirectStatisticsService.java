@@ -42,11 +42,13 @@ public abstract class AbstractFlowDirectStatisticsService<T extends OfHeader>
      * @param flowStatistics flow statistics
      * @return generated flow ID
      */
-    protected FlowId generateFlowId(FlowAndStatisticsMapList flowStatistics) {
+    protected FlowId generateFlowId(final FlowAndStatisticsMapList flowStatistics) {
         final FlowStatisticsDataBuilder flowStatisticsDataBld = new FlowStatisticsDataBuilder()
                 .setFlowStatistics(new FlowStatisticsBuilder(flowStatistics).build());
 
-        final FlowBuilder flowBuilder = new FlowBuilder(flowStatistics).addAugmentation(flowStatisticsDataBld.build());
+        final FlowBuilder flowBuilder = new FlowBuilder(flowStatistics)
+            .withKey(FlowRegistryKeyFactory.DUMMY_FLOW_KEY)
+            .addAugmentation(flowStatisticsDataBld.build());
 
         final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(getVersion(), flowBuilder.build());
 

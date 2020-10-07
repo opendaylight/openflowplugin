@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.reconciliation.cli;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -29,9 +29,8 @@ public class GetRegisteredServices extends OsgiCommandSupport {
 
     private ReconciliationManager reconciliationManager;
 
-    public void setReconciliationManager(ReconciliationManager reconciliationManager) {
-        this.reconciliationManager = Preconditions.checkNotNull(reconciliationManager,
-                "ReconciliationManager can not be null!");
+    public void setReconciliationManager(final ReconciliationManager reconciliationManager) {
+        this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager can not be null!");
     }
 
     @Override

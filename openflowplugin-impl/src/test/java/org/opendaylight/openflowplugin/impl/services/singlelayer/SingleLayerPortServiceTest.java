@@ -32,6 +32,7 @@ public class SingleLayerPortServiceTest extends ServiceMocking {
     public void buildRequest() {
         final Port input = new PortBuilder()
                 .setPortNumber(new PortNumberUni(PORT_ID))
+                .setPortModOrder(Uint32.ZERO)
                 .build();
 
         final OfHeader ofHeader = service.buildRequest(DUMMY_XID, input);
