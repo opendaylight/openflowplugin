@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.extension.vendor.eric;
 
-import com.google.common.base.Preconditions;
-import java.util.HashSet;
-import java.util.Set;
+import static java.util.Objects.requireNonNull;
+
+import java.util.List;
 import org.opendaylight.openflowjava.eric.codec.match.Icmpv6NDOptionsTypeCodec;
 import org.opendaylight.openflowjava.eric.codec.match.Icmpv6NDReservedCodec;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -33,26 +33,22 @@ public class EricExtensionProvider implements AutoCloseable {
             = new Icmpv6NDOptionsTypeConvertor();
 
     private final ExtensionConverterRegistrator extensionConverterRegistrator;
-    private final Set<ObjectRegistration<?>> registrations;
+    private final List<ObjectRegistration<?>> registrations;
 
     /**
      * Register appropriate converters.
      */
     public EricExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
-        this.extensionConverterRegistrator = Preconditions.checkNotNull(provider.getExtensionConverterRegistrator());
-        registrations = new HashSet<>();
-
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(Icmpv6NdReservedKey.class, EncodeConstants.OF13_VERSION_ID),
-                ICMPV6_ND_RESERVED_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(Icmpv6NDReservedCodec.SERIALIZER_KEY,
-                ICMPV6_ND_RESERVED_CONVERTOR));
-
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(Icmpv6NdOptionsTypeKey.class, EncodeConstants.OF13_VERSION_ID),
-                ICMPV6_ND_OPTIONS_TYPE_CONVERTOR));
-        registrations.add(extensionConverterRegistrator.registerMatchConvertor(Icmpv6NDOptionsTypeCodec.SERIALIZER_KEY,
-                ICMPV6_ND_OPTIONS_TYPE_CONVERTOR));
+        this.extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
+        registrations = List.of(
+            extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
+                Icmpv6NdReservedKey.class, EncodeConstants.OF13_VERSION_ID), ICMPV6_ND_RESERVED_CONVERTOR),
+            extensionConverterRegistrator.registerMatchConvertor(
+                Icmpv6NDReservedCodec.SERIALIZER_KEY, ICMPV6_ND_RESERVED_CONVERTOR),
+            extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
+                Icmpv6NdOptionsTypeKey.class, EncodeConstants.OF13_VERSION_ID), ICMPV6_ND_OPTIONS_TYPE_CONVERTOR),
+            extensionConverterRegistrator.registerMatchConvertor(
+                Icmpv6NDOptionsTypeCodec.SERIALIZER_KEY, ICMPV6_ND_OPTIONS_TYPE_CONVERTOR));
     }
 
     @Override

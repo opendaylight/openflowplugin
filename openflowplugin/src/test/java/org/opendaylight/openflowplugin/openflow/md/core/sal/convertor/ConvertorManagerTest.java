@@ -64,7 +64,7 @@ public class ConvertorManagerTest {
                     }
                 });
 
-        final Action source = new ActionBuilder().build();
+        final Action source = new ActionBuilder().setOrder(0).build();
         final VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
         final String expectedResult = String.valueOf(source) + String.valueOf(data);
         final Optional<String> result = convertorManager.convert(source, data);
@@ -92,7 +92,7 @@ public class ConvertorManagerTest {
                     }
                 });
 
-        final List<Action> source = Collections.singletonList(new ActionBuilder().build());
+        final List<Action> source = Collections.singletonList(new ActionBuilder().setOrder(0).build());
         final VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
         final String expectedResult = String.valueOf(source) + String.valueOf(data);
         final Optional<String> result = convertorManager.convert(source, data);
