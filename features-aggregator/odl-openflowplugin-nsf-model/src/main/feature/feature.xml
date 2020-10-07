@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="odl-openflowplugin-nsf-model-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name="odl-openflowplugin-nsf-model" version="${project.version}">
-        <feature version="[6,7)">odl-mdsal-model-odl-l2-types</feature>
-        <feature version="[2,3)">odl-mdsal-model-inventory</feature>
-        <feature version="[2,3)">odl-controller-model-topology</feature>
+        <feature version="[7,8)">odl-mdsal-model-odl-l2-types</feature>
+        <feature version="[3,4)">odl-mdsal-model-inventory</feature>
+        <feature version="[3,4)">odl-controller-model-topology</feature>
     </feature>
 </features>
