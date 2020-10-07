@@ -67,7 +67,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -313,7 +313,7 @@ public class FlowConvertorTest {
                 .build())).build();
     }
 
-    private static class MockFlow implements AddFlowInput {
+    private static class MockFlow extends AbstractAugmentable<AddFlowInput> implements AddFlowInput {
         private Instructions instructions;
         private Match match;
 
@@ -325,14 +325,8 @@ public class FlowConvertorTest {
             this.match = match;
         }
 
-
         @Override
         public FlowRef getFlowRef() {
-            return null;
-        }
-
-        @Override
-        public <E extends Augmentation<AddFlowInput>> E augmentation(final Class<E> augmentationType) {
             return null;
         }
 
@@ -434,11 +428,6 @@ public class FlowConvertorTest {
         @Override
         public Uri getTransactionUri() {
             return null;
-        }
-
-        @Override
-        public Class<AddFlowInput> implementedInterface() {
-            return AddFlowInput.class;
         }
     }
 }
