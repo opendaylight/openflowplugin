@@ -120,11 +120,8 @@ public class QueueStatNotificationSupplierImplTest {
     }
 
     private static FlowCapableNodeConnectorQueueStatisticsData createTestQueueStat() {
-        final FlowCapableNodeConnectorQueueStatisticsDataBuilder builder
-                = new FlowCapableNodeConnectorQueueStatisticsDataBuilder();
-        final FlowCapableNodeConnectorQueueStatisticsBuilder value
-                = new FlowCapableNodeConnectorQueueStatisticsBuilder();
-        builder.setFlowCapableNodeConnectorQueueStatistics(value.build());
-        return builder.build();
+        return new FlowCapableNodeConnectorQueueStatisticsDataBuilder()
+            .setFlowCapableNodeConnectorQueueStatistics(new FlowCapableNodeConnectorQueueStatisticsBuilder().build())
+            .build();
     }
 }

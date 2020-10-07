@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessageBuilder;
@@ -28,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, DeserializerRegistryInjector {
 
@@ -45,7 +47,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
     private DeserializerRegistry registry;
 
     @Override
-    public GroupMessage deserialize(ByteBuf message) {
+    public GroupMessage deserialize(final ByteBuf message) {
         final GroupMessageBuilder builder = new GroupMessageBuilder()
             .setVersion((short) EncodeConstants.OF13_VERSION_ID)
             .setXid(message.readUnsignedInt())
@@ -88,7 +90,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
                 bucket.setAction(actions);
             }
 
-            buckets.add(bucket.build());
+            buckets.add(bucket.setBucketId(new BucketId(Uint32.valueOf(buckets.size()))).build());
         }
 
         buckets.sort(COMPARATOR);
@@ -100,7 +102,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 

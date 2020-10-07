@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -127,9 +129,9 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
         isBundleBasedReconciliationEnabled = config.isBundleBasedReconciliationEnabled();
         this.configurationServiceRegistration = configurationService.registerListener(this);
-        this.registrationHelper = Preconditions.checkNotNull(registrationHelper, "RegistrationHelper cannot be null");
-        this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
-        this.clusterSingletonServiceProvider = Preconditions.checkNotNull(clusterSingletonService,
+        this.registrationHelper = requireNonNull(registrationHelper, "RegistrationHelper cannot be null");
+        this.dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
+        this.clusterSingletonServiceProvider = requireNonNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
         this.reconciliationManager = reconciliationManager;
         this.rpcProviderService = rpcProviderService;
@@ -138,22 +140,22 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
-        this.salFlowService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlowService.class),
+        this.salFlowService = requireNonNull(rpcRegistry.getRpcService(SalFlowService.class),
                 "RPC SalFlowService not found.");
-        this.salGroupService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalGroupService.class),
+        this.salGroupService = requireNonNull(rpcRegistry.getRpcService(SalGroupService.class),
                 "RPC SalGroupService not found.");
-        this.salMeterService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalMeterService.class),
+        this.salMeterService = requireNonNull(rpcRegistry.getRpcService(SalMeterService.class),
                 "RPC SalMeterService not found.");
-        this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
+        this.salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-        this.salBundleService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalBundleService.class),
+        this.salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundlService not found.");
-        this.openflowServiceRecoveryHandler = Preconditions.checkNotNull(openflowServiceRecoveryHandler,
+        this.openflowServiceRecoveryHandler = requireNonNull(openflowServiceRecoveryHandler,
                 "Openflow service recovery handler cannot be null");
-        this.serviceRecoveryRegistry = Preconditions.checkNotNull(serviceRecoveryRegistry,
+        this.serviceRecoveryRegistry = requireNonNull(serviceRecoveryRegistry,
                 "Service recovery registry cannot be null");
-        this.arbitratorReconciliationManager = Preconditions
-                .checkNotNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
+        this.arbitratorReconciliationManager =
+                requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
                         "ArbitratorReconciliationManager can not be null!");
     }
 

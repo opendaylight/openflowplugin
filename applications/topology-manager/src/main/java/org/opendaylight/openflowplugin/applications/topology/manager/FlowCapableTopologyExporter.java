@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyLink;
 
-import com.google.common.base.Preconditions;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -31,10 +31,9 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
     private final InstanceIdentifier<Topology> iiToTopology;
     private final OperationProcessor processor;
 
-    FlowCapableTopologyExporter(final OperationProcessor processor,
-            final InstanceIdentifier<Topology> topology) {
-        this.processor = Preconditions.checkNotNull(processor);
-        this.iiToTopology = Preconditions.checkNotNull(topology);
+    FlowCapableTopologyExporter(final OperationProcessor processor, final InstanceIdentifier<Topology> topology) {
+        this.processor = requireNonNull(processor);
+        this.iiToTopology = requireNonNull(topology);
     }
 
     @Override

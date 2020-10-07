@@ -51,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -101,11 +102,12 @@ public class DeviceFlowRegistryImplTest {
                 .build();
 
         final Table table = new TableBuilder()
-                .setFlow(Collections.singletonList(flow))
+                .setId(Uint8.ONE)
+                .setFlow(BindingMap.of(flow))
                 .build();
 
         final FlowCapableNode flowCapableNode = new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(table))
+                .setTable(BindingMap.of(table))
                 .build();
 
         final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = fillRegistry(path, flowCapableNode);
@@ -130,23 +132,25 @@ public class DeviceFlowRegistryImplTest {
         fillRegistry(path, new FlowCapableNodeBuilder().build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.EMPTY_LIST)
+                .setTable(Collections.emptyMap())
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(new TableBuilder().build()))
+                .setTable(BindingMap.of(new TableBuilder().setId(Uint8.ZERO).build()))
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(Collections.EMPTY_LIST)
+                .setTable(BindingMap.of(new TableBuilder()
+                        .setId(Uint8.ZERO)
+                        .setFlow(Collections.emptyMap())
                         .build()))
                 .build());
 
         fillRegistry(path, new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(Collections.singletonList(new FlowBuilder()
-                                .setId(null)
+                .setTable(BindingMap.of(new TableBuilder()
+                        .setId(Uint8.ZERO)
+                        .setFlow(BindingMap.of(new FlowBuilder()
+                                .setId(new FlowId("foo"))
                                 .build()))
                         .build()))
                 .build());

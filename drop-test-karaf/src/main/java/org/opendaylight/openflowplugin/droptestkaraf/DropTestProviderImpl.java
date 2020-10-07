@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.droptestkaraf;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.openflowplugin.testcommon.DropTestDsProvider;
@@ -31,9 +31,9 @@ public class DropTestProviderImpl implements AutoCloseable {
     public DropTestProviderImpl(final DataBroker dataBroker,
                                 final NotificationService notificationService,
                                 final SalFlowService salFlowService) {
-        Preconditions.checkNotNull(dataBroker, "Data broker can't be empty");
-        Preconditions.checkNotNull(notificationService, "NotificationProviderService can't be empty");
-        Preconditions.checkNotNull(salFlowService, "SalFlowService can't be empty");
+        requireNonNull(dataBroker, "Data broker can't be empty");
+        requireNonNull(notificationService, "NotificationProviderService can't be empty");
+        requireNonNull(salFlowService, "SalFlowService can't be empty");
 
         LOG.debug("Activator DropAllPack INIT");
 

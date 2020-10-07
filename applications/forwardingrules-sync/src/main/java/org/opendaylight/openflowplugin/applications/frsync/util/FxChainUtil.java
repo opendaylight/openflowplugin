@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
-import com.google.common.base.MoreObjects;
+import static java.util.Objects.requireNonNullElse;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.Collection;
@@ -38,8 +38,7 @@ public final class FxChainUtil {
                     if (result.isSuccessful()) {
                         LOG.debug("{} finished successfully: {}", prefix, nodeId.getValue());
                     } else {
-                        final Collection<RpcError> errors = MoreObjects.firstNonNull(result.getErrors(),
-                                ImmutableList.of());
+                        final Collection<RpcError> errors = requireNonNullElse(result.getErrors(), ImmutableList.of());
                         LOG.debug("{} failed: {} -> {}", prefix, nodeId.getValue(), errors);
                     }
                 } else {

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import com.google.common.base.Preconditions;
-import java.util.Collections;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
@@ -20,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Implementation define a contract between {@link FlowCapableNodeConnectorStatistics} data object
@@ -60,13 +60,14 @@ public class NodeConnectorStatNotificationSupplierImpl extends
         ncBuilder.setId(ncKey.getId());
         ncBuilder.withKey(ncKey);
 
-        final NodeConnectorStatisticsUpdateBuilder builder = new NodeConnectorStatisticsUpdateBuilder();
-        builder.setId(getNodeId(path));
-        builder.setMoreReplies(Boolean.FALSE);
-        builder.setNodeConnector(Collections.singletonList(ncBuilder.build()));
-        builder.setNodeConnectorStatisticsAndPortNumberMap(Collections.singletonList(
-                new NodeConnectorStatisticsAndPortNumberMapBuilder(flowCapableNodeConnectorStatistics).build()));
-        return builder.build();
+        return new NodeConnectorStatisticsUpdateBuilder()
+            .setId(getNodeId(path))
+            .setMoreReplies(Boolean.FALSE)
+            .setNodeConnector(BindingMap.of(ncBuilder.build()))
+            .setNodeConnectorStatisticsAndPortNumberMap(BindingMap.of(
+                new NodeConnectorStatisticsAndPortNumberMapBuilder(flowCapableNodeConnectorStatistics)
+                .setNodeConnectorId(ncKey.getId()).build()))
+            .build();
     }
 }
 

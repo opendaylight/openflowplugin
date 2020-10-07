@@ -36,6 +36,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowUtilTest {
@@ -138,6 +139,7 @@ public class FlowUtilTest {
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedFlowsOutputBuilder()
                         .setFlowId(DUMMY_FLOW_ID)
+                        .setBatchOrder(Uint16.ZERO)
                         .build()))
                 .build();
     }

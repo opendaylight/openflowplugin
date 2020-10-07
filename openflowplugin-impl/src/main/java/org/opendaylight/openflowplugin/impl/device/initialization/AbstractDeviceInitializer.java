@@ -51,7 +51,7 @@ public abstract class AbstractDeviceInitializer {
                     .getNodeInstanceIdentifier(),
                 new NodeBuilder()
                     .setId(deviceContext.getDeviceInfo().getNodeId())
-                    .setNodeConnector(Collections.emptyList())
+                    .setNodeConnector(Collections.emptyMap())
                     .build());
         } catch (final Exception e) {
             LOG.warn("Failed to write node {} to DS ", deviceContext.getDeviceInfo().getNodeId(), e);

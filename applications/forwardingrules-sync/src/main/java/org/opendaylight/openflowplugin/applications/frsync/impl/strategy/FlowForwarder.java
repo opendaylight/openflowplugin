@@ -8,7 +8,8 @@
 
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -126,8 +127,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
     }
 
     private static boolean tableIdValidationPrecondition(final TableKey tableKey, final Flow flow) {
-        Preconditions.checkNotNull(tableKey, "TableKey can not be null or empty!");
-        Preconditions.checkNotNull(flow, "Flow can not be null or empty!");
+        requireNonNull(tableKey, "TableKey can not be null or empty!");
+        requireNonNull(flow, "Flow can not be null or empty!");
         if (!tableKey.getId().equals(flow.getTableId())) {
             LOG.warn("TableID in URI tableId={} and in payload tableId={} is not same.",
                     flow.getTableId(), tableKey.getId());

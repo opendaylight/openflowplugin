@@ -90,6 +90,7 @@ public class OF10DeviceInitializerTest {
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
+        when(deviceInfo.getNodeId()).thenReturn(nodeInstanceIdentifier.getKey().getId());
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(translatorLibrary.lookupTranslator(any())).thenReturn(messageTranslator);

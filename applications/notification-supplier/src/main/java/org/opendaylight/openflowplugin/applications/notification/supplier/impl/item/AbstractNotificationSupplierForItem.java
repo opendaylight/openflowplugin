@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
@@ -44,14 +45,11 @@ public abstract class AbstractNotificationSupplierForItem<O extends DataObject, 
     public AbstractNotificationSupplierForItem(final NotificationPublishService notifProviderService,
                                                final DataBroker db, final Class<O> clazz) {
         super(db, clazz);
-        this.notificationProviderService = Preconditions.checkNotNull(notifProviderService);
+        this.notificationProviderService = requireNonNull(notifProviderService);
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<O>> changes) {
-
-        Preconditions.checkNotNull(changes, "Changes may not be null!");
-
+    public void onDataTreeChanged(final Collection<DataTreeModification<O>> changes) {
         for (DataTreeModification<O> change : changes) {
             final InstanceIdentifier<O> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<O> mod = change.getRootNode();
@@ -75,19 +73,19 @@ public abstract class AbstractNotificationSupplierForItem<O extends DataObject, 
         }
     }
 
-    public void add(InstanceIdentifier<O> identifier, O add) {
+    public void add(final InstanceIdentifier<O> identifier, final O add) {
         putNotification(createNotification(add, identifier));
     }
 
-    public void remove(InstanceIdentifier<O> identifier, O del) {
+    public void remove(final InstanceIdentifier<O> identifier, final O del) {
         putNotification(deleteNotification(identifier.firstIdentifierOf(clazz)));
     }
 
-    public void update(InstanceIdentifier<O> identifier, O before, O after) {
+    public void update(final InstanceIdentifier<O> identifier, final O before, final O after) {
         putNotification(updateNotification(after, identifier));
     }
 
-    private void putNotification(Notification notif) {
+    private void putNotification(final Notification notif) {
         if (notif != null) {
             try {
                 notificationProviderService.putNotification(notif);

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
 import com.google.common.base.Preconditions;
-import java.util.Collections;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -21,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Implementation define a contract between {@link FlowCapableNodeConnectorQueueStatisticsData} data object
@@ -65,12 +65,12 @@ public class QueueStatNotificationSupplierImpl extends
         final QueueIdAndStatisticsMapBuilder queueStatMapBuilder = new QueueIdAndStatisticsMapBuilder(
                 statisticsDataTreeItem.getFlowCapableNodeConnectorQueueStatistics());
 
-        final QueueStatisticsUpdateBuilder builder = new QueueStatisticsUpdateBuilder();
-        builder.setId(getNodeId(path));
-        builder.setMoreReplies(Boolean.FALSE);
-        builder.setQueueIdAndStatisticsMap(Collections.singletonList(queueStatMapBuilder.build()));
-        builder.setNodeConnector(Collections.singletonList(connBuilder.build()));
-        return builder.build();
+        return new QueueStatisticsUpdateBuilder()
+            .setId(getNodeId(path))
+            .setMoreReplies(Boolean.FALSE)
+            .setQueueIdAndStatisticsMap(BindingMap.of(queueStatMapBuilder.build()))
+            .setNodeConnector(BindingMap.of(connBuilder.build()))
+            .build();
     }
 }
 

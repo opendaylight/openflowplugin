@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import java.util.Collection;
@@ -95,8 +94,6 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
 
     @Override
     public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<FlowCapableNode>> changes) {
-        Preconditions.checkNotNull(changes, "Changes may not be null!");
-
         for (DataTreeModification<FlowCapableNode> change : changes) {
             final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<FlowCapableNode> mod = change.getRootNode();

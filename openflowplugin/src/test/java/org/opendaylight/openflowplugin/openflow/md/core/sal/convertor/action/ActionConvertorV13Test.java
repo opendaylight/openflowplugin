@@ -57,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.strip.vlan.action._case.StripVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv6Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -509,7 +510,7 @@ public class ActionConvertorV13Test {
         IpMatchBuilder ipMatchBld = new IpMatchBuilder().setIpProtocol(Uint8.valueOf(6));
         MatchBuilder matchBld = new MatchBuilder().setIpMatch(ipMatchBld.build());
         FlowBuilder flowBld = new FlowBuilder().setMatch(matchBld.build());
-        Flow flow = flowBld.build();
+        Flow flow = flowBld.setId(new FlowId("foo")).build();
 
         ActionConvertorData data = new ActionConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.valueOf(42));

@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -70,13 +71,13 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     public ForwardingRulesSyncProvider(final DataBroker dataBroker,
                                        final RpcConsumerRegistry rpcRegistry,
                                        final ClusterSingletonServiceProvider clusterSingletonService) {
-        Preconditions.checkNotNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
-        this.dataService = Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
-        this.clusterSingletonService = Preconditions.checkNotNull(clusterSingletonService,
+        requireNonNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
+        this.dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
+        this.clusterSingletonService = requireNonNull(clusterSingletonService,
                 "ClusterSingletonServiceProvider can not be null!");
-        this.salTableService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalTableService.class),
+        this.salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-        this.flatBatchService = Preconditions.checkNotNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
+        this.flatBatchService = requireNonNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
                 "RPC SalFlatBatchService not found.");
 
         nodeConfigDataTreePath = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,

@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -98,12 +99,12 @@ public class NotificationProvider implements AutoCloseable {
      * @param groupStatSupp     - Group Stat Support Flag
      * @param queueStatSupp     - Queue Stat Support Flag
      */
-    public NotificationProvider(final NotificationPublishService nps, final DataBroker db, boolean flowSupp,
-                                boolean meterSupp, boolean groupSupp, boolean connectorStatSupp, boolean flowStatSupp,
-                                boolean flowTableStatSupp, boolean meterStatSupp, boolean groupStatSupp,
-                                boolean queueStatSupp) {
-        this.nps = Preconditions.checkNotNull(nps);
-        this.db = Preconditions.checkNotNull(db);
+    public NotificationProvider(final NotificationPublishService nps, final DataBroker db, final boolean flowSupp,
+                                final boolean meterSupp, final boolean groupSupp, final boolean connectorStatSupp,
+                                final boolean flowStatSupp, final boolean flowTableStatSupp,
+                                final boolean meterStatSupp, final boolean groupStatSupp, final boolean queueStatSupp) {
+        this.nps = requireNonNull(nps);
+        this.db = requireNonNull(db);
         this.config = initializeNotificationProviderConfig(flowSupp, meterSupp, groupSupp, connectorStatSupp,
                                                            flowStatSupp, flowTableStatSupp, meterStatSupp,
                                                            groupStatSupp, queueStatSupp);
@@ -112,15 +113,15 @@ public class NotificationProvider implements AutoCloseable {
     /**
      * Method to initialize NotificationProviderConfig.
      */
-    private NotificationProviderConfig initializeNotificationProviderConfig(boolean hasFlowSupp,
-                                                                            boolean hasMeterSupp,
-                                                                            boolean hasGroupSupp,
-                                                                            boolean hasConnectorStatSupp,
-                                                                            boolean hasFlowStatSupp,
-                                                                            boolean hasFlowTableStatSupp,
-                                                                            boolean hasMeterStatSupp,
-                                                                            boolean hasGroupStatSupp,
-                                                                            boolean hasQueueStatSupp) {
+    private NotificationProviderConfig initializeNotificationProviderConfig(final boolean hasFlowSupp,
+                                                                            final boolean hasMeterSupp,
+                                                                            final boolean hasGroupSupp,
+                                                                            final boolean hasConnectorStatSupp,
+                                                                            final boolean hasFlowStatSupp,
+                                                                            final boolean hasFlowTableStatSupp,
+                                                                            final boolean hasMeterStatSupp,
+                                                                            final boolean hasGroupStatSupp,
+                                                                            final boolean hasQueueStatSupp) {
         NotificationProviderConfig.NotificationProviderConfigBuilder notif
                 = new NotificationProviderConfig.NotificationProviderConfigBuilder();
         notif.setFlowSupport(hasFlowSupp);
