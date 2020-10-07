@@ -34,6 +34,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -136,6 +137,7 @@ public class MeterUtilTest {
         return RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedMetersOutputBuilder()
+                        .setBatchOrder(Uint16.ZERO)
                         .setMeterId(DUMMY_METER_ID)
                         .build()))
                 .build();

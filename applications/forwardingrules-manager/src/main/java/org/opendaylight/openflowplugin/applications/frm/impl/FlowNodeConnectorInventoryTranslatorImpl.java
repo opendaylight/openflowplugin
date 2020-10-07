@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
@@ -48,7 +49,7 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
 
     @SuppressWarnings("IllegalCatch")
     public FlowNodeConnectorInventoryTranslatorImpl(final DataBroker dataBroker) {
-        Preconditions.checkNotNull(dataBroker, "DataBroker can not be null!");
+        requireNonNull(dataBroker, "DataBroker can not be null!");
 
         final DataTreeIdentifier<FlowCapableNodeConnector> treeId =
                 DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
@@ -82,8 +83,8 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     }
 
     @Override
-    public void remove(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector del,
-            InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    public void remove(final InstanceIdentifier<FlowCapableNodeConnector> identifier,
+            final FlowCapableNodeConnector del, final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector removed");
             String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class)
@@ -95,8 +96,9 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     }
 
     @Override
-    public void update(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector original,
-            FlowCapableNodeConnector update, InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    public void update(final InstanceIdentifier<FlowCapableNodeConnector> identifier,
+            final FlowCapableNodeConnector original, final FlowCapableNodeConnector update,
+            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector updated");
             // Don't need to do anything as we are not considering updates here
@@ -104,8 +106,8 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
     }
 
     @Override
-    public void add(InstanceIdentifier<FlowCapableNodeConnector> identifier, FlowCapableNodeConnector add,
-            InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    public void add(final InstanceIdentifier<FlowCapableNodeConnector> identifier, final FlowCapableNodeConnector add,
+            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector added");
             String nodeConnectorIdentifier = nodeConnIdent
@@ -120,19 +122,19 @@ public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnec
         }
     }
 
-    private static boolean compareInstanceIdentifierTail(InstanceIdentifier<?> identifier1,
-                                  InstanceIdentifier<?> identifier2) {
+    private static boolean compareInstanceIdentifierTail(final InstanceIdentifier<?> identifier1,
+                                  final InstanceIdentifier<?> identifier2) {
         return Iterables.getLast(identifier1.getPathArguments())
                 .equals(Iterables.getLast(identifier2.getPathArguments()));
     }
 
     @Override
-    public boolean isNodeConnectorUpdated(BigInteger dpId, String portName) {
+    public boolean isNodeConnectorUpdated(final BigInteger dpId, final String portName) {
         return dpnToPortMultiMap.containsEntry(dpId,portName) ;
     }
 
 
-    private static BigInteger getDpIdFromPortName(String portName) {
+    private static BigInteger getDpIdFromPortName(final String portName) {
         String dpId = portName.substring(portName.indexOf(SEPARATOR) + 1, portName.lastIndexOf(SEPARATOR));
         return new BigInteger(dpId);
     }

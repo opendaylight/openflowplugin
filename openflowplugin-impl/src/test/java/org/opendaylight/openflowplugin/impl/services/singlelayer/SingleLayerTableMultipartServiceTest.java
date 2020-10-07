@@ -25,9 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
     private static final Uint32 MAX_ENTRIES = Uint32.valueOf(42);
@@ -44,7 +46,8 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
     public void buildRequest() {
         final UpdateTableInput input = new UpdateTableInputBuilder()
                 .setUpdatedTable(new UpdatedTableBuilder()
-                        .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()
+                        .setTableFeatures(BindingMap.of(new TableFeaturesBuilder()
+                                .setTableId(Uint8.ZERO)
                                 .setMaxEntries(MAX_ENTRIES)
                                 .build()))
                         .build())
@@ -64,7 +67,8 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
         mockSuccessfulFuture(Collections.singletonList(new MultipartReplyBuilder()
                 .setXid(XID)
                 .setMultipartReplyBody(new MultipartReplyTableFeaturesBuilder()
-                        .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()
+                        .setTableFeatures(BindingMap.of(new TableFeaturesBuilder()
+                                .setTableId(Uint8.ZERO)
                                 .setMaxEntries(MAX_ENTRIES)
                                 .build()))
                         .build())
@@ -72,7 +76,8 @@ public class SingleLayerTableMultipartServiceTest extends ServiceMocking {
 
         final UpdateTableInput input = new UpdateTableInputBuilder()
                 .setUpdatedTable(new UpdatedTableBuilder()
-                        .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()
+                        .setTableFeatures(BindingMap.of(new TableFeaturesBuilder()
+                                .setTableId(Uint8.ZERO)
                                 .setMaxEntries(MAX_ENTRIES)
                                 .build()))
                         .build())

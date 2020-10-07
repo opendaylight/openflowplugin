@@ -8,9 +8,9 @@
 
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErrorLogging;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,7 +91,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         return operationalStatus;
     }
 
-    public void setLldpFloodInterval(long time) {
+    public void setLldpFloodInterval(final long time) {
         this.currentFloodPeriod = time;
         scheduledSpeakerTask.cancel(false);
         scheduledSpeakerTask = this.scheduledExecutorService
@@ -193,9 +193,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
 
     @Override
     public void nodeConnectorRemoved(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId) {
-        Preconditions.checkNotNull(nodeConnectorInstanceId);
-
-        nodeConnectorMap.remove(nodeConnectorInstanceId);
+        nodeConnectorMap.remove(requireNonNull(nodeConnectorInstanceId));
         NodeConnectorId nodeConnectorId = InstanceIdentifier.keyOf(nodeConnectorInstanceId).getId();
         LOG.trace("Port removed from node-connector map : {}", nodeConnectorId.getValue());
     }

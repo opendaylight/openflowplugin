@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper;
 
 import java.util.Collection;
@@ -18,7 +17,7 @@ public final class TestChangeEventBuildHelper {
     }
 
     public static Collection createEmptyTestDataTreeEvent() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public static Collection createNullTestDataTreeEvent() {

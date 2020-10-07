@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.Preconditions;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
@@ -106,8 +108,8 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
      * @param path pointer to element
      * @return extracted {@link NodeKey} and wrapped in {@link NodeRef}
      */
-    public static NodeRef createNodeRef(InstanceIdentifier<?> path) {
-        final InstanceIdentifier<Node> nodePath = Preconditions.checkNotNull(path.firstIdentifierOf(Node.class));
+    public static NodeRef createNodeRef(final InstanceIdentifier<?> path) {
+        final InstanceIdentifier<Node> nodePath = requireNonNull(path.firstIdentifierOf(Node.class));
         return new NodeRef(nodePath);
     }
 
@@ -117,8 +119,8 @@ public abstract class AbstractNotificationSupplierBase<O extends DataObject> imp
      * @param path pointer to element
      * @return extracted {@link NodeId}
      */
-    public static NodeId getNodeId(InstanceIdentifier<?> path) {
-        final NodeKey nodeKey = Preconditions.checkNotNull(path.firstKeyOf(Node.class));
+    public static NodeId getNodeId(final InstanceIdentifier<?> path) {
+        final NodeKey nodeKey = requireNonNull(path.firstKeyOf(Node.class));
         return nodeKey.getId();
     }
 }

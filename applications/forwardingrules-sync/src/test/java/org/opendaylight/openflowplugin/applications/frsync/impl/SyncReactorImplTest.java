@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,8 +37,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,19 +86,21 @@ public class SyncReactorImplTest {
     @Test
     public void testSyncup() throws Exception {
         final FlowCapableNode configFcn = new FlowCapableNodeBuilder()
-                .setGroup(Collections.singletonList(DSInputFactory.createGroup(Uint32.ONE)))
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(Collections.singletonList(DSInputFactory.createFlow("f1", 1)))
+                .setGroup(BindingMap.of(DSInputFactory.createGroup(Uint32.ONE)))
+                .setTable(BindingMap.of(new TableBuilder()
+                        .setId(Uint8.valueOf(42))
+                        .setFlow(BindingMap.of(DSInputFactory.createFlow("f1", 1)))
                         .build()))
-                .setMeter(Collections.singletonList(DSInputFactory.createMeter(Uint32.ONE)))
+                .setMeter(BindingMap.of(DSInputFactory.createMeter(Uint32.ONE)))
                 .build();
 
         final FlowCapableNode operationalFcn = new FlowCapableNodeBuilder()
-                .setGroup(Collections.singletonList(DSInputFactory.createGroup(Uint32.TWO)))
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setFlow(Collections.singletonList(DSInputFactory.createFlow("f2", 2)))
+                .setGroup(BindingMap.of(DSInputFactory.createGroup(Uint32.TWO)))
+                .setTable(BindingMap.of(new TableBuilder()
+                        .setId(Uint8.valueOf(42))
+                        .setFlow(BindingMap.of(DSInputFactory.createFlow("f2", 2)))
                         .build()))
-                .setMeter(Collections.singletonList(DSInputFactory.createMeter(Uint32.TWO)))
+                .setMeter(BindingMap.of(DSInputFactory.createMeter(Uint32.TWO)))
                 .build();
 
         final SyncupEntry syncupEntry = new SyncupEntry(configFcn, LogicalDatastoreType.CONFIGURATION,

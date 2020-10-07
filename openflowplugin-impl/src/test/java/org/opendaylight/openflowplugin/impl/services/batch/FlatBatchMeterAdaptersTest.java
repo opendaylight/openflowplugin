@@ -78,12 +78,14 @@ public class FlatBatchMeterAdaptersTest {
     private static FlatBatchAddMeter createAddMeterBatch(final Uint32 groupIdValue) {
         return new FlatBatchAddMeterBuilder()
                 .setMeterId(new MeterId(groupIdValue))
+                .setBatchOrder(groupIdValue.toUint16())
                 .build();
     }
 
     private static FlatBatchRemoveMeter createRemoveMeterBatch(final Uint32 groupIdValue) {
         return new FlatBatchRemoveMeterBuilder()
                 .setMeterId(new MeterId(groupIdValue))
+                .setBatchOrder(groupIdValue.toUint16())
                 .build();
     }
 
@@ -95,6 +97,7 @@ public class FlatBatchMeterAdaptersTest {
                 .setUpdatedBatchedMeter(new UpdatedBatchedMeterBuilder()
                         .setMeterId(new MeterId(groupIdValue))
                         .build())
+                .setBatchOrder(groupIdValue.toUint16())
                 .build();
     }
 

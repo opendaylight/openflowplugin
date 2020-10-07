@@ -35,6 +35,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -136,6 +137,7 @@ public class GroupUtilTest {
         return RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedGroupsOutputBuilder()
+                        .setBatchOrder(Uint16.ZERO)
                         .setGroupId(DUMMY_GROUP_ID)
                         .build()))
                 .build();

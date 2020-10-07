@@ -4,7 +4,7 @@
     <feature name='odl-openflowjava-protocol' version='${project.version}'>
         <configfile finalname="etc/opendaylight/datastore/initial/config/default-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/config</configfile>
         <configfile finalname="etc/opendaylight/datastore/initial/config/legacy-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/legacyConfig</configfile>
-        <feature version="[7,8)">odl-netty-4</feature>
-        <feature version="[6,7)">odl-mdsal-model-rfc6991</feature>
+        <feature version="[8,9)">odl-netty-4</feature>
+        <feature version="[7,8)">odl-mdsal-model-rfc6991</feature>
     </feature>
 </features>

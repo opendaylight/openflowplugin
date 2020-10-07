@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashSet;
 import java.util.Set;
 import org.opendaylight.openflowjava.nx.api.NiciraUtil;
@@ -362,7 +363,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
      * Register appropriate converters.
      */
     public NiciraExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
-        this.extensionConverterRegistrator = Preconditions.checkNotNull(provider.getExtensionConverterRegistrator());
+        this.extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
         registrations = new HashSet<>();
         // src=dataStore/config
         registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
@@ -730,8 +731,8 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations.add(extensionConverterRegistrator.registerActionConvertor(key, actionConvertor));
     }
 
-    private void registerAction13(Class<? extends ActionChoice> actionCaseType,
-        ConvertorActionFromOFJava<
+    private void registerAction13(final Class<? extends ActionChoice> actionCaseType,
+        final ConvertorActionFromOFJava<
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action,
                 ActionPath> actionConvertor) {
         ActionSerializerKey<?> key = new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, actionCaseType,

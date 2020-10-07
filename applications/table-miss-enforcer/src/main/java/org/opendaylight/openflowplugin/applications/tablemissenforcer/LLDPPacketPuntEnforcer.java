@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,12 +68,11 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     private final DeviceOwnershipService deviceOwnershipService;
     private ListenerRegistration<?> listenerRegistration;
 
-    public LLDPPacketPuntEnforcer(SalFlowService flowService, DataBroker dataBroker,
-            DeviceOwnershipService deviceOwnershipService) {
+    public LLDPPacketPuntEnforcer(final SalFlowService flowService, final DataBroker dataBroker,
+            final DeviceOwnershipService deviceOwnershipService) {
         this.flowService = flowService;
         this.dataBroker = dataBroker;
-        this.deviceOwnershipService = Preconditions.checkNotNull(deviceOwnershipService,
-                "DeviceOwnershipService can not be null");
+        this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
     }
 
     @SuppressWarnings("IllegalCatch")

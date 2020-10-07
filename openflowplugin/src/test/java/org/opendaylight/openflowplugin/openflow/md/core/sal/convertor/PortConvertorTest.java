@@ -59,11 +59,12 @@ public class PortConvertorTest {
      */
     @Test
     public void testtoPortModInputwithAllParameters() {
-        PortBuilder portBld = new PortBuilder();
-        portBld.setAdvertisedFeatures(features);
-        portBld.setConfiguration(config);
-        portBld.setPortNumber(new PortNumberUni(Uint32.valueOf(42L)));
-        portBld.setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
+        PortBuilder portBld = new PortBuilder()
+            .setPortModOrder(Uint32.ZERO)
+            .setAdvertisedFeatures(features)
+            .setConfiguration(config)
+            .setPortNumber(new PortNumberUni(Uint32.valueOf(42)))
+            .setHardwareAddress(new MacAddress(DEFAULT_MAC_ADDRESS));
 
         VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
