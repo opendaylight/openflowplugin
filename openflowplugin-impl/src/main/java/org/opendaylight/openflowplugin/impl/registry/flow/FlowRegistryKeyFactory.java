@@ -15,6 +15,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.util.MatchNormalizationUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
@@ -24,6 +26,10 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowRegistryKeyFactory {
+    // Temporary use, we will overwrite this. We do not have a flow ID and are about to make one up
+    // from the contents -- but for that we need a Flow object. But for that we need a FlowId, but
+    // ... so we set a dummy value and overwrite it afterwards.
+    public static final FlowKey DUMMY_FLOW_KEY = new FlowKey(new FlowId("__DUMMY_ID_FOR_ALIEN__"));
 
     private FlowRegistryKeyFactory() {
         // Hide implicit constructor

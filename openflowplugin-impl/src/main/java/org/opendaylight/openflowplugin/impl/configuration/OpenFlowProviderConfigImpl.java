@@ -12,11 +12,14 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
+// FIXME: Rename this to "ConfigurationOpenflowProviderConfig" or some such. OpenFlowProviderConfigImpl is taken as
+//        Builder-based (guaranteed to work).
+public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProviderConfig>
+        implements OpenflowProviderConfig {
     private final ConfigurationService service;
 
     public OpenFlowProviderConfigImpl(final ConfigurationService service) {
@@ -25,11 +28,8 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
 
     @Override
     public NonZeroUint16Type getRpcRequestsQuota() {
-        final Integer property = service.getProperty(
-                ConfigurationProperty.RPC_REQUESTS_QUOTA.toString(),
-                Integer::valueOf);
-
-        return new NonZeroUint16Type(property);
+        return new NonZeroUint16Type(service.<Uint16>getProperty(
+            ConfigurationProperty.RPC_REQUESTS_QUOTA.toString(), Uint16::valueOf));
     }
 
     @Override
@@ -85,43 +85,31 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
 
     @Override
     public NonZeroUint32Type getBarrierIntervalTimeoutLimit() {
-        final Long property = service.getProperty(
-                ConfigurationProperty.BARRIER_INTERVAL_TIMEOUT_LIMIT.toString(),
-                Long::valueOf);
-
-        return new NonZeroUint32Type(property);
+        return new NonZeroUint32Type(service.<Uint32>getProperty(
+            ConfigurationProperty.BARRIER_INTERVAL_TIMEOUT_LIMIT.toString(), Uint32::valueOf));
     }
 
     @Override
     public NonZeroUint16Type getBarrierCountLimit() {
-        final Integer property = service.getProperty(
-                ConfigurationProperty.BARRIER_COUNT_LIMIT.toString(),
-                Integer::valueOf);
-
-        return new NonZeroUint16Type(property);
+        return new NonZeroUint16Type(service.<Uint16>getProperty(
+            ConfigurationProperty.BARRIER_COUNT_LIMIT.toString(), Uint16::valueOf));
     }
 
     @Override
     public NonZeroUint32Type getEchoReplyTimeout() {
-        final Long property = service.getProperty(
-                ConfigurationProperty.ECHO_REPLY_TIMEOUT.toString(),
-                Long::valueOf);
-
-        return new NonZeroUint32Type(property);
+        return new NonZeroUint32Type(service.<Uint32>getProperty(
+            ConfigurationProperty.ECHO_REPLY_TIMEOUT.toString(), Uint32::valueOf));
     }
 
     @Override
     public Uint16 getThreadPoolMinThreads() {
-        return service.getProperty(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString(), Uint16::valueOf);
+        return service.<Uint16>getProperty(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString(), Uint16::valueOf);
     }
 
     @Override
     public NonZeroUint16Type getThreadPoolMaxThreads() {
-        final Integer property = service.getProperty(
-                ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(),
-                Integer::valueOf);
-
-        return new NonZeroUint16Type(property);
+        return new NonZeroUint16Type(service.<Uint16>getProperty(
+            ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(), Uint16::valueOf));
     }
 
     @Override
@@ -146,20 +134,14 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
 
     @Override
     public NonZeroUint32Type getBasicTimerDelay() {
-        final Long property = service.getProperty(
-                ConfigurationProperty.BASIC_TIMER_DELAY.toString(),
-                Long::valueOf);
-
-        return new NonZeroUint32Type(property);
+        return new NonZeroUint32Type(service.<Uint32>getProperty(
+            ConfigurationProperty.BASIC_TIMER_DELAY.toString(), Uint32::valueOf));
     }
 
     @Override
     public NonZeroUint32Type getMaximumTimerDelay() {
-        final Long property = service.getProperty(
-                ConfigurationProperty.MAXIMUM_TIMER_DELAY.toString(),
-                Long::valueOf);
-
-        return new NonZeroUint32Type(property);
+        return new NonZeroUint32Type(service.<Uint32>getProperty(
+            ConfigurationProperty.MAXIMUM_TIMER_DELAY.toString(), Uint32::valueOf));
     }
 
     @Override
@@ -168,31 +150,21 @@ public class OpenFlowProviderConfigImpl implements OpenflowProviderConfig {
     }
 
     @Override
-    public <E extends Augmentation<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang
-            .openflow.provider.config.rev160510.OpenflowProviderConfig>> E augmentation(
-                    final java.lang.Class<E> augmentationType) {
-        return null;
-    }
-
-    @Override
     public Uint16 getDeviceConnectionRateLimitPerMin() {
-        return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(),
-                Uint16::valueOf);
+        return service.getProperty(
+            ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString(), Uint16::valueOf);
     }
 
     @Override
     public Uint16 getDeviceConnectionHoldTimeInSeconds() {
-        return service.getProperty(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString(),
-                Uint16::valueOf);
+        return service.getProperty(
+            ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString(), Uint16::valueOf);
     }
 
     @Override
     public NonZeroUint32Type getDeviceDatastoreRemovalDelay() {
-        final Long property = service.getProperty(
-                ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(),
-                Long::valueOf);
-
-        return new NonZeroUint32Type(property);
+        return new NonZeroUint32Type(service.<Uint32>getProperty(
+            ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(), Uint32::valueOf));
     }
 
     @Override

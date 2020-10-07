@@ -59,8 +59,8 @@ public class FlatBatchFlowAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createAddFlowBatch("1"),
-                createAddFlowBatch("2")));
+                createAddFlowBatch(Uint16.ONE),
+                createAddFlowBatch(Uint16.TWO)));
 
         final AddFlowsBatchInput addFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, NODE_REF);
         Iterator<BatchAddFlows> iterator = addFlowsBatchInput.nonnullBatchAddFlows().values().iterator();
@@ -71,21 +71,24 @@ public class FlatBatchFlowAdaptersTest {
         Assert.assertEquals("2", iterator.next().getFlowId().getValue());
     }
 
-    private static FlatBatchAddFlow createAddFlowBatch(final String flowIdValue) {
+    private static FlatBatchAddFlow createAddFlowBatch(final Uint16 flowIdValue) {
         return new FlatBatchAddFlowBuilder()
-                .setFlowId(new FlowId(flowIdValue))
+                .setFlowId(new FlowId(flowIdValue.toString()))
+                .setBatchOrder(flowIdValue)
                 .build();
     }
 
-    private static FlatBatchRemoveFlow createRemoveFlowBatch(final String flowIdValue) {
+    private static FlatBatchRemoveFlow createRemoveFlowBatch(final Uint16 flowIdValue) {
         return new FlatBatchRemoveFlowBuilder()
-                .setFlowId(new FlowId(flowIdValue))
+                .setFlowId(new FlowId(flowIdValue.toString()))
+                .setBatchOrder(flowIdValue)
                 .build();
     }
 
-    private static FlatBatchUpdateFlow createUpdateFlowBatch(final String flowIdValue) {
+    private static FlatBatchUpdateFlow createUpdateFlowBatch(final Uint16 flowIdValue) {
         return new FlatBatchUpdateFlowBuilder()
-                .setFlowId(new FlowId(flowIdValue))
+                .setFlowId(new FlowId(flowIdValue.toString()))
+                .setBatchOrder(flowIdValue)
                 .build();
     }
 
@@ -94,8 +97,8 @@ public class FlatBatchFlowAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createRemoveFlowBatch("1"),
-                createRemoveFlowBatch("2")));
+                createRemoveFlowBatch(Uint16.ONE),
+                createRemoveFlowBatch(Uint16.TWO)));
 
         final RemoveFlowsBatchInput removeFlowsBatchInput =
                 FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, NODE_REF);
@@ -112,8 +115,8 @@ public class FlatBatchFlowAdaptersTest {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
         planStep.getTaskBag().addAll(Lists.newArrayList(
-                createUpdateFlowBatch("1"),
-                createUpdateFlowBatch("2")));
+                createUpdateFlowBatch(Uint16.ONE),
+                createUpdateFlowBatch(Uint16.TWO)));
 
         final UpdateFlowsBatchInput updateFlowsBatchInput =
                 FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, NODE_REF);

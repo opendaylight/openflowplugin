@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndStatisticsMapList> {
-
     private final DeviceRegistry registry;
     private final short version;
 
@@ -48,6 +47,7 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
         statistics.nonnullFlowAndStatisticsMapList()
             .forEach(stat -> {
                 final FlowBuilder flow = new FlowBuilder(stat)
+                        .withKey(FlowRegistryKeyFactory.DUMMY_FLOW_KEY)
                         .addAugmentation(new FlowStatisticsDataBuilder()
                             .setFlowStatistics(new FlowStatisticsBuilder(stat).build())
                             .build());

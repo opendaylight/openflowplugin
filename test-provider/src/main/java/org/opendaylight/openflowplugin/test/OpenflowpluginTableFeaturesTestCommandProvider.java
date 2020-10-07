@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
     private final BundleContext ctx;
     private Node testNode;
 
-    public OpenflowpluginTableFeaturesTestCommandProvider(DataBroker dataBroker, BundleContext ctx) {
+    public OpenflowpluginTableFeaturesTestCommandProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.ctx = ctx;
     }
@@ -89,7 +90,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         // createTestTableFeatures();
     }
 
-    private void createUserNode(String nodeRef) {
+    private void createUserNode(final String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.withKey(new NodeKey(builder.getId()));
@@ -103,11 +104,11 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         testNode = builder.build();
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    private static TableFeaturesBuilder createTestTableFeatures(String tableFeatureTypeArg) {
+    private static TableFeaturesBuilder createTestTableFeatures(final String tableFeatureTypeArg) {
 
         String tableFeatureType = tableFeatureTypeArg;
         if (tableFeatureType == null) {
@@ -567,8 +568,8 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         return tableFeatureProperty;
     }
 
-    private void writeTableFeatures(final CommandInterpreter ci, TableFeatures tableFeatures) {
-        ReadWriteTransaction modification = Preconditions.checkNotNull(dataBroker).newReadWriteTransaction();
+    private void writeTableFeatures(final CommandInterpreter ci, final TableFeatures tableFeatures) {
+        ReadWriteTransaction modification = requireNonNull(dataBroker).newReadWriteTransaction();
 
         KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
@@ -581,18 +582,18 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, tableFeatures);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _modifyTable(CommandInterpreter ci) {
+    public void _modifyTable(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
         ci.println(" Table Command Provider modify");
 

@@ -216,11 +216,11 @@ public class FlatBatchUtilTest {
         }
     }
 
-    private static Batch createBatch(BatchStepType type) {
+    private static Batch createBatch(final BatchStepType type) {
         return createBatch(type, 1);
     }
 
-    private static Batch createBatch(BatchStepType type, final int size) {
+    private static Batch createBatch(final BatchStepType type, final int size) {
         final BatchChoice batchCase;
         switch (type) {
             case FLOW_ADD:
@@ -274,6 +274,7 @@ public class FlatBatchUtilTest {
         }
 
         return new BatchBuilder()
+                .setBatchOrder(Uint16.ZERO)
                 .setBatchChoice(batchCase)
                 .build();
     }
