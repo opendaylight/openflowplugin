@@ -27,24 +27,24 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenFlowProviderConfigImplTest {
     private static final Boolean IS_STATISTICS_POLLING_ON = true;
-    private static final int BARRIER_COUNT_LIMIT = 2000;
-    private static final long BARRIER_INTERVAL_TIMEOUT_LIMIT = 3000L;
-    private static final long ECHO_REPLY_TIMEOUT = 4000L;
+    private static final Uint16 BARRIER_COUNT_LIMIT = Uint16.valueOf(2000);
+    private static final Uint32 BARRIER_INTERVAL_TIMEOUT_LIMIT = Uint32.valueOf(3000);
+    private static final Uint32 ECHO_REPLY_TIMEOUT = Uint32.valueOf(4000);
     private static final Boolean ENABLE_FLOW_REMOVED_NOTIFICATION = true;
     private static final Boolean SKIP_TABLE_FEATURES = true;
-    private static final long BASIC_TIMER_DELAY = 2690L;
-    private static final long MAXIMUM_TIMER_DELAY = 3679L;
+    private static final Uint32 BASIC_TIMER_DELAY = Uint32.valueOf(2690);
+    private static final Uint32 MAXIMUM_TIMER_DELAY = Uint32.valueOf(3679);
     private static final Boolean SWITCH_FEATURES_MANDATORY = false;
     private static final Boolean IS_STATISTICS_RPC_ENABLED = false;
     private static final Boolean USE_SINGLE_LAYER_SERIALIZATION = true;
-    private static final int RPC_REQUESTS_QUOTA = 2500;
+    private static final Uint16 RPC_REQUESTS_QUOTA = Uint16.valueOf(2500);
     private static final Uint32 GLOBAL_NOTIFICATION_QUOTA = Uint32.valueOf(9000);
     private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.valueOf(3);
-    private static final int THREAD_POOL_MAX_THREADS = 1000;
+    private static final Uint16 THREAD_POOL_MAX_THREADS = Uint16.valueOf(1000);
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
-    private static final long DEVICE_DATASTORE_REMOVAL_DELAY = 500L;
+    private static final Uint32 DEVICE_DATASTORE_REMOVAL_DELAY = Uint32.valueOf(500);
 
     @Mock
     private ConfigurationService configurationService;
@@ -101,7 +101,7 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void getRpcRequestsQuota() {
-        assertEquals(RPC_REQUESTS_QUOTA, openflowProviderConfig.getRpcRequestsQuota().getValue().toJava());
+        assertEquals(RPC_REQUESTS_QUOTA, openflowProviderConfig.getRpcRequestsQuota().getValue());
     }
 
     @Test
@@ -126,18 +126,18 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void getBarrierIntervalTimeoutLimit() {
-        assertEquals(BARRIER_INTERVAL_TIMEOUT_LIMIT, openflowProviderConfig.getBarrierIntervalTimeoutLimit()
-                .getValue().toJava());
+        assertEquals(BARRIER_INTERVAL_TIMEOUT_LIMIT,
+            openflowProviderConfig.getBarrierIntervalTimeoutLimit().getValue());
     }
 
     @Test
     public void getBarrierCountLimit() {
-        assertEquals(BARRIER_COUNT_LIMIT, openflowProviderConfig.getBarrierCountLimit().getValue().toJava());
+        assertEquals(BARRIER_COUNT_LIMIT, openflowProviderConfig.getBarrierCountLimit().getValue());
     }
 
     @Test
     public void getEchoReplyTimeout() {
-        assertEquals(ECHO_REPLY_TIMEOUT, openflowProviderConfig.getEchoReplyTimeout().getValue().toJava());
+        assertEquals(ECHO_REPLY_TIMEOUT, openflowProviderConfig.getEchoReplyTimeout().getValue());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void getThreadPoolMaxThreads() {
-        assertEquals(THREAD_POOL_MAX_THREADS, openflowProviderConfig.getThreadPoolMaxThreads().getValue().toJava());
+        assertEquals(THREAD_POOL_MAX_THREADS, openflowProviderConfig.getThreadPoolMaxThreads().getValue());
     }
 
     @Test
@@ -167,12 +167,12 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void getBasicTimerDelay() {
-        assertEquals(BASIC_TIMER_DELAY, openflowProviderConfig.getBasicTimerDelay().getValue().toJava());
+        assertEquals(BASIC_TIMER_DELAY, openflowProviderConfig.getBasicTimerDelay().getValue());
     }
 
     @Test
     public void getMaximumTimerDelay() {
-        assertEquals(MAXIMUM_TIMER_DELAY, openflowProviderConfig.getMaximumTimerDelay().getValue().toJava());
+        assertEquals(MAXIMUM_TIMER_DELAY, openflowProviderConfig.getMaximumTimerDelay().getValue());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class OpenFlowProviderConfigImplTest {
     @Test
     public void getDeviceDatastoreRemovalDelay() {
         assertEquals(DEVICE_DATASTORE_REMOVAL_DELAY,
-                openflowProviderConfig.getDeviceDatastoreRemovalDelay().getValue().toJava());
+                openflowProviderConfig.getDeviceDatastoreRemovalDelay().getValue());
     }
 
 }

@@ -9,8 +9,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.mockito.Mockito.verify;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -29,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.port.update.UpdatedPortBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,10 +65,9 @@ public class SalPortServiceImplTest extends ServiceMocking {
                 true, true, true, true, true, true, true, true));
         concretePortBuilder.setPortNumber(new PortNumberUni(DUMMY_PORT_NUMBER));
         concretePortBuilder.setHardwareAddress(new MacAddress(DUMMY_MAC_ADDRESS));
+        concretePortBuilder.setPortModOrder(Uint32.ZERO);
 
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.port.mod.port.Port> ports
-                = Lists.newArrayList(concretePortBuilder.build());
-        Port port = new PortBuilder().setPort(ports).build();
+        Port port = new PortBuilder().setPort(BindingMap.of(concretePortBuilder.build())).build();
         UpdatedPort updatePort = new UpdatedPortBuilder().setPort(port).build();
         return new UpdatePortInputBuilder().setUpdatedPort(updatePort).build();
     }

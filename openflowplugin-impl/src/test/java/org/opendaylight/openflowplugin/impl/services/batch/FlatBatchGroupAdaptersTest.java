@@ -77,12 +77,14 @@ public class FlatBatchGroupAdaptersTest {
     private static FlatBatchAddGroup createAddGroupBatch(final Uint32 groupIdValue) {
         return new FlatBatchAddGroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
+                .setBatchOrder(groupIdValue.toUint16())
                 .build();
     }
 
     private static FlatBatchRemoveGroup createRemoveGroupBatch(final Uint32 groupIdValue) {
         return new FlatBatchRemoveGroupBuilder()
                 .setGroupId(new GroupId(groupIdValue))
+                .setBatchOrder(groupIdValue.toUint16())
                 .build();
     }
 
@@ -94,6 +96,7 @@ public class FlatBatchGroupAdaptersTest {
                 .setUpdatedBatchedGroup(new UpdatedBatchedGroupBuilder()
                         .setGroupId(new GroupId(groupIdValue))
                         .build())
+                .setBatchOrder(groupIdValue.toUint16())
                 .build();
     }
 

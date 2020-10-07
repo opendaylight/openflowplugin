@@ -115,7 +115,7 @@ public class MeterConvertorTest {
         MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
         meterBandHeaderBuilder2.setBandType(experimenter);
         meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
-        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
+        meterBandHeaderBuilder2.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
         MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
 
         List<MeterBandHeader> meterBandList = new ArrayList<>();
