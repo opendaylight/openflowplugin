@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowsStatisticsUpdateBuilder;
@@ -143,6 +144,7 @@ public class FlowRegistryKeyFactoryTest {
         MatchBuilder match1Builder = new MatchBuilder().setLayer3Match(new Ipv4MatchBuilder()
                 .setIpv4Destination(new Ipv4Prefix("10.0.1.157/32")).build());
         FlowBuilder flow1Builder = new FlowBuilder()
+                .setId(new FlowId("foo"))
                 .setCookie(new FlowCookie(Uint64.valueOf(483)))
                 .setMatch(match1Builder.build())
                 .setPriority(Uint16.TWO)
