@@ -39,10 +39,10 @@ committers:
       company: 'Ericsson'
       id: 'gobinath'
       timezone: 'Unknown/Unknown'
-    - name: 'Somashekhar Javalagi'
-      email: 'somashekhar.manohara.javalagi@ericsson.com'
-      company: 'Ericsson'
-      id: 'Somashekhar'
+    - name: 'Robert Varga'
+      email: 'nite@hq.sk'
+      company: 'hq'
+      id: 'rovarga'
       timezone: 'Unknown/Unknown'
 tsc:
     # yamllint disable rule:line-length
