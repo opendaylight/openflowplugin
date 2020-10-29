@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin</groupId>
         <artifactId>openflowplugin-parent</artifactId>
-        <version>0.11.1-SNAPSHOT</version>
+        <version>0.11.1</version>
         <relativePath>parent</relativePath>
     </parent>
 
     <artifactId>openflowplugin-aggregator</artifactId>
-    <version>0.11.1-SNAPSHOT</version>
+    <version>0.11.1</version>
     <name>openflowplugin</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
