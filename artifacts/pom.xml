@@ -19,7 +19,7 @@
 
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>openflowplugin-artifacts</artifactId>
-    <version>0.10.3-SNAPSHOT</version>
+    <version>0.10.3</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
