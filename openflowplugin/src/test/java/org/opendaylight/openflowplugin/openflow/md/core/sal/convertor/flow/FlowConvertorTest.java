@@ -381,17 +381,17 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public Boolean isInstallHw() {
+        public Boolean getInstallHw() {
             return null;
         }
 
         @Override
-        public Boolean isBarrier() {
+        public Boolean getBarrier() {
             return null;
         }
 
         @Override
-        public Boolean isStrict() {
+        public Boolean getStrict() {
             return null;
         }
 

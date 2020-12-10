@@ -33,7 +33,7 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     }
 
     @Override
-    public Boolean isSwitchFeaturesMandatory() {
+    public Boolean getSwitchFeaturesMandatory() {
         return service.getProperty(ConfigurationProperty.SWITCH_FEATURES_MANDATORY.toString(), Boolean::valueOf);
     }
 
@@ -43,43 +43,42 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     }
 
     @Override
-    public Boolean isIsStatisticsPollingOn() {
+    public Boolean getIsStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isIsTableStatisticsPollingOn() {
+    public Boolean getIsTableStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_TABLE_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isIsFlowStatisticsPollingOn() {
+    public Boolean getIsFlowStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_FLOW_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isIsGroupStatisticsPollingOn() {
+    public Boolean getIsGroupStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_GROUP_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isIsMeterStatisticsPollingOn() {
+    public Boolean getIsMeterStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_METER_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isIsQueueStatisticsPollingOn() {
+    public Boolean getIsQueueStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_QUEUE_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isIsPortStatisticsPollingOn() {
+    public Boolean getIsPortStatisticsPollingOn() {
         return service.getProperty(ConfigurationProperty.IS_PORT_STATISTICS_POLLING_ON.toString(), Boolean::valueOf);
     }
 
-
     @Override
-    public Boolean isIsStatisticsRpcEnabled() {
+    public Boolean getIsStatisticsRpcEnabled() {
         return service.getProperty(ConfigurationProperty.IS_STATISTICS_RPC_ENABLED.toString(), Boolean::valueOf);
     }
 
@@ -118,17 +117,17 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     }
 
     @Override
-    public Boolean isEnableFlowRemovedNotification() {
+    public Boolean getEnableFlowRemovedNotification() {
         return service.getProperty(ConfigurationProperty.ENABLE_FLOW_REMOVED_NOTIFICATION.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isSkipTableFeatures() {
+    public Boolean getSkipTableFeatures() {
         return service.getProperty(ConfigurationProperty.SKIP_TABLE_FEATURES.toString(), Boolean::valueOf);
     }
 
     @Override
-    public Boolean isEnableEqualRole() {
+    public Boolean getEnableEqualRole() {
         return service.getProperty(ConfigurationProperty.ENABLE_EQUAL_ROLE.toString(), Boolean::valueOf);
     }
 
@@ -145,7 +144,7 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     }
 
     @Override
-    public Boolean isUseSingleLayerSerialization() {
+    public Boolean getUseSingleLayerSerialization() {
         return service.getProperty(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString(), Boolean::valueOf);
     }
 
@@ -168,7 +167,7 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     }
 
     @Override
-    public Boolean isEnableCustomTrustManager() {
+    public Boolean getEnableCustomTrustManager() {
         return service.getProperty(ConfigurationProperty.ENABLE_CUSTOM_TRUST_MANAGER.toString(),
                 Boolean::valueOf);
     }

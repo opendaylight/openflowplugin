@@ -72,7 +72,7 @@ public final class StatisticsGatheringUtils {
             final ConvertorExecutor convertorExecutor, final MultipartWriterProvider statisticsWriterProvider,
             final ListeningExecutorService executorService) {
         return Futures.transformAsync(statisticsGatheringService.getStatisticsOfType(
-           new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
+            new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
             rpcResult -> executorService.submit(() -> {
                 final boolean rpcResultIsNull = rpcResult == null;
 

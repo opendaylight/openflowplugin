@@ -118,10 +118,10 @@ public class Icmpv6NDReservedConvertorTest {
                 new GroupingLooseResolver<>(GeneralExtensionListGrouping.class);
         eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        ExtensionAugment<? extends Augmentation<Extension>> extensionMatch
-                =  new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
+        ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
+            new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdReserved(
-                        new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(Uint32.ONE).build()).build(),
+                    new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(Uint32.ONE).build()).build(),
                 Icmpv6NdReservedKey.class);
 
         ExtensionListBuilder extListBld = null;
