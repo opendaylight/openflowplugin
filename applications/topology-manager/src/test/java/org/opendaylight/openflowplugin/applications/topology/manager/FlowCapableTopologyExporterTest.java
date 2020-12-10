@@ -149,7 +149,7 @@ public class FlowCapableTopologyExporterTest {
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
                 new NodeConnectorRef(sourceConnID)).setDestination(
-                new NodeConnectorRef(destConnID)).build());
+                    new NodeConnectorRef(destConnID)).build());
 
         waitForSubmit(submitLatch);
 
@@ -181,7 +181,7 @@ public class FlowCapableTopologyExporterTest {
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
                 new NodeConnectorRef(sourceConnID)).setDestination(
-                new NodeConnectorRef(destConnID)).build());
+                    new NodeConnectorRef(destConnID)).build());
 
         waitForSubmit(submitLatch);
 

@@ -105,7 +105,7 @@ public final class TestUtils {
     static org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey newInvNodeKey(String id) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey
                 = new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey(
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(id));
+                    new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(id));
         return nodeKey;
     }
 

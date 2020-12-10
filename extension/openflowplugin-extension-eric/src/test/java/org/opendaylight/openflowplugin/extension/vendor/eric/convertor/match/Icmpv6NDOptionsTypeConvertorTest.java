@@ -119,10 +119,10 @@ public class Icmpv6NDOptionsTypeConvertorTest {
                 new GroupingLooseResolver<>(GeneralExtensionListGrouping.class);
         eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        ExtensionAugment<? extends Augmentation<Extension>> extensionMatch
-                =  new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
+        ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
+            new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(
-                        new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType(Uint8.ONE).build()).build(),
+                    new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType(Uint8.ONE).build()).build(),
                 Icmpv6NdOptionsTypeKey.class);
 
         ExtensionListBuilder extListBld = null;

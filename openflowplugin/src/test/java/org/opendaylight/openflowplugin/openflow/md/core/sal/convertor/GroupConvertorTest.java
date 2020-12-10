@@ -163,16 +163,16 @@ public class GroupConvertorTest {
 
         final List<Action> outActionList = outAddGroupInput.getBucketsList().get(0).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
-                    .rev150203.actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
+            .rev150203.actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
-                        .action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5)).build())
-                        .build()).build(),
-                    new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
-                    .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
-                            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5))
-                            .build()).build())
-                    .build()), outActionList);
+                .action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5)).build())
+                .build()).build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
+                    new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
+                    .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5))
+                    .build()).build())
+            .build()), outActionList);
 
         assertEquals(50, outAddGroupInput.getBucketsList().get(1).getWeight().toJava());
         assertEquals(60, outAddGroupInput.getBucketsList().get(1).getWatchPort().getValue().toJava());
@@ -180,16 +180,16 @@ public class GroupConvertorTest {
 
         final List<Action> outActionList1 = outAddGroupInput.getBucketsList().get(1).getAction();
         assertEquals(ImmutableList.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action
-                    .rev150203.actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
+            .rev150203.actions.grouping.ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
-                        .action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5)).build()).build())
-                    .build(),
-                    new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
-                    .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
-                            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
-                            .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5))
-                            .build()).build())
-                    .build()), outActionList1);
+                .action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5)).build()).build())
+            .build(),
+            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
+            .ActionBuilder().setActionChoice(new GroupCaseBuilder().setGroupAction(
+                    new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action
+                    .grouping.action.choice.group._case.GroupActionBuilder().setGroupId(Uint32.valueOf(5))
+                    .build()).build())
+            .build()), outActionList1);
     }
 
     /**

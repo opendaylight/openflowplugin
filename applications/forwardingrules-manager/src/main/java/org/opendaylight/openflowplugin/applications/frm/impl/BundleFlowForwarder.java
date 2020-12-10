@@ -173,8 +173,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         BundleInnerMessage bundleInnerMessage = new BundleAddGroupCaseBuilder()
                                 .setAddGroupCaseData(new AddGroupCaseDataBuilder(group.get()).build()).build();
                         Message groupMessage = new MessageBuilder()
-                                .setNode(
-                                new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
                                 .setBundleInnerMessage(bundleInnerMessage)
                                 .build();
                         final List<Message> messages = new ArrayList<>(1);

@@ -121,7 +121,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
                 if (Preconditions.checkNotNull(result).isSuccessful()) {
                     final MessageTranslator<MultipartReply, AggregatedFlowStatistics>
                              messageTranslator = translatorLibrary.lookupTranslator(
-                             new TranslatorKey(getVersion(),
+                                 new TranslatorKey(getVersion(),
                                                MultipartReplyAggregateCase.class.getName()));
 
                     return RpcResultBuilder.success(
