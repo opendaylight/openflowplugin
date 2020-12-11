@@ -11,7 +11,7 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>odl-openflowplugin-flow-services-rest</artifactId>
     <packaging>feature</packaging>
-    <version>0.10.3-SNAPSHOT</version>
+    <version>0.10.4-SNAPSHOT</version>
 
     <name>OpenDaylight :: Openflow Plugin :: Flow Services :: REST</name>
 
@@ -21,7 +21,7 @@
             <dependency>
                 <groupId>org.opendaylight.netconf</groupId>
                 <artifactId>netconf-artifacts</artifactId>
-                <version>1.8.3-SNAPSHOT</version>
+                <version>1.8.4-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>

@@ -8,11 +8,11 @@
   </parent>
   <groupId>org.opendaylight.openflowplugin</groupId>
   <artifactId>openflowplugin-karaf</artifactId>
-  <version>0.10.3-SNAPSHOT</version>
+  <version>0.10.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
-    <openflowplugin.version>0.10.3-SNAPSHOT</openflowplugin.version>
+    <openflowplugin.version>0.10.4-SNAPSHOT</openflowplugin.version>
   </properties>
 
   <dependencyManagement>
