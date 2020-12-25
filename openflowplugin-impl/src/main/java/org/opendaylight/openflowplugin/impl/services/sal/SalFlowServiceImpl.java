@@ -223,7 +223,16 @@ public class SalFlowServiceImpl implements SalFlowService {
         public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 final FlowDescriptor flowDescriptor;
-                final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
+                if (input.getFlowRef() != null) {
+                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(),
+                            input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
+                    deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
+                } else {
+                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
+                    flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+                }
+
+                final FlowId flowId = flowDescriptor.getFlowId();
                 FlowGroupCache cache = new FlowGroupCache(flowId.getValue(), input.getTableId().toString(),
                         FlowGroupStatus.ADDED, LocalDateTime.now());
                 if (provider.getAllNodesFlowGroupCache().containsKey(nodeId.getValue())) {
@@ -234,16 +243,9 @@ public class SalFlowServiceImpl implements SalFlowService {
                     flowGroupCacheList.add(cache);
                     provider.getAllNodesFlowGroupCache().put(nodeId.getValue(), flowGroupCacheList);
                 }
-                if (input.getFlowRef() != null) {
-                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-                    deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
-                } else {
-                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
-                    flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
-                }
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
+                    LOG.debug("Flow add with id={} finished without error", flowId);
                 }
             } else {
                 if (LOG.isDebugEnabled()) {
@@ -319,7 +321,6 @@ public class SalFlowServiceImpl implements SalFlowService {
         @Override
         public void onSuccess(final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult) {
             final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
-            final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
             final UpdatedFlow updated = input.getUpdatedFlow();
             final OriginalFlow original = input.getOriginalFlow();
             final FlowRegistryKey origFlowRegistryKey =
@@ -330,17 +331,6 @@ public class SalFlowServiceImpl implements SalFlowService {
 
             final boolean isUpdate = origFlowDescriptor != null;
             final FlowDescriptor updatedFlowDescriptor;
-            FlowGroupCache cache = new FlowGroupCache(flowId.getValue(), updated.getTableId().toString(),
-                    FlowGroupStatus.MODIFIED,
-                    LocalDateTime.now());
-            if (provider.getAllNodesFlowGroupCache().containsKey(nodeId)) {
-                provider.getAllNodesFlowGroupCache().get(nodeId).add(cache);
-            } else {
-                Queue<FlowGroupCache> flowGroupCacheList =
-                        Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
-                flowGroupCacheList.add(cache);
-                provider.getAllNodesFlowGroupCache().put(nodeId, flowGroupCacheList);
-            }
 
             if (input.getFlowRef() != null) {
                 updatedFlowDescriptor =
@@ -353,6 +343,19 @@ public class SalFlowServiceImpl implements SalFlowService {
                     deviceFlowRegistry.store(updatedFlowRegistryKey);
                     updatedFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(updatedFlowRegistryKey);
                 }
+            }
+
+            final FlowId flowId = updatedFlowDescriptor.getFlowId();
+            FlowGroupCache cache = new FlowGroupCache(flowId.getValue(), updated.getTableId().toString(),
+                    FlowGroupStatus.MODIFIED,
+                    LocalDateTime.now());
+            if (provider.getAllNodesFlowGroupCache().containsKey(nodeId)) {
+                provider.getAllNodesFlowGroupCache().get(nodeId).add(cache);
+            } else {
+                Queue<FlowGroupCache> flowGroupCacheList =
+                        Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
+                flowGroupCacheList.add(cache);
+                provider.getAllNodesFlowGroupCache().put(nodeId, flowGroupCacheList);
             }
 
             if (isUpdate) {
