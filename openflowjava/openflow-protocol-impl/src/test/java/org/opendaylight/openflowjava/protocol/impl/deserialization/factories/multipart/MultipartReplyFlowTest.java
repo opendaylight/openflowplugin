@@ -56,7 +56,7 @@ public class MultipartReplyFlowTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 0x01, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyFlowCase messageCase = (MultipartReplyFlowCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyFlow message = messageCase.getMultipartReplyFlow();
         Assert.assertEquals("Wrong flow stats size", 0, message.nonnullFlowStats().size());
@@ -96,7 +96,7 @@ public class MultipartReplyFlowTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 0x01, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyFlowCase messageCase = (MultipartReplyFlowCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyFlow message = messageCase.getMultipartReplyFlow();
         Assert.assertEquals("Wrong flow stats size", 2, message.getFlowStats().size());

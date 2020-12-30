@@ -24,7 +24,7 @@ final class OutboundQueueEntry {
     private static final Logger LOG = LoggerFactory.getLogger(OutboundQueueEntry.class);
     public static final Function<OfHeader, Boolean> DEFAULT_IS_COMPLETE = message -> {
         if (message instanceof MultipartReplyMessage) {
-            return !((MultipartReplyMessage) message).getFlags().isOFPMPFREQMORE();
+            return !((MultipartReplyMessage) message).getFlags().getOFPMPFREQMORE();
         }
 
         return true;

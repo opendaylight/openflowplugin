@@ -25,9 +25,8 @@ public class OxmArpSpaSerializer extends AbstractOxmIpv4AddressSerializer {
         super.serialize(entry, outBuffer);
         ArpSpaCase entryValue = (ArpSpaCase) entry.getMatchEntryValue();
         writeIpv4Address(entryValue.getArpSpa().getIpv4Address(), outBuffer);
-        if (entry.isHasMask()) {
-            writeMask(entryValue.getArpSpa().getMask(), outBuffer,
-                    EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
+        if (entry.getHasMask()) {
+            writeMask(entryValue.getArpSpa().getMask(), outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
         }
     }
 

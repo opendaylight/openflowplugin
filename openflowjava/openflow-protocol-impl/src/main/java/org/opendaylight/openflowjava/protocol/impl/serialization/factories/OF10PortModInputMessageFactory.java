@@ -40,29 +40,29 @@ public class OF10PortModInputMessageFactory implements OFSerializer<PortModInput
 
     private static int createPortConfigBitmask(final PortConfigV10 config) {
         return ByteBufUtils.fillBitMask(0,
-                config.isPortDown(),
-                config.isNoStp(),
-                config.isNoRecv(),
-                config.isNoRecvStp(),
-                config.isNoFlood(),
-                config.isNoFwd(),
-                config.isNoPacketIn());
+                config.getPortDown(),
+                config.getNoStp(),
+                config.getNoRecv(),
+                config.getNoRecvStp(),
+                config.getNoFlood(),
+                config.getNoFwd(),
+                config.getNoPacketIn());
     }
 
     private static int createPortFeaturesBitmask(final PortFeaturesV10 feature) {
         return ByteBufUtils.fillBitMask(0,
-                feature.is_10mbHd(),
-                feature.is_10mbFd(),
-                feature.is_100mbHd(),
-                feature.is_100mbFd(),
-                feature.is_1gbHd(),
-                feature.is_1gbFd(),
-                feature.is_10gbFd(),
-                feature.isCopper(),
-                feature.isFiber(),
-                feature.isAutoneg(),
-                feature.isPause(),
-                feature.isPauseAsym());
+                feature.get_10mbHd(),
+                feature.get_10mbFd(),
+                feature.get_100mbHd(),
+                feature.get_100mbFd(),
+                feature.get_1gbHd(),
+                feature.get_1gbFd(),
+                feature.get_10gbFd(),
+                feature.getCopper(),
+                feature.getFiber(),
+                feature.getAutoneg(),
+                feature.getPause(),
+                feature.getPauseAsym());
     }
 
 }

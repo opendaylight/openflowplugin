@@ -29,7 +29,7 @@ public class OxmArpTpaDeserializer extends AbstractOxmMatchEntryDeserializer {
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         final ArpTpaBuilder arpBuilder = new ArpTpaBuilder()
                 .setIpv4Address(ByteBufUtils.readIetfIpv4Address(input));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             arpBuilder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.GROUPS_IN_IPV4_ADDRESS));
         }
         builder.setMatchEntryValue(new ArpTpaCaseBuilder().setArpTpa(arpBuilder.build()).build());

@@ -55,10 +55,10 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
 
     private static void writePortConfig(final PortConfig config, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, config.isPortDown());
-        map.put(2, config.isNoRecv());
-        map.put(5, config.isNoFwd());
-        map.put(6, config.isNoPacketIn());
+        map.put(0, config.getPortDown());
+        map.put(2, config.getNoRecv());
+        map.put(5, config.getNoFwd());
+        map.put(6, config.getNoPacketIn());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
@@ -83,31 +83,31 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
 
     private static void writePortState(final PortState state, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.isLinkDown());
-        map.put(1, state.isBlocked());
-        map.put(2, state.isLive());
+        map.put(0, state.getLinkDown());
+        map.put(1, state.getBlocked());
+        map.put(2, state.getLive());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writePortFeatures(final PortFeatures features, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, features.is_10mbHd());
-        map.put(1, features.is_10mbFd());
-        map.put(2, features.is_100mbHd());
-        map.put(3, features.is_100mbFd());
-        map.put(4, features.is_1gbHd());
-        map.put(5, features.is_1gbFd());
-        map.put(6, features.is_10gbFd());
-        map.put(7, features.is_40gbFd());
-        map.put(8, features.is_100gbFd());
-        map.put(9, features.is_1tbFd());
-        map.put(10, features.isOther());
-        map.put(11, features.isCopper());
-        map.put(12, features.isFiber());
-        map.put(13, features.isAutoneg());
-        map.put(14, features.isPause());
-        map.put(15, features.isPauseAsym());
+        map.put(0, features.get_10mbHd());
+        map.put(1, features.get_10mbFd());
+        map.put(2, features.get_100mbHd());
+        map.put(3, features.get_100mbFd());
+        map.put(4, features.get_1gbHd());
+        map.put(5, features.get_1gbFd());
+        map.put(6, features.get_10gbFd());
+        map.put(7, features.get_40gbFd());
+        map.put(8, features.get_100gbFd());
+        map.put(9, features.get_1tbFd());
+        map.put(10, features.getOther());
+        map.put(11, features.getCopper());
+        map.put(12, features.getFiber());
+        map.put(13, features.getAutoneg());
+        map.put(14, features.getPause());
+        map.put(15, features.getPauseAsym());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }

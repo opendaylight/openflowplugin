@@ -19,11 +19,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIpv6FlabelSerializer extends AbstractOxmMatchEntrySerializer {
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         Ipv6FlabelCase entryValue = (Ipv6FlabelCase) entry.getMatchEntryValue();
         outBuffer.writeInt(entryValue.getIpv6Flabel().getIpv6Flabel().getValue().intValue());
-        if (entry.isHasMask()) {
+        if (entry.getHasMask()) {
             writeMask(entryValue.getIpv6Flabel().getMask(), outBuffer, Integer.BYTES);
         }
     }

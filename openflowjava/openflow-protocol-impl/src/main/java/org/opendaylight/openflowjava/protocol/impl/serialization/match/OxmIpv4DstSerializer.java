@@ -25,9 +25,8 @@ public class OxmIpv4DstSerializer extends AbstractOxmIpv4AddressSerializer {
         super.serialize(entry, outBuffer);
         Ipv4DstCase entryValue = (Ipv4DstCase) entry.getMatchEntryValue();
         writeIpv4Address(entryValue.getIpv4Dst().getIpv4Address(), outBuffer);
-        if (entry.isHasMask()) {
-            writeMask(entryValue.getIpv4Dst().getMask(), outBuffer,
-                    EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
+        if (entry.getHasMask()) {
+            writeMask(entryValue.getIpv4Dst().getMask(), outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
         }
     }
 

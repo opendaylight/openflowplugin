@@ -25,9 +25,8 @@ public class OxmIpv4SrcSerializer extends AbstractOxmIpv4AddressSerializer {
         super.serialize(entry, outBuffer);
         Ipv4SrcCase entryValue = (Ipv4SrcCase) entry.getMatchEntryValue();
         writeIpv4Address(entryValue.getIpv4Src().getIpv4Address(), outBuffer);
-        if (entry.isHasMask()) {
-            writeMask(entryValue.getIpv4Src().getMask(), outBuffer,
-                    EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
+        if (entry.getHasMask()) {
+            writeMask(entryValue.getIpv4Src().getMask(), outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
         }
     }
 

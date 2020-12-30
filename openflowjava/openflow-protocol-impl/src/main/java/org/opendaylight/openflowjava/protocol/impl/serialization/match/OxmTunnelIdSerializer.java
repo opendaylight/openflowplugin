@@ -19,11 +19,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmTunnelIdSerializer extends AbstractOxmMatchEntrySerializer {
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         TunnelIdCase entryValue = (TunnelIdCase) entry.getMatchEntryValue();
         outBuffer.writeBytes(entryValue.getTunnelId().getTunnelId());
-        if (entry.isHasMask()) {
+        if (entry.getHasMask()) {
             writeMask(entryValue.getTunnelId().getMask(), outBuffer, Long.BYTES);
         }
     }

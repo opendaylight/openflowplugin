@@ -20,16 +20,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmVlanVidSerializer extends AbstractOxmMatchEntrySerializer {
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         VlanVid vlanVid = ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid();
         int vlanVidValue = vlanVid.getVlanVid().toJava();
-        if (vlanVid.isCfiBit()) {
+        if (vlanVid.getCfiBit()) {
             short cfi = 1 << 12; // 13-th bit
             vlanVidValue = vlanVidValue | cfi;
         }
         outBuffer.writeShort(vlanVidValue);
-        if (entry.isHasMask()) {
+        if (entry.getHasMask()) {
             writeMask(vlanVid.getMask(), outBuffer, getValueLength());
         }
     }

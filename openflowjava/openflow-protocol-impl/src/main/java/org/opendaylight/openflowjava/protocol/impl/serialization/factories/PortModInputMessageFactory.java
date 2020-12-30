@@ -47,31 +47,31 @@ public class PortModInputMessageFactory implements OFSerializer<PortMod> {
 
     private static int createPortConfigBitmask(final PortConfig config) {
         Map<Integer, Boolean> portConfigMap = new HashMap<>();
-        portConfigMap.put(0, config.isPortDown());
-        portConfigMap.put(2, config.isNoRecv());
-        portConfigMap.put(5, config.isNoFwd());
-        portConfigMap.put(6, config.isNoPacketIn());
+        portConfigMap.put(0, config.getPortDown());
+        portConfigMap.put(2, config.getNoRecv());
+        portConfigMap.put(5, config.getNoFwd());
+        portConfigMap.put(6, config.getNoPacketIn());
 
         return ByteBufUtils.fillBitMaskFromMap(portConfigMap);
     }
 
     private static int createPortFeaturesBitmask(final PortFeatures feature) {
-        return ByteBufUtils.fillBitMask(0, feature.is_10mbHd(),
-                feature.is_10mbFd(),
-                feature.is_100mbHd(),
-                feature.is_100mbFd(),
-                feature.is_1gbHd(),
-                feature.is_1gbFd(),
-                feature.is_10gbFd(),
-                feature.is_40gbFd(),
-                feature.is_100gbFd(),
-                feature.is_1tbFd(),
-                feature.isOther(),
-                feature.isCopper(),
-                feature.isFiber(),
-                feature.isAutoneg(),
-                feature.isPause(),
-                feature.isPauseAsym());
+        return ByteBufUtils.fillBitMask(0, feature.get_10mbHd(),
+                feature.get_10mbFd(),
+                feature.get_100mbHd(),
+                feature.get_100mbFd(),
+                feature.get_1gbHd(),
+                feature.get_1gbFd(),
+                feature.get_10gbFd(),
+                feature.get_40gbFd(),
+                feature.get_100gbFd(),
+                feature.get_1tbFd(),
+                feature.getOther(),
+                feature.getCopper(),
+                feature.getFiber(),
+                feature.getAutoneg(),
+                feature.getPause(),
+                feature.getPauseAsym());
     }
 
 }

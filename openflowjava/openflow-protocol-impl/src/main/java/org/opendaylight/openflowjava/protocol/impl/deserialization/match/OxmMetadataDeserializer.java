@@ -29,7 +29,7 @@ public class OxmMetadataDeserializer extends AbstractOxmMatchEntryDeserializer {
         input.readBytes(metadataBytes);
 
         final MetadataBuilder metadataBuilder = new MetadataBuilder().setMetadata(metadataBytes);
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             metadataBuilder.setMask(OxmDeserializerHelper.convertMask(input, Long.BYTES));
         }
         builder.setMatchEntryValue(new MetadataCaseBuilder().setMetadata(metadataBuilder.build()).build());

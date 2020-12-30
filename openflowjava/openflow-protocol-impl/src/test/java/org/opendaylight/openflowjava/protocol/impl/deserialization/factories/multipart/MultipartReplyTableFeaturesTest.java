@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -42,7 +41,7 @@ public class MultipartReplyTableFeaturesTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
@@ -76,7 +75,7 @@ public class MultipartReplyTableFeaturesTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
@@ -88,7 +87,7 @@ public class MultipartReplyTableFeaturesTest {
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
         Assert.assertArrayEquals("Wrong metadata write",
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().getOFPTCDEPRECATEDMASK());
         Assert.assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
         feature = message.getTableFeatures().get(1);
         Assert.assertEquals("Wrong table id", 2, feature.getTableId().intValue());
@@ -97,7 +96,7 @@ public class MultipartReplyTableFeaturesTest {
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 3}, feature.getMetadataMatch());
         Assert.assertArrayEquals("Wrong metadata write",
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 4}, feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", true, feature.getConfig().isOFPTCDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", true, feature.getConfig().getOFPTCDEPRECATEDMASK());
         Assert.assertEquals("Wrong max entries", 43, feature.getMaxEntries().intValue());
     }
 
@@ -133,7 +132,7 @@ public class MultipartReplyTableFeaturesTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 12, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyTableFeaturesCase messageCase =
                 (MultipartReplyTableFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTableFeatures message = messageCase.getMultipartReplyTableFeatures();
@@ -145,7 +144,7 @@ public class MultipartReplyTableFeaturesTest {
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 1}, feature.getMetadataMatch());
         Assert.assertArrayEquals("Wrong metadata write",
                 new byte[]{0, 0, 0, 0, 0, 0, 0, 2}, feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isOFPTCDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().getOFPTCDEPRECATEDMASK());
         Assert.assertEquals("Wrong max entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties size", 14, feature.getTableFeatureProperties().size());
         Assert.assertEquals("Wrong property type", TableFeaturesPropType.OFPTFPTINSTRUCTIONS,

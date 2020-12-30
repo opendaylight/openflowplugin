@@ -19,10 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmMplsBosSerializer extends AbstractOxmMatchEntrySerializer {
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         MplsBosCase entryValue = (MplsBosCase) entry.getMatchEntryValue();
-        outBuffer.writeBoolean(entryValue.getMplsBos().isBos().booleanValue());
+        outBuffer.writeBoolean(entryValue.getMplsBos().getBos());
     }
 
     @Override

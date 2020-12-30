@@ -27,7 +27,7 @@ public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntr
     @Override
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         ExperimenterIdCaseBuilder expCaseBuilder = createExperimenterIdCase(builder, input);
-        addTcpFlagsAugmentation(input, expCaseBuilder, builder.isHasMask());
+        addTcpFlagsAugmentation(input, expCaseBuilder, builder.getHasMask());
         builder.setMatchEntryValue(expCaseBuilder.build());
     }
 

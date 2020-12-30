@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -78,7 +77,7 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
     }
 
     private static int createMultipartRequestFlagsBitmask(final MultipartRequestFlags flags) {
-        return ByteBufUtils.fillBitMask(0, flags.isOFPMPFREQMORE());
+        return ByteBufUtils.fillBitMask(0, flags.getOFPMPFREQMORE());
     }
 
     private void serializeDescBody() {

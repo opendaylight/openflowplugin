@@ -132,7 +132,7 @@ public class ActionsDeserializerTest {
                 + "oxm.rev150225.OpenflowBasicClass", entries.get(0).getOxmClass().getName());
         Assert.assertEquals("Wrong match entry field", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow."
                 + "oxm.rev150225.InPhyPort", entries.get(0).getOxmMatchField().getName());
-        Assert.assertEquals("Wrong match entry mask", false, entries.get(0).isHasMask());
+        Assert.assertEquals("Wrong match entry mask", false, entries.get(0).getHasMask());
         Assert.assertEquals("Wrong match entry value", 11,
                 ((InPhyPortCase) entries.get(0).getMatchEntryValue()).getInPhyPort().getPortNumber()
                 .getValue().intValue());

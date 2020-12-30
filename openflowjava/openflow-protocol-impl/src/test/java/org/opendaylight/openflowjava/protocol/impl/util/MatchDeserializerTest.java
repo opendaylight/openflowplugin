@@ -223,19 +223,19 @@ public class MatchDeserializerTest {
         MatchEntry entry0 = entries.get(0);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry0.getOxmClass());
         Assert.assertEquals("Wrong entry field", InPort.class, entry0.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry0.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry0.getHasMask());
         Assert.assertEquals("Wrong entry value", 1,
                 ((InPortCase) entry0.getMatchEntryValue()).getInPort().getPortNumber().getValue().intValue());
         MatchEntry entry1 = entries.get(1);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry1.getOxmClass());
         Assert.assertEquals("Wrong entry field", InPhyPort.class, entry1.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry1.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry1.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((InPhyPortCase) entry1.getMatchEntryValue()).getInPhyPort().getPortNumber().getValue().intValue());
         MatchEntry entry2 = entries.get(2);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry2.getOxmClass());
         Assert.assertEquals("Wrong entry field", Metadata.class, entry2.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry2.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry2.getHasMask());
         Assert.assertArrayEquals("Wrong entry value", ByteBufUtils.hexStringToBytes("00 00 00 00 00 00 00 03"),
                 ((MetadataCase) entry2.getMatchEntryValue()).getMetadata().getMetadata());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 00 00 00 00 04"),
@@ -243,7 +243,7 @@ public class MatchDeserializerTest {
         MatchEntry entry3 = entries.get(3);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry3.getOxmClass());
         Assert.assertEquals("Wrong entry field", EthDst.class, entry3.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry3.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry3.getHasMask());
         Assert.assertEquals("Wrong entry value", new MacAddress("00:00:00:00:00:05"),
                 ((EthDstCase) entry3.getMatchEntryValue()).getEthDst().getMacAddress());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 00 00 06"),
@@ -251,7 +251,7 @@ public class MatchDeserializerTest {
         MatchEntry entry4 = entries.get(4);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry4.getOxmClass());
         Assert.assertEquals("Wrong entry field", EthSrc.class, entry4.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry4.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry4.getHasMask());
         Assert.assertEquals("Wrong entry value", new MacAddress("00:00:00:00:00:07"),
                 ((EthSrcCase) entry4.getMatchEntryValue()).getEthSrc().getMacAddress());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 00 00 08"),
@@ -259,47 +259,47 @@ public class MatchDeserializerTest {
         MatchEntry entry5 = entries.get(5);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry5.getOxmClass());
         Assert.assertEquals("Wrong entry field", EthType.class, entry5.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry5.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry5.getHasMask());
         Assert.assertEquals("Wrong entry value", 9,
                 ((EthTypeCase) entry5.getMatchEntryValue()).getEthType().getEthType().getValue().intValue());
         MatchEntry entry6 = entries.get(6);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry6.getOxmClass());
         Assert.assertEquals("Wrong entry field", VlanVid.class, entry6.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry6.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry6.getHasMask());
         Assert.assertEquals("Wrong entry value", 10,
                 ((VlanVidCase) entry6.getMatchEntryValue()).getVlanVid().getVlanVid().intValue());
         Assert.assertEquals("Wrong entry value", false,
-                ((VlanVidCase) entry6.getMatchEntryValue()).getVlanVid().isCfiBit());
+                ((VlanVidCase) entry6.getMatchEntryValue()).getVlanVid().getCfiBit());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 0B"),
                 ((VlanVidCase) entry6.getMatchEntryValue()).getVlanVid().getMask());
         MatchEntry entry7 = entries.get(7);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry7.getOxmClass());
         Assert.assertEquals("Wrong entry field", VlanPcp.class, entry7.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry7.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry7.getHasMask());
         Assert.assertEquals("Wrong entry value", 12,
                 ((VlanPcpCase) entry7.getMatchEntryValue()).getVlanPcp().getVlanPcp().intValue());
         MatchEntry entry8 = entries.get(8);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry8.getOxmClass());
         Assert.assertEquals("Wrong entry field", IpDscp.class, entry8.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry8.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry8.getHasMask());
         Assert.assertEquals("Wrong entry value", 13,
                 ((IpDscpCase) entry8.getMatchEntryValue()).getIpDscp().getDscp().getValue().intValue());
         MatchEntry entry9 = entries.get(9);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry9.getOxmClass());
         Assert.assertEquals("Wrong entry field", IpEcn.class, entry9.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry9.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry9.getHasMask());
         Assert.assertEquals("Wrong entry value", 14,
                 ((IpEcnCase) entry9.getMatchEntryValue()).getIpEcn().getEcn().intValue());
         MatchEntry entry10 = entries.get(10);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry10.getOxmClass());
         Assert.assertEquals("Wrong entry field", IpProto.class, entry10.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry10.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry10.getHasMask());
         Assert.assertEquals("Wrong entry value", 15,
                 ((IpProtoCase) entry10.getMatchEntryValue()).getIpProto().getProtocolNumber().intValue());
         MatchEntry entry11 = entries.get(11);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry11.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv4Src.class, entry11.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry11.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry11.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv4Address("10.0.0.1"),
                 ((Ipv4SrcCase) entry11.getMatchEntryValue()).getIpv4Src().getIpv4Address());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 FF 00"),
@@ -307,7 +307,7 @@ public class MatchDeserializerTest {
         MatchEntry entry12 = entries.get(12);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry12.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv4Dst.class, entry12.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry12.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry12.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv4Address("10.0.0.2"),
                 ((Ipv4DstCase) entry12.getMatchEntryValue()).getIpv4Dst().getIpv4Address());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 FF"),
@@ -315,61 +315,61 @@ public class MatchDeserializerTest {
         MatchEntry entry13 = entries.get(13);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry13.getOxmClass());
         Assert.assertEquals("Wrong entry field", TcpSrc.class, entry13.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry13.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry13.getHasMask());
         Assert.assertEquals("Wrong entry value", 3,
                 ((TcpSrcCase) entry13.getMatchEntryValue()).getTcpSrc().getPort().getValue().intValue());
         MatchEntry entry14 = entries.get(14);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry14.getOxmClass());
         Assert.assertEquals("Wrong entry field", TcpDst.class, entry14.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry14.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry14.getHasMask());
         Assert.assertEquals("Wrong entry value", 4,
                 ((TcpDstCase) entry14.getMatchEntryValue()).getTcpDst().getPort().getValue().intValue());
         MatchEntry entry15 = entries.get(15);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry15.getOxmClass());
         Assert.assertEquals("Wrong entry field", UdpSrc.class, entry15.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry15.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry15.getHasMask());
         Assert.assertEquals("Wrong entry value", 5,
                 ((UdpSrcCase) entry15.getMatchEntryValue()).getUdpSrc().getPort().getValue().intValue());
         MatchEntry entry16 = entries.get(16);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry16.getOxmClass());
         Assert.assertEquals("Wrong entry field", UdpDst.class, entry16.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry16.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry16.getHasMask());
         Assert.assertEquals("Wrong entry value", 6,
                 ((UdpDstCase) entry16.getMatchEntryValue()).getUdpDst().getPort().getValue().intValue());
         MatchEntry entry17 = entries.get(17);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry17.getOxmClass());
         Assert.assertEquals("Wrong entry field", SctpSrc.class, entry17.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry17.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry17.getHasMask());
         Assert.assertEquals("Wrong entry value", 7,
                 ((SctpSrcCase) entry17.getMatchEntryValue()).getSctpSrc().getPort().getValue().intValue());
         MatchEntry entry18 = entries.get(18);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry18.getOxmClass());
         Assert.assertEquals("Wrong entry field", SctpDst.class, entry18.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry18.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry18.getHasMask());
         Assert.assertEquals("Wrong entry value", 8,
                 ((SctpDstCase) entry18.getMatchEntryValue()).getSctpDst().getPort().getValue().intValue());
         MatchEntry entry19 = entries.get(19);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry19.getOxmClass());
         Assert.assertEquals("Wrong entry field", Icmpv4Type.class, entry19.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry19.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry19.getHasMask());
         Assert.assertEquals("Wrong entry value", 5,
                 ((Icmpv4TypeCase) entry19.getMatchEntryValue()).getIcmpv4Type().getIcmpv4Type().intValue());
         MatchEntry entry20 = entries.get(20);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry20.getOxmClass());
         Assert.assertEquals("Wrong entry field", Icmpv4Code.class, entry20.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry20.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry20.getHasMask());
         Assert.assertEquals("Wrong entry value", 7,
                 ((Icmpv4CodeCase) entry20.getMatchEntryValue()).getIcmpv4Code().getIcmpv4Code().intValue());
         MatchEntry entry21 = entries.get(21);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry21.getOxmClass());
         Assert.assertEquals("Wrong entry field", ArpOp.class, entry21.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry21.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry21.getHasMask());
         Assert.assertEquals("Wrong entry value", 16,
                 ((ArpOpCase) entry21.getMatchEntryValue()).getArpOp().getOpCode().intValue());
         MatchEntry entry22 = entries.get(22);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry22.getOxmClass());
         Assert.assertEquals("Wrong entry field", ArpSpa.class, entry22.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry22.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry22.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv4Address("10.0.0.9"),
                 ((ArpSpaCase) entry22.getMatchEntryValue()).getArpSpa().getIpv4Address());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 FF 00"),
@@ -377,7 +377,7 @@ public class MatchDeserializerTest {
         MatchEntry entry23 = entries.get(23);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry23.getOxmClass());
         Assert.assertEquals("Wrong entry field", ArpTpa.class, entry23.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry23.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry23.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv4Address("10.0.0.10"),
                 ((ArpTpaCase) entry23.getMatchEntryValue()).getArpTpa().getIpv4Address());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 FF"),
@@ -385,7 +385,7 @@ public class MatchDeserializerTest {
         MatchEntry entry24 = entries.get(24);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry24.getOxmClass());
         Assert.assertEquals("Wrong entry field", ArpSha.class, entry24.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry24.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry24.getHasMask());
         Assert.assertEquals("Wrong entry value", new MacAddress("00:00:00:00:00:01"),
                 ((ArpShaCase) entry24.getMatchEntryValue()).getArpSha().getMacAddress());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 00 00 03"),
@@ -393,7 +393,7 @@ public class MatchDeserializerTest {
         MatchEntry entry25 = entries.get(25);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry25.getOxmClass());
         Assert.assertEquals("Wrong entry field", ArpTha.class, entry25.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry25.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry25.getHasMask());
         Assert.assertEquals("Wrong entry value", new MacAddress("00:00:00:00:00:02"),
                 ((ArpThaCase) entry25.getMatchEntryValue()).getArpTha().getMacAddress());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 00 00 04"),
@@ -401,7 +401,7 @@ public class MatchDeserializerTest {
         MatchEntry entry26 = entries.get(26);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry26.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Src.class, entry26.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry26.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry26.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv6Address("::15"),
                 ((Ipv6SrcCase) entry26.getMatchEntryValue()).getIpv6Src().getIpv6Address());
         Assert.assertArrayEquals("Wrong entry mask",
@@ -410,7 +410,7 @@ public class MatchDeserializerTest {
         MatchEntry entry27 = entries.get(27);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry27.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Dst.class, entry27.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry27.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry27.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv6Address("::17"),
                 ((Ipv6DstCase) entry27.getMatchEntryValue()).getIpv6Dst().getIpv6Address());
         Assert.assertArrayEquals("Wrong entry mask",
@@ -419,62 +419,62 @@ public class MatchDeserializerTest {
         MatchEntry entry28 = entries.get(28);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry28.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Flabel.class, entry28.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry28.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry28.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((Ipv6FlabelCase) entry28.getMatchEntryValue()).getIpv6Flabel().getIpv6Flabel()
                 .getValue().intValue());
         MatchEntry entry29 = entries.get(29);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry29.getOxmClass());
         Assert.assertEquals("Wrong entry field", Icmpv6Type.class, entry29.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry29.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry29.getHasMask());
         Assert.assertEquals("Wrong entry value", 21,
                 ((Icmpv6TypeCase) entry29.getMatchEntryValue()).getIcmpv6Type().getIcmpv6Type().intValue());
         MatchEntry entry30 = entries.get(30);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry30.getOxmClass());
         Assert.assertEquals("Wrong entry field", Icmpv6Code.class, entry30.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry30.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry30.getHasMask());
         Assert.assertEquals("Wrong entry value", 23,
                 ((Icmpv6CodeCase) entry30.getMatchEntryValue()).getIcmpv6Code().getIcmpv6Code().intValue());
         MatchEntry entry31 = entries.get(31);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry31.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6NdTarget.class, entry31.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry31.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry31.getHasMask());
         Assert.assertEquals("Wrong entry value", new Ipv6Address("::20"),
                 ((Ipv6NdTargetCase) entry31.getMatchEntryValue()).getIpv6NdTarget().getIpv6Address());
         MatchEntry entry32 = entries.get(32);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry32.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6NdSll.class, entry32.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry32.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry32.getHasMask());
         Assert.assertEquals("Wrong entry value", new MacAddress("00:05:00:00:00:01"),
                 ((Ipv6NdSllCase) entry32.getMatchEntryValue()).getIpv6NdSll().getMacAddress());
         MatchEntry entry33 = entries.get(33);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry33.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6NdTll.class, entry33.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry33.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry33.getHasMask());
         Assert.assertEquals("Wrong entry value", new MacAddress("00:05:00:00:00:02"),
                 ((Ipv6NdTllCase) entry33.getMatchEntryValue()).getIpv6NdTll().getMacAddress());
         MatchEntry entry34 = entries.get(34);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry34.getOxmClass());
         Assert.assertEquals("Wrong entry field", MplsLabel.class, entry34.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry34.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry34.getHasMask());
         Assert.assertEquals("Wrong entry value", 515,
                 ((MplsLabelCase) entry34.getMatchEntryValue()).getMplsLabel().getMplsLabel().intValue());
         MatchEntry entry35 = entries.get(35);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry35.getOxmClass());
         Assert.assertEquals("Wrong entry field", MplsTc.class, entry35.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry35.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry35.getHasMask());
         Assert.assertEquals("Wrong entry value", 3,
                 ((MplsTcCase) entry35.getMatchEntryValue()).getMplsTc().getTc().intValue());
         MatchEntry entry36 = entries.get(36);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry36.getOxmClass());
         Assert.assertEquals("Wrong entry field", MplsBos.class, entry36.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry36.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry36.getHasMask());
         Assert.assertEquals("Wrong entry value", true,
-                ((MplsBosCase) entry36.getMatchEntryValue()).getMplsBos().isBos());
+                ((MplsBosCase) entry36.getMatchEntryValue()).getMplsBos().getBos());
         MatchEntry entry37 = entries.get(37);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry37.getOxmClass());
         Assert.assertEquals("Wrong entry field", PbbIsid.class, entry37.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry37.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry37.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((PbbIsidCase) entry37.getMatchEntryValue()).getPbbIsid().getIsid().intValue());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 01"),
@@ -482,7 +482,7 @@ public class MatchDeserializerTest {
         MatchEntry entry38 = entries.get(38);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry38.getOxmClass());
         Assert.assertEquals("Wrong entry field", TunnelId.class, entry38.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry38.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry38.getHasMask());
         Assert.assertArrayEquals("Wrong entry value", ByteBufUtils.hexStringToBytes("00 00 00 00 00 00 00 07"),
                 ((TunnelIdCase) entry38.getMatchEntryValue()).getTunnelId().getTunnelId());
         Assert.assertArrayEquals("Wrong entry mask", ByteBufUtils.hexStringToBytes("00 00 00 00 00 00 00 FF"),
@@ -490,7 +490,7 @@ public class MatchDeserializerTest {
         MatchEntry entry39 = entries.get(39);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry39.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Exthdr.class, entry39.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry39.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry39.getHasMask());
         Assert.assertEquals("Wrong entry value",
                 new Ipv6ExthdrFlags(false, false, false, false, false, false, false, false, false),
                 ((Ipv6ExthdrCase) entry39.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());
@@ -500,7 +500,7 @@ public class MatchDeserializerTest {
         MatchEntry entry40 = entries.get(40);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry40.getOxmClass());
         Assert.assertEquals("Wrong entry field", PacketType.class, entry40.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry40.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry40.getHasMask());
         Assert.assertEquals("Wrong entry value", 0x1894f,
                 ((PacketTypeCase) entry40.getMatchEntryValue()).getPacketType().getPacketType().longValue());
     }
@@ -519,7 +519,7 @@ public class MatchDeserializerTest {
         MatchEntry entry = entryDeserializer.deserializeHeader(buffer);
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv4Dst.class, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertNull("Wrong Ipv4 address", entry.getMatchEntryValue());
     }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -159,7 +158,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
     }
 
     private static int createMultipartRequestFlagsBitmask(final MultipartRequestFlags flags) {
-        return ByteBufUtils.fillBitMask(0, flags.isOFPMPFREQMORE());
+        return ByteBufUtils.fillBitMask(0, flags.getOFPMPFREQMORE());
     }
 
     private void serializeDescBody() {
@@ -310,9 +309,8 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
                     writeOxmRelatedTableProperty(output, property, APPLY_SETFIELD_CODE);
                 } else if (type.equals(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS)) {
                     writeOxmRelatedTableProperty(output, property, APPLY_SETFIELD_MISS_CODE);
-                } else if (type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTER)) {
-                    writeExperimenterRelatedTableProperty(output, property);
-                } else if (type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS)) {
+                } else if (type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTER)
+                        || type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS)) {
                     writeExperimenterRelatedTableProperty(output, property);
                 }
             }
@@ -409,7 +407,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
     }
 
     private static int createTableConfigBitmask(final TableConfig tableConfig) {
-        return ByteBufUtils.fillBitMask(3, tableConfig.isOFPTCDEPRECATEDMASK());
+        return ByteBufUtils.fillBitMask(3, tableConfig.getOFPTCDEPRECATEDMASK());
     }
 
     @Override

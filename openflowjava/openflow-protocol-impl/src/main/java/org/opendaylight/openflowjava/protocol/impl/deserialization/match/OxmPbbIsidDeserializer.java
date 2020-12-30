@@ -30,7 +30,7 @@ public class OxmPbbIsidDeserializer extends AbstractOxmMatchEntryDeserializer {
         final int isid = input.readUnsignedMedium();
         final PbbIsidBuilder isidBuilder = new PbbIsidBuilder()
                 .setIsid(Uint32.valueOf(isid));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             isidBuilder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.SIZE_OF_3_BYTES));
         }
         builder.setMatchEntryValue(new PbbIsidCaseBuilder().setPbbIsid(isidBuilder.build()).build());

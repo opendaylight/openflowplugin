@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -43,7 +42,7 @@ public class MultipartReplyMeterFeaturesTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 11, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyMeterFeaturesCase messageCase =
                 (MultipartReplyMeterFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyMeterFeatures message = messageCase.getMultipartReplyMeterFeatures();
@@ -69,7 +68,7 @@ public class MultipartReplyMeterFeaturesTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 11, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyMeterFeaturesCase messageCase =
                 (MultipartReplyMeterFeaturesCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyMeterFeatures message = messageCase.getMultipartReplyMeterFeatures();

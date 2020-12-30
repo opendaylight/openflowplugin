@@ -223,7 +223,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writeFlags(final MultipartRequestFlags flags, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, flags.isOFPMPFREQMORE());
+        map.put(0, flags.getOFPMPFREQMORE());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeShort(bitmap);
     }
@@ -389,7 +389,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writeTableConfig(final TableConfig tableConfig, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, tableConfig.isOFPTCDEPRECATEDMASK());
+        map.put(0, tableConfig.getOFPTCDEPRECATEDMASK());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
@@ -407,8 +407,8 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writeBandTypes(final MeterBandTypeBitmap bandTypes, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, bandTypes.isOFPMBTDROP());
-        map.put(1, bandTypes.isOFPMBTDSCPREMARK());
+        map.put(0, bandTypes.getOFPMBTDROP());
+        map.put(1, bandTypes.getOFPMBTDSCPREMARK());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
@@ -451,10 +451,10 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writeMeterFlags(final MeterFlags flags, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, flags.isOFPMFKBPS());
-        map.put(1, flags.isOFPMFPKTPS());
-        map.put(2, flags.isOFPMFBURST());
-        map.put(3, flags.isOFPMFSTATS());
+        map.put(0, flags.getOFPMFKBPS());
+        map.put(1, flags.getOFPMFPKTPS());
+        map.put(2, flags.getOFPMFBURST());
+        map.put(3, flags.getOFPMFSTATS());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeShort(bitmap);
     }
@@ -496,43 +496,43 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writeActionType(final ActionType action, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, action.isOFPATOUTPUT());
-        map.put(1, action.isOFPATCOPYTTLOUT());
-        map.put(2, action.isOFPATCOPYTTLIN());
-        map.put(3, action.isOFPATSETMPLSTTL());
-        map.put(4, action.isOFPATDECMPLSTTL());
-        map.put(5, action.isOFPATPUSHVLAN());
-        map.put(6, action.isOFPATPOPVLAN());
-        map.put(7, action.isOFPATPUSHMPLS());
-        map.put(8, action.isOFPATPOPMPLS());
-        map.put(9, action.isOFPATSETQUEUE());
-        map.put(10, action.isOFPATGROUP());
-        map.put(11, action.isOFPATSETNWTTL());
-        map.put(12, action.isOFPATDECNWTTL());
-        map.put(13, action.isOFPATSETFIELD());
-        map.put(14, action.isOFPATPUSHPBB());
-        map.put(15, action.isOFPATPOPPBB());
-        map.put(16, action.isOFPATEXPERIMENTER());
+        map.put(0, action.getOFPATOUTPUT());
+        map.put(1, action.getOFPATCOPYTTLOUT());
+        map.put(2, action.getOFPATCOPYTTLIN());
+        map.put(3, action.getOFPATSETMPLSTTL());
+        map.put(4, action.getOFPATDECMPLSTTL());
+        map.put(5, action.getOFPATPUSHVLAN());
+        map.put(6, action.getOFPATPOPVLAN());
+        map.put(7, action.getOFPATPUSHMPLS());
+        map.put(8, action.getOFPATPOPMPLS());
+        map.put(9, action.getOFPATSETQUEUE());
+        map.put(10, action.getOFPATGROUP());
+        map.put(11, action.getOFPATSETNWTTL());
+        map.put(12, action.getOFPATDECNWTTL());
+        map.put(13, action.getOFPATSETFIELD());
+        map.put(14, action.getOFPATPUSHPBB());
+        map.put(15, action.getOFPATPOPPBB());
+        map.put(16, action.getOFPATEXPERIMENTER());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writeGroupCapabilities(final GroupCapabilities capabilities, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, capabilities.isOFPGFCSELECTWEIGHT());
-        map.put(1, capabilities.isOFPGFCSELECTLIVENESS());
-        map.put(2, capabilities.isOFPGFCCHAINING());
-        map.put(3, capabilities.isOFPGFCCHAININGCHECKS());
+        map.put(0, capabilities.getOFPGFCSELECTWEIGHT());
+        map.put(1, capabilities.getOFPGFCSELECTLIVENESS());
+        map.put(2, capabilities.getOFPGFCCHAINING());
+        map.put(3, capabilities.getOFPGFCCHAININGCHECKS());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writeGroupTypes(final GroupTypes types, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, types.isOFPGTALL());
-        map.put(1, types.isOFPGTSELECT());
-        map.put(2, types.isOFPGTINDIRECT());
-        map.put(3, types.isOFPGTFF());
+        map.put(0, types.getOFPGTALL());
+        map.put(1, types.getOFPGTSELECT());
+        map.put(2, types.getOFPGTINDIRECT());
+        map.put(3, types.getOFPGTFF());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
@@ -762,41 +762,41 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     private static void writePortConfig(final PortConfig config, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, config.isPortDown());
-        map.put(2, config.isNoRecv());
-        map.put(5, config.isNoFwd());
-        map.put(6, config.isNoPacketIn());
+        map.put(0, config.getPortDown());
+        map.put(2, config.getNoRecv());
+        map.put(5, config.getNoFwd());
+        map.put(6, config.getNoPacketIn());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writePortState(final PortState state, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.isLinkDown());
-        map.put(1, state.isBlocked());
-        map.put(2, state.isLive());
+        map.put(0, state.getLinkDown());
+        map.put(1, state.getBlocked());
+        map.put(2, state.getLive());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writePortFeatures(final PortFeatures features, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, features.is_10mbHd());
-        map.put(1, features.is_10mbFd());
-        map.put(2, features.is_100mbHd());
-        map.put(3, features.is_100mbFd());
-        map.put(4, features.is_1gbHd());
-        map.put(5, features.is_1gbFd());
-        map.put(6, features.is_10gbFd());
-        map.put(7, features.is_40gbFd());
-        map.put(8, features.is_100gbFd());
-        map.put(9, features.is_1tbFd());
-        map.put(10, features.isOther());
-        map.put(11, features.isCopper());
-        map.put(12, features.isFiber());
-        map.put(13, features.isAutoneg());
-        map.put(14, features.isPause());
-        map.put(15, features.isPauseAsym());
+        map.put(0, features.get_10mbHd());
+        map.put(1, features.get_10mbFd());
+        map.put(2, features.get_100mbHd());
+        map.put(3, features.get_100mbFd());
+        map.put(4, features.get_1gbHd());
+        map.put(5, features.get_1gbFd());
+        map.put(6, features.get_10gbFd());
+        map.put(7, features.get_40gbFd());
+        map.put(8, features.get_100gbFd());
+        map.put(9, features.get_1tbFd());
+        map.put(10, features.getOther());
+        map.put(11, features.getCopper());
+        map.put(12, features.getFiber());
+        map.put(13, features.getAutoneg());
+        map.put(14, features.getPause());
+        map.put(15, features.getPauseAsym());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }

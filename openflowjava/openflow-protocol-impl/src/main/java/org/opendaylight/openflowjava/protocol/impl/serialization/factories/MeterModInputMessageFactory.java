@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -61,10 +60,10 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
 
     private static int createMeterFlagsBitmask(final MeterFlags flags) {
         return ByteBufUtils.fillBitMask(0,
-                flags.isOFPMFKBPS(),
-                flags.isOFPMFPKTPS(),
-                flags.isOFPMFBURST(),
-                flags.isOFPMFSTATS());
+                flags.getOFPMFKBPS(),
+                flags.getOFPMFPKTPS(),
+                flags.getOFPMFBURST(),
+                flags.getOFPMFSTATS());
     }
 
     private void serializeBands(final List<Bands> bands, final ByteBuf outBuffer) {

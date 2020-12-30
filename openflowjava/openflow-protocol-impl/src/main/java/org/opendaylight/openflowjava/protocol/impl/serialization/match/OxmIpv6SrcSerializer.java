@@ -21,13 +21,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public class OxmIpv6SrcSerializer extends AbstractOxmIpv6AddressSerializer {
 
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         Ipv6SrcCase entryValue = (Ipv6SrcCase) entry.getMatchEntryValue();
         writeIpv6Address(entryValue.getIpv6Src().getIpv6Address().getValue(), outBuffer);
-        if (entry.isHasMask()) {
-            writeMask(entryValue.getIpv6Src().getMask(), outBuffer,
-                    EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES);
+        if (entry.getHasMask()) {
+            writeMask(entryValue.getIpv6Src().getMask(), outBuffer, EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES);
         }
     }
 

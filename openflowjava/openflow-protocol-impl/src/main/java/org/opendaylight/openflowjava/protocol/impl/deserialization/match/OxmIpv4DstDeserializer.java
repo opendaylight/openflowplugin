@@ -29,7 +29,7 @@ public class OxmIpv4DstDeserializer extends AbstractOxmMatchEntryDeserializer {
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         final Ipv4DstBuilder ipv4Builder = new Ipv4DstBuilder()
                 .setIpv4Address(ByteBufUtils.readIetfIpv4Address(input));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             ipv4Builder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.GROUPS_IN_IPV4_ADDRESS));
         }
         builder.setMatchEntryValue(new Ipv4DstCaseBuilder().setIpv4Dst(ipv4Builder.build()).build());

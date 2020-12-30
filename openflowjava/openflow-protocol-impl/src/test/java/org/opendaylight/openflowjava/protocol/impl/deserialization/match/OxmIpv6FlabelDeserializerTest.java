@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
@@ -37,7 +36,7 @@ public class OxmIpv6FlabelDeserializerTest {
 
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Flabel.class, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel()
                 .getIpv6Flabel().getValue().intValue());
@@ -56,7 +55,7 @@ public class OxmIpv6FlabelDeserializerTest {
 
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Flabel.class, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", true, entry.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", true, entry.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel()
                 .getIpv6Flabel().getValue().intValue());

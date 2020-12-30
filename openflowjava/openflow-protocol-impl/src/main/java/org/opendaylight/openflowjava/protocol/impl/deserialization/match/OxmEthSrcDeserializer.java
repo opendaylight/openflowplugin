@@ -28,7 +28,7 @@ public class OxmEthSrcDeserializer extends AbstractOxmMatchEntryDeserializer {
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         final EthSrcBuilder ethBuilder = new EthSrcBuilder()
                 .setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             ethBuilder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.MAC_ADDRESS_LENGTH));
         }
         builder.setMatchEntryValue(new EthSrcCaseBuilder().setEthSrc(ethBuilder.build()).build());

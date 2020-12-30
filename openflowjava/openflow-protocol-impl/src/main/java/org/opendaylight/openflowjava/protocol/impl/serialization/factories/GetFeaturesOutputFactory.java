@@ -29,7 +29,7 @@ public class GetFeaturesOutputFactory implements OFSerializer<GetFeaturesOutput>
     private static final byte PADDING = 2;
 
     @Override
-    public void serialize(GetFeaturesOutput message, ByteBuf outBuffer) {
+    public void serialize(final GetFeaturesOutput message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeLong(message.getDatapathId().longValue());
         outBuffer.writeInt(message.getBuffers().intValue());
@@ -45,15 +45,15 @@ public class GetFeaturesOutputFactory implements OFSerializer<GetFeaturesOutput>
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
     }
 
-    private static void writeCapabilities(Capabilities capabilities, ByteBuf outBuffer) {
+    private static void writeCapabilities(final Capabilities capabilities, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, capabilities.isOFPCFLOWSTATS());
-        map.put(1, capabilities.isOFPCTABLESTATS());
-        map.put(2, capabilities.isOFPCPORTSTATS());
-        map.put(3, capabilities.isOFPCGROUPSTATS());
-        map.put(5, capabilities.isOFPCIPREASM());
-        map.put(6, capabilities.isOFPCQUEUESTATS());
-        map.put(8, capabilities.isOFPCPORTBLOCKED());
+        map.put(0, capabilities.getOFPCFLOWSTATS());
+        map.put(1, capabilities.getOFPCTABLESTATS());
+        map.put(2, capabilities.getOFPCPORTSTATS());
+        map.put(3, capabilities.getOFPCGROUPSTATS());
+        map.put(5, capabilities.getOFPCIPREASM());
+        map.put(6, capabilities.getOFPCQUEUESTATS());
+        map.put(8, capabilities.getOFPCPORTBLOCKED());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }

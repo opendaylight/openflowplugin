@@ -49,45 +49,45 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
 
     private static void writePortFeature(final PortFeaturesV10 feature, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, feature.is_10mbHd());
-        map.put(1, feature.is_10mbFd());
-        map.put(2, feature.is_100mbHd());
-        map.put(3, feature.is_100mbFd());
-        map.put(4, feature.is_1gbHd());
-        map.put(5, feature.is_1gbFd());
-        map.put(6, feature.is_10gbFd());
-        map.put(7, feature.isCopper());
-        map.put(8, feature.isFiber());
-        map.put(9, feature.isAutoneg());
-        map.put(10, feature.isPause());
-        map.put(11, feature.isPauseAsym());
+        map.put(0, feature.get_10mbHd());
+        map.put(1, feature.get_10mbFd());
+        map.put(2, feature.get_100mbHd());
+        map.put(3, feature.get_100mbFd());
+        map.put(4, feature.get_1gbHd());
+        map.put(5, feature.get_1gbFd());
+        map.put(6, feature.get_10gbFd());
+        map.put(7, feature.getCopper());
+        map.put(8, feature.getFiber());
+        map.put(9, feature.getAutoneg());
+        map.put(10, feature.getPause());
+        map.put(11, feature.getPauseAsym());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writePortState(final PortStateV10 state, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.isLinkDown());
-        map.put(1, state.isBlocked());
-        map.put(2, state.isLive());
-        map.put(3, state.isStpListen());
-        map.put(4, state.isStpLearn());
-        map.put(5, state.isStpForward());
-        map.put(6, state.isStpBlock());
-        map.put(7, state.isStpMask());
+        map.put(0, state.getLinkDown());
+        map.put(1, state.getBlocked());
+        map.put(2, state.getLive());
+        map.put(3, state.getStpListen());
+        map.put(4, state.getStpLearn());
+        map.put(5, state.getStpForward());
+        map.put(6, state.getStpBlock());
+        map.put(7, state.getStpMask());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
 
     private static void writePortConfig(final PortConfigV10 config, final ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, config.isPortDown());
-        map.put(1, config.isNoStp());
-        map.put(2, config.isNoRecv());
-        map.put(3, config.isNoRecvStp());
-        map.put(4, config.isNoFlood());
-        map.put(5, config.isNoFwd());
-        map.put(6, config.isNoPacketIn());
+        map.put(0, config.getPortDown());
+        map.put(1, config.getNoStp());
+        map.put(2, config.getNoRecv());
+        map.put(3, config.getNoRecvStp());
+        map.put(4, config.getNoFlood());
+        map.put(5, config.getNoFwd());
+        map.put(6, config.getNoPacketIn());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }

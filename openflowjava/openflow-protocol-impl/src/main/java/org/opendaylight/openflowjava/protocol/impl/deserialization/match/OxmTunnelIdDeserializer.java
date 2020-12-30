@@ -29,7 +29,7 @@ public class OxmTunnelIdDeserializer extends AbstractOxmMatchEntryDeserializer {
         input.readBytes(metadataBytes);
         final TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder()
                 .setTunnelId(metadataBytes);
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             tunnelIdBuilder.setMask(OxmDeserializerHelper.convertMask(input, Long.BYTES));
         }
         builder.setMatchEntryValue(new TunnelIdCaseBuilder().setTunnelId(tunnelIdBuilder.build()).build());

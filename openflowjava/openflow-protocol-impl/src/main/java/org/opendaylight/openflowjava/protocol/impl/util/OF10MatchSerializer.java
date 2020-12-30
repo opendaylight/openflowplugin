@@ -54,17 +54,17 @@ public class OF10MatchSerializer implements OFSerializer<MatchV10> {
 
     private static int encodeWildcards(final FlowWildcardsV10 wildcards, final short srcMask, final short dstMask) {
         int bitmask = ByteBufUtils.fillBitMask(0,
-                wildcards.isINPORT(),
-                wildcards.isDLVLAN(),
-                wildcards.isDLSRC(),
-                wildcards.isDLDST(),
-                wildcards.isDLTYPE(),
-                wildcards.isNWPROTO(),
-                wildcards.isTPSRC(),
-                wildcards.isTPDST());
+                wildcards.getINPORT(),
+                wildcards.getDLVLAN(),
+                wildcards.getDLSRC(),
+                wildcards.getDLDST(),
+                wildcards.getDLTYPE(),
+                wildcards.getNWPROTO(),
+                wildcards.getTPSRC(),
+                wildcards.getTPDST());
         bitmask |= ByteBufUtils.fillBitMask(20,
-                wildcards.isDLVLANPCP(),
-                wildcards.isNWTOS());
+                wildcards.getDLVLANPCP(),
+                wildcards.getNWTOS());
         bitmask |= 32 - srcMask << NW_SRC_SHIFT;
         bitmask |= 32 - dstMask << NW_DST_SHIFT;
         return bitmask;

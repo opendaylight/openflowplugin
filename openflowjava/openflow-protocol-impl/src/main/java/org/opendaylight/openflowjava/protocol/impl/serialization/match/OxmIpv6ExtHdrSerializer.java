@@ -21,22 +21,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIpv6ExtHdrSerializer extends AbstractOxmMatchEntrySerializer {
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         Ipv6ExthdrCase entryValue = (Ipv6ExthdrCase) entry.getMatchEntryValue();
         Ipv6ExthdrFlags pseudoField = entryValue.getIpv6Exthdr().getPseudoField();
         int bitmap = ByteBufUtils.fillBitMask(0,
-                pseudoField.isNonext(),
-                pseudoField.isEsp(),
-                pseudoField.isAuth(),
-                pseudoField.isDest(),
-                pseudoField.isFrag(),
-                pseudoField.isRouter(),
-                pseudoField.isHop(),
-                pseudoField.isUnrep(),
-                pseudoField.isUnseq());
+                pseudoField.getNonext(),
+                pseudoField.getEsp(),
+                pseudoField.getAuth(),
+                pseudoField.getDest(),
+                pseudoField.getFrag(),
+                pseudoField.getRouter(),
+                pseudoField.getHop(),
+                pseudoField.getUnrep(),
+                pseudoField.getUnseq());
         outBuffer.writeShort(bitmap);
-        if (entry.isHasMask()) {
+        if (entry.getHasMask()) {
             outBuffer.writeBytes(entryValue.getIpv6Exthdr().getMask());
         }
     }

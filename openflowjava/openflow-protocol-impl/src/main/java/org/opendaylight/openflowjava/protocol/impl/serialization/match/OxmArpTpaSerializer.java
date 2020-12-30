@@ -25,9 +25,8 @@ public class OxmArpTpaSerializer extends AbstractOxmIpv4AddressSerializer {
         super.serialize(entry, outBuffer);
         ArpTpaCase entryValue = (ArpTpaCase) entry.getMatchEntryValue();
         writeIpv4Address(entryValue.getArpTpa().getIpv4Address(), outBuffer);
-        if (entry.isHasMask()) {
-            writeMask(entryValue.getArpTpa().getMask(), outBuffer,
-                    EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
+        if (entry.getHasMask()) {
+            writeMask(entryValue.getArpTpa().getMask(), outBuffer, EncodeConstants.GROUPS_IN_IPV4_ADDRESS);
         }
     }
 

@@ -99,7 +99,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE().booleanValue());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE().booleanValue());
         MultipartReplyDescCase messageCase = (MultipartReplyDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyDesc message = messageCase.getMultipartReplyDesc();
         Assert.assertEquals("Wrong mfrDesc", "Manufacturer description", message.getMfrDesc());
@@ -126,7 +126,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x01, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE().booleanValue());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE().booleanValue());
         MultipartReplyFlowCase messageCase = (MultipartReplyFlowCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyFlow message = messageCase.getMultipartReplyFlow();
         Assert.assertEquals("Wrong tableId", 1, message.getFlowStats().get(0).getTableId().intValue());
@@ -166,7 +166,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x02, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE().booleanValue());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE().booleanValue());
         MultipartReplyAggregateCase messageCase = (MultipartReplyAggregateCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyAggregate message = messageCase.getMultipartReplyAggregate();
         Assert.assertEquals("Wrong packet-count", Uint64.valueOf("FF01020304050607", 16), message.getPacketCount());
@@ -189,7 +189,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x03, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
 
         MultipartReplyTableCase messageCase = (MultipartReplyTableCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyTable message = messageCase.getMultipartReplyTable();
@@ -226,7 +226,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x04, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyPortStatsCase messageCase = (MultipartReplyPortStatsCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortStats message = messageCase.getMultipartReplyPortStats();
         Assert.assertEquals("Wrong portNo", 255, message.getPortStats().get(0).getPortNo().intValue());
@@ -272,7 +272,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x05, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyQueueCase messageCase = (MultipartReplyQueueCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyQueue message = messageCase.getMultipartReplyQueue();
         Assert.assertEquals("Wrong portNo", 255, message.getQueueStats().get(0).getPortNo().intValue());

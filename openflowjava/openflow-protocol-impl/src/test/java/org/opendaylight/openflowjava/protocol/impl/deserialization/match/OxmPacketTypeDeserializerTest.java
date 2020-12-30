@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
@@ -29,7 +28,7 @@ public class OxmPacketTypeDeserializerTest {
 
         Assert.assertEquals(OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals(PacketType.class, entry.getOxmMatchField());
-        Assert.assertEquals(false, entry.isHasMask());
+        Assert.assertEquals(false, entry.getHasMask());
 
         PacketTypeCase packetTypeCase = (PacketTypeCase) entry.getMatchEntryValue();
         Assert.assertEquals(0x1894f, packetTypeCase.getPacketType().getPacketType().longValue());

@@ -29,7 +29,7 @@ public class OxmIpv6DstDeserializer extends AbstractOxmMatchEntryDeserializer {
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         final Ipv6DstBuilder ipv6Builder = new Ipv6DstBuilder()
                 .setIpv6Address(ByteBufUtils.readIetfIpv6Address(input));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             ipv6Builder.setMask(OxmDeserializerHelper.convertMask(input,
                 EncodeConstants.SIZE_OF_IPV6_ADDRESS_IN_BYTES));
         }

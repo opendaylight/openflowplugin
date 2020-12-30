@@ -28,7 +28,7 @@ public class OxmIpv6ExtHdrDeserializer extends AbstractOxmMatchEntryDeserializer
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         final Ipv6ExthdrBuilder extHdrBuilder = new Ipv6ExthdrBuilder()
                 .setPseudoField(convertPseudofields(input));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             extHdrBuilder.setMask(OxmDeserializerHelper.convertMask(input, Short.BYTES));
         }
         builder.setMatchEntryValue(new Ipv6ExthdrCaseBuilder().setIpv6Exthdr(extHdrBuilder.build()).build());

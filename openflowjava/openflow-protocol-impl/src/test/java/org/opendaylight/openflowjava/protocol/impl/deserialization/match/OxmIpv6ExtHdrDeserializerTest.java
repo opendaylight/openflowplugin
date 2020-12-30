@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
@@ -38,7 +37,7 @@ public class OxmIpv6ExtHdrDeserializerTest {
 
         Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong entry field", Ipv6Exthdr.class, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry.isHasMask());
+        Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertEquals("Wrong entry value",
                 new Ipv6ExthdrFlags(true, true, true, true, true, true, true, true, true),
                 ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());

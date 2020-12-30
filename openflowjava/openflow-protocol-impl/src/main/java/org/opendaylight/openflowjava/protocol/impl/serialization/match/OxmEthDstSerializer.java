@@ -21,11 +21,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public class OxmEthDstSerializer extends AbstractOxmMacAddressSerializer {
 
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         super.serialize(entry, outBuffer);
         EthDstCase entryValue = (EthDstCase) entry.getMatchEntryValue();
         writeMacAddress(entryValue.getEthDst().getMacAddress(), outBuffer);
-        if (entry.isHasMask()) {
+        if (entry.getHasMask()) {
             writeMask(entryValue.getEthDst().getMask(), outBuffer, EncodeConstants.MAC_ADDRESS_LENGTH);
         }
     }

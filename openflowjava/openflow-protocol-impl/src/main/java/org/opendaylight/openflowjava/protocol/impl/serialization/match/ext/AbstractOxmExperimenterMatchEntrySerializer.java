@@ -25,7 +25,7 @@ public abstract class AbstractOxmExperimenterMatchEntrySerializer extends Abstra
     @Override
     public void serializeHeader(final MatchEntry entry, final ByteBuf outBuffer) {
         outBuffer.writeShort(getOxmClassCode());
-        writeOxmFieldAndLength(outBuffer, getOxmFieldCode(), entry.isHasMask(), getValueLength());
+        writeOxmFieldAndLength(outBuffer, getOxmFieldCode(), entry.getHasMask(), getValueLength());
     }
 
     protected static void writeOxmFieldAndLength(final ByteBuf out, final int fieldValue, final boolean hasMask,

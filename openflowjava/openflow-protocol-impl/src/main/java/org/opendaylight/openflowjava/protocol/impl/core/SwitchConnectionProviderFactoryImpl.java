@@ -34,8 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
 
     @Override
-    public SwitchConnectionProvider newInstance(SwitchConnectionConfig config,
-                                                OpenflowDiagStatusProvider openflowPluginDiagStatusProvider) {
+    public SwitchConnectionProvider newInstance(final SwitchConnectionConfig config,
+                                                final OpenflowDiagStatusProvider openflowPluginDiagStatusProvider) {
         return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config),
                 openflowPluginDiagStatusProvider);
     }
@@ -44,7 +44,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
         private final SwitchConnectionConfig config;
         private InetAddress address;
 
-        ConnectionConfigurationImpl(SwitchConnectionConfig config) {
+        ConnectionConfigurationImpl(final SwitchConnectionConfig config) {
             this.config = config;
 
             try {
@@ -168,12 +168,12 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
 
         @Override
         public boolean useBarrier() {
-            return config.isUseBarrier();
+            return config.getUseBarrier();
         }
 
         @Override
         public boolean isGroupAddModEnabled() {
-            return config.isGroupAddModEnabled();
+            return config.getGroupAddModEnabled();
         }
 
         private static InetAddress getInetAddress(final IpAddress address) throws UnknownHostException {

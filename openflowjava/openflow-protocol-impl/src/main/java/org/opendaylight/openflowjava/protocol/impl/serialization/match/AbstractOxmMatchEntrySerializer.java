@@ -21,18 +21,17 @@ public abstract class AbstractOxmMatchEntrySerializer
         implements OFSerializer<MatchEntry>, HeaderSerializer<MatchEntry> {
 
     @Override
-    public void serialize(MatchEntry entry, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry entry, final ByteBuf outBuffer) {
         serializeHeader(entry, outBuffer);
     }
 
     @Override
-    public void serializeHeader(MatchEntry entry, ByteBuf outBuffer) {
+    public void serializeHeader(final MatchEntry entry, final ByteBuf outBuffer) {
         outBuffer.writeShort(getOxmClassCode());
-        writeOxmFieldAndLength(outBuffer, getOxmFieldCode(), entry.isHasMask(),
-                getValueLength());
+        writeOxmFieldAndLength(outBuffer, getOxmFieldCode(), entry.getHasMask(), getValueLength());
     }
 
-    protected static void writeMask(byte[] mask, ByteBuf out, int length) {
+    protected static void writeMask(final byte[] mask, final ByteBuf out, final int length) {
         if (mask != null && mask.length != length) {
             throw new IllegalArgumentException("incorrect length of mask: "
                     + mask.length + ", expected: " + length);
@@ -40,7 +39,8 @@ public abstract class AbstractOxmMatchEntrySerializer
         out.writeBytes(mask);
     }
 
-    protected static void writeOxmFieldAndLength(ByteBuf out, int fieldValue, boolean hasMask, int lengthArg) {
+    protected static void writeOxmFieldAndLength(final ByteBuf out, final int fieldValue, final boolean hasMask,
+            final int lengthArg) {
         int fieldAndMask = fieldValue << 1;
         int length = lengthArg;
         if (hasMask) {

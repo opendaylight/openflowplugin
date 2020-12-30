@@ -35,6 +35,6 @@ public class TableModInputMessageFactory implements OFSerializer<TableModInput> 
     }
 
     private static int createConfigBitmask(final TableConfig tableConfig) {
-        return ByteBufUtils.fillBitMask(3, tableConfig.isOFPTCDEPRECATEDMASK());
+        return ByteBufUtils.fillBitMask(3, tableConfig.getOFPTCDEPRECATEDMASK());
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -41,7 +40,7 @@ public class MultipartReplyPortDescTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 13, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyPortDescCase messageCase = (MultipartReplyPortDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortDesc message = messageCase.getMultipartReplyPortDesc();
         Assert.assertEquals("Wrong table features size", 0, message.nonnullPorts().size());
@@ -82,7 +81,7 @@ public class MultipartReplyPortDescTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 13, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyPortDescCase messageCase = (MultipartReplyPortDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyPortDesc message = messageCase.getMultipartReplyPortDesc();
         Assert.assertEquals("Wrong port desc size", 2, message.getPorts().size());

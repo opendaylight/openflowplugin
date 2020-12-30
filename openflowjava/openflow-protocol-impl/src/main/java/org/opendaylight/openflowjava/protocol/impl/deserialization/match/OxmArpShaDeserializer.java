@@ -28,7 +28,7 @@ public class OxmArpShaDeserializer extends AbstractOxmMatchEntryDeserializer {
     protected void deserialize(final ByteBuf input, final MatchEntryBuilder builder) {
         final ArpShaBuilder shaBuilder = new ArpShaBuilder()
                 .setMacAddress(OxmDeserializerHelper.convertMacAddress(input));
-        if (builder.isHasMask()) {
+        if (builder.getHasMask()) {
             shaBuilder.setMask(OxmDeserializerHelper.convertMask(input, EncodeConstants.MAC_ADDRESS_LENGTH));
         }
         builder.setMatchEntryValue(new ArpShaCaseBuilder().setArpSha(shaBuilder.build()).build());
