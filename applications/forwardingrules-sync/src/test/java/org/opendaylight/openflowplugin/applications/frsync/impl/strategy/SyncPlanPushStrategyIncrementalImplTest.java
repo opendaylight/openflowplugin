@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -616,10 +616,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
                 .thenReturn(RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture());
 
         final FlowCapableNode operational = new FlowCapableNodeBuilder()
-                .setTable(Collections.singletonList(new TableBuilder()
-                        .setId(Uint8.ONE)
-                        .build()))
-                .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()
+                .setTable(BindingMap.of(new TableBuilder().setId(Uint8.ONE).build()))
+                .setTableFeatures(BindingMap.of(new TableFeaturesBuilder()
                         .setName("test table features")
                         .setTableId(Uint8.ONE)
                         .build()))

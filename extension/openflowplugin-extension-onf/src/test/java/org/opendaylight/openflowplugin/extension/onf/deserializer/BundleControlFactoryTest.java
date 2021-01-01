@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.deserializer;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,9 +50,9 @@ public class BundleControlFactoryTest {
         Assert.assertEquals(1, builtByFactory.getOnfControlGroupingData().getBundleId().getValue().intValue());
         BundleFlags flags = new BundleFlags(true, true);
         Assert.assertEquals("Wrong atomic flag",
-                flags.isAtomic(), builtByFactory.getOnfControlGroupingData().getFlags().isAtomic());
+                flags.getAtomic(), builtByFactory.getOnfControlGroupingData().getFlags().getAtomic());
         Assert.assertEquals("Wrong ordered flag",
-                flags.isOrdered(), builtByFactory.getOnfControlGroupingData().getFlags().isOrdered());
+                flags.getOrdered(), builtByFactory.getOnfControlGroupingData().getFlags().getOrdered());
         Assert.assertEquals("Wrong type",
                 BundleControlType.ONFBCTOPENREPLY, builtByFactory.getOnfControlGroupingData().getType());
         Assert.assertTrue("Properties not empty",
@@ -80,10 +79,10 @@ public class BundleControlFactoryTest {
         Assert.assertEquals(1, builtByFactory.getOnfControlGroupingData().getBundleId().getValue().intValue());
         BundleFlags flags = new BundleFlags(false, true);
         Assert.assertEquals("Wrong atomic flag",
-                flags.isAtomic(), builtByFactory.getOnfControlGroupingData().getFlags().isAtomic());
+                flags.getAtomic(), builtByFactory.getOnfControlGroupingData().getFlags().getAtomic());
         Assert.assertEquals("Wrong ordered flag",
-                flags.isOrdered(),
-                builtByFactory.getOnfControlGroupingData().getFlags().isOrdered());
+                flags.getOrdered(),
+                builtByFactory.getOnfControlGroupingData().getFlags().getOrdered());
         Assert.assertEquals("Wrong type",
                 BundleControlType.ONFBCTCOMMITREPLY, builtByFactory.getOnfControlGroupingData().getType());
         BundleProperty property = builtByFactory.getOnfControlGroupingData().getBundleProperty().get(0);

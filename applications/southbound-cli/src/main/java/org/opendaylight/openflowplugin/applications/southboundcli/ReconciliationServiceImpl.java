@@ -69,8 +69,9 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final AlarmAgent alarmAgent;
     private final NodeListener nodeListener;
     private final int threadPoolSize = 10;
-    private final ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
     private final Map<String, ReconciliationState> reconciliationStates;
+
+    private ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
                                      final AlarmAgent alarmAgent, final NodeListener nodeListener,
@@ -86,12 +87,13 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     public void close() {
         if (executor != null) {
             executor.shutdownNow();
+            executor = null;
         }
     }
 
     @Override
-    public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(ReconcileInput input) {
-        boolean reconcileAllNodes = input.isReconcileAllNodes();
+    public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(final ReconcileInput input) {
+        boolean reconcileAllNodes = input.getReconcileAllNodes();
         List<Uint64> inputNodes = input.getNodes();
         if (inputNodes == null) {
             inputNodes = new ArrayList<>();
@@ -142,7 +144,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         return reconciliationStates.get(nodeId.toString());
     }
 
-    private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(String msg) {
+    private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(final String msg) {
         LOG.error("Error {}", msg);
         return RpcResultBuilder.<ReconcileOutput>failed()
                 .withError(RpcError.ErrorType.PROTOCOL, "reconcile", msg)
@@ -151,7 +153,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
     private List<Long> getAllNodes() {
         List<OFNode> nodeList = ShellUtil.getAllNodes(nodeListener);
-        List<Long> nodes = nodeList.stream().distinct().map(node -> node.getNodeId()).collect(Collectors.toList());
+        List<Long> nodes = nodeList.stream().distinct().map(OFNode::getNodeId).collect(Collectors.toList());
         return nodes;
     }
 
@@ -160,7 +162,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         private final NodeKey nodeKey;
         private final Uint64 nodeId;
 
-        private ReconciliationTask(Uint64 nodeId, NodeKey nodeKey) {
+        private ReconciliationTask(final Uint64 nodeId, final NodeKey nodeKey) {
             this.nodeId = nodeId;
             this.nodeKey = nodeKey;
         }
@@ -230,8 +232,8 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             }
         }
 
-        private Optional<ReconcileCounter> getReconciliationCount(ReadWriteTransaction tx,
-                                                             InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
+        private Optional<ReconcileCounter> getReconciliationCount(final ReadWriteTransaction tx,
+                final InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
             try {
                 return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             } catch (InterruptedException | ExecutionException e) {
@@ -240,8 +242,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             return Optional.empty();
         }
 
-
-        private void updateReconciliationState(ReconciliationState.ReconciliationStatus status) {
+        private void updateReconciliationState(final ReconciliationState.ReconciliationStatus status) {
             ReconciliationState state = new ReconciliationState(status, LocalDateTime.now());
             reconciliationStates.put(nodeId.toString(),state);
         }

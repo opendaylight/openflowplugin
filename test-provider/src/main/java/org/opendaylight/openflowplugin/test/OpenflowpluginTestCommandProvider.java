@@ -687,7 +687,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
 
         final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
-        if (null == flow.isBarrier()) {
+        if (null == flow.getBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
         flow.setCookie(new FlowCookie(Uint64.TEN));
@@ -729,7 +729,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }
 
         final FlowKey key = new FlowKey(new FlowId(Long.toString(flowId)));
-        if (null == flow.isBarrier()) {
+        if (null == flow.getBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
         flow.setCookie(new FlowCookie(Uint64.TEN));

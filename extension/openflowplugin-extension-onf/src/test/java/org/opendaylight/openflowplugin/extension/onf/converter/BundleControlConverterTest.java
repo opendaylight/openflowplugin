@@ -100,8 +100,8 @@ public class BundleControlConverterTest {
         );
         Assert.assertEquals("Wrong flags",
                 new BundleFlags(
-                        ofpMessage.getSalControlData().getFlags().isAtomic(),
-                        ofpMessage.getSalControlData().getFlags().isOrdered()),
+                        ofpMessage.getSalControlData().getFlags().getAtomic(),
+                        ofpMessage.getSalControlData().getFlags().getOrdered()),
                         ofjMessage.getOnfControlGroupingData().getFlags()
         );
         if (withProperty) {

@@ -61,7 +61,8 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
             = new HashMap<>();
 
     @SuppressWarnings("IllegalCatch")
-    public NodeConnectorInventoryEventTranslator(DataBroker dataBroker, NodeConnectorEventsObserver... observers) {
+    public NodeConnectorInventoryEventTranslator(final DataBroker dataBroker,
+            final NodeConnectorEventsObserver... observers) {
         this.observers = ImmutableSet.copyOf(observers);
         final DataTreeIdentifier dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                                                                                    II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
@@ -93,7 +94,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull Collection<DataTreeModification<T>> modifications) {
+    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<T>> modifications) {
         for (DataTreeModification modification : modifications) {
             LOG.trace("Node connectors in inventory changed -> {}", modification.getRootNode().getModificationType());
             switch (modification.getRootNode().getModificationType()) {
@@ -142,7 +143,7 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
             FlowCapableNodeConnector flowNodeConnector = iiToDownFlowCapableNodeConnectors.get(nodeConnectorInstanceId);
             if (flowNodeConnector != null) {
                 State state = (State) modification.getRootNode().getDataAfter();
-                if (!state.isLinkDown()) {
+                if (!state.getLinkDown()) {
                     FlowCapableNodeConnectorBuilder flowCapableNodeConnectorBuilder
                             = new FlowCapableNodeConnectorBuilder(flowNodeConnector);
                     flowCapableNodeConnectorBuilder.setState(state);
@@ -162,14 +163,14 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
         }
     }
 
-    private boolean compareIITail(final InstanceIdentifier<?> ii1, final InstanceIdentifier<?> ii2) {
+    private static boolean compareIITail(final InstanceIdentifier<?> ii1, final InstanceIdentifier<?> ii2) {
         return Iterables.getLast(ii1.getPathArguments()).equals(Iterables.getLast(ii2.getPathArguments()));
     }
 
     private static boolean isPortDown(final FlowCapableNodeConnector flowCapableNodeConnector) {
         PortState portState = flowCapableNodeConnector.getState();
         PortConfig portConfig = flowCapableNodeConnector.getConfiguration();
-        return portState != null && portState.isLinkDown() || portConfig != null && portConfig.isPORTDOWN();
+        return portState != null && portState.getLinkDown() || portConfig != null && portConfig.getPORTDOWN();
     }
 
     private void notifyNodeConnectorAppeared(final InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,

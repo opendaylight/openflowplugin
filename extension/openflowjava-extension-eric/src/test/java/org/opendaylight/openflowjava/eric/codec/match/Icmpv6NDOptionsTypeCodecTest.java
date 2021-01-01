@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.eric.api.EricConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EricExpClass;
@@ -28,15 +27,10 @@ public class Icmpv6NDOptionsTypeCodecTest {
     private static final int ERIC_FIELD_CODE = 2;
     private static final int VALUE_LENGTH = 1;
 
-    private Icmpv6NDOptionsTypeCodec icmpv6NDOptionsTypeCodec;
-    private ByteBuf buffer;
-    private MatchEntry input;
+    private final Icmpv6NDOptionsTypeCodec icmpv6NDOptionsTypeCodec = new Icmpv6NDOptionsTypeCodec();
+    private final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
 
-    @Before
-    public void setUp() {
-        icmpv6NDOptionsTypeCodec = new Icmpv6NDOptionsTypeCodec();
-        buffer = ByteBufAllocator.DEFAULT.buffer();
-    }
+    private MatchEntry input;
 
     @Test
     public void serializeTest() {
@@ -61,7 +55,7 @@ public class Icmpv6NDOptionsTypeCodecTest {
         final Icmpv6NdOptionsTypeCaseValue result = (Icmpv6NdOptionsTypeCaseValue) input.getMatchEntryValue();
         assertEquals(EricExpClass.class, input.getOxmClass());
         assertEquals(Icmpv6NdOptionsType.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(false, input.getHasMask());
         assertEquals(2, result.getIcmpv6NdOptionsTypeValues().getIcmpv6NdOptionsType().shortValue());
     }
 
@@ -81,7 +75,7 @@ public class Icmpv6NDOptionsTypeCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(EricConstants.ERICOXM_OF_EXPERIMENTER_ID);
 
         int fieldMask = ERIC_FIELD_CODE << 1;
