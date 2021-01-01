@@ -134,7 +134,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Mockito.verify(flatBatchService).processFlatBatch(processFlatBatchInputCpt.capture());
 
         final ProcessFlatBatchInput processFlatBatchInput = processFlatBatchInputCpt.getValue();
-        Assert.assertFalse(processFlatBatchInput.isExitOnFirstError());
+        Assert.assertFalse(processFlatBatchInput.getExitOnFirstError());
         Assert.assertEquals(13, processFlatBatchInput.getBatch().size());
 
         Assert.assertTrue(rpcResult.isDone());

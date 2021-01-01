@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -25,19 +24,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class UdpDstCodecTest {
+    private final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+    private final UdpDstCodec udpDstCodec = new UdpDstCodec();
 
-    UdpDstCodec udpDstCodec;
-    ByteBuf buffer;
-    MatchEntry input;
+    private MatchEntry input;
 
     private static final int VALUE_LENGTH = 4;
     private static final int NXM_FIELD_CODE = 12;
-
-    @Before
-    public void setUp() {
-        udpDstCodec = new UdpDstCodec();
-        buffer = ByteBufAllocator.DEFAULT.buffer();
-    }
 
     @Test
     public void serializeTest() {
@@ -63,7 +56,7 @@ public class UdpDstCodecTest {
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfUdpDst.class, input.getOxmMatchField());
-        assertEquals(true, input.isHasMask());
+        assertEquals(true, input.getHasMask());
         assertEquals(1, result.getUdpDstValues().getPort().getValue().shortValue());
         assertEquals(0xffff, result.getUdpDstValues().getMask().shortValue() & 0xffff);
     }
@@ -85,7 +78,7 @@ public class UdpDstCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
@@ -24,20 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class Reg3CodecTest {
+    private final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+    private final Reg3Codec reg3Codec = new Reg3Codec();
 
-    Reg3Codec reg3Codec;
-    ByteBuf buffer;
-    MatchEntry input;
+    private MatchEntry input;
 
     private static final int NXM_FIELD_CODE = 3;
     private static final int VALUE_LENGTH = 4;
-
-    @Before
-    public void setUp() {
-        reg3Codec = new Reg3Codec();
-        buffer = ByteBufAllocator.DEFAULT.buffer();
-    }
-
 
     @Test
     public void serializeTest() {
@@ -62,7 +54,7 @@ public class Reg3CodecTest {
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxReg3.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(false, input.getHasMask());
         assertEquals(1, result.getRegValues().getValue().intValue());
     }
 
@@ -82,7 +74,7 @@ public class Reg3CodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

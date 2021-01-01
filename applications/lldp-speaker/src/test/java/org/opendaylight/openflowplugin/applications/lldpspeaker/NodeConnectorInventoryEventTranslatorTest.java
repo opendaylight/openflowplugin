@@ -161,7 +161,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         // Create prerequisites
         InstanceIdentifier<NodeConnector> id2 = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:2");
         InstanceIdentifier<FlowCapableNodeConnector> iiToConnector2 = id2.augmentation(FlowCapableNodeConnector.class);
-        List<DataTreeModification> modifications = new ArrayList();
+        List<DataTreeModification> modifications = new ArrayList<>();
         modifications.add(setupDataTreeChange(WRITE, NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR));
         modifications.add(setupDataTreeChange(DELETE, iiToConnector2, null));
         // Invoke onDataTreeChanged and check that both observers notified
