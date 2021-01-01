@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -88,10 +87,10 @@ public class MultipartReplyMeterConfigDeserializerTest extends AbstractMultipart
     private static void writeCommonAtributes(final ByteBuf buffer) {
         buffer.writeShort(ITEM_LENGTH);
         buffer.writeShort(ByteBufUtils.fillBitMask(0,
-                FLAGS.isMeterKbps(),
-                FLAGS.isMeterPktps(),
-                FLAGS.isMeterBurst(),
-                FLAGS.isMeterStats()));
+                FLAGS.getMeterKbps(),
+                FLAGS.getMeterPktps(),
+                FLAGS.getMeterBurst(),
+                FLAGS.getMeterStats()));
         buffer.writeInt(METER_ID);
     }
 }

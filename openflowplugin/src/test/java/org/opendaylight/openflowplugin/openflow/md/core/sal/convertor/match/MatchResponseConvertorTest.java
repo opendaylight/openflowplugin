@@ -113,7 +113,7 @@ public class MatchResponseConvertorTest {
             int expectedVid = vid < 0 ? 0 : vid;
             Boolean expectedCfi = vid != 0;
             assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().getValue().intValue());
-            assertEquals(expectedCfi, vlanMatch.getVlanId().isVlanIdPresent());
+            assertEquals(expectedCfi, vlanMatch.getVlanId().getVlanIdPresent());
             assertEquals(null, vlanMatch.getVlanPcp());
         }
     }
@@ -276,7 +276,7 @@ public class MatchResponseConvertorTest {
 
     private static void checkDefaultV10(final Match match, final FlowWildcardsV10 wc, final int vid) {
         EthernetMatch ethMatch = match.getEthernetMatch();
-        if (wc.isDLSRC()) {
+        if (wc.getDLSRC()) {
             if (ethMatch != null) {
                 assertEquals(null, ethMatch.getEthernetSource());
             }
@@ -285,7 +285,7 @@ public class MatchResponseConvertorTest {
         }
 
         if (ethMatch != null) {
-            if (wc.isDLDST()) {
+            if (wc.getDLDST()) {
                 assertEquals(null, ethMatch.getEthernetDestination());
             } else {
                 assertNotEquals(null, ethMatch.getEthernetDestination());
@@ -294,7 +294,7 @@ public class MatchResponseConvertorTest {
             }
         }
 
-        if (wc.isDLTYPE()) {
+        if (wc.getDLTYPE()) {
             if (ethMatch != null) {
                 assertEquals(null, ethMatch.getEthernetType());
             }
@@ -309,7 +309,7 @@ public class MatchResponseConvertorTest {
         }
 
         VlanMatch vlanMatch = match.getVlanMatch();
-        if (wc.isDLVLAN()) {
+        if (wc.getDLVLAN()) {
             assertEquals(null, vlanMatch);
         } else {
             int expectedVid;
@@ -322,9 +322,9 @@ public class MatchResponseConvertorTest {
                 expectedCfi = Boolean.TRUE;
             }
             assertEquals(expectedVid, vlanMatch.getVlanId().getVlanId().getValue().intValue());
-            assertEquals(expectedCfi, vlanMatch.getVlanId().isVlanIdPresent());
+            assertEquals(expectedCfi, vlanMatch.getVlanId().getVlanIdPresent());
 
-            if (wc.isDLVLANPCP()) {
+            if (wc.getDLVLANPCP()) {
                 assertEquals(null, vlanMatch.getVlanPcp());
             } else {
                 assertEquals(VLAN_PCP, vlanMatch.getVlanPcp().getValue());

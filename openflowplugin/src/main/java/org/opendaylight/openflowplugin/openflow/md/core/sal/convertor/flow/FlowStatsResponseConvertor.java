@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.util.ArrayList;
@@ -169,11 +168,11 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
 
 
                 salFlowStatsBuilder.setFlags(
-                        new FlowModFlags(flowStats.getFlags().isOFPFFCHECKOVERLAP(),
-                                flowStats.getFlags().isOFPFFRESETCOUNTS(),
-                                flowStats.getFlags().isOFPFFNOPKTCOUNTS(),
-                                flowStats.getFlags().isOFPFFNOBYTCOUNTS(),
-                                flowStats.getFlags().isOFPFFSENDFLOWREM()));
+                        new FlowModFlags(flowStats.getFlags().getOFPFFCHECKOVERLAP(),
+                                flowStats.getFlags().getOFPFFRESETCOUNTS(),
+                                flowStats.getFlags().getOFPFFNOPKTCOUNTS(),
+                                flowStats.getFlags().getOFPFFNOBYTCOUNTS(),
+                                flowStats.getFlags().getOFPFFSENDFLOWREM()));
             }
 
             if (flowStats.getInstruction() != null) {
@@ -182,7 +181,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                         flowStats.getInstruction(), simpleConvertorData);
 
                 salFlowStatsBuilder.setInstructions(instructions.orElse(new InstructionsBuilder()
-                        .setInstruction(Collections.emptyList()).build()));
+                        .setInstruction(Collections.emptyMap()).build()));
             }
 
             result.add(salFlowStatsBuilder.build());

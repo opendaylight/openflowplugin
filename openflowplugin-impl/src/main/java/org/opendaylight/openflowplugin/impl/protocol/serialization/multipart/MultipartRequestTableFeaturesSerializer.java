@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.Preconditions;
@@ -45,7 +44,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
                     byteBuf.writeZero(32 - tableFeature.getName().getBytes(StandardCharsets.UTF_8).length);
                     byteBuf.writeLong(tableFeature.getMetadataMatch().longValue());
                     byteBuf.writeLong(tableFeature.getMetadataWrite().longValue());
-                    byteBuf.writeInt(ByteBufUtils.fillBitMask(0, tableFeature.getConfig().isDEPRECATEDMASK()));
+                    byteBuf.writeInt(ByteBufUtils.fillBitMask(0, tableFeature.getConfig().getDEPRECATEDMASK()));
                     byteBuf.writeInt(tableFeature.getMaxEntries().intValue());
                     serializeProperties(tableFeature.getTableProperties(), byteBuf);
                     byteBuf.setShort(featureIndex, byteBuf.writerIndex() - featureIndex);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
 import com.google.common.base.Preconditions;
@@ -74,7 +73,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
                 this::transformResult,
                 MoreExecutors.directExecutor());
 
-        if (Boolean.TRUE.equals(input.isStoreStats())) {
+        if (Boolean.TRUE.equals(input.getStoreStats())) {
             rpcResult = Futures.transform(rpcResult, this::storeResult, MoreExecutors.directExecutor());
         }
 

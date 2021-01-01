@@ -66,7 +66,7 @@ public class RoleContextImpl implements RoleContext {
         this.timer = timer;
         this.config = config;
         this.executorService = executorService;
-        slaveTask = timer.newTimeout((timerTask) -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
+        slaveTask = timer.newTimeout(timerTask -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
 
         LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
                 deviceInfo,
@@ -147,7 +147,7 @@ public class RoleContextImpl implements RoleContext {
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> sendRoleChangeToDevice(final OfpRole newRole) {
-        final Boolean isEqualRole = config.isEnableEqualRole();
+        final Boolean isEqualRole = config.getEnableEqualRole();
         if (isEqualRole) {
             LOG.warn("Skip sending role change request to device {} as user enabled"
                     + " equal role for controller", deviceInfo);

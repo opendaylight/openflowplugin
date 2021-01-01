@@ -55,7 +55,7 @@ public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartRe
                         OpenflowVersion.get(features.getVersion()));
                 OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Status: {}",
                         features.getDatapathId(), portNumber, stat.getName(),
-                        stat.getConfiguration().isPORTDOWN() ? "Down" : "Up");
+                        stat.getConfiguration().getPORTDOWN() ? "Down" : "Up");
 
                 writeToTransaction(
                     getInstanceIdentifier()

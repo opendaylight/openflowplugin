@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import java.util.List;
@@ -18,20 +17,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class SingleLayerMultipartRequestCallback<T extends OfHeader> extends AbstractMultipartRequestCallback<T> {
 
-    public SingleLayerMultipartRequestCallback(RequestContext<List<T>> context,
-                                               Class<?> requestType,
-                                               DeviceContext deviceContext,
-                                               EventIdentifier eventIdentifier) {
+    public SingleLayerMultipartRequestCallback(final RequestContext<List<T>> context,
+                                               final Class<?> requestType,
+                                               final DeviceContext deviceContext,
+                                               final EventIdentifier eventIdentifier) {
         super(context, requestType, deviceContext, eventIdentifier);
     }
 
     @Override
-    protected boolean isMultipart(OfHeader result) {
+    protected boolean isMultipart(final OfHeader result) {
         return result instanceof MultipartReply;
     }
 
     @Override
-    protected boolean isReqMore(T result) {
-        return ((MultipartReply) result).isRequestMore();
+    protected boolean isReqMore(final T result) {
+        return ((MultipartReply) result).getRequestMore();
     }
 }
