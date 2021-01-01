@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
 import static org.junit.Assert.assertEquals;
@@ -78,11 +77,11 @@ public class FlowMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.writeInt(OUT_PORT);
         buffer.writeInt(OUT_GROUP);
         buffer.writeShort(ByteBufUtils.fillBitMask(0,
-                    FLAGS.isSENDFLOWREM(),
-                    FLAGS.isCHECKOVERLAP(),
-                    FLAGS.isRESETCOUNTS(),
-                    FLAGS.isNOPKTCOUNTS(),
-                    FLAGS.isNOBYTCOUNTS()));
+                    FLAGS.getSENDFLOWREM(),
+                    FLAGS.getCHECKOVERLAP(),
+                    FLAGS.getRESETCOUNTS(),
+                    FLAGS.getNOPKTCOUNTS(),
+                    FLAGS.getNOBYTCOUNTS()));
         buffer.writeZero(PADDING);
 
         // Match header
@@ -138,5 +137,4 @@ public class FlowMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().values().iterator().next()
                 .getAction().implementedInterface());
     }
-
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
@@ -93,7 +92,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> updateGroupsBulkFuture = Futures
                 .transform(commonResult, GroupUtil.GROUP_UPDATE_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             updateGroupsBulkFuture = BarrierUtil
                     .chainBarrier(updateGroupsBulkFuture, input.getNode(), transactionService,
                                   GroupUtil.GROUP_UPDATE_COMPOSING_TRANSFORM);
@@ -120,7 +119,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         ListenableFuture<RpcResult<AddGroupsBatchOutput>> addGroupsBulkFuture = Futures
                 .transform(commonResult, GroupUtil.GROUP_ADD_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             addGroupsBulkFuture = BarrierUtil.chainBarrier(addGroupsBulkFuture, input.getNode(), transactionService,
                                                            GroupUtil.GROUP_ADD_COMPOSING_TRANSFORM);
         }
@@ -147,7 +146,7 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
         ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> removeGroupsBulkFuture = Futures
                 .transform(commonResult, GroupUtil.GROUP_REMOVE_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             removeGroupsBulkFuture = BarrierUtil
                     .chainBarrier(removeGroupsBulkFuture, input.getNode(), transactionService,
                                   GroupUtil.GROUP_REMOVE_COMPOSING_TRANSFORM);

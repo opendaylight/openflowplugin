@@ -85,10 +85,10 @@ public class MeterConfigStatsResponseConvertorTest {
         int cnt = 0;
         for (MeterConfigStats meterConfigStats: meterConfigs) {
             assertEquals(cnt, meterConfigStats.getMeterId().getValue().toJava());
-            assertTrue(meterConfigStats.getFlags().isMeterBurst());
-            assertFalse(meterConfigStats.getFlags().isMeterKbps());
-            assertTrue(meterConfigStats.getFlags().isMeterPktps());
-            assertFalse(meterConfigStats.getFlags().isMeterStats());
+            assertTrue(meterConfigStats.getFlags().getMeterBurst());
+            assertFalse(meterConfigStats.getFlags().getMeterKbps());
+            assertTrue(meterConfigStats.getFlags().getMeterPktps());
+            assertFalse(meterConfigStats.getFlags().getMeterStats());
 
             cnt++;
         }

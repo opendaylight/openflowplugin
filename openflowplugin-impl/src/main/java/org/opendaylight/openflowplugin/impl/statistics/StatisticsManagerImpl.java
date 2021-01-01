@@ -63,7 +63,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode(
-            GetStatisticsWorkModeInput input) {
+            final GetStatisticsWorkModeInput input) {
         return RpcResultBuilder.success(new GetStatisticsWorkModeOutputBuilder()
                 .setMode(workMode)
                 .build()).buildFuture();
@@ -71,7 +71,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     @Override
     public ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> changeStatisticsWorkMode(
-            ChangeStatisticsWorkModeInput input) {
+            final ChangeStatisticsWorkModeInput input) {
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();
             isStatisticsFullyDisabled = StatisticsWorkMode.FULLYDISABLED.equals(targetWorkMode);
@@ -111,7 +111,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 statisticsWriterProvider,
                 executorService,
                 config,
-                !isStatisticsFullyDisabled && config.isIsStatisticsPollingOn(),
+                !isStatisticsFullyDisabled && config.getIsStatisticsPollingOn(),
                 useReconciliationFramework);
 
         contexts.put(deviceContext.getDeviceInfo(), statisticsContext);

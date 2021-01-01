@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
 import static org.junit.Assert.assertEquals;
@@ -81,10 +80,10 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
 
         assertEquals(message.getXid().intValue(), XID);
         assertEquals(message.getCommand().getIntValue(), COMMAND.getIntValue());
-        assertEquals(message.getFlags().isMeterBurst(), IS_BURST);
-        assertEquals(message.getFlags().isMeterKbps(), IS_KBPS);
-        assertEquals(message.getFlags().isMeterPktps(), IS_PKTPS);
-        assertEquals(message.getFlags().isMeterStats(), IS_STATS);
+        assertEquals(message.getFlags().getMeterBurst(), IS_BURST);
+        assertEquals(message.getFlags().getMeterKbps(), IS_KBPS);
+        assertEquals(message.getFlags().getMeterPktps(), IS_PKTPS);
+        assertEquals(message.getFlags().getMeterStats(), IS_STATS);
         assertEquals(message.getMeterId().getValue().intValue(), ID);
 
         final Map<MeterBandHeaderKey, MeterBandHeader> meterBandHeader =
@@ -95,7 +94,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         // Drop band
         final MeterBandHeader dropHeader = meterBandHeaderIt.next();
         assertEquals(Drop.class, dropHeader.getBandType().implementedInterface());
-        assertTrue(dropHeader.getMeterBandTypes().getFlags().isOfpmbtDrop());
+        assertTrue(dropHeader.getMeterBandTypes().getFlags().getOfpmbtDrop());
 
         final Drop drop = (Drop) dropHeader.getBandType();
         assertEquals(DROP_RATE, drop.getDropRate().intValue());
@@ -104,7 +103,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         // Dscp band
         final MeterBandHeader dscpHeader = meterBandHeaderIt.next();
         assertEquals(DscpRemark.class, dscpHeader.getBandType().implementedInterface());
-        assertTrue(dscpHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark());
+        assertTrue(dscpHeader.getMeterBandTypes().getFlags().getOfpmbtDscpRemark());
 
         final DscpRemark dscpRemark = (DscpRemark) dscpHeader.getBandType();
         assertEquals(DSCP_RATE, dscpRemark.getDscpRemarkRate().intValue());
@@ -112,5 +111,4 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
 
         assertEquals(buffer.readableBytes(), 0);
     }
-
 }

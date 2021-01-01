@@ -51,9 +51,9 @@ final class GroupFeaturesService
     private static final MultipartRequestGroupFeaturesCase GROUP_FEAT_CASE =
             new MultipartRequestGroupFeaturesCaseBuilder().build();
 
-    GroupFeaturesService(RequestContextStack requestContextStack,
-                                DeviceContext deviceContext,
-                                AtomicLong compatibilityXidSeed) {
+    GroupFeaturesService(final RequestContextStack requestContextStack,
+                                final DeviceContext deviceContext,
+                                final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
@@ -66,12 +66,12 @@ final class GroupFeaturesService
     }
 
     @Override
-    public GetGroupFeaturesOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetGroupFeaturesOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetGroupFeaturesOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public GroupFeaturesUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+    public GroupFeaturesUpdated transformToNotification(final List<MultipartReply> result, final TransactionId emulatedTxId) {
         final int mpSize = result.size();
         Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
 
@@ -93,38 +93,38 @@ final class GroupFeaturesService
     }
 
     @VisibleForTesting
-    static List<Class<? extends GroupCapability>> extractSupportedCapabilities(GroupCapabilities capabilities) {
+    static List<Class<? extends GroupCapability>> extractSupportedCapabilities(final GroupCapabilities capabilities) {
         List<Class<? extends GroupCapability>> supportedCapabilities = new ArrayList<>();
 
-        if (capabilities.isOFPGFCCHAINING()) {
+        if (capabilities.getOFPGFCCHAINING()) {
             supportedCapabilities.add(Chaining.class);
         }
-        if (capabilities.isOFPGFCCHAININGCHECKS()) {
+        if (capabilities.getOFPGFCCHAININGCHECKS()) {
             supportedCapabilities.add(ChainingChecks.class);
         }
-        if (capabilities.isOFPGFCSELECTLIVENESS()) {
+        if (capabilities.getOFPGFCSELECTLIVENESS()) {
             supportedCapabilities.add(SelectLiveness.class);
         }
-        if (capabilities.isOFPGFCSELECTWEIGHT()) {
+        if (capabilities.getOFPGFCSELECTWEIGHT()) {
             supportedCapabilities.add(SelectWeight.class);
         }
         return supportedCapabilities;
     }
 
     @VisibleForTesting
-    static List<Class<? extends GroupType>> extractSupportedGroupTypes(GroupTypes types) {
+    static List<Class<? extends GroupType>> extractSupportedGroupTypes(final GroupTypes types) {
         List<Class<? extends GroupType>> supportedGroups = new ArrayList<>();
 
-        if (types.isOFPGTALL()) {
+        if (types.getOFPGTALL()) {
             supportedGroups.add(GroupAll.class);
         }
-        if (types.isOFPGTSELECT()) {
+        if (types.getOFPGTSELECT()) {
             supportedGroups.add(GroupSelect.class);
         }
-        if (types.isOFPGTINDIRECT()) {
+        if (types.getOFPGTINDIRECT()) {
             supportedGroups.add(GroupIndirect.class);
         }
-        if (types.isOFPGTFF()) {
+        if (types.getOFPGTFF()) {
             supportedGroups.add(GroupFf.class);
         }
         return supportedGroups;

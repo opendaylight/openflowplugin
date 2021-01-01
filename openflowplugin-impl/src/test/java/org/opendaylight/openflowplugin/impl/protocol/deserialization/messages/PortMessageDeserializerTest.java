@@ -106,28 +106,28 @@ public class PortMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(ADDRESS.getValue(), message.getHardwareAddress().getValue());
 
         // Config
-        assertEquals(IS_PORTDOWN, message.getConfiguration().isPORTDOWN());
-        assertEquals(IS_NORECV, message.getConfiguration().isNORECV());
-        assertEquals(IS_NOFWD, message.getConfiguration().isNOFWD());
-        assertEquals(IS_NOPACKETIN, message.getConfiguration().isNOPACKETIN());
+        assertEquals(IS_PORTDOWN, message.getConfiguration().getPORTDOWN());
+        assertEquals(IS_NORECV, message.getConfiguration().getNORECV());
+        assertEquals(IS_NOFWD, message.getConfiguration().getNOFWD());
+        assertEquals(IS_NOPACKETIN, message.getConfiguration().getNOPACKETIN());
 
         // Features
-        assertEquals(IS_10MBHD, message.getAdvertisedFeatures().isTenMbHd());
-        assertEquals(IS_10MBFD, message.getAdvertisedFeatures().isTenMbHd());
-        assertEquals(IS_100MBHD, message.getAdvertisedFeatures().isHundredMbHd());
-        assertEquals(IS_100MBFD, message.getAdvertisedFeatures().isHundredMbFd());
-        assertEquals(IS_1GBHD, message.getAdvertisedFeatures().isOneGbHd());
-        assertEquals(IS_1GBFD, message.getAdvertisedFeatures().isOneGbFd());
-        assertEquals(IS_10GBFD, message.getAdvertisedFeatures().isTenGbFd());
-        assertEquals(IS_40GBFD, message.getAdvertisedFeatures().isFortyGbFd());
-        assertEquals(IS_100GBFD, message.getAdvertisedFeatures().isHundredGbFd());
-        assertEquals(IS_1TBFD, message.getAdvertisedFeatures().isOneTbFd());
-        assertEquals(IS_OTHER, message.getAdvertisedFeatures().isOther());
-        assertEquals(IS_COPPER, message.getAdvertisedFeatures().isCopper());
-        assertEquals(IS_FIBER, message.getAdvertisedFeatures().isFiber());
-        assertEquals(IS_AUTOENG, message.getAdvertisedFeatures().isAutoeng());
-        assertEquals(IS_PAUSE, message.getAdvertisedFeatures().isPause());
-        assertEquals(IS_PAUSE_ASYM, message.getAdvertisedFeatures().isPauseAsym());
+        assertEquals(IS_10MBHD, message.getAdvertisedFeatures().getTenMbHd());
+        assertEquals(IS_10MBFD, message.getAdvertisedFeatures().getTenMbHd());
+        assertEquals(IS_100MBHD, message.getAdvertisedFeatures().getHundredMbHd());
+        assertEquals(IS_100MBFD, message.getAdvertisedFeatures().getHundredMbFd());
+        assertEquals(IS_1GBHD, message.getAdvertisedFeatures().getOneGbHd());
+        assertEquals(IS_1GBFD, message.getAdvertisedFeatures().getOneGbFd());
+        assertEquals(IS_10GBFD, message.getAdvertisedFeatures().getTenGbFd());
+        assertEquals(IS_40GBFD, message.getAdvertisedFeatures().getFortyGbFd());
+        assertEquals(IS_100GBFD, message.getAdvertisedFeatures().getHundredGbFd());
+        assertEquals(IS_1TBFD, message.getAdvertisedFeatures().getOneTbFd());
+        assertEquals(IS_OTHER, message.getAdvertisedFeatures().getOther());
+        assertEquals(IS_COPPER, message.getAdvertisedFeatures().getCopper());
+        assertEquals(IS_FIBER, message.getAdvertisedFeatures().getFiber());
+        assertEquals(IS_AUTOENG, message.getAdvertisedFeatures().getAutoeng());
+        assertEquals(IS_PAUSE, message.getAdvertisedFeatures().getPause());
+        assertEquals(IS_PAUSE_ASYM, message.getAdvertisedFeatures().getPauseAsym());
 
         assertEquals(buffer.readableBytes(), 0);
     }

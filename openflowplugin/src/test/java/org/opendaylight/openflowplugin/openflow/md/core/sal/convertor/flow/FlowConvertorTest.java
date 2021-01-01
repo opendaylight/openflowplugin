@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -176,8 +176,7 @@ public class FlowConvertorTest {
         instructionBuilder = new InstructionBuilder();
         WriteActionsCaseBuilder writeCaseBuilder = new WriteActionsCaseBuilder();
         WriteActionsBuilder writeBuilder = new WriteActionsBuilder();
-        List<Action> actions = new ArrayList<>();
-        writeBuilder.setAction(actions);
+        writeBuilder.setAction(Map.of());
         writeCaseBuilder.setWriteActions(writeBuilder.build());
         instructionBuilder.setInstruction(writeCaseBuilder.build());
         instructionBuilder.setOrder(2);
@@ -185,8 +184,7 @@ public class FlowConvertorTest {
         instructionBuilder = new InstructionBuilder();
         ApplyActionsCaseBuilder applyCaseBuilder = new ApplyActionsCaseBuilder();
         ApplyActionsBuilder applyBuilder = new ApplyActionsBuilder();
-        actions = new ArrayList<>();
-        applyBuilder.setAction(actions);
+        applyBuilder.setAction(Map.of());
         applyCaseBuilder.setApplyActions(applyBuilder.build());
         instructionBuilder.setInstruction(applyCaseBuilder.build());
         instructionBuilder.setOrder(3);
@@ -194,8 +192,7 @@ public class FlowConvertorTest {
         instructionBuilder = new InstructionBuilder();
         ClearActionsCaseBuilder clearCaseBuilder = new ClearActionsCaseBuilder();
         ClearActionsBuilder clearBuilder = new ClearActionsBuilder();
-        actions = new ArrayList<>();
-        clearBuilder.setAction(actions);
+        clearBuilder.setAction(Map.of());
         clearCaseBuilder.setClearActions(clearBuilder.build());
         instructionBuilder.setInstruction(clearCaseBuilder.build());
         instructionBuilder.setOrder(4);

@@ -260,8 +260,7 @@ public class MatchConvertorTest {
         checkEntryHeader(entry, VlanVid.class, false);
         Assert.assertEquals("Wrong vlan id", 7, ((VlanVidCase) entry.getMatchEntryValue())
                 .getVlanVid().getVlanVid().intValue());
-        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue())
-                .getVlanVid().isCfiBit());
+        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getCfiBit());
         entry = entries.get(7);
         checkEntryHeader(entry,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp.class, false);
@@ -317,7 +316,7 @@ public class MatchConvertorTest {
                 .getMplsLabel().getMplsLabel().intValue());
         entry = entries.get(20);
         checkEntryHeader(entry, MplsBos.class, false);
-        Assert.assertEquals("Wrong mpls bos", true, ((MplsBosCase) entry.getMatchEntryValue()).getMplsBos().isBos());
+        Assert.assertEquals("Wrong mpls bos", true, ((MplsBosCase) entry.getMatchEntryValue()).getMplsBos().getBos());
         entry = entries.get(21);
         checkEntryHeader(entry, MplsTc.class, false);
         Assert.assertEquals("Wrong mpls tc", 18, ((MplsTcCase) entry.getMatchEntryValue())
@@ -332,10 +331,10 @@ public class MatchConvertorTest {
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
     }
 
-    private static void checkEntryHeader(MatchEntry entry, Class<? extends MatchField> field, boolean hasMask) {
+    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field, final boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
+        Assert.assertEquals("Wrong hasMask", hasMask, entry.getHasMask());
     }
 
     @Test
@@ -724,8 +723,7 @@ public class MatchConvertorTest {
         checkEntryHeader(entry, VlanVid.class, true);
         Assert.assertEquals("Wrong vlan id", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .getVlanVid().intValue());
-        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
-                .isCfiBit());
+        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getCfiBit());
         Assert.assertArrayEquals("Wrong vlanId mask", new byte[]{16, 0},
                 ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getMask());
         entry = entries.get(4);

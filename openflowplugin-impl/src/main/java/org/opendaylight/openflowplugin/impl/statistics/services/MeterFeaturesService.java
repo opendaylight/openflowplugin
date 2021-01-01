@@ -48,9 +48,9 @@ final class MeterFeaturesService
     private static final MultipartRequestMeterFeaturesCase METER_FEATURES_CASE =
             new MultipartRequestMeterFeaturesCaseBuilder().build();
 
-    MeterFeaturesService(RequestContextStack requestContextStack,
-                                DeviceContext deviceContext,
-                                AtomicLong compatibilityXidSeed) {
+    MeterFeaturesService(final RequestContextStack requestContextStack,
+                                final DeviceContext deviceContext,
+                                final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
@@ -63,14 +63,15 @@ final class MeterFeaturesService
     }
 
     @Override
-    public GetMeterFeaturesOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetMeterFeaturesOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetMeterFeaturesOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public MeterFeaturesUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+    public MeterFeaturesUpdated transformToNotification(final List<MultipartReply> result,
+            final TransactionId emulatedTxId) {
         final int mpSize = result.size();
-        Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: {}", mpSize);
+        Preconditions.checkArgument(mpSize == 1, "unexpected (!=1) mp-reply size received: %s", mpSize);
 
         MeterFeaturesUpdatedBuilder notification = new MeterFeaturesUpdatedBuilder();
         notification.setId(getDeviceInfo().getNodeId());
@@ -90,32 +91,32 @@ final class MeterFeaturesService
     }
 
     @VisibleForTesting
-    protected static List<Class<? extends MeterBand>> extractSupportedMeterBand(MultipartReplyMeterFeatures replyBody,
-                                                                         MeterBandTypeBitmap bandTypes) {
+    protected static List<Class<? extends MeterBand>> extractSupportedMeterBand(
+            final MultipartReplyMeterFeatures replyBody, final MeterBandTypeBitmap bandTypes) {
         List<Class<? extends MeterBand>> supportedMeterBand = new ArrayList<>();
-        if (bandTypes.isOFPMBTDROP()) {
+        if (bandTypes.getOFPMBTDROP()) {
             supportedMeterBand.add(MeterBandDrop.class);
         }
-        if (replyBody.getBandTypes().isOFPMBTDSCPREMARK()) {
+        if (replyBody.getBandTypes().getOFPMBTDSCPREMARK()) {
             supportedMeterBand.add(MeterBandDscpRemark.class);
         }
         return supportedMeterBand;
     }
 
     @VisibleForTesting
-    protected static List<Class<? extends MeterCapability>> extractMeterCapabilities(MeterFlags capabilities) {
+    protected static List<Class<? extends MeterCapability>> extractMeterCapabilities(final MeterFlags capabilities) {
         List<Class<? extends MeterCapability>> supportedCapabilities = new ArrayList<>();
 
-        if (capabilities.isOFPMFBURST()) {
+        if (capabilities.getOFPMFBURST()) {
             supportedCapabilities.add(MeterBurst.class);
         }
-        if (capabilities.isOFPMFKBPS()) {
+        if (capabilities.getOFPMFKBPS()) {
             supportedCapabilities.add(MeterKbps.class);
         }
-        if (capabilities.isOFPMFPKTPS()) {
+        if (capabilities.getOFPMFPKTPS()) {
             supportedCapabilities.add(MeterPktps.class);
         }
-        if (capabilities.isOFPMFSTATS()) {
+        if (capabilities.getOFPMFSTATS()) {
             supportedCapabilities.add(MeterStats.class);
         }
         return supportedCapabilities;

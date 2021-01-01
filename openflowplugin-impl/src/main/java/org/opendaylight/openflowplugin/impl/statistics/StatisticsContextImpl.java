@@ -158,29 +158,29 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
     public void initializeDevice() {
         final List<MultipartType> statListForCollecting = new ArrayList<>();
 
-        if (devState.isGroupAvailable() && config.isIsGroupStatisticsPollingOn()) {
+        if (devState.isGroupAvailable() && config.getIsGroupStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPGROUPDESC);
             statListForCollecting.add(MultipartType.OFPMPGROUP);
         }
 
-        if (devState.isMetersAvailable() && config.isIsMeterStatisticsPollingOn()) {
+        if (devState.isMetersAvailable() && config.getIsMeterStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPMETERCONFIG);
             statListForCollecting.add(MultipartType.OFPMPMETER);
         }
 
-        if (devState.isFlowStatisticsAvailable() && config.isIsFlowStatisticsPollingOn()) {
+        if (devState.isFlowStatisticsAvailable() && config.getIsFlowStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPFLOW);
         }
 
-        if (devState.isTableStatisticsAvailable() && config.isIsTableStatisticsPollingOn()) {
+        if (devState.isTableStatisticsAvailable() && config.getIsTableStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPTABLE);
         }
 
-        if (devState.isPortStatisticsAvailable() && config.isIsPortStatisticsPollingOn()) {
+        if (devState.isPortStatisticsAvailable() && config.getIsPortStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPPORTSTATS);
         }
 
-        if (devState.isQueueStatisticsAvailable() && config.isIsQueueStatisticsPollingOn()) {
+        if (devState.isQueueStatisticsAvailable() && config.getIsQueueStatisticsPollingOn()) {
             statListForCollecting.add(MultipartType.OFPMPQUEUE);
         }
 
