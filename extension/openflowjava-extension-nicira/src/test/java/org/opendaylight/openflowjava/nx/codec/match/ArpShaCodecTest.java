@@ -66,7 +66,7 @@ public class ArpShaCodecTest {
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxArpSha.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(false, input.getHasMask());
         assertEquals(RESULT_ADDRESS, result.getArpShaValues().getMacAddress());
     }
 
@@ -88,7 +88,7 @@ public class ArpShaCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

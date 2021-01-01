@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.serializer;
 
 import io.netty.buffer.ByteBuf;
@@ -34,12 +33,12 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
     protected SerializerRegistry serializerRegistry;
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry registry) {
+    public void injectSerializerRegistry(final SerializerRegistry registry) {
         this.serializerRegistry = registry;
     }
 
     static void writeBundleFlags(final BundleFlags bundleFlags, final ByteBuf outBuffer) {
-        short flagsBitMap = fillBitMask(bundleFlags.isAtomic(), bundleFlags.isOrdered());
+        short flagsBitMap = fillBitMask(bundleFlags.getAtomic(), bundleFlags.getOrdered());
         outBuffer.writeShort(flagsBitMap);
     }
 
