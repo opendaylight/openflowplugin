@@ -9,8 +9,7 @@ package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -38,9 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.mpls.action._case.PopMplsActionBuilder;
@@ -67,14 +64,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -84,7 +78,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
@@ -96,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -104,7 +98,6 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("checkstyle:MethodName")
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
     private final DataBroker dataBroker;
@@ -115,8 +108,8 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private final String originalGroupName = "Foo";
     private final NotificationService notificationService;
 
-    public OpenflowPluginBulkGroupTransactionProvider(DataBroker dataBroker, NotificationService notificationService,
-            BundleContext ctx) {
+    public OpenflowPluginBulkGroupTransactionProvider(final DataBroker dataBroker,
+            final NotificationService notificationService, final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.ctx = ctx;
@@ -132,17 +125,11 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         if (nodeId == null) {
             nodeId = OpenflowpluginTestActivator.NODE_ID;
         }
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(nodeId));
-        builder.withKey(new NodeKey(builder.getId()));
-        return builder;
+        return new NodeBuilder().setId(new NodeId(nodeId));
     }
 
     private void createTestNode() {
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
-        builder.withKey(new NodeKey(builder.getId()));
-        testNode12 = builder.build();
+        testNode12 = new NodeBuilder().setId(new NodeId(OpenflowpluginTestActivator.NODE_ID)).build();
     }
 
     @Override
@@ -167,272 +154,166 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     }
 
     private static InstructionsBuilder createDecNwTtlInstructions() {
-        DecNwTtlBuilder ta = new DecNwTtlBuilder();
-        DecNwTtl decNwTtl = ta.build();
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-
-        // Add our drop action to a list
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.withKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static MatchBuilder createMatch2() {
-        MatchBuilder match = new MatchBuilder();
-        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1");
-        ipv4Match.setIpv4Source(prefix);
-        Ipv4Match i4m = ipv4Match.build();
-        match.setLayer3Match(i4m);
-
-        EthernetMatchBuilder eth = new EthernetMatchBuilder();
-        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
-        eth.setEthernetType(ethTypeBuilder.build());
-        match.setEthernetMatch(eth.build());
-        return match;
+        return new MatchBuilder()
+            .setLayer3Match(new Ipv4MatchBuilder().setIpv4Source(new Ipv4Prefix("10.0.0.1")).build())
+            .setEthernetMatch(new EthernetMatchBuilder()
+                .setEthernetType(new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(0x0800))).build())
+                .build());
     }
 
     private static MatchBuilder createMatch3() {
-        MatchBuilder match = new MatchBuilder();
-        EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-        EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-        ethSourceBuilder.setAddress(new MacAddress("00:00:00:00:00:01"));
-        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
-        match.setEthernetMatch(ethernetMatch.build());
-
-        return match;
+        return new MatchBuilder()
+            .setEthernetMatch(new EthernetMatchBuilder()
+                .setEthernetSource(new EthernetSourceBuilder().setAddress(new MacAddress("00:00:00:00:00:01")).build())
+                .build());
     }
 
     private static InstructionsBuilder createDropInstructions() {
-        DropActionBuilder dab = new DropActionBuilder();
-        DropAction dropAction = dab.build();
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
-
-        // Add our drop action to a list
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new DropActionCaseBuilder()
+                                .setDropAction(new DropActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static MatchBuilder createEthernetMatch() {
-        EthernetMatchBuilder ethmatch = new EthernetMatchBuilder(); // ethernettype
-        // match
-        EthernetTypeBuilder ethtype = new EthernetTypeBuilder();
-        EtherType type = new EtherType(Uint32.valueOf(0x0800));
-        ethmatch.setEthernetType(ethtype.setType(type).build());
-
-        EthernetDestinationBuilder ethdest = new EthernetDestinationBuilder(); // ethernet
-        // macaddress
-        // match
-        MacAddress macdest = new MacAddress("ff:ff:ff:ff:ff:ff");
-        ethdest.setAddress(macdest);
-        // ethdest.setMask(mask1);
-
-        ethmatch.setEthernetDestination(ethdest.build());
-
-        EthernetSourceBuilder ethsrc = new EthernetSourceBuilder();
-        MacAddress macsrc = new MacAddress("00:00:00:00:23:ae");
-        ethsrc.setAddress(macsrc);
-        // ethsrc.setMask(mask2);
-
-        ethmatch.setEthernetSource(ethsrc.build());
-        MatchBuilder match = new MatchBuilder();
-        match.setEthernetMatch(ethmatch.build());
-        return match;
-
+        return new MatchBuilder()
+            .setEthernetMatch(new EthernetMatchBuilder()
+                .setEthernetType(new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(0x0800))).build())
+                .setEthernetDestination(new EthernetDestinationBuilder()
+                    .setAddress(new MacAddress("ff:ff:ff:ff:ff:ff"))
+                    // .setMask(mask1);
+                    .build())
+                .setEthernetSource(new EthernetSourceBuilder()
+                    .setAddress(new MacAddress("00:00:00:00:23:ae"))
+                    // .setMask(mask2);
+                    .build())
+                .build());
     }
 
     private static InstructionsBuilder createMeterInstructions() {
-
-        MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(Uint32.ONE));
-
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new MeterCaseBuilder()
+                    .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.ONE)).build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction() {
-
-        List<Action> actionList = new ArrayList<>();
-        ActionBuilder ab = new ActionBuilder();
-        ControllerActionBuilder controller = new ControllerActionBuilder();
-        controller.setMaxLength(Uint16.valueOf(5));
-        ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new ControllerActionCaseBuilder()
+                                .setControllerAction(new ControllerActionBuilder()
+                                    .setMaxLength(Uint16.valueOf(5))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction7() {
-
-        List<Action> actionList = new ArrayList<>();
-        ActionBuilder ab = new ActionBuilder();
-
-        SetVlanIdActionBuilder vl = new SetVlanIdActionBuilder();
-        VlanId vlanId = new VlanId(Uint16.valueOf(4012));
-        vl.setVlanId(vlanId);
-        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new SetVlanIdActionCaseBuilder()
+                                .setSetVlanIdAction(new SetVlanIdActionBuilder()
+                                    .setVlanId(new VlanId(Uint16.valueOf(4012)))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction21() {
-
-        List<Action> actionList = new ArrayList<>();
-        ActionBuilder ab = new ActionBuilder();
-
-        PopVlanActionBuilder popVlanActionBuilder = new PopVlanActionBuilder();
-        ab.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVlanActionBuilder.build()).build());
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new PopVlanActionCaseBuilder()
+                                .setPopVlanAction(new PopVlanActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction2() {
-
-        List<Action> actionList = new ArrayList<>();
-        ActionBuilder ab = new ActionBuilder();
-
-        PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(Uint16.valueOf(0x8847));
-        ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new PushMplsActionCaseBuilder()
+                                .setPushMplsAction(new PushMplsActionBuilder()
+                                    .setEthernetType(Uint16.valueOf(0x8847))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction3() {
-
-        List<Action> actionList = new ArrayList<>();
-        ActionBuilder ab = new ActionBuilder();
-
-        PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(Uint16.valueOf(0x88E7));
-        ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new PushPbbActionCaseBuilder()
+                                .setPushPbbAction(new PushPbbActionBuilder()
+                                    .setEthernetType(Uint16.valueOf(0x88E7))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createGotoTableInstructions() {
-
-        GoToTableBuilder aab = new GoToTableBuilder();
-        aab.setTableId(Uint8.TWO);
-
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new GoToTableCaseBuilder()
+                    .setGoToTable(new GoToTableBuilder().setTableId(Uint8.TWO).build())
+                    .build())
+                .build()));
     }
 
-    private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
+    private FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg, final String tableId) {
 
         FlowBuilder flow = new FlowBuilder();
         long id = 123;
@@ -514,7 +395,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
 
         final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
-        if (null == flow.isBarrier()) {
+        if (null == flow.getBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
         // flow.setBufferId(12L);
@@ -539,7 +420,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return flow;
     }
 
-    private static Uint8 getTableId(String tableId) {
+    private static Uint8 getTableId(final String tableId) {
         Uint8 table = Uint8.TWO;
         if (tableId == null) {
             return table;
@@ -555,7 +436,8 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
     }
 
-    public void _addGroups(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _addGroups(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -593,14 +475,12 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private void createUserNode(String nodeRef) {
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(nodeRef));
-        builder.withKey(new NodeKey(builder.getId()));
-        testNode12 = builder.build();
+    private void createUserNode(final String nodeRef) {
+        testNode12 = new NodeBuilder().setId(new NodeId(nodeRef)).build();
     }
 
-    public void _modifyGroups(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _modifyGroups(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -638,11 +518,12 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    public void _removeGroups(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _removeGroups(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -701,7 +582,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private void writeGroup(final CommandInterpreter ci, Group group, Group group1) {
+    private void writeGroup(final CommandInterpreter ci, final Group group, final Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
@@ -719,18 +600,18 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, group1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    private void deleteGroup(final CommandInterpreter ci, Group group, Group group1) {
+    private void deleteGroup(final CommandInterpreter ci, final Group group, final Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
@@ -744,18 +625,19 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    private GroupBuilder createTestGroup(String actionType, String groupType, String groupmod, String strId) {
+    private GroupBuilder createTestGroup(String actionType, String groupType, final String groupmod,
+            final String strId) {
         // Sample data , committing to DataStore
 
         GroupBuilder group = new GroupBuilder();
@@ -835,132 +717,102 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             bucket.setWeight(Uint16.valueOf(30));
         }
 
-        GroupKey key = new GroupKey(new GroupId(Uint32.valueOf(strId)));
-        group.withKey(key);
-        // group.setInstall(false);
-        group.setGroupName(originalGroupName);
-        group.setBarrier(false);
-        BucketsBuilder value = new BucketsBuilder();
-        List<Bucket> value1 = new ArrayList<>();
-        value1.add(bucket.build());
-        value.setBucket(value1);
-        group.setBuckets(value.build());
-        return group;
+        return group.withKey(new GroupKey(new GroupId(Uint32.valueOf(strId))))
+            // .group.setInstall(false)
+            .setGroupName(originalGroupName)
+            .setBarrier(false)
+            .setBuckets(new BucketsBuilder().setBucket(BindingMap.of(bucket.build())).build());
     }
 
-    private static List<Action> createPopVlanAction() {
-        PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
-        action.withKey(new ActionKey(0));
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createPopVlanAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new PopVlanActionCaseBuilder().setPopVlanAction(new PopVlanActionBuilder().build()).build())
+            .build());
     }
 
-    private static List<Action> createPushVlanAction() {
-        PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(Uint16.valueOf(0x8100));
-        VlanId vlanId = new VlanId(Uint16.TWO);
-        vlan.setVlanId(vlanId);
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createPushVlanAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new PushVlanActionCaseBuilder()
+                .setPushVlanAction(new PushVlanActionBuilder()
+                    .setEthernetType(Uint16.valueOf(0x8100))
+                    .setVlanId(new VlanId(Uint16.TWO))
+                    .build())
+                .build())
+            .build());
     }
 
-    private static List<Action> createPushMplsAction() {
-        PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(Uint16.valueOf(0x8847));
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createPushMplsAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new PushMplsActionCaseBuilder()
+                .setPushMplsAction(new PushMplsActionBuilder().setEthernetType(Uint16.valueOf(0x8847)).build())
+                .build())
+            .build());
     }
 
-    private static List<Action> createPopMplsAction() {
-        PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
-        popMplsActionBuilder.setEthernetType(Uint16.valueOf(0XB));
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createPopMplsAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new PopMplsActionCaseBuilder()
+                .setPopMplsAction(new PopMplsActionBuilder().setEthernetType(Uint16.valueOf(0xB)).build())
+                .build())
+            .build());
     }
 
-    private static List<Action> createPopPbbAction() {
-        PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createPopPbbAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new PopPbbActionCaseBuilder().setPopPbbAction(new PopPbbActionBuilder().build()).build())
+            .build());
     }
 
-    private static List<Action> createPushPbbAction() {
-        PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(Uint16.valueOf(0x88E7));
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createPushPbbAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new PushPbbActionCaseBuilder()
+                .setPushPbbAction(new PushPbbActionBuilder().setEthernetType(Uint16.valueOf(0x88E7)).build())
+                .build())
+            .build());
     }
 
-    private static List<Action> createCopyTtlInAction() {
-        CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createCopyTtlInAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(new CopyTtlInBuilder().build()).build())
+            .build());
     }
 
-    private static List<Action> createCopyTtlOutAction() {
-        CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createCopyTtlOutAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(new CopyTtlOutBuilder().build()).build())
+            .build());
     }
 
-    private static List<Action> createDecMplsTtlAction() {
-        DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createDecMplsTtlAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(new DecMplsTtlBuilder().build()).build())
+            .build());
     }
 
-    private static List<Action> createGroupAction() {
-
-        GroupActionBuilder groupActionB = new GroupActionBuilder();
-        groupActionB.setGroupId(Uint32.ONE);
-        groupActionB.setGroup("0");
-        ActionBuilder action = new ActionBuilder();
-        action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
-        action.withKey(new ActionKey(0));
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+    private static Map<ActionKey, Action> createGroupAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new GroupActionCaseBuilder()
+                .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
+                .build())
+            .build());
     }
 
-    private static List<Action> createNonAppyPushVlanAction() {
-
-        ActionBuilder ab = new ActionBuilder();
-
-        GroupActionBuilder groupActionB = new GroupActionBuilder();
-        groupActionB.setGroupId(Uint32.ONE);
-        groupActionB.setGroup("0");
-        ab.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
-
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-
-        return actionList;
+    private static Map<ActionKey, Action> createNonAppyPushVlanAction() {
+        return BindingMap.of(new ActionBuilder()
+            .setOrder(0)
+            .setAction(new GroupActionCaseBuilder()
+                .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
+                .build())
+            .build());
     }
 }

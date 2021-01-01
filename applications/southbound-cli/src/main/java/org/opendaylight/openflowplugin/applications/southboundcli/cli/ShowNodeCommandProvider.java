@@ -32,6 +32,7 @@ public class ShowNodeCommandProvider extends OsgiCommandSupport {
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
+    @Deprecated
     @Override
     protected Object doExecute() {
         if (nodeId == null) {

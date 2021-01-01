@@ -26,7 +26,7 @@ public abstract class AbstractMatchCodec implements
     protected NxmHeader headerWithMask;
     protected NxmHeader headerWithoutMask;
 
-    protected MatchEntryBuilder deserializeHeaderToBuilder(ByteBuf message) {
+    protected MatchEntryBuilder deserializeHeaderToBuilder(final ByteBuf message) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
@@ -40,20 +40,20 @@ public abstract class AbstractMatchCodec implements
     }
 
     @Override
-    public MatchEntry deserializeHeader(ByteBuf message) {
+    public MatchEntry deserializeHeader(final ByteBuf message) {
         return deserializeHeaderToBuilder(message).build();
     }
 
     @Override
-    public void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
-        serializeHeader(getHeader(input.isHasMask()), outBuffer);
+    public void serializeHeader(final MatchEntry input, final ByteBuf outBuffer) {
+        serializeHeader(getHeader(input.getHasMask()), outBuffer);
     }
 
-    public void serializeHeader(NxmHeader input, ByteBuf outBuffer) {
+    public void serializeHeader(final NxmHeader input, final ByteBuf outBuffer) {
         outBuffer.writeInt((int) input.toLong());
     }
 
-    protected NxmHeader getHeader(boolean hasMask) {
+    protected NxmHeader getHeader(final boolean hasMask) {
         if (hasMask) {
             if (headerWithMask == null) {
                 headerWithMask = buildHeader(hasMask);
@@ -67,7 +67,7 @@ public abstract class AbstractMatchCodec implements
         }
     }
 
-    protected NxmHeader buildHeader(boolean hasMask) {
+    protected NxmHeader buildHeader(final boolean hasMask) {
         return new NxmHeader(
                 getOxmClassCode(),
                 getNxmFieldCode(),
@@ -108,5 +108,4 @@ public abstract class AbstractMatchCodec implements
      * Returns the oxm_class class.
      */
     public abstract Class<? extends OxmClassBase> getOxmClass();
-
 }

@@ -58,7 +58,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
 
     @SuppressWarnings("unchecked")
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         NxmNxRegBuilder nxRegBuilder = new NxmNxRegBuilder();
         if (!org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg.class
                 .isAssignableFrom(input.getOxmMatchField())) {
@@ -73,7 +73,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         RegCaseValue regCaseValue = (RegCaseValue) input.getMatchEntryValue();
         nxRegBuilder.setValue(regCaseValue.getRegValues().getValue());
 
-        if (input.isHasMask()) {
+        if (input.getHasMask()) {
             nxRegBuilder.setMask(regCaseValue.getRegValues().getMask());
         }
 
@@ -81,7 +81,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<NxmNxRegGrouping> matchGrouping = MatchUtil.REG_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
@@ -100,7 +100,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
             .build();
     }
 
-    private static Class<? extends ExtensionKey> resolveRegKey(Class<? extends MatchField> oxmMatchField) {
+    private static Class<? extends ExtensionKey> resolveRegKey(final Class<? extends MatchField> oxmMatchField) {
         if (NiciraMatchCodecs.REG0_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
             return NxmNxReg0Key.class;
         }
@@ -128,8 +128,8 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         throw new CodecPreconditionException("There is no key for " + oxmMatchField);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxReg nxmNxReg,
-            MatchPath path, Class<? extends ExtensionKey> key) {
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxReg nxmNxReg,
+            final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

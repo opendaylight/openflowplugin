@@ -26,7 +26,7 @@ public abstract class AbstractMatchCodec implements
     protected EricHeader headerWithMask;
     protected EricHeader headerWithoutMask;
 
-    protected MatchEntryBuilder deserializeHeaderToBuilder(ByteBuf message) {
+    protected MatchEntryBuilder deserializeHeaderToBuilder(final ByteBuf message) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(getOxmClass());
         // skip oxm_class - provided
@@ -40,20 +40,20 @@ public abstract class AbstractMatchCodec implements
     }
 
     @Override
-    public MatchEntry deserializeHeader(ByteBuf message) {
+    public MatchEntry deserializeHeader(final ByteBuf message) {
         return deserializeHeaderToBuilder(message).build();
     }
 
     @Override
-    public void serializeHeader(MatchEntry input, ByteBuf outBuffer) {
-        serializeHeader(getHeader(input.isHasMask()), outBuffer);
+    public void serializeHeader(final MatchEntry input, final ByteBuf outBuffer) {
+        serializeHeader(getHeader(input.getHasMask()), outBuffer);
     }
 
-    public void serializeHeader(EricHeader input, ByteBuf outBuffer) {
+    public void serializeHeader(final EricHeader input, final ByteBuf outBuffer) {
         outBuffer.writeInt((int) input.toLong());
     }
 
-    protected EricHeader getHeader(boolean hasMask) {
+    protected EricHeader getHeader(final boolean hasMask) {
         if (hasMask) {
             if (headerWithMask == null) {
                 headerWithMask = buildHeader(hasMask);
@@ -67,7 +67,7 @@ public abstract class AbstractMatchCodec implements
         }
     }
 
-    protected EricHeader buildHeader(boolean hasMask) {
+    protected EricHeader buildHeader(final boolean hasMask) {
         return new EricHeader(
                 getOxmClassCode(),
                 getEricFieldCode(),

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
@@ -24,19 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class CtStateCodecTest {
+    private final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+    private final CtStateCodec ctStateCodec = new CtStateCodec();
 
-    CtStateCodec ctStateCodec;
-    ByteBuf buffer;
-    MatchEntry input;
+    private MatchEntry input;
 
     private static final int VALUE_LENGTH = 8;
     private static final int NXM_FIELD_CODE = 105;
-
-    @Before
-    public void setUp() {
-        ctStateCodec = new CtStateCodec();
-        buffer = ByteBufAllocator.DEFAULT.buffer();
-    }
 
     @Test
     public void serializeTest() {
@@ -61,7 +54,7 @@ public class CtStateCodecTest {
 
         assertEquals(Nxm1Class.class, input.getOxmClass());
         assertEquals(NxmNxCtState.class, input.getOxmMatchField());
-        assertEquals(true, input.isHasMask());
+        assertEquals(true, input.getHasMask());
         assertEquals(1, result.getCtStateValues().getCtState().intValue());
         assertEquals(2, result.getCtStateValues().getMask().intValue());
     }
@@ -83,7 +76,7 @@ public class CtStateCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_1_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

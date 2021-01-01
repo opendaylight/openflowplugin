@@ -99,7 +99,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     @Override
     public ListenableFuture<RpcResult<AddFlowsDsOutput>> addFlowsDs(final AddFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-        boolean createParentsNextTime = requireNonNullElse(input.isAlwaysCreateParents(), Boolean.FALSE);
+        boolean createParentsNextTime = requireNonNullElse(input.getAlwaysCreateParents(), Boolean.FALSE);
         boolean createParents = true;
         for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
             FlowBuilder flowBuilder = new FlowBuilder(bulkFlow);
@@ -191,7 +191,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
     @Override
     public ListenableFuture<RpcResult<ReadFlowTestOutput>> readFlowTest(final ReadFlowTestInput input) {
         FlowReader flowReader = FlowReader.getNewInstance(dataBroker, input.getDpnCount().intValue(),
-                input.getFlowsPerDpn().intValue(), input.isVerbose(), input.isIsConfigDs(),
+                input.getFlowsPerDpn().intValue(), input.getVerbose(), input.getIsConfigDs(),
                 input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
         flowCounterBeanImpl.setReader(flowReader);
         fjService.execute(flowReader);
@@ -249,14 +249,14 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
 
     @Override
     public ListenableFuture<RpcResult<FlowTestOutput>> flowTest(final FlowTestInput input) {
-        if (input.isTxChain()) {
+        if (input.getTxChain()) {
             FlowWriterTxChain flowTester = new FlowWriterTxChain(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
-            if (input.isIsAdd()) {
+            if (input.getIsAdd()) {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
-                        input.getEndTableId().shortValue(), input.isCreateParents());
+                        input.getEndTableId().shortValue(), input.getCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
@@ -265,14 +265,14 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             RpcResultBuilder<FlowTestOutput> rpcResultBuilder = RpcResultBuilder.success();
             return Futures.immediateFuture(rpcResultBuilder.build());
         }
-        if (input.isSeq()) {
+        if (input.getSeq()) {
             FlowWriterSequential flowTester = new FlowWriterSequential(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
-            if (input.isIsAdd()) {
+            if (input.getIsAdd()) {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getStartTableId().shortValue(), input.getEndTableId().shortValue(),
-                        input.isCreateParents());
+                        input.getCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),
@@ -281,11 +281,11 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         } else {
             FlowWriterConcurrent flowTester = new FlowWriterConcurrent(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
-            if (input.isIsAdd()) {
+            if (input.getIsAdd()) {
                 flowTester.addFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getSleepFor().intValue(),
                         input.getSleepAfter().intValue(), input.getStartTableId().shortValue(),
-                        input.getEndTableId().shortValue(), input.isCreateParents());
+                        input.getEndTableId().shortValue(), input.getCreateParents());
             } else {
                 flowTester.deleteFlows(input.getDpnCount().intValue(), input.getFlowsPerDpn().intValue(),
                         input.getBatchSize().intValue(), input.getStartTableId().shortValue(),

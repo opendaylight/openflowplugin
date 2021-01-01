@@ -26,20 +26,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 
 /**
  * Codec for CtMark.
- * s
+ *
  * @author Bertrand Low.
  */
 public class CtMarkCodec extends AbstractMatchCodec {
-
     private static final int VALUE_LENGTH = 4;
     private static final int NXM_FIELD_CODE = 107;
+
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxCtMark> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
             EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtMark.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         CtMarkCaseValue ctMarkCase = (CtMarkCaseValue) input.getMatchEntryValue();
         outBuffer.writeInt(ctMarkCase.getCtMarkValues().getCtMark().intValue());
@@ -47,11 +47,11 @@ public class CtMarkCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         CtMarkCaseValueBuilder caseBuilder = new CtMarkCaseValueBuilder();
         CtMarkValuesBuilder ctMarkValuesBuilder = new CtMarkValuesBuilder();
-        if (matchEntryBuilder.isHasMask()) {
+        if (matchEntryBuilder.getHasMask()) {
             ctMarkValuesBuilder.setMask(readUint32(message));
         }
         ctMarkValuesBuilder.setCtMark(readUint32(message));

@@ -190,7 +190,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
             return false;
         }
 
-        if (!gatheringStatusEnd.isSucceeded()) {
+        if (!gatheringStatusEnd.getSucceeded()) {
             LOG.trace("Statistics gathering was not successful: {}", nodeId.getValue());
             return false;
         }

@@ -124,10 +124,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
                                       @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry,
                                       @Reference final FlowGroupCacheManager flowGroupCacheManager,
                                       final ListenerRegistrationHelper registrationHelper) {
-        disableReconciliation = config.isDisableReconciliation();
-        staleMarkingEnabled = config.isStaleMarkingEnabled();
+        disableReconciliation = config.getDisableReconciliation();
+        staleMarkingEnabled = config.getStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
-        isBundleBasedReconciliationEnabled = config.isBundleBasedReconciliationEnabled();
+        isBundleBasedReconciliationEnabled = config.getBundleBasedReconciliationEnabled();
         this.configurationServiceRegistration = configurationService.registerListener(this);
         this.registrationHelper = requireNonNull(registrationHelper, "RegistrationHelper cannot be null");
         this.dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
