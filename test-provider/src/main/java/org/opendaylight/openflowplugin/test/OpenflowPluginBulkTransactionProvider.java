@@ -122,8 +122,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private final NotificationService notificationService;
 
-    public OpenflowPluginBulkTransactionProvider(DataBroker dataBroker, NotificationService notificationService,
-            BundleContext ctx) {
+    public OpenflowPluginBulkTransactionProvider(final DataBroker dataBroker, final NotificationService notificationService,
+            final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.ctx = ctx;
@@ -150,7 +150,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return "No help";
     }
 
-    private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
+    private FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg, final String tableId) {
 
         FlowBuilder flow = new FlowBuilder();
         long id = 123;
@@ -391,7 +391,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
                 LOG.warn("flow type not understood: {}", flowType);
         }
 
-        if (null == flow.isBarrier()) {
+        if (null == flow.getBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
         // flow.setBufferId(12L);
@@ -417,7 +417,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return flow;
     }
 
-    private static Uint8 getTableId(String tableId) {
+    private static Uint8 getTableId(final String tableId) {
         if (tableId != null) {
             try {
                 return Uint8.valueOf(tableId);
@@ -428,7 +428,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return Uint8.TWO;
     }
 
-    public void _addFlows(CommandInterpreter ci) {
+    public void _addFlows(final CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
         String flowtype = ci.nextArgument();
         Integer flowcnt = Integer.parseInt(flowtype);
@@ -481,11 +481,11 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
     }
 
-    private static InstanceIdentifier<Node> nodeBuilderToInstanceId(NodeBuilder node) {
+    private static InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    public void _modifyFlows(CommandInterpreter ci) {
+    public void _modifyFlows(final CommandInterpreter ci) {
         NodeBuilder tn = createTestNode(ci.nextArgument());
         String flowtype = ci.nextArgument();
         Integer flowcnt = Integer.parseInt(flowtype);
@@ -645,12 +645,12 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("Status of Group Data Loaded Transaction : failure.", throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
@@ -658,8 +658,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
 
     }
 
-    private void writeFlow(final CommandInterpreter ci, FlowBuilder flow, FlowBuilder flow1, FlowBuilder flow2,
-                           FlowBuilder flow3, NodeBuilder nodeBuilder) {
+    private void writeFlow(final CommandInterpreter ci, final FlowBuilder flow, final FlowBuilder flow1, final FlowBuilder flow2,
+                           final FlowBuilder flow3, final NodeBuilder nodeBuilder) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
@@ -701,12 +701,12 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path4, flow3.build());
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("Status of Group Data Loaded Transaction : failure.", throwable);
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
@@ -1234,7 +1234,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return match;
     }
 
-    private static MatchBuilder createInphyportMatch(NodeId nodeId) {
+    private static MatchBuilder createInphyportMatch(final NodeId nodeId) {
         MatchBuilder match = new MatchBuilder();
         match.setInPort(new NodeConnectorId(nodeId + ":202"));
         match.setInPhyPort(new NodeConnectorId(nodeId + ":10122"));

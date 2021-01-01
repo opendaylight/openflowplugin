@@ -47,7 +47,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNodeConnector>> modifications) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNodeConnector>> modifications) {
         for (DataTreeModification<FlowCapableNodeConnector> modification : modifications) {
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:
@@ -127,9 +127,9 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
 
     private void removeLinks(final FlowCapableNodeConnector flowCapNodeConnector, final TerminationPoint point) {
         operationProcessor.enqueueOperation(manager -> {
-            if (flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().isLinkDown()
+            if (flowCapNodeConnector.getState() != null && flowCapNodeConnector.getState().getLinkDown()
                     || flowCapNodeConnector.getConfiguration() != null
-                        && flowCapNodeConnector.getConfiguration().isPORTDOWN()) {
+                        && flowCapNodeConnector.getConfiguration().getPORTDOWN()) {
                 TopologyManagerUtil.removeAffectedLinks(point.getTpId(), manager, II_TO_TOPOLOGY);
             }
         });

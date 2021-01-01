@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -27,22 +26,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthSrcCaseValueBuilder;
 
 public class EthSrcCodecTest {
+    private final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+    private final EthSrcCodec ethSrcCodec = new EthSrcCodec();
 
-    EthSrcCodec ethSrcCodec;
-    ByteBuf buffer;
-    MatchEntry input;
+    private MatchEntry input;
 
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 2;
 
     private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
     private static final MacAddress TEST_ADDRESS = IetfYangUtil.INSTANCE.macAddressFor(TEST_ADDR);
-
-    @Before
-    public void setUp() {
-        ethSrcCodec = new EthSrcCodec();
-        buffer = ByteBufAllocator.DEFAULT.buffer();
-    }
 
     @Test
     public void serializeTest() {
@@ -67,7 +60,7 @@ public class EthSrcCodecTest {
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfEthSrc.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(false, input.getHasMask());
         assertEquals(TEST_ADDRESS, result.getEthSrcValues().getMacAddress());
     }
 
@@ -88,7 +81,7 @@ public class EthSrcCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

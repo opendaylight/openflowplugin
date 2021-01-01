@@ -35,7 +35,7 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 
 public abstract class FRMTest extends AbstractDataBrokerTest {
 
-    public void addFlowCapableNode(NodeKey nodeKey) {
+    public void addFlowCapableNode(final NodeKey nodeKey) {
         Nodes nodes = new NodesBuilder().build();
 
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -54,11 +54,11 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
 
     // TODO: remove with mdsal-3.0.7 or later
     @SuppressWarnings("unchecked")
-    protected static final void assertCommit(FluentFuture<?> future) {
+    protected static final void assertCommit(final FluentFuture<?> future) {
         assertCommit((ListenableFuture<Void>) future);
     }
 
-    public void removeNode(NodeKey nodeKey) throws ExecutionException, InterruptedException {
+    public void removeNode(final NodeKey nodeKey) throws ExecutionException, InterruptedException {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey));
@@ -92,21 +92,21 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         });
 
         Mockito.lenient().when(configurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
-                .thenReturn(config.isDisableReconciliation());
+                .thenReturn(config.getDisableReconciliation());
 
         Mockito.lenient().when(configurationService.getProperty(Mockito.eq("stale-marking-enabled"), Mockito.any()))
-                .thenReturn(config.isStaleMarkingEnabled());
+                .thenReturn(config.getStaleMarkingEnabled());
 
         Mockito.lenient().when(configurationService.getProperty(Mockito.eq("reconciliation-retry-count"),
                 Mockito.any())).thenReturn(config.getReconciliationRetryCount());
 
         Mockito.lenient().when(configurationService.getProperty(Mockito.eq("bundle-based-reconciliation-enabled"),
-                Mockito.any())).thenReturn(config.isBundleBasedReconciliationEnabled());
+                Mockito.any())).thenReturn(config.getBundleBasedReconciliationEnabled());
 
         return configurationService;
     }
 
-    protected Callable<Integer> listSize(List<?> list) {
+    protected Callable<Integer> listSize(final List<?> list) {
         // The condition supplier part
         return list::size;
     }
