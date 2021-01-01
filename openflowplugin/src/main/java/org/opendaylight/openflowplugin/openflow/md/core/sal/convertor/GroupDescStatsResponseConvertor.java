@@ -51,7 +51,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
     private static final Set<Class<?>> TYPES = Collections.singleton(GroupDesc.class);
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(
-            List<BucketsList> bucketDescStats, short version) {
+            final List<BucketsList> bucketDescStats, final short version) {
         final ActionResponseConvertorData data = new ActionResponseConvertorData(version);
         data.setActionPath(ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
 
@@ -82,7 +82,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
 
                 bucketDesc.setAction(actions);
             } else {
-                bucketDesc.setAction(Collections.emptyList());
+                bucketDesc.setAction(Collections.emptyMap());
             }
 
             bucketDesc.setWeight(bucketDetails.getWeight());
@@ -105,7 +105,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
     }
 
     @Override
-    public List<GroupDescStats> convert(List<GroupDesc> source, VersionConvertorData data) {
+    public List<GroupDescStats> convert(final List<GroupDesc> source, final VersionConvertorData data) {
         List<GroupDescStats> convertedSALGroupsDesc = new ArrayList<>();
 
         for (GroupDesc groupDesc : source) {

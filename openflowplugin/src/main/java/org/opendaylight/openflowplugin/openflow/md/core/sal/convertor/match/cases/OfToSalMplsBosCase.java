@@ -25,15 +25,15 @@ public class OfToSalMplsBosCase extends ConvertorCase<MplsBosCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull MplsBosCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@NonNull final MplsBosCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = data.getProtocolMatchFieldsBuilder();
 
         MplsBos mplsBos = source.getMplsBos();
 
         if (mplsBos != null) {
-            protocolMatchFieldsBuilder.setMplsBos(mplsBos.isBos() ? Uint8.ONE : Uint8.ZERO);
+            protocolMatchFieldsBuilder.setMplsBos(mplsBos.getBos() ? Uint8.ONE : Uint8.ZERO);
             matchBuilder.setProtocolMatchFields(protocolMatchFieldsBuilder.build());
         }
 

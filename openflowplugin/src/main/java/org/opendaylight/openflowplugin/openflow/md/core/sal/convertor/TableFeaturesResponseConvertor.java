@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.ImmutableMap;
@@ -542,7 +541,7 @@ public class TableFeaturesResponseConvertor
             Class<? extends MatchField> ofMatchField = currMatch.getOxmMatchField();
 
             if (setHasMask) {
-                setFieldMatchBuilder.setHasMask(currMatch.isHasMask());
+                setFieldMatchBuilder.setHasMask(currMatch.getHasMask());
             }
 
             setFieldMatchBuilder.setMatchType(OF_TO_SAL_TABLE_FEATURE_PROPERTIES.get(ofMatchField));
@@ -583,7 +582,7 @@ public class TableFeaturesResponseConvertor
             }
 
             if (ofTableFeatures.getConfig() != null) {
-                salTableFeatures.setConfig(new TableConfig(ofTableFeatures.getConfig().isOFPTCDEPRECATEDMASK()));
+                salTableFeatures.setConfig(new TableConfig(ofTableFeatures.getConfig().getOFPTCDEPRECATEDMASK()));
             }
 
             salTableFeatures.setMaxEntries(ofTableFeatures.getMaxEntries());

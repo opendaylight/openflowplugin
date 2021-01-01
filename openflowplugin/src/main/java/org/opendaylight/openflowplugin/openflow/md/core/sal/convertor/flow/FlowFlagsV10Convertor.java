@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.util.Collection;
@@ -39,6 +38,6 @@ public class FlowFlagsV10Convertor extends Convertor<FlowModFlags, FlowModFlagsV
     @Override
     public FlowModFlagsV10 convert(final FlowModFlags source, final VersionConvertorData data) {
         return new FlowModFlagsV10(
-                source.isCHECKOVERLAP(), FlowConvertor.DEFAULT_OFPFF_EMERGENCY, source.isSENDFLOWREM());
+                source.getCHECKOVERLAP(), FlowConvertor.DEFAULT_OFPFF_EMERGENCY, source.getSENDFLOWREM());
     }
 }

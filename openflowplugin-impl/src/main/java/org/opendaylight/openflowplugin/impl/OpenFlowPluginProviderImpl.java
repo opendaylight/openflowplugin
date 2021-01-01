@@ -169,7 +169,7 @@ public class OpenFlowPluginProviderImpl implements
         LOG.info("onSystemBootReady() received, starting the switch connections");
         Futures.addCallback(Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
             // Inject OpenFlowPlugin custom serializers and deserializers into OpenFlowJava
-            if (config.isUseSingleLayerSerialization()) {
+            if (config.getUseSingleLayerSerialization()) {
                 SerializerInjector.injectSerializers(switchConnectionProvider,
                         switchConnectionProvider.getConfiguration().isGroupAddModEnabled());
                 DeserializerInjector.injectDeserializers(switchConnectionProvider);
@@ -206,7 +206,7 @@ public class OpenFlowPluginProviderImpl implements
         final ListenableFuture<List<Boolean>> listListenableFuture =
                 Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
                     // Revert deserializers to their original state
-                    if (config.isUseSingleLayerSerialization()) {
+                    if (config.getUseSingleLayerSerialization()) {
                         DeserializerInjector.revertDeserializers(switchConnectionProvider);
                     }
 

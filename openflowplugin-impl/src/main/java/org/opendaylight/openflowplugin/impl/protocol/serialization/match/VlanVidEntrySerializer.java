@@ -22,25 +22,25 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId,
     }
 
     @Override
-    protected VlanId extractEntry(Match match) {
+    protected VlanId extractEntry(final Match match) {
         final VlanMatch vlanMatch = match.getVlanMatch();
         return vlanMatch == null ? null : vlanMatch.getVlanId();
     }
 
     @Override
-    protected Empty extractEntryMask(VlanId entry) {
-        return Boolean.TRUE.equals(entry.isVlanIdPresent())
+    protected Empty extractEntryMask(final VlanId entry) {
+        return Boolean.TRUE.equals(entry.getVlanIdPresent())
                 && (entry.getVlanId() == null || entry.getVlanId().getValue().shortValue() == 0) ? Empty.getInstance()
                         : null;
     }
 
     @Override
-    protected void serializeEntry(VlanId entry, Empty mask, ByteBuf outBuffer) {
+    protected void serializeEntry(final VlanId entry, final Empty mask, final ByteBuf outBuffer) {
         final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId vlanId = entry.getVlanId();
 
         int vlanVidValue = vlanId != null ? vlanId.getValue().toJava() : 0;
 
-        if (Boolean.TRUE.equals(entry.isVlanIdPresent())) {
+        if (Boolean.TRUE.equals(entry.getVlanIdPresent())) {
             short cfi = 1 << 12;
             vlanVidValue = vlanVidValue | cfi;
         }

@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 
 public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<AsyncConfigMessage> {
     @Override
-    public void serialize(AsyncConfigMessage message, ByteBuf outBuffer) {
+    public void serialize(final AsyncConfigMessage message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
 
@@ -59,15 +59,15 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
 
         final Map<Integer, Boolean> map = new WeakHashMap<>();
 
-        if (mask.isNOMATCH()) {
+        if (mask.getNOMATCH()) {
             map.put(PacketInReason.OFPRNOMATCH.getIntValue(), true);
         }
 
-        if (mask.isACTION()) {
+        if (mask.getACTION()) {
             map.put(PacketInReason.OFPRACTION.getIntValue(), true);
         }
 
-        if (mask.isINVALIDTTL()) {
+        if (mask.getINVALIDTTL()) {
             map.put(PacketInReason.OFPRINVALIDTTL.getIntValue(), true);
         }
 
@@ -81,15 +81,15 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
 
         final Map<Integer, Boolean> map = new WeakHashMap<>();
 
-        if (mask.isADD()) {
+        if (mask.getADD()) {
             map.put(PortReason.OFPPRADD.getIntValue(), true);
         }
 
-        if (mask.isDELETE()) {
+        if (mask.getDELETE()) {
             map.put(PortReason.OFPPRDELETE.getIntValue(), true);
         }
 
-        if (mask.isUPDATE()) {
+        if (mask.getUPDATE()) {
             map.put(PortReason.OFPPRMODIFY.getIntValue(), true);
         }
 
@@ -103,19 +103,19 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
 
         final Map<Integer, Boolean> map = new WeakHashMap<>();
 
-        if (mask.isIDLETIMEOUT()) {
+        if (mask.getIDLETIMEOUT()) {
             map.put(FlowRemovedReason.OFPRRIDLETIMEOUT.getIntValue(), true);
         }
 
-        if (mask.isHARDTIMEOUT()) {
+        if (mask.getHARDTIMEOUT()) {
             map.put(FlowRemovedReason.OFPRRHARDTIMEOUT.getIntValue(), true);
         }
 
-        if (mask.isDELETE()) {
+        if (mask.getDELETE()) {
             map.put(FlowRemovedReason.OFPRRDELETE.getIntValue(), true);
         }
 
-        if (mask.isGROUPDELETE()) {
+        if (mask.getGROUPDELETE()) {
             map.put(FlowRemovedReason.OFPRRGROUPDELETE.getIntValue(), true);
         }
 

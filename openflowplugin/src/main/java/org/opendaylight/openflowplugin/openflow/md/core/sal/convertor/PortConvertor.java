@@ -52,63 +52,48 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
      * @param version Openflow version
      * @return default empty port mod input
      */
-    public static PortModInput defaultResult(short version) {
+    public static PortModInput defaultResult(final short version) {
         return new PortModInputBuilder()
                 .setVersion(version)
                 .build();
     }
 
     private static PortConfig maskPortConfigFields(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
-
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
         if (configData == null) {
             return null;
         }
-
-        Boolean portDown = configData.isPORTDOWN();
-        Boolean noRecv = configData.isNORECV();
-        Boolean noFwd = configData.isNOFWD();
-        Boolean noPacketIn = configData.isNOPACKETIN();
-
-        return new PortConfig(noFwd, noPacketIn, noRecv, portDown);
-
+        return new PortConfig(configData.getNOFWD(), configData.getNOPACKETIN(), configData.getNORECV(),
+            configData.getPORTDOWN());
     }
 
     private static PortConfigV10 maskPortConfigV10Fields(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
-
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig configData) {
         if (configData == null) {
             return null;
         }
-
-        Boolean portDown = configData.isPORTDOWN();
-        Boolean noRecv = configData.isNORECV();
-        Boolean noFwd = configData.isNOFWD();
-        Boolean noPacketIn = configData.isNOPACKETIN();
-
-        return new PortConfigV10(false, noFwd, noPacketIn, noRecv, true, true, portDown);
+        return new PortConfigV10(false, configData.getNOFWD(), configData.getNOPACKETIN(), configData.getNORECV(), true,
+            true, configData.getPORTDOWN());
 
     }
 
-    private static PortFeatures getPortFeatures(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures salPortFeatures) {
-
-        return new PortFeatures(salPortFeatures.isHundredGbFd(), salPortFeatures.isHundredMbFd(),
-                salPortFeatures.isHundredMbHd(), salPortFeatures.isTenGbFd(), salPortFeatures.isTenMbFd(),
-                salPortFeatures.isTenMbHd(), salPortFeatures.isOneGbFd(), salPortFeatures.isOneGbHd(),
-                salPortFeatures.isOneTbFd(), salPortFeatures.isFortyGbFd(), salPortFeatures.isAutoeng(),
-                salPortFeatures.isCopper(), salPortFeatures.isFiber(), salPortFeatures.isOther(),
-                salPortFeatures.isPause(), salPortFeatures.isPauseAsym());
+    private static PortFeatures getPortFeatures(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port
+            .rev130925.PortFeatures salPortFeatures) {
+        return new PortFeatures(salPortFeatures.getHundredGbFd(), salPortFeatures.getHundredMbFd(),
+                salPortFeatures.getHundredMbHd(), salPortFeatures.getTenGbFd(), salPortFeatures.getTenMbFd(),
+                salPortFeatures.getTenMbHd(), salPortFeatures.getOneGbFd(), salPortFeatures.getOneGbHd(),
+                salPortFeatures.getOneTbFd(), salPortFeatures.getFortyGbFd(), salPortFeatures.getAutoeng(),
+                salPortFeatures.getCopper(), salPortFeatures.getFiber(), salPortFeatures.getOther(),
+                salPortFeatures.getPause(), salPortFeatures.getPauseAsym());
     }
 
-    private static PortFeaturesV10 getPortFeaturesV10(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures salPortFeatures) {
-
-        return new PortFeaturesV10(salPortFeatures.isHundredMbFd(), salPortFeatures.isHundredMbHd(),
-                salPortFeatures.isTenGbFd(), salPortFeatures.isTenMbFd(), salPortFeatures.isTenMbHd(),
-                salPortFeatures.isOneGbFd(), salPortFeatures.isOneGbHd(), salPortFeatures.isAutoeng(),
-                salPortFeatures.isCopper(), salPortFeatures.isFiber(), salPortFeatures.isPause(),
-                salPortFeatures.isPauseAsym());
+    private static PortFeaturesV10 getPortFeaturesV10(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
+            .port.rev130925.PortFeatures salPortFeatures) {
+        return new PortFeaturesV10(salPortFeatures.getHundredMbFd(), salPortFeatures.getHundredMbHd(),
+                salPortFeatures.getTenGbFd(), salPortFeatures.getTenMbFd(), salPortFeatures.getTenMbHd(),
+                salPortFeatures.getOneGbFd(), salPortFeatures.getOneGbHd(), salPortFeatures.getAutoeng(),
+                salPortFeatures.getCopper(), salPortFeatures.getFiber(), salPortFeatures.getPause(),
+                salPortFeatures.getPauseAsym());
     }
 
     /**
@@ -120,8 +105,8 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
      */
     @VisibleForTesting
     static Ports toPortDesc(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source,
-            short version) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source,
+            final short version) {
 
         PortsBuilder ofPortDescDataBuilder = new PortsBuilder();
 
@@ -150,14 +135,8 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     }
 
     private static PortState getPortState(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
-
-        boolean isLinkDown = state.isLinkDown();
-        boolean isBlocked = state.isBlocked();
-        boolean isLive = state.isLive();
-
-        return new PortState(isLinkDown, isBlocked, isLive);
-
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortState state) {
+        return new PortState(state.getLinkDown(), state.getBlocked(), state.getLive());
     }
 
     @Override
@@ -166,7 +145,7 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     }
 
     @Override
-    public PortModInput convert(Port source, VersionConvertorData data) {
+    public PortModInput convert(final Port source, final VersionConvertorData data) {
         PortConfig config = maskPortConfigFields(source.getConfiguration());
         PortConfigV10 configV10 = maskPortConfigV10Fields(source.getConfiguration());
 

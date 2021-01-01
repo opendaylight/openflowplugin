@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
 import java.util.List;
@@ -32,14 +31,14 @@ public class MultiLayerFlowMultipartRequestOnTheFlyCallback<T extends OfHeader>
     }
 
     @Override
-    protected boolean isMultipart(OfHeader result) {
+    protected boolean isMultipart(final OfHeader result) {
         return result instanceof MultipartReply
             && ((MultipartReply) result).getType().equals(getMultipartType());
     }
 
     @Override
-    protected boolean isReqMore(T result) {
-        return ((MultipartReply) result).getFlags().isOFPMPFREQMORE();
+    protected boolean isReqMore(final T result) {
+        return ((MultipartReply) result).getFlags().getOFPMPFREQMORE();
     }
 
     @Override

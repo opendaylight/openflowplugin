@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.common;
 
 import java.util.ArrayList;
@@ -361,16 +360,16 @@ public final class MultipartReplyTranslatorUtil {
         List<Class<? extends GroupType>> supportedGroups =
             new ArrayList<>();
 
-        if (replyBody.getTypes().isOFPGTALL()) {
+        if (replyBody.getTypes().getOFPGTALL()) {
             supportedGroups.add(GroupAll.class);
         }
-        if (replyBody.getTypes().isOFPGTSELECT()) {
+        if (replyBody.getTypes().getOFPGTSELECT()) {
             supportedGroups.add(GroupSelect.class);
         }
-        if (replyBody.getTypes().isOFPGTINDIRECT()) {
+        if (replyBody.getTypes().getOFPGTINDIRECT()) {
             supportedGroups.add(GroupIndirect.class);
         }
-        if (replyBody.getTypes().isOFPGTFF()) {
+        if (replyBody.getTypes().getOFPGTFF()) {
             supportedGroups.add(GroupFf.class);
         }
         message.setGroupTypesSupported(supportedGroups);
@@ -379,16 +378,16 @@ public final class MultipartReplyTranslatorUtil {
         List<Class<? extends GroupCapability>> supportedCapabilities =
             new ArrayList<>();
 
-        if (replyBody.getCapabilities().isOFPGFCCHAINING()) {
+        if (replyBody.getCapabilities().getOFPGFCCHAINING()) {
             supportedCapabilities.add(Chaining.class);
         }
-        if (replyBody.getCapabilities().isOFPGFCCHAININGCHECKS()) {
+        if (replyBody.getCapabilities().getOFPGFCCHAININGCHECKS()) {
             supportedCapabilities.add(ChainingChecks.class);
         }
-        if (replyBody.getCapabilities().isOFPGFCSELECTLIVENESS()) {
+        if (replyBody.getCapabilities().getOFPGFCSELECTLIVENESS()) {
             supportedCapabilities.add(SelectLiveness.class);
         }
-        if (replyBody.getCapabilities().isOFPGFCSELECTWEIGHT()) {
+        if (replyBody.getCapabilities().getOFPGFCSELECTWEIGHT()) {
             supportedCapabilities.add(SelectWeight.class);
         }
 
@@ -441,29 +440,28 @@ public final class MultipartReplyTranslatorUtil {
 
         List<Class<? extends MeterCapability>> supportedCapabilities =
             new ArrayList<>();
-        if (replyBody.getCapabilities().isOFPMFBURST()) {
+        if (replyBody.getCapabilities().getOFPMFBURST()) {
             supportedCapabilities.add(MeterBurst.class);
         }
-        if (replyBody.getCapabilities().isOFPMFKBPS()) {
+        if (replyBody.getCapabilities().getOFPMFKBPS()) {
             supportedCapabilities.add(MeterKbps.class);
 
         }
-        if (replyBody.getCapabilities().isOFPMFPKTPS()) {
+        if (replyBody.getCapabilities().getOFPMFPKTPS()) {
             supportedCapabilities.add(MeterPktps.class);
 
         }
-        if (replyBody.getCapabilities().isOFPMFSTATS()) {
+        if (replyBody.getCapabilities().getOFPMFSTATS()) {
             supportedCapabilities.add(MeterStats.class);
 
         }
         message.setMeterCapabilitiesSupported(supportedCapabilities);
 
-        List<Class<? extends MeterBand>> supportedMeterBand =
-            new ArrayList<>();
-        if (replyBody.getBandTypes().isOFPMBTDROP()) {
+        List<Class<? extends MeterBand>> supportedMeterBand = new ArrayList<>();
+        if (replyBody.getBandTypes().getOFPMBTDROP()) {
             supportedMeterBand.add(MeterBandDrop.class);
         }
-        if (replyBody.getBandTypes().isOFPMBTDSCPREMARK()) {
+        if (replyBody.getBandTypes().getOFPMBTDSCPREMARK()) {
             supportedMeterBand.add(MeterBandDscpRemark.class);
         }
         message.setMeterBandSupported(supportedMeterBand);
@@ -499,10 +497,9 @@ public final class MultipartReplyTranslatorUtil {
         MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) msg.getMultipartReplyBody();
         MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
 
-        List<QueueIdAndStatisticsMap> statsMap =
-            new ArrayList<>();
+        List<QueueIdAndStatisticsMap> statsMap = new ArrayList<>();
 
-        for (QueueStats queueStats : replyBody.getQueueStats()) {
+        for (QueueStats queueStats : replyBody.nonnullQueueStats()) {
 
             QueueIdAndStatisticsMapBuilder statsBuilder =
                 new QueueIdAndStatisticsMapBuilder();
@@ -528,5 +525,4 @@ public final class MultipartReplyTranslatorUtil {
 
         return message.build();
     }
-
 }

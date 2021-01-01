@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.util.Collection;
@@ -22,7 +21,6 @@ public class FlowFlagsConvertor extends Convertor<
 
     private static final List<Class<?>> TYPES = Collections.singletonList(
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags.class);
-
 
     /**
      * Create default empty flow flags
@@ -47,7 +45,7 @@ public class FlowFlagsConvertor extends Convertor<
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags source,
             final VersionConvertorData data) {
         return new FlowModFlags(
-                source.isCHECKOVERLAP(), source.isNOBYTCOUNTS(), source.isNOPKTCOUNTS(),
-                source.isRESETCOUNTS(), source.isSENDFLOWREM());
+                source.getCHECKOVERLAP(), source.getNOBYTCOUNTS(), source.getNOPKTCOUNTS(),
+                source.getRESETCOUNTS(), source.getSENDFLOWREM());
     }
 }

@@ -22,9 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public abstract class AbstractMultipartService<I, T extends OfHeader> extends AbstractService<I, List<T>> {
-
     private static final Function<OfHeader, Boolean> ALTERNATE_IS_COMPLETE = message ->
-        !(message instanceof MultipartReply) || !((MultipartReply) message).isRequestMore();
+        !(message instanceof MultipartReply) || !((MultipartReply) message).getRequestMore();
 
     protected AbstractMultipartService(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext) {
@@ -32,7 +31,8 @@ public abstract class AbstractMultipartService<I, T extends OfHeader> extends Ab
     }
 
     @Override
-    protected FutureCallback<OfHeader> createCallback(RequestContext<List<T>> context, Class<?> requestType) {
+    protected FutureCallback<OfHeader> createCallback(final RequestContext<List<T>> context,
+            final Class<?> requestType) {
         return canUseSingleLayerSerialization()
             ? new SingleLayerMultipartRequestCallback<>(context, requestType, getDeviceContext(), getEventIdentifier())
             : new MultiLayerMultipartRequestCallback<>(context, requestType, getDeviceContext(), getEventIdentifier());
@@ -44,5 +44,4 @@ public abstract class AbstractMultipartService<I, T extends OfHeader> extends Ab
             ? super.handleServiceCall(input, ALTERNATE_IS_COMPLETE)
             : super.handleServiceCall(input);
     }
-
 }

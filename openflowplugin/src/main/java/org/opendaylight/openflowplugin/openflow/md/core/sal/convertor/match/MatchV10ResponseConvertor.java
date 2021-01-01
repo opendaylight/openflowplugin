@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.Collection;
@@ -72,31 +71,31 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         OpenflowVersion ofVersion = OpenflowVersion.get(datapathIdConvertorData.getVersion());
         Uint64 datapathid = datapathIdConvertorData.getDatapathId();
 
-        if (!source.getWildcards().isINPORT() && source.getInPort() != null) {
+        if (!source.getWildcards().getINPORT() && source.getInPort() != null) {
             matchBuilder.setInPort(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathid,
                     Uint32.valueOf(source.getInPort()), ofVersion));
         }
 
-        if (!source.getWildcards().isDLSRC() && source.getDlSrc() != null) {
+        if (!source.getWildcards().getDLSRC() && source.getDlSrc() != null) {
             EthernetSourceBuilder ethSrcBuilder = new EthernetSourceBuilder();
             ethSrcBuilder.setAddress(source.getDlSrc());
             ethMatchBuilder.setEthernetSource(ethSrcBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
-        if (!source.getWildcards().isDLDST() && source.getDlDst() != null) {
+        if (!source.getWildcards().getDLDST() && source.getDlDst() != null) {
             EthernetDestinationBuilder ethDstBuilder = new EthernetDestinationBuilder();
             ethDstBuilder.setAddress(source.getDlDst());
             ethMatchBuilder.setEthernetDestination(ethDstBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
-        if (!source.getWildcards().isDLTYPE() && source.getDlType() != null) {
+        if (!source.getWildcards().getDLTYPE() && source.getDlType() != null) {
             EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
             ethTypeBuilder.setType(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType(
                     Uint32.valueOf(source.getDlType())));
             ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
-        if (!source.getWildcards().isDLVLAN() && source.getDlVlan() != null) {
+        if (!source.getWildcards().getDLVLAN() && source.getDlVlan() != null) {
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
             int vlanId = source.getDlVlan().toJava() == 0xffff ? 0 : source.getDlVlan().toJava();
             vlanIdBuilder.setVlanId(
@@ -105,12 +104,12 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
-        if (!source.getWildcards().isDLVLANPCP() && source.getDlVlanPcp() != null) {
+        if (!source.getWildcards().getDLVLANPCP() && source.getDlVlanPcp() != null) {
             vlanMatchBuilder.setVlanPcp(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp(
                     source.getDlVlanPcp()));
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
-        if (!source.getWildcards().isDLTYPE() && source.getNwSrc() != null) {
+        if (!source.getWildcards().getDLTYPE() && source.getNwSrc() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwSrcMask() != null) {
                 prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwSrc(), source.getNwSrcMask().toJava());
@@ -126,7 +125,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
-        if (!source.getWildcards().isDLTYPE() && source.getNwDst() != null) {
+        if (!source.getWildcards().getDLTYPE() && source.getNwDst() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwDstMask() != null) {
                 prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwDst(), source.getNwDstMask().toJava());
@@ -142,7 +141,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
-        if (!source.getWildcards().isNWPROTO() && source.getNwProto() != null) {
+        if (!source.getWildcards().getNWPROTO() && source.getNwProto() != null) {
             Uint8 nwProto = source.getNwProto();
             ipMatchBuilder.setIpProtocol(nwProto);
             matchBuilder.setIpMatch(ipMatchBuilder.build());
@@ -151,12 +150,12 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             if (proto == PROTO_TCP) {
                 TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
                 boolean hasTcp = false;
-                if (!source.getWildcards().isTPSRC() && source.getTpSrc() != null) {
+                if (!source.getWildcards().getTPSRC() && source.getTpSrc() != null) {
                     tcpMatchBuilder.setTcpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
                             .inet.types.rev130715.PortNumber(source.getTpSrc()));
                     hasTcp = true;
                 }
-                if (!source.getWildcards().isTPDST() && source.getTpDst() != null) {
+                if (!source.getWildcards().getTPDST() && source.getTpDst() != null) {
                     tcpMatchBuilder.setTcpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
                             .ietf.inet.types.rev130715.PortNumber(source.getTpDst()));
                     hasTcp = true;
@@ -168,12 +167,12 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             } else if (proto == PROTO_UDP) {
                 UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
                 boolean hasUdp = false;
-                if (!source.getWildcards().isTPSRC() && source.getTpSrc() != null) {
+                if (!source.getWildcards().getTPSRC() && source.getTpSrc() != null) {
                     udpMatchBuilder.setUdpSourcePort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
                             .inet.types.rev130715.PortNumber(source.getTpSrc()));
                     hasUdp = true;
                 }
-                if (!source.getWildcards().isTPDST() && source.getTpDst() != null) {
+                if (!source.getWildcards().getTPDST() && source.getTpDst() != null) {
                     udpMatchBuilder.setUdpDestinationPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
                             .ietf.inet.types.rev130715.PortNumber(source.getTpDst()));
                     hasUdp = true;
@@ -185,17 +184,17 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             } else if (proto == PROTO_ICMPV4) {
                 Icmpv4MatchBuilder icmpv4MatchBuilder = new Icmpv4MatchBuilder();
                 boolean hasIcmpv4 = false;
-                if (!source.getWildcards().isTPSRC()) {
+                if (!source.getWildcards().getTPSRC()) {
                     Uint16 type = source.getTpSrc();
                     if (type != null) {
-                        icmpv4MatchBuilder.setIcmpv4Type(type.shortValue());
+                        icmpv4MatchBuilder.setIcmpv4Type(type.toUint8());
                         hasIcmpv4 = true;
                     }
                 }
-                if (!source.getWildcards().isTPDST()) {
+                if (!source.getWildcards().getTPDST()) {
                     Uint16 code = source.getTpDst();
                     if (code != null) {
-                        icmpv4MatchBuilder.setIcmpv4Code(code.shortValue());
+                        icmpv4MatchBuilder.setIcmpv4Code(code.toUint8());
                         hasIcmpv4 = true;
                     }
                 }
@@ -205,7 +204,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 }
             }
         }
-        if (!source.getWildcards().isNWTOS() && source.getNwTos() != null) {
+        if (!source.getWildcards().getNWTOS() && source.getNwTos() != null) {
             ipMatchBuilder.setIpDscp(new Dscp(ActionUtil.tosToDscp(source.getNwTos())));
             matchBuilder.setIpMatch(ipMatchBuilder.build());
         }

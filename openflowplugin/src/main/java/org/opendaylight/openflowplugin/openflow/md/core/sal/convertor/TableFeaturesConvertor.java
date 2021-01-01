@@ -607,7 +607,7 @@ public class TableFeaturesConvertor extends Convertor<
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>
                 ofTableFeatureClass = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
-            setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.isHasMask());
+            setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.getHasMask());
             matchEntriesList.add(matchEntryBuilder.build());
         }
 
@@ -649,7 +649,7 @@ public class TableFeaturesConvertor extends Convertor<
             ofTableFeatures.setMaxEntries(salTableFeatures.getMaxEntries());
 
             if (salTableFeatures.getConfig() != null) {
-                ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().isDEPRECATEDMASK()));
+                ofTableFeatures.setConfig(new TableConfig(salTableFeatures.getConfig().getDEPRECATEDMASK()));
             }
 
             ofTableFeatures.setTableFeatureProperties(toTableProperties(salTableFeatures.getTableProperties()));

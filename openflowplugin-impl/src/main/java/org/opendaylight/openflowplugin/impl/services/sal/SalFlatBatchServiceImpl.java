@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -83,7 +82,7 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
         FlatBatchUtil.markBarriersWhereNeeded(batchPlan);
         // prepare chain elements
         final List<BatchStepJob> batchChainElements =
-                prepareBatchChain(batchPlan, input.getNode(), input.isExitOnFirstError());
+                prepareBatchChain(batchPlan, input.getNode(), input.getExitOnFirstError());
         // execute plan with barriers and collect outputs chain correspondingly, collect results
         return executeBatchPlan(batchChainElements);
     }

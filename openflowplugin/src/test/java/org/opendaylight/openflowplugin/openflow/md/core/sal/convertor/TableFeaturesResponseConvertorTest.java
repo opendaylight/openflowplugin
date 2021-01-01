@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
@@ -168,7 +167,7 @@ public class TableFeaturesResponseConvertorTest {
         Assert.assertEquals("Wrong name", "Aloha", feature.getName());
         Assert.assertEquals("Wrong metadata match", Uint64.valueOf("0001020304050607", 16), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write", Uint64.valueOf("08090A0B0C0D0E0F", 16), feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().getDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 0, feature.getTableProperties().nonnullTableFeatureProperties().size());
     }
@@ -521,7 +520,7 @@ public class TableFeaturesResponseConvertorTest {
         Assert.assertEquals("Wrong name", "Aloha", feature.getName());
         Assert.assertEquals("Wrong metadata match", Uint64.valueOf("0001020304050607", 16), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write",Uint64.valueOf("08090A0B0C0D0E0F", 16), feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().getDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 4, feature.getTableProperties().nonnullTableFeatureProperties().size());
 
@@ -588,7 +587,7 @@ public class TableFeaturesResponseConvertorTest {
         Assert.assertEquals("Wrong name", "Mahalo", feature.getName());
         Assert.assertEquals("Wrong metadata match", Uint64.valueOf("08090A0B0C0D0E0F", 16), feature.getMetadataMatch());
         Assert.assertEquals("Wrong metadata write", Uint64.valueOf("0001020304050607", 16), feature.getMetadataWrite());
-        Assert.assertEquals("Wrong config", false, feature.getConfig().isDEPRECATEDMASK());
+        Assert.assertEquals("Wrong config", false, feature.getConfig().getDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 24, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 12, feature.getTableProperties().getTableFeatureProperties().size());
         featProps = feature.getTableProperties().nonnullTableFeatureProperties().values().iterator();
