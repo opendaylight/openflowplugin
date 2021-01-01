@@ -45,11 +45,11 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                     .put(ConfigurationProperty.GLOBAL_NOTIFICATION_QUOTA.toString(),
                             providerConfig.getGlobalNotificationQuota().toString())
                     .put(ConfigurationProperty.SWITCH_FEATURES_MANDATORY.toString(),
-                            providerConfig.isSwitchFeaturesMandatory().toString())
+                            providerConfig.getSwitchFeaturesMandatory().toString())
                     .put(ConfigurationProperty.ENABLE_FLOW_REMOVED_NOTIFICATION.toString(),
-                            providerConfig.isEnableFlowRemovedNotification().toString())
+                            providerConfig.getEnableFlowRemovedNotification().toString())
                     .put(ConfigurationProperty.IS_STATISTICS_RPC_ENABLED.toString(),
-                            providerConfig.isIsStatisticsRpcEnabled().toString())
+                            providerConfig.getIsStatisticsRpcEnabled().toString())
                     .put(ConfigurationProperty.BARRIER_COUNT_LIMIT.toString(),
                             providerConfig.getBarrierCountLimit().getValue().toString())
                     .put(ConfigurationProperty.BARRIER_INTERVAL_TIMEOUT_LIMIT.toString(),
@@ -57,27 +57,27 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
                     .put(ConfigurationProperty.ECHO_REPLY_TIMEOUT.toString(),
                             providerConfig.getEchoReplyTimeout().getValue().toString())
                     .put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsStatisticsPollingOn().toString())
+                            providerConfig.getIsStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.IS_TABLE_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsTableStatisticsPollingOn().toString())
+                            providerConfig.getIsTableStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.IS_FLOW_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsFlowStatisticsPollingOn().toString())
+                            providerConfig.getIsFlowStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.IS_GROUP_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsGroupStatisticsPollingOn().toString())
+                            providerConfig.getIsGroupStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.IS_METER_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsMeterStatisticsPollingOn().toString())
+                            providerConfig.getIsMeterStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.IS_PORT_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsPortStatisticsPollingOn().toString())
+                            providerConfig.getIsPortStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.IS_QUEUE_STATISTICS_POLLING_ON.toString(),
-                            providerConfig.isIsQueueStatisticsPollingOn().toString())
+                            providerConfig.getIsQueueStatisticsPollingOn().toString())
                     .put(ConfigurationProperty.SKIP_TABLE_FEATURES.toString(),
-                            providerConfig.isSkipTableFeatures().toString())
+                            providerConfig.getSkipTableFeatures().toString())
                     .put(ConfigurationProperty.BASIC_TIMER_DELAY.toString(),
                             providerConfig.getBasicTimerDelay().getValue().toString())
                     .put(ConfigurationProperty.MAXIMUM_TIMER_DELAY.toString(),
                             providerConfig.getMaximumTimerDelay().getValue().toString())
                     .put(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString(),
-                            providerConfig.isUseSingleLayerSerialization().toString())
+                            providerConfig.getUseSingleLayerSerialization().toString())
                     .put(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString(),
                             providerConfig.getThreadPoolMinThreads().toString())
                     .put(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString(),

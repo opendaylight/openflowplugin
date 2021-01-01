@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
@@ -16,7 +15,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Con
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.data.MatchResponseConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.VlanVidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.vlan.vid._case.VlanVid;
@@ -27,19 +25,17 @@ public class OfToSalVlanVidCase extends ConvertorCase<VlanVidCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull VlanVidCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(@NonNull final VlanVidCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
-        final VlanMatchBuilder vlanMatchBuilder = data.getVlanMatchBuilder();
-
         final VlanVid vlanVid = source.getVlanVid();
-
         if (vlanVid != null) {
-            VlanIdBuilder vlanBuilder = new VlanIdBuilder();
-            vlanBuilder.setVlanId(new VlanId(vlanVid.getVlanVid()));
-            vlanBuilder.setVlanIdPresent(vlanVid.isCfiBit());
-            vlanMatchBuilder.setVlanId(vlanBuilder.build());
-            matchBuilder.setVlanMatch(vlanMatchBuilder.build());
+            matchBuilder.setVlanMatch(data.getVlanMatchBuilder()
+                .setVlanId(new VlanIdBuilder()
+                    .setVlanId(new VlanId(vlanVid.getVlanVid()))
+                    .setVlanIdPresent(vlanVid.getCfiBit())
+                    .build())
+                .build());
         }
 
         return Optional.of(matchBuilder);

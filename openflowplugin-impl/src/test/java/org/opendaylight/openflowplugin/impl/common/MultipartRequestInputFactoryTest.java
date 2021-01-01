@@ -253,14 +253,14 @@ public class MultipartRequestInputFactoryTest {
                 MultipartRequestExperimenterCase.class);
     }
 
-    private void checkHeader(MultipartRequestInput mpRqInput, MultipartType mpType) {
-        Assert.assertFalse(mpRqInput.getFlags().isOFPMPFREQMORE());
+    private void checkHeader(final MultipartRequestInput mpRqInput, final MultipartType mpType) {
+        Assert.assertFalse(mpRqInput.getFlags().getOFPMPFREQMORE());
         Assert.assertEquals(ofVersion, mpRqInput.getVersion().shortValue());
         Assert.assertEquals(mpType, mpRqInput.getType());
         Assert.assertEquals(xid, mpRqInput.getXid().longValue());
     }
 
-    private static void checkEmptyBody(Class<? extends DataContainer> mpRqBody, Class<? extends
+    private static void checkEmptyBody(final Class<? extends DataContainer> mpRqBody, final Class<? extends
             MultipartRequestBody> expectedMpRqBodyClass) {
         Assert.assertTrue(expectedMpRqBodyClass.isAssignableFrom(mpRqBody));
         Assert.assertEquals(expectedMpRqBodyClass, mpRqBody);

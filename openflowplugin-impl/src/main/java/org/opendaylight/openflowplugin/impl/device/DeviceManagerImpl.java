@@ -89,7 +89,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.messageSpy = messageSpy;
         DeviceInitializationUtil.makeEmptyNodes(dataBroker);
         this.queuedNotificationManager =  QueuedNotificationManager.create(executorService, (key, entries) -> {
-            entries.forEach(jobEntry -> jobEntry.run());
+            entries.forEach(Runnable::run);
         }, 2048, "port-status-queue");
     }
 
@@ -164,15 +164,15 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
                 messageSpy,
                 translatorLibrary,
                 convertorExecutor,
-                config.isSkipTableFeatures(),
+                config.getSkipTableFeatures(),
                 hashedWheelTimer,
-                config.isUseSingleLayerSerialization(),
+                config.getUseSingleLayerSerialization(),
                 deviceInitializerProvider,
-                config.isEnableFlowRemovedNotification(),
-                config.isSwitchFeaturesMandatory(),
+                config.getEnableFlowRemovedNotification(),
+                config.getSwitchFeaturesMandatory(),
                 contextChainHolder,
                 queuedNotificationManager,
-                config.isIsStatisticsPollingOn());
+                config.getIsStatisticsPollingOn());
         ((ExtensionConverterProviderKeeper) deviceContext).setExtensionConverterProvider(extensionConverterProvider);
         deviceContext.setNotificationPublishService(notificationPublishService);
 

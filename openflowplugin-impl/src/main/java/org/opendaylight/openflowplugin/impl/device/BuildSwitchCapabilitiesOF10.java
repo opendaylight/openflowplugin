@@ -27,10 +27,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * SwitchFeature builder for OF 1.0.
  */
 public final class BuildSwitchCapabilitiesOF10 implements BuildSwitchFeatures {
-
-    private static BuildSwitchCapabilitiesOF10 instance = new BuildSwitchCapabilitiesOF10();
+    private static final BuildSwitchCapabilitiesOF10 INSTANCE = new BuildSwitchCapabilitiesOF10();
 
     private BuildSwitchCapabilitiesOF10() {
+        // Hidden on purpose
     }
 
     /**
@@ -39,47 +39,41 @@ public final class BuildSwitchCapabilitiesOF10 implements BuildSwitchFeatures {
      * @return instance
      */
     public static BuildSwitchCapabilitiesOF10 getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
-    public SwitchFeatures build(GetFeaturesOutput features) {
-
-        SwitchFeaturesBuilder builderSwFeatures = new SwitchFeaturesBuilder();
-        builderSwFeatures.setMaxBuffers(features.getBuffers());
-        builderSwFeatures.setMaxTables(features.getTables());
-
+    public SwitchFeatures build(final GetFeaturesOutput features) {
         List<Class<? extends FeatureCapability>> capabilities = new ArrayList<>();
-
-        if (features.getCapabilitiesV10().isOFPCARPMATCHIP()) {
+        if (features.getCapabilitiesV10().getOFPCARPMATCHIP()) {
             capabilities.add(FlowFeatureCapabilityArpMatchIp.class);
         }
-        if (features.getCapabilitiesV10().isOFPCFLOWSTATS()) {
+        if (features.getCapabilitiesV10().getOFPCFLOWSTATS()) {
             capabilities.add(FlowFeatureCapabilityFlowStats.class);
         }
-        if (features.getCapabilitiesV10().isOFPCIPREASM()) {
+        if (features.getCapabilitiesV10().getOFPCIPREASM()) {
             capabilities.add(FlowFeatureCapabilityIpReasm.class);
         }
-        if (features.getCapabilitiesV10().isOFPCPORTSTATS()) {
+        if (features.getCapabilitiesV10().getOFPCPORTSTATS()) {
             capabilities.add(FlowFeatureCapabilityPortStats.class);
         }
-        if (features.getCapabilitiesV10().isOFPCQUEUESTATS()) {
+        if (features.getCapabilitiesV10().getOFPCQUEUESTATS()) {
             capabilities.add(FlowFeatureCapabilityQueueStats.class);
         }
-        if (features.getCapabilitiesV10().isOFPCRESERVED()) {
+        if (features.getCapabilitiesV10().getOFPCRESERVED()) {
             capabilities.add(FlowFeatureCapabilityReserved.class);
         }
-        if (features.getCapabilitiesV10().isOFPCSTP()) {
+        if (features.getCapabilitiesV10().getOFPCSTP()) {
             capabilities.add(FlowFeatureCapabilityStp.class);
         }
-        if (features.getCapabilitiesV10().isOFPCTABLESTATS()) {
+        if (features.getCapabilitiesV10().getOFPCTABLESTATS()) {
             capabilities.add(FlowFeatureCapabilityTableStats.class);
         }
 
-        builderSwFeatures.setCapabilities(capabilities);
-
-        return builderSwFeatures.build();
+        return new SwitchFeaturesBuilder()
+            .setMaxBuffers(features.getBuffers())
+            .setMaxTables(features.getTables())
+            .setCapabilities(capabilities)
+            .build();
     }
-
-
 }

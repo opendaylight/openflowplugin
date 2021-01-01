@@ -56,12 +56,12 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceInfo.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
         Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        Mockito.when(config.isIsTableStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.isIsFlowStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.isIsGroupStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.isIsMeterStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.isIsPortStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.isIsQueueStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getIsTableStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getIsFlowStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getIsGroupStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getIsMeterStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getIsPortStatisticsPollingOn()).thenReturn(true);
+        Mockito.when(config.getIsQueueStatisticsPollingOn()).thenReturn(true);
         Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(3000)));
         Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(50000)));
 

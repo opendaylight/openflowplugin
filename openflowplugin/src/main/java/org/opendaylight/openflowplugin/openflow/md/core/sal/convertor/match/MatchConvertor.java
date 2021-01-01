@@ -373,7 +373,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             Uint16 vidEntryValue = Uint16.ZERO;
             boolean hasmask = false;
 
-            if (Boolean.TRUE.equals(vlanId.isVlanIdPresent())) {
+            if (Boolean.TRUE.equals(vlanId.getVlanIdPresent())) {
                 setCfiBit = true;
                 if (vlanId.getVlanId() != null) {
                     vidEntryValue = vlanId.getVlanId().getValue();

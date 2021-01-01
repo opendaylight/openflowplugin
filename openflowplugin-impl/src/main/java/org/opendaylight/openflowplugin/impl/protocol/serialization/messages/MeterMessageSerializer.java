@@ -59,10 +59,11 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
     private void serializeBands(final MeterBandHeaders meterBandHeaders, final ByteBuf outBuffer) {
         if (meterBandHeaders != null && meterBandHeaders.getMeterBandHeader() != null) {
             meterBandHeaders.nonnullMeterBandHeader().values().forEach(meterBandHeader ->
+                    // FIXME: get rid of this atrocity and just use a null check
                     Optional.ofNullable(meterBandHeader.getMeterBandTypes())
                             .flatMap(m -> Optional.ofNullable(m.getFlags()))
                             .ifPresent(flags -> Optional.ofNullable(meterBandHeader.getBandType()).ifPresent(type -> {
-                                if (flags.isOfpmbtDrop()) {
+                                if (flags.getOfpmbtDrop()) {
                                     final Drop band = (Drop) type;
                                     outBuffer.writeShort(MeterBandType.OFPMBTDROP.getIntValue());
 
@@ -70,7 +71,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                     outBuffer.writeInt(band.getDropRate().intValue());
                                     outBuffer.writeInt(band.getDropBurstSize().intValue());
                                     outBuffer.writeZero(PADDING_IN_METER_BAND_DROP);
-                                } else if (flags.isOfpmbtDscpRemark()) {
+                                } else if (flags.getOfpmbtDscpRemark()) {
                                     final DscpRemark band = (DscpRemark) type;
                                     outBuffer.writeShort(MeterBandType.OFPMBTDSCPREMARK.getIntValue());
 
@@ -79,7 +80,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
                                     outBuffer.writeInt(band.getDscpRemarkBurstSize().intValue());
                                     outBuffer.writeByte(band.getPrecLevel().toJava());
                                     outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
-                                } else if (flags.isOfpmbtExperimenter()) {
+                                } else if (flags.getOfpmbtExperimenter()) {
                                     final Experimenter band = (Experimenter) type;
 
                                     // TODO: finish experimenter serialization
@@ -107,9 +108,9 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
 
     private static int createMeterFlagsBitMask(final MeterFlags flags) {
         return ByteBufUtils.fillBitMask(0,
-                flags.isMeterKbps(),
-                flags.isMeterPktps(),
-                flags.isMeterBurst(),
-                flags.isMeterStats());
+                flags.getMeterKbps(),
+                flags.getMeterPktps(),
+                flags.getMeterBurst(),
+                flags.getMeterStats());
     }
 }

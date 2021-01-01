@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -51,16 +50,18 @@ public final class MatchConvertorUtil {
      * @return integer containing lower 9 bits filled with corresponding flags
      */
     public static Integer ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags flags) {
+        // FIXME: this should be 'int'
         Integer bitmap = 0;
-        bitmap |= flags.isNonext() ? 1 : 0;
-        bitmap |= flags.isEsp() ? 1 << 1 : 0;
-        bitmap |= flags.isAuth() ? 1 << 2 : 0;
-        bitmap |= flags.isDest() ? 1 << 3 : 0;
-        bitmap |= flags.isFrag() ? 1 << 4 : 0;
-        bitmap |= flags.isRouter() ? 1 << 5 : 0;
-        bitmap |= flags.isHop() ? 1 << 6 : 0;
-        bitmap |= flags.isUnrep() ? 1 << 7 : 0;
-        bitmap |= flags.isUnseq() ? 1 << 8 : 0;
+        // FIXME: use explicit if (flags) { bitmap |= 1 << 2; }
+        bitmap |= flags.getNonext() ? 1 : 0;
+        bitmap |= flags.getEsp() ? 1 << 1 : 0;
+        bitmap |= flags.getAuth() ? 1 << 2 : 0;
+        bitmap |= flags.getDest() ? 1 << 3 : 0;
+        bitmap |= flags.getFrag() ? 1 << 4 : 0;
+        bitmap |= flags.getRouter() ? 1 << 5 : 0;
+        bitmap |= flags.getHop() ? 1 << 6 : 0;
+        bitmap |= flags.getUnrep() ? 1 << 7 : 0;
+        bitmap |= flags.getUnseq() ? 1 << 8 : 0;
         return bitmap;
     }
 

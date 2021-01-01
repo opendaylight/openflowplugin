@@ -29,19 +29,22 @@ import org.opendaylight.yangtools.yang.common.Uint64;
  * Created by Martin Bobak mbobak@cisco.com on 7/29/14.
  */
 public class PortTranslatorUtilTest {
-
     private static final String MAC_ADDRESS = "00:01:02:03:04:05";
-    private static final String NAME = "PortTranslatorTest";
-    private final Boolean[] pfBls
-                = {false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                   false, false};
-    private final boolean[] pfV10Bls
-            = {false, false, false, false, false, false, false, false, false, false, false, false};
-    private final boolean[] portCfgBools = {false, false, false, false};
-    private final boolean[] portCfgV10bools = {false, false, false, false, false, false, false};
-    private final boolean[] portStateBools = {false, false, false, false};
-    private final Uint32 currentSpeed = Uint32.valueOf(4294967295L);
     private static final Uint32 MAX_SPEED = Uint32.valueOf(4294967295L);
+    private static final String NAME = "PortTranslatorTest";
+
+    private final Boolean[] pfBls = {
+        false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+    };
+
+    private final boolean[] pfV10Bls = {
+        false, false, false, false, false, false, false, false, false, false, false, false
+    };
+
+    private final boolean[] portCfgBools = { false, false, false, false };
+    private final boolean[] portCfgV10bools = { false, false, false, false, false, false, false };
+    private final boolean[] portStateBools = { false, false, false, false };
+    private final Uint32 currentSpeed = Uint32.MAX_VALUE;
 
     /**
      * Test  method for
@@ -72,19 +75,14 @@ public class PortTranslatorUtilTest {
      */
     @Test
     public void testTranslatePortFeaturesV10() {
-
-
         for (int i = 0; i < pfV10Bls.length; i++) {
-
             pfV10Bls[i] = true;
             final PortFeaturesV10 apfV10 = getPortFeaturesV10();
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf
                     = PortTranslatorUtil.translatePortFeatures(apfV10);
             assertEqualsPortFeaturesV10(apfV10, npf);
             pfV10Bls[i] = false;
-
         }
-
     }
 
     private PortFeaturesV10 getPortFeaturesV10() {
@@ -103,7 +101,7 @@ public class PortTranslatorUtilTest {
         Short version = OpenflowVersion.OF10.getVersion();
 
         Uint64 dataPathId = Uint64.ONE;
-        Uint32 portNumber = Uint32.valueOf(4294967295L);
+        Uint32 portNumber = Uint32.MAX_VALUE;
         PortGrouping portGrouping = mockPortGrouping();
 
         NodeConnectorUpdated nodeConnectorUpdated = PortTranslatorUtil
@@ -160,48 +158,45 @@ public class PortTranslatorUtilTest {
     }
 
     private static void assertEqualsPortFeaturesV10(final PortFeaturesV10 apfV10,
-                                                    final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
-                                                            .port.rev130925.PortFeatures npf) {
-        assertEquals(apfV10.is_100mbFd(), npf.isHundredMbFd());
-        assertEquals(apfV10.is_100mbHd(), npf.isHundredMbHd());
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+        assertEquals(apfV10.get_100mbFd(), npf.getHundredMbFd());
+        assertEquals(apfV10.get_100mbHd(), npf.getHundredMbHd());
 
-        assertEquals(apfV10.is_10gbFd(), npf.isTenGbFd());
-        assertEquals(apfV10.is_10mbFd(), npf.isTenMbFd());
-        assertEquals(apfV10.is_10mbHd(), npf.isTenMbHd());
+        assertEquals(apfV10.get_10gbFd(), npf.getTenGbFd());
+        assertEquals(apfV10.get_10mbFd(), npf.getTenMbFd());
+        assertEquals(apfV10.get_10mbHd(), npf.getTenMbHd());
 
-        assertEquals(apfV10.is_1gbFd(), npf.isOneGbFd());
-        assertEquals(apfV10.is_1gbHd(), npf.isOneGbHd());
+        assertEquals(apfV10.get_1gbFd(), npf.getOneGbFd());
+        assertEquals(apfV10.get_1gbHd(), npf.getOneGbHd());
 
-        assertEquals(apfV10.isAutoneg(), npf.isAutoeng());
-        assertEquals(apfV10.isCopper(), npf.isCopper());
-        assertEquals(apfV10.isFiber(), npf.isFiber());
-        assertEquals(apfV10.isPause(), npf.isPause());
-        assertEquals(apfV10.isPauseAsym(), npf.isPauseAsym());
+        assertEquals(apfV10.getAutoneg(), npf.getAutoeng());
+        assertEquals(apfV10.getCopper(), npf.getCopper());
+        assertEquals(apfV10.getFiber(), npf.getFiber());
+        assertEquals(apfV10.getPause(), npf.getPause());
+        assertEquals(apfV10.getPauseAsym(), npf.getPauseAsym());
     }
 
     private static void assertEqualsPortFeatures(final PortFeatures apf,
-                                                 final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port
-                                                         .rev130925.PortFeatures npf) {
-        assertEquals(apf.is_100gbFd(), npf.isHundredGbFd());
-        assertEquals(apf.is_100mbFd(), npf.isHundredMbFd());
-        assertEquals(apf.is_100mbHd(), npf.isHundredMbHd());
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures npf) {
+        assertEquals(apf.get_100gbFd(), npf.getHundredGbFd());
+        assertEquals(apf.get_100mbFd(), npf.getHundredMbFd());
+        assertEquals(apf.get_100mbHd(), npf.getHundredMbHd());
 
-        assertEquals(apf.is_10gbFd(), npf.isTenGbFd());
-        assertEquals(apf.is_10mbFd(), npf.isTenMbFd());
-        assertEquals(apf.is_10mbHd(), npf.isTenMbHd());
+        assertEquals(apf.get_10gbFd(), npf.getTenGbFd());
+        assertEquals(apf.get_10mbFd(), npf.getTenMbFd());
+        assertEquals(apf.get_10mbHd(), npf.getTenMbHd());
 
-        assertEquals(apf.is_1gbFd(), npf.isOneGbFd());
-        assertEquals(apf.is_1gbHd(), npf.isOneGbHd());
-        assertEquals(apf.is_1tbFd(), npf.isOneTbFd());
+        assertEquals(apf.get_1gbFd(), npf.getOneGbFd());
+        assertEquals(apf.get_1gbHd(), npf.getOneGbHd());
+        assertEquals(apf.get_1tbFd(), npf.getOneTbFd());
 
-        assertEquals(apf.is_40gbFd(), npf.isFortyGbFd());
+        assertEquals(apf.get_40gbFd(), npf.getFortyGbFd());
 
-        assertEquals(apf.isAutoneg(), npf.isAutoeng());
-        assertEquals(apf.isCopper(), npf.isCopper());
-        assertEquals(apf.isFiber(), npf.isFiber());
-        assertEquals(apf.isOther(), npf.isOther());
-        assertEquals(apf.isPause(), npf.isPause());
-        assertEquals(apf.isPauseAsym(), npf.isPauseAsym());
+        assertEquals(apf.getAutoneg(), npf.getAutoeng());
+        assertEquals(apf.getCopper(), npf.getCopper());
+        assertEquals(apf.getFiber(), npf.getFiber());
+        assertEquals(apf.getOther(), npf.getOther());
+        assertEquals(apf.getPause(), npf.getPause());
+        assertEquals(apf.getPauseAsym(), npf.getPauseAsym());
     }
-
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures.matchfield;
 
 import io.netty.buffer.ByteBuf;
@@ -21,7 +20,7 @@ public abstract class AbstractMatchFieldSerializer implements OFSerializer<SetFi
         int fieldAndMask = getOxmFieldCode() << 1;
         int length = getValueLength();
 
-        if (setFieldMatch.isHasMask()) {
+        if (setFieldMatch.getHasMask()) {
             fieldAndMask |= 1;
             length *= 2;
         }
@@ -35,5 +34,4 @@ public abstract class AbstractMatchFieldSerializer implements OFSerializer<SetFi
     protected abstract int getOxmFieldCode();
 
     protected abstract int getValueLength();
-
 }

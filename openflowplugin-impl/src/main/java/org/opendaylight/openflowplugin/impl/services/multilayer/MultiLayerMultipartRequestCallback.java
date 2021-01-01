@@ -18,20 +18,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 public class MultiLayerMultipartRequestCallback<T extends OfHeader> extends AbstractMultipartRequestCallback<T> {
 
-    public MultiLayerMultipartRequestCallback(RequestContext<List<T>> context, Class<?> requestType,
-                                              DeviceContext deviceContext,
-                                              EventIdentifier eventIdentifier) {
+    public MultiLayerMultipartRequestCallback(final RequestContext<List<T>> context, final Class<?> requestType,
+                                              final DeviceContext deviceContext,
+                                              final EventIdentifier eventIdentifier) {
         super(context, requestType, deviceContext, eventIdentifier);
     }
 
     @Override
-    protected boolean isMultipart(OfHeader result) {
+    protected boolean isMultipart(final OfHeader result) {
         return result instanceof MultipartReply;
     }
 
     @Override
-    protected boolean isReqMore(T result) {
+    protected boolean isReqMore(final T result) {
         final MultipartRequestFlags flags = ((MultipartReply) result).getFlags();
-        return flags != null && flags.isOFPMPFREQMORE();
+        return flags != null && flags.getOFPMPFREQMORE();
     }
 }
