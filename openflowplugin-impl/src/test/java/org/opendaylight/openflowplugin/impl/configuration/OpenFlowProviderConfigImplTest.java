@@ -106,7 +106,7 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void isSwitchFeaturesMandatory() {
-        assertEquals(SWITCH_FEATURES_MANDATORY, openflowProviderConfig.isSwitchFeaturesMandatory());
+        assertEquals(SWITCH_FEATURES_MANDATORY, openflowProviderConfig.getSwitchFeaturesMandatory());
     }
 
     @Test
@@ -116,12 +116,12 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void isIsStatisticsPollingOn() {
-        assertEquals(IS_STATISTICS_POLLING_ON, openflowProviderConfig.isIsStatisticsPollingOn());
+        assertEquals(IS_STATISTICS_POLLING_ON, openflowProviderConfig.getIsStatisticsPollingOn());
     }
 
     @Test
     public void isIsStatisticsRpcEnabled() {
-        assertEquals(IS_STATISTICS_RPC_ENABLED, openflowProviderConfig.isIsStatisticsRpcEnabled());
+        assertEquals(IS_STATISTICS_RPC_ENABLED, openflowProviderConfig.getIsStatisticsRpcEnabled());
     }
 
     @Test
@@ -157,12 +157,12 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void isEnableFlowRemovedNotification() {
-        assertEquals(ENABLE_FLOW_REMOVED_NOTIFICATION, openflowProviderConfig.isEnableFlowRemovedNotification());
+        assertEquals(ENABLE_FLOW_REMOVED_NOTIFICATION, openflowProviderConfig.getEnableFlowRemovedNotification());
     }
 
     @Test
     public void isSkipTableFeatures() {
-        assertEquals(SKIP_TABLE_FEATURES, openflowProviderConfig.isSkipTableFeatures());
+        assertEquals(SKIP_TABLE_FEATURES, openflowProviderConfig.getSkipTableFeatures());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class OpenFlowProviderConfigImplTest {
 
     @Test
     public void isUseSingleLayerSerialization() {
-        assertEquals(USE_SINGLE_LAYER_SERIALIZATION, openflowProviderConfig.isUseSingleLayerSerialization());
+        assertEquals(USE_SINGLE_LAYER_SERIALIZATION, openflowProviderConfig.getUseSingleLayerSerialization());
     }
 
     @Test

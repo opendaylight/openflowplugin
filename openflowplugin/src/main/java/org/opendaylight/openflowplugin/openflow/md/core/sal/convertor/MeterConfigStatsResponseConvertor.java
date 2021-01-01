@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
@@ -72,10 +71,9 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
             meterConfigStatsBuilder.withKey(new MeterConfigStatsKey(meterConfigStatsBuilder.getMeterId()));
             MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
 
-            MeterFlags meterFlags = new MeterFlags(meterConfig.getFlags().isOFPMFBURST(),
-                    meterConfig.getFlags().isOFPMFKBPS(),
-                    meterConfig.getFlags().isOFPMFPKTPS(),
-                    meterConfig.getFlags().isOFPMFSTATS());
+            MeterFlags meterFlags = new MeterFlags(meterConfig.getFlags().getOFPMFBURST(),
+                    meterConfig.getFlags().getOFPMFKBPS(), meterConfig.getFlags().getOFPMFPKTPS(),
+                    meterConfig.getFlags().getOFPMFSTATS());
 
             meterConfigStatsBuilder.setFlags(meterFlags);
             List<MeterBandHeader> listBandHeaders = new ArrayList<>();

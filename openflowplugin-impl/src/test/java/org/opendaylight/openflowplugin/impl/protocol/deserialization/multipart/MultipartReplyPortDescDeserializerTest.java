@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +19,7 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.MultipartReplyPortDesc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDeserializerTest {
@@ -74,30 +74,30 @@ public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDes
         buffer.writeZero(EncodeConstants.MAX_PORT_NAME_LENGTH);
 
         Map<Integer, Boolean> portMap = new HashMap<>();
-        portMap.put(0, PORT_CONFIG.isPORTDOWN());
-        portMap.put(2, PORT_CONFIG.isNORECV());
-        portMap.put(5, PORT_CONFIG.isNOFWD());
-        portMap.put(6, PORT_CONFIG.isNOPACKETIN());
+        portMap.put(0, PORT_CONFIG.getPORTDOWN());
+        portMap.put(2, PORT_CONFIG.getNORECV());
+        portMap.put(5, PORT_CONFIG.getNOFWD());
+        portMap.put(6, PORT_CONFIG.getNOPACKETIN());
 
         buffer.writeInt(ByteBufUtils.fillBitMaskFromMap(portMap));
         buffer.writeInt(ByteBufUtils.fillBitMask(0, PS_BLOCKED, PS_LINK_DOWN, PS_LIVE));
         buffer.writeInt(ByteBufUtils.fillBitMask(0,
-                CURRENT_FEATURE.isTenMbHd(),
-                CURRENT_FEATURE.isTenMbFd(),
-                CURRENT_FEATURE.isHundredMbHd(),
-                CURRENT_FEATURE.isHundredMbFd(),
-                CURRENT_FEATURE.isOneGbHd(),
-                CURRENT_FEATURE.isOneGbFd(),
-                CURRENT_FEATURE.isTenGbFd(),
-                CURRENT_FEATURE.isFortyGbFd(),
-                CURRENT_FEATURE.isHundredGbFd(),
-                CURRENT_FEATURE.isOneTbFd(),
-                CURRENT_FEATURE.isOther(),
-                CURRENT_FEATURE.isFiber(),
-                CURRENT_FEATURE.isAutoeng(),
-                CURRENT_FEATURE.isCopper(),
-                CURRENT_FEATURE.isPause(),
-                CURRENT_FEATURE.isPauseAsym()));
+                CURRENT_FEATURE.getTenMbHd(),
+                CURRENT_FEATURE.getTenMbFd(),
+                CURRENT_FEATURE.getHundredMbHd(),
+                CURRENT_FEATURE.getHundredMbFd(),
+                CURRENT_FEATURE.getOneGbHd(),
+                CURRENT_FEATURE.getOneGbFd(),
+                CURRENT_FEATURE.getTenGbFd(),
+                CURRENT_FEATURE.getFortyGbFd(),
+                CURRENT_FEATURE.getHundredGbFd(),
+                CURRENT_FEATURE.getOneTbFd(),
+                CURRENT_FEATURE.getOther(),
+                CURRENT_FEATURE.getFiber(),
+                CURRENT_FEATURE.getAutoeng(),
+                CURRENT_FEATURE.getCopper(),
+                CURRENT_FEATURE.getPause(),
+                CURRENT_FEATURE.getPauseAsym()));
         buffer.writeInt(ADVERTISED_FEATURE);
         buffer.writeInt(SUPPORTED_FEATURE);
         buffer.writeInt(PEER_FEATURES);
@@ -105,15 +105,16 @@ public class MultipartReplyPortDescDeserializerTest extends AbstractMultipartDes
         buffer.writeInt(MAXIMUM_SPEED);
 
         final MultipartReplyPortDesc reply = (MultipartReplyPortDesc) deserializeMultipart(buffer);
-        assertEquals(PORT_NUMBER, reply.getPorts().get(0).getPortNumber().getUint32().intValue());
-        assertEquals("01:02:03:04:05:06", reply.getPorts().get(0).getHardwareAddress().getValue());
-        assertEquals(PORT_CONFIG, reply.getPorts().get(0).getConfiguration());
-        assertEquals(PS_BLOCKED, reply.getPorts().get(0).getState().isBlocked());
-        assertEquals(PS_LINK_DOWN, reply.getPorts().get(0).getState().isLinkDown());
-        assertEquals(PS_LIVE, reply.getPorts().get(0).getState().isLive());
-        assertEquals(CURRENT_FEATURE, reply.getPorts().get(0).getCurrentFeature());
-        assertEquals(CURRENT_SPEED, reply.getPorts().get(0).getCurrentSpeed().intValue());
-        assertEquals(MAXIMUM_SPEED, reply.getPorts().get(0).getMaximumSpeed().intValue());
+        final Ports ports = reply.nonnullPorts().get(0);
+        assertEquals(PORT_NUMBER, ports.getPortNumber().getUint32().intValue());
+        assertEquals("01:02:03:04:05:06", ports.getHardwareAddress().getValue());
+        assertEquals(PORT_CONFIG, ports.getConfiguration());
+        assertEquals(PS_BLOCKED, ports.getState().getBlocked());
+        assertEquals(PS_LINK_DOWN, ports.getState().getLinkDown());
+        assertEquals(PS_LIVE, ports.getState().getLive());
+        assertEquals(CURRENT_FEATURE, ports.getCurrentFeature());
+        assertEquals(CURRENT_SPEED, ports.getCurrentSpeed().intValue());
+        assertEquals(MAXIMUM_SPEED, ports.getMaximumSpeed().intValue());
     }
 
     @Override

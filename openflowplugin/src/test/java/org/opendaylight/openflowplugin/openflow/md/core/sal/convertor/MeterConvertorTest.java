@@ -147,7 +147,7 @@ public class MeterConvertorTest {
         MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
-        assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
+        assertTrue(outMeterModInput.getFlags().getOFPMFBURST());
         assertEquals(Uint32.valueOf(10L), outMeterModInput.getMeterId().getValue());
         // BandInformation starts here:
 
@@ -281,8 +281,8 @@ public class MeterConvertorTest {
         MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
-        assertFalse(outMeterModInput.getFlags().isOFPMFBURST());
-        assertTrue(outMeterModInput.getFlags().isOFPMFPKTPS());
+        assertFalse(outMeterModInput.getFlags().getOFPMFBURST());
+        assertTrue(outMeterModInput.getFlags().getOFPMFPKTPS());
         assertEquals(Uint32.TEN, outMeterModInput.getMeterId().getValue());
         // BandInformation starts here:
 
@@ -341,7 +341,7 @@ public class MeterConvertorTest {
         MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
-        assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
+        assertTrue(outMeterModInput.getFlags().getOFPMFBURST());
         assertEquals(Uint32.valueOf(10L), outMeterModInput.getMeterId().getValue());
     }
 
@@ -423,7 +423,7 @@ public class MeterConvertorTest {
         MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
-        assertTrue(outMeterModInput.getFlags().isOFPMFBURST());
+        assertTrue(outMeterModInput.getFlags().getOFPMFBURST());
         assertEquals(Uint32.valueOf(10L), outMeterModInput.getMeterId().getValue());
         // BandInformation starts here:
 

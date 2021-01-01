@@ -24,7 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowCreatorUtil {
     /**
@@ -63,24 +65,25 @@ public final class FlowCreatorUtil {
      *
      * @return V10 Match object
      */
+    // FIXME: make this a constant
     public static MatchV10 createWildcardedMatchV10() {
-        MatchV10Builder builder = new MatchV10Builder();
-        builder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
-        builder.setNwSrcMask((short) 0);
-        builder.setNwDstMask((short) 0);
-        builder.setInPort(0);
-        builder.setDlSrc(new MacAddress("00:00:00:00:00:00"));
-        builder.setDlDst(new MacAddress("00:00:00:00:00:00"));
-        builder.setDlVlan(0);
-        builder.setDlVlanPcp((short) 0);
-        builder.setDlType(0);
-        builder.setNwTos((short) 0);
-        builder.setNwProto((short) 0);
-        builder.setNwSrc(new Ipv4Address("0.0.0.0"));
-        builder.setNwDst(new Ipv4Address("0.0.0.0"));
-        builder.setTpSrc(0);
-        builder.setTpDst(0);
-        return builder.build();
+        return new MatchV10Builder()
+            .setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true))
+            .setNwSrcMask(Uint8.ZERO)
+            .setNwDstMask(Uint8.ZERO)
+            .setInPort(Uint16.ZERO)
+            .setDlSrc(new MacAddress("00:00:00:00:00:00"))
+            .setDlDst(new MacAddress("00:00:00:00:00:00"))
+            .setDlVlan(Uint16.ZERO)
+            .setDlVlanPcp(Uint8.ZERO)
+            .setDlType(Uint16.ZERO)
+            .setNwTos(Uint8.ZERO)
+            .setNwProto(Uint8.ZERO)
+            .setNwSrc(new Ipv4Address("0.0.0.0"))
+            .setNwDst(new Ipv4Address("0.0.0.0"))
+            .setTpSrc(Uint16.ZERO)
+            .setTpDst(Uint16.ZERO)
+            .build();
     }
 
     public static Match createWildcardedMatch() {
@@ -109,7 +112,7 @@ public final class FlowCreatorUtil {
             return false;
         }
 
-        if (!Boolean.TRUE.equals(updated.isStrict()) && version != null
+        if (!Boolean.TRUE.equals(updated.getStrict()) && version != null
                 && version.shortValue() != OFConstants.OFP_VERSION_1_0) {
             FlowCookie cookieMask = updated.getCookieMask();
             if (cookieMask != null) {
@@ -162,12 +165,11 @@ public final class FlowCreatorUtil {
             f2 = flags2 == null ? DEFAULT_FLOW_MOD_FLAGS : flags2;
         }
 
-        return equalsWithDefault(f1.isCHECKOVERLAP(), f2.isCHECKOVERLAP(), Boolean.FALSE) && equalsWithDefault(
-                f1.isNOBYTCOUNTS(), f2.isNOBYTCOUNTS(), Boolean.FALSE) && equalsWithDefault(f1.isNOPKTCOUNTS(),
-                                                                                            f2.isNOPKTCOUNTS(),
-                                                                                            Boolean.FALSE)
-                && equalsWithDefault(f1.isRESETCOUNTS(), f2.isRESETCOUNTS(), Boolean.FALSE) && equalsWithDefault(
-                f1.isSENDFLOWREM(), f2.isSENDFLOWREM(), Boolean.FALSE);
+        return equalsWithDefault(f1.getCHECKOVERLAP(), f2.getCHECKOVERLAP(), Boolean.FALSE)
+            && equalsWithDefault(f1.getNOBYTCOUNTS(), f2.getNOBYTCOUNTS(), Boolean.FALSE)
+            && equalsWithDefault(f1.getNOPKTCOUNTS(), f2.getNOPKTCOUNTS(), Boolean.FALSE)
+            && equalsWithDefault(f1.getRESETCOUNTS(), f2.getRESETCOUNTS(), Boolean.FALSE)
+            && equalsWithDefault(f1.getSENDFLOWREM(), f2.getSENDFLOWREM(), Boolean.FALSE);
     }
 
     /**

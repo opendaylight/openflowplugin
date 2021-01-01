@@ -135,7 +135,7 @@ public class FlatBatchUtilTest {
         checkBarriersBetween(BatchStepType.FLOW_UPDATE, BatchStepType.METER_REMOVE);
     }
 
-    private void checkBarriersBetween(final BatchStepType typeOfFirst, final BatchStepType typeOfSecond) {
+    private static void checkBarriersBetween(final BatchStepType typeOfFirst, final BatchStepType typeOfSecond) {
         final List<Batch> batches = Lists.newArrayList(createBatch(typeOfFirst), createBatch(typeOfSecond));
         final List<BatchPlanStep> batchPlan = FlatBatchUtil.assembleBatchPlan(batches);
         FlatBatchUtil.markBarriersWhereNeeded(batchPlan);
@@ -149,7 +149,7 @@ public class FlatBatchUtilTest {
 
     @Test
     public void testMarkBarriersWhereNeeded_single() {
-        final List<Batch> batches = Lists.newArrayList(
+        final List<Batch> batches = List.of(
                 //general part - no flush required
                 createBatch(BatchStepType.GROUP_REMOVE)
         );

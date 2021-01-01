@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
 import com.google.common.base.Preconditions;
@@ -96,7 +95,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
         ListenableFuture<RpcResult<UpdateMetersBatchOutput>> updateMetersBulkFuture =
                 Futures.transform(commonResult, MeterUtil.METER_UPDATE_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             updateMetersBulkFuture = BarrierUtil.chainBarrier(updateMetersBulkFuture, input.getNode(),
                     transactionService, MeterUtil.METER_UPDATE_COMPOSING_TRANSFORM);
         }
@@ -124,7 +123,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
         ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBulkFuture =
                 Futures.transform(commonResult, MeterUtil.METER_ADD_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             addMetersBulkFuture = BarrierUtil.chainBarrier(addMetersBulkFuture, input.getNode(),
                     transactionService, MeterUtil.METER_ADD_COMPOSING_TRANSFORM);
         }
@@ -154,7 +153,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
         ListenableFuture<RpcResult<RemoveMetersBatchOutput>> removeMetersBulkFuture =
                 Futures.transform(commonResult, MeterUtil.METER_REMOVE_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             removeMetersBulkFuture = BarrierUtil.chainBarrier(removeMetersBulkFuture, input.getNode(),
                     transactionService, MeterUtil.METER_REMOVE_COMPOSING_TRANSFORM);
         }

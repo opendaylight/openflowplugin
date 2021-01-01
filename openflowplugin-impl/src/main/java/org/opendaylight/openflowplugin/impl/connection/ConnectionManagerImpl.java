@@ -118,7 +118,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext,
                 config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService);
         connectionAdapter.setSystemListener(systemListener);
-        SslContextFactory.setIsCustomTrustManagerEnabled(config.isEnableCustomTrustManager());
+        SslContextFactory.setIsCustomTrustManagerEnabled(config.getEnableCustomTrustManager());
 
         LOG.trace("connection ballet finished");
     }
@@ -184,22 +184,22 @@ public class ConnectionManagerImpl implements ConnectionManager {
         }
 
         @Override
-        public LocalDateTime getDeviceLastConnectionTime(BigInteger nodeId) {
+        public LocalDateTime getDeviceLastConnectionTime(final BigInteger nodeId) {
             return deviceConnectionMap.get(nodeId);
         }
 
         @Override
-        public void addDeviceLastConnectionTime(BigInteger nodeId, LocalDateTime time) {
+        public void addDeviceLastConnectionTime(final BigInteger nodeId, final LocalDateTime time) {
             deviceConnectionMap.put(nodeId, time);
         }
 
         @Override
-        public void removeDeviceLastConnectionTime(BigInteger nodeId) {
+        public void removeDeviceLastConnectionTime(final BigInteger nodeId) {
             deviceConnectionMap.remove(nodeId);
         }
 
         @Override
-        public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Node>> changes) {
+        public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<Node>> changes) {
             Preconditions.checkNotNull(changes, "Changes must not be null!");
             for (DataTreeModification<Node> change : changes) {
                 final DataObjectModification<Node> mod = change.getRootNode();
@@ -221,7 +221,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
             return InstanceIdentifier.create(Nodes.class).child(Node.class);
         }
 
-        private void processNodeModification(DataTreeModification<Node> change) {
+        private void processNodeModification(final DataTreeModification<Node> change) {
             final InstanceIdentifier<Node> key = change.getRootPath().getRootIdentifier();
             final InstanceIdentifier<Node> nodeIdent = key.firstIdentifierOf(Node.class);
             String[] nodeIdentity = nodeIdent.firstKeyOf(Node.class).getId().getValue().split(":");

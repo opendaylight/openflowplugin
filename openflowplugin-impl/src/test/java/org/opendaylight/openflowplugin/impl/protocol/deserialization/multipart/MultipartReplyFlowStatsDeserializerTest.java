@@ -68,11 +68,11 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         buffer.writeShort(IDLE_TIMEOUT);
         buffer.writeShort(HARD_TIMEOUT);
         buffer.writeShort(ByteBufUtils.fillBitMask(0,
-                FLAGS.isSENDFLOWREM(),
-                FLAGS.isCHECKOVERLAP(),
-                FLAGS.isRESETCOUNTS(),
-                FLAGS.isNOPKTCOUNTS(),
-                FLAGS.isNOBYTCOUNTS()));
+                FLAGS.getSENDFLOWREM(),
+                FLAGS.getCHECKOVERLAP(),
+                FLAGS.getRESETCOUNTS(),
+                FLAGS.getNOPKTCOUNTS(),
+                FLAGS.getNOBYTCOUNTS()));
         buffer.writeZero(PADDING_IN_FLOW_STATS_HEADER_02);
         buffer.writeLong(COOKIE);
         buffer.writeLong(PACKET_COUNT);

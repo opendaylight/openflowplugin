@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.Preconditions;
@@ -50,7 +49,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
         outBuffer.writeShort(multipartType.getIntValue());
-        outBuffer.writeShort(ByteBufUtils.fillBitMask(0, message.isRequestMore()));
+        outBuffer.writeShort(ByteBufUtils.fillBitMask(0, message.getRequestMore()));
         outBuffer.writeZero(PADDING_IN_MULTIPART_REQUEST_MESSAGE);
 
         final OFSerializer<MultipartRequestBody> serializer = Preconditions.checkNotNull(registry)
@@ -98,5 +97,4 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
-
 }

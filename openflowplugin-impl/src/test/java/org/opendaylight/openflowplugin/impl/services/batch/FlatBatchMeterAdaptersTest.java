@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMeters;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -67,7 +68,7 @@ public class FlatBatchMeterAdaptersTest {
         final AddMetersBatchInput addMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, NODE_REF);
 
-        Assert.assertTrue(addMetersBatchInput.isBarrierAfter());
+        Assert.assertTrue(addMetersBatchInput.getBarrierAfter());
         Assert.assertEquals(2, addMetersBatchInput.nonnullBatchAddMeters().size());
         final Iterator<BatchAddMeters> it = addMetersBatchInput.nonnullBatchAddMeters().values().iterator();
 
@@ -113,7 +114,7 @@ public class FlatBatchMeterAdaptersTest {
                 FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, NODE_REF);
         Iterator<BatchRemoveMeters> iterator = removeMetersBatchInput.nonnullBatchRemoveMeters().values().iterator();
 
-        Assert.assertTrue(removeMetersBatchInput.isBarrierAfter());
+        Assert.assertTrue(removeMetersBatchInput.getBarrierAfter());
         Assert.assertEquals(2, removeMetersBatchInput.nonnullBatchRemoveMeters().size());
         Assert.assertEquals(1L, iterator.next().getMeterId().getValue().longValue());
         Assert.assertEquals(2L, iterator.next().getMeterId().getValue().longValue());
@@ -130,7 +131,7 @@ public class FlatBatchMeterAdaptersTest {
         final UpdateMetersBatchInput updateMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, NODE_REF);
 
-        Assert.assertTrue(updateMetersBatchInput.isBarrierAfter());
+        Assert.assertTrue(updateMetersBatchInput.getBarrierAfter());
         Assert.assertEquals(2, updateMetersBatchInput.getBatchUpdateMeters().size());
         Assert.assertEquals(1L, updateMetersBatchInput.getBatchUpdateMeters().get(0)
                 .getUpdatedBatchedMeter().getMeterId().getValue().longValue());
@@ -143,7 +144,7 @@ public class FlatBatchMeterAdaptersTest {
         final RpcResult<BatchMeterOutputListGrouping> input = RpcResultBuilder.<BatchMeterOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-meterError")
                 .withResult(new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(Lists.newArrayList(
+                        .setBatchFailedMetersOutput(BindingMap.of(
                                 createBatchFailedMetersOutput(Uint16.ZERO, Uint32.ONE),
                                 createBatchFailedMetersOutput(Uint16.ONE, Uint32.TWO)
                         ))

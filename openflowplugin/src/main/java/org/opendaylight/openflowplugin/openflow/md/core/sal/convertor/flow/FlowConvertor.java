@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import com.google.common.base.MoreObjects;
@@ -273,7 +272,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
         if (flow instanceof AddFlowInput || flow instanceof UpdatedFlow) {
             flowMod.setCommand(FlowModCommand.OFPFCADD);
         } else if (flow instanceof RemoveFlowInput) {
-            if (MoreObjects.firstNonNull(flow.isStrict(), Boolean.FALSE)) {
+            if (MoreObjects.firstNonNull(flow.getStrict(), Boolean.FALSE)) {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETESTRICT);
             } else {
                 flowMod.setCommand(FlowModCommand.OFPFCDELETE);
@@ -405,7 +404,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             // match on vlan tag or vlanid with no mask
             VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder(srcVlanMatch);
             VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            vlanIdBuilder.setVlanIdPresent(srcVlanMatch.getVlanId().isVlanIdPresent());
+            vlanIdBuilder.setVlanIdPresent(srcVlanMatch.getVlanId().getVlanIdPresent());
             vlanIdBuilder.setVlanId(srcVlanMatch.getVlanId().getVlanId());
             vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
             Match match = new MatchBuilder(srcMatch).setVlanMatch(vlanMatchBuilder.build()).build();

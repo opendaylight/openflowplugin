@@ -65,24 +65,24 @@ public class ConfigurationServiceFactoryImplTest {
 
     @Before
     public void setUp() {
-        when(config.isIsStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsTableStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsGroupStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsMeterStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsQueueStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
-        when(config.isIsPortStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsTableStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsFlowStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsGroupStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsMeterStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsQueueStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
+        when(config.getIsPortStatisticsPollingOn()).thenReturn(IS_STATISTICS_POLLING_ON);
         when(config.getBarrierCountLimit()).thenReturn(new NonZeroUint16Type(BARRIER_COUNT_LIMIT));
         when(config.getBarrierIntervalTimeoutLimit()).thenReturn(new NonZeroUint32Type(BARRIER_INTERVAL_TIMEOUT_LIMIT));
         when(config.getEchoReplyTimeout()).thenReturn(new NonZeroUint32Type(ECHO_REPLY_TIMEOUT));
-        when(config.isEnableFlowRemovedNotification()).thenReturn(ENABLE_FLOW_REMOVED_NOTIFICATION);
-        when(config.isSkipTableFeatures()).thenReturn(SKIP_TABLE_FEATURES);
+        when(config.getEnableFlowRemovedNotification()).thenReturn(ENABLE_FLOW_REMOVED_NOTIFICATION);
+        when(config.getSkipTableFeatures()).thenReturn(SKIP_TABLE_FEATURES);
         when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(BASIC_TIMER_DELAY));
         when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(MAXIMUM_TIMER_DELAY));
-        when(config.isSwitchFeaturesMandatory()).thenReturn(SWITCH_FEATURES_MANDATORY);
-        when(config.isIsStatisticsRpcEnabled()).thenReturn(IS_STATISTICS_RPC_ENABLED);
-        when(config.isUseSingleLayerSerialization()).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
+        when(config.getSwitchFeaturesMandatory()).thenReturn(SWITCH_FEATURES_MANDATORY);
+        when(config.getIsStatisticsRpcEnabled()).thenReturn(IS_STATISTICS_RPC_ENABLED);
+        when(config.getUseSingleLayerSerialization()).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
         when(config.getRpcRequestsQuota()).thenReturn(new NonZeroUint16Type(RPC_REQUESTS_QUOTA));
         when(config.getGlobalNotificationQuota()).thenReturn(GLOBAL_NOTIFICATION_QUOTA);
         when(config.getThreadPoolMinThreads()).thenReturn(THREAD_POOL_MIN_THREADS);

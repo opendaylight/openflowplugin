@@ -86,7 +86,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
         ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBulkFuture =
                 Futures.transform(commonResult, FlowUtil.FLOW_REMOVE_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             removeFlowsBulkFuture = BarrierUtil.chainBarrier(removeFlowsBulkFuture, input.getNode(),
                     transactionService, FlowUtil.FLOW_REMOVE_COMPOSING_TRANSFORM);
         }
@@ -114,7 +114,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
         ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBulkFuture =
                 Futures.transform(commonResult, FlowUtil.FLOW_ADD_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             addFlowsBulkFuture = BarrierUtil.chainBarrier(addFlowsBulkFuture, input.getNode(),
                     transactionService, FlowUtil.FLOW_ADD_COMPOSING_TRANSFORM);
         }
@@ -156,7 +156,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
         ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBulkFuture =
                 Futures.transform(commonResult, FlowUtil.FLOW_UPDATE_TRANSFORM, MoreExecutors.directExecutor());
 
-        if (input.isBarrierAfter()) {
+        if (input.getBarrierAfter()) {
             updateFlowsBulkFuture = BarrierUtil.chainBarrier(updateFlowsBulkFuture, input.getNode(),
                     transactionService, FlowUtil.FLOW_UPDATE_COMPOSING_TRANSFORM);
         }
